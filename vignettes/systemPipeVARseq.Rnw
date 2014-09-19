@@ -1,0 +1,167 @@
+%\VignetteIndexEntry{VAR-Seq Report Template}
+%\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap}
+%\VignetteKeywords{compute cluster, pipeline, reports}
+%\VignettePackage{systemPipeR}
+
+% Latex compile
+% Sweave("systemPipeR.Rnw"); system("pdflatex systemPipeR.tex; bibtex systemPipeR; pdflatex systemPipeR.tex; pdflatex systemPipeR.tex")
+% echo 'Sweave("systemPipeVARseq.Rnw")' | R --slave; echo 'Stangle("systemPipeVARseq.Rnw")' | R --slave; pdflatex systemPipeVARseq.tex;  bibtex systemPipeVARseq; pdflatex systemPipeVARseq.tex
+
+\documentclass{article}
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex(use.unsrturl=FALSE)
+@
+
+\usepackage[authoryear,round]{natbib}
+\bibliographystyle{plainnat}
+\def\bibsection{\section{References}}
+
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{float}
+
+%\newcommand{\comment}[1]{}
+%\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+%\newcommand{\Robject}[1]{{\texttt{#1}}}
+%\newcommand{\Rpackage}[1]{{\textit{#1}}}
+%\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+%\newcommand{\Rclass}[1]{{\textit{#1}}}
+	
+% Define header and footer area with fandyhdr package (see: http://www.ctan.org/tex-archive/macros/latex/contrib/fancyhdr/fancyhdr.pdf)
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\rhead{\nouppercase{\leftmark}}
+\lhead{\textit{systemPipeR VAR-Seq Report}}
+\rfoot{\thepage}
+
+<<echo=FALSE>>=
+options(width=95)
+unlink("test.db")
+@
+%\parindent 0in
+
+%\bibliographystyle{plainnat}
+
+\begin{document}
+\title{VAR-Seq project report template: Some Descriptive Title}
+\author{Project ID: RNAseq\_PI\_Name\_Organism\_Jun2014 \\
+	Project PI: First Last (first.last@inst.edu)\\
+        Author of Report: First Last (first.last@inst.edu)}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+This report describes the analysis of an VAR-Seq project from Dr. First Last's lab which studies the gene expression changes of ... in \textit{organism} .... The experimental design is as follows...
+
+\section{Sample definitions and environment settings}
+
+\subsection{Environment settings and input data}
+Typically, the user wants to record here the sources and versions of the reference genome sequence along with the corresponding annotations. In the provided sample data set all data inputs are stored in a \Robject{data} subdirectory and all results will be written to a separate \Robject{results} directory, while the \Robject{systemPipeVARseq.Rnw} script and the \Robject{targets} file are expected be located in the parent directory. The R session is expected to run from this parent directory.
+
+To run this sample report, mini sample FASTQ and reference genome files can be downloaded from \href{http://biocluster.ucr.edu/~tgirke/projects/systemPipeR_test_data.zip}{\textcolor{blue}{here}}. The chosen data set \href{http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938}{\textcolor{blue}{SRP010938}} contains 18 paired-end (PE) read sets from \textit{Arabidposis thaliana} \cite{Howard2013-fq}. To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the \textit{A. thalina} genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set is less than 200MB in storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads. 
+
+\subsection{Required packages and resources}
+The \Rpackage{systemPipeR} package needs to be loaded to perform the analysis steps shown in this report \citep{Girke2014-oy}. 
+<<eval=TRUE, keep.source=TRUE>>=
+library(systemPipeR)
+@
+
+If applicable load custom functions not provided by \Rpackage{systemPipeR}
+<<eval=FALSE, keep.source=TRUE>>=
+source("systemPipeVARseq_Fct.R")
+@
+
+\subsection{Experiment definition provided by \Robject{targets} file}
+The \href{run:targets.txt}{\Robject{targets}} file defines all FASTQ files and sample comparisons of the analysis workflow. 
+<<eval=TRUE, keep.source=TRUE>>=
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+targets <- read.delim(targetspath, comment.char = "#")[,1:4]
+targets
+@
+
+\section{Read preprocessing}
+\subsection{FASTQ quality report}
+The following \Rfunction{seeFastq} and \Rfunction{seeFastqPlot} functions generate and plot a series of
+useful quality statistics for a set of FASTQ files including per cycle quality
+box plots, base proportions, base-level quality trends, relative k-mer
+diversity, length and occurrence distribution of reads, number of reads above
+quality cutoffs and mean quality distribution. The results are written to a PDF file named 
+\href{run:./results/fastqReport.pdf}{\Robject{fastqReport.pdf}}.
+
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
+pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
+seeFastqPlot(fqlist)
+dev.off()
+@
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=18cm]{fastqReport.pdf}
+   \caption{QC report for 18 FASTQ files.}
+   \label{fig:fastqreport}
+\end{figure}
+
+\section{Alignments}
+\subsection{Read mapping with \Rfunction{BWA}}
+The NGS reads of this project will be aligned against the reference genome sequence using \Robject{BWA} \citep{Li2013-oy, Li2009-oc}. The parameter settings of the aligner are defined in the \Robject{bwa.param} file.
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="bwa.param", mytargets="targets.txt")
+sysargs(args)[1] # Command-line parameters for first FASTQ file
+@
+Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
+<<eval=FALSE, keep.source=TRUE>>=
+moduleload(modules(args))
+system("bowtie2-build ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa")
+qsubargs <- getQsubargs(queue="batch", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
+(joblist <- qsubRun(args=args, qsubargs=qsubargs, Nqsubs=18, package="systemPipeR"))
+@
+Check whether all BAM files have been created
+<<eval=FALSE, keep.source=TRUE>>=
+file.exists(outpaths(args))
+@
+
+\subsection{Read and alignment stats}
+The following provides an overview of the number of reads in each sample and how many of them aligned to the reference.
+<<eval=FALSE, keep.source=TRUE>>=
+read_statsDF <- alignStats(args=args) 
+write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+@
+<<eval=FALSE, keep.source=TRUE>>=
+read.delim("results/alignStats.xls")
+@
+
+\subsection{Create symbolic links for viewing BAM files in IGV}
+The \Rfunction{symLink2bam} function creates symbolic links to view the BAM alignment files in a genome browser such as IGV. The corresponding URLs are written to a file with a path specified under \Robject{urlfile}, here \href{run:./results/IGVurl.txt}{IGVurl.txt}.
+<<eval=FALSE, keep.source=TRUE>>=
+symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/AlexRaikhel/2014/"), 
+            urlbase="http://biocluster.ucr.edu/~tgirke/", 
+	    urlfile="./results/IGVurl.txt")
+@
+
+\section{Variant calling}
+To be continued...
+
+\section{Annotating variants}
+To be continued...
+
+\section{Summary statistics of variants}
+To be continued...
+
+\section{Version Information}
+<<sessionInfo, results=tex, print=TRUE>>=
+toLatex(sessionInfo())
+@
+
+\section{Funding}
+This project was supported by funds from the National Institutes of Health (NIH).
+
+\bibliography{bibtex}
+
+\end{document}
