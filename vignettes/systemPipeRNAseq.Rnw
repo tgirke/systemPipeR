@@ -141,7 +141,7 @@ read.delim("results/alignStats.xls")
 \subsection{Create symbolic links for viewing BAM files in IGV}
 The \Rfunction{symLink2bam} function creates symbolic links to view the BAM alignment files in a genome browser such as IGV. The corresponding URLs are written to a file with a path specified under \Robject{urlfile}, here \href{run:./results/IGVurl.txt}{IGVurl.txt}.
 <<eval=FALSE, keep.source=TRUE>>=
-symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/AlexRaikhel/2014/"), 
+symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
             urlbase="http://biocluster.ucr.edu/~tgirke/", 
 	    urlfile="./results/IGVurl.txt")
 @

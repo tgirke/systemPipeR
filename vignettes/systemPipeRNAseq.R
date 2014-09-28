@@ -82,7 +82,7 @@ targets
 ###################################################
 ### code chunk number 12: systemPipeRNAseq.Rnw:143-146 (eval = FALSE)
 ###################################################
-## symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/AlexRaikhel/2014/"), 
+## symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
 ##             urlbase="http://biocluster.ucr.edu/~tgirke/", 
 ## 	    urlfile="./results/IGVurl.txt")
 

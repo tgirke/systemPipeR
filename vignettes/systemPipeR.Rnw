@@ -367,7 +367,7 @@ toLatex(sessionInfo())
 @
 
 \section{Funding}
-This software was developed with funding from the National Science Foundation: \href{http://www.nsf.gov/awardsearch/showAward?AWD_ID=1021969}{{\textcolor{blue}{MCB-1021969 }}}.
+This software was developed with funding from the Agriculture and Food Research Institute of the National Institute of Food and Agriculture of the USDA (\href{http://www.reeis.usda.gov/web/crisprojectpages/0224573-reducing-losses-to-potato-and-tomato-late-blight-by-monitoring-pathogen-populations-improved-resistant-plants-education-and-extension.html}{{\textcolor{blue}{2011-68004-30154}}}), the National Science Foundation (\href{http://www.nsf.gov/awardsearch/showAward?AWD_ID=1021969}{{\textcolor{blue}{MCB-1021969}}}) and the National Institutes of Health/National Institute of Allergy and Infectious Diseases (5R01 AI036959).
 
 
 \bibliography{bibtex}
