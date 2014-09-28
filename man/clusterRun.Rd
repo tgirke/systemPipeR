@@ -4,7 +4,7 @@
 Submit command-line tools to cluster
 }
 \description{
-Submits non-R command-line software to queueing/scheduling systems of compute clusters using run specifications defined by \code{runCommandline}. \code{runCluster} can be used with most queueing systems since it is based on utilities from the \code{BatchJobs} package which supports the use of template files (\code{*.tmpl}) for defining the run parameters of the different schedulers. The path to the \code{*.tmpl} file needs to be specified in a conf file provided under the \code{conffile} argument.
+Submits non-R command-line software to queueing/scheduling systems of compute clusters using run specifications defined by functions similar to \code{runCommandline}. \code{runCluster} can be used with most queueing systems since it is based on utilities from the \code{BatchJobs} package which supports the use of template files (\code{*.tmpl}) for defining the run parameters of the different schedulers. The path to the \code{*.tmpl} file needs to be specified in a conf file provided under the \code{conffile} argument.
 }
 \usage{
 clusterRun(args, FUN=runCommandline, conffile = ".BatchJobs.R", template = "torque.tmpl", Njobs, runid = "01", resourceList)
@@ -14,7 +14,7 @@ clusterRun(args, FUN=runCommandline, conffile = ".BatchJobs.R", template = "torq
 	Object of class \code{SYSargs}. 
 }
   \item{FUN}{
-	Accpets functions such as \code{runCommandline(args, ...)} where \code{args} argument is mandatory and needs to be of class \code{SYSargs}.
+	Accpets functions such as \code{runCommandline(args, ...)} where the \code{args} argument is mandatory and needs to be of class \code{SYSargs}.
 }
   \item{conffile}{
 	Path to conf file (default location \code{./.BatchJobs.R}). This file contains in its simplest form just one command, such as this line for the Torque scheduler: 
