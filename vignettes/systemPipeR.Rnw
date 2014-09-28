@@ -81,7 +81,7 @@ vignette("systemPipeR") # Opens this PDF manual from R
 The mini sample FASTQ files used by this overview vignette as well as the associated workflow reporting vignettes can be downloaded from \href{http://biocluster.ucr.edu/~tgirke/projects/systemPipeR_test_data.zip}{\textcolor{blue}{here}}. The chosen data set \href{http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938}{\textcolor{blue}{SRP010938}} contains 18 paired-end (PE) read sets from \textit{Arabidposis thaliana} \citep{Howard2013-fq}. To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the \textit{A. thalina} genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set is less than 200MB in storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads. 
 
 \section{Structure of \Robject{targets} file}
-The \Robject{targets} file defines all FASTQ files and sample comparisons of an analysis workflow. The following shows the format of a sample \Robject{targets} file provided by this package. 
+The \Robject{targets} file defines all FASTQ files and sample comparisons of an analysis workflow. The following shows the format of a sample \Robject{targets} file provided by this package. Note: the first three columns are mandatory including their column names. All subsequent columns are optional and any number of additional columns can be added as needed.
 <<eval=TRUE, keep.source=TRUE>>=
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
@@ -95,8 +95,7 @@ targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:2,1:6]
 @
 
-\noindent Comparisons are defined in the header lines of the \Robject{targets} starting with '\texttt{\# <CMP>}'. The 
-function \Rfunction{readComp} imports the comparison and stores them in a \Robject{list}.
+\noindent Sample comparisons are defined in the header lines of the \Robject{targets} file starting with '\texttt{\# <CMP>}'. The function \Rfunction{readComp} imports the comparison and stores them in a \Robject{list}. These lines are also optional. They are mainly useful for controlling comparative analysis according to certain biological expectations, such as simple pairwise comparisons in RNA-Seq experiments. 
 <<eval=TRUE, keep.source=TRUE>>=
 readComp(file=targetspath, format="vector", delim="-")
 @
