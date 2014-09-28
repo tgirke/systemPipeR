@@ -51,35 +51,36 @@ targets
 
 
 ###################################################
-### code chunk number 8: systemPipeRNAseq.Rnw:119-123 (eval = FALSE)
+### code chunk number 8: systemPipeRNAseq.Rnw:119-124 (eval = FALSE)
 ###################################################
 ## moduleload(modules(args))
 ## system("bowtie2-build ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa")
-## qsubargs <- getQsubargs(queue="batch", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
-## (joblist <- qsubRun(args=args, qsubargs=qsubargs, Nqsubs=18, package="systemPipeR"))
+## resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
+## reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
+##                   resourceList=resources)
 
 
 ###################################################
-### code chunk number 9: systemPipeRNAseq.Rnw:126-127 (eval = FALSE)
+### code chunk number 9: systemPipeRNAseq.Rnw:127-128 (eval = FALSE)
 ###################################################
 ## file.exists(outpaths(args))
 
 
 ###################################################
-### code chunk number 10: systemPipeRNAseq.Rnw:132-134 (eval = FALSE)
+### code chunk number 10: systemPipeRNAseq.Rnw:133-135 (eval = FALSE)
 ###################################################
 ## read_statsDF <- alignStats(args=args) 
 ## write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 
 
 ###################################################
-### code chunk number 11: systemPipeRNAseq.Rnw:136-137 (eval = FALSE)
+### code chunk number 11: systemPipeRNAseq.Rnw:137-138 (eval = FALSE)
 ###################################################
 ## read.delim("results/alignStats.xls")
 
 
 ###################################################
-### code chunk number 12: systemPipeRNAseq.Rnw:142-145 (eval = FALSE)
+### code chunk number 12: systemPipeRNAseq.Rnw:143-146 (eval = FALSE)
 ###################################################
 ## symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/AlexRaikhel/2014/"), 
 ##             urlbase="http://biocluster.ucr.edu/~tgirke/", 
@@ -87,7 +88,7 @@ targets
 
 
 ###################################################
-### code chunk number 13: systemPipeRNAseq.Rnw:151-165 (eval = FALSE)
+### code chunk number 13: systemPipeRNAseq.Rnw:152-166 (eval = FALSE)
 ###################################################
 ## library("GenomicFeatures"); library(BiocParallel)
 ## txdb <- loadDb("./data/AedesAegypti.sqlite")
@@ -106,19 +107,19 @@ targets
 
 
 ###################################################
-### code chunk number 14: systemPipeRNAseq.Rnw:168-169 (eval = FALSE)
+### code chunk number 14: systemPipeRNAseq.Rnw:169-170 (eval = FALSE)
 ###################################################
 ## read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:5]
 
 
 ###################################################
-### code chunk number 15: systemPipeRNAseq.Rnw:172-173 (eval = FALSE)
+### code chunk number 15: systemPipeRNAseq.Rnw:173-174 (eval = FALSE)
 ###################################################
 ## read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
 
 
 ###################################################
-### code chunk number 16: systemPipeRNAseq.Rnw:178-186 (eval = FALSE)
+### code chunk number 16: systemPipeRNAseq.Rnw:179-187 (eval = FALSE)
 ###################################################
 ## library(ape)
 ## rpkmDFeByg <- read.delim("./results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[,-19]
@@ -131,7 +132,7 @@ targets
 
 
 ###################################################
-### code chunk number 17: systemPipeRNAseq.Rnw:197-202 (eval = FALSE)
+### code chunk number 17: systemPipeRNAseq.Rnw:198-203 (eval = FALSE)
 ###################################################
 ## library(edgeR)
 ## countDF <- read.delim("countDFeByg.xls", row.names=1, check.names=FALSE) 
@@ -141,7 +142,7 @@ targets
 
 
 ###################################################
-### code chunk number 18: systemPipeRNAseq.Rnw:206-211 (eval = FALSE)
+### code chunk number 18: systemPipeRNAseq.Rnw:207-212 (eval = FALSE)
 ###################################################
 ## desc <- read.delim("data/desc.xls") 
 ## desc <- desc[!duplicated(desc[,1]),]
@@ -151,7 +152,7 @@ targets
 
 
 ###################################################
-### code chunk number 19: systemPipeRNAseq.Rnw:215-220 (eval = FALSE)
+### code chunk number 19: systemPipeRNAseq.Rnw:216-221 (eval = FALSE)
 ###################################################
 ## edgeDF <- read.delim("results/edgeRglm_allcomp.xls", row.names=1, check.names=FALSE) 
 ## pdf("results/DEGcounts.pdf")
@@ -161,7 +162,7 @@ targets
 
 
 ###################################################
-### code chunk number 20: systemPipeRNAseq.Rnw:232-245 (eval = FALSE)
+### code chunk number 20: systemPipeRNAseq.Rnw:233-246 (eval = FALSE)
 ###################################################
 ## library("biomaRt")
 ## listMarts() # To choose BioMart database
@@ -179,7 +180,7 @@ targets
 
 
 ###################################################
-### code chunk number 21: systemPipeRNAseq.Rnw:250-261 (eval = FALSE)
+### code chunk number 21: systemPipeRNAseq.Rnw:251-262 (eval = FALSE)
 ###################################################
 ## load("data/GO/catdb.RData")
 ## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
@@ -195,7 +196,7 @@ targets
 
 
 ###################################################
-### code chunk number 22: systemPipeRNAseq.Rnw:266-271 (eval = FALSE)
+### code chunk number 22: systemPipeRNAseq.Rnw:267-272 (eval = FALSE)
 ###################################################
 ## gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 ## gos <- BatchResultslim
@@ -205,7 +206,7 @@ targets
 
 
 ###################################################
-### code chunk number 23: systemPipeRNAseq.Rnw:284-290 (eval = FALSE)
+### code chunk number 23: systemPipeRNAseq.Rnw:285-291 (eval = FALSE)
 ###################################################
 ## library(pheatmap)
 ## geneids <- unique(as.character(unlist(DEG_list[[1]])))

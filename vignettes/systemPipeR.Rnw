@@ -168,13 +168,23 @@ system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 bampaths <- runCommandline(args=args)
 @
 
-\noindent Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from \Rfunction{cores(args)} is passed on to the submission command, here \Rfunarg{cores} under \Rfunction{getQsubargs}. The number of independent parallel \Rfunction{qsub} processes is defined under the \Rfunarg{Nqsubs} argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores.  
+\noindent Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from \Rfunction{cores(args)} is passed on to the submission command, here \Rfunarg{nodes} in \Rfunction{resources} list object. The number of independent parallel cluster processes is defined under the \Rfunarg{Njobs} argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores. Note, \Rfunction{runCluster} can be used with most queueing systems as it is based on utilities from the \Rfunction{BatchJobs} package which supports the use of template files (\Rfunarg{*.tmpl}) for defining the run parameters of different schedulers. To run the following code, one needs to have both a conf file (see \Rfunarg{.BatchJob} samples \href{https://code.google.com/p/batchjobs/wiki/DortmundUsage}{{\textcolor{blue}{here}}}) and a template file (see \Rfunarg{*.tmpl} samples \href{https://github.com/tudo-r/BatchJobs/tree/master/examples}{{\textcolor{blue}{here}}}) for the queueing available on a system. The following example uses the sample conf and template files for the Torque scheduler provided by this package.  
 <<eval=FALSE, keep.source=TRUE>>=0
-qsubargs <- getQsubargs(queue="batch", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
-(joblist <- qsubRun(args=args, qsubargs=qsubargs, Nqsubs=18, package="systemPipeR"))
+file.copy(system.file("extdata", ".BatchJobs.R", package="systemPipeR"), ".")
+file.copy(system.file("extdata", "torque.tmpl", package="systemPipeR"), ".")
+resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
+                  resourceList=resources)
 @
 
-\noindent Alignment Stats
+\noindent Useful commands for monitoring progress of submitted jobs
+<<eval=FALSE, keep.source=TRUE>>=
+showStatus(reg)
+file.exists(outpaths(args))
+sapply(1:length(args), function(x) loadResult(reg, x)) # Works after job completion
+@
+
+\noindent Generate table containing for each FASTQ file the number of total reads and alignment statistics
 <<eval=FALSE, keep.source=TRUE>>=
 read_statsDF <- alignStats(args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")

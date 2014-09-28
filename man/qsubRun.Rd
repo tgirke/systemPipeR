@@ -4,7 +4,7 @@
 Submit command-line tools to cluster
 }
 \description{
-Submits command-line tools to queue (e.g. Torque) of compute cluster using run specifications defined by \code{runX} and \code{getQsubargs} functions. 
+Note: This function as been deprecated. Please use \code{clusterRun} instead. \code{qsubRun} submits command-line tools to queue (e.g. Torque) of compute cluster using run specifications defined by \code{runX} and \code{getQsubargs} functions. 
 }
 \usage{
 qsubRun(appfct="runCommandline(args=args, runid='01')", args, qsubargs, Nqsubs = 1, package = "systemPipeR", shebang="#!/bin/bash")

@@ -1,5 +1,5 @@
 ## IMPORTS
-import(rjson, Rsamtools, Biostrings, ShortRead, grid, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, methods)
+import(rjson, Rsamtools, Biostrings, ShortRead, grid, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, BatchJobs, methods)
 ## S4 Classes
 exportClasses(
     "SYSargs", "catDB"
@@ -25,7 +25,7 @@ export(
 
     ## Utilities
     ## Source: systemPipe.R
-    "alignStats", "getQsubargs", "qsubRun", "returnRPKM", 
+    "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
     "modulelist", "run_edgeR", "filterDEGs", "seeFastq", "seeFastqPlot",
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
