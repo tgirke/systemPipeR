@@ -210,14 +210,14 @@ runCommandline <- function(args, runid="01", ...) {
 			next()
 		} else {
 			## Create soubmitargsID_command file
-			cat(commands[i], file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
+			cat(commands[i], file=paste(logdir, "submitargs", runid, sep=""), sep = "\n", append=TRUE)
         		## Run executable 
 			command <- gsub(" .*", "", as.character(commands[i]))
 			commandargs <- gsub("^.*? ", "",as.character(commands[i]))
 			stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
 			## Create submitargsID_stdout file
-			cat(commands[i], file=paste(logdir, "submitargs", runid, "_", i, "_log", sep=""), sep = "\n", append=TRUE)
-			cat(unlist(stdout), file=paste(logdir, "submitargs", runid, "_", i, "_log", sep=""), sep = "\n", append=TRUE)
+			cat(commands[i], file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
+			cat(unlist(stdout), file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
 			## Conditional postprocessing of results
 			if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
 				asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
@@ -301,7 +301,7 @@ clusterRun <- function(args, FUN=runCommandline, conffile=".BatchJobs.R", templa
 	## BachJobs routines
 	loadConfig(conffile = conffile)
 	f <- function(i, args, ...) FUN(args=args[i], ...)
-	logdir1 <- paste0(gsub("^.*/", "", normalizePath(results(args))), "/submitargs", runid, "_BJdb")
+	logdir1 <- paste0(gsub("^.*/", "", normalizePath(results(args))), "/submitargs", runid, "_BJdb_", paste(sample(0:9, 4), collapse=""))
 	reg <- makeRegistry(id="systemPipe", file.dir=logdir1, packages="systemPipeR")
 	ids <- batchMap(reg, fun=f, seq(along=args), more.args=list(args=args, runid=runid))
 	names(ids) <- names(infile1(args))
