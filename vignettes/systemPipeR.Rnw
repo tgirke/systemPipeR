@@ -163,7 +163,7 @@ moduleload(modules(args)) # Skip if module system is not available
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 @
 
-\noindent Execute \Robject{SYSargs} on a single machine without submitting to a queuing system of a compute cluster. This way the input FASTQ files will be processed sequentially. If available, multiple CPU cores can be used for processing each file. The number of CPU cores (here 4) to use for each process is defined in the \Robject{*.param} file. With \Rfunction{cores(args)} one can return this value from the \Robject{SYSargs} object. Note, if a module system is not installed or used, then the argument setting \Rfunarg{usemodule=FALSE} should be included in \Rfunction{runCommandline}.
+\noindent Execute \Robject{SYSargs} on a single machine without submitting to a queuing system of a compute cluster. This way the input FASTQ files will be processed sequentially. If available, multiple CPU cores can be used for processing each file. The number of CPU cores (here 4) to use for each process is defined in the \Robject{*.param} file. With \Rfunction{cores(args)} one can return this value from the \Robject{SYSargs} object. Note, if a module system is not installed or used, then the corresponding \Robject{*.param} file needs to be edited accordingly by either providing an empty field in the line(s) starting with \Robject{module} or by deleting these lines.
 <<eval=FALSE, keep.source=TRUE>>=
 bampaths <- runCommandline(args=args)
 @
