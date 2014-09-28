@@ -60,7 +60,7 @@ runCommandline(args=args)
 
 ## Execute SYSargs on multiple machines of a compute cluster. The following
 ## example uses the conf and template files for the Torque scheduler. Please
-## read instructions how to obtain the corresponding files for other schedulers. 
+## read the instructions above how to obtain the corresponding files for other schedulers. 
 file.copy(system.file("extdata", ".BatchJobs.R", package="systemPipeR"), ".")
 file.copy(system.file("extdata", "torque.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
