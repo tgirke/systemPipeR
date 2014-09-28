@@ -45,9 +45,15 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 ## Execute SYSargs on single machine
 runCommandline(args=args)
 
-## Execute SYSargs on multiple machines  
-qsubargs <- getQsubargs(queue="batch", Nnodes="nodes=1", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
-qsubRun(appfct="runCommandline(args=args)", appargs=args, qsubargs=qsubargs, Nqsubs=1, submitdir="results", package="systemPipeR")
+## Execute SYSargs on multiple machines of a compute cluster 
+resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
+
+## Monitor progress of submitted jobs
+showStatus(reg)
+file.exists(outpaths(args))
+sapply(1:length(args), function(x) loadResult(reg, x)) # Works once all jobs have completed successfully.
+
 ## Alignment stats
 read_statsDF <- alignStats(fqpaths=infile1(args), bampaths=outpaths(args), fqgz=TRUE) 
 read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)

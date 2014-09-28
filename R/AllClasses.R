@@ -196,23 +196,29 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", usemodule=TRUE) {
-	if(usemodule==TRUE) {
+runCommandline <- function(args, runid="01", ...) {
+	if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
 		for(j in modules(args)) moduleload(j) # loads specified software from module system
 	}	
 	commands <- sysargs(args)
 	completed <- file.exists(outpaths(args))
 	names(completed) <- outpaths(args)
-	resultdir <- results(args)
+	logdir <- results(args)
 	for(i in seq(along=commands)) {
 		## Run alignmets only for samples for which no BAM file is available.
 		if(as.logical(completed)[i]) {
 			next()
 		} else {
-			## Create submitrunID_log file
-			cat(commands[i], file=paste(resultdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
-        		## Run executable  
-			system(as.character(commands[i]))
+			## Create soubmitargsID_command file
+			cat(commands[i], file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
+        		## Run executable 
+			command <- gsub(" .*", "", as.character(commands[i]))
+			commandargs <- gsub("^.*? ", "",as.character(commands[i]))
+			stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+			## Create submitargsID_stdout file
+			cat(commands[i], file=paste(logdir, "submitargs", runid, "_", i, "_log", sep=""), sep = "\n", append=TRUE)
+			cat(unlist(stdout), file=paste(logdir, "submitargs", runid, "_", i, "_log", sep=""), sep = "\n", append=TRUE)
+			## Conditional postprocessing of results
 			if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
 				asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
 				unlink(outfile1(args)[i])
@@ -231,10 +237,11 @@ runCommandline <- function(args, runid="01", usemodule=TRUE) {
 ## Usage: 
 # runCommandline(args=args)
 
-####################
-## qsub Arguments ##
-####################
+#########################
+## Old: qsub Arguments ##
+#########################
 getQsubargs <- function(software="qsub", queue="batch", Nnodes="nodes=1", cores=as.numeric(gsub("^.* ", "", tophatargs$args["p"])), memory="mem=10gb", time="walltime=20:00:00") {
+	.Deprecated("clusterRun")
 	qsubargs <- list(software=software, 
 			queue=queue, 
                 	Nnodes=Nnodes, 
@@ -246,10 +253,11 @@ getQsubargs <- function(software="qsub", queue="batch", Nnodes="nodes=1", cores=
 ## Usage:
 # qsubargs <- getQsubargs(queue="batch", Nnodes="nodes=1", cores=cores(tophat), memory="mem=10gb", time="walltime=20:00:00")
 
-###########################################################################
-## Function to submit runCommandline jobs to queuing system of a cluster ##
-###########################################################################
+#######################################################################################
+## Old: custom function to submit runCommandline jobs to queuing system of a cluster ##
+#######################################################################################
 qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubargs, Nqsubs=1, package="systemPipeR", shebang="#!/bin/bash") {
+	.Deprecated("clusterRun")
 	args2 <- sysargs(args)
 	mydir <- getwd()
 	setwd(results(args))
@@ -276,5 +284,29 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 ## Usage:
 # qsubRun(args=args, qsubargs=qsubargs, Nqsubs=1, package="systemPipeR")
 
-
+###########################################################################################
+## BatchJobs-based function to submit runCommandline jobs to queuing system of a cluster ##
+###########################################################################################
+## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
+clusterRun <- function(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs, runid="01", resourceList) {
+	if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
+	if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. 
+	                                 See sample here: https://code.google.com/p/batchjobs/wiki/DortmundUsage. 
+					 Note: in this file *.tmpl needs to point to a valid template file.")
+	if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. 
+	                                 Sample template files for different schedulers are available 
+					 here: https://github.com/tudo-r/BatchJobs/tree/master/examples")
+	loadConfig(conffile = conffile)
+	f <- function(i, args, ...) runCommandline(args=args[i], ...)
+	logdir1 <- paste0(gsub("^.*/", "", normalizePath(results(args))), "/submitargs", runid, "_BJdb")
+	reg <- makeRegistry(id="systemPipe", file.dir=logdir1, packages="systemPipeR")
+	ids <- batchMap(reg, fun=f, seq(along=args), more.args=list(args=args, runid=runid))
+	names(ids) <- names(infile1(args))
+	Njobs <- chunk(ids, n.chunks = Njobs) # Number of list components in Njobs defines the number of cluster jobs
+	done <- submitJobs(reg, ids=Njobs, resources=resourceList)
+	return(reg)
+}
+## Usage: 
+# resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
+# reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
 

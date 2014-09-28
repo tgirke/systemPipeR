@@ -4,7 +4,7 @@
 Arguments for qsub 
 }
 \description{
-Defines arguments to submit runX job(s) to queuing system (e.g. Torque) via \code{qsub}.
+Note: This function as been deprecated. Please use \code{clusterRun} instead. \code{getQsubargs} defines arguments to submit runX job(s) to queuing system (e.g. Torque) via \code{qsub}.
 }
 \usage{
 getQsubargs(software = "qsub", queue = "batch", Nnodes = "nodes=1", cores = as.numeric(gsub("^.* ", "", tophatargs$args["p"])), memory = "mem=10gb", time = "walltime=20:00:00")
