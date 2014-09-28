@@ -8,7 +8,7 @@ Execute SYSargs
 Function to execute system parameters specified in \code{SYSargs} object
 }
 \usage{
-runCommandline(args, runid = "01", usemodule=TRUE)
+runCommandline(args, runid = "01", ...)
 }
 \arguments{
   \item{args}{
@@ -17,8 +17,8 @@ runCommandline(args, runid = "01", usemodule=TRUE)
   \item{runid}{
 	Run identifier used for log file to track system call commands. Default is \code{"01"}.
 }
-  \item{usemodule}{
-	Determines whether the external executable software should be loaded from a module system. If set to \code{TRUE} then the software version specified in the \code{*.param} file will be used. The function \code{modules} returns this parameter from a \code{SYSargs} instance. On systems where a module system is not available, \code{usemodule} should be set to \code{FALSE}.
+  \item{\dots}{
+	Additional plotting arguments to pass on to \code{runCommandline()}.
 }
 }
 \value{
@@ -40,9 +40,15 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 ## Execute SYSargs on single machine
 runCommandline(args=args)
 
-## Execute SYSargs on multiple machines  
-qsubargs <- getQsubargs(queue="batch", Nnodes="nodes=1", cores=cores(tophat), memory="mem=10gb", time="walltime=20:00:00")
-qsubRun(args=args, qsubargs=qsubargs, Nqsubs=1, package="systemPipeR")
+## Execute SYSargs on multiple machines of a compute cluster 
+resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
+
+## Monitor progress of submitted jobs
+showStatus(reg)
+file.exists(outpaths(args))
+sapply(1:length(args), function(x) loadResult(reg, x)) # Works once all jobs have completed successfully.
+
 ## Alignment stats
 read_statsDF <- alignStats(fqpaths=tophatargs$infile1, bampaths=bampaths, fqgz=TRUE) 
 read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
