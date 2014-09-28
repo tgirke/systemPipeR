@@ -288,16 +288,19 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 ## BatchJobs-based function to submit runCommandline jobs to queuing system of a cluster ##
 ###########################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
-clusterRun <- function(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs, runid="01", resourceList) {
+clusterRun <- function(args, FUN=runCommandline, conffile=".BatchJobs.R", template="torque.tmpl", Njobs, runid="01", resourceList) {
+	## Validity checks of inputs
 	if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
+	if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
 	if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. 
 	                                 See sample here: https://code.google.com/p/batchjobs/wiki/DortmundUsage. 
 					 Note: in this file *.tmpl needs to point to a valid template file.")
 	if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. 
 	                                 Sample template files for different schedulers are available 
 					 here: https://github.com/tudo-r/BatchJobs/tree/master/examples")
+	## BachJobs routines
 	loadConfig(conffile = conffile)
-	f <- function(i, args, ...) runCommandline(args=args[i], ...)
+	f <- function(i, args, ...) FUN(args=args[i], ...)
 	logdir1 <- paste0(gsub("^.*/", "", normalizePath(results(args))), "/submitargs", runid, "_BJdb")
 	reg <- makeRegistry(id="systemPipe", file.dir=logdir1, packages="systemPipeR")
 	ids <- batchMap(reg, fun=f, seq(along=args), more.args=list(args=args, runid=runid))
