@@ -190,7 +190,7 @@ read_statsDF <- alignStats(args)
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 @
 
-\noindent Beginning of the sample alignment stats file provided by this package. Note, for simplicity the number of reads is multiplied here by 2 to approximate proper alignment frequencies for PE samples. 
+\noindent The following shows the first four lines of the sample alignment stats file provided by the \Rpackage{systemPipeR} package. For simplicity the number of PE reads is multiplied here by 2 to approximate proper alignment frequencies where each read in a pair is counted. 
 <<eval=TRUE, keep.source=TRUE>>=
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 @
