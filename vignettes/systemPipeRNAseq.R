@@ -91,7 +91,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ### code chunk number 13: systemPipeRNAseq.Rnw:152-166 (eval = FALSE)
 ###################################################
 ## library("GenomicFeatures"); library(BiocParallel)
-## txdb <- loadDb("./data/AedesAegypti.sqlite")
+## txdb <- loadDb("./data/tair10.sqlite")
 ## eByg <- exonsBy(txdb, by=c("gene"))
 ## bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
 ## multicoreParam <- MulticoreParam(workers=8); register(multicoreParam); registered()
