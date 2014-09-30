@@ -74,9 +74,9 @@ targets
 
 
 ###################################################
-### code chunk number 11: systemPipeRNAseq.Rnw:137-138 (eval = FALSE)
+### code chunk number 11: systemPipeRNAseq.Rnw:137-138
 ###################################################
-## read.delim("results/alignStats.xls")
+read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 
 
 ###################################################

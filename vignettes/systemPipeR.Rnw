@@ -183,14 +183,20 @@ file.exists(outpaths(args))
 sapply(1:length(args), function(x) loadResult(reg, x)) # Works after job completion
 @
 
-\noindent Generate table containing for each FASTQ file the number of total reads and alignment statistics
+\subsection{Read and alignment count stats}
+\noindent Generate table of read and alignment counts for all samples. 
 <<eval=FALSE, keep.source=TRUE>>=
 read_statsDF <- alignStats(args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 @
 
+\noindent Beginning of the sample alignment stats file provided by this package. Note, for simplicity the number of reads is multiplied here by 2 to approximate proper alignment frequencies for PE samples. 
+<<eval=TRUE, keep.source=TRUE>>=
+read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
+@
+
 \subsection{Create symbolic links for viewing BAM files in IGV}
-The genome browser IGV supports reading indexed/sorted BAM via web URLs. This way no unnecessary copies of these large files need to be generated. To enable this approach, an HTML directory with http access needs to be available in the user account (\textit{e.g.} \Rfunarg{~/public\_html}) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, \Rfunarg{htmldir} defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the \Rfunarg{urlfile} argument. 
+The genome browser IGV supports reading indexed/sorted BAM via web URLs. This way no unnecessary copies of these large files need to be generated. To enable this approach, an HTML directory with http access needs to be available in the user account (\textit{e.g.} \Rfunarg{\textasciitilde/public\_html}) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, \Rfunarg{htmldir} defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the \Rfunarg{urlfile} argument. 
 <<eval=FALSE, keep.source=TRUE>>=
 symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
             urlbase="http://myserver.edu/~username/", 
