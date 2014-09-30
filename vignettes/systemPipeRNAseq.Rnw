@@ -134,8 +134,8 @@ The following provides an overview of the number of reads in each sample and how
 read_statsDF <- alignStats(args=args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 @
-<<eval=FALSE, keep.source=TRUE>>=
-read.delim("results/alignStats.xls")
+<<eval=TRUE, keep.source=TRUE>>=
+read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 @
 
 \subsection{Create symbolic links for viewing BAM files in IGV}
