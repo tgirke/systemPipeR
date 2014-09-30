@@ -151,7 +151,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 Reads overlapping with annotation ranges of interest are counted for each sample using the \Rfunction{summarizeOverlaps} function \citep{Lawrence2013-kt}. The read counting is preformed for exonic gene regions in a non-strand-specific manner while ignoring overlaps among different genes. Subsequently, the expression count values are normalized by \textit{reads per kp per million mapped reads} (RPKM). The raw read count table (\href{run:./results/countDFeByg.xls}{countDFeByg.xls}) and the correspoding RPKM table (\href{run:./results/rpkmDFeByg.xls}{rpkmDFeByg.xls}) are written to separate files in the \Robject{results} directory of this project. Parallelization is achieved with the \Rpackage{BiocParallel} package, here using 8 CPU cores.
 <<eval=FALSE, keep.source=TRUE>>=
 library("GenomicFeatures"); library(BiocParallel)
-txdb <- loadDb("./data/AedesAegypti.sqlite")
+txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by=c("gene"))
 bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
 multicoreParam <- MulticoreParam(workers=8); register(multicoreParam); registered()
