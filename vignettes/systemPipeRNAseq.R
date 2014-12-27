@@ -54,7 +54,7 @@ targets
 ### code chunk number 8: systemPipeRNAseq.Rnw:119-124 (eval = FALSE)
 ###################################################
 ## moduleload(modules(args))
-## system("bowtie2-build ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa")
+## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 ## resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 ## reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
 ##                   resourceList=resources)
