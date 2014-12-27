@@ -40,7 +40,7 @@ read.delim(targetspath, comment.char = "#")
 ### code chunk number 6: systemPipeR.Rnw:92-95
 ###################################################
 library(systemPipeR)
-targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:2,1:6]
 
 
