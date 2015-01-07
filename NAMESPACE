@@ -2,14 +2,16 @@
 import(rjson, Rsamtools, Biostrings, ShortRead, grid, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, BatchJobs, methods)
 ## S4 Classes
 exportClasses(
-    "SYSargs", "catDB"
+    "SYSargs", "catDB", "VENNset", "INTERSECTset"
 )
 
 ## Methods
 exportMethods(
     "modules", "software", "cores", "other", "reference", "results",
     "infile1", "infile2", "outfile1", "SampleName", "sysargs",
-    "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv"  
+    "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
+    "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
+    "as.list" 
 )
 
 ## Functions
@@ -29,5 +31,5 @@ export(
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
     "modulelist", "run_edgeR", "filterDEGs", "seeFastq", "seeFastqPlot",
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
-    "makeCATdb", "goBarplot"
+    "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot"
 ) 

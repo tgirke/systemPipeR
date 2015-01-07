@@ -20,7 +20,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
 	## Processing of single fastq file
 	seeFastqSingle <- function(fastq, batchsize, klength) {
         	## Random sample N reads from fastq file (N=batchsize)
-        	f <- open(FastqSampler(fastq, batchsize))
+        	f <- FastqSampler(fastq, batchsize)
         	fq <- yield(f)
         	nReads <- f$status()[["total"]] # Total number of reads in fastq file
 		close(f)
