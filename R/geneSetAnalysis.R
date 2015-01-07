@@ -5,7 +5,7 @@
 ############################################
 ## Class and Method Definitions for catDB ##
 ############################################
-## Define SYSargs class
+## Define catDB class
 setClass("catDB", representation(catmap="list",	catlist="list", idconv="ANY"))
 
 ## Methods to return catDB components as lists 
