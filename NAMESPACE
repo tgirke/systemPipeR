@@ -18,15 +18,11 @@ exportMethods(
 # exportPattern("^[[:alpha:]]+")
 export(
     ## Data sets
-    ## Source: ./data/
-    # "targets", "targetsPE",
 
     ## Import/exports
-    ## Source: systemPipe.R
     "readComp",
 
     ## Utilities
-    ## Source: systemPipe.R
     "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
     "modulelist", "run_edgeR", "filterDEGs", "seeFastq", "seeFastqPlot",
