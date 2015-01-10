@@ -113,7 +113,7 @@ site: http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual#TOC-Venn-Diagra
 }
 \examples{
 ## Sample data
-setlist <- list(A=sample(letters, 18), A_B=sample(letters, 16),
+setlist <- list(A=sample(letters, 18), B=sample(letters, 16),
                 C=sample(letters, 20), D=sample(letters, 22),
                 E=sample(letters, 18), F=sample(letters, 22))
 
