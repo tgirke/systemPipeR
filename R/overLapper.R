@@ -200,21 +200,25 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 	# If x is VENNset
 	if(class(x)=="VENNset") { 
 	 	counts <- list(sapply(vennlist(x), length))
+		myclass <- "VENNset"
 	# If x is list of VENNsets
 	} else if(class(x)=="list" & all(sapply(x, class)=="VENNset")) { 
 		counts <- lapply(x, function(y) sapply(vennlist(y), length))	
+		myclass <- "VENNset"
 	## If x is count set (named numeric vector) 
 	} else if(is.numeric(x) & is.list(x)==FALSE) {
 		counts <- list(x)
+		myclass <- "numeric"
 	## If x is list of count sets
 	} else if(class(x)=="list" & all(sapply(x, is.numeric))) {
 		counts <- x
+		myclass <- "numeric"
 	} else {
 		stop("x needs to be one of: VENNset, list of VENNsets, named numeric vector, or list of named numeric vectors.")
 	}
 	
 	## Check for supported number of Venn counts: 3, 7, 15 and 31
-	if(!length(counts[[1]]) %in%  c(3,7,15,31)) stop("Only the counts from 2-5 way venn comparisons are supported.")
+	if(!length(counts[[1]]) %in%  c(3,7,15,31)) stop("Only 2-5 way venn comparisons are supported.")
 
         ## Function to return for a set label the index of matches in the name field of a counts object
         grepLabel <- function(label, x=names(counts[[1]])) {
@@ -226,18 +230,23 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 	if(length(counts[[1]])==3) {
 		## Define subtitle
 		if(mysub=="default") {
-                        n <- names(counts[[1]])[1:2]
-                        if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
-			        if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
+			if(myclass=="numeric") {
+                        	n <- names(counts[[1]])[1:2]
+                        	if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			        	if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
+				} else {
+                                	sample_counts <- sapply(n, function(x) sum(counts[[1]][grep(x, names(counts[[1]]))]))
+                        	}
+				mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), sep="")
+			} else if(myclass=="VENNset") {
+				if(class(x)=="list") x <- x[[1]]
+				sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
+                        	mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), sep="")
 			} else {
-                                sample_counts <- sapply(n, function(x) sum(counts[[1]][grep(x, names(counts[[1]]))]))
-                        }
-			mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), sep="")
-		} else { 
-			mysub <- mysub 
+				mysub <- mysub
+			}
 		}
-		
 		## Plot venn shapes
 		symbols(x=c(4, 6), y = c(6, 6), circles=c(2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=F, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="",  xaxt="n", yaxt="n", bty="n", fg=lines, ...); 
 		
@@ -263,18 +272,23 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 	if(length(counts[[1]])==7) { 
 		## Define subtitle
 		if(mysub=="default") {
-                        n <- names(counts[[1]])[1:3]
-                        if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
-			        if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
+			if(myclass=="numeric") {
+                        	n <- names(counts[[1]])[1:3]
+                        	if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			        	if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
+				} else {
+				        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+				}
+                        	mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), sep="")
+			} else if(myclass=="VENNset") {
+				if(class(x)=="list") x <- x[[1]]
+				sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
+                        	mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), sep="")
 			} else {
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+				mysub <- mysub
 			}
-                        mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), sep="")
-		} else { 
-			mysub <- mysub
 		}
-		
 		## Plot venn shapes
 		symbols(x=c(4, 6, 5), y=c(6, 6, 4), circles=c(2, 2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="", xaxt="n", yaxt="n", bty="n", fg=lines, ...)
 		
@@ -301,18 +315,23 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 	if(length(counts[[1]])==15 & type=="ellipse") {
 		## Define subtitle
 		if(mysub=="default") {
-                        n <- names(counts[[1]])[1:4]
-                        if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
-			        if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
-			} else {
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			if(myclass=="numeric") {
+                        	n <- names(counts[[1]])[1:4]
+                        	if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			        	if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
+				} else {
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+				}
+                        	mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep="")
+			} else if(myclass=="VENNset") {
+				if(class(x)=="list") x <- x[[1]]
+				sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
+                        	mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep="")
+			} else { 
+				mysub <- mysub
 			}
-                        mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep="")
-		} else { 
-			mysub <- mysub
 		}
-		
 		## Plot ellipse
 		plotellipse <- function (center=c(1,1), radius=c(1,2), rotate=1, segments=360, xlab="", ylab="", ...) {
 			angles <- (0:segments) * 2 * pi/segments  
@@ -356,18 +375,23 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 	if(length(counts[[1]])==15 & type=="circle") {
 		## Define subtitle
 		if(mysub=="default") {
-                        n <- names(counts[[1]])[1:4]
-                        if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
-			        if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
-			} else {
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			if(myclass=="numeric") {
+                        	n <- names(counts[[1]])[1:4]
+                        	if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			        	if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
+				} else {
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+				}
+                        	mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep="")
+			} else if(myclass=="VENNset") {
+				if(class(x)=="list") x <- x[[1]]
+				sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
+                        	mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep="")
+			} else { 
+				mysub <- mysub
 			}
-                        mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep="")
-		} else { 
-			mysub <- mysub
 		}
-		
 		## Plot venn shapes
 		symbols(x=c(4, 5.5, 4, 5.5), y = c(6, 6, 4.5, 4.5), circles=c(2, 2, 2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="", xaxt="n", yaxt="n", bty="n", fg=lines, ...)
 		
@@ -394,18 +418,23 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 	if(length(counts[[1]])==31) {
 		## Define subtitle
 		if(mysub=="default") {
-                        n <- names(counts[[1]])[1:5]
-                        if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
-			        if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
-			} else {
-			        sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			if(myclass=="numeric") {
+                        	n <- names(counts[[1]])[1:5]
+                        	if(!all(rowSums(sapply(n, function(x) sapply(n, function(y) grepl(y, x)))) == 1)) { # Checks if one or more set labels are substrings of one another
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+			        	if(sum(grepl(sepsplit, n)) > 0 | !all(grepl(sepsplit, names(counts[[1]][-c(1:length(n))])))) { sample_counts <- rep("?", length(n)); warning("Set labels are substrings of one another. To fix this, the set labels need to be separated by the character provided under \"sepsplit\", but the individual names cannot contain this character themselves.")  } 
+				} else {
+			        	sample_counts <- sapply(n, function(x) sum(counts[[1]][grepLabel(x, names(counts[[1]]))]))
+				}
+                        	mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), paste("; S5 =", sample_counts[5]), sep="")
+			} else if(myclass=="VENNset") {
+				if(class(x)=="list") x <- x[[1]]
+				sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
+                        	mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), paste("; S5 =", sample_counts[5]), sep="")
+			} else { 
+				mysub <- mysub
 			}
-                        mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), paste("; S5 =", sample_counts[5]), sep="")
-		} else { 
-			mysub <- mysub
-		}
-		
+	 	}
 		## Plot ellipse
 		plotellipse <- function (center=c(1,1), radius=c(1,2), rotate=1, segments=360, xlab="", ylab="", ...) {
 			angles <- (0:segments) * 2 * pi/segments  
@@ -505,7 +534,5 @@ olBarplot <- function(x, mincount=0, complexity="default", myxlabel="default", m
 		labs(x = myxlabel, y = myylabel) +
 		ggtitle(mytitle) 
 }
-
-
 
 
