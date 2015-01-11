@@ -227,6 +227,21 @@ write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", 
    \label{fig:DEGcounts}
 \end{figure}
 
+The function \Rfunction{overLapper} can compute Venn intersects for large numbers of sample sets (up to 20 or more) and \Rfunction{vennPlot} can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
+<<eval=FALSE, keep.source=TRUE>>=
+vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
+vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
+pdf("results/vennplot.pdf")
+vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
+dev.off()
+@
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=14cm]{vennplot.pdf}
+   \caption{Venn Diagram for 4 Up and Down DEG Sets.}
+   \label{fig:vennplot}
+\end{figure}
+
 \subsection{GO term enrichment analysis of DEGs}
 \subsubsection{Obtain gene-to-GO mappings}
 The following shows how to obtain gene-to-GO mappings from \Rpackage{biomaRt} (here for \textit{A. thaliana}) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor's  \Robject{*.db} genome annotation packages or GO annotation files provided by various genome databases. For each annotation this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the \Rfunction{load} function as shown in the next subsection. 

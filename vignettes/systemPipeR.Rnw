@@ -90,7 +90,6 @@ read.delim(targetspath, comment.char = "#")
 
 \noindent Structure of \Robject{targets} file for paired end (PE) samples.
 <<eval=TRUE, keep.source=TRUE>>=
-library(systemPipeR)
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:2,1:6]
 @
@@ -255,9 +254,10 @@ write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="
 
 \subsection{Correlation analysis of samples}
 The following computes the sample-wise Spearman correlation coefficients from the RPKM normalized expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \Rfunction{hclust} function and the result is plotted as a dendrogram (\href{run:./results/sample_tree.pdf}{sample\_tree.pdf}). 
-<<eval=FALSE, keep.source=TRUE>>=
+<<sample_tree, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
 library(ape)
-rpkmDFeByg <- read.table("./results/rpkmDFeByg.xls", check.names=FALSE)
+rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
+rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
 rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
 d <- cor(rpkmDFeByg, method="spearman")
 hc <- hclust(as.dist(1-d))
@@ -265,7 +265,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 @
 \begin{figure}[H]
   \centering
-   \includegraphics[width=6cm]{sample_tree.pdf}
+   \includegraphics[width=6cm]{systemPipeR-sample_tree.pdf}
    \caption{Correlation dendrogram of samples.}
    \label{fig:sample_tree}
 \end{figure}
@@ -277,24 +277,39 @@ cmp <- readComp(file=targetspath, format="matrix", delim="-")
 cmp[[1]]
 @
 Run \Rpackage{edgeR}
-<<eval=FALSE, keep.source=TRUE>>=
-countDFeByg <- read.delim("./results/countDFeByg.xls", row.names=1)
+<<eval=TRUE, keep.source=TRUE>>=
+countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+countDFeByg <- read.delim(countDFeBygpath, row.names=1)
 edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 @
 Filter and plot DEG results for up and down regulated genes. Because of the small size of the toy data set used by this vignette, the \Rfunarg{FDR} value has been set to a relatively high threshold (here 10\%). More commonly used \Rfunarg{FDR} cutoffs are 1\% or 5\%.
-<<eval=FALSE, keep.source=TRUE>>=
+<<DEGcounts, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 @
 \begin{figure}[H]
   \centering
-   \includegraphics[width=10cm]{DEGcounts.pdf}
+   \includegraphics[width=10cm]{systemPipeR-DEGcounts.pdf}
    \caption{Up and down regulated DEGs.}
    \label{fig:DEGcounts}
 \end{figure}
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=TRUE, keep.source=TRUE>>=
 names(DEG_list)
-DEG_list$Summary
+DEG_list$Summary[1:4,]
 @
+
+\subsection{Venn Diagrams}
+The function \Rfunction{overLapper} can compute Venn intersects for large numbers of sample sets (up to 20 or more) and \Rfunction{vennPlot} can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
+<<vennplot, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
+vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
+vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
+vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
+@
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=14cm]{systemPipeR-vennplot.pdf}
+   \caption{Venn Diagram for 4 Up and Down DEG Sets.}
+   \label{fig:vennplot}
+\end{figure}
 
 \subsection{GO term enrichment analysis of DEGs}
 \subsubsection{Obtain gene-to-GO mappings}
