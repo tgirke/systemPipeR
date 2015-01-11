@@ -54,7 +54,7 @@ targets
 ### code chunk number 8: systemPipeRNAseq.Rnw:119-124 (eval = FALSE)
 ###################################################
 ## moduleload(modules(args))
-## system("bowtie2-build ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa")
+## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 ## resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 ## reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
 ##                   resourceList=resources)
@@ -162,7 +162,17 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 20: systemPipeRNAseq.Rnw:233-246 (eval = FALSE)
+### code chunk number 20: systemPipeRNAseq.Rnw:231-236 (eval = FALSE)
+###################################################
+## vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
+## vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
+## pdf("results/vennplot.pdf")
+## vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
+## dev.off()
+
+
+###################################################
+### code chunk number 21: systemPipeRNAseq.Rnw:248-261 (eval = FALSE)
 ###################################################
 ## library("biomaRt")
 ## listMarts() # To choose BioMart database
@@ -180,7 +190,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 21: systemPipeRNAseq.Rnw:251-262 (eval = FALSE)
+### code chunk number 22: systemPipeRNAseq.Rnw:266-277 (eval = FALSE)
 ###################################################
 ## load("data/GO/catdb.RData")
 ## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
@@ -196,7 +206,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 22: systemPipeRNAseq.Rnw:267-272 (eval = FALSE)
+### code chunk number 23: systemPipeRNAseq.Rnw:282-287 (eval = FALSE)
 ###################################################
 ## gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 ## gos <- BatchResultslim
@@ -206,7 +216,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 23: systemPipeRNAseq.Rnw:285-291 (eval = FALSE)
+### code chunk number 24: systemPipeRNAseq.Rnw:300-306 (eval = FALSE)
 ###################################################
 ## library(pheatmap)
 ## geneids <- unique(as.character(unlist(DEG_list[[1]])))
@@ -217,7 +227,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 24: sessionInfo
+### code chunk number 25: sessionInfo
 ###################################################
 toLatex(sessionInfo())
 

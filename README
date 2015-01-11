@@ -1,0 +1,10 @@
+changelog
+	
+	version 1.0.1
+		- updated vignettes
+		- added functions: overLapper, vennPlot and olBarplot
+		- eliminated warning in seeFastq
+	
+	version 0.99.0 - 1.0.0
+		- initial version on Bioconductor
+

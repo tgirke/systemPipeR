@@ -118,7 +118,7 @@ sysargs(args)[1] # Command-line parameters for first FASTQ file
 Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
 <<eval=FALSE, keep.source=TRUE>>=
 moduleload(modules(args))
-system("bowtie2-build ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa")
+system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
                   resourceList=resources)
@@ -225,6 +225,21 @@ write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", 
    \includegraphics[width=10cm]{DEGcounts.pdf}
    \caption{Up and down regulated DEGs with FDR of 1\%.}
    \label{fig:DEGcounts}
+\end{figure}
+
+The function \Rfunction{overLapper} can compute Venn intersects for large numbers of sample sets (up to 20 or more) and \Rfunction{vennPlot} can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
+<<eval=FALSE, keep.source=TRUE>>=
+vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
+vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
+pdf("results/vennplot.pdf")
+vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
+dev.off()
+@
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=14cm]{vennplot.pdf}
+   \caption{Venn Diagram for 4 Up and Down DEG Sets.}
+   \label{fig:vennplot}
 \end{figure}
 
 \subsection{GO term enrichment analysis of DEGs}
