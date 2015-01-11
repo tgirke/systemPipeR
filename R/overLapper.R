@@ -117,7 +117,7 @@ overLapper <- function(setlist, complexity="default", sep="_", cleanup=FALSE, ke
              The input 'setlist' needs to be of class 'list' where each list component stores a
              label set as 'vector' and the name of each label set is provided under the
              name slot of each list component.")
-	if(!all(sapply(setlist, is.vector)) | length(setlist) < 2) stop("Unexpected input. 
+	if(!all(sapply(setlist, is.vector) | sapply(setlist, is.null)) | length(setlist) < 2) stop("Unexpected input. 
 	     The input 'setlist' needs to be a list with at least 2 components each 
              containig a vector of set labels.")
 	if(length(type)!=1 & all(c("vennsets", "intersects") %in% type)) stop("Argument 'type' needs to be assigned 'vennsets' or 'intersects'.")
