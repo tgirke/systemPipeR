@@ -17,18 +17,14 @@ Set Intersect and Venn Diagram Functions
 Function for computing Venn intersects or standard intersects among large
 numbers of label sets provided as \code{list} of \code{vectors}. The resulting
 intersect objects can be used for plotting 2-5 way Venn diagrams or intersect
-bar plots using the functions \code{vennPlot} or \code{olBarplot}, respetively.
+bar plots using the functions \code{vennPlot} or \code{olBarplot}, respectively.
 The \code{overLapper} function scales to 2-20 or more label vectors for Venn
 intersect calculations and to much larger sample numbers for standard
 intersects. The different intersect types are explained below under the
 definition of the \code{type} argument. The upper Venn limit around 20 label
 sets is unavoidable because the complexity of Venn intersects increases
 exponentially with the label set number \code{n} according to this
-relationship: \code{2^n - 1}. The overall workflow of the
-\code{overLapper} environment is to first compute for a list of label sets
-their Venn intersects using the \code{overLapper} function, which organizes the
-result sets in an object of class \code{VENNset}. Subsequently, the Venn counts
-are computed and plotted as bar or Venn diagrams. The current implementation of
+relationship: \code{2^n - 1}. The current implementation of
 the plotting function \code{vennPlot} supports Venn diagrams for 2-5 label
 sets. To visually analyze larger numbers of label sets, a variety of intersect
 methods are introduced in the \code{olBarplot} help file. These methods are
