@@ -214,7 +214,14 @@ runCommandline <- function(args, runid="01", ...) {
         		## Run executable 
 			command <- gsub(" .*", "", as.character(commands[i]))
 			commandargs <- gsub("^.*? ", "",as.character(commands[i]))
-			stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+			
+			## Execute system command; note: BWA needs special treatment in stderr handling since it writes 
+                        ## some stderr messages to sam file if used with system2()
+			if(software(args) %in% c("bwa aln", "bwa mem")) {
+				stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
+			} else {
+				stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+			}
 			## Create submitargsID_stdout file
 			cat(commands[i], file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
 			cat(unlist(stdout), file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)

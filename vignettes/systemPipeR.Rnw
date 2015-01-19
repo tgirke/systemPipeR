@@ -195,17 +195,20 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 @
 
 \subsection{Create symbolic links for viewing BAM files in IGV}
-The genome browser IGV supports reading indexed/sorted BAM via web URLs. This way no unnecessary copies of these large files need to be generated. To enable this approach, an HTML directory with http access needs to be available in the user account (\textit{e.g.} \Rfunarg{\textasciitilde/public\_html}) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, \Rfunarg{htmldir} defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the \Rfunarg{urlfile} argument. 
+The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with http access needs to be available in the user account (\textit{e.g.} \Rfunarg{\textasciitilde/public\_html}) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, \Rfunarg{htmldir} defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the \Rfunarg{urlfile} argument. 
 <<eval=FALSE, keep.source=TRUE>>=
 symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
             urlbase="http://myserver.edu/~username/", 
 	    urlfile="IGVurl.txt")
 @
 
-\subsection{Alignment with Bowtie 2 (here for miRNA profiling experiment)}
-Run as single process without submitting to cluster, e.g. via qsub -I.
+\subsection{Alternative NGS Aligners}
+
+\subsubsection{Alignment with Bowtie 2 (\textit{e.g.} for miRNA profiling)}
+The following example runs Bowtie 2 as a single process without submitting it to a cluster.
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="bowtieSE.param", mytargets="targets.txt")
+moduleload(modules(args)) # Skip if module system is not available
 bampaths <- runCommandline(args=args)
 @
 
@@ -213,6 +216,27 @@ bampaths <- runCommandline(args=args)
 <<eval=FALSE, keep.source=TRUE>>=
 qsubargs <- getQsubargs(queue="batch", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
 (joblist <- qsubRun(args=args, qsubargs=qsubargs, Nqsubs=18, package="systemPipeR"))
+@
+
+\subsubsection{Alignment with BWA-MEM (\textit{e.g.} for VAR-Seq)}
+The following example runs BWA-MEM as a single process without submitting it to a cluster.
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="bwa.param", mytargets="targets.txt")
+moduleload(modules(args)) # Skip if module system is not available
+system("bwa index -a bwtsw ./data/tair10.fasta") # Indexes reference genome
+bampaths <- runCommandline(args=args)
+@
+
+\subsubsection{Alignment with Rsubread (\textit{e.g.} for RNA-Seq)}
+The following example shows how one can use within the \Rpackage{systemPipeR} environment the R-based 
+aligner \Rpackage{Rsubread} or other R-based functions that read from input files and write to output files.
+<<eval=FALSE, keep.source=TRUE>>=
+library(Rsubread)
+args <- systemArgs(sysma="rsubread.param", mytargets="targets.txt")
+buildindex(basename=reference(args), reference=reference(args)) # Build indexed reference genome
+align(index=reference(args), readfile1=infile1(args), input_format="FASTQ", 
+      output_file=outfile1(args), output_format="SAM", nthreads=8, indels=1, TH1=2)
+for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gsub(".sam", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
 @
 
 \subsection{Read counting for mRNA profiling experiments}
