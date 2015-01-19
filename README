@@ -1,5 +1,7 @@
 changelog
-	
+	version 1.0.1 - 1.0.2
+		- added new *.param files
+
 	version 1.0.1 - 1.0.2
 		- updated vignettes
 		- added functions: overLapper, vennPlot and olBarplot
