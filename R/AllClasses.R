@@ -218,7 +218,7 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	## If sysma=NULL then make adjustments that are most reasonable
 	if(length(sysmapath)==0) {
 		targetsout <- mytargetsorig
-		modules <- ""; software <- ""; other=""; reference=""; resultpath=""
+		modules <- ""; software <- "R functions"; other=""; reference=""; resultpath=""
 		outfile1back <- infile1back; args[] <- ""; outpaths[] <- infile1back
 	}
 		
