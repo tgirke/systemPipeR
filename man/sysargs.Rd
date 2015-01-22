@@ -1,4 +1,10 @@
 \name{sysargs}
+\alias{targetsin}
+\alias{targetsin-methods}
+\alias{targetsout}
+\alias{targetsout-methods}
+\alias{targetsheader}
+\alias{targetsheader-methods}
 \alias{modules}
 \alias{modules-methods}
 \alias{software}

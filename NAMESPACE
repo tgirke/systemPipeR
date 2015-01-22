@@ -7,9 +7,9 @@ exportClasses(
 
 ## Methods
 exportMethods(
-    "modules", "software", "cores", "other", "reference", "results",
-    "infile1", "infile2", "outfile1", "SampleName", "sysargs",
-    "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
+    "targetsin", "targetsout", "targetsheader", "modules", "software", "cores", 
+    "other", "reference", "results", "infile1", "infile2", "outfile1", "SampleName", 
+    "sysargs", "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
     "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
     "as.list" 
 )
@@ -20,7 +20,7 @@ export(
     ## Data sets
 
     ## Import/exports
-    "readComp",
+    "readComp", "writeTargetsout",
 
     ## Utilities
     "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
