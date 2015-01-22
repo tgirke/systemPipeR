@@ -2,7 +2,10 @@
 ## Class and Method Definitions for SYSargs ##
 ##############################################
 ## Define SYSargs class
-setClass("SYSargs", representation(modules="character", 
+setClass("SYSargs", representation(targetsin="data.frame",	
+                                   targetsout="data.frame",
+		                   targetsheader="character",
+				   modules="character", 
 				   software="character",
 				   cores="numeric", 
 				   other="character",
@@ -15,7 +18,13 @@ setClass("SYSargs", representation(modules="character",
 				   outpaths="character")
 )
 
-## Methods to return SYSargs as list
+## Methods to return SYSargs components 
+setGeneric(name="targetsin", def=function(x) standardGeneric("targetsin"))
+setMethod(f="targetsin", signature="SYSargs", definition=function(x) {return(x@targetsin)})
+setGeneric(name="targetsout", def=function(x) standardGeneric("targetsout"))
+setMethod(f="targetsout", signature="SYSargs", definition=function(x) {return(x@targetsout)})
+setGeneric(name="targetsheader", def=function(x) standardGeneric("targetsheader"))
+setMethod(f="targetsheader", signature="SYSargs", definition=function(x) {return(x@targetsheader)})
 setGeneric(name="modules", def=function(x) standardGeneric("modules"))
 setMethod(f="modules", signature="SYSargs", definition=function(x) {return(as.character(x@modules))})
 setGeneric(name="software", def=function(x) standardGeneric("software"))
@@ -45,7 +54,10 @@ setMethod(f="outpaths", signature="SYSargs", definition=function(x) {return(x@ou
 ## List to SYSargs with: as(mylist, "SYSargs")
 setAs(from="list", to="SYSargs",  
         def=function(from) {
-		new("SYSargs", modules=from$modules, 
+		new("SYSargs", targetsin=from$targetsin,
+                               targetsout=from$targetsout,
+                               targetsheader=from$targetsheader,
+                               modules=from$modules, 
 			       software=from$software,
 			       cores=from$cores, 
 			       other=from$other,
@@ -81,6 +93,8 @@ setMethod(f="[", signature="SYSargs", definition=function(x, i, ..., drop) {
         if(is.logical(i)) {
                 i <- which(i)
         }
+        x@targetsin <- x@targetsin[i,]
+        x@targetsout <- x@targetsout[i,]
         x@infile1 <- x@infile1[i]
         x@infile2 <- x@infile2[i]
         x@outfile1 <- x@outfile1[i]
@@ -91,14 +105,32 @@ setMethod(f="[", signature="SYSargs", definition=function(x, i, ..., drop) {
 
 ## Construct SYSargs object from param and targets files
 systemArgs <- function(sysma, mytargets, type="SYSargs") {
-	## Read sysma and convert to arglist
-	sysma <- as.matrix(read.delim(sysma, comment.char = "#"))
-	sysma[is.na(sysma)] <- ""
-	arglist <- sapply(as.character(unique(sysma[,"PairSet"])), function(x) as.vector(t(as.matrix(sysma[sysma[,"PairSet"]==x, 2:3]))))
+	## Read sysma and convert to arglist; if NULL is assigned to sysma then a dummy version is generated
+	sysmapath <- sysma
+	if(length(sysmapath)!=0) {
+		sysma <- as.matrix(read.delim(sysma, comment.char = "#"))
+		sysma[is.na(sysma)] <- ""
+	} else {
+		sysma <- cbind(PairSet=c("sofware", "cores", "other", "outfile1", "reference", "infile1", "infile1", "infile2", "infile2"), 
+					Name=c("", "", "", "", "", "", "path", "", "path"), 
+					Value=c("", "1", "", "<FileName1>", "", "<FileName1>", "", "<FileName2>", ""))
+	}
+	if(any(sysma[,1] %in% "type")) { # Detects software type: commandline or R
+		iscommandline <- sysma[sysma[,1] %in% "type",, drop = FALSE]
+		iscommandline <- as.logical(iscommandline[1, "Value"])
+		sysma <- sysma[!sysma[,1] %in% "type",] # removes type row(s)
+	} else {
+		iscommandline <- TRUE # If type line not present then 'commandline' will be assumed
+	}
+	arglist <- sapply(as.character(unique(sysma[,"PairSet"])), function(x) as.vector(t(as.matrix(sysma[sysma[,"PairSet"]==x, 2:3]))), simplify=FALSE)
 	for(i in seq(along=arglist)) names(arglist[[i]]) <- paste(rep(c("n", "v"), length(arglist[[i]])/2), rep(1:(length(arglist[[i]])/2), 2), sep="")
 	if(type=="json") return(toJSON(arglist))
+	## Read comment/header lines from targets file
+	targetsheader <- readLines(mytargets)
+        targetsheader <- targetsheader[grepl("^#", targetsheader)]
 	## Validity checks
 	mytargets <- read.delim(mytargets, comment.char = "#")
+	mytargetsorig <- mytargets
 	if(any(duplicated(mytargets$SampleName))) stop("SampleName column of mytargets cannot contain duplicated entries!")
 	## Preprocessing of targets input
 	colnames(mytargets)[1] <- "FileName1" # To support FileName column for SE data
@@ -167,15 +199,34 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	outpaths <- paste(getwd(), "/", path, "/", outpaths, outextension, sep="")
 	names(outpaths) <- as.character(mytargets$SampleName)	
 
+	## Generate targetsout
+	targetsout <- mytargetsorig
+	targetsout[,1] <- outpaths[as.character(targetsout$SampleName)]
+	colnames(targetsout)[1] <- "FileName"
+	targetsout <- targetsout[ ,!colnames(targetsout) %in% "FileName2"]
+
 	## Collapse remaining components to single string vectors
 	remaining <- names(arglist)[!names(arglist) %in% c("outfile1", "infile1", "infile2", "outpaths")]
 	for(i in remaining) arglist[[i]] <- rep(gsub("(^ {1,})|( ${1,})", "", paste(arglist[[i]], collapse=" ")), length(arglist$infile1))
 	args <- do.call("cbind", arglist)	
 	rownames(args) <- as.character(mytargets$SampleName)
 	args <- apply(args, 1, paste, collapse=" ")
-	
+
+	## When software is R-based then system commands make no sense and NA is used instead
+	if(iscommandline==FALSE) args[] <- "" 
+
+	## If sysma=NULL then make necessary adjustments
+	if(length(sysmapath)==0) {
+		targetsout <- mytargetsorig
+		modules <- ""; software <- ""; other=""; reference=""; resultpath=""
+		outfile1back[] <- ""; args[] <- ""; outpaths[] <- ""
+	}
+		
 	## Construct SYSargs object from components
-	syslist <- list(modules=modules, 
+	syslist <- list(targetsin=mytargetsorig,
+		        targetsout=targetsout,
+		        targetsheader=targetsheader,
+			modules=modules, 
                         software=software, 
                         cores=cores,
 			other=other,
@@ -189,9 +240,31 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	sysargs <- as(syslist, "SYSargs")
 	if(type=="SYSargs") return(sysargs)
 }
+
 ## Usage:
-# args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+# args <- systemArgs(sysma="../inst/extdata/tophat.param", mytargets="../inst/extdata/targets.txt")
 # names(args); modules(args); cores(args); outpaths(args); sysargs(args)
+
+##############################################
+## Additional utilities for SYSargs objects ##
+##############################################
+## Convenience write function for targetsout(args)
+writeTargetsout <- function(x, file="default", silent=FALSE, ...) {
+	if(class(x)!="SYSargs") stop("x needs to be 'SYSargs' object")
+	targets <- targetsout(x)
+	if(file=="default") {
+		file <- paste("targets_", software(x), ".txt", sep="")
+		file <- gsub(" {1,}", "_", file)
+	} else {
+		file <- file
+	}
+	if(file.exists(file)) stop(paste("I am not allowed to overwrite files; please delete existing file:", file))
+	targetsheader <- targetsheader(args)	
+        targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
+        writeLines(c(targetsheader, targetslines), file, ...)
+	if(silent!=TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
+}
+## writeTargetsout(x=args, file="default") 
 
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##

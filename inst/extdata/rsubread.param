@@ -2,8 +2,9 @@
 ## This is a dummy file to support within the systemPipeR workflow 
 ## R-based functions that read from input files and write to output files 
 ## Values in <...> reference column titles in targets file
+## type row can have values: commandline, R or none. If line is ommited 'commandline' will be used
 PairSet	Name	Value
-modules		
+type	system	FALSE
 modules		
 software	NA	Rsubread
 cores	-p	4

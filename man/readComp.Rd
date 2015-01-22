@@ -4,16 +4,16 @@
 Import sample comparisons from targets file
 }
 \description{
-Parses sample comparisons specified in \code{<CMP>} line(s) of targets file. 
-All possible comparisons can be specified with 'CMPset: ALL'.
+Parses sample comparisons specified in \code{<CMP>} line(s) of targets file
+or in \code{targetsheader} slot of \code{SYSargs} object. All possible comparisons 
+can be specified with 'CMPset: ALL'.
 }
 \usage{
 readComp(file, format = "vector", delim = "-")
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{file}{
-	Path to targets file.
+	Path to targets file. Alternatively, a \code{SYSargs} object can be assigned.
 }
   \item{format}{
 	Object type to return: \code{vector} or  \code{matrix}.
@@ -29,8 +29,15 @@ readComp(file, format = "vector", delim = "-")
 Thomas Girke
 }
 \examples{
+## Return comparisons from targets file
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")
 readComp(file=targetspath, format="vector", delim="-")
+
+## Return comparisons from SYSargs object
+param <- system.file("extdata", "tophat.param", package="systemPipeR")
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+args <- systemArgs(sysma=param, mytargets=targets)
+readComp(args, format = "vector", delim = "-")
 }
 \keyword{ utilities }
