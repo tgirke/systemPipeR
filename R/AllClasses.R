@@ -215,11 +215,11 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	## When software is R-based then system commands make no sense and NA is used instead
 	if(iscommandline==FALSE) args[] <- "" 
 
-	## If sysma=NULL then make necessary adjustments
+	## If sysma=NULL then make adjustments that are most reasonable
 	if(length(sysmapath)==0) {
 		targetsout <- mytargetsorig
 		modules <- ""; software <- ""; other=""; reference=""; resultpath=""
-		outfile1back[] <- ""; args[] <- ""; outpaths[] <- ""
+		outfile1back <- infile1back; args[] <- ""; outpaths[] <- infile1back
 	}
 		
 	## Construct SYSargs object from components
