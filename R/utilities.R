@@ -36,7 +36,7 @@ alignStats <- function(args) {
 	bfl <- BamFileList(bampaths, yieldSize=50000, index=character())
 	Nalign <- countBam(bfl)
 	## Obtain number of primary alignments from BAM files
-	param <- ScanBamParam(flag=scanBamFlag(isNotPrimaryRead=FALSE, isUnmappedQuery=FALSE))
+	param <- ScanBamParam(flag=scanBamFlag(isSecondaryAlignment=FALSE, isUnmappedQuery=FALSE))
 	Nalignprim <- countBam(bfl, param=param)
 	statsDF <- data.frame(FileName=names(Nreads), 
                               Nreads=Nreads, 
@@ -68,12 +68,17 @@ returnRPKM <- function(counts, ranges) {
 ###############################################
 ## Read Sample Comparisons from Targets File ##
 ###############################################
-## Parses sample comparisons from <CMP> line(s) in targets.txt file. All possible
-## comparisons can be specified with 'CMPset: ALL'.
+## Parses sample comparisons from <CMP> line(s) in targets.txt file or SYSars object. 
+## All possible comparisons can be specified with 'CMPset: ALL'.
 readComp <- function(file, format="vector", delim="-") {
 	if(!format %in% c("vector", "matrix")) stop("Argument format can only be assigned: vector or matrix!")
 	## Parse <CMP> line
-	comp <- readLines(file)
+	if(class(file)=="SYSargs") {
+		if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
+		comp <- targetsheader(file)
+	} else {
+		comp <- readLines(file)
+	}
 	comp <- comp[grepl("<CMP>", comp)]
 	comp <- gsub("#.*<CMP>| {1,}", "", comp)
 	comp <- strsplit(comp, ":|,")
@@ -83,7 +88,11 @@ readComp <- function(file, format="vector", delim="-") {
 	## Check whether all samples are present in Factor column of targets file
 	checkvalues <- unique(unlist(strsplit(unlist(comp), "-")))
 	checkvalues <- checkvalues[checkvalues!="ALL"]
-	all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
+	if(class(file)=="SYSargs") {
+		all <- unique(as.character(targetsin(file)$Factor))
+	} else {
+		all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
+	}
 	if(any(!checkvalues %in% all)) stop(paste("The following samples are not present in Factor column of targets file:", paste(checkvalues[!checkvalues %in% all], collapse=", ")))	
 
 	## Generate outputs 
@@ -94,7 +103,8 @@ readComp <- function(file, format="vector", delim="-") {
 	if(format == "matrix") return(sapply(names(comp), function(x) do.call("rbind", strsplit(comp[[x]], "-")), simplify=FALSE))
 }
 ## Usage:
-# cmp <- readComp(file="targets.txt", format="vector", delim="-")
+# cmp <- readComp("targets.txt", format="vector", delim="-")
+# cmp <- readComp(args, format="vector", delim="-")
 
 #################################
 ## Access module system from R ##

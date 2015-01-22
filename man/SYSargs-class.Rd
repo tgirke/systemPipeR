@@ -19,6 +19,9 @@
 \alias{software,SYSargs-method}
 \alias{sysargs,SYSargs-method}
 \alias{SampleName,SYSargs-method}
+\alias{targetsheader,SYSargs-method}
+\alias{targetsin,SYSargs-method}
+\alias{targetsout,SYSargs-method}
 
 \title{Class \code{"SYSargs"}}
 \description{
@@ -32,6 +35,9 @@ Objects can be created by calls of the form \code{new("SYSargs", ...)}.
 }
 \section{Slots}{
   \describe{
+    \item{\code{targetsin}:}{Object of class \code{"data.frame"} storing tabular data from targets input file }
+    \item{\code{targetsout}:}{Object of class \code{"data.frame"} storing tabular data from targets output file }
+    \item{\code{targetsheader}:}{Object of class \code{"character"} storing header/comment lines of targets file }
     \item{\code{modules}:}{Object of class \code{"character"} storing software versions from module system }
     \item{\code{software}:}{Object of class \code{"character"} name of executable of command-line software  }
     \item{\code{cores}:}{Object of class \code{"numeric"} number of CPU cores to use }
@@ -63,6 +69,9 @@ Objects can be created by calls of the form \code{new("SYSargs", ...)}.
     \item{results}{\code{signature(x = "SYSargs")}: extracts data from \code{results} slot }
     \item{show}{\code{signature(object = "SYSargs")}: summary view of \code{SYSargs} objects }
     \item{software}{\code{signature(x = "SYSargs")}: extracts data from \code{software} slot }
+    \item{targetsheader}{\code{signature(x = "SYSargs")}: extracts data from \code{targetsheader} slot }
+    \item{targetsin}{\code{signature(x = "SYSargs")}: extracts data from \code{targetsin} slot }
+    \item{targetsout}{\code{signature(x = "SYSargs")}: extracts data from \code{targetsout} slot }
 	 }
 }
 \author{
@@ -79,9 +88,13 @@ param <- system.file("extdata", "tophat.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 args <- systemArgs(sysma=param, mytargets=targets)
 args
-names(args); software(args); modules(args); cores(args); outpaths(args); 
+names(args); targetsin(args); targetsout(args); targetsheader(args); 
+software(args); modules(args); cores(args); outpaths(args) 
 sysargs(args); other(args); reference(args); results(args); infile1(args)
 infile2(args); outfile1(args); SampleName(args)
+
+## Return sample comparisons
+readComp(args, format = "vector", delim = "-")
 
 ## The subsetting operator '[' allows to select specific samples
 args[1:4]
