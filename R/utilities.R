@@ -1,3 +1,33 @@
+#############################################################################
+## Run custom read preprocessing functions with systemPipeR infrastructure ##
+#############################################################################
+preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
+	if(class(args)!="SYSargs") stop("Argument 'args' needs to be of class SYSargs")
+	if(class(Fct)!="character") stop("Argument 'Fct' needs to be of class character")
+	## Run function in loop over all fastq files
+	for(i in seq(along=args)) {
+		outfile <- outpaths(args)[i]
+		## Delete existing fastq files with same names, since writeFastq will append to them
+		if(overwrite==TRUE) {
+			if(any(file.exists(outfile))) unlink(outfile)
+		} else {
+			if(any(file.exists(outfile))) stop(paste("File", outfile , "exists. Please delete file first or set overwrite=TRUE."))
+		}
+		## Run preprocessor function with FastqStreamer
+		counter <- 0
+		f <- FastqStreamer(infile1(args)[i], batchsize)
+		while(length(fq <- yield(f))) {
+			fqtrim <- eval(parse(text=Fct))
+			writeFastq(fqtrim, outfile, mode="a", ...)
+			counter <- counter + length(fqtrim)
+			cat(counter, "reads trimmed and written to file no:", outfile, "\n")
+		}
+		close(f)
+	}
+}
+## Usage:
+# preprocessReads(args=args, Fct="trimLRPatterns(Rpattern="GCCCGGGTAA", subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+
 ##################################################################
 ## Function to create sym links to bam files for viewing in IGV ##
 ##################################################################
