@@ -10,11 +10,11 @@ software	NA	Rsubread
 cores	-p	4
 other	NA	
 outfile1	-o	<FileName1>
-outfile1	path	./results/
-outfile1	remove	NA
-outfile1	append	.sam
-outfile1	outextension	.bam
-reference	NA	./data/tair10.fasta
+outfile1	path	./data/
+outfile1	remove	.gz
+outfile1	append	_trim.gz
+outfile1	outextension	_trim.gz
+reference	NA	NA
 infile1	NA	<FileName1>
 infile1	path	NA
 infile2	NA	<FileName2>

@@ -1,4 +1,7 @@
 changelog
+	version 1.5
+		- fixed preprocessReads
+	
 	version 1.4
 		- fixed support for R-based software generating input/output files
 		- fixed support for pipelines with several system command steps
