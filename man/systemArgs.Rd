@@ -16,7 +16,8 @@ systemArgs(sysma, mytargets, type = "SYSargs")
 \arguments{
   \item{sysma}{ path to 'param' file; file structure follows a simple name/value syntax that
 	converted into JSON format; for details about the file structure see sample files provided
-	by package.
+	by package. To run the pipeline without 'param' file, \code{NULL} can be assigned. This 
+        can be userful to run partial workflow, e.g. with pregenerated bam files.
 }
   \item{mytargets}{ path to targets file
 }

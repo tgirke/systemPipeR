@@ -1,4 +1,7 @@
 changelog
+	version 1.1.8
+		- added preprocessReads function
+	
 	version 1.1.7
 		- support for R-based software generating input/output files
 		- support for pipelines with several system command steps
