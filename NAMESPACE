@@ -27,5 +27,6 @@ export(
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
     "modulelist", "run_edgeR", "filterDEGs", "seeFastq", "seeFastqPlot",
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
-    "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot"
+    "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
+    "preprocessReads"
 ) 
