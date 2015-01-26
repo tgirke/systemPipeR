@@ -18,8 +18,9 @@ preprocessReads(args, Fct, batchsize = 1e+05, overwrite = TRUE, ...)
 Object of class \code{SYSargs}
 }
   \item{Fct}{
-\code{character} string of custom read preprocessing function call where the
-input needs to be an object of class \code{ShortReadQ} that is named \code{fq}.
+\code{character} string of custom read preprocessing function call where both the 
+input and output needs to be an object of class \code{ShortReadQ}. The name of the 
+input \code{ShortReadQ} object needs to be \code{fq}.
 }
   \item{batchsize}{
 Number of reads to process in each iteration by the internally used \code{FastqStreamer}
@@ -46,7 +47,7 @@ param <- system.file("extdata", "trim.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 args <- systemArgs(sysma=param, mytargets=targets)
 \dontrun{
-preprocessReads(args=args, Fct="trimLRPatterns(Rpattern="GCCCGGGTAA", subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
 }
 }
 \keyword{ utilities }

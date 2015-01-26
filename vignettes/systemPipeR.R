@@ -14,14 +14,14 @@ unlink("test.db")
 
 
 ###################################################
-### code chunk number 3: systemPipeR.Rnw:67-69 (eval = FALSE)
+### code chunk number 3: systemPipeR.Rnw:69-71 (eval = FALSE)
 ###################################################
 ## source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
 ## biocLite("systemPipeR") # Installs the package
 
 
 ###################################################
-### code chunk number 4: systemPipeR.Rnw:74-77 (eval = FALSE)
+### code chunk number 4: systemPipeR.Rnw:76-79 (eval = FALSE)
 ###################################################
 ## library("systemPipeR") # Loads the package
 ## library(help="systemPipeR") # Lists all functions and classes 
@@ -29,7 +29,7 @@ unlink("test.db")
 
 
 ###################################################
-### code chunk number 5: systemPipeR.Rnw:85-88
+### code chunk number 5: systemPipeR.Rnw:87-90
 ###################################################
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
@@ -37,34 +37,34 @@ read.delim(targetspath, comment.char = "#")
 
 
 ###################################################
-### code chunk number 6: systemPipeR.Rnw:92-94
+### code chunk number 6: systemPipeR.Rnw:94-96
 ###################################################
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:2,1:6]
 
 
 ###################################################
-### code chunk number 7: systemPipeR.Rnw:98-99
+### code chunk number 7: systemPipeR.Rnw:100-101
 ###################################################
 readComp(file=targetspath, format="vector", delim="-")
 
 
 ###################################################
-### code chunk number 8: systemPipeR.Rnw:104-106
+### code chunk number 8: systemPipeR.Rnw:106-108
 ###################################################
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
 read.delim(parampath, comment.char = "#")
 
 
 ###################################################
-### code chunk number 9: systemPipeR.Rnw:109-111
+### code chunk number 9: systemPipeR.Rnw:111-113
 ###################################################
 args <- systemArgs(sysma=parampath, mytargets=targetspath)
 args
 
 
 ###################################################
-### code chunk number 10: systemPipeR.Rnw:114-119
+### code chunk number 10: systemPipeR.Rnw:116-121
 ###################################################
 names(args)
 modules(args)
@@ -74,25 +74,45 @@ sysargs(args)[1]
 
 
 ###################################################
-### code chunk number 11: systemPipeR.Rnw:122-123
+### code chunk number 11: systemPipeR.Rnw:124-125
 ###################################################
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 12: systemPipeR.Rnw:129-130 (eval = FALSE)
+### code chunk number 12: systemPipeR.Rnw:131-132 (eval = FALSE)
 ###################################################
 ## library(systemPipeR)
 
 
 ###################################################
-### code chunk number 13: systemPipeR.Rnw:134-135 (eval = FALSE)
+### code chunk number 13: systemPipeR.Rnw:136-137 (eval = FALSE)
 ###################################################
-## args <- systemArgs(sysma="tophat.param", mytargets="targetsPE.txt")
+## args <- systemArgs(sysma="trim.param", mytargets="targets.txt")
 
 
 ###################################################
-### code chunk number 14: systemPipeR.Rnw:144-148 (eval = FALSE)
+### code chunk number 14: systemPipeR.Rnw:153-156 (eval = FALSE)
+###################################################
+## preprocessReads(args=args, Fct="trimLRPatterns(Rpattern=GCCCGGGTAA', subject=fq)", 
+##                 batchsize=100000, overwrite=TRUE, compress=TRUE)
+## writeTargetsout(x=args, file="targets_trim.txt")
+
+
+###################################################
+### code chunk number 15: systemPipeR.Rnw:162-169 (eval = FALSE)
+###################################################
+## filterFct <- function(fq) {
+## 	filter1 <- nFilter(threshold=1) # Keeps only reads without Ns
+## 	filter2 <- polynFilter(threshold=20, nuc=c("A","T","G","C")) # Removes low complexity reads 
+## 	filter <- compose(filter1, filter2)
+## 	fq[filter(fq)]
+## }
+## preprocessReads(args=args, Fct="filterFct(fq)", batchsize=100000)
+
+
+###################################################
+### code chunk number 16: systemPipeR.Rnw:178-182 (eval = FALSE)
 ###################################################
 ## fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
 ## pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
@@ -101,20 +121,21 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 15: systemPipeR.Rnw:159-161 (eval = FALSE)
+### code chunk number 17: systemPipeR.Rnw:193-196 (eval = FALSE)
 ###################################################
+## args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 ## moduleload(modules(args)) # Skip if module system is not available
 ## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 
 
 ###################################################
-### code chunk number 16: systemPipeR.Rnw:165-166 (eval = FALSE)
+### code chunk number 18: systemPipeR.Rnw:200-201 (eval = FALSE)
 ###################################################
 ## bampaths <- runCommandline(args=args)
 
 
 ###################################################
-### code chunk number 17: systemPipeR.Rnw:170-175 (eval = FALSE)
+### code chunk number 19: systemPipeR.Rnw:205-210 (eval = FALSE)
 ###################################################
 ## file.copy(system.file("extdata", ".BatchJobs.R", package="systemPipeR"), ".")
 ## file.copy(system.file("extdata", "torque.tmpl", package="systemPipeR"), ".")
@@ -124,7 +145,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 18: systemPipeR.Rnw:179-182 (eval = FALSE)
+### code chunk number 20: systemPipeR.Rnw:214-217 (eval = FALSE)
 ###################################################
 ## showStatus(reg)
 ## file.exists(outpaths(args))
@@ -132,20 +153,20 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 19: systemPipeR.Rnw:187-189 (eval = FALSE)
+### code chunk number 21: systemPipeR.Rnw:222-224 (eval = FALSE)
 ###################################################
 ## read_statsDF <- alignStats(args) 
 ## write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 
 
 ###################################################
-### code chunk number 20: systemPipeR.Rnw:193-194
+### code chunk number 22: systemPipeR.Rnw:228-229
 ###################################################
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 
 
 ###################################################
-### code chunk number 21: systemPipeR.Rnw:199-202 (eval = FALSE)
+### code chunk number 23: systemPipeR.Rnw:234-237 (eval = FALSE)
 ###################################################
 ## symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
 ##             urlbase="http://myserver.edu/~username/", 
@@ -153,7 +174,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 22: systemPipeR.Rnw:209-212 (eval = FALSE)
+### code chunk number 24: systemPipeR.Rnw:244-247 (eval = FALSE)
 ###################################################
 ## args <- systemArgs(sysma="bowtieSE.param", mytargets="targets.txt")
 ## moduleload(modules(args)) # Skip if module system is not available
@@ -161,14 +182,14 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 23: systemPipeR.Rnw:216-218 (eval = FALSE)
+### code chunk number 25: systemPipeR.Rnw:251-253 (eval = FALSE)
 ###################################################
 ## qsubargs <- getQsubargs(queue="batch", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
 ## (joblist <- qsubRun(args=args, qsubargs=qsubargs, Nqsubs=18, package="systemPipeR"))
 
 
 ###################################################
-### code chunk number 24: systemPipeR.Rnw:223-227 (eval = FALSE)
+### code chunk number 26: systemPipeR.Rnw:258-262 (eval = FALSE)
 ###################################################
 ## args <- systemArgs(sysma="bwa.param", mytargets="targets.txt")
 ## moduleload(modules(args)) # Skip if module system is not available
@@ -177,7 +198,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 25: systemPipeR.Rnw:233-239 (eval = FALSE)
+### code chunk number 27: systemPipeR.Rnw:268-274 (eval = FALSE)
 ###################################################
 ## library(Rsubread)
 ## args <- systemArgs(sysma="rsubread.param", mytargets="targets.txt")
@@ -188,7 +209,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 26: systemPipeR.Rnw:244-247 (eval = FALSE)
+### code chunk number 28: systemPipeR.Rnw:279-282 (eval = FALSE)
 ###################################################
 ## library(GenomicFeatures)
 ## txdb <- makeTranscriptDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", species="A. thaliana")
@@ -196,7 +217,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 27: systemPipeR.Rnw:251-262 (eval = FALSE)
+### code chunk number 29: systemPipeR.Rnw:286-297 (eval = FALSE)
 ###################################################
 ## library(BiocParallel)
 ## txdb <- loadDb("./data/tair10.sqlite")
@@ -212,7 +233,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 28: systemPipeR.Rnw:267-276 (eval = FALSE)
+### code chunk number 30: systemPipeR.Rnw:302-311 (eval = FALSE)
 ###################################################
 ## system("wget ftp://mirbase.org/pub/mirbase/19/genomes/My_species.gff3 -P ./data/")
 ## gff <- import.gff("./data/My_species.gff3", asRangedData=FALSE)
@@ -226,7 +247,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 29: sample_tree
+### code chunk number 31: sample_tree
 ###################################################
 library(ape)
 rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
@@ -238,7 +259,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 
 
 ###################################################
-### code chunk number 30: systemPipeR.Rnw:298-301
+### code chunk number 32: systemPipeR.Rnw:333-336
 ###################################################
 targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
@@ -246,7 +267,7 @@ cmp[[1]]
 
 
 ###################################################
-### code chunk number 31: systemPipeR.Rnw:304-307
+### code chunk number 33: systemPipeR.Rnw:339-342
 ###################################################
 countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
@@ -254,20 +275,20 @@ edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independ
 
 
 ###################################################
-### code chunk number 32: DEGcounts
+### code chunk number 34: DEGcounts
 ###################################################
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 
 
 ###################################################
-### code chunk number 33: systemPipeR.Rnw:319-321
+### code chunk number 35: systemPipeR.Rnw:354-356
 ###################################################
 names(DEG_list)
 DEG_list$Summary[1:4,]
 
 
 ###################################################
-### code chunk number 34: vennplot
+### code chunk number 36: vennplot
 ###################################################
 vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
 vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
@@ -275,7 +296,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 35: systemPipeR.Rnw:341-352 (eval = FALSE)
+### code chunk number 37: systemPipeR.Rnw:376-387 (eval = FALSE)
 ###################################################
 ## library("biomaRt")
 ## listMarts() # To choose BioMart database
@@ -291,7 +312,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 36: systemPipeR.Rnw:357-368 (eval = FALSE)
+### code chunk number 38: systemPipeR.Rnw:392-403 (eval = FALSE)
 ###################################################
 ## load("data/GO/catdb.RData")
 ## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
@@ -307,7 +328,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 37: systemPipeR.Rnw:373-378 (eval = FALSE)
+### code chunk number 39: systemPipeR.Rnw:408-413 (eval = FALSE)
 ###################################################
 ## gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 ## gos <- BatchResultslim
@@ -317,7 +338,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 38: systemPipeR.Rnw:391-397 (eval = FALSE)
+### code chunk number 40: systemPipeR.Rnw:426-432 (eval = FALSE)
 ###################################################
 ## library(pheatmap)
 ## geneids <- unique(as.character(unlist(DEG_list[[1]])))
@@ -328,7 +349,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 39: sessionInfo
+### code chunk number 41: sessionInfo
 ###################################################
 toLatex(sessionInfo())
 
