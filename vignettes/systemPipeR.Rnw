@@ -158,7 +158,7 @@ writeTargetsout(x=args, file="targets_trim.txt")
 
 The following example shows how one can design a custom read preprocessing function 
 using utilities provided by the \Rpackage{ShortRead} package, and then run it
-in batch mode with the \Rfunction{preprocessReads}.
+in batch mode with the \Rfunction{preprocessReads} function.
 <<eval=FALSE, keep.source=TRUE>>=
 filterFct <- function(fq) {
 	filter1 <- nFilter(threshold=1) # Keeps only reads without Ns
