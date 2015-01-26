@@ -1,4 +1,7 @@
 changelog
+	version 1.1.9
+		- vignette/man updates
+	
 	version 1.1.8
 		- added preprocessReads function
 	
