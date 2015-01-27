@@ -151,7 +151,7 @@ file (here \Robject{targets\_trim.txt}) is generated containing the paths to the
 trimmed FASTQ files. The new targets file is then used to initiate the next
 \Robject{SYSargs} instance for running the NGS alignments. 
 <<eval=FALSE, keep.source=TRUE>>=
-preprocessReads(args=args, Fct="trimLRPatterns(Rpattern=GCCCGGGTAA', subject=fq)", 
+preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", 
                 batchsize=100000, overwrite=TRUE, compress=TRUE)
 writeTargetsout(x=args, file="targets_trim.txt")
 @
