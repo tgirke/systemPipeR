@@ -20,7 +20,7 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
 			fqtrim <- eval(parse(text=Fct))
 			writeFastq(fqtrim, outfile, mode="a", ...)
 			counter <- counter + length(fqtrim)
-			cat(counter, "reads trimmed and written to file no:", outfile, "\n")
+			cat(counter, "processed reads written to file:", outfile, "\n")
 		}
 		close(f)
 	}
