@@ -94,7 +94,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ###################################################
 ### code chunk number 14: systemPipeR.Rnw:153-156 (eval = FALSE)
 ###################################################
-## preprocessReads(args=args, Fct="trimLRPatterns(Rpattern=GCCCGGGTAA', subject=fq)", 
+## preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", 
 ##                 batchsize=100000, overwrite=TRUE, compress=TRUE)
 ## writeTargetsout(x=args, file="targets_trim.txt")
 
