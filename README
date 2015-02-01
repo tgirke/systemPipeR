@@ -1,4 +1,7 @@
 changelog
+	version 1.1.11
+		- added DESeq2 support
+	
 	version 1.1.9-1.1.10
 		- vignette/man updates
 	

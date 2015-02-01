@@ -39,8 +39,6 @@ and the columns from \code{targetsout(x)}.
 \author{
 Thomas Girke
 }
-\seealso{
-}
 \examples{
 ## Create SYSargs object
 param <- system.file("extdata", "tophat.param", package="systemPipeR")
