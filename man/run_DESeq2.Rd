@@ -1,16 +1,15 @@
-\name{run_edgeR}
-\alias{run_edgeR}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\name{run_DESeq2}
+\alias{run_DESeq2}
 \title{
-Runs edgeR 
+Runs DESeq2 
 }
 \description{
-Convenience function to rund \code{edgeR GLM} on many comparisons. Analysis 
+Convenience function to rund \code{DESeq2} on many comparisons. Analysis 
 can be performed on entire count matrix or only on those columns required for each
-comparison. 
+comparison.  
 }
 \usage{
-run_edgeR(countDF, targets, cmp, independent = TRUE, paired = NULL, mdsplot = "")
+run_DESeq2(countDF, targets, cmp, independent = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -26,33 +25,26 @@ run_edgeR(countDF, targets, cmp, independent = TRUE, paired = NULL, mdsplot = ""
   \item{independent}{
 	If \code{independent=TRUE} then \code{countDF} will be subsetted for each comparison
 }
-  \item{paired}{
-	Defines pairs (\code{character vector}) for paired analysis. Default is unpaired (\code{paired=NULL}).
-}
-  \item{mdsplot}{
-	Directory where \code{plotMDS} should be written to. Default setting \code{mdsplot=""} will omit the plotting step.
-}
 }
 \value{
-\code{data.frame} containing \code{edgeR} results from all comparisons. Comparison labels are appended to column titles for tracking.
+\code{data.frame} containing \code{DESeq2} results from all comparisons. Comparison labels are appended to column titles for tracking.
 }
 \author{
 Thomas Girke
 }
 \seealso{
-\code{run_DESeq2}, \code{readComp} and \code{edgeR} vignette
+\code{run_edgeR}, \code{readComp} and \code{DESeq2} vignette
 }
 \examples{
-library(DESeq2)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
 countfile <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDF <- read.delim(countfile, row.names=1)
-edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
-pval <- edgeDF[, grep("_FDR$", colnames(edgeDF)), drop=FALSE]
-fold <- edgeDF[, grep("_logFC$", colnames(edgeDF)), drop=FALSE]
-DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
+degseqDF <- run_DESeq2(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE)
+pval <- degseqDF[, grep("_FDR$", colnames(degseqDF)), drop=FALSE]
+fold <- degseqDF[, grep("_logFC$", colnames(degseqDF)), drop=FALSE]
+DEG_list <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
 names(DEG_list)
 DEG_list$Summary
 }
