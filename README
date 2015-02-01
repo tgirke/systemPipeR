@@ -1,18 +1,21 @@
 changelog
-	version 1.8
-		- DESeq2 support
-	
-	version 1.6-1.7
+	version 1.0.9
 		- vignette and man updates
 	
-	version 1.5
+	version 1.0.8
+		- DESeq2 support
+	
+	version 1.0.6-1.0.7
+		- vignette and man updates
+	
+	version 1.0.5
 		- fixed preprocessReads
 	
-	version 1.4
+	version 1.0.4
 		- fixed support for R-based software generating input/output files
 		- fixed support for pipelines with several system command steps
 
-	version 1.3
+	version 1.0.3
 		- added new *.param files
 
 	version 1.0.1 - 1.0.2
