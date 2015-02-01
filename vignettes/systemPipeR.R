@@ -259,7 +259,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 
 
 ###################################################
-### code chunk number 32: systemPipeR.Rnw:335-338
+### code chunk number 32: systemPipeR.Rnw:343-346
 ###################################################
 targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
@@ -267,7 +267,7 @@ cmp[[1]]
 
 
 ###################################################
-### code chunk number 33: systemPipeR.Rnw:341-344
+### code chunk number 33: systemPipeR.Rnw:347-350
 ###################################################
 countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
@@ -281,14 +281,14 @@ DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 
 
 ###################################################
-### code chunk number 35: systemPipeR.Rnw:356-358
+### code chunk number 35: systemPipeR.Rnw:362-364
 ###################################################
 names(DEG_list)
 DEG_list$Summary[1:4,]
 
 
 ###################################################
-### code chunk number 36: systemPipeR.Rnw:363-364
+### code chunk number 36: systemPipeR.Rnw:375-376
 ###################################################
 degseqDF <- run_DESeq2(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE)
 
@@ -308,7 +308,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 39: systemPipeR.Rnw:394-405 (eval = FALSE)
+### code chunk number 39: systemPipeR.Rnw:406-417 (eval = FALSE)
 ###################################################
 ## library("biomaRt")
 ## listMarts() # To choose BioMart database
@@ -324,7 +324,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 40: systemPipeR.Rnw:410-421 (eval = FALSE)
+### code chunk number 40: systemPipeR.Rnw:422-433 (eval = FALSE)
 ###################################################
 ## load("data/GO/catdb.RData")
 ## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
@@ -340,7 +340,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 41: systemPipeR.Rnw:426-431 (eval = FALSE)
+### code chunk number 41: systemPipeR.Rnw:438-443 (eval = FALSE)
 ###################################################
 ## gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 ## gos <- BatchResultslim
@@ -350,7 +350,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 42: systemPipeR.Rnw:444-450 (eval = FALSE)
+### code chunk number 42: systemPipeR.Rnw:456-462 (eval = FALSE)
 ###################################################
 ## library(pheatmap)
 ## geneids <- unique(as.character(unlist(DEG_list[[1]])))

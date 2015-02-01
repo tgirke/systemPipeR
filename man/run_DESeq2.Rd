@@ -4,14 +4,16 @@
 Runs DESeq2 
 }
 \description{
-Convenience function to rund \code{DESeq2} on many comparisons. Analysis 
-can be performed on entire count matrix or only on those columns required for each
-comparison.  
+Convenience wrapper function to identify differentially expressed genes
+(DEGs) in batch mode with \code{DESeq2} for any number of pairwise sample
+comparisons specified under the \code{cmp} argument.  Users are strongly
+encouraged to consult the \code{DESeq2} vignette for more detailed information
+on this topic and how to properly run \code{DESeq2} on data sets with more
+complex experimental designs.
 }
 \usage{
 run_DESeq2(countDF, targets, cmp, independent = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{countDF}{
 \code{date.frame} containing raw read counts
@@ -20,14 +22,18 @@ run_DESeq2(countDF, targets, cmp, independent = FALSE)
 	targets \code{data.frame}
 }
   \item{cmp}{
-	\code{character matrix} where comparisons are defined in two columns. This matrix should be generated with \code{readComp()} from targets file. Values used for comparisons need to match those in \code{Factor} column of targets file.
+	\code{character matrix} where comparisons are defined in two columns. This matrix should be generated with the \code{readComp()} function from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
 }
   \item{independent}{
-	If \code{independent=TRUE} then \code{countDF} will be subsetted for each comparison
+	If \code{independent=TRUE} then the \code{countDF} will be subsetted for each comparison. This behavior can be useful when working with samples from unrelated studies. For samples from the same or comparable studies, the setting \code{independent=FALSE} is usually preferred.
 }
 }
 \value{
 \code{data.frame} containing \code{DESeq2} results from all comparisons. Comparison labels are appended to column titles for tracking.
+}
+\references{
+Please properly cite the \code{DESeq2} papers when using this function:
+http://www.bioconductor.org/packages/devel/bioc/html/DESeq2.html
 }
 \author{
 Thomas Girke
