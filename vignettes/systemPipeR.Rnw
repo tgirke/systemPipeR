@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{Overview Vignette}
-%\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap}
+%\VignetteDepends{rjson, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap}
 %\VignetteKeywords{compute cluster, pipeline, reports}
 %\VignettePackage{systemPipeR}
 
@@ -139,17 +139,19 @@ args <- systemArgs(sysma="trim.param", mytargets="targets.txt")
 
 \subsection{Read Preprocessing}
 The function \Rfunction{preprocessReads} allows to apply predefined or custom
-read preprocessing functions to all FASTQ files stored in a \Robject{SYSargs}
-container, such as quality filtering or adaptor trimming routines. The paths to
-the resulting output FASTQ files are stored in the \Robject{outpaths} slot of
-the \Robject{SYSargs} object. Internally, \Rfunction{preprocessReads} uses the
-\Rfunction{FastqStreamer} function from the \Rpackage{ShortRead} package to
-stream through large FASTQ files in a memory-efficient manner. The following
-example performs adaptor trimming with the \Rfunction{trimLRPatterns} function
-from the \Rpackage{Biostrings} package. After the trimming step a new targets
-file (here \Robject{targets\_trim.txt}) is generated containing the paths to the
-trimmed FASTQ files. The new targets file is then used to initiate the next
-\Robject{SYSargs} instance for running the NGS alignments. 
+read preprocessing functions to all FASTQ files referenced in a
+\Robject{SYSargs} container, such as quality filtering or adaptor trimming
+routines. The paths to the resulting output FASTQ files are stored in the
+\Robject{outpaths} slot of the \Robject{SYSargs} object. Internally,
+\Rfunction{preprocessReads} uses the \Rfunction{FastqStreamer} function from
+the \Rpackage{ShortRead} package to stream through large FASTQ files in a
+memory-efficient manner. The following example performs adaptor trimming with
+the \Rfunction{trimLRPatterns} function from the \Rpackage{Biostrings} package.
+After the trimming step a new targets file is generated (here
+\Robject{targets\_trim.txt}) containing the paths to the trimmed FASTQ files.
+The new targets file can be used for the next workflow step with an updated
+\Robject{SYSargs} instance, \textit{e.g.} running the NGS alignments using the
+trimmed FASTQ files. 
 <<eval=FALSE, keep.source=TRUE>>=
 preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", 
                 batchsize=100000, overwrite=TRUE, compress=TRUE)
@@ -335,7 +337,7 @@ targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
 cmp[[1]]
 @
-Run \Rpackage{edgeR}
+Run \Rpackage{edgeR} \citep{Robinson2010-uk}. 
 <<eval=TRUE, keep.source=TRUE>>=
 countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
@@ -355,6 +357,22 @@ DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 names(DEG_list)
 DEG_list$Summary[1:4,]
 @
+
+\subsection{DEG analysis with \Rpackage{DESeq2}} 
+Run \Rpackage{DESeq2} \citep{Love2014-sh}.
+<<eval=TRUE, keep.source=TRUE>>=
+degseqDF <- run_DESeq2(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE)
+@
+Filter and plot DEG results for up and down regulated genes. 
+<<DEGcounts2, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
+DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
+@
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=10cm]{systemPipeR-DEGcounts2.pdf}
+   \caption{Up and down regulated DEGs from \Rpackage{DESeq2}.}
+   \label{fig:DEGcounts2}
+\end{figure}
 
 \subsection{Venn Diagrams}
 The function \Rfunction{overLapper} can compute Venn intersects for large numbers of sample sets (up to 20 or more) and \Rfunction{vennPlot} can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
