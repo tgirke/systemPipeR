@@ -222,7 +222,56 @@ run_edgeR <- function(countDF, targets, cmp, independent=TRUE, paired=NULL, mdsp
 # cmp <- readComp(file=targetspath, format="matrix", delim="-")
 # edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=TRUE, mdsplot="")
 
-## Filter DEGs by p-value and fold change
+####################################################################
+## Run DESeq2 with entire count matrix or subsetted by comparison ##
+####################################################################
+## If independent=TRUE then countDF will be subsetted for each comparison
+run_DESeq2 <- function(countDF, targets, cmp, independent=FALSE) {
+    if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
+    samples <- as.character(targets$Factor); names(samples) <- paste(as.character(targets$SampleName), "", sep="")
+    countDF <- countDF[, names(samples)]
+    countDF[is.na(countDF)] <- 0
+    deseqDF <- data.frame(row.names=rownames(countDF))
+    if(independent==TRUE) {
+	loopv <- seq(along=cmp[,1])
+    } else {
+	loopv <- 1
+    }
+    for(j in loopv) {
+	if(independent==TRUE) {
+	    ## Create subsetted DESeqDataSet object
+	    subset <- samples[samples %in% cmp[j,]]
+	    countDFsub <- countDF[, names(subset)]
+	    dds <- DESeq2::DESeqDataSetFromMatrix(countData=as.matrix(countDFsub), colData=data.frame(condition=subset), design = ~ condition)
+	    mycmp <- cmp[j, , drop=FALSE]	
+	} else {
+	    ## Create full DESeqDataSet object
+	    dds <- DESeq2::DESeqDataSetFromMatrix(countData=as.matrix(countDF), colData=data.frame(condition=samples), design = ~ condition)
+	    mycmp <- cmp
+	}
+	## Estimate of (i) size factors, (ii) dispersion, (iii) negative binomial GLM fitting and (iv) Wald statistics
+	dds <- DESeq2::DESeq(dds, quiet=TRUE)
+	for(i in seq(along=mycmp[,1])) { 
+	    ## Extracts DEG results for specific contrasts from DESeqDataSet object 
+	    res <- DESeq2::results(dds, contrast=c("condition", mycmp[i,])) 
+	    ## Set NAs to reasonable values to avoid errors in downstream filtering steps
+	    res[is.na(res[,"padj"]), "padj"] <- 1
+	    res[is.na(res[,"log2FoldChange"]), "log2FoldChange"] <- 0
+	    deg <- as.data.frame(res)	
+	    colnames(deg)[colnames(deg) %in% c("log2FoldChange", "padj")] <- c("logFC", "FDR")
+	    colnames(deg) <- paste(paste(mycmp[i,], collapse="-"), colnames(deg), sep="_")
+	    deseqDF <- cbind(deseqDF, deg[rownames(deseqDF),]) 
+	}
+    }
+    return(deseqDF)
+} 
+## Usage:
+# cmp <- readComp(file=targetspath, format="matrix", delim="-")
+# degseqDF <- run_DESeq2(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=TRUE)
+
+############################################
+## Filter DEGs by p-value and fold change ##
+############################################
 filterDEGs <- function(degDF, filter, plot=TRUE) {
 	pval <- degDF[, grep("_FDR$", colnames(degDF)), drop=FALSE]
 	log2FC <- degDF[, grep("_logFC$", colnames(degDF)), drop=FALSE]

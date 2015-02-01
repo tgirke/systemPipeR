@@ -1,4 +1,7 @@
 changelog
+	version 1.8
+		- DESeq2 support
+	
 	version 1.6-1.7
 		- vignette and man updates
 	
