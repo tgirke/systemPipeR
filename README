@@ -1,4 +1,7 @@
 changelog
+	version 1.0.10
+		- fixed alignStats
+	
 	version 1.0.9
 		- vignette and man updates
 	
