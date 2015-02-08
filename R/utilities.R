@@ -64,7 +64,8 @@ alignStats <- function(args) {
 	if(nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2	
 	## Obtain total number of alignments from BAM files
 	bfl <- BamFileList(bampaths, yieldSize=50000, index=character())
-	Nalign <- countBam(bfl)
+	param <- ScanBamParam(flag=scanBamFlag(isUnmappedQuery=FALSE))
+	Nalign <- countBam(bfl, param=param)
 	## Obtain number of primary alignments from BAM files
 	param <- ScanBamParam(flag=scanBamFlag(isNotPrimaryRead=FALSE, isUnmappedQuery=FALSE))
 	Nalignprim <- countBam(bfl, param=param)
