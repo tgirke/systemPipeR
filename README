@@ -1,4 +1,7 @@
 changelog
+	version 1.1.15
+		- support for GATK and BCFtools
+	
 	version 1.1.12-1.1.14
 		- vignette/man updates
 	
