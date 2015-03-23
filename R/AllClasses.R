@@ -148,33 +148,51 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	## Extract single value components
 	software <- as.character(arglist$software[grepl("v", names(arglist$software))])
 	other <- as.character(arglist$other[grepl("v", names(arglist$other))])
-	reference <- as.character(arglist$reference[grepl("v", names(arglist$reference))])
-	if(!grepl("^/", reference)) reference <- paste0(getwd(), gsub("^\\.", "", reference)) # Turn relative into absolute path.
-	arglist[["reference"]]["v1"] <- reference
+	if(!(is.na(arglist[["reference"]][["v1"]]) | nchar(arglist[["reference"]][["v1"]])==0)) {
+		reference <- as.character(arglist$reference[grepl("v", names(arglist$reference))])
+		if(!grepl("^/", reference)) reference <- paste0(getwd(), gsub("^\\.", "", reference)) # Turn relative into absolute path.
+		arglist[["reference"]]["v1"] <- reference
+	} else {
+		reference <- ""
+	}
 	cores <- as.numeric(arglist$cores[grepl("v", names(arglist$cores))])	
 
 	## Populate arglist$infile1
-	infile1 <- gsub("<|>", "", arglist$infile1[grepl("^<.*>$", arglist$infile1)][[1]])
-	infile1 <- as.character(mytargets[,infile1])	
-	infile1 <- normalizePath(infile1)
-	argname <- arglist$infile1[grep("<.*>", arglist$infile1)[1] -1]
-	path <- arglist$infile1[grep("path", arglist$infile1)[1] +1]
-	infile1back <- paste(path, infile1, sep="")
-	names(infile1back) <- as.character(mytargets$SampleName)	
-	infile1 <- paste(argname, " ", path, infile1, sep="")
-	arglist[["infile1"]] <- gsub("(^ {1,})|( ${1,})", "", infile1)
+	if(any(grepl("^<.*>$", arglist$infile1))) { 
+		infile1 <- gsub("<|>", "", arglist$infile1[grepl("^<.*>$", arglist$infile1)][[1]])
+		infile1 <- as.character(mytargets[,infile1])	
+		infile1 <- normalizePath(infile1)
+		argname <- arglist$infile1[grep("<.*>", arglist$infile1)[1] -1]
+		path <- arglist$infile1[grep("path", arglist$infile1)[1] +1]
+		infile1back <- paste(path, infile1, sep="")
+		names(infile1back) <- as.character(mytargets$SampleName)	
+		infile1 <- paste(argname, " ", path, infile1, sep="")
+		arglist[["infile1"]] <- gsub("(^ {1,})|( ${1,})", "", infile1)
+	} else {
+		infile1back <- rep("", length(mytargets[,1])) 
+		infile1 <- infile1back
+		names(infile1back) <- as.character(mytargets$SampleName)	
+		arglist[["infile1"]] <- infile1back
+	}
 	
 	## Populate arglist$infile2
-	infile2 <- gsub("<|>", "", arglist$infile2[grepl("^<.*>$", arglist$infile2)][[1]])
-	infile2 <- as.character(mytargets[,infile2])	
-	if(nchar(infile2[1]) > 0) infile2 <- normalizePath(infile2)
-	argname <- arglist$infile2[grep("<.*>", arglist$infile2)[1] -1]
-	path <- arglist$infile2[grep("path", arglist$infile2)[1] +1]
-	infile2back <- paste(path, infile2, sep="")
-	names(infile2back) <- as.character(mytargets$SampleName)	
-	infile2 <- paste(argname, " ", path, infile2, sep="")
-	arglist[["infile2"]] <- gsub("(^ {1,})|( ${1,})", "", infile2)
-	
+	if(any(grepl("^<.*>$", arglist$infile2))) { 
+		infile2 <- gsub("<|>", "", arglist$infile2[grepl("^<.*>$", arglist$infile2)][[1]])
+		infile2 <- as.character(mytargets[,infile2])	
+		if(nchar(infile2[1]) > 0) infile2 <- normalizePath(infile2)
+		argname <- arglist$infile2[grep("<.*>", arglist$infile2)[1] -1]
+		path <- arglist$infile2[grep("path", arglist$infile2)[1] +1]
+		infile2back <- paste(path, infile2, sep="")
+		names(infile2back) <- as.character(mytargets$SampleName)	
+		infile2 <- paste(argname, " ", path, infile2, sep="")
+		arglist[["infile2"]] <- gsub("(^ {1,})|( ${1,})", "", infile2)
+	} else {
+		infile2back <- rep("", length(mytargets[,1])) 
+		infile2 <- infile2back
+		names(infile2back) <- as.character(mytargets$SampleName)	
+		arglist[["infile2"]] <- infile2back
+	}
+		
 	## Populate arglist$outfile1
 	outfile1 <- gsub("<|>", "", arglist$outfile1[grepl("^<.*>$", arglist$outfile1)][[1]])
 	outfile1 <- as.character(mytargets[,outfile1])
@@ -211,7 +229,11 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	args <- do.call("cbind", arglist)	
 	rownames(args) <- as.character(mytargets$SampleName)
 	args <- apply(args, 1, paste, collapse=" ")
-
+	if(software=="bash_commands") { # If command-line is series of bash commands
+		args <- gsub("' {1,}| {1,}'", "'", args)
+		args <- gsub("bash_commands {1,}", "", args)
+	}
+	
 	## When software is R-based then system commands make no sense and NA is used instead
 	if(iscommandline==FALSE) args[] <- "" 
 
@@ -292,6 +314,8 @@ runCommandline <- function(args, runid="01", ...) {
                         ## some stderr messages to sam file if used with system2()
 			if(software(args) %in% c("bwa aln", "bwa mem")) {
 				stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
+			} else if(software(args) %in% c("bash_commands")) {
+				stdout <- system(paste(command, commandargs))
 			} else {
 				stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
 			}
