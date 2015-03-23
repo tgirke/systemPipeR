@@ -1,4 +1,7 @@
 changelog
+	version 1.0.12
+		- added support for GATK and BCFtools
+	
 	version 1.0.10-1.0.11
 		- fixed alignStats
 	

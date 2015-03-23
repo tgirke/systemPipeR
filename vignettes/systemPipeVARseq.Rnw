@@ -118,7 +118,7 @@ sysargs(args)[1] # Command-line parameters for first FASTQ file
 Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
 <<eval=FALSE, keep.source=TRUE>>=
 moduleload(modules(args))
-system("bowtie2-build ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa ./data/aedes-aegypti-liverpool_scaffolds_AaegL3.fa")
+system("bwa index -a bwtsw ./data/tair10.fasta")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
                   resourceList=resources)
@@ -147,7 +147,24 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/AlexRaikhel/2014/"),
 @
 
 \section{Variant calling}
-To be continued...
+\subsection{Variant calling with GATK}
+<<eval=FALSE, keep.source=TRUE>>=
+writeTargetsout(x=args, file="targets_bam.txt")
+args <- systemArgs(sysma="gatk.param", mytargets="targets_bam.txt")
+resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
+                  resourceList=resources)
+#unlink(outfile1(args), recursive = TRUE, force = TRUE)
+@
+
+\subsection{Variant calling with BCFtools}
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
+resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
+                  resourceList=resources)
+#unlink(outfile1(args), recursive = TRUE, force = TRUE)
+@
 
 \section{Annotating variants}
 To be continued...
