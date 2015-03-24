@@ -150,6 +150,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/AlexRaikhel/2014/"),
 \subsection{Variant calling with GATK}
 <<eval=FALSE, keep.source=TRUE>>=
 writeTargetsout(x=args, file="targets_bam.txt")
+system("java -jar /opt/picard/1.81/CreateSequenceDictionary.jar R=./data/tair10.fasta O=./data/tair10.dict")
 args <- systemArgs(sysma="gatk.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
