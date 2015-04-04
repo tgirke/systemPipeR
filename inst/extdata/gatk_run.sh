@@ -3,23 +3,24 @@
 ######################
 ## GATK SNP Calling ##
 ######################
-## See also GATK: http://seqanswers.com/wiki/How-to/exome_analysis
+## Please adjust the enivronment setting of this script as indicated below
 ## Path: run one level above data and results directories
+## Note, some of the settings are adopted from this page: http://seqanswers.com/wiki/How-to/exome_analysis
 
-## Load GATK from module system (delete these rows if a module system is not available)
+## Load GATK from module system (delete or comment out these rows if a module system is not available)
 module load GATK/2.4-3-g2a7af43
 module load picard/1.124
 
-## Path to refenence genome needs to be set here
+## The path to your refenence genome needs to be set here
 REF="./data/tair10.fasta"
 
 ## Create dictionary for FASTA reference
-# java -jar /opt/picard/1.81/CreateSequenceDictionary.jar R=data/tair10chr.fasta O=data/tair10chr.dict
+# java -jar picard/CreateSequenceDictionary.jar R=$REF O=./data/tair10chr.dict
 
 ## Check functionality of GATK and inputs
-# java -jar /opt/GATK/2.4-3-g2a7af43/GenomeAnalysisTK.jar -T CountReads -R data/tair10chr.fasta -I results/SRR064154.fastq.bam
+# java -jar GenomeAnalysisTK.jar -T CountReads -R ./data/tair10chr.fasta -I results/SRR064154.fastq.bam
 
-## Marking PCR duplicates
+## Marking PCR duplicates (if '$PICARD MarkDuplicates' fails use 'picard/MarkDuplicates.jar')
 java -Xmx4g -Djava.io.tmpdir=./tmp \
 -jar $PICARD MarkDuplicates \
 INPUT=myfile.fastq.bam \
@@ -29,7 +30,7 @@ METRICS_FILE=metrics.txt \
 CREATE_INDEX=true \
 VALIDATION_STRINGENCY=LENIENT
 
-## Local realignment around indels
+## Local realignment around indels (if '$GATK' fails use 'GenomeAnalysisTK.jar')
 ## (a) Create a table 'input.bam.list' of indel candidates
 java -Xmx4g -jar $GATK \
 -T RealignerTargetCreator \
@@ -37,7 +38,7 @@ java -Xmx4g -jar $GATK \
 -o input.bam.list \
 -I myfile.fastq.marked.bam
 
-## (b) Realigns reads around indel candidates
+## (b) Realigns reads around indel candidate (if '$GATK' fails use 'GenomeAnalysisTK.jar')
 java -Xmx4g -Djava.io.tmpdir=./tmp \
 -jar $GATK \
 -I myfile.fastq.bam \
@@ -46,7 +47,7 @@ java -Xmx4g -Djava.io.tmpdir=./tmp \
 -targetIntervals input.bam.list \
 -o myfile.fastq.marked.realigned.bam
 
-## (c) Fix mate information for PE data given updated alignment
+## (c) Fix mate information for PE data given updated alignment (if '$PICARD FixMateInformation' fails use 'picard/FixMateInformation.jar')
 java -Djava.io.tmpdir=./tmp/flx-auswerter \
 -jar $PICARD FixMateInformation \
 INPUT=myfile.fastq.marked.realigned.bam \
@@ -55,10 +56,31 @@ SO=coordinate \
 VALIDATION_STRINGENCY=LENIENT \
 CREATE_INDEX=true
 
-## Phred Quality score recalibration
-# skipped since this requires known snps from SNPdb
+## Phred Quality score recalibration (if '$GATK' fails use 'GenomeAnalysisTK.jar')
+# skipped here since this requires known snps from SNPdb
+# 1) Count covariates
+# java -Xmx4g -jar $GATK \
+# -l INFO \
+# -R $REF \
+# --DBSNP dbsnp132.txt \
+# -I myfile.fastq.marked.realigned.fixed.bam \
+# -T CountCovariates \
+# -cov ReadGroupCovariate \
+# -cov QualityScoreCovariate \
+# -cov CycleCovariate \
+# -cov DinucCovariate \
+# -recalFile input.recal_data.csv
 
-## Produce raw SNP calls
+# 2) Table recalibration
+# java -Xmx4g -jar $GATK \
+# -l INFO \
+# -R $REF \
+# -I input.marked.realigned.fixed.bam \
+# -T TableRecalibration \
+# --out input.marked.realigned.fixed.recal.bam \
+# -recalFile input.recal_data.csv
+
+## Produce raw SNP calls (if '$GATK' fails use 'GenomeAnalysisTK.jar')
 java -Xmx4g -jar $GATK \
 -glm BOTH \
 -R $REF \
@@ -71,7 +93,7 @@ java -Xmx4g -jar $GATK \
 -dcov 1000 \
 -A AlleleBalance 
 
-## Filter SNPs
+## Filter SNPs (if '$GATK' fails use 'GenomeAnalysisTK.jar')
 java -Xmx4g -jar $GATK \
 -R $REF \
 -T VariantFiltration \

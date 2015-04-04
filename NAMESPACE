@@ -28,5 +28,5 @@ export(
     "modulelist", "run_edgeR", "run_DESeq2", "filterDEGs", "seeFastq", "seeFastqPlot",
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
     "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
-    "preprocessReads"
+    "preprocessReads", "filterVars", "variantReport", "combineVarReports", "varSummary" 
 ) 
