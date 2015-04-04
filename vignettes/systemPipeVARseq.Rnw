@@ -175,8 +175,8 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
 #unlink(outfile1(args), recursive = TRUE, force = TRUE)
 @
 
-\section{Filtering variants}
-\subsection{Filtering variants from GATK}
+\section{Filter variants}
+\subsection{Filter variants from GATK}
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="filter_gatk.param", mytargets="targets_gatk.txt")
 filter <- "totalDepth(vr) >= 2 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==4"
@@ -185,7 +185,7 @@ filterVars(args, filter, varcaller="gatk", organism="A. thaliana")
 writeTargetsout(x=args, file="targets_gatk_filtered.txt")
 @
 
-\subsection{Filtering variants from BCFtools}
+\subsection{Filter variants from BCFtools}
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="filter_sambcf.param", mytargets="targets_sambcf.txt")
 filter <- "rowSums(vr) >= 2 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
