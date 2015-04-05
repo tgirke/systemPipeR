@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{VAR-Seq Report Template}
-%\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap}
+%\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, VariantAnnotation, VariantTools}
 %\VignetteKeywords{compute cluster, pipeline, reports}
 %\VignettePackage{systemPipeR}
 
