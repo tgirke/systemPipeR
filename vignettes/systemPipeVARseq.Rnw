@@ -165,7 +165,7 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
 @
 
 \subsection{Variant calling with BCFtools}
-The following runs the variant calling with BCFtools. This step requires in the current working directory the parameter file \Robject{sambcf.param}. A bash script is not required for this step.  
+The following runs the variant calling with BCFtools. This step requires in the current working directory the parameter file \Robject{sambcf.param}. A bash script is not required in this case.  
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
@@ -175,6 +175,8 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
 @
 
 \section{Filter variants}
+The function \Rfunction{filterVars} filters VCF files based on user definable quality parameters. It first imports each VCF file into R, applies the filtering on an internally generated \Robject{VRanges} object and then writes the results to a new VCF file.
+
 \subsection{Filter variants from GATK}
 
 <<eval=FALSE, keep.source=TRUE>>=
@@ -195,6 +197,8 @@ writeTargetsout(x=args, file="targets_sambcf_filtered.txt")
 @
 
 \section{Annotate filtered variants}
+The function \Rfunction{variantReport} generates a variant report using utilities provided by the \Rpackage{VariantAnnotation} package. The report for each sample is written to a tabular file containing genomic context annotations (\textit{e.g.} coding or non-coding SNPs, amino acid changes, IDs of affected genes, etc.) along with confidence statistics of the variants from the corresponding VCF files. 
+
 \subsection{Annotate filtered variants from GATK}
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
