@@ -197,9 +197,10 @@ writeTargetsout(x=args, file="targets_sambcf_filtered.txt")
 @
 
 \section{Annotate filtered variants}
-The function \Rfunction{variantReport} generates a variant report using utilities provided by the \Rpackage{VariantAnnotation} package. The report for each sample is written to a tabular file containing genomic context annotations (\textit{e.g.} coding or non-coding SNPs, amino acid changes, IDs of affected genes, etc.) along with confidence statistics for each variant. 
+The function \Rfunction{variantReport} generates a variant report using utilities provided by the \Rpackage{VariantAnnotation} package. The report for each sample is written to a tabular file containing genomic context annotations (\textit{e.g.} coding or non-coding SNPs, amino acid changes, IDs of affected genes, etc.) along with confidence statistics for each variant. The parameter file \Robject{annotate\_vars.param} defines the paths to the input and output files which are stored in a new \Robject{SYSargs} instance. 
 
 \subsection{Annotate filtered variants called by GATK}
+
 <<eval=FALSE, keep.source=TRUE>>=
 library("GenomicFeatures")
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
@@ -217,6 +218,8 @@ variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana")
 @
 
 \section{Combine annotation results among samples}
+To simplify comparisons among samples, the \Rfunction{combineVarReports} function combines all variant annotation reports referenced in a \Robject{SYSargs} instance (below \Robject{args}). At the same time the function allows to consider only certain feature types of interest. For instance, the below setting \Rfunarg{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \Rfunarg{Consequence} column of the annotation reports. To omit filtering, one can use the setting \Rfunarg{filtercol="All"}
+
 \subsection{Combine results from GATK}
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
@@ -232,6 +235,7 @@ write.table(combineDF, "./results/combineDF_nonsyn_sambcf.xls", quote=FALSE, row
 @
 
 \section{Summary statistics of variants}
+The function \Rfunction{varSummar} counts the number of variances for each feature type included in the anntation reports. 
 \subsection{Summary for GATK}
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
@@ -245,6 +249,7 @@ write.table(varSummary(args), "./results/variantStats_sambcf.xls", quote=FALSE, 
 @
 
 \section{Venn diagram of variants}
+The venn diagram utilities of the \Rpackage{systemPipeR} can be used to identify common and unique variances reported for different samples and/or variant callers. The below generates a 4-way venn diagram comparing four sampes for each of the two variant callers.
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
 varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
