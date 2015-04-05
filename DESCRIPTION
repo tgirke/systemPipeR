@@ -8,7 +8,7 @@ Maintainer: Thomas Girke <thomas.girke@ucr.edu>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, ChIPSeq, MethylSeq, SNP, GeneExpression, Coverage, GeneSetEnrichment, Alignment, QualityControl
 Description: R package for building end-to-end analysis pipelines with automated report generation for next generation sequence (NGS) applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. An important feature is support for running command-line software, such as NGS aligners, on both single machines or compute clusters. Instructions for using systemPipeR are given in the Overview Vignette (PDF). The remaining Vignettes, linked below, are workflow templates for common NGS use cases.
 Depends: Rsamtools, Biostrings, ShortRead, methods
-Imports: BiocGenerics, rjson, grid, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap, BatchJobs, VariantAnnotation
+Imports: BiocGenerics, VariantAnnotation, rjson, grid, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap, BatchJobs
 Suggests: ape, RUnit, BiocStyle, biomaRt, GenomicFeatures, BiocParallel
 SystemRequirements: systemPipeR can be used to run external command-line software (e.g. short read aligners), but the corresponding tool needs to be installed on a system.
 License: Artistic-2.0

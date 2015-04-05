@@ -48,7 +48,6 @@ Thomas Girke
 \code{run_DESeq2}, \code{readComp} and \code{edgeR} vignette
 }
 \examples{
-library(DESeq2)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
