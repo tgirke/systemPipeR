@@ -23,16 +23,16 @@ varSummary(args)
 	Object of class \code{SYSargs}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)}.
 }
   \item{txdb}{
-	Annotation data stored as \code{TranscriptDb} object, which can be obtained from GFF/GTF files, BioMart, Bioc Annotation packages, UCSC, etc. For details see the vignette of \code{GenomicFeatures} package. It is important to use here matching versions of the \code{txdb} and \code{fa}. The latter is the genome sequence used for read mapping and variant calling.  
+	Annotation data stored as \code{TranscriptDb} object, which can be obtained from GFF/GTF files, BioMart, Bioc Annotation packages, UCSC, etc. For details see the vignette of the \code{GenomicFeatures} package. It is important to use here matching versions of the \code{txdb} and \code{fa} objects. The latter is the genome sequence used for read mapping and variant calling.  
 }
   \item{fa}{
-	\code{FaFile} object pointing to sequence file of corresponding reference genome stored in FASTA format or a \code{BSgenome} instance.
+	\code{FaFile} object pointing to the sequence file of the corresponding reference genome stored in FASTA format or a \code{BSgenome} instance.
 }
   \item{organism}{
 	Character vector specifying the organism name of the reference genome.
 }
   \item{filtercol}{
-	Named character vector containing in the name field the column titles to filter on and in the data field the corresponding values to include in the report. For instance, the setting \code{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \code{Consequence} column.
+	Named character vector containing in the name field the column titles to filter on, and in the data field the corresponding values to include in the report. For instance, the setting \code{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \code{Consequence} column.
 }
   \item{ncol}{
 	Integer specifying the number of columns in the tabular input files. Default is set to 15.
