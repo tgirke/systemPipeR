@@ -32,7 +32,7 @@ varSummary(args)
 	Character vector specifying the organism name of the reference genome.
 }
   \item{filtercol}{
-	Named character vector containing in the name field the column titles to filter on, and in the data field the corresponding values to include in the report. For instance, the setting \code{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \code{Consequence} column.
+	Named character vector containing in the name field the column titles to filter on, and in the data field the corresponding values to include in the report. For instance, the setting \code{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \code{Consequence} column. To omit the filtering step, one can use the setting \code{filtercol="All"}. 
 }
   \item{ncol}{
 	Integer specifying the number of columns in the tabular input files. Default is set to 15.
