@@ -218,7 +218,7 @@ variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana")
 @
 
 \section{Combine annotation results among samples}
-To simplify comparisons among samples, the \Rfunction{combineVarReports} function combines all variant annotation reports referenced in a \Robject{SYSargs} instance (below \Robject{args}). At the same time the function allows to consider only certain feature types of interest. For instance, the below setting \Rfunarg{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \Rfunarg{Consequence} column of the annotation reports. To omit filtering, one can use the setting \Rfunarg{filtercol="All"}
+To simplify comparisons among samples, the \Rfunction{combineVarReports} function combines all variant annotation reports referenced in a \Robject{SYSargs} instance (here \Robject{args}). At the same time the function allows to consider only certain feature types of interest. For instance, the below setting \Rfunarg{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \Rfunarg{Consequence} column of the annotation reports. To omit filtering, one can use the setting \Rfunarg{filtercol="All"}
 
 \subsection{Combine results from GATK}
 <<eval=FALSE, keep.source=TRUE>>=
@@ -249,7 +249,7 @@ write.table(varSummary(args), "./results/variantStats_sambcf.xls", quote=FALSE, 
 @
 
 \section{Venn diagram of variants}
-The venn diagram utilities of the \Rpackage{systemPipeR} can be used to identify common and unique variances reported for different samples and/or variant callers. The below generates a 4-way venn diagram comparing four sampes for each of the two variant callers.
+The venn diagram utilities defined by the \Rpackage{systemPipeR} package can be used to identify common and unique variants reported for different samples and/or variant callers. The below generates a 4-way venn diagram comparing four sampes for each of the two variant callers.
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
 varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
@@ -264,7 +264,7 @@ dev.off()
 
 \begin{figure}[H]
   \centering
-   \includegraphics[width=14cm]{vennplot_var.pdf}
+   \includegraphics[width=10cm]{vennplot_var.pdf}
    \caption{Venn Diagram for 4 samples from GATK and BCFtools.}
    \label{fig:vennplot}
 \end{figure}
