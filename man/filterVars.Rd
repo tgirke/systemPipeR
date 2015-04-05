@@ -49,6 +49,16 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
                   resourceList=resources)
 
 ## Variant calling with GATK
+## The following creates in the inital step a new targets file
+## (targets_bam.txt). The first column of this file gives the paths to
+## the BAM files created in the alignment step. The new targets file and the
+## parameter file gatk.param are used to create a new SYSargs
+## instance for running GATK. Since GATK involves many processing steps, it is
+## executed by a bash script gatk_run.sh where the user can specify the
+## detailed run parameters. All three files are expected to be located in the
+## current working directory. Samples files for gatk.param and
+## gatk_run.sh are available in the subdirectory ./inst/extdata/ of the 
+## source file of the systemPipeR package. 
 writeTargetsout(x=args, file="targets_bam.txt")
 system("java -jar CreateSequenceDictionary.jar R=./data/tair10.fasta O=./data/tair10.dict")
 # system("java -jar /opt/picard/1.81/CreateSequenceDictionary.jar R=./data/tair10.fasta O=./data/tair10.dict")
@@ -59,6 +69,9 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
 writeTargetsout(x=args, file="targets_gatk.txt")
 
 ## Variant calling with BCFtools
+## The following runs the variant calling with BCFtools. This step requires in
+## the current working directory the parameter file sambcf.param. A bash
+## script is not required for this step.  
 args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",

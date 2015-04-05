@@ -57,14 +57,14 @@ unlink("test.db")
 \tableofcontents
 
 \section{Introduction}
-This report describes the analysis of an VAR-Seq project from Dr. First Last's lab which studies the gene expression changes of ... in \textit{organism} .... The experimental design is as follows...
+This report describes the analysis of an VAR-Seq project from Dr. First Last's lab which studies the genetic differences of ... in \textit{organism} .... The experimental design is as follows...
 
 \section{Sample definitions and environment settings}
 
 \subsection{Environment settings and input data}
 Typically, the user wants to record here the sources and versions of the reference genome sequence along with the corresponding annotations. In the provided sample data set all data inputs are stored in a \Robject{data} subdirectory and all results will be written to a separate \Robject{results} directory, while the \Robject{systemPipeVARseq.Rnw} script and the \Robject{targets} file are expected to be located in the parent directory. The R session is expected to run from this parent directory.
 
-To run this sample report, mini sample FASTQ and reference genome files can be downloaded from \href{http://biocluster.ucr.edu/~tgirke/projects/systemPipeR_test_data.zip}{\textcolor{blue}{here}}. The chosen data set \href{http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938}{\textcolor{blue}{SRP010938}} contains 18 paired-end (PE) read sets from \textit{Arabidposis thaliana} \cite{Howard2013-fq}. To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the \textit{A. thalina} genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set is less than 200MB in storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads. 
+To run this sample report, mini sample FASTQ and reference genome files can be downloaded from \href{http://biocluster.ucr.edu/~tgirke/projects/systemPipeR_test_data.zip}{\textcolor{blue}{here}}. The chosen data set \href{http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938}{\textcolor{blue}{SRP010938}} contains 18 paired-end (PE) read sets from \textit{Arabidposis thaliana} \cite{Howard2013-fq}. This data set comes from a different NGS application area, but it is sufficient to demonstrate the analysis steps of this workflow. To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the \textit{A. thalina} genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set is less than 200MB in storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads. 
 
 \subsection{Required packages and resources}
 The \Rpackage{systemPipeR} package needs to be loaded to perform the analysis steps shown in this report \citep{Girke2014-oy}. 
@@ -110,18 +110,18 @@ dev.off()
 
 \section{Alignments}
 \subsection{Read mapping with \Rfunction{BWA}}
-The NGS reads of this project will be aligned against the reference genome sequence using \Robject{BWA} \citep{Li2013-oy, Li2009-oc}. The parameter settings of the aligner are defined in the \Robject{bwa.param} file.
+The NGS reads of this project are aligned against the reference genome sequence using the highly variant tolerant short read aligner \Robject{BWA} \citep{Li2013-oy, Li2009-oc}. The parameter settings of the aligner are defined in the \Robject{bwa.param} file.
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="bwa.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 @
 
-Run alignments sequentially (\textit{e.g.} on a single machine)
+Runs the alignments sequentially (\textit{e.g.} on a single machine)
 <<eval=FALSE, keep.source=TRUE>>=
 bampaths <- runCommandline(args=args)
 @
 
-Alternatively, submit alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
+Alternatively, the alignment jobs can be submitted to a compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
 <<eval=FALSE, keep.source=TRUE>>=
 moduleload(modules(args))
 system("bwa index -a bwtsw ./data/tair10.fasta")
@@ -135,13 +135,10 @@ file.exists(outpaths(args))
 @
 
 \subsection{Read and alignment stats}
-The following provides an overview of the number of reads in each sample and how many of them aligned to the reference.
+The following generates a summary table of the number of reads in each sample and how many of them aligned to the reference.
 <<eval=FALSE, keep.source=TRUE>>=
 read_statsDF <- alignStats(args=args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
-@
-<<eval=FALSE, keep.source=TRUE>>=
-read.delim("results/alignStats.xls")
 @
 
 \subsection{Create symbolic links for viewing BAM files in IGV}
@@ -153,8 +150,9 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 @
 
 \section{Variant calling}
-The following performs variant calling with \Robject{GATK} and \Robject{BCFtools} in parallel mode on a compute cluster \citep{McKenna2010-ql, Li2011-ll}. Alternatively, \Rfunction{runCommandline(args=args)} will run them sequentially on a single machine. 
+The following performs variant calling with \Robject{GATK} and \Robject{BCFtools} in parallel mode on a compute cluster \citep{McKenna2010-ql, Li2011-ll}. If a cluster is not available, the \Rfunction{runCommandline()} function can be used to run them sequentially on a single machine. Typically, the user would choose here one variant caller rather than running several ones.   
 \subsection{Variant calling with GATK}
+The following creates in the inital step a new targets file (\Robject{targets\_bam.txt}). The first column of this file gives the paths to the BAM files created in the alignment step. The new targets file and the parameter file \Robject{gatk.param} are used to create a new \Robject{SYSargs} instance for running GATK. Since GATK involves many processing steps, it is executed by a bash script \Robject{gatk\_run.sh} where the user can specify the detailed run parameters. All three files are expected to be located in the current working directory. Samples files for \Robject{gatk.param} and \Robject{gatk\_run.sh} are available in the subdirectory \Robject{./inst/extdata/} of the source file of the \Rpackage{systemPipeR} package. Alternatively, they can be downloaded directly from \href{https://github.com/tgirke/systemPipeR/tree/master/inst/extdata}{here}.
 <<eval=FALSE, keep.source=TRUE>>=
 writeTargetsout(x=args, file="targets_bam.txt")
 system("java -jar CreateSequenceDictionary.jar R=./data/tair10.fasta O=./data/tair10.dict")
@@ -163,20 +161,22 @@ args <- systemArgs(sysma="gatk.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
                   resourceList=resources)
-#unlink(outfile1(args), recursive = TRUE, force = TRUE)
+# unlink(outfile1(args), recursive = TRUE, force = TRUE)
 @
 
 \subsection{Variant calling with BCFtools}
+The following runs the variant calling with BCFtools. This step requires in the current working directory the parameter file \Robject{sambcf.param}. A bash script is not required for this step.  
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
                   resourceList=resources)
-#unlink(outfile1(args), recursive = TRUE, force = TRUE)
+# unlink(outfile1(args), recursive = TRUE, force = TRUE)
 @
 
 \section{Filter variants}
 \subsection{Filter variants from GATK}
+
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="filter_gatk.param", mytargets="targets_gatk.txt")
 filter <- "totalDepth(vr) >= 2 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==4"
