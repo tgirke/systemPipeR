@@ -235,7 +235,7 @@ write.table(combineDF, "./results/combineDF_nonsyn_sambcf.xls", quote=FALSE, row
 @
 
 \section{Summary statistics of variants}
-The function \Rfunction{varSummar} counts the number of variances for each feature type included in the anntation reports. 
+The function \Rfunction{varSummar} counts the number of variants for each feature type included in the anntation reports. 
 \subsection{Summary for GATK}
 <<eval=FALSE, keep.source=TRUE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
