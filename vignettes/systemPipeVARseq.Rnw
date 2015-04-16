@@ -1,0 +1,282 @@
+%\VignetteIndexEntry{VAR-Seq Report Template}
+%\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, VariantAnnotation}
+%\VignetteKeywords{compute cluster, pipeline, reports}
+%\VignettePackage{systemPipeR}
+
+% Latex compile
+% Sweave("systemPipeR.Rnw"); system("pdflatex systemPipeR.tex; bibtex systemPipeR; pdflatex systemPipeR.tex; pdflatex systemPipeR.tex")
+% echo 'Sweave("systemPipeVARseq.Rnw")' | R --slave; echo 'Stangle("systemPipeVARseq.Rnw")' | R --slave; pdflatex systemPipeVARseq.tex;  bibtex systemPipeVARseq; pdflatex systemPipeVARseq.tex
+
+\documentclass{article}
+<<style, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex(use.unsrturl=FALSE)
+@
+
+\usepackage[authoryear,round]{natbib}
+\bibliographystyle{plainnat}
+\def\bibsection{\section{References}}
+
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{float}
+
+%\newcommand{\comment}[1]{}
+%\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+%\newcommand{\Robject}[1]{{\texttt{#1}}}
+%\newcommand{\Rpackage}[1]{{\textit{#1}}}
+%\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+%\newcommand{\Rclass}[1]{{\textit{#1}}}
+	
+% Define header and footer area with fandyhdr package (see: http://www.ctan.org/tex-archive/macros/latex/contrib/fancyhdr/fancyhdr.pdf)
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\rhead{\nouppercase{\leftmark}}
+\lhead{\textit{systemPipeR VAR-Seq Report}}
+\rfoot{\thepage}
+
+<<echo=FALSE>>=
+options(width=95)
+unlink("test.db")
+@
+%\parindent 0in
+
+%\bibliographystyle{plainnat}
+
+\begin{document}
+\title{VAR-Seq project report template: Some Descriptive Title}
+\author{Project ID: VARseq\_PI\_Name\_Organism\_Mar2015 \\
+	Project PI: First Last (first.last@inst.edu)\\
+        Author of Report: First Last (first.last@inst.edu)}
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+This report describes the analysis of an VAR-Seq project from Dr. First Last's lab which studies the genetic differences of ... in \textit{organism} .... The experimental design is as follows...
+
+\section{Sample definitions and environment settings}
+
+\subsection{Environment settings and input data}
+Typically, the user wants to record here the sources and versions of the reference genome sequence along with the corresponding annotations. In the provided sample data set all data inputs are stored in a \Robject{data} subdirectory and all results will be written to a separate \Robject{results} directory, while the \Robject{systemPipeVARseq.Rnw} script and the \Robject{targets} file are expected to be located in the parent directory. The R session is expected to run from this parent directory.
+
+To run this sample report, mini sample FASTQ and reference genome files can be downloaded from \href{http://biocluster.ucr.edu/~tgirke/projects/systemPipeR_test_data.zip}{\textcolor{blue}{here}}. The chosen data set \href{http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938}{\textcolor{blue}{SRP010938}} contains 18 paired-end (PE) read sets from \textit{Arabidposis thaliana} \cite{Howard2013-fq}. This data set comes from a different NGS application area, but it is sufficient to demonstrate the analysis steps of this workflow. To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the \textit{A. thalina} genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set is less than 200MB in storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads. 
+
+\subsection{Required packages and resources}
+The \Rpackage{systemPipeR} package needs to be loaded to perform the analysis steps shown in this report \citep{Girke2014-oy}. 
+<<eval=TRUE, keep.source=TRUE>>=
+library(systemPipeR)
+@
+
+If applicable load custom functions not provided by \Rpackage{systemPipeR}
+<<eval=FALSE, keep.source=TRUE>>=
+source("systemPipeVARseq_Fct.R")
+@
+
+\subsection{Experiment definition provided by \Robject{targets} file}
+The \href{run:targets.txt}{\Robject{targets}} file defines all FASTQ files and sample comparisons of the analysis workflow. 
+<<eval=TRUE, keep.source=TRUE>>=
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+targets <- read.delim(targetspath, comment.char = "#")[,1:5]
+targets
+@
+
+\section{Read preprocessing}
+\subsection{FASTQ quality report}
+The following \Rfunction{seeFastq} and \Rfunction{seeFastqPlot} functions generate and plot a series of
+useful quality statistics for a set of FASTQ files including per cycle quality
+box plots, base proportions, base-level quality trends, relative k-mer
+diversity, length and occurrence distribution of reads, number of reads above
+quality cutoffs and mean quality distribution. The results are written to a PDF file named 
+\href{run:./results/fastqReport.pdf}{\Robject{fastqReport.pdf}}.
+
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="bwa.param", mytargets="targets.txt")
+fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
+pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
+seeFastqPlot(fqlist)
+dev.off()
+@
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=18cm]{fastqReport.pdf}
+   \caption{QC report for 18 FASTQ files.}
+   \label{fig:fastqreport}
+\end{figure}
+
+\section{Alignments}
+\subsection{Read mapping with \Rfunction{BWA}}
+The NGS reads of this project are aligned against the reference genome sequence using the highly variant tolerant short read aligner \Robject{BWA} \citep{Li2013-oy, Li2009-oc}. The parameter settings of the aligner are defined in the \Robject{bwa.param} file.
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="bwa.param", mytargets="targets.txt")
+sysargs(args)[1] # Command-line parameters for first FASTQ file
+@
+
+Runs the alignments sequentially (\textit{e.g.} on a single machine)
+<<eval=FALSE, keep.source=TRUE>>=
+bampaths <- runCommandline(args=args)
+@
+
+Alternatively, the alignment jobs can be submitted to a compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
+<<eval=FALSE, keep.source=TRUE>>=
+moduleload(modules(args))
+system("bwa index -a bwtsw ./data/tair10.fasta")
+resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
+                  resourceList=resources)
+@
+Check whether all BAM files have been created
+<<eval=FALSE, keep.source=TRUE>>=
+file.exists(outpaths(args))
+@
+
+\subsection{Read and alignment stats}
+The following generates a summary table of the number of reads in each sample and how many of them aligned to the reference.
+<<eval=FALSE, keep.source=TRUE>>=
+read_statsDF <- alignStats(args=args) 
+write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+@
+
+\subsection{Create symbolic links for viewing BAM files in IGV}
+The \Rfunction{symLink2bam} function creates symbolic links to view the BAM alignment files in a genome browser such as IGV. The corresponding URLs are written to a file with a path specified under \Robject{urlfile}, here \href{run:./results/IGVurl.txt}{IGVurl.txt}.
+<<eval=FALSE, keep.source=TRUE>>=
+symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
+            urlbase="http://biocluster.ucr.edu/~tgirke/", 
+	    urlfile="./results/IGVurl.txt")
+@
+
+\section{Variant calling}
+The following performs variant calling with \Robject{GATK} and \Robject{BCFtools} in parallel mode on a compute cluster \citep{McKenna2010-ql, Li2011-ll}. If a cluster is not available, the \Rfunction{runCommandline()} function can be used to run the variant calling for each sample sequentially on a single machine. Typically, the user would choose here one variant caller rather than running several ones.   
+\subsection{Variant calling with GATK}
+The following creates in the inital step a new targets file (\Robject{targets\_bam.txt}). The first column of this file gives the paths to the BAM files created in the alignment step. The new targets file and the parameter file \Robject{gatk.param} are used to create a new \Robject{SYSargs} instance for running GATK. Since GATK involves many processing steps, it is executed by a bash script \Robject{gatk\_run.sh} where the user can specify the detailed run parameters. All three files are expected to be located in the current working directory. Samples files for \Robject{gatk.param} and \Robject{gatk\_run.sh} are available in the subdirectory \Robject{./inst/extdata/} of the source file of the \Rpackage{systemPipeR} package. Alternatively, they can be downloaded directly from \href{https://github.com/tgirke/systemPipeR/tree/master/inst/extdata}{here}.
+<<eval=FALSE, keep.source=TRUE>>=
+writeTargetsout(x=args, file="targets_bam.txt")
+system("java -jar CreateSequenceDictionary.jar R=./data/tair10.fasta O=./data/tair10.dict")
+# system("java -jar /opt/picard/1.81/CreateSequenceDictionary.jar R=./data/tair10.fasta O=./data/tair10.dict")
+args <- systemArgs(sysma="gatk.param", mytargets="targets_bam.txt")
+resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
+                  resourceList=resources)
+@
+
+\subsection{Variant calling with BCFtools}
+The following runs the variant calling with BCFtools. This step requires in the current working directory the parameter file \Robject{sambcf.param}. A bash script is not required in this case.  
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
+resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
+                  resourceList=resources)
+@
+
+\section{Filter variants}
+The function \Rfunction{filterVars} filters VCF files based on user definable quality parameters. It sequentially imports each VCF file into R, applies the filtering on an internally generated \Robject{VRanges} object and then writes the results to a new subsetted VCF file. The filter parameters are passed on to the corresponding argument as a character string. The function applies this filter to the internally generated \Robject{VRanges} object using the standard subsetting syntax for two dimensional objects such as: \Robject{vr[filter, ]}. The parameter files (\Robject{filter\_gatk.param} and \Robject{filter\_sambcf.param}), used in the filtering steps, define the paths to the input and output VCF files which are stored in new \Robject{SYSargs} instances.  
+
+\subsection{Filter variants called by GATK}
+The below example filters for variants that are supported by $\ge$\texttt{x} reads and $\ge$80\% of them support the called variants. In addition, all variants need to pass $\ge$\texttt{x} of the soft filters recorded in the VCF files generated by GATK. Since the toy data used for this workflow is very small, the chosen settings are unreasonabley relaxed. A more reasonable filter setting is given in the line below (here commented out).  
+<<eval=FALSE, keep.source=TRUE>>=
+library(VariantAnnotation)
+args <- systemArgs(sysma="filter_gatk.param", mytargets="targets_gatk.txt")
+filter <- "totalDepth(vr) >= 2 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==4"
+# filter <- "totalDepth(vr) >= 20 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==6"
+filterVars(args, filter, varcaller="gatk", organism="A. thaliana")
+writeTargetsout(x=args, file="targets_gatk_filtered.txt")
+@
+
+\subsection{Filter variants called by BCFtools}
+The following shows how to filter the VCF files generated by BCFtools using similar parameter settings as in the previous filtering of the GATK results.
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="filter_sambcf.param", mytargets="targets_sambcf.txt")
+filter <- "rowSums(vr) >= 2 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
+# filter <- "rowSums(vr) >= 20 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
+filterVars(args, filter, varcaller="bcftools", organism="A. thaliana")
+writeTargetsout(x=args, file="targets_sambcf_filtered.txt")
+@
+
+\section{Annotate filtered variants}
+The function \Rfunction{variantReport} generates a variant report using utilities provided by the \Rpackage{VariantAnnotation} package. The report for each sample is written to a tabular file containing genomic context annotations (\textit{e.g.} coding or non-coding SNPs, amino acid changes, IDs of affected genes, etc.) along with confidence statistics for each variant. The parameter file \Robject{annotate\_vars.param} defines the paths to the input and output files which are stored in a new \Robject{SYSargs} instance. 
+
+\subsection{Annotate filtered variants called by GATK}
+
+<<eval=FALSE, keep.source=TRUE>>=
+library("GenomicFeatures")
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+txdb <- loadDb("./data/tair10.sqlite")
+fa <- FaFile(systemPipeR::reference(args))
+variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana")
+@
+
+\subsection{Annotate filtered variants called by BCFtools}
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
+txdb <- loadDb("./data/tair10.sqlite")
+fa <- FaFile(systemPipeR::reference(args))
+variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana")
+@
+
+\section{Combine annotation results among samples}
+To simplify comparisons among samples, the \Rfunction{combineVarReports} function combines all variant annotation reports referenced in a \Robject{SYSargs} instance (here \Robject{args}). At the same time the function allows to consider only certain feature types of interest. For instance, the below setting \Rfunarg{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \Rfunarg{Consequence} column of the annotation reports. To omit filtering, one can use the setting \Rfunarg{filtercol="All"}
+
+\subsection{Combine results from GATK}
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
+write.table(combineDF, "./results/combineDF_nonsyn_gatk.xls", quote=FALSE, row.names=FALSE, sep="\t")
+@
+
+\subsection{Combine results from BCFtools}
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
+combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
+write.table(combineDF, "./results/combineDF_nonsyn_sambcf.xls", quote=FALSE, row.names=FALSE, sep="\t")
+@
+
+\section{Summary statistics of variants}
+The function \Rfunction{varSummar} counts the number of variants for each feature type included in the anntation reports. 
+\subsection{Summary for GATK}
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+write.table(varSummary(args), "./results/variantStats_gatk.xls", quote=FALSE, col.names = NA, sep="\t")
+@
+
+\subsection{Summary for BCFtools}
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
+write.table(varSummary(args), "./results/variantStats_sambcf.xls", quote=FALSE, col.names = NA, sep="\t")
+@
+
+\section{Venn diagram of variants}
+The venn diagram utilities defined by the \Rpackage{systemPipeR} package can be used to identify common and unique variants reported for different samples and/or variant callers. The below generates a 4-way venn diagram comparing four sampes for each of the two variant callers.
+<<eval=FALSE, keep.source=TRUE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
+vennset_gatk <- overLapper(varlist, type="vennsets")
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
+varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
+vennset_bcf <- overLapper(varlist, type="vennsets")
+pdf("./results/vennplot_var.pdf")
+vennPlot(list(vennset_gatk, vennset_bcf), mymain="", mysub="GATK: red; BCFtools: blue", colmode=2, ccol=c("blue", "red"))
+dev.off()
+@
+
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=10cm]{vennplot_var.pdf}
+   \caption{Venn Diagram for 4 samples from GATK and BCFtools.}
+   \label{fig:vennplot}
+\end{figure}
+
+\section{Version Information}
+<<sessionInfo, results=tex, print=TRUE>>=
+toLatex(sessionInfo())
+@
+
+\section{Funding}
+This project was supported by funds from the National Institutes of Health (NIH).
+
+\bibliography{bibtex}
+
+\end{document}
