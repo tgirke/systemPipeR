@@ -280,7 +280,7 @@ for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gs
 Create \Robject{txdb} (needs to be done only once)
 <<eval=FALSE, keep.source=TRUE>>=
 library(GenomicFeatures)
-txdb <- makeTranscriptDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", species="A. thaliana")
+txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="A. thaliana")
 saveDb(txdb, file="./data/tair10.sqlite")
 @
 
