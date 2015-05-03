@@ -212,7 +212,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ### code chunk number 28: systemPipeR.Rnw:281-284 (eval = FALSE)
 ###################################################
 ## library(GenomicFeatures)
-## txdb <- makeTranscriptDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", species="A. thaliana")
+## txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="A. thaliana")
 ## saveDb(txdb, file="./data/tair10.sqlite")
 
 
