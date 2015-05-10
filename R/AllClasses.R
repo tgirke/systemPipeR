@@ -405,7 +405,9 @@ clusterRun <- function(args, FUN=runCommandline, conffile=".BatchJobs.R", templa
 	## BachJobs routines
 	loadConfig(conffile = conffile)
 	f <- function(i, args, ...) FUN(args=args[i], ...)
-	logdir1 <- paste0(gsub("^.*/", "", normalizePath(results(args))), "/submitargs", runid, "_BJdb_", paste(sample(0:9, 4), collapse=""))
+	## Updated 10-May-15: fixes path to log file location when symbolic links are used
+	# logdir1 <- paste0(gsub("^.*/", "", normalizePath(results(args))), "/submitargs", runid, "_BJdb_", paste(sample(0:9, 4), collapse=""))
+	logdir1 <- paste0(normalizePath(results(args)), "/submitargs", runid, "_BJdb_", paste(sample(0:9, 4), collapse=""))
 	reg <- makeRegistry(id="systemPipe", file.dir=logdir1, packages="systemPipeR")
 	ids <- batchMap(reg, fun=f, seq(along=args), more.args=list(args=args, runid=runid))
 	names(ids) <- names(infile1(args))
