@@ -112,6 +112,7 @@ readComp <- function(file, format="vector", delim="-") {
 	}
 	comp <- comp[grepl("<CMP>", comp)]
 	comp <- gsub("#.*<CMP>| {1,}", "", comp)
+	comp <- gsub("\t", "", comp); comp <- gsub("^\"|\"$", "", comp) # Often required if Excel is used for editing targets file
 	comp <- strsplit(comp, ":|,")
 	names(comp) <- lapply(seq(along=comp), function(x) comp[[x]][1])	
 	comp <- sapply(names(comp), function(x) comp[[x]][-1], simplify=FALSE)	
