@@ -107,7 +107,7 @@ readComp(file=targetspath, format="vector", delim="-")
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
 read.delim(parampath, comment.char = "#")
 @
-\noindent The \Rfunction{systemArgs} function imports the definitions of both the \Robject{param} file and the \Robject{targets} file, and stores all relevant information as \Robject{SYSargs} object. To run the pipeline without command-line software, one can assign \Rfunarg{NULL} to \Rfunarg{sysma} instead of a \Robject{param} file. In addition, one can start the \Rpackage{systemPipeR} workflow with pregenerated BAM files by providing a targets file where the \Robject{FileName} column gives the paths to the BAM files and \Rfunarg{param} is assigned \Rfunarg{NULL}.
+\noindent The \Rfunction{systemArgs} function imports the definitions of both the \Robject{param} file and the \Robject{targets} file, and stores all relevant information as \Robject{SYSargs} object. To run the pipeline without command-line software, one can assign \Rfunarg{NULL} to \Rfunarg{sysma} instead of a \Robject{param} file. In addition, one can start the \Rpackage{systemPipeR} workflow with pregenerated BAM files by providing a targets file where the \Robject{FileName} column gives the paths to the BAM files and \Rfunarg{sysma} is assigned \Rfunarg{NULL}.
 <<eval=TRUE, keep.source=TRUE>>=   
 args <- systemArgs(sysma=parampath, mytargets=targetspath)
 args
