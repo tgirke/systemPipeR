@@ -1,5 +1,9 @@
 changelog
-	version 1.1.16
+	version 1.2.1
+		- updated readComp 
+        - corrected typo for systemArgs when NULL is assigned to sysma
+	
+    version 1.1.16
 		- added functions for variant filtering and annotation
 	
 	version 1.1.15

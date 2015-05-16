@@ -111,7 +111,7 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 		sysma <- as.matrix(read.delim(sysma, comment.char = "#"))
 		sysma[is.na(sysma)] <- ""
 	} else {
-		sysma <- cbind(PairSet=c("sofware", "cores", "other", "outfile1", "reference", "infile1", "infile1", "infile2", "infile2"), 
+		sysma <- cbind(PairSet=c("software", "cores", "other", "outfile1", "reference", "infile1", "infile1", "infile2", "infile2"), 
 					Name=c("", "", "", "", "", "", "path", "", "path"), 
 					Value=c("", "1", "", "<FileName1>", "", "<FileName1>", "", "<FileName2>", ""))
 	}
