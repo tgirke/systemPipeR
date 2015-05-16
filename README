@@ -1,4 +1,8 @@
 changelog
+	version 1.3.3
+		- updated readComp 
+        - corrected typo for systemArgs when NULL is assigned to sysma
+	
 	version 1.3.2
 		- fixed path to BatchJob's log file location when symbolic links are used
 	
