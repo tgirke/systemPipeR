@@ -1,5 +1,5 @@
 ## IMPORTS
-import(rjson, Rsamtools, Biostrings, ShortRead, grid, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, BatchJobs, methods)
+import(rjson, GenomicRanges, SummarizedExperiment, Rsamtools, Biostrings, ShortRead, grid, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, BatchJobs, methods)
 ## S4 Classes
 exportClasses(
     "SYSargs", "catDB", "VENNset", "INTERSECTset"
