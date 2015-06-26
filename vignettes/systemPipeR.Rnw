@@ -199,7 +199,7 @@ fqlist <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
 seeFastqPlot(unlist(fqlist, recursive=FALSE))
 @
 
-Parallelization of QC report via scheduler (\textit{e.g.} Torque) to run on many compute nodes
+Parallelization of QC report via scheduler (\textit{e.g.} Torque) across several compute nodes
 <<eval=FALSE, keep.source=TRUE>>=
 library(BiocParallel); library(BatchJobs)
 f <- function(x) {
@@ -262,7 +262,7 @@ read_statsList <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=
 read_statsDF <- do.call("rbind", read_statsList)
 @
 
-Parallelization of read/alignment stats via scheduler (e.g. Torque) to run on many compute nodes
+Parallelization of read/alignment stats via scheduler (e.g. Torque) across several compute nodes 
 <<eval=FALSE, keep.source=TRUE>>=
 library(BiocParallel); library(BatchJobs)
 f <- function(x) {
