@@ -190,6 +190,30 @@ dev.off()
    \label{fig:fastqreport}
 \end{figure}
 
+Parallelization of QC report on single machine with multiple cores
+<<eval=FALSE, keep.source=TRUE>>=
+library(systemPipeR)
+args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+f <- function(x) seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
+fqlist <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
+seeFastqPlot(unlist(fqlist, recursive=FALSE))
+@
+
+Parallelization of QC report via scheduler (\textit{e.g.} Torque) to run on many compute nodes
+<<eval=FALSE, keep.source=TRUE>>=
+library(BiocParallel); library(BatchJobs)
+f <- function(x) {
+    library(systemPipeR)
+    args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+    seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
+}
+funs <- makeClusterFunctionsTorque("torque.tmpl")
+param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+register(param)
+fqlist <- bplapply(seq(along=args), f)
+seeFastqPlot(unlist(fqlist, recursive=FALSE))
+@
+
 \subsection{Alignment with Tophat 2}
 Build Bowtie 2 index.
 <<eval=FALSE, keep.source=TRUE>>=
@@ -229,6 +253,28 @@ write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE
 \noindent The following shows the first four lines of the sample alignment stats file provided by the \Rpackage{systemPipeR} package. For simplicity the number of PE reads is multiplied here by 2 to approximate proper alignment frequencies where each read in a pair is counted. 
 <<eval=TRUE, keep.source=TRUE>>=
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
+@
+
+Parallelization of read/alignment stats on single machine with multiple cores
+<<eval=FALSE, keep.source=TRUE>>=
+f <- function(x) alignStats(args[x])
+read_statsList <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
+read_statsDF <- do.call("rbind", read_statsList)
+@
+
+Parallelization of read/alignment stats via scheduler (e.g. Torque) to run on many compute nodes
+<<eval=FALSE, keep.source=TRUE>>=
+library(BiocParallel); library(BatchJobs)
+f <- function(x) {
+    library(systemPipeR)
+    args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+    alignStats(args[x])
+}
+funs <- makeClusterFunctionsTorque("torque.tmpl")
+param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+register(param)
+read_statsList <- bplapply(seq(along=args), f)
+read_statsDF <- do.call("rbind", read_statsList)
 @
 
 \subsection{Create symbolic links for viewing BAM files in IGV}
