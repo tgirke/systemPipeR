@@ -121,9 +121,8 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 17: systemPipeR.Rnw:194-199 (eval = FALSE)
+### code chunk number 17: systemPipeR.Rnw:194-198 (eval = FALSE)
 ###################################################
-## library(systemPipeR)
 ## args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 ## f <- function(x) seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
 ## fqlist <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
@@ -131,7 +130,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 18: systemPipeR.Rnw:203-214 (eval = FALSE)
+### code chunk number 18: systemPipeR.Rnw:202-213 (eval = FALSE)
 ###################################################
 ## library(BiocParallel); library(BatchJobs)
 ## f <- function(x) {
@@ -147,7 +146,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 19: systemPipeR.Rnw:219-222 (eval = FALSE)
+### code chunk number 19: systemPipeR.Rnw:218-221 (eval = FALSE)
 ###################################################
 ## args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 ## moduleload(modules(args)) # Skip if module system is not available
@@ -155,19 +154,20 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ###################################################
-### code chunk number 20: systemPipeR.Rnw:226-227 (eval = FALSE)
+### code chunk number 20: systemPipeR.Rnw:225-226 (eval = FALSE)
 ###################################################
 ## bampaths <- runCommandline(args=args)
 
 
 ###################################################
-### code chunk number 21: systemPipeR.Rnw:231-236 (eval = FALSE)
+### code chunk number 21: systemPipeR.Rnw:230-236 (eval = FALSE)
 ###################################################
 ## file.copy(system.file("extdata", ".BatchJobs.R", package="systemPipeR"), ".")
 ## file.copy(system.file("extdata", "torque.tmpl", package="systemPipeR"), ".")
 ## resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 ## reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
 ##                   resourceList=resources)
+## waitForJobs(reg)
 
 
 ###################################################
@@ -283,7 +283,27 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 34: systemPipeR.Rnw:350-359 (eval = FALSE)
+### code chunk number 34: systemPipeR.Rnw:349-364 (eval = FALSE)
+###################################################
+## library(BiocParallel)
+## f <- function(x) {
+##     library(systemPipeR); library(BiocParallel); library(GenomicFeatures)
+##     txdb <- loadDb("./data/tair10.sqlite")
+##     eByg <- exonsBy(txdb, by="gene")
+##     args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+##     bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+##     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
+## }
+## funs <- makeClusterFunctionsTorque("torque.tmpl")
+## param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+## register(param)
+## counteByg <- bplapply(seq(along=args), f) 
+## countDFeByg <- sapply(seq(along=counteByg), function(x) assays(counteByg[[x]])$counts)
+## rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
+
+
+###################################################
+### code chunk number 35: systemPipeR.Rnw:369-378 (eval = FALSE)
 ###################################################
 ## system("wget ftp://mirbase.org/pub/mirbase/19/genomes/My_species.gff3 -P ./data/")
 ## gff <- import.gff("./data/My_species.gff3", asRangedData=FALSE)
@@ -297,7 +317,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 
 ###################################################
-### code chunk number 35: sample_tree
+### code chunk number 36: sample_tree
 ###################################################
 library(ape)
 rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
@@ -309,7 +329,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 
 
 ###################################################
-### code chunk number 36: systemPipeR.Rnw:389-392
+### code chunk number 37: systemPipeR.Rnw:408-411
 ###################################################
 targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
@@ -317,7 +337,7 @@ cmp[[1]]
 
 
 ###################################################
-### code chunk number 37: systemPipeR.Rnw:393-396
+### code chunk number 38: systemPipeR.Rnw:412-415
 ###################################################
 countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
@@ -325,32 +345,32 @@ edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independ
 
 
 ###################################################
-### code chunk number 38: DEGcounts
+### code chunk number 39: DEGcounts
 ###################################################
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 
 
 ###################################################
-### code chunk number 39: systemPipeR.Rnw:408-410
+### code chunk number 40: systemPipeR.Rnw:427-429
 ###################################################
 names(DEG_list)
 DEG_list$Summary[1:4,]
 
 
 ###################################################
-### code chunk number 40: systemPipeR.Rnw:421-422
+### code chunk number 41: systemPipeR.Rnw:440-441
 ###################################################
 degseqDF <- run_DESeq2(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE)
 
 
 ###################################################
-### code chunk number 41: DEGcounts2
+### code chunk number 42: DEGcounts2
 ###################################################
 DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
 
 
 ###################################################
-### code chunk number 42: vennplot
+### code chunk number 43: vennplot
 ###################################################
 vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
 vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
@@ -358,7 +378,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 43: systemPipeR.Rnw:452-463 (eval = FALSE)
+### code chunk number 44: systemPipeR.Rnw:471-482 (eval = FALSE)
 ###################################################
 ## library("biomaRt")
 ## listMarts() # To choose BioMart database
@@ -374,7 +394,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 44: systemPipeR.Rnw:468-479 (eval = FALSE)
+### code chunk number 45: systemPipeR.Rnw:487-498 (eval = FALSE)
 ###################################################
 ## load("data/GO/catdb.RData")
 ## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
@@ -390,7 +410,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 45: systemPipeR.Rnw:484-489 (eval = FALSE)
+### code chunk number 46: systemPipeR.Rnw:503-508 (eval = FALSE)
 ###################################################
 ## gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 ## gos <- BatchResultslim
@@ -400,7 +420,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 46: systemPipeR.Rnw:502-508 (eval = FALSE)
+### code chunk number 47: systemPipeR.Rnw:521-527 (eval = FALSE)
 ###################################################
 ## library(pheatmap)
 ## geneids <- unique(as.character(unlist(DEG_list[[1]])))
@@ -411,7 +431,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 
 ###################################################
-### code chunk number 47: sessionInfo
+### code chunk number 48: sessionInfo
 ###################################################
 toLatex(sessionInfo())
 
