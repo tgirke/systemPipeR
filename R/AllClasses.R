@@ -418,4 +418,4 @@ clusterRun <- function(args, FUN=runCommandline, conffile=".BatchJobs.R", templa
 ## Usage: 
 # resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
 # reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
-
+# waitForJobs(reg)
