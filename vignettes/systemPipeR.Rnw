@@ -233,6 +233,7 @@ file.copy(system.file("extdata", "torque.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
                   resourceList=resources)
+waitForJobs(reg)
 @
 
 \noindent Useful commands for monitoring progress of submitted jobs
@@ -329,7 +330,7 @@ txdb <- makeTranscriptDbFromGFF(file="data/tair10.gff", format="gff", dataSource
 saveDb(txdb, file="./data/tair10.sqlite")
 @
 
-\noindent Read counting with summarizeOverlaps in parallel mode with multiple cores
+\noindent Read counting with \Rfunction{summarizeOverlaps} in parallel mode with multiple cores
 <<eval=FALSE, keep.source=TRUE>>=
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
@@ -342,6 +343,25 @@ rownames(countDFeByg) <- names(rowData(counteByg[[1]])); colnames(countDFeByg) <
 rpkmDFeByg <- apply(countDFeByg, 2, function(x) returnRPKM(counts=x, ranges=eByg))
 write.table(countDFeByg, "results/countDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
 write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
+@
+
+\noindent Read counting with \Rfunction{summarizeOverlaps} using multiple nodes of a cluster
+<<eval=FALSE, keep.source=TRUE>>=
+library(BiocParallel)
+f <- function(x) {
+    library(systemPipeR); library(BiocParallel); library(GenomicFeatures)
+    txdb <- loadDb("./data/tair10.sqlite")
+    eByg <- exonsBy(txdb, by="gene")
+    args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+    bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+    summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
+}
+funs <- makeClusterFunctionsTorque("torque.tmpl")
+param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+register(param)
+counteByg <- bplapply(seq(along=args), f) 
+countDFeByg <- sapply(seq(along=counteByg), function(x) assays(counteByg[[x]])$counts)
+rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
 @
 
 \subsection{Read counting for miRNA profiling experiments}
