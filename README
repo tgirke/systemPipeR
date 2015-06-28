@@ -1,4 +1,7 @@
 changelog
+	version 1.3.7
+		- added sample Makefile 
+	
 	version 1.3.4 - 1.3.6
 		- vignette updates 
 	
