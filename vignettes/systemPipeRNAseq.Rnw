@@ -122,6 +122,7 @@ system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
                   resourceList=resources)
+waitForJobs(reg)
 @
 Check whether all BAM files have been created
 <<eval=FALSE, keep.source=TRUE>>=
