@@ -1,14 +1,17 @@
 %\VignetteIndexEntry{ChIP-Seq Report Template}
 %\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap}
 %\VignetteKeywords{compute cluster, pipeline, reports}
+%\VignetteEngine{knitr::knitr}
 %\VignettePackage{systemPipeR}
 
-% Latex compile
-% Sweave("systemPipeR.Rnw"); system("pdflatex systemPipeR.tex; bibtex systemPipeR; pdflatex systemPipeR.tex; pdflatex systemPipeR.tex")
-% echo 'Sweave("systemPipeChIPseq.Rnw")' | R --slave; echo 'Stangle("systemPipeChIPseq.Rnw")' | R --slave; pdflatex systemPipeChIPseq.tex; bibtex systemPipeChIPseq; pdflatex systemPipeChIPseq.tex
+% Generate vignette with knitr
+% R CMD Sweave --engine=knitr::knitr --pdf systemPipeChIPseq.Rnw
 
 \documentclass{article}
-<<style, eval=TRUE, echo=FALSE, results=tex>>=
+%<<style, eval=TRUE, echo=FALSE, results=tex>>=
+%BiocStyle::latex(use.unsrturl=FALSE)
+%@
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex(use.unsrturl=FALSE)
 @
 
@@ -39,15 +42,16 @@ BiocStyle::latex(use.unsrturl=FALSE)
 \lhead{\textit{systemPipeR ChIP-Seq Report}}
 \rfoot{\thepage}
 
-<<echo=FALSE>>=
-options(width=95)
+\begin{document}
+
+<<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options for knitr
+opts_chunk$set(comment=NA, warning=FALSE, message=FALSE, fig.path='figure/systemPipeR-')
+options(formatR.arrow=TRUE, width=95)
 unlink("test.db")
 @
-%\parindent 0in
 
-%\bibliographystyle{plainnat}
-
-\begin{document}
 \title{ChIP-Seq project report template: Some Descriptive Title}
 \author{Project ID: ChIPseq\_PI\_Name\_Organism\_Jun2014 \\
 	Project PI: First Last (first.last@inst.edu)\\
@@ -68,18 +72,18 @@ To run this sample report, mini sample FASTQ and reference genome files can be d
 
 \subsection{Required packages and resources}
 The \Rpackage{systemPipeR} package needs to be loaded to perform the analysis steps shown in this report \citep{Girke2014-oy}. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 library(systemPipeR)
 @
 
 If applicable load custom functions not provided by \Rpackage{systemPipeR}
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 source("systemPipeChIPseq_Fct.R")
 @
 
 \subsection{Experiment definition provided by \Robject{targets} file}
 The \href{run:targets.txt}{\Robject{targets}} file defines all FASTQ files and sample comparisons of the analysis workflow. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
@@ -94,7 +98,7 @@ diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution. The results are written to a PDF file named 
 \href{run:./results/fastqReport.pdf}{\Robject{fastqReport.pdf}}.
 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
@@ -111,12 +115,12 @@ dev.off()
 \section{Alignments}
 \subsection{Read mapping with \Rfunction{Bowtie2}}
 The NGS reads of this project will be aligned against the reference genome sequence using \Robject{Bowtie2} \citep{Langmead2012-bs}. The parameter settings of the aligner are defined in the \Robject{tophat.param} file.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="bowtieSE.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 @
 Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 moduleload(modules(args))
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
@@ -124,23 +128,23 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
                   resourceList=resources)
 @
 Check whether all BAM files have been created
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 file.exists(outpaths(args))
 @
 
 \subsection{Read and alignment stats}
 The following provides an overview of the number of reads in each sample and how many of them aligned to the reference.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 read_statsDF <- alignStats(args=args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 @
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 read.delim("results/alignStats.xls")
 @
 
 \subsection{Create symbolic links for viewing BAM files in IGV}
 The \Rfunction{symLink2bam} function creates symbolic links to view the BAM alignment files in a genome browser such as IGV. The corresponding URLs are written to a file with a path specified under \Robject{urlfile}, here \href{run:./results/IGVurl.txt}{IGVurl.txt}.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
             urlbase="http://biocluster.ucr.edu/~tgirke/", 
 	    urlfile="./results/IGVurl.txt")
@@ -162,7 +166,7 @@ To be continued ...
 To be continued ...
 
 \section{Version Information}
-<<sessionInfo, results=tex, print=TRUE>>=
+<<sessionInfo, results='asis'>>=
 toLatex(sessionInfo())
 @
 
