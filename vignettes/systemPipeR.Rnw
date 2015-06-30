@@ -1,14 +1,17 @@
 %\VignetteIndexEntry{Overview Vignette}
 %\VignetteDepends{rjson, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap}
 %\VignetteKeywords{compute cluster, pipeline, reports}
+%\VignetteEngine{knitr::knitr}
 %\VignettePackage{systemPipeR}
 
-% Latex compile
-% Sweave("systemPipeR.Rnw"); system("pdflatex systemPipeR.tex; bibtex systemPipeR; pdflatex systemPipeR.tex; pdflatex systemPipeR.tex")
-% echo 'Sweave("systemPipeR.Rnw")' | R --slave; echo 'Stangle("systemPipeR.Rnw")' | R --slave; pdflatex systemPipeR.tex;  bibtex systemPipeR; pdflatex systemPipeR.tex
+% Generate vignette with knitr
+% R CMD Sweave --engine=knitr::knitr --pdf systemPipeR.Rnw
 
 \documentclass{article}
-<<style, eval=TRUE, echo=FALSE, results=tex>>=
+%<<style, eval=TRUE, echo=FALSE, results=tex>>=
+%BiocStyle::latex(use.unsrturl=FALSE)
+%@
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex(use.unsrturl=FALSE)
 @
 
@@ -39,14 +42,16 @@ BiocStyle::latex(use.unsrturl=FALSE)
 \lhead{\textit{systemPipeR Manual}}
 \rfoot{\thepage}
 
-<<echo=FALSE>>=
-options(width=95)
+\begin{document}
+
+<<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options for knitr
+opts_chunk$set(comment=NA, warning=FALSE, message=FALSE, fig.path='figure/systemPipeR-')
+options(formatR.arrow=TRUE, width=95)
 unlink("test.db")
 @
-%\parindent 0in
 
-
-\begin{document}
 \title{\Rpackage{systemPipeR}: NGS workflow and report generation environment}
 \author{Thomas Girke  \\
  Email contact: thomas.girke@ucr.edu}
@@ -73,7 +78,7 @@ biocLite("systemPipeR") # Installs the package
 
 \subsection{Loading the Package and Documentation}
 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library("systemPipeR") # Loads the package
 library(help="systemPipeR") # Lists all functions and classes 
 vignette("systemPipeR") # Opens this PDF manual from R
@@ -84,36 +89,36 @@ The mini sample FASTQ files used by this overview vignette as well as the associ
 
 \section{Structure of \Robject{targets} file}
 The \Robject{targets} file defines all input files (\textit{e.g.} FASTQ, BAM, BCF) and sample comparisons of an analysis workflow. The following shows the format of a sample \Robject{targets} file provided by this package. In a target file with a single type of input files, here FASTQ files of single end (SE) reads, the first three columns are mandatory including their column names, while it is four mandatory columns for FASTQ files for PE reads. All subsequent columns are optional and any number of additional columns can be added as needed.
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")
 @
 
 \noindent Structure of \Robject{targets} file for paired end (PE) samples.
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:2,1:6]
 @
 
 \noindent Sample comparisons are defined in the header lines of the \Robject{targets} file starting with '\texttt{\# <CMP>}'. The function \Rfunction{readComp} imports the comparison and stores them in a \Robject{list}. Alternatively, \Rfunction{readComp} can obtain the comparison information from the corresponding \Robject{SYSargs} object (see below). Note, the header lines are optional in \Robject{targets} files. They are mainly useful for controlling comparative analysis according to certain biological expectations, such as simple pairwise comparisons in RNA-Seq experiments. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 readComp(file=targetspath, format="vector", delim="-")
 @
 
 \section{Structure of \Robject{param} file and \Robject{SYSargs} container}
 \noindent The \Robject{param} file defines the parameters of the command-line software. The following shows the format of a sample \Robject{param} file provided by this package. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
 read.delim(parampath, comment.char = "#")
 @
 \noindent The \Rfunction{systemArgs} function imports the definitions of both the \Robject{param} file and the \Robject{targets} file, and stores all relevant information as \Robject{SYSargs} object. To run the pipeline without command-line software, one can assign \Rfunarg{NULL} to \Rfunarg{sysma} instead of a \Robject{param} file. In addition, one can start the \Rpackage{systemPipeR} workflow with pregenerated BAM files by providing a targets file where the \Robject{FileName} column gives the paths to the BAM files and \Rfunarg{sysma} is assigned \Rfunarg{NULL}.
-<<eval=TRUE, keep.source=TRUE>>=   
+<<eval=TRUE>>=
 args <- systemArgs(sysma=parampath, mytargets=targetspath)
 args
 @
 \noindent Several accessor functions are available that are named after the slot names of the \Robject{SYSargs} object class.
-<<eval=TRUE, keep.source=TRUE>>=   
+<<eval=TRUE>>=
 names(args)
 modules(args)
 cores(args)
@@ -121,19 +126,19 @@ outpaths(args)[1]
 sysargs(args)[1]
 @
 \noindent The content of the \Robject{param} file can be returned as JSON object as follows (requires \Rpackage{rjson} package).
-<<eval=TRUE, keep.source=TRUE>>=   
+<<eval=TRUE>>=
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 @
 
 \section{Workflow}
 \subsection{Define environment settings and samples}
 Load package:
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(systemPipeR)
 @
 
 \noindent Construct \Robject{SYSargs} object from \Robject{param} and \Robject{targets} files.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="trim.param", mytargets="targets.txt")
 @
 
@@ -152,7 +157,7 @@ After the trimming step a new targets file is generated (here
 The new targets file can be used for the next workflow step with an updated
 \Robject{SYSargs} instance, \textit{e.g.} running the NGS alignments using the
 trimmed FASTQ files. 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", 
                 batchsize=100000, overwrite=TRUE, compress=TRUE)
 writeTargetsout(x=args, file="targets_trim.txt")
@@ -161,7 +166,7 @@ writeTargetsout(x=args, file="targets_trim.txt")
 The following example shows how one can design a custom read preprocessing function 
 using utilities provided by the \Rpackage{ShortRead} package, and then run it
 in batch mode with the \Rfunction{preprocessReads} function.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 filterFct <- function(fq) {
 	filter1 <- nFilter(threshold=1) # Keeps only reads without Ns
 	filter2 <- polynFilter(threshold=20, nuc=c("A","T","G","C")) # Removes low complexity reads 
@@ -177,7 +182,7 @@ useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution.  
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 seeFastqPlot(fqlist)
@@ -191,7 +196,7 @@ dev.off()
 \end{figure}
 
 Parallelization of QC report on single machine with multiple cores
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 f <- function(x) seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
 fqlist <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
@@ -199,7 +204,7 @@ seeFastqPlot(unlist(fqlist, recursive=FALSE))
 @
 
 Parallelization of QC report via scheduler (\textit{e.g.} Torque) across several compute nodes
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(BiocParallel); library(BatchJobs)
 f <- function(x) {
     library(systemPipeR)
@@ -215,19 +220,19 @@ seeFastqPlot(unlist(fqlist, recursive=FALSE))
 
 \subsection{Alignment with Tophat 2}
 Build Bowtie 2 index.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 moduleload(modules(args)) # Skip if module system is not available
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 @
 
 \noindent Execute \Robject{SYSargs} on a single machine without submitting to a queuing system of a compute cluster. This way the input FASTQ files will be processed sequentially. If available, multiple CPU cores can be used for processing each file. The number of CPU cores (here 4) to use for each process is defined in the \Robject{*.param} file. With \Rfunction{cores(args)} one can return this value from the \Robject{SYSargs} object. Note, if a module system is not installed or used, then the corresponding \Robject{*.param} file needs to be edited accordingly by either providing an empty field in the line(s) starting with \Robject{module} or by deleting these lines.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 bampaths <- runCommandline(args=args)
 @
 
 \noindent Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from \Rfunction{cores(args)} is passed on to the submission command, here \Rfunarg{nodes} in the \Rfunction{resources} list object. The number of independent parallel cluster processes is defined under the \Rfunarg{Njobs} argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores. Note, \Rfunction{runCluster} can be used with most queueing systems as it is based on utilities from the \Rfunction{BatchJobs} package which supports the use of template files (\Rfunarg{*.tmpl}) for defining the run parameters of different schedulers. To run the following code, one needs to have both a conf file (see \Rfunarg{.BatchJob} samples \href{https://code.google.com/p/batchjobs/wiki/DortmundUsage}{{\textcolor{blue}{here}}}) and a template file (see \Rfunarg{*.tmpl} samples \href{https://github.com/tudo-r/BatchJobs/tree/master/examples}{{\textcolor{blue}{here}}}) for the queueing available on a system. The following example uses the sample conf and template files for the Torque scheduler provided by this package.  
-<<eval=FALSE, keep.source=TRUE>>=0
+<<eval=FALSE>>=
 file.copy(system.file("extdata", ".BatchJobs.R", package="systemPipeR"), ".")
 file.copy(system.file("extdata", "torque.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
@@ -237,7 +242,7 @@ waitForJobs(reg)
 @
 
 \noindent Useful commands for monitoring progress of submitted jobs
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 showStatus(reg)
 file.exists(outpaths(args))
 sapply(1:length(args), function(x) loadResult(reg, x)) # Works after job completion
@@ -245,25 +250,25 @@ sapply(1:length(args), function(x) loadResult(reg, x)) # Works after job complet
 
 \subsection{Read and alignment count stats}
 \noindent Generate table of read and alignment counts for all samples. 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 read_statsDF <- alignStats(args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 @
 
 \noindent The following shows the first four lines of the sample alignment stats file provided by the \Rpackage{systemPipeR} package. For simplicity the number of PE reads is multiplied here by 2 to approximate proper alignment frequencies where each read in a pair is counted. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 @
 
 Parallelization of read/alignment stats on single machine with multiple cores
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 f <- function(x) alignStats(args[x])
 read_statsList <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
 read_statsDF <- do.call("rbind", read_statsList)
 @
 
 Parallelization of read/alignment stats via scheduler (e.g. Torque) across several compute nodes 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(BiocParallel); library(BatchJobs)
 f <- function(x) {
     library(systemPipeR)
@@ -279,7 +284,7 @@ read_statsDF <- do.call("rbind", read_statsList)
 
 \subsection{Create symbolic links for viewing BAM files in IGV}
 The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with http access needs to be available in the user account (\textit{e.g.} \Rfunarg{\textasciitilde/public\_html}) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, \Rfunarg{htmldir} defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the \Rfunarg{urlfile} argument. 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
             urlbase="http://myserver.edu/~username/", 
 	    urlfile="IGVurl.txt")
@@ -289,21 +294,21 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 
 \subsubsection{Alignment with Bowtie 2 (\textit{e.g.} for miRNA profiling)}
 The following example runs Bowtie 2 as a single process without submitting it to a cluster.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="bowtieSE.param", mytargets="targets.txt")
 moduleload(modules(args)) # Skip if module system is not available
 bampaths <- runCommandline(args=args)
 @
 
 \noindent Alternatively, submit the job to compute nodes.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 qsubargs <- getQsubargs(queue="batch", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
 (joblist <- qsubRun(args=args, qsubargs=qsubargs, Nqsubs=18, package="systemPipeR"))
 @
 
 \subsubsection{Alignment with BWA-MEM (\textit{e.g.} for VAR-Seq)}
 The following example runs BWA-MEM as a single process without submitting it to a cluster.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="bwa.param", mytargets="targets.txt")
 moduleload(modules(args)) # Skip if module system is not available
 system("bwa index -a bwtsw ./data/tair10.fasta") # Indexes reference genome
@@ -313,7 +318,7 @@ bampaths <- runCommandline(args=args)
 \subsubsection{Alignment with Rsubread (\textit{e.g.} for RNA-Seq)}
 The following example shows how one can use within the \Rpackage{systemPipeR} environment the R-based 
 aligner \Rpackage{Rsubread} or other R-based functions that read from input files and write to output files.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(Rsubread)
 args <- systemArgs(sysma="rsubread.param", mytargets="targets.txt")
 buildindex(basename=reference(args), reference=reference(args)) # Build indexed reference genome
@@ -324,14 +329,14 @@ for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gs
 
 \subsection{Read counting for mRNA profiling experiments}
 Create \Robject{txdb} (needs to be done only once)
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(GenomicFeatures)
 txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="A. thaliana")
 saveDb(txdb, file="./data/tair10.sqlite")
 @
 
 \noindent Read counting with \Rfunction{summarizeOverlaps} in parallel mode with multiple cores
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by="gene")
@@ -346,7 +351,7 @@ write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep
 @
 
 \noindent Read counting with \Rfunction{summarizeOverlaps} using multiple nodes of a cluster
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(BiocParallel)
 f <- function(x) {
     library(systemPipeR); library(BiocParallel); library(GenomicFeatures)
@@ -366,7 +371,7 @@ rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg)
 
 \subsection{Read counting for miRNA profiling experiments}
 Download miRNA genes from miRBase
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 system("wget ftp://mirbase.org/pub/mirbase/19/genomes/My_species.gff3 -P ./data/")
 gff <- import.gff("./data/My_species.gff3", asRangedData=FALSE)
 gff <- split(gff, elementMetadata(gff)$ID)
@@ -380,7 +385,7 @@ write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="
 
 \subsection{Correlation analysis of samples}
 The following computes the sample-wise Spearman correlation coefficients from the RPKM normalized expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \Rfunction{hclust} function and the result is plotted as a dendrogram (\href{run:./results/sample_tree.pdf}{sample\_tree.pdf}). 
-<<sample_tree, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
+<<sample_tree, eval=TRUE, include=FALSE>>=
 library(ape)
 rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
 rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
@@ -391,7 +396,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 @
 \begin{figure}[H]
   \centering
-   \includegraphics[width=6cm]{systemPipeR-sample_tree.pdf}
+   \includegraphics[width=6cm]{figure/systemPipeR-sample_tree-1.pdf}
    \caption{Correlation dendrogram of samples.}
    \label{fig:sample_tree}
 \end{figure}
@@ -405,26 +410,26 @@ are strongly encouraged to consult the
 \href{http://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf}{\Rpackage{edgeR} vignette}
 for more detailed information on this topic and how to properly run \Rpackage{edgeR} 
 on data sets with more complex experimental designs. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
 cmp[[1]]
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
 edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 @
 Filter and plot DEG results for up and down regulated genes. Because of the small size of the toy data set used by this vignette, the \Rfunarg{FDR} value has been set to a relatively high threshold (here 10\%). More commonly used \Rfunarg{FDR} cutoffs are 1\% or 5\%.
-<<DEGcounts, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
+<<DEGcounts, eval=TRUE, include=FALSE>>=
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 @
 \begin{figure}[H]
   \centering
-   \includegraphics[width=10cm]{systemPipeR-DEGcounts.pdf}
+   \includegraphics[width=10cm]{figure/systemPipeR-DEGcounts-1.pdf}
    \caption{Up and down regulated DEGs identified with \Rpackage{edgeR}.}
    \label{fig:DEGcounts}
 \end{figure}
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 names(DEG_list)
 DEG_list$Summary[1:4,]
 @
@@ -437,30 +442,30 @@ are strongly encouraged to consult the
 \href{http://www.bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf}{\Rpackage{DESeq2} vignette}
 for more detailed information on this topic and how to properly run \Rpackage{DESeq2} 
 on data sets with more complex experimental designs. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 degseqDF <- run_DESeq2(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE)
 @
 Filter and plot DEG results for up and down regulated genes. 
-<<DEGcounts2, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
+<<DEGcounts2, eval=TRUE, include=FALSE>>=
 DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
 @
 \begin{figure}[H]
   \centering
-   \includegraphics[width=10cm]{systemPipeR-DEGcounts2.pdf}
+   \includegraphics[width=10cm]{figure/systemPipeR-DEGcounts2-1.pdf}
    \caption{Up and down regulated DEGs identified with \Rpackage{DESeq2}.}
    \label{fig:DEGcounts2}
 \end{figure}
 
 \subsection{Venn Diagrams}
 The function \Rfunction{overLapper} can compute Venn intersects for large numbers of sample sets (up to 20 or more) and \Rfunction{vennPlot} can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
-<<vennplot, eval=TRUE, fig=TRUE, include=FALSE, keep.source=TRUE>>=
+<<vennplot, eval=TRUE, include=FALSE>>=
 vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
 vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
 vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
 @
 \begin{figure}[H]
   \centering
-   \includegraphics[width=14cm]{systemPipeR-vennplot.pdf}
+   \includegraphics[width=14cm]{figure/systemPipeR-vennplot-1.pdf}
    \caption{Venn Diagram for 4 Up and Down DEG Sets.}
    \label{fig:vennplot}
 \end{figure}
@@ -468,7 +473,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 \subsection{GO term enrichment analysis of DEGs}
 \subsubsection{Obtain gene-to-GO mappings}
 The following shows how to obtain gene-to-GO mappings from \Rpackage{biomaRt} (here for \textit{A. thaliana}) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor's  \Robject{*.db} genome annotation packages or GO annotation files provided by various genome databases. For each annotation this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the \Rfunction{load} function as shown in the next subsection. 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library("biomaRt")
 listMarts() # To choose BioMart database
 m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m) 
@@ -484,7 +489,7 @@ save(catdb, file="data/GO/catdb.RData")
 
 \subsubsection{Batch GO term enrichment analysis}
 Apply the enrichment analysis to the DEG sets obtained in the above differential expression analysis. Note, in the following example the \Rfunarg{FDR} filter is set here to an unreasonably high value, simply because of the small size of the toy data set used in this vignette. Batch enrichment analysis of many gene sets is performed with the \Rfunction{GOCluster\_Report} function. When \Rfunarg{method="all"}, it returns all GO terms passing the p-value cutoff specified under the \Rfunarg{cutoff} arguments. When \Rfunarg{method="slim"}, it returns only the GO terms specified under the \Rfunarg{myslimv} argument. The given example shows how one can obtain such a GO slim vector from BioMart for a specific organism.  
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 load("data/GO/catdb.RData")
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
 up_down <- DEG_list$UporDown; names(up_down) <- paste(names(up_down), "_up_down", sep="")
@@ -500,7 +505,7 @@ BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim",
 
 \subsubsection{Plot batch GO term results}
 The \Robject{data.frame} generated by \Rfunction{GOCluster\_Report} can be plotted with the \Rfunction{goBarplot} function. Because of the variable size of the sample sets, it may not always be desirable to show the results from different DEG sets in the same bar plot. Plotting single sample sets is achieved by subsetting the input data frame as shown in the first line of the following example. 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 gos <- BatchResultslim
 pdf("GOslimbarplotMF.pdf", height=8, width=10); goBarplot(gos, gocat="MF"); dev.off()
@@ -518,7 +523,7 @@ goBarplot(gos, gocat="CC")
 \subsection{Clustering and heat maps}
 The following example performs hierarchical clustering on the RPKM normalized expression matrix subsetted by the DEGs identified in the 
 above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(pheatmap)
 geneids <- unique(as.character(unlist(DEG_list[[1]])))
 y <- rpkmDFeByg[geneids, ]
@@ -537,7 +542,7 @@ dev.off()
 
 
 \section{Version Information}
-<<sessionInfo, results=tex, print=TRUE>>=
+<<sessionInfo, results='asis'>>=
 toLatex(sessionInfo())
 @
 
