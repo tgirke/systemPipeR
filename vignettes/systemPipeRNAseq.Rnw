@@ -1,14 +1,17 @@
 %\VignetteIndexEntry{RNA-Seq Report Template}
 %\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap}
 %\VignetteKeywords{compute cluster, pipeline, reports}
+%\VignetteEngine{knitr::knitr}
 %\VignettePackage{systemPipeR}
 
-% Latex compile
-% Sweave("systemPipeR.Rnw"); system("pdflatex systemPipeR.tex; bibtex systemPipeR; pdflatex systemPipeR.tex; pdflatex systemPipeR.tex")
-% echo 'Sweave("systemPipeRNAseq.Rnw")' | R --slave; echo 'Stangle("systemPipeRNAseq.Rnw")' | R --slave; pdflatex systemPipeRNAseq.tex;  bibtex systemPipeRNAseq; pdflatex systemPipeRNAseq.tex
+% Generate vignette with knitr
+% R CMD Sweave --engine=knitr::knitr --pdf systemPipeRNAseq.Rnw
 
 \documentclass{article}
-<<style, eval=TRUE, echo=FALSE, results=tex>>=
+%<<style, eval=TRUE, echo=FALSE, results=tex>>=
+%BiocStyle::latex(use.unsrturl=FALSE)
+%@
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
 BiocStyle::latex(use.unsrturl=FALSE)
 @
 
@@ -39,15 +42,16 @@ BiocStyle::latex(use.unsrturl=FALSE)
 \lhead{\textit{systemPipeR RNA-Seq Report}}
 \rfoot{\thepage}
 
-<<echo=FALSE>>=
-options(width=95)
+\begin{document}
+
+<<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options for knitr
+opts_chunk$set(comment=NA, warning=FALSE, message=FALSE, fig.path='figure/systemPipeR-')
+options(formatR.arrow=TRUE, width=95)
 unlink("test.db")
 @
-%\parindent 0in
 
-%\bibliographystyle{plainnat}
-
-\begin{document}
 \title{RNA-Seq project report template: Some Descriptive Title}
 \author{Project ID: RNAseq\_PI\_Name\_Organism\_Jun2014 \\
 	Project PI: First Last (first.last@inst.edu)\\
@@ -68,18 +72,18 @@ To run this sample report, mini sample FASTQ and reference genome files can be d
 
 \subsection{Required packages and resources}
 The \Rpackage{systemPipeR} package needs to be loaded to perform the analysis steps shown in this report \citep{Girke2014-oy}. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 library(systemPipeR)
 @
 
 If applicable load custom functions not provided by \Rpackage{systemPipeR}
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 source("systemPipeRNAseq_Fct.R")
 @
 
 \subsection{Experiment definition provided by \Robject{targets} file}
 The \href{run:targets.txt}{\Robject{targets}} file defines all FASTQ files and sample comparisons of the analysis workflow. 
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
@@ -94,7 +98,7 @@ diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution. The results are written to a PDF file named 
 \href{run:./results/fastqReport.pdf}{\Robject{fastqReport.pdf}}.
 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
@@ -111,12 +115,12 @@ dev.off()
 \section{Alignments}
 \subsection{Read mapping with \Rfunction{Bowtie2/Tophat2}}
 The NGS reads of this project will be aligned against the reference genome sequence using \Robject{Bowtie2/TopHat2} \citep{Kim2013-vg, Langmead2012-bs}. The parameter settings of the aligner are defined in the \Robject{tophat.param} file.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 @
 Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 moduleload(modules(args))
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
@@ -125,23 +129,23 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
 waitForJobs(reg)
 @
 Check whether all BAM files have been created
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 file.exists(outpaths(args))
 @
 
 \subsection{Read and alignment stats}
 The following provides an overview of the number of reads in each sample and how many of them aligned to the reference.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 read_statsDF <- alignStats(args=args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 @
-<<eval=TRUE, keep.source=TRUE>>=
+<<eval=TRUE>>=
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 @
 
 \subsection{Create symbolic links for viewing BAM files in IGV}
 The \Rfunction{symLink2bam} function creates symbolic links to view the BAM alignment files in a genome browser such as IGV. The corresponding URLs are written to a file with a path specified under \Robject{urlfile}, here \href{run:./results/IGVurl.txt}{IGVurl.txt}.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
             urlbase="http://biocluster.ucr.edu/~tgirke/", 
 	    urlfile="./results/IGVurl.txt")
@@ -150,7 +154,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 \section{Read quantification per annotation range}
 \subsection{Read counting with \Rfunction{summarizeOverlaps} in parallel mode using multiple cores}
 Reads overlapping with annotation ranges of interest are counted for each sample using the \Rfunction{summarizeOverlaps} function \citep{Lawrence2013-kt}. The read counting is preformed for exonic gene regions in a non-strand-specific manner while ignoring overlaps among different genes. Subsequently, the expression count values are normalized by \textit{reads per kp per million mapped reads} (RPKM). The raw read count table (\href{run:./results/countDFeByg.xls}{countDFeByg.xls}) and the correspoding RPKM table (\href{run:./results/rpkmDFeByg.xls}{rpkmDFeByg.xls}) are written to separate files in the \Robject{results} directory of this project. Parallelization is achieved with the \Rpackage{BiocParallel} package, here using 8 CPU cores.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library("GenomicFeatures"); library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by=c("gene"))
@@ -167,17 +171,17 @@ write.table(countDFeByg, "results/countDFeByg.xls", col.names=NA, quote=FALSE, s
 write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
 @
 Sample of data slice of count table
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:5]
 @
 Sample of data slice of RPKM table
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
 @
 
 \subsection{Sample-wise correlation analysis}
 The following computes the sample-wise Spearman correlation coefficients from the RPKM normalized expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \Rfunction{hclust} function and the result is plotted as a dendrogram (\href{run:./results/sample_tree.pdf}{sample\_tree.pdf}). 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(ape)
 rpkmDFeByg <- read.delim("./results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[,-19]
 rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
@@ -196,7 +200,7 @@ dev.off()
 
 \section{Analysis of differentially expressed genes with \Rpackage{edgeR}}
 The analysis of differentially expressed genes (DEGs) is performed with the glm method from the \Rpackage{edgeR} package \citep{Robinson2010-uk}. The sample comparisons used by this analysis are defined in the header lines of the \href{run:targets.txt}{\Robject{targets}} file starting with \texttt{<CMP>}.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(edgeR)
 countDF <- read.delim("countDFeByg.xls", row.names=1, check.names=FALSE) 
 targets <- read.delim("targets.txt", comment="#")
@@ -205,7 +209,7 @@ edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=
 @
 
 Add functional descriptions
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 desc <- read.delim("data/desc.xls") 
 desc <- desc[!duplicated(desc[,1]),]
 descv <- as.character(desc[,2]); names(descv) <- as.character(desc[,1])
@@ -214,7 +218,7 @@ write.table(edgeDF, "./results/edgeRglm_allcomp.xls", quote=FALSE, sep="\t", col
 @
 
 Filter and plot DEG results for up and down regulated genes
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 edgeDF <- read.delim("results/edgeRglm_allcomp.xls", row.names=1, check.names=FALSE) 
 pdf("results/DEGcounts.pdf")
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=1))
@@ -229,7 +233,7 @@ write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", 
 \end{figure}
 
 The function \Rfunction{overLapper} can compute Venn intersects for large numbers of sample sets (up to 20 or more) and \Rfunction{vennPlot} can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
 vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
 pdf("results/vennplot.pdf")
@@ -246,7 +250,7 @@ dev.off()
 \subsection{GO term enrichment analysis of DEGs}
 \subsubsection{Obtain gene-to-GO mappings}
 The following shows how to obtain gene-to-GO mappings from \Rpackage{biomaRt} (here for \textit{A. thaliana}) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor's  \Robject{*.db} genome annotation packages or GO annotation files provided by various genome databases. For each annotation this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the \Rfunction{load} function as shown in the next subsection. 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library("biomaRt")
 listMarts() # To choose BioMart database
 m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m) 
@@ -264,7 +268,7 @@ save(catdb, file="data/GO/catdb.RData")
 
 \subsubsection{Batch GO term enrichment analysis}
 Apply the enrichment analysis to the DEG sets obtained the above differential expression analysis. Note, in the following example the \Rfunarg{FDR} filter is set here to an unreasonably high value, simply because of the small size of the toy data set used in this vignette. Batch enrichment analysis of many gene sets is performed with the \Rfunction{GOCluster\_Report} function. When \Rfunarg{method="all"}, it returns all GO terms passing the p-value cutoff specified under the \Rfunarg{cutoff} arguments. When \Rfunarg{method="slim"}, it returns only the GO terms specified under the \Rfunarg{myslimv} argument. The given example shows how a GO slim vector for a specific organism can be obtained from BioMart.  
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 load("data/GO/catdb.RData")
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
 up_down <- DEG_list$UporDown; names(up_down) <- paste(names(up_down), "_up_down", sep="")
@@ -280,7 +284,7 @@ BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim",
 
 \subsubsection{Plot batch GO term results}
 The \Robject{data.frame} generated by \Rfunction{GOCluster\_Report} can be plotted with the \Rfunction{goBarplot} function. Because of the variable size of the sample sets, it may not always be desirable to show the results from different DEG sets in the same bar plot. Plotting single sample sets is achieved by subsetting the input data frame as shown in the first line of the following example. 
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 gos <- BatchResultslim
 pdf("GOslimbarplotMF.pdf", height=8, width=10); goBarplot(gos, gocat="MF"); dev.off()
@@ -298,7 +302,7 @@ goBarplot(gos, gocat="CC")
 \section{Clustering and heat maps}
 The following example performs hierarchical clustering on the RPKM normalized expression matrix subsetted by the DEGs identified in the 
 above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.
-<<eval=FALSE, keep.source=TRUE>>=
+<<eval=FALSE>>=
 library(pheatmap)
 geneids <- unique(as.character(unlist(DEG_list[[1]])))
 y <- rpkmDFeByg[geneids, ]
@@ -315,7 +319,7 @@ dev.off()
 \end{figure}
 
 \section{Version Information}
-<<sessionInfo, results=tex, print=TRUE>>=
+<<sessionInfo, results='asis'>>=
 toLatex(sessionInfo())
 @
 
