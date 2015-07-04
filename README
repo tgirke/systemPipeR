@@ -1,7 +1,7 @@
 changelog
-	version 1.2.3 - 1.2.5
+	version 1.2.3 - 1.2.6
 		- vignette updates
-	    - added sample Makefile
+		- added sample Makefile
 
     version 1.2.1
 		- updated readComp 
