@@ -2,6 +2,7 @@
 
 ## Load samtools from module system (delete this line if a module system is not available)
 module load samtools
+module load bcftools
 
 ## Path to refenence genome needs to be set here
 REF="./data/tair10.fasta"
