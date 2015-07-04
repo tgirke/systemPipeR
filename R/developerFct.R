@@ -5,10 +5,22 @@
 ####################################################################
 ## Subset Reads by Mapping Regions to Create Mini FASTQ/BAM Files ##
 ####################################################################
-## (a) E.g. download from NCBI's SRA fastq files for study SRP010938
-## (b) Align reads with systemPipeR/tophat against truncated TAIR10 reference (each chr truncated to 100kbp)
-## (c) Extract 100,000 reads from each fastq file mapping to the truncated regions in reference
-## Step (c) is performed with the following function
+
+## (A) Download FASTQ files of study SRP010938 from SRA at NCBI
+.getSRAfastq <- function(sraid, maxreads) {
+    moduleload("sratoolkit/2.5.0")
+    system(paste("fastq-dump --split-files --gzip --maxSpotId", maxreads, sraid))
+}
+## Usage:
+# library(systemPipeR)
+# sraidv <- paste("SRR4460", 27:44, sep="")
+# bplapply(sraidv, .getSRAfastq, maxreads="1000000000", BPPARAM = MulticoreParam(workers=4))
+## Non-parallized download
+# for(i in sraidv) .getSRAfastq(sraid=i, maxreads = "1000000000")
+
+## (B) Align reads with systemPipeR/tophat against truncated TAIR10 reference (each chr truncated to 100kbp)
+## (C) Extract 100,000 reads from each fastq file mapping to the truncated regions in reference
+## Step (C) is performed with the following function
 .subsetReadsByMappingRegion <- function(args) {
 	chromosomelength <- 100000
 	mydir <- getwd()
