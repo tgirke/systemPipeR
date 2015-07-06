@@ -168,7 +168,7 @@ reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=1
 @
 
 \subsection{Variant calling with BCFtools}
-The following runs the variant calling with BCFtools. This step requires in the current working directory the parameter file \Robject{sambcf.param}. A bash script is not required in this case.  
+The following runs the variant calling with BCFtools. This step requires in the current working directory the parameter file \Robject{sambcf.param} and the bash script \Robject{sambcf\_run.sh}.  
 <<eval=FALSE>>=
 args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
