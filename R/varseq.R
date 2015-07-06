@@ -9,12 +9,18 @@ filterVars <- function(args, filter, varcaller, organism) {
 		vcf <- readVcf(infile1(args)[i], organism)
 		vr <- as(vcf, "VRanges")
 		if(varcaller=="gatk") {
+            ## Apply filter
 			vrfilt <- vr[eval(parse(text=filter)), ]
 		}
 		if(varcaller=="bcftools") {
 			vrsambcf <- vr
 			vr <- unlist(values(vr)$DP4)
 			vr <- matrix(vr, ncol=4, byrow=TRUE)
+            ## Fix missing depth info in VRanges generated from VCF of bcftools
+            totalDepth(vrsambcf) <- as.integer(values(vrsambcf)$DP)
+            refDepth(vrsambcf) <- rowSums(vr[,1:2])
+            altDepth(vrsambcf) <- rowSums(vr[,3:4])
+            ## Apply filter
 			vrfilt <- vrsambcf[eval(parse(text=filter)), ]
 		}
 		vcffilt <- asVCF(vrfilt)
