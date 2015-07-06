@@ -70,8 +70,8 @@ writeTargetsout(x=args, file="targets_gatk.txt")
 
 ## Variant calling with BCFtools
 ## The following runs the variant calling with BCFtools. This step requires in
-## the current working directory the parameter file sambcf.param. A bash
-## script is not required for this step.  
+## the current working directory the parameter file sambcf.param and the 
+## bash script sambcf_run.sh.
 args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
