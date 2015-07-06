@@ -18,7 +18,7 @@ MAIN = systemPipeRNAseq
 #######################################
 all: $(MAIN).pdf 
 
-.Rnw.R:
+.Rnw.pdf:
 	R CMD Sweave --engine=knitr::knitr --pdf $<
 
 ########################################
