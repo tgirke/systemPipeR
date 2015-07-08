@@ -167,6 +167,22 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gsub(".sam", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  library(gmapR); library(BiocParallel); library(BatchJobs)
+#  gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=TRUE)
+#  args <- systemArgs(sysma="gsnap.param", mytargets="targetsPE.txt")
+#  f <- function(x) {
+#      library(gmapR); library(systemPipeR)
+#      args <- systemArgs(sysma="gsnap.param", mytargets="targetsPE.txt")
+#      gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=FALSE)
+#      p <- GsnapParam(genome=gmapGenome, unique_only=TRUE, molecule="DNA", max_mismatches=3)
+#      o <- gsnap(input_a=infile1(args)[x], input_b=infile2(args)[x], params=p, output=outfile1(args)[x])
+#  }
+#  funs <- makeClusterFunctionsTorque("torque.tmpl")
+#  param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+#  register(param)
+#  d <- bplapply(seq(along=args), f)
+
+## ----eval=FALSE------------------------------------------------------------------------------
 #  library(GenomicFeatures)
 #  txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="A. thaliana")
 #  saveDb(txdb, file="./data/tair10.sqlite")

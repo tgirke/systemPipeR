@@ -9,8 +9,11 @@
 ##PBS -q highmem
 ## remove this line if your cluster does not support arrayjobs
 ##PBS -t 1-<%= arrayjobs %>
+#PBS -e /dir/for/error/stream/error.txt
+#PBS -o /dir/for/out/stream/out.txt
 
 ## Run R:
 ## we merge R output with stdout from PBS, which gets then logged via -o option
+# module load R/3.2.1-dev
 R CMD BATCH --no-save --no-restore "<%= rscript %>" /dev/stdout 
  
