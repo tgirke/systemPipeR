@@ -327,7 +327,7 @@ align(index=reference(args), readfile1=infile1(args), input_format="FASTQ",
 for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gsub(".sam", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
 @
 
-\subsubsection{Read mapping with \Rfunction{gsnap}}
+\subsubsection{Alignment with \Rfunction{gsnap}}
 Another R-based short read aligner is \Rfunction{gsnap} from the \Rpackage{gmapR} package. 
 The code sample below introduces how to run this aligner on multiple nodes of a compute cluster. 
 <<eval=FALSE>>=
