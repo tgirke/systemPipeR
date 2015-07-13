@@ -3,19 +3,31 @@
 ######################
 filterVars <- function(args, filter, varcaller, organism) {
 	if(class(args)!="SYSargs") stop("Argument 'args' needs to be of class SYSargs")
-	if(all(!c("gatk", "bcftools") %in% varcaller)) stop("Argument 'varcaller' needs to be assigned 'gatk' or 'bcftools'")
+	if(all(!c("gatk", "bcftools", "vartools") %in% varcaller)) stop("Argument 'varcaller' needs to be assigned 'gatk' or 'bcftools'")
 	if(length(filter)!=1 | !is.character(filter)) stop("Argument 'filter' needs to character vector of length 1")
 	for(i in seq(along=args)) {
 		vcf <- readVcf(infile1(args)[i], organism)
 		vr <- as(vcf, "VRanges")
 		if(varcaller=="gatk") {
+            ## Apply filter
 			vrfilt <- vr[eval(parse(text=filter)), ]
 		}
 		if(varcaller=="bcftools") {
 			vrsambcf <- vr
 			vr <- unlist(values(vr)$DP4)
 			vr <- matrix(vr, ncol=4, byrow=TRUE)
+            ## Fix missing depth info in VRanges generated from VCF of bcftools
+            totalDepth(vrsambcf) <- as.integer(values(vrsambcf)$DP)
+            refDepth(vrsambcf) <- rowSums(vr[,1:2])
+            altDepth(vrsambcf) <- rowSums(vr[,3:4])
+            ## Apply filter
 			vrfilt <- vrsambcf[eval(parse(text=filter)), ]
+		}
+		if(varcaller=="vartools") {
+            ## Apply filter
+			tmp <- as.data.frame(values(vr)); tmp[is.na(tmp)]<-0
+            values(vr) <- tmp
+            vrfilt <- vr[eval(parse(text=filter)), ]
 		}
 		vcffilt <- asVCF(vrfilt)
 		writeVcf(vcffilt, outfile1(args)[i], index = TRUE)

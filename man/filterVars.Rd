@@ -17,7 +17,7 @@ filterVars(args, filter, varcaller, organism)
 	Character vector of length one specifying the filter syntax that will be applied to the internally created \code{VRanges} object.
 }
   \item{varcaller}{
-	Character vector of length one specifying the variant caller used for generating the input VCFs. Currently, this argument can be assigned 'gatk' or 'bcftools'.
+	Character vector of length one specifying the variant caller used for generating the input VCFs. Currently, this argument can be assigned 'gatk', 'bcftools' or 'vartools'.
 }
   \item{organism}{
 	Character vector specifying the organism name of the reference genome.
