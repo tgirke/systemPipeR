@@ -132,12 +132,32 @@ system("bwa index -a bwtsw ./data/tair10.fasta")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
                   resourceList=resources)
+waitForJobs(reg)
 @
 Check whether all BAM files have been created
 <<eval=FALSE>>=
 file.exists(outpaths(args))
 @
 
+\subsection{Read mapping with \Rfunction{gsnap}}
+An alternative variant tolerant aligner is \Rfunction{gsnap} from the \Rpackage{gmapR} package. The following code shows how to run this aligner on multiple nodes of a comute cluster that uses Torque as scheduler.
+<<eval=FALSE>>=
+library(gmapR); library(BiocParallel); library(BatchJobs)
+gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr", create=TRUE)
+args <- systemArgs(sysma="gsnap.param", mytargets="targetsPE.txt")
+f <- function(x) {
+    library(gmapR); library(systemPipeR)
+    args <- systemArgs(sysma="gsnap.param", mytargets="targetsPE.txt")
+    gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr", create=FALSE)
+    p <- GsnapParam(genome=gmapGenome, unique_only=TRUE, molecule="DNA", max_mismatches=3)
+    o <- gsnap(input_a=infile1(args)[x], input_b=infile2(args)[x], params=p, output=outfile1(args)[x])
+}
+funs <- makeClusterFunctionsTorque("torque.tmpl")
+param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+register(param)
+d <- bplapply(seq(along=args), f)
+writeTargetsout(x=args, file="targets_gsnap_bam.txt")
+@
 \subsection{Read and alignment stats}
 The following generates a summary table of the number of reads in each sample and how many of them aligned to the reference.
 <<eval=FALSE>>=
@@ -154,7 +174,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 @
 
 \section{Variant calling}
-The following performs variant calling with \Robject{GATK} and \Robject{BCFtools} in parallel mode on a compute cluster \citep{McKenna2010-ql, Li2011-ll}. If a cluster is not available, the \Rfunction{runCommandline()} function can be used to run the variant calling for each sample sequentially on a single machine. Typically, the user would choose here one variant caller rather than running several ones.   
+The following performs variant calling with \Robject{GATK}, \Robject{BCFtools} and \Rpackage{VariantTools} in parallel mode on a compute cluster \citep{McKenna2010-ql, Li2011-ll}. If a cluster is not available, the \Rfunction{runCommandline()} function can be used to run the variant calling with \Robject{GATK} and \Robject{BCFtools} for each sample sequentially on a single machine, or \Rfunction{callVariants} in case of \Rpackage{VariantTools}. Typically, the user would choose here only one variant caller rather than running several ones.   
 \subsection{Variant calling with GATK}
 The following creates in the inital step a new targets file (\Robject{targets\_bam.txt}). The first column of this file gives the paths to the BAM files created in the alignment step. The new targets file and the parameter file \Robject{gatk.param} are used to create a new \Robject{SYSargs} instance for running GATK. Since GATK involves many processing steps, it is executed by a bash script \Robject{gatk\_run.sh} where the user can specify the detailed run parameters. All three files are expected to be located in the current working directory. Samples files for \Robject{gatk.param} and \Robject{gatk\_run.sh} are available in the subdirectory \Robject{./inst/extdata/} of the source file of the \Rpackage{systemPipeR} package. Alternatively, they can be downloaded directly from \href{https://github.com/tgirke/systemPipeR/tree/master/inst/extdata}{here}.
 <<eval=FALSE>>=
@@ -165,6 +185,8 @@ args <- systemArgs(sysma="gatk.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
                   resourceList=resources)
+waitForJobs(reg)
+writeTargetsout(x=args, file="targets_gatk.txt")
 @
 
 \subsection{Variant calling with BCFtools}
@@ -174,30 +196,63 @@ args <- systemArgs(sysma="sambcf.param", mytargets="targets_bam.txt")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", 1), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
                   resourceList=resources)
+waitForJobs(reg)
+writeTargetsout(x=args, file="targets_sambcf.txt")
+@
+
+\subsection{Variant calling with \Rpackage{VariantTools}}
+<<eval=FALSE>>=
+library(gmapR); library(BiocParallel); library(BatchJobs)
+args <- systemArgs(sysma="vartools.param", mytargets="targets_gsnap_bam.txt")
+f <- function(x) {
+    library(VariantTools); library(gmapR); library(systemPipeR)
+    args <- systemArgs(sysma="vartools.param", mytargets="targets_gsnap_bam.txt")
+    gmapGenome <- GmapGenome(systemPipeR::reference(args), directory="data", name="gmap_tair10chr", create=FALSE)
+    tally.param <- TallyVariantsParam(gmapGenome, high_base_quality = 23L, indels = TRUE)
+    bfl <- BamFileList(infile1(args)[x], index=character())
+    var <- callVariants(bfl[[1]], tally.param)
+    sampleNames(var) <- names(bfl)
+    writeVcf(asVCF(var), outfile1(args)[x], index = TRUE)
+}
+funs <- makeClusterFunctionsTorque("torque.tmpl")
+param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+register(param)
+d <- bplapply(seq(along=args), f)
+writeTargetsout(x=args, file="targets_vartools.txt")
 @
 
 \section{Filter variants}
-The function \Rfunction{filterVars} filters VCF files based on user definable quality parameters. It sequentially imports each VCF file into R, applies the filtering on an internally generated \Robject{VRanges} object and then writes the results to a new subsetted VCF file. The filter parameters are passed on to the corresponding argument as a character string. The function applies this filter to the internally generated \Robject{VRanges} object using the standard subsetting syntax for two dimensional objects such as: \Robject{vr[filter, ]}. The parameter files (\Robject{filter\_gatk.param} and \Robject{filter\_sambcf.param}), used in the filtering steps, define the paths to the input and output VCF files which are stored in new \Robject{SYSargs} instances.  
+The function \Rfunction{filterVars} filters VCF files based on user definable quality parameters. It sequentially imports each VCF file into R, applies the filtering on an internally generated \Robject{VRanges} object and then writes the results to a new subsetted VCF file. The filter parameters are passed on to the corresponding argument as a character string. The function applies this filter to the internally generated \Robject{VRanges} object using the standard subsetting syntax for two dimensional objects such as: \Robject{vr[filter, ]}. The parameter files (\Robject{filter\_gatk.param}, \Robject{filter\_sambcf.param} and \Robject{filter\_vartools.param}), used in the filtering steps, define the paths to the input and output VCF files which are stored in new \Robject{SYSargs} instances.  
 
-\subsection{Filter variants called by GATK}
+\subsection{Filter variants called by \Rpackage{GATK}}
 The below example filters for variants that are supported by $\ge$\texttt{x} reads and $\ge$80\% of them support the called variants. In addition, all variants need to pass $\ge$\texttt{x} of the soft filters recorded in the VCF files generated by GATK. Since the toy data used for this workflow is very small, the chosen settings are unreasonabley relaxed. A more reasonable filter setting is given in the line below (here commented out).  
 <<eval=FALSE>>=
 library(VariantAnnotation)
 args <- systemArgs(sysma="filter_gatk.param", mytargets="targets_gatk.txt")
-filter <- "totalDepth(vr) >= 2 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==4"
+filter <- "totalDepth(vr) >= 2 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))>=1"
 # filter <- "totalDepth(vr) >= 20 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==6"
 filterVars(args, filter, varcaller="gatk", organism="A. thaliana")
 writeTargetsout(x=args, file="targets_gatk_filtered.txt")
 @
 
-\subsection{Filter variants called by BCFtools}
-The following shows how to filter the VCF files generated by BCFtools using similar parameter settings as in the previous filtering of the GATK results.
+\subsection{Filter variants called by \Rpackage{BCFtools}}
+The following shows how to filter the VCF files generated by \Rpackage{BCFtools} using similar parameter settings as in the previous filtering of the GATK results.
 <<eval=FALSE>>=
 args <- systemArgs(sysma="filter_sambcf.param", mytargets="targets_sambcf.txt")
 filter <- "rowSums(vr) >= 2 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
 # filter <- "rowSums(vr) >= 20 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
 filterVars(args, filter, varcaller="bcftools", organism="A. thaliana")
 writeTargetsout(x=args, file="targets_sambcf_filtered.txt")
+@
+
+\subsection{Filter variants called by \Rpackage{VariantTools}}
+The following shows how to filter the VCF files generated by \Rpackage{VariantTools} using similar parameter settings as in the previous filtering of the GATK results.
+<<eval=FALSE>>=
+args <- systemArgs(sysma="filter_vartools.param", mytargets="targets_vartools.txt")
+filter <- "(values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 2 & (values(vr)$n.read.pos / (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 0.8)"
+# filter <- "(values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 20 & (values(vr)$n.read.pos / (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 0.8)"
+filterVars(args, filter, varcaller="vartools", organism="A. thaliana")
+writeTargetsout(x=args, file="targets_vartools_filtered.txt")
 @
 
 \section{Annotate filtered variants}
@@ -221,35 +276,56 @@ fa <- FaFile(systemPipeR::reference(args))
 variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana")
 @
 
+\subsection{Annotate filtered variants called by \Rpackage{VariantTools}}
+<<eval=FALSE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_vartools_filtered.txt")
+txdb <- loadDb("./data/tair10.sqlite")
+fa <- FaFile(systemPipeR::reference(args))
+variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana")
+@
+
 \section{Combine annotation results among samples}
 To simplify comparisons among samples, the \Rfunction{combineVarReports} function combines all variant annotation reports referenced in a \Robject{SYSargs} instance (here \Robject{args}). At the same time the function allows to consider only certain feature types of interest. For instance, the below setting \Rfunarg{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \Rfunarg{Consequence} column of the annotation reports. To omit filtering, one can use the setting \Rfunarg{filtercol="All"}
 
-\subsection{Combine results from GATK}
+\subsection{Combine results from \Rpackage{GATK}}
 <<eval=FALSE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
 combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
 write.table(combineDF, "./results/combineDF_nonsyn_gatk.xls", quote=FALSE, row.names=FALSE, sep="\t")
 @
 
-\subsection{Combine results from BCFtools}
+\subsection{Combine results from \Rpackage{BCFtools}}
 <<eval=FALSE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
 combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
 write.table(combineDF, "./results/combineDF_nonsyn_sambcf.xls", quote=FALSE, row.names=FALSE, sep="\t")
 @
 
+\subsection{Combine results from \Rpackage{VariantTools}}
+<<eval=FALSE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_vartools_filtered.txt")
+combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
+write.table(combineDF, "./results/combineDF_nonsyn_vartools.xls", quote=FALSE, row.names=FALSE, sep="\t")
+@
+
 \section{Summary statistics of variants}
 The function \Rfunction{varSummar} counts the number of variants for each feature type included in the anntation reports. 
-\subsection{Summary for GATK}
+\subsection{Summary for \Rpackage{GATK}}
 <<eval=FALSE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_gatk_filtered.txt")
 write.table(varSummary(args), "./results/variantStats_gatk.xls", quote=FALSE, col.names = NA, sep="\t")
 @
 
-\subsection{Summary for BCFtools}
+\subsection{Summary for \Rpackage{BCFtools}}
 <<eval=FALSE>>=
 args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
 write.table(varSummary(args), "./results/variantStats_sambcf.xls", quote=FALSE, col.names = NA, sep="\t")
+@
+
+\subsection{Summary for \Rpackage{VariantTools}}
+<<eval=FALSE>>=
+args <- systemArgs(sysma="annotate_vars.param", mytargets="targets_vartools_filtered.txt")
+write.table(varSummary(args), "./results/variantStats_vartools.xls", quote=FALSE, col.names = NA, sep="\t")
 @
 
 \section{Venn diagram of variants}
