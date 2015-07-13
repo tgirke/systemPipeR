@@ -1,5 +1,8 @@
 changelog
-	version 1.3.8 - 1.3.12
+	version 1.3.13
+		- Included gsnap and VariantTools examples in vignette
+	
+    version 1.3.8 - 1.3.12
 		- vignette updates 
 	
     version 1.3.7
