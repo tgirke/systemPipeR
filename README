@@ -1,4 +1,7 @@
 changelog
+	version 1.2.10
+		- fixed PE read support in preprocessReads
+
 	version 1.2.3 - 1.2.9
 		- vignette updates
 		- added sample Makefile
