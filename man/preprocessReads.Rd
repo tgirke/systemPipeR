@@ -4,11 +4,9 @@
 Run custom read preprocessing functions
 }
 \description{
-Function to run custom read preprocessing functions on FASTQ files specified in
-the \code{infile1} slot of \code{SYSargs} objects. The names of the corresponding 
-output FASTQ files are specified in the \code{outpaths} slot of the same \code{SYSargs} 
-object. The function uses the \code{FastqStreamer} function from the \code{ShortRead} 
-package to stream through large files in a memory-efficient manner.
+Applies custom read preprocessing functions to single-end or paired-end FASTQ 
+files. The function uses the \code{FastqStreamer} function from the \code{ShortRead} 
+package to stream through large files in a memory-efficient manner. 
 }
 \usage{
 preprocessReads(args, Fct, batchsize = 1e+05, overwrite = TRUE, ...)
@@ -43,8 +41,17 @@ Thomas Girke
 FastqStreamer 
 }
 \examples{
+## Preprocessing of single-end reads
 param <- system.file("extdata", "trim.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+args <- systemArgs(sysma=param, mytargets=targets)
+\dontrun{
+preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+}
+
+## Preprocessing of paired-end reads
+param <- system.file("extdata", "trimPE.param", package="systemPipeR")
+targets <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 args <- systemArgs(sysma=param, mytargets=targets)
 \dontrun{
 preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
