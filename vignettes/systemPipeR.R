@@ -59,6 +59,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 #  writeTargetsout(x=args, file="targets_trim.txt")
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  args <- systemArgs(sysma="trimPE.param", mytargets="targetsPE.txt")
 #  filterFct <- function(fq) {
 #  	filter1 <- nFilter(threshold=1) # Keeps only reads without Ns
 #  	filter2 <- polynFilter(threshold=20, nuc=c("A","T","G","C")) # Removes low complexity reads
