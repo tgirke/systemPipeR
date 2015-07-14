@@ -165,16 +165,15 @@ writeTargetsout(x=args, file="targets_trim.txt")
 
 The following example shows how one can design a custom read preprocessing function 
 using utilities provided by the \Rpackage{ShortRead} package, and then run it
-in batch mode with the \Rfunction{preprocessReads} function on paired-end reads.
+in batch mode with the \Rfunction{preprocessReads} function (here on paired-end reads).
 <<eval=FALSE>>=
 args <- systemArgs(sysma="trimPE.param", mytargets="targetsPE.txt")
-filterFct <- function(fq) {
-	filter1 <- nFilter(threshold=1) # Keeps only reads without Ns
-	filter2 <- polynFilter(threshold=20, nuc=c("A","T","G","C")) # Removes low complexity reads 
-	filter <- compose(filter1, filter2)
-	fq[filter(fq)]
+filterFct <- function(fq, cutoff=20, Nexceptions=0) {
+    qcount <- rowSums(as(quality(fq), "matrix") <= cutoff)
+    fq[qcount <= Nexceptions] # Retains reads where Phred scores are >= cutoff with N exceptions
 }
-preprocessReads(args=args, Fct="filterFct(fq)", batchsize=100000)
+preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)", batchsize=100000)
+writeTargetsout(x=args, file="targets_PEtrim.txt")
 @
 
 \subsection{FASTQ quality report}
