@@ -14,6 +14,11 @@ outfile1	path	./results/
 outfile1	remove	.gz
 outfile1	append	_trim.gz
 outfile1	outextension	_trim.gz
+outfile2	-o	<FileName2>
+outfile2	path	./results/
+outfile2	remove	.gz
+outfile2	append	_trim.gz
+outfile2	outextension	_trim.gz
 reference	NA	NA
 infile1	NA	<FileName1>
 infile1	path	NA
