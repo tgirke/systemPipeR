@@ -3,19 +3,19 @@
 ##############################################
 ## Define SYSargs class
 setClass("SYSargs", representation(targetsin="data.frame",	
-                                   targetsout="data.frame",
-		                   targetsheader="character",
-				   modules="character", 
-				   software="character",
-				   cores="numeric", 
-				   other="character",
-				   reference="character",
-				   results="character",
-			           infile1="character",
-				   infile2="character",
-				   outfile1="character",
-				   sysargs="character", 
-				   outpaths="character")
+					targetsout="data.frame",
+		            targetsheader="character",
+					modules="character", 
+					software="character",
+					cores="numeric", 
+					other="character",
+					reference="character",
+					results="character",
+					infile1="character",
+					infile2="character",
+					outfile1="character",
+					sysargs="character", 
+					outpaths="character")
 )
 
 ## Methods to return SYSargs components 
@@ -55,19 +55,19 @@ setMethod(f="outpaths", signature="SYSargs", definition=function(x) {return(x@ou
 setAs(from="list", to="SYSargs",  
         def=function(from) {
 		new("SYSargs", targetsin=from$targetsin,
-                               targetsout=from$targetsout,
-                               targetsheader=from$targetsheader,
-                               modules=from$modules, 
-			       software=from$software,
-			       cores=from$cores, 
-			       other=from$other,
-			       reference=from$reference,
-			       results=from$results,
-			       infile1=from$infile1, 
-			       infile2=from$infile2,
-			       outfile1=from$outfile1,
-			       sysargs=from$sysargs, 
-                               outpaths=from$outpaths)
+					targetsout=from$targetsout,
+					targetsheader=from$targetsheader,
+					modules=from$modules, 
+					software=from$software,
+					cores=from$cores, 
+					other=from$other,
+					reference=from$reference,
+					results=from$results,
+					infile1=from$infile1, 
+					infile2=from$infile2,
+					outfile1=from$outfile1,
+					sysargs=from$sysargs, 
+					outpaths=from$outpaths)
 })
 
 ## Define print behavior for SYSargs
@@ -78,14 +78,14 @@ setMethod(f="show", signature="SYSargs",
 
 ## Extend names() method
 setMethod(f="names", signature="SYSargs",
-    definition=function(x) {
-    	return(slotNames(x))
+		definition=function(x) {
+		return(slotNames(x))
 })
 
 ## Extend length() method
 setMethod(f="length", signature="SYSargs",
-    definition=function(x) {
-        return(length(x@infile1))
+	definition=function(x) {
+	return(length(x@infile1))
 })
 
 ## Behavior of "[" operator for SYSargs
@@ -205,7 +205,7 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	append <- arglist$outfile1[grep("append", arglist$outfile1)[1] +1]
 	outfile1 <- paste(outfile1, append, sep="")
 	argname <- arglist$outfile1[grep("<.*>", arglist$outfile1)[1] -1]
-	path <- arglist$outfile1[grep("path", arglist$outfile)[1] +1]
+	path <- arglist$outfile1[grep("path", arglist$outfile1)[1] +1]
 	path <- gsub("^\\./|^/|/$", "", path)
 	resultpath <- paste(getwd(), "/", path, "/", sep="")	
 	outfile1back <- paste(getwd(), "/", path, "/", outfile1, sep="")
@@ -213,15 +213,44 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 	outfile1 <- paste(argname, " ", getwd(), "/", path, "/", outfile1, sep="")
 	arglist[["outfile1"]] <- gsub("(^ {1,})|( ${1,})", "", outfile1)
 
-	## Generate arglist$outpaths
+	## Populate arglist$outfile2 if it exists (usually only required for PE trimming)
+	if("outfile2" %in% names(arglist)) {
+		outfile2 <- gsub("<|>", "", arglist$outfile2[grepl("^<.*>$", arglist$outfile2)][[1]])
+		outfile2 <- as.character(mytargets[,outfile2])
+		outfile2 <- gsub("^.*/", "", outfile2) 	
+		remove2 <- arglist$outfile2[grep("remove", arglist$outfile2)[1] +1]
+		outfile2 <- gsub(as.character(remove2), "", outfile2)
+		outfile2back <- outfile2
+		outpaths2 <- outfile2
+		outextension2 <- as.character(arglist$outfile2[grep("outextension", arglist$outfile2)+1])
+		append2 <- arglist$outfile2[grep("append", arglist$outfile2)[1] +1]
+		outfile2 <- paste(outfile2, append2, sep="")
+		argname2 <- arglist$outfile2[grep("<.*>", arglist$outfile2)[1] -1]
+		path2 <- arglist$outfile2[grep("path", arglist$outfile2)[1] +1]
+		path2 <- gsub("^\\./|^/|/$", "", path2)
+		resultpath2 <- paste(getwd(), "/", path2, "/", sep="")	
+		outfile2back <- paste(getwd(), "/", path2, "/", outfile2, sep="")
+		names(outfile2back) <- as.character(mytargets$SampleName)	
+		outfile2 <- paste(argname2, " ", getwd(), "/", path2, "/", outfile2, sep="")
+		arglist[["outfile2"]] <- gsub("(^ {1,})|( ${1,})", "", outfile2)
+	}
+
+    ## Generate arglist$outpaths
 	outpaths <- paste(getwd(), "/", path, "/", outpaths, outextension, sep="")
 	names(outpaths) <- as.character(mytargets$SampleName)	
 
 	## Generate targetsout
 	targetsout <- mytargetsorig
 	targetsout[,1] <- outpaths[as.character(targetsout$SampleName)]
-	colnames(targetsout)[1] <- "FileName"
-	targetsout <- targetsout[ ,!colnames(targetsout) %in% "FileName2"]
+	if("outfile2" %in% names(arglist)) { 
+		outpaths2 <- paste(getwd(), "/", path2, "/", outpaths2, outextension2, sep="")
+		names(outpaths2) <- as.character(mytargets$SampleName)	
+		targetsout[,2] <- outpaths2[as.character(targetsout$SampleName)]
+		arglist <- arglist[!names(arglist) %in% "outfile2"]
+	} else {
+		colnames(targetsout)[1] <- "FileName"
+		targetsout <- targetsout[ ,!colnames(targetsout) %in% "FileName2"]
+	}
 
 	## Collapse remaining components to single string vectors
 	remaining <- names(arglist)[!names(arglist) %in% c("outfile1", "infile1", "infile2", "outpaths")]
@@ -246,19 +275,19 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 		
 	## Construct SYSargs object from components
 	syslist <- list(targetsin=mytargetsorig,
-		        targetsout=targetsout,
-		        targetsheader=targetsheader,
-			modules=modules, 
-                        software=software, 
-                        cores=cores,
-			other=other,
-			reference=reference,
-			results=resultpath,
-			infile1=infile1back,
-			infile2=infile2back,
-			outfile1=outfile1back,
-                        sysargs=args, 
-                        outpaths=outpaths)
+					targetsout=targetsout,
+					targetsheader=targetsheader,
+					modules=modules, 
+					software=software, 
+					cores=cores,
+					other=other,
+					reference=reference,
+					results=resultpath,
+					infile1=infile1back,
+					infile2=infile2back,
+					outfile1=outfile1back,
+					sysargs=args, 
+					outpaths=outpaths)
 	sysargs <- as(syslist, "SYSargs")
 	if(type=="SYSargs") return(sysargs)
 }
