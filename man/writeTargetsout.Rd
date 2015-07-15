@@ -5,16 +5,16 @@ Write updated targets out to file
 }
 \description{
 Convenience write function for generating targets files with updated
-\code{FileName} columns containing the output paths to files generated
+\code{FileName} columns containing the paths to files generated
 by input/output processes. These processes can be commandline- or R-based software.
 Typically, the paths to the inputs are stored in the targets infile 
 (\code{targetsin(args)}) and the outputs are stored in the targets outfile 
-(\code{targetsout(args)}). Note: the function cannot overwrite 
+(\code{targetsout(args)}). Note: by default the function cannot overwrite 
 any existing files. If a file exists then the user has to explicitly 
-remove it first. 
+remove it or set \code{overwrite=TRUE}. 
 }
 \usage{
-writeTargetsout(x, file = "default", silent = FALSE, ...)
+writeTargetsout(x, file = "default", silent = FALSE, overwrite=FALSE, ...)
 }
 \arguments{
   \item{x}{
@@ -27,6 +27,9 @@ the output file will have the pattern 'targets_<software>.txt', where
 }
   \item{silent}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.
+}
+  \item{overwrite}{
+If set to \code{TRUE}, existing files of same name will be overwritten.
 }
   \item{\dots}{
 To pass on additional arguments.
