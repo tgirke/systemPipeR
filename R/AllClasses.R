@@ -300,7 +300,7 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 ## Additional utilities for SYSargs objects ##
 ##############################################
 ## Convenience write function for targetsout(args)
-writeTargetsout <- function(x, file="default", silent=FALSE, ...) {
+writeTargetsout <- function(x, file="default", silent=FALSE, overwrite=FALSE, ...) {
 	if(class(x)!="SYSargs") stop("x needs to be 'SYSargs' object")
 	targets <- targetsout(x)
 	if(file=="default") {
@@ -309,7 +309,7 @@ writeTargetsout <- function(x, file="default", silent=FALSE, ...) {
 	} else {
 		file <- file
 	}
-	if(file.exists(file)) stop(paste("I am not allowed to overwrite files; please delete existing file:", file))
+	if(file.exists(file) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
 	headerlines <- targetsheader(x)	
         targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
         writeLines(c(headerlines, targetslines), file, ...)
