@@ -140,7 +140,7 @@ file.exists(outpaths(args))
 @
 
 \subsection{Read mapping with \Rfunction{gsnap}}
-An alternative variant tolerant aligner is \Rfunction{gsnap} from the \Rpackage{gmapR} package. The following code shows how to run this aligner on multiple nodes of a comute cluster that uses Torque as scheduler.
+An alternative variant tolerant aligner is \Rfunction{gsnap} from the \Rpackage{gmapR} package \citep{Wu2010-iq}. The following code shows how to run this aligner on multiple nodes of a comute cluster that uses Torque as scheduler.
 <<eval=FALSE>>=
 library(gmapR); library(BiocParallel); library(BatchJobs)
 gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr", create=TRUE)

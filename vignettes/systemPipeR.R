@@ -59,13 +59,13 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 #  writeTargetsout(x=args, file="targets_trim.txt")
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  filterFct <- function(fq) {
-#  	filter1 <- nFilter(threshold=1) # Keeps only reads without Ns
-#  	filter2 <- polynFilter(threshold=20, nuc=c("A","T","G","C")) # Removes low complexity reads
-#  	filter <- compose(filter1, filter2)
-#  	fq[filter(fq)]
+#  args <- systemArgs(sysma="trimPE.param", mytargets="targetsPE.txt")
+#  filterFct <- function(fq, cutoff=20, Nexceptions=0) {
+#      qcount <- rowSums(as(quality(fq), "matrix") <= cutoff)
+#      fq[qcount <= Nexceptions] # Retains reads where Phred scores are >= cutoff with N exceptions
 #  }
-#  preprocessReads(args=args, Fct="filterFct(fq)", batchsize=100000)
+#  preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)", batchsize=100000)
+#  writeTargetsout(x=args, file="targets_PEtrim.txt")
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
