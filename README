@@ -1,5 +1,8 @@
 changelog
-	version 1.2.10 - 1.2.11
+	version 1.2.12
+		- fixed minor bug in runCommandline
+	
+    version 1.2.10 - 1.2.11
 		- fixed PE read support in preprocessReads
 
 	version 1.2.3 - 1.2.9

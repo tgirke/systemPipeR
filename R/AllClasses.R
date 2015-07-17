@@ -355,6 +355,8 @@ runCommandline <- function(args, runid="01", ...) {
 			if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
 				asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
 				unlink(outfile1(args)[i])
+			} else if(grepl("vcf$|bcf$", outpaths(args)[i])) {
+                dump <- "do nothing"
 			} else { # If output is unindexed *.bam file (e.g. Tophat2)
 				sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
         			indexBam(names(completed[i]))
