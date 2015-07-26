@@ -251,14 +251,14 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## write.table(assays(countDFmiR)$counts, "results/countDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 ## write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 
-## ----sample_tree_, eval=FALSE--------------------------------------------
-## library(ape)
-## rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
-## rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
-## rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
-## d <- cor(rpkmDFeByg, method="spearman")
-## hc <- hclust(as.dist(1-d))
-## plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
+## ----sample_tree_, eval=TRUE---------------------------------------------
+library(ape)
+rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
+rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
+rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
+d <- cor(rpkmDFeByg, method="spearman")
+hc <- hclust(as.dist(1-d))
+plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
 
 ## ----genVar_workflow_single, eval=FALSE----------------------------------
 ## setwd("../")
