@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 26 July, 2015</em></h4>
+<h4 class="date"><em>Last update: 27 July, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -77,8 +77,8 @@ document.addEventListener("DOMContentLoaded", function() {
 <li><a href="#create-symbolic-links-for-viewing-bam-files-in-igv"><span class="toc-section-number">3.6</span> Create symbolic links for viewing BAM files in IGV</a></li>
 <li><a href="#alternative-ngs-aligners"><span class="toc-section-number">3.7</span> Alternative NGS Aligners</a><ul>
 <li><a href="#alignment-with-bowtie2-e.g.-for-mirna-profiling"><span class="toc-section-number">3.7.1</span> Alignment with <em><code>Bowtie2</code></em> (<em>e.g.</em> for miRNA profiling)</a></li>
-<li><a href="#alignment-with-bwa-mem-e.g.-for-var-seq"><span class="toc-section-number">3.7.2</span> Alignment with BWA-MEM (<em>e.g.</em> for VAR-Seq)</a></li>
-<li><a href="#alignment-with-rsubread-e.g.-for-rna-seq"><span class="toc-section-number">3.7.3</span> Alignment with Rsubread (<em>e.g.</em> for RNA-Seq)</a></li>
+<li><a href="#alignment-with-bwa-mem-e.g.-for-var-seq"><span class="toc-section-number">3.7.2</span> Alignment with <em><code>BWA-MEM</code></em> (<em>e.g.</em> for VAR-Seq)</a></li>
+<li><a href="#alignment-with-rsubread-e.g.-for-rna-seq"><span class="toc-section-number">3.7.3</span> Alignment with <em><code>Rsubread</code></em> (<em>e.g.</em> for RNA-Seq)</a></li>
 <li><a href="#alignment-with-gsnap"><span class="toc-section-number">3.7.4</span> Alignment with <em><code>gsnap</code></em></a></li>
 </ul></li>
 <li><a href="#read-counting-for-mrna-profiling-experiments"><span class="toc-section-number">3.8</span> Read counting for mRNA profiling experiments</a></li>
@@ -491,7 +491,7 @@ waitForJobs(reg)</code></pre>
 </div>
 </div>
 <div id="alignment-with-bwa-mem-e.g.-for-var-seq" class="section level3">
-<h3><span class="header-section-number">3.7.2</span> Alignment with BWA-MEM (<em>e.g.</em> for VAR-Seq)</h3>
+<h3><span class="header-section-number">3.7.2</span> Alignment with <em><code>BWA-MEM</code></em> (<em>e.g.</em> for VAR-Seq)</h3>
 <p>The following example runs BWA-MEM as a single process without submitting it to a cluster.</p>
 <pre class="r"><code>args &lt;- systemArgs(sysma=&quot;param/bwa.param&quot;, mytargets=&quot;targets.txt&quot;)
 moduleload(modules(args)) # Skip if module system is not available
@@ -502,7 +502,7 @@ bampaths &lt;- runCommandline(args=args[1:2])</code></pre>
 </div>
 </div>
 <div id="alignment-with-rsubread-e.g.-for-rna-seq" class="section level3">
-<h3><span class="header-section-number">3.7.3</span> Alignment with Rsubread (<em>e.g.</em> for RNA-Seq)</h3>
+<h3><span class="header-section-number">3.7.3</span> Alignment with <em><code>Rsubread</code></em> (<em>e.g.</em> for RNA-Seq)</h3>
 <p>The following example shows how one can use within the  environment the R-based aligner  or other R-based functions that read from input files and write to output files.</p>
 <pre class="r"><code>library(Rsubread)
 args &lt;- systemArgs(sysma=&quot;param/rsubread.param&quot;, mytargets=&quot;targets.txt&quot;)
