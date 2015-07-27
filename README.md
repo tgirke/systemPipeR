@@ -17,8 +17,8 @@ To install the package, please use the _biocLite_ method as instructed
 
 
 #### Usage
-Instructions for running _systemPipeR_ are given in its
-[_vignette_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeR.pdf?raw=true) (manual).
+Instructions for running _systemPipeR_ are given in its main
+[_vignette_](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeR.html) (manual).
 The sample data set used in the vignette can be downloaded [_here_](http://biocluster.ucr.edu/~tgirke/projects/systemPipeR_test_data.zip).
 Alternatively, the sample data are available from the affiliated [_systemPipeRdata_](https://github.com/tgirke/systemPipeRdata) package.
 The expected format to define NGS samples (_e.g._ FASTQ files) and their
