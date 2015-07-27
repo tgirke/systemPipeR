@@ -204,7 +204,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-# Workflow overview for RNA-Seq
+# Workflow overview
 
 ## Define environment settings and samples
 
@@ -646,7 +646,54 @@ dev.off()
 <div align="right">[Back to Table of Contents]()</div>
 
 
-# Workflow overview for VAR-Seq 
+# Workflow sample for RNA-Seq 
+
+Load the RNA-Seq sample workflow into your current working directory.
+```{r genRna_workflow_single, eval=FALSE}
+setwd("../")
+genWorkenvir(workflow="rnaseq")
+setwd("rnaseq")
+```
+<div align="right">[Back to Table of Contents]()</div>
+
+## Run workflow
+Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
+
+Workflow includes following steps:
+
+1. Read preprocessing
+    + Quality filtering (trimming)
+    + FASTQ quality report
+2. Alignments: Tophat 2 (or any other RNA-Seq aligner)
+3. Alignment stats 
+4. Read counting 
+5. Sample-wise correlation analysis
+6. Analysis of differentially expressed genes (DEGs)
+7. GO term enrichment analysis
+8. Gene-wise clustering
+
+<div align="right">[Back to Table of Contents]()</div>
+
+# Workflow sample for ChIP-Seq 
+
+Load the ChIP-Seq sample workflow into your current working directory.
+```{r genChip_workflow_single, eval=FALSE}
+setwd("../")
+genWorkenvir(workflow="chipseq")
+setwd("chipseq")
+```
+<div align="right">[Back to Table of Contents]()</div>
+
+## Run workflow
+Next, run the chosen sample workflow _`systemPipeRNAseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
+
+Workflow includes following steps:
+
+To be completed...
+
+<div align="right">[Back to Table of Contents]()</div>
+
+# Workflow sample for VAR-Seq 
 
 ## VAR-Seq workflow for single machine
 
@@ -659,7 +706,7 @@ setwd("varseq")
 <div align="right">[Back to Table of Contents]()</div>
 
 ## Run workflow
-Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. Much more detailed information is available in _`systemPipeR`_'s overview and workflow vignettes available [here](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html).
+Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
 
 Workflow includes following steps:
 
