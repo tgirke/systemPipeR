@@ -47,7 +47,7 @@ suppressPackageStartupMessages({
 })
 ```
 
-Note: the most recent version of this tutorial can be found <a href="https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeRdata/blob/master/vignettes/systemPipeR_Presentation.html">here</a>.
+Note: the most recent version of this tutorial can be found <a href="https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeR.html">here</a>.
 
 # Introduction
 
