@@ -421,7 +421,7 @@ for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gs
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-### Alignment with _`gsnap`_
+### Alignment with _`gsnap`_ (_e.g._ for VAR-Seq and RNA-Seq)
 Another R-based short read aligner is _`gsnap`_ from the _`gmapR`_ package [@Wu2010-iq]. 
 The code sample below introduces how to run this aligner on multiple nodes of a compute cluster. 
 ```{r gsnap, eval=FALSE}
