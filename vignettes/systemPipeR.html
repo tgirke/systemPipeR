@@ -94,18 +94,20 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul></li>
 <li><a href="#clustering-and-heat-maps"><span class="toc-section-number">3.15</span> Clustering and heat maps</a></li>
 </ul></li>
-<li><a href="#workflow-sample-for-rna-seq"><span class="toc-section-number">4</span> Workflow sample for RNA-Seq</a><ul>
-<li><a href="#run-workflow"><span class="toc-section-number">4.1</span> Run workflow</a></li>
+<li><a href="#workflow-templates"><span class="toc-section-number">4</span> Workflow templates</a><ul>
+<li><a href="#workflow-sample-for-rna-seq"><span class="toc-section-number">4.1</span> Workflow sample for RNA-Seq</a><ul>
+<li><a href="#run-workflow"><span class="toc-section-number">4.1.1</span> Run workflow</a></li>
 </ul></li>
-<li><a href="#workflow-sample-for-chip-seq"><span class="toc-section-number">5</span> Workflow sample for ChIP-Seq</a><ul>
-<li><a href="#run-workflow-1"><span class="toc-section-number">5.1</span> Run workflow</a></li>
+<li><a href="#workflow-sample-for-chip-seq"><span class="toc-section-number">4.2</span> Workflow sample for ChIP-Seq</a><ul>
+<li><a href="#run-workflow-1"><span class="toc-section-number">4.2.1</span> Run workflow</a></li>
 </ul></li>
-<li><a href="#workflow-sample-for-var-seq"><span class="toc-section-number">6</span> Workflow sample for VAR-Seq</a><ul>
-<li><a href="#var-seq-workflow-for-single-machine"><span class="toc-section-number">6.1</span> VAR-Seq workflow for single machine</a></li>
-<li><a href="#run-workflow-2"><span class="toc-section-number">6.2</span> Run workflow</a></li>
-<li><a href="#var-seq-workflow-for-computer-cluster"><span class="toc-section-number">6.3</span> VAR-Seq workflow for computer cluster</a></li>
+<li><a href="#workflow-sample-for-var-seq"><span class="toc-section-number">4.3</span> Workflow sample for VAR-Seq</a><ul>
+<li><a href="#var-seq-workflow-for-single-machine"><span class="toc-section-number">4.3.1</span> VAR-Seq workflow for single machine</a></li>
+<li><a href="#run-workflow-2"><span class="toc-section-number">4.3.2</span> Run workflow</a></li>
+<li><a href="#var-seq-workflow-for-computer-cluster"><span class="toc-section-number">4.3.3</span> VAR-Seq workflow for computer cluster</a></li>
 </ul></li>
-<li><a href="#version-information"><span class="toc-section-number">7</span> Version information</a></li>
+</ul></li>
+<li><a href="#version-information"><span class="toc-section-number">5</span> Version information</a></li>
 </ul>
 </div>
 
@@ -769,8 +771,10 @@ dev.off()</code></pre>
 </div>
 </div>
 </div>
-<div id="workflow-sample-for-rna-seq" class="section level1">
-<h1><span class="header-section-number">4</span> Workflow sample for RNA-Seq</h1>
+<div id="workflow-templates" class="section level1">
+<h1><span class="header-section-number">4</span> Workflow templates</h1>
+<div id="workflow-sample-for-rna-seq" class="section level2">
+<h2><span class="header-section-number">4.1</span> Workflow sample for RNA-Seq</h2>
 <p>Load the RNA-Seq sample workflow into your current working directory.</p>
 <pre class="r"><code>setwd(&quot;../&quot;)
 genWorkenvir(workflow=&quot;rnaseq&quot;)
@@ -778,8 +782,8 @@ setwd(&quot;rnaseq&quot;)</code></pre>
 <div align="right">
 <a href>Back to Table of Contents</a>
 </div>
-<div id="run-workflow" class="section level2">
-<h2><span class="header-section-number">4.1</span> Run workflow</h2>
+<div id="run-workflow" class="section level3">
+<h3><span class="header-section-number">4.1.1</span> Run workflow</h3>
 <p>Next, run the chosen sample workflow <em><code>systemPipeRNAseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rnw">Rnw</a>) by executing from the command-line <em><code>make -B</code></em> within the <em><code>rnaseq</code></em> directory. Alternatively, one can run the code from the provided <em><code>*.Rnw</code></em> template file from within R interactively.</p>
 <p>Workflow includes following steps:</p>
 <ol style="list-style-type: decimal">
@@ -801,8 +805,8 @@ setwd(&quot;rnaseq&quot;)</code></pre>
 </div>
 </div>
 </div>
-<div id="workflow-sample-for-chip-seq" class="section level1">
-<h1><span class="header-section-number">5</span> Workflow sample for ChIP-Seq</h1>
+<div id="workflow-sample-for-chip-seq" class="section level2">
+<h2><span class="header-section-number">4.2</span> Workflow sample for ChIP-Seq</h2>
 <p>Load the ChIP-Seq sample workflow into your current working directory.</p>
 <pre class="r"><code>setwd(&quot;../&quot;)
 genWorkenvir(workflow=&quot;chipseq&quot;)
@@ -810,8 +814,8 @@ setwd(&quot;chipseq&quot;)</code></pre>
 <div align="right">
 <a href>Back to Table of Contents</a>
 </div>
-<div id="run-workflow-1" class="section level2">
-<h2><span class="header-section-number">5.1</span> Run workflow</h2>
+<div id="run-workflow-1" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> Run workflow</h3>
 <p>Next, run the chosen sample workflow <em><code>systemPipeRNAseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rnw">Rnw</a>) by executing from the command-line <em><code>make -B</code></em> within the <em><code>rnaseq</code></em> directory. Alternatively, one can run the code from the provided <em><code>*.Rnw</code></em> template file from within R interactively.</p>
 <p>Workflow includes following steps:</p>
 <p>To be completed…</p>
@@ -820,10 +824,10 @@ setwd(&quot;chipseq&quot;)</code></pre>
 </div>
 </div>
 </div>
-<div id="workflow-sample-for-var-seq" class="section level1">
-<h1><span class="header-section-number">6</span> Workflow sample for VAR-Seq</h1>
-<div id="var-seq-workflow-for-single-machine" class="section level2">
-<h2><span class="header-section-number">6.1</span> VAR-Seq workflow for single machine</h2>
+<div id="workflow-sample-for-var-seq" class="section level2">
+<h2><span class="header-section-number">4.3</span> Workflow sample for VAR-Seq</h2>
+<div id="var-seq-workflow-for-single-machine" class="section level3">
+<h3><span class="header-section-number">4.3.1</span> VAR-Seq workflow for single machine</h3>
 <p>Load the VAR-Seq sample workflow into your current working directory.</p>
 <pre class="r"><code>setwd(&quot;../&quot;)
 genWorkenvir(workflow=&quot;varseq&quot;)
@@ -832,8 +836,8 @@ setwd(&quot;varseq&quot;)</code></pre>
 <a href>Back to Table of Contents</a>
 </div>
 </div>
-<div id="run-workflow-2" class="section level2">
-<h2><span class="header-section-number">6.2</span> Run workflow</h2>
+<div id="run-workflow-2" class="section level3">
+<h3><span class="header-section-number">4.3.2</span> Run workflow</h3>
 <p>Next, run the chosen sample workflow <em><code>systemPipeVARseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rnw">Rnw</a>) by executing from the command-line <em><code>make -B</code></em> within the <em><code>varseq</code></em> directory. Alternatively, one can run the code from the provided <em><code>*.Rnw</code></em> template file from within R interactively.</p>
 <p>Workflow includes following steps:</p>
 <ol style="list-style-type: decimal">
@@ -854,16 +858,17 @@ setwd(&quot;varseq&quot;)</code></pre>
 <a href>Back to Table of Contents</a>
 </div>
 </div>
-<div id="var-seq-workflow-for-computer-cluster" class="section level2">
-<h2><span class="header-section-number">6.3</span> VAR-Seq workflow for computer cluster</h2>
+<div id="var-seq-workflow-for-computer-cluster" class="section level3">
+<h3><span class="header-section-number">4.3.3</span> VAR-Seq workflow for computer cluster</h3>
 <p>The workflow template provided for this step is called <em><code>systemPipeVARseq.Rnw</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rnw">Rnw</a>). It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Torque as scheduler.</p>
 <div align="right">
 <a href>Back to Table of Contents</a>
 </div>
 </div>
 </div>
+</div>
 <div id="version-information" class="section level1">
-<h1><span class="header-section-number">7</span> Version information</h1>
+<h1><span class="header-section-number">5</span> Version information</h1>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.2.1 (2015-06-18)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
