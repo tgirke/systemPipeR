@@ -95,13 +95,13 @@ document.addEventListener("DOMContentLoaded", function() {
 <li><a href="#clustering-and-heat-maps"><span class="toc-section-number">3.15</span> Clustering and heat maps</a></li>
 </ul></li>
 <li><a href="#workflow-templates"><span class="toc-section-number">4</span> Workflow templates</a><ul>
-<li><a href="#workflow-sample-for-rna-seq"><span class="toc-section-number">4.1</span> Workflow sample for RNA-Seq</a><ul>
+<li><a href="#rna-seq-sample"><span class="toc-section-number">4.1</span> RNA-Seq sample</a><ul>
 <li><a href="#run-workflow"><span class="toc-section-number">4.1.1</span> Run workflow</a></li>
 </ul></li>
-<li><a href="#workflow-sample-for-chip-seq"><span class="toc-section-number">4.2</span> Workflow sample for ChIP-Seq</a><ul>
+<li><a href="#chip-seq-sample"><span class="toc-section-number">4.2</span> ChIP-Seq sample</a><ul>
 <li><a href="#run-workflow-1"><span class="toc-section-number">4.2.1</span> Run workflow</a></li>
 </ul></li>
-<li><a href="#workflow-sample-for-var-seq"><span class="toc-section-number">4.3</span> Workflow sample for VAR-Seq</a><ul>
+<li><a href="#var-seq-sample"><span class="toc-section-number">4.3</span> VAR-Seq sample</a><ul>
 <li><a href="#var-seq-workflow-for-single-machine"><span class="toc-section-number">4.3.1</span> VAR-Seq workflow for single machine</a></li>
 <li><a href="#run-workflow-2"><span class="toc-section-number">4.3.2</span> Run workflow</a></li>
 <li><a href="#var-seq-workflow-for-computer-cluster"><span class="toc-section-number">4.3.3</span> VAR-Seq workflow for computer cluster</a></li>
@@ -773,10 +773,10 @@ dev.off()</code></pre>
 </div>
 <div id="workflow-templates" class="section level1">
 <h1><span class="header-section-number">4</span> Workflow templates</h1>
-<div id="workflow-sample-for-rna-seq" class="section level2">
-<h2><span class="header-section-number">4.1</span> Workflow sample for RNA-Seq</h2>
+<div id="rna-seq-sample" class="section level2">
+<h2><span class="header-section-number">4.1</span> RNA-Seq sample</h2>
 <p>Load the RNA-Seq sample workflow into your current working directory.</p>
-<pre class="r"><code>setwd(&quot;../&quot;)
+<pre class="r"><code>library(systemPipeRdata)
 genWorkenvir(workflow=&quot;rnaseq&quot;)
 setwd(&quot;rnaseq&quot;)</code></pre>
 <div align="right">
@@ -805,10 +805,10 @@ setwd(&quot;rnaseq&quot;)</code></pre>
 </div>
 </div>
 </div>
-<div id="workflow-sample-for-chip-seq" class="section level2">
-<h2><span class="header-section-number">4.2</span> Workflow sample for ChIP-Seq</h2>
+<div id="chip-seq-sample" class="section level2">
+<h2><span class="header-section-number">4.2</span> ChIP-Seq sample</h2>
 <p>Load the ChIP-Seq sample workflow into your current working directory.</p>
-<pre class="r"><code>setwd(&quot;../&quot;)
+<pre class="r"><code>library(systemPipeRdata)
 genWorkenvir(workflow=&quot;chipseq&quot;)
 setwd(&quot;chipseq&quot;)</code></pre>
 <div align="right">
@@ -824,12 +824,12 @@ setwd(&quot;chipseq&quot;)</code></pre>
 </div>
 </div>
 </div>
-<div id="workflow-sample-for-var-seq" class="section level2">
-<h2><span class="header-section-number">4.3</span> Workflow sample for VAR-Seq</h2>
+<div id="var-seq-sample" class="section level2">
+<h2><span class="header-section-number">4.3</span> VAR-Seq sample</h2>
 <div id="var-seq-workflow-for-single-machine" class="section level3">
 <h3><span class="header-section-number">4.3.1</span> VAR-Seq workflow for single machine</h3>
 <p>Load the VAR-Seq sample workflow into your current working directory.</p>
-<pre class="r"><code>setwd(&quot;../&quot;)
+<pre class="r"><code>library(systemPipeRdata)
 genWorkenvir(workflow=&quot;varseq&quot;)
 setwd(&quot;varseq&quot;)</code></pre>
 <div align="right">

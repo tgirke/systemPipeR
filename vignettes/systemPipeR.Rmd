@@ -647,11 +647,11 @@ dev.off()
 
 # Workflow templates
 
-## Workflow sample for RNA-Seq 
+## RNA-Seq sample
 
 Load the RNA-Seq sample workflow into your current working directory.
 ```{r genRna_workflow_single, eval=FALSE}
-setwd("../")
+library(systemPipeRdata)
 genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
 ```
@@ -675,11 +675,11 @@ Workflow includes following steps:
 
 <div align="right">[Back to Table of Contents]()</div>
 
-## Workflow sample for ChIP-Seq 
+## ChIP-Seq sample
 
 Load the ChIP-Seq sample workflow into your current working directory.
 ```{r genChip_workflow_single, eval=FALSE}
-setwd("../")
+library(systemPipeRdata)
 genWorkenvir(workflow="chipseq")
 setwd("chipseq")
 ```
@@ -694,13 +694,13 @@ To be completed...
 
 <div align="right">[Back to Table of Contents]()</div>
 
-## Workflow sample for VAR-Seq 
+## VAR-Seq sample 
 
 ### VAR-Seq workflow for single machine
 
 Load the VAR-Seq sample workflow into your current working directory.
 ```{r genVar_workflow_single, eval=FALSE}
-setwd("../")
+library(systemPipeRdata)
 genWorkenvir(workflow="varseq")
 setwd("varseq")
 ```
