@@ -16,6 +16,7 @@ suppressPackageStartupMessages({
     library(ggplot2)
     library(GenomicAlignments)
     library(ShortRead)
+    library(ape)
 })
 
 ## ----install, eval=FALSE-------------------------------------------------
@@ -252,13 +253,39 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 
 ## ----sample_tree_, eval=TRUE---------------------------------------------
-library(ape)
+library(ape,  warn.conflicts=FALSE)
 rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
 rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
 rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
 d <- cor(rpkmDFeByg, method="spearman")
 hc <- hclust(as.dist(1-d))
 plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
+
+## ----edger_wrapper, eval=TRUE--------------------------------------------
+targets <- read.delim(targetspath, comment="#")
+cmp <- readComp(file=targetspath, format="matrix", delim="-")
+cmp[[1]]
+countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+countDFeByg <- read.delim(countDFeBygpath, row.names=1)
+edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
+
+## ----edger_deg_counts, eval=TRUE-----------------------------------------
+DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
+
+## ----edger_deg_stats, eval=TRUE------------------------------------------
+names(DEG_list)
+DEG_list$Summary[1:4,]
+
+## ----deseq2_wrapper, eval=TRUE-------------------------------------------
+degseqDF <- run_DESeq2(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE)
+
+## ----deseq2_deg_counts, eval=TRUE----------------------------------------
+DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
+
+## ----vennplot, eval=TRUE-------------------------------------------------
+vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
+vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
+vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
 
 ## ----genVar_workflow_single, eval=FALSE----------------------------------
 ## setwd("../")
