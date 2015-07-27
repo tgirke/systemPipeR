@@ -329,17 +329,17 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ## dev.off()
 
 ## ----genRna_workflow_single, eval=FALSE----------------------------------
-## setwd("../")
+## library(systemPipeRdata)
 ## genWorkenvir(workflow="rnaseq")
 ## setwd("rnaseq")
 
 ## ----genChip_workflow_single, eval=FALSE---------------------------------
-## setwd("../")
+## library(systemPipeRdata)
 ## genWorkenvir(workflow="chipseq")
 ## setwd("chipseq")
 
 ## ----genVar_workflow_single, eval=FALSE----------------------------------
-## setwd("../")
+## library(systemPipeRdata)
 ## genWorkenvir(workflow="varseq")
 ## setwd("varseq")
 
