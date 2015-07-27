@@ -676,7 +676,8 @@ Workflow includes following steps:
 <div align="right">[Back to Table of Contents]()</div>
 
 ## VAR-Seq workflow for computer cluster (demo)
-This demonstration will run the above VAR-Seq workflow in parallel on multiple computer nodes of a HPC system using Torque and Maui as scheduler and load balancing system. The workflow template provided for this step is called _`systemPipeVARseq.Rnw`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rnw)) .
+The workflow template provided for this step is called _`systemPipeVARseq.Rnw`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rnw)).
+It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Torque as scheduler. 
 
 <div align="right">[Back to Table of Contents]()</div>
 
