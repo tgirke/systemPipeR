@@ -328,6 +328,16 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ## pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
 ## dev.off()
 
+## ----genRna_workflow_single, eval=FALSE----------------------------------
+## setwd("../")
+## genWorkenvir(workflow="rnaseq")
+## setwd("rnaseq")
+
+## ----genChip_workflow_single, eval=FALSE---------------------------------
+## setwd("../")
+## genWorkenvir(workflow="chipseq")
+## setwd("chipseq")
+
 ## ----genVar_workflow_single, eval=FALSE----------------------------------
 ## setwd("../")
 ## genWorkenvir(workflow="varseq")
