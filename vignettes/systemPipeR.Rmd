@@ -398,7 +398,7 @@ waitForJobs(reg)
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-### Alignment with BWA-MEM (_e.g._ for VAR-Seq)
+### Alignment with _`BWA-MEM`_ (_e.g._ for VAR-Seq)
 The following example runs BWA-MEM as a single process without submitting it to a cluster.
 ```{r bwamem_cluster, eval=FALSE}
 args <- systemArgs(sysma="param/bwa.param", mytargets="targets.txt")
@@ -408,7 +408,7 @@ bampaths <- runCommandline(args=args[1:2])
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-### Alignment with Rsubread (_e.g._ for RNA-Seq)
+### Alignment with _`Rsubread`_ (_e.g._ for RNA-Seq)
 The following example shows how one can use within the \Rpackage{systemPipeR} environment the R-based 
 aligner \Rpackage{Rsubread} or other R-based functions that read from input files and write to output files.
 ```{r rsubread, eval=FALSE}
