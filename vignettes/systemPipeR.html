@@ -550,8 +550,7 @@ d &lt;- bplapply(seq(along=args), f)</code></pre>
 <div id="read-counting-for-mrna-profiling-experiments" class="section level2">
 <h2><span class="header-section-number">3.8</span> Read counting for mRNA profiling experiments</h2>
 <p>Create <em><code>txdb</code></em> (needs to be done only once)</p>
-<pre class="r"><code>library(gmapR); library(BiocParallel); library(BatchJobs)
-library(GenomicFeatures)
+<pre class="r"><code>library(GenomicFeatures)
 txdb &lt;- makeTxDbFromGFF(file=&quot;data/tair10.gff&quot;, format=&quot;gff&quot;, dataSource=&quot;TAIR&quot;, organism=&quot;A. thaliana&quot;)
 saveDb(txdb, file=&quot;./data/tair10.sqlite&quot;)</code></pre>
 <div align="right">

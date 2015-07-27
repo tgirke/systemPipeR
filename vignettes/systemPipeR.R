@@ -206,7 +206,6 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## d <- bplapply(seq(along=args), f)
 
 ## ----create_txdb, eval=FALSE---------------------------------------------
-## library(gmapR); library(BiocParallel); library(BatchJobs)
 ## library(GenomicFeatures)
 ## txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="A. thaliana")
 ## saveDb(txdb, file="./data/tair10.sqlite")
