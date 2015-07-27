@@ -1,4 +1,7 @@
 changelog
+	version 1.2.13
+		- vignette updates
+	
 	version 1.2.12
 		- fixed minor bug in runCommandline
 	
