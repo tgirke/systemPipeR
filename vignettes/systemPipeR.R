@@ -287,6 +287,39 @@ vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
 vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
 vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
 
+## ----get_go_biomart, eval=FALSE------------------------------------------
+## library("biomaRt")
+## listMarts() # To choose BioMart database
+## m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m)
+## m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
+## listAttributes(m) # Choose data types you want to download
+## go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
+## go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
+## dir.create("./data/GO")
+## write.table(go, "data/GO/GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
+## catdb <- makeCATdb(myfile="data/GO/GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=NULL)
+## save(catdb, file="data/GO/catdb.RData")
+
+## ----go_enrichment, eval=FALSE-------------------------------------------
+## load("data/GO/catdb.RData")
+## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
+## up_down <- DEG_list$UporDown; names(up_down) <- paste(names(up_down), "_up_down", sep="")
+## up <- DEG_list$Up; names(up) <- paste(names(up), "_up", sep="")
+## down <- DEG_list$Down; names(down) <- paste(names(down), "_down", sep="")
+## DEGlist <- c(up_down, up, down)
+## DEGlist <- DEGlist[sapply(DEGlist, length) > 0]
+## BatchResult <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="all", id_type="gene", CLSZ=2, cutoff=0.9, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+## library("biomaRt"); m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
+## goslimvec <- as.character(getBM(attributes=c("goslim_goa_accession"), mart=m)[,1])
+## BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim", id_type="gene", myslimv=goslimvec, CLSZ=10, cutoff=0.01, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+
+## ----plot_go_enrichment, eval=FALSE--------------------------------------
+## gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
+## gos <- BatchResultslim
+## pdf("GOslimbarplotMF.pdf", height=8, width=10); goBarplot(gos, gocat="MF"); dev.off()
+## goBarplot(gos, gocat="BP")
+## goBarplot(gos, gocat="CC")
+
 ## ----genVar_workflow_single, eval=FALSE----------------------------------
 ## setwd("../")
 ## genWorkenvir(workflow="varseq")
