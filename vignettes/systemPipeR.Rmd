@@ -445,7 +445,6 @@ d <- bplapply(seq(along=args), f)
 ## Read counting for mRNA profiling experiments
 Create _`txdb`_ (needs to be done only once)
 ```{r create_txdb, eval=FALSE}
-library(gmapR); library(BiocParallel); library(BatchJobs)
 library(GenomicFeatures)
 txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="A. thaliana")
 saveDb(txdb, file="./data/tair10.sqlite")
