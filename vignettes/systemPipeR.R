@@ -320,6 +320,14 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ## goBarplot(gos, gocat="BP")
 ## goBarplot(gos, gocat="CC")
 
+## ----hierarchical_clustering, eval=FALSE---------------------------------
+## library(pheatmap)
+## geneids <- unique(as.character(unlist(DEG_list[[1]])))
+## y <- rpkmDFeByg[geneids, ]
+## pdf("heatmap1.pdf")
+## pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
+## dev.off()
+
 ## ----genVar_workflow_single, eval=FALSE----------------------------------
 ## setwd("../")
 ## genWorkenvir(workflow="varseq")
