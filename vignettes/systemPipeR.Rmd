@@ -645,8 +645,9 @@ dev.off()
 
 <div align="right">[Back to Table of Contents]()</div>
 
+# Workflow templates
 
-# Workflow sample for RNA-Seq 
+## Workflow sample for RNA-Seq 
 
 Load the RNA-Seq sample workflow into your current working directory.
 ```{r genRna_workflow_single, eval=FALSE}
@@ -656,7 +657,7 @@ setwd("rnaseq")
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-## Run workflow
+### Run workflow
 Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
 
 Workflow includes following steps:
@@ -674,7 +675,7 @@ Workflow includes following steps:
 
 <div align="right">[Back to Table of Contents]()</div>
 
-# Workflow sample for ChIP-Seq 
+## Workflow sample for ChIP-Seq 
 
 Load the ChIP-Seq sample workflow into your current working directory.
 ```{r genChip_workflow_single, eval=FALSE}
@@ -684,7 +685,7 @@ setwd("chipseq")
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-## Run workflow
+### Run workflow
 Next, run the chosen sample workflow _`systemPipeRNAseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
 
 Workflow includes following steps:
@@ -693,9 +694,9 @@ To be completed...
 
 <div align="right">[Back to Table of Contents]()</div>
 
-# Workflow sample for VAR-Seq 
+## Workflow sample for VAR-Seq 
 
-## VAR-Seq workflow for single machine
+### VAR-Seq workflow for single machine
 
 Load the VAR-Seq sample workflow into your current working directory.
 ```{r genVar_workflow_single, eval=FALSE}
@@ -705,7 +706,7 @@ setwd("varseq")
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-## Run workflow
+### Run workflow
 Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
 
 Workflow includes following steps:
@@ -723,7 +724,7 @@ Workflow includes following steps:
 `*`not evaluated because required software is not available on all systems.
 <div align="right">[Back to Table of Contents]()</div>
 
-## VAR-Seq workflow for computer cluster
+### VAR-Seq workflow for computer cluster
 The workflow template provided for this step is called _`systemPipeVARseq.Rnw`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rnw)).
 It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Torque as scheduler. 
 
