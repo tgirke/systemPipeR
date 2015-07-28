@@ -1,6 +1,7 @@
 changelog
-	version 1.2.13
+	version 1.2.13 - 1.2.14
 		- several vignette updates
+        - fix for missing systemPipeRdata
 	
 	version 1.2.12
 		- fixed minor bug in runCommandline
