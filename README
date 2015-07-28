@@ -1,7 +1,8 @@
 changelog
-	version 1.3.17
+	version 1.3.17 - 1.3.18
 	    - Converted main vignette to R Markdown
         - Instructions to download sample data via systemPipeRdata
+        - Fix for missing systemPipeRdata on build system
 
 	version 1.3.16
 	    - Fixed minor bug in runCommandline
