@@ -7,12 +7,18 @@ output:
     toc: true
     toc_depth: 3
     fig_caption: yes
-vignette: >
-  % \VignetteIndexEntry{Bioconductor for High Throughput Sequence Analysis}
-  % \VignetteEngine{knitr::rmarkdown}
+
 fontsize: 14pt
 bibliography: bibtex.bib
 ---
+<!--
+%% \VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Overview Vignette}
+%% \VignetteDepends{rjson, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap}
+%% \VignetteKeywords{compute cluster, pipeline, reports}
+%% \VignettePackage{systemPipeR}
+-->
+
 <!---
 - Compile from command-line
 echo "rmarkdown::render('systemPipeR.Rmd')" | R -slave; R CMD Stangle systemPipeR.Rmd
@@ -142,7 +148,7 @@ Users can change this structure as needed, but need to adjust the code in their 
 
 The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample comparisons of an analysis workflow. The following shows the format of a sample _`targets`_ file provided by this package. In a target file with a single type of input files, here FASTQ files of single end (SE) reads, the first three columns are mandatory including their column names, while it is four mandatory columns for FASTQ files for PE reads. All subsequent columns are optional and any number of additional columns can be added as needed.
 
-### Structure of _`targets`_ file for single end (PE) samples
+### Structure of _`targets`_ file for single end (SE) samples
 ```{r targetsSE, eval=TRUE}
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")

@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 28 July, 2015</em></h4>
+<h4 class="date"><em>Last update: 29 July, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <li><a href="#loading-package-and-documentation"><span class="toc-section-number">2.2</span> Loading package and documentation</a></li>
 <li><a href="#load-sample-data-and-workflow-templates"><span class="toc-section-number">2.3</span> Load sample data and workflow templates</a></li>
 <li><a href="#structure-of-targets-file"><span class="toc-section-number">2.4</span> Structure of <em><code>targets</code></em> file</a><ul>
-<li><a href="#structure-of-targets-file-for-single-end-pe-samples"><span class="toc-section-number">2.4.1</span> Structure of <em><code>targets</code></em> file for single end (PE) samples</a></li>
+<li><a href="#structure-of-targets-file-for-single-end-se-samples"><span class="toc-section-number">2.4.1</span> Structure of <em><code>targets</code></em> file for single end (SE) samples</a></li>
 <li><a href="#structure-of-targets-file-for-paired-end-pe-samples"><span class="toc-section-number">2.4.2</span> Structure of <em><code>targets</code></em> file for paired end (PE) samples</a></li>
 <li><a href="#sample-comparisons"><span class="toc-section-number">2.4.3</span> Sample comparisons</a></li>
 </ul></li>
@@ -112,6 +112,13 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul>
 </div>
 
+<!--
+%% \VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{Overview Vignette}
+%% \VignetteDepends{rjson, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap}
+%% \VignetteKeywords{compute cluster, pipeline, reports}
+%% \VignettePackage{systemPipeR}
+-->
 <!---
 - Compile from command-line
 echo "rmarkdown::render('systemPipeR.Rmd')" | R -slave; R CMD Stangle systemPipeR.Rmd
@@ -236,8 +243,8 @@ setwd(&quot;rnaseq&quot;)</code></pre>
 <div id="structure-of-targets-file" class="section level2">
 <h2><span class="header-section-number">2.4</span> Structure of <em><code>targets</code></em> file</h2>
 <p>The <em><code>targets</code></em> file defines all input files (<em>e.g.</em> FASTQ, BAM, BCF) and sample comparisons of an analysis workflow. The following shows the format of a sample <em><code>targets</code></em> file provided by this package. In a target file with a single type of input files, here FASTQ files of single end (SE) reads, the first three columns are mandatory including their column names, while it is four mandatory columns for FASTQ files for PE reads. All subsequent columns are optional and any number of additional columns can be added as needed.</p>
-<div id="structure-of-targets-file-for-single-end-pe-samples" class="section level3">
-<h3><span class="header-section-number">2.4.1</span> Structure of <em><code>targets</code></em> file for single end (PE) samples</h3>
+<div id="structure-of-targets-file-for-single-end-se-samples" class="section level3">
+<h3><span class="header-section-number">2.4.1</span> Structure of <em><code>targets</code></em> file for single end (SE) samples</h3>
 <pre class="r"><code>library(systemPipeR)
 targetspath &lt;- system.file(&quot;extdata&quot;, &quot;targets.txt&quot;, package=&quot;systemPipeR&quot;)
 read.delim(targetspath, comment.char = &quot;#&quot;)</code></pre>
@@ -907,7 +914,7 @@ setwd(&quot;varseq&quot;)</code></pre>
 ## [46] locfit_1.5-9.1            munsell_0.4.2             cluster_2.0.3            
 ## [49] AnnotationDbi_1.31.17     lambda.r_1.1.7            futile.logger_1.4.1      
 ## [52] grid_3.2.1                rjson_0.2.15              AnnotationForge_1.11.15  
-## [55] bitops_1.0-6              base64enc_0.1-2           labeling_0.3             
+## [55] bitops_1.0-6              base64enc_0.1-3           labeling_0.3             
 ## [58] rmarkdown_0.7             gtable_0.1.2              codetools_0.2-14         
 ## [61] reshape2_1.4.1            gridExtra_2.0.0           knitr_1.10.5             
 ## [64] Hmisc_3.16-0              futile.options_1.0.0      stringi_0.5-5            

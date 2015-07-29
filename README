@@ -1,8 +1,9 @@
 changelog
-	version 1.3.17 - 1.3.18
+	version 1.3.17 - 1.3.19
 	    - Converted main vignette to R Markdown
         - Instructions to download sample data via systemPipeRdata
         - Fix for missing systemPipeRdata on build system
+        - Fix to get correct name of HTML page on Bioc page
 
 	version 1.3.16
 	    - Fixed minor bug in runCommandline
