@@ -121,6 +121,7 @@ genWorkenvir(workflow="varseq", mydirname=NULL)
 ### </b>
 setwd("varseq")
 ```
+<br></br>
 Command-line alternative for generating workflow environments
 ```{.sh generate_workenvir_from_shell, eval=FALSE}
 $ echo 'library(systemPipeRdata); 
@@ -130,6 +131,7 @@ $ echo 'library(systemPipeRdata);
 ## Run workflows 
 
 - Next, run from within R the chosen sample workflow by executing the code provided in the corresponding _`*.Rnw`_ template file (or corresponding _`*.Rmd`_ or _`*.R`_ versions).
+
 - Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:
 
 ```{.sh run_make, eval=FALSE}
