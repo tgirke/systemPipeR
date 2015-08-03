@@ -98,9 +98,9 @@ biocLite("systemPipeR")
 biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # github
 ```
 
-Load package
+Load packages
 ```{r load_systemPipeRdata, eval=FALSE}
-library(systemPipeR); library("systemPipeRdata") 
+library("systemPipeR"); library("systemPipeRdata") 
 ```
 
 Generate workflow template, _e.g._ "rnaseq", "varseq" or "chipseq"
