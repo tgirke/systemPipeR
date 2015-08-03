@@ -237,7 +237,7 @@ read.delim(targetspath, comment.char = &quot;#&quot;)[1:4,1:5]</pre>
 <pre class = 'prettyprint lang-r'><b>genWorkenvir(workflow=&quot;varseq&quot;, mydirname=NULL)
 </b>setwd(&quot;varseq&quot;)</pre>
 
-<p>Command-line alternative for generating workflow environments</p>
+<p><br></br> Command-line alternative for generating workflow environments</p>
 
 <pre class = 'prettyprint lang-sh'>$ echo &#39;library(systemPipeRdata); 
         genWorkenvir(workflow=&quot;varseq&quot;, mydirname=NULL)&#39; | R --slave</pre>
@@ -245,8 +245,8 @@ read.delim(targetspath, comment.char = &quot;#&quot;)[1:4,1:5]</pre>
 </article></slide><slide class=''><hgroup><h2>Run workflows</h2></hgroup><article  id="run-workflows">
 
 <ul>
-<li>Next, run from within R the chosen sample workflow by executing the code provided in the corresponding <em><code>*.Rnw</code></em> template file (or corresponding <em><code>*.Rmd</code></em> or <em><code>*.R</code></em> versions).</li>
-<li>Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:</li>
+<li><p>Next, run from within R the chosen sample workflow by executing the code provided in the corresponding <em><code>*.Rnw</code></em> template file (or corresponding <em><code>*.Rmd</code></em> or <em><code>*.R</code></em> versions).</p></li>
+<li><p>Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:</p></li>
 </ul>
 
 <pre class = 'prettyprint lang-sh'>$ make -B</pre>
