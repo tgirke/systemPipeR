@@ -169,9 +169,9 @@ echo "library(rmarkdown); render('systemPipeRslides.Rmd', ioslides_presentation(
 <p><br></br></p>
 
 <ul>
-<li><p>Each workflow step is controlled by a <em><code>SYSargs</code></em> object.</p></li>
-<li><p><em><code>SYSargs</code></em> instances are constructed from a <em><code>targets</code></em> file and a <em><code>param</code></em> file.</p></li>
-<li><p>Only input provided by user is first <em><code>targets</code></em> files. Subsequent <em><code>target</code></em> instances are created automatically.</p></li>
+<li><p>Workflow steps with input/output file operations are controlled by <em><code>SYSargs</code></em> objects.</p></li>
+<li><p>Each <em><code>SYSargs</code></em> instances are constructed from a <em><code>targets</code></em> file and a <em><code>param</code></em> file.</p></li>
+<li><p>Only first <em><code>targets</code></em> file needs to be provided by user. Subsequent <em><code>target</code></em> instances are created automatically.</p></li>
 <li><p>Any number of predefined or custom workflow steps are supported.</p></li>
 </ul>
 
