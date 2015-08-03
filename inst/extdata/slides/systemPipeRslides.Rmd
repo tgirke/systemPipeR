@@ -40,7 +40,7 @@ Outline
 
 ## Introduction 
 
--   [_systemPipeR_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) is an R package for building *end-to-end* analysis pipelines with automated report generation for next generation for NGS applications 
+-   [_systemPipeR_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) is an R package for building *end-to-end* analysis pipelines with automated report generation for next generation NGS applications [@Girke2014-oy].
 -   Important features:
     - Support for command-line software, such as NGS aligners, peak callers, variant callers, etc.
     - Runs on single machines and compute clusters with schedulers
@@ -58,9 +58,9 @@ Outline
 <img src="./images/SystemPipeR_Workflow.png" alt="Drawing" style="width: 800px;"/>
 </div><br></br>
 
-- Each workflow step is controlled by a _`SYSargs`_ object [@Girke2014-oy].
+- Each workflow step is controlled by a _`SYSargs`_ object.
 
-- _`SYSargs`_ instances are constructed from a _`targets`_ file and a _`param`_ file
+- _`SYSargs`_ instances are constructed from a _`targets`_ file and a _`param`_ file.
 
 - Only input provided by user is first _`targets`_ files. Subsequent _`target`_ instances are created automatically. 
 
@@ -117,7 +117,10 @@ $ echo 'library(systemPipeRdata);
 ## Run workflows {.smaller} 
 
 - Next, run from within R the chosen sample workflow by executing the code provided in the corresponding _`*.Rnw`_ template file (or corresponding _`*.Rmd`_ or _`*.R`_ versions).
-- Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line _`'make -B'`_. 
+- Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:
+```{.sh run_make, eval=FALSE}
+$ make -B
+```
 - Continue in [Overview Vignette](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html) 
 
 ## References

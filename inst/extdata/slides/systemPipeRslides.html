@@ -140,7 +140,7 @@ echo "library(rmarkdown); render('systemPipeRslides.Rmd', ioslides_presentation(
 </article></slide><slide class=''><hgroup><h2>Introduction</h2></hgroup><article  id="introduction">
 
 <ul>
-<li><a href='http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html' title=''><em>systemPipeR</em></a> is an R package for building <em>end-to-end</em> analysis pipelines with automated report generation for next generation for NGS applications</li>
+<li><a href='http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html' title=''><em>systemPipeR</em></a> is an R package for building <em>end-to-end</em> analysis pipelines with automated report generation for next generation NGS applications <span class="cite">(Girke 2014)</span>.</li>
 <li>Important features:
 
 <ul>
@@ -169,8 +169,8 @@ echo "library(rmarkdown); render('systemPipeRslides.Rmd', ioslides_presentation(
 <p><br></br></p>
 
 <ul>
-<li><p>Each workflow step is controlled by a <em><code>SYSargs</code></em> object <span class="cite">(Girke 2014)</span>.</p></li>
-<li><p><em><code>SYSargs</code></em> instances are constructed from a <em><code>targets</code></em> file and a <em><code>param</code></em> file</p></li>
+<li><p>Each workflow step is controlled by a <em><code>SYSargs</code></em> object.</p></li>
+<li><p><em><code>SYSargs</code></em> instances are constructed from a <em><code>targets</code></em> file and a <em><code>param</code></em> file.</p></li>
 <li><p>Only input provided by user is first <em><code>targets</code></em> files. Subsequent <em><code>target</code></em> instances are created automatically.</p></li>
 <li><p>Any number of predefined or custom workflow steps are supported.</p></li>
 </ul>
@@ -231,7 +231,12 @@ setwd(&quot;varseq&quot;)</pre>
 
 <ul>
 <li>Next, run from within R the chosen sample workflow by executing the code provided in the corresponding <em><code>*.Rnw</code></em> template file (or corresponding <em><code>*.Rmd</code></em> or <em><code>*.R</code></em> versions).</li>
-<li>Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line <em><code>&#39;make -B&#39;</code></em>.</li>
+<li>Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:</li>
+</ul>
+
+<pre class = 'prettyprint lang-sh'>$ make -B</pre>
+
+<ul>
 <li>Continue in <a href='http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html' title=''>Overview Vignette</a></li>
 </ul>
 
