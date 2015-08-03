@@ -94,6 +94,7 @@ Outline
 Install required packages
 ```{r install, eval=FALSE}
 source("http://bioconductor.org/biocLite.R") 
+biocLite("systemPipeRdata")
 biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # github
 ```
 
