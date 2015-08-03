@@ -3,14 +3,12 @@ title: "systemPipeR"
 author: "Author: Thomas Girke (thomas.girke@ucr.edu)"
 date: "July 22, 2015" 
 output:
-  beamer_presentation: default
   ioslides_presentation:
     keep_md: yes
     logo: logo.png
     toc: yes
     toc_depth: 2
     widescreen: yes
-  slidy_presentation: default
 subtitle: "NGS workflow and report generation environment" 
 bibliography: bibtex.bib
 ---
@@ -28,7 +26,7 @@ library(rmarkdown)
 render('systemPipeRslides.Rmd', ioslides_presentation(logo="logo.png"))
 
 - Compile from command-line
-echo "library(rmarkdown); render('systemPipeRslides.Rmd', ioslides_presentation(logo='logo.png'))" | R -slave
+echo "library(rmarkdown); library(knitr); render('systemPipeRslides.Rmd', ioslides_presentation(logo='logo.png')); knit('systemPipeRslides.Rmd', tangle=TRUE)" | R -slave
 -->
 
 Outline
@@ -99,15 +97,15 @@ biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # gi
 ```
 
 Load packages
-```{r load_systemPipeR_hidden, eval=TRUE, include=FALSE, messages=FALSE, warnings=FALSE}
+```{r load_systemPipeR_hidden, eval=TRUE, include=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
 library("systemPipeR"); library("systemPipeRdata")
 ```
-```{r load_systemPipeR_print, eval=FALSE, messages=FALSE, warnings=FALSE}
+```{r load_systemPipeR_print, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
 library("systemPipeR"); library("systemPipeRdata")
 ```
 
 Structure of _`targets`_ file
-```{r show_targets, eval=TRUE, messages=FALSE, warnings=FALSE}
+```{r show_targets, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:4,1:5]
 ```
@@ -115,7 +113,7 @@ read.delim(targetspath, comment.char = "#")[1:4,1:5]
 ## Workflow templates 
 
 Generate workflow template, _e.g._ "rnaseq", "varseq" or "chipseq"
-```{r generate_workenvir, eval=FALSE}
+```{r generate_workenvir, eval=FALSE, cache=TRUE}
 ### <b>
 genWorkenvir(workflow="varseq", mydirname=NULL)
 ### </b>
@@ -123,7 +121,7 @@ setwd("varseq")
 ```
 <br></br>
 Command-line alternative for generating workflow environments
-```{.sh generate_workenvir_from_shell, eval=FALSE}
+```{.sh generate_workenvir_from_shell, eval=FALSE, cache=TRUE}
 $ echo 'library(systemPipeRdata); 
         genWorkenvir(workflow="varseq", mydirname=NULL)' | R --slave
 ```
@@ -131,9 +129,7 @@ $ echo 'library(systemPipeRdata);
 ## Run workflows 
 
 - Next, run from within R the chosen sample workflow by executing the code provided in the corresponding _`*.Rnw`_ template file (or corresponding _`*.Rmd`_ or _`*.R`_ versions).
-
 - Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:
-
 ```{.sh run_make, eval=FALSE}
 $ make -B
 ```
