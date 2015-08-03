@@ -60,9 +60,9 @@ Outline
 
 - Workflow steps with input/output file operations are controlled by _`SYSargs`_ objects.
 
-- Each _`SYSargs`_ instances are constructed from a _`targets`_ file and a _`param`_ file.
+- Each _`SYSargs`_ instance is constructed from a _`targets`_ file and a _`param`_ file.
 
-- Only first _`targets`_ file needs to be provided by user. Subsequent _`target`_ instances are created automatically. 
+- Only input provided by user is first _`targets`_ file. Subsequent _`target`_ instances are created automatically. 
 
 - Any number of predefined or custom workflow steps are supported.
 
