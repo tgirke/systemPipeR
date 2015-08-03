@@ -11,9 +11,6 @@ complex sample sets and experimental designs is facilitated by a well-defined
 sample annotation infrastructure which improves reproducibility and
 user-friendliness of many typical analysis workflows in the NGS area.
 
-#### Slides
-+ [Overview Slide Show](https://htmlpreview.github.io/?https://raw.githubusercontent.com/tgirke/systemPipeR/master/inst/extdata/slides/systemPipeRslides.html)
-
 #### Installation 
 To install the package, please use the _biocLite_ method as instructed 
 [_here_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html).
@@ -41,4 +38,8 @@ corresponding PDFs of these report templates are linked here:
 [systemPipeChIPseq](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeChIPseq.pdf?raw=true)
 and
 [systemPipeVARseq](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeVARseq.pdf?raw=true).
+
+#### Slides
++ [Overview Slide Show](https://htmlpreview.github.io/?https://raw.githubusercontent.com/tgirke/systemPipeR/master/inst/extdata/slides/systemPipeRslides.html)
+
 
