@@ -1,8 +1,8 @@
 ## Parameter file for Tophat2
 ## Values in <...> reference column titles in targets file
 PairSet	Name	Value
-modules	NA	bowtie2/2.1.0
-modules	NA	tophat/2.0.8b
+modules	NA	bowtie2/2.2.5
+modules	NA	tophat/2.0.14
 software	NA	tophat
 cores	-p	4
 other	NA	-g 1 --segment-length 25 -i 30 -I 3000
