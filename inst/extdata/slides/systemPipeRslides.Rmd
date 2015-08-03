@@ -58,11 +58,11 @@ Outline
 <img src="./images/SystemPipeR_Workflow.png" alt="Drawing" style="width: 800px;"/>
 </div><br></br>
 
-- Each workflow step is controlled by a _`SYSargs`_ object.
+- Workflow steps with input/output file operations are controlled by _`SYSargs`_ objects.
 
-- _`SYSargs`_ instances are constructed from a _`targets`_ file and a _`param`_ file.
+- Each _`SYSargs`_ instances are constructed from a _`targets`_ file and a _`param`_ file.
 
-- Only input provided by user is first _`targets`_ files. Subsequent _`target`_ instances are created automatically. 
+- Only first _`targets`_ file needs to be provided by user. Subsequent _`target`_ instances are created automatically. 
 
 - Any number of predefined or custom workflow steps are supported.
 
