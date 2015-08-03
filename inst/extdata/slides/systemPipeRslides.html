@@ -124,7 +124,7 @@ library(rmarkdown)
 render('systemPipeRslides.Rmd', ioslides_presentation(logo="logo.png"))
 
 - Compile from command-line
-echo "library(rmarkdown); render('systemPipeRslides.Rmd', ioslides_presentation(logo='logo.png'))" | R -slave
+echo "library(rmarkdown); library(knitr); render('systemPipeRslides.Rmd', ioslides_presentation(logo='logo.png')); knit('systemPipeRslides.Rmd', tangle=TRUE)" | R -slave
 -->
 
 
@@ -245,8 +245,8 @@ read.delim(targetspath, comment.char = &quot;#&quot;)[1:4,1:5]</pre>
 </article></slide><slide class=''><hgroup><h2>Run workflows</h2></hgroup><article  id="run-workflows">
 
 <ul>
-<li><p>Next, run from within R the chosen sample workflow by executing the code provided in the corresponding <em><code>*.Rnw</code></em> template file (or corresponding <em><code>*.Rmd</code></em> or <em><code>*.R</code></em> versions).</p></li>
-<li><p>Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:</p></li>
+<li>Next, run from within R the chosen sample workflow by executing the code provided in the corresponding <em><code>*.Rnw</code></em> template file (or corresponding <em><code>*.Rmd</code></em> or <em><code>*.R</code></em> versions).</li>
+<li>Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:</li>
 </ul>
 
 <pre class = 'prettyprint lang-sh'>$ make -B</pre>
