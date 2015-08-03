@@ -1,0 +1,125 @@
+---
+title: "systemPipeR"
+author: "Author: Thomas Girke (thomas.girke@ucr.edu)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  beamer_presentation: default
+  ioslides_presentation:
+    keep_md: yes
+    logo: logo.png
+    toc: yes
+    toc_depth: 2
+    widescreen: yes
+  slidy_presentation: default
+subtitle: "NGS workflow and report generation environment" 
+bibliography: bibtex.bib
+---
+
+<!---
+- Latex to markdown conversion with pandoc
+  pandoc -s systemPipeRslides.tex -o systemPipeRslides.text
+
+- rmarkdown manuals/movies: 
+  http://rmarkdown.rstudio.com/ioslides_presentation_format.html
+	http://blog.rstudio.org/2014/06/18/r-markdown-v2/
+
+- Compile from R console like this
+library(rmarkdown)
+render('systemPipeRslides.Rmd', ioslides_presentation(logo="logo.png"))
+
+- Compile from command-line
+echo "library(rmarkdown); render('systemPipeRslides.Rmd', ioslides_presentation(logo='logo.png'))" | R -slave
+-->
+
+Outline
+=======================
+- <div class="white">__Introduction__</div>
+- Design
+- Motivation
+- Getting started
+
+## Introduction 
+
+-   [_systemPipeR_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) is an R package for building *end-to-end* analysis pipelines with automated report generation for next generation for NGS applications 
+-   Important features:
+    - Support for command-line software, such as NGS aligners, peak callers, variant callers, etc.
+    - Runs on single machines and compute clusters with schedulers
+    - Uniform sample handling and annotation
+
+Outline
+=======================
+- Introduction
+- <div class="white">__Design__</div>
+- Motivation
+- Getting started
+
+## Workflow design in _`systemPipeR`_ {.flexbox .vcenter .smaller}
+
+<img src="./images/SystemPipeR_Workflow.png" alt="Drawing" style="width: 800px;"/>
+</div><br></br>
+
+- Each workflow step is controlled by a _`SYSargs`_ object [@Girke2014-oy].
+
+- _`SYSargs`_ instances are constructed from a _`targets`_ file and a _`param`_ file
+
+- Only input provided by user is first _`targets`_ files. Subsequent _`target`_ instances are created automatically. 
+
+- Any number of predefined or custom workflow steps are supported.
+
+Outline
+=======================
+- Introduction
+- Design
+- <div class="white">__Motivation__</div>
+- Getting started
+
+## Motivation and advantages 
+
+- Facilitates design of complex NGS workflows involving multiple R/Bioconductor packages [@Huber2015-ag].
+- Makes NGS analysis with Bioconductor utilities more accessible to new users
+- Simplifies usage of command-line software from within R
+- Reduces complexity of using compute clusters for R and command-line software
+- Accelerates runtime of workflows via parallelzation on computer systems with mutiple CPU cores and/or multiple compute nodes
+- Automates generation of analysis reports to improve reproducibility
+
+Outline
+=======================
+- Introduction
+- Design
+- Motivation
+- <div class="white">__Getting Started__</div>
+
+## Getting started {.smaller}
+
+Install required packages
+```{r install, eval=FALSE}
+source("http://bioconductor.org/biocLite.R") 
+biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # github
+```
+
+Load package
+```{r load_systemPipeRdata, eval=FALSE}
+library(systemPipeR); library("systemPipeRdata") 
+```
+
+Generate workflow template, _e.g._ "rnaseq", "varseq" or "chipseq"
+```{r generate_workenvir, eval=FALSE}
+genWorkenvir(workflow="varseq", mydirname=NULL)
+setwd("varseq")
+```
+
+Alternative way from command-line
+```{.sh generate_workenvir_from_shell, eval=FALSE}
+$ echo 'library(systemPipeRdata); 
+        genWorkenvir(workflow="varseq", mydirname=NULL)' | R --slave
+```
+
+## Run workflows {.smaller} 
+
+- Next, run from within R the chosen sample workflow by executing the code provided in the corresponding _`*.Rnw`_ template file (or corresponding _`*.Rmd`_ or _`*.R`_ versions).
+- Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line _`'make -B'`_. 
+- Continue in [Overview Vignette](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html) 
+
+## References
+
+
