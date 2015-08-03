@@ -207,7 +207,7 @@ echo "library(rmarkdown); render('systemPipeRslides.Rmd', ioslides_presentation(
 <strong>Getting Started</strong></div></li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Getting started</h2></hgroup><article  id="getting-started" class="smaller">
+</article></slide><slide class=''><hgroup><h2>Install and load packages</h2></hgroup><article  id="install-and-load-packages" class="smaller">
 
 <p>Install required packages</p>
 
@@ -217,19 +217,32 @@ biocLite(&quot;tgirke/systemPipeRdata&quot;, build_vignettes=TRUE, dependencies=
 
 <p>Load packages</p>
 
-<pre class = 'prettyprint lang-r'>library(&quot;systemPipeR&quot;); library(&quot;systemPipeRdata&quot;) </pre>
+<pre class = 'prettyprint lang-r'>library(&quot;systemPipeR&quot;); library(&quot;systemPipeRdata&quot;)</pre>
+
+<p>Structure of <em><code>targets</code></em> file</p>
+
+<pre class = 'prettyprint lang-r'>targetspath &lt;- system.file(&quot;extdata&quot;, &quot;targets.txt&quot;, package=&quot;systemPipeR&quot;)
+read.delim(targetspath, comment.char = &quot;#&quot;)[1:4,1:5]</pre>
+
+<pre >##                   FileName SampleName Factor SampleLong Experiment
+## 1 ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A          1
+## 2 ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B          1
+## 3 ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A          1
+## 4 ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B          1</pre>
+
+</article></slide><slide class=''><hgroup><h2>Workflow templates</h2></hgroup><article  id="workflow-templates">
 
 <p>Generate workflow template, <em>e.g.</em> &quot;rnaseq&quot;, &quot;varseq&quot; or &quot;chipseq&quot;</p>
 
 <pre class = 'prettyprint lang-r'><b>genWorkenvir(workflow=&quot;varseq&quot;, mydirname=NULL)
 </b>setwd(&quot;varseq&quot;)</pre>
 
-<p>Alternative way from command-line</p>
+<p>Command-line alternative for generating workflow environments</p>
 
 <pre class = 'prettyprint lang-sh'>$ echo &#39;library(systemPipeRdata); 
         genWorkenvir(workflow=&quot;varseq&quot;, mydirname=NULL)&#39; | R --slave</pre>
 
-</article></slide><slide class=''><hgroup><h2>Run workflows</h2></hgroup><article  id="run-workflows" class="smaller">
+</article></slide><slide class=''><hgroup><h2>Run workflows</h2></hgroup><article  id="run-workflows">
 
 <ul>
 <li>Next, run from within R the chosen sample workflow by executing the code provided in the corresponding <em><code>*.Rnw</code></em> template file (or corresponding <em><code>*.Rmd</code></em> or <em><code>*.R</code></em> versions).</li>
@@ -238,12 +251,19 @@ biocLite(&quot;tgirke/systemPipeRdata&quot;, build_vignettes=TRUE, dependencies=
 
 <pre class = 'prettyprint lang-sh'>$ make -B</pre>
 
-<ul>
-<li>Continue in <a href='http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html' title=''>Overview Vignette</a></li>
-</ul>
+</article></slide><slide class=''><hgroup><h2>Continue here</h2></hgroup><article  id="continue-here">
+
+<br></br><br></br><br></br>
+
+<center>
+
+<a href='http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html' title=''>Overview Vignette</a>
+
+</center>
+
 
 <div class="references">
-</article></slide><slide class=''><hgroup><h2>References</h2></hgroup><article  id="references" class="unnumbered">
+</article></slide><slide class=''><hgroup><h2>References</h2></hgroup><article  id="references" class="unnumbered smaller">
 
 <div id="ref-Girke2014-oy">
 <p>Girke, Thomas. 2014. “systemPipeR: NGS Workflow and Report Generation Environment.” UC Riverside. <a href='https://github.com/tgirke/systemPipeR' title=''>https://github.com/tgirke/systemPipeR</a>.</p></div>
