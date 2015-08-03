@@ -42,7 +42,7 @@ Outline
 
 -   [_systemPipeR_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) is an R package for building *end-to-end* analysis pipelines with automated report generation for next generation NGS applications [@Girke2014-oy].
 -   Important features:
-    - Support for command-line software, such as NGS aligners, peak callers, variant callers, etc.
+    - Support for R and command-line software, such as NGS aligners, peak callers, variant callers, etc.
     - Runs on single machines and compute clusters with schedulers
     - Uniform sample handling and annotation
 
