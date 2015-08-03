@@ -94,7 +94,7 @@ Outline
 Install required packages
 ```{r install, eval=FALSE}
 source("http://bioconductor.org/biocLite.R") 
-biocLite("systemPipeRdata")
+biocLite("systemPipeR")
 biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # github
 ```
 
@@ -105,7 +105,9 @@ library(systemPipeR); library("systemPipeRdata")
 
 Generate workflow template, _e.g._ "rnaseq", "varseq" or "chipseq"
 ```{r generate_workenvir, eval=FALSE}
+### <b>
 genWorkenvir(workflow="varseq", mydirname=NULL)
+### </b>
 setwd("varseq")
 ```
 
