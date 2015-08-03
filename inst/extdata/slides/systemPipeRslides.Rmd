@@ -89,7 +89,7 @@ Outline
 - Motivation
 - <div class="white">__Getting Started__</div>
 
-## Getting started {.smaller}
+## Install and load packages {.smaller}
 
 Install required packages
 ```{r install, eval=FALSE}
@@ -99,9 +99,20 @@ biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # gi
 ```
 
 Load packages
-```{r load_systemPipeRdata, eval=FALSE}
-library("systemPipeR"); library("systemPipeRdata") 
+```{r load_systemPipeR_hidden, eval=TRUE, include=FALSE, messages=FALSE, warnings=FALSE}
+library("systemPipeR"); library("systemPipeRdata")
 ```
+```{r load_systemPipeR_print, eval=FALSE, messages=FALSE, warnings=FALSE}
+library("systemPipeR"); library("systemPipeRdata")
+```
+
+Structure of _`targets`_ file
+```{r show_targets, eval=TRUE, messages=FALSE, warnings=FALSE}
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+read.delim(targetspath, comment.char = "#")[1:4,1:5]
+```
+
+## Workflow templates 
 
 Generate workflow template, _e.g._ "rnaseq", "varseq" or "chipseq"
 ```{r generate_workenvir, eval=FALSE}
@@ -110,22 +121,27 @@ genWorkenvir(workflow="varseq", mydirname=NULL)
 ### </b>
 setwd("varseq")
 ```
-
-Alternative way from command-line
+Command-line alternative for generating workflow environments
 ```{.sh generate_workenvir_from_shell, eval=FALSE}
 $ echo 'library(systemPipeRdata); 
         genWorkenvir(workflow="varseq", mydirname=NULL)' | R --slave
 ```
 
-## Run workflows {.smaller} 
+## Run workflows 
 
 - Next, run from within R the chosen sample workflow by executing the code provided in the corresponding _`*.Rnw`_ template file (or corresponding _`*.Rmd`_ or _`*.R`_ versions).
 - Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:
+
 ```{.sh run_make, eval=FALSE}
 $ make -B
 ```
-- Continue in [Overview Vignette](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html) 
 
-## References
+## Continue here  
+<br></br><br></br><br></br>
+<center>
+[Overview Vignette](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html) 
+</center>
+
+## References {.smaller}
 
 
