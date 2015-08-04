@@ -150,7 +150,7 @@ Outline
 
 ## Under development
 
-Workflow templates for
+Workflow templates for:
 
 - miRNA-Seq
 - BS-Seq
