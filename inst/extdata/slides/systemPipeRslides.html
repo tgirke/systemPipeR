@@ -134,6 +134,7 @@ echo "library(rmarkdown); library(knitr); render('systemPipeRslides.Rmd', ioslid
 <strong>Introduction</strong></div></li>
 <li>Motivation</li>
 <li>Design</li>
+<li>Templates</li>
 <li>Getting started</li>
 </ul>
 
@@ -157,10 +158,26 @@ echo "library(rmarkdown); library(knitr); render('systemPipeRslides.Rmd', ioslid
 <li><div class="white">
 <strong>Motivation</strong></div></li>
 <li>Design</li>
+<li>Templates</li>
 <li>Getting started</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Motivation and advantages</h2></hgroup><article  id="motivation-and-advantages">
+</article></slide><slide class=''><hgroup><h2>Motivation</h2></hgroup><article  id="motivation">
+
+<ul>
+<li>Many NGS applications share the same or very similar analysis routines such as:
+
+<ul>
+<li>Read QC and preprocessing</li>
+<li>Alignments</li>
+<li>Quantification</li>
+<li>Feature annotation routines</li>
+<li>Enrichment analysis</li>
+</ul></li>
+<li>Thus, a common workflow environment has many advantages in imporving efficiency, standardization and reproducibility</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Advantages of <em><code>systemPipeR</code></em></h2></hgroup><article  id="advantages-of-systempiper">
 
 <ul>
 <li>Facilitates design of complex NGS workflows involving multiple R/Bioconductor packages <span class="cite">(Huber et al. 2015)</span>.</li>
@@ -178,6 +195,7 @@ echo "library(rmarkdown); library(knitr); render('systemPipeRslides.Rmd', ioslid
 <li>Motivation</li>
 <li><div class="white">
 <strong>Design</strong></div></li>
+<li>Templates</li>
 <li>Getting started</li>
 </ul>
 
@@ -196,12 +214,97 @@ echo "library(rmarkdown); library(knitr); render('systemPipeRslides.Rmd', ioslid
 <li><p>Any number of predefined or custom workflow steps are supported.</p></li>
 </ul>
 
-</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Outline</h2></hgroup><article  id="outline-3">
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Outline``</h2></hgroup><article  id="outline-3">
 
 <ul>
 <li>Introduction</li>
 <li>Motivation</li>
 <li>Design</li>
+<li><div class="white">
+<strong>Templates</strong></div></li>
+<li>Getting started</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2><em><code>systemPipeRdata</code></em>: template workflows</h2></hgroup><article  id="systempiperdata-template-workflows">
+
+<ul>
+<li>Helper package to generate with a single command NGS workflow templates</li>
+<li>Includes sample data for testing</li>
+<li>Workflows can be changed and/or extended by user</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>RNA-Seq workflow template</h2></hgroup><article  id="rna-seq-workflow-template">
+
+<ol>
+<li>Read preprocessing
+
+<ul>
+<li>Quality filtering (trimming)</li>
+<li>FASTQ quality report</li>
+</ul></li>
+<li>Alignments: <em><code>rsubread</code></em>, <em><code>Bowtie2/Tophat2</code></em></li>
+<li>Alignment statistics</li>
+<li>Read counting per annotation</li>
+<li>Sample-wise correlation analysis</li>
+<li>DEG analysis with <em><code>edgeR</code></em> or <em><code>DESeq2</code></em></li>
+<li>Enrichment analysis of GO terms or other annotation types</li>
+<li>Gene-wise cluster analysis</li>
+</ol>
+
+</article></slide><slide class=''><hgroup><h2>VAR-Seq workflow template</h2></hgroup><article  id="var-seq-workflow-template">
+
+<ol>
+<li>Read preprocessing
+
+<ul>
+<li>Quality filtering (trimming)</li>
+<li>FASTQ quality report</li>
+</ul></li>
+<li>Alignments: <em><code>gsnap</code></em>, <em><code>bwa</code></em></li>
+<li>Alignment statistics</li>
+<li>Variant calling: <em><code>VariantTools</code></em>, <em><code>GATK</code></em>, <em><code>BCFtools</code></em></li>
+<li>Variant filtering: <em><code>VariantTools</code></em> and <em><code>VariantAnnotation</code></em></li>
+<li>Variant annotation: <em><code>VariantAnnotation</code></em></li>
+<li>Combine results from many samples</li>
+<li>Summary statistics of samples</li>
+</ol>
+
+</article></slide><slide class=''><hgroup><h2>ChIP-Seq workflow template</h2></hgroup><article  id="chip-seq-workflow-template">
+
+<ol>
+<li>Read preprocessing
+
+<ul>
+<li>Quality filtering and/or trimming</li>
+<li>FASTQ quality report</li>
+</ul></li>
+<li>Alignments: <em><code>rsubread</code></em>, <em><code>Bowtie2</code></em></li>
+<li>Alignment statistics</li>
+<li>Genome-wide coverage statistics</li>
+<li>Peak calling</li>
+<li>Peak annotation with genomic context</li>
+<li>Differential binding analysis</li>
+<li>Enrichment analysis of GO terms or other annotation types</li>
+<li>Motif analysis</li>
+</ol>
+
+</article></slide><slide class=''><hgroup><h2>Under development</h2></hgroup><article  id="under-development">
+
+<p>Workflow templates for</p>
+
+<ul>
+<li>miRNA-Seq</li>
+<li>BS-Seq</li>
+<li>BS-Seq</li>
+</ul>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Outline</h2></hgroup><article  id="outline-4">
+
+<ul>
+<li>Introduction</li>
+<li>Motivation</li>
+<li>Design</li>
+<li>Templates</li>
 <li><div class="white">
 <strong>Getting Started</strong></div></li>
 </ul>
