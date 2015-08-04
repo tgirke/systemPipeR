@@ -202,17 +202,18 @@ targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:3,1:4]
 ```
 
-## _`SYSargs`_ combines _`targets`_ and _`param`_ {.smaller}
+## _`SYSargs`_: _`targets`_ & _`param`_ {.smaller}
+
+_`SYSargs`_ instances are constructed from a _`targets`_ file and a _`param`_ file. The  _`param`_ file contains the settings for running command-line software.
 ```{r sysargs_instance, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
-args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
-args
+(args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath)))
 ```
 Slots and accessor functions have the same names 
 ```{r sysargs_names, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
 names(args)[c(5,8,13)]
 ```
-Autogenerates command-line arguments for a given software on first sample, here for _`Tophat2`_.
+Return command-line arguments for given software, here _`Tophat2`_ for 1st sample.
 ```{r sysargs_args, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
 sysargs(args)[1]
 ```
