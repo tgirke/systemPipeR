@@ -94,7 +94,7 @@ Outline
 
 - Any number of predefined or custom workflow steps are supported.
 
-Outline``
+Outline
 =======================
 - Introduction
 - Motivation
