@@ -180,23 +180,57 @@ library("systemPipeR"); library("systemPipeRdata")
 ```{r load_systemPipeR_print, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
 library("systemPipeR")
 library("systemPipeRdata")
+```
+Access help
+```{r accessing_help, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
 library(help="systemPipeR")
 vignette("systemPipeR")
 ```
 
-## Targets file organizes samples
+## Targets file organizes samples {.smaller}
 
-Structure of _`targets`_ file single-end (SE) library
+Structure of _`targets`_ file for single-end (SE) library
 ```{r show_targetsSE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:4,1:5]
 ```
 
-Structure of _`targets`_ file paired-end (PE) library
+Structure of _`targets`_ file for paired-end (PE) library
 ```{r show_targetsPE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-read.delim(targetspath, comment.char = "#")[1:4,1:5]
+read.delim(targetspath, comment.char = "#")[1:4,1:4]
 ```
+
+## _`SYSargs`_ object {.smaller}
+```{r sysargs_instance, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
+parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
+args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
+args
+```
+Slots and accessor functions have the same names 
+```{r sysargs_names, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
+names(args)[c(5,8,13)]
+```
+Autogenerates command-line arguments for a given software on first sample, here for _`Tophat2`_.
+```{r sysargs_args, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
+sysargs(args)[1]
+```
+<pre>## tophat -p 4 -o SRR446027_1.fastq.tophat tair10.fasta SRR446027_1.fastq .SRR446027_2.fastq</pre>
+
+
+## Run on single machines or clusters
+
+Run command-line tool, here _`Tophat2`_, on single machine. Command-line tool needs to be installed for this.
+```{r run_args_single, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
+runCommandline(args)
+```
+
+Submit command-line or R processes to a computer cluster with a queueing system.
+```{r run_args_cluster, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
+clusterRun(args, ...) 
+```
+The last step requires several resource allocation arguments. For details please visit the main manual [here](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html#alignment-with-tophat2).
+
 
 ## Workflow templates 
 

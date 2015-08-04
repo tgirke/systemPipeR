@@ -9,6 +9,8 @@ library("systemPipeR"); library("systemPipeRdata")
 ## ----load_systemPipeR_print, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----
 ## library("systemPipeR")
 ## library("systemPipeRdata")
+
+## ----accessing_help, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----
 ## library(help="systemPipeR")
 ## vignette("systemPipeR")
 
@@ -18,7 +20,24 @@ read.delim(targetspath, comment.char = "#")[1:4,1:5]
 
 ## ----show_targetsPE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-read.delim(targetspath, comment.char = "#")[1:4,1:5]
+read.delim(targetspath, comment.char = "#")[1:4,1:4]
+
+## ----sysargs_instance, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
+parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
+args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
+args
+
+## ----sysargs_names, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
+names(args)[c(5,8,13)]
+
+## ----sysargs_args, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----
+## sysargs(args)[1]
+
+## ----run_args_single, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----
+## runCommandline(args)
+
+## ----run_args_cluster, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----
+## clusterRun(args, ...)
 
 ## ----generate_workenvir, eval=FALSE, cache=TRUE--------------------------
 ## ### <b>
