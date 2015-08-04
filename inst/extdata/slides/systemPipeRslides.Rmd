@@ -55,7 +55,7 @@ Outline
 
 ## Motivation
 
-- Many NGS applications share several analysis routines: 
+- Many NGS applications share several analysis routines, such as: 
     - Read QC and preprocessing
     - Alignments
     - Quantification
