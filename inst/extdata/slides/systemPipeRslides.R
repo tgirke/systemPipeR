@@ -24,10 +24,12 @@ read.delim(targetspath, comment.char = "#")[1:4,1:5]
 ##         genWorkenvir(workflow="varseq", mydirname=NULL)' | R --slave
 
 ## ----workflow_template_structure, eval=FALSE-----------------------------
+## ### <b>
 ## workflow_name/            # *.Rnw/*.Rmd scripts, targets file, etc.
 ##                 param/    # parameter files for command-line software
 ##                 data/     # inputs e.g. FASTQ, reference, annotations
 ##                 results/  # analysis result files
+## ### </b>
 
 ## ----run_make, eval=FALSE, engine="sh"-----------------------------------
 ## $ make -B
