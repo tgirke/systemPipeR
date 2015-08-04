@@ -152,9 +152,9 @@ Outline
 
 Workflow templates for:
 
-- miRNA-Seq
-- Ribo-Seq
-- BS-Seq
+    - miRNA-Seq
+    - Ribo-Seq
+    - BS-Seq
 
 Outline
 =======================
