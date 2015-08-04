@@ -7,10 +7,17 @@
 library("systemPipeR"); library("systemPipeRdata")
 
 ## ----load_systemPipeR_print, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----
-## library("systemPipeR"); library("systemPipeRdata")
+## library("systemPipeR")
+## library("systemPipeRdata")
+## library(help="systemPipeR")
+## vignette("systemPipeR")
 
-## ----show_targets, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
+## ----show_targetsSE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+read.delim(targetspath, comment.char = "#")[1:4,1:5]
+
+## ----show_targetsPE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:4,1:5]
 
 ## ----generate_workenvir, eval=FALSE, cache=TRUE--------------------------
