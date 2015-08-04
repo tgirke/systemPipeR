@@ -140,7 +140,7 @@ workflow_name/            # any name
 
 ## Run workflows 
 
-- Next, run from within R the chosen sample workflow by executing the code provided in the corresponding _`*.Rnw`_ template file (_`*.Rmd`_ or _`*.R`_ versions).
+- Next, run from within R the chosen sample workflow by executing the code provided in the corresponding _`*.Rnw`_ template file (or _`*.Rmd`_ or _`*.R`_ versions).
 - Alternatively, one can run an entire workflow from start to finish with a single command by executing from the command-line:
 ```{.sh run_make, eval=FALSE}
 $ make -B
