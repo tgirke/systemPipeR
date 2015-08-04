@@ -148,7 +148,7 @@ Outline
 8. Enrichment analysis of GO terms or other annotation types
 9. Motif analysis
 
-## Under development
+## Coming soon
 
 Workflow templates for:
 
