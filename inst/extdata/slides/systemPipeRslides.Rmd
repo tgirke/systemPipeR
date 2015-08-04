@@ -229,7 +229,7 @@ Submit command-line or R processes to a computer cluster with a queueing system.
 ```{r run_args_cluster, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
 clusterRun(args, ...) 
 ```
-The last step requires several resource allocation arguments. For details please visit the main manual [here](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html#alignment-with-tophat2).
+The last step requires additional resource allocation arguments. For details please visit the main manual [here](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html#alignment-with-tophat2).
 
 
 ## Workflow templates 
