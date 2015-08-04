@@ -24,8 +24,7 @@ read.delim(targetspath, comment.char = "#")[1:3,1:4]
 
 ## ----sysargs_instance, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
-args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
-args
+(args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath)))
 
 ## ----sysargs_names, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
 names(args)[c(5,8,13)]

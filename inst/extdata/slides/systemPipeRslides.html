@@ -354,11 +354,12 @@ read.delim(targetspath, comment.char = &quot;#&quot;)[1:3,1:4]</pre>
 ## 2 ./data/SRR446028_1.fastq ./data/SRR446028_2.fastq        M1B     M1
 ## 3 ./data/SRR446029_1.fastq ./data/SRR446029_2.fastq        A1A     A1</pre>
 
-</article></slide><slide class=''><hgroup><h2><em><code>SYSargs</code></em> combines <em><code>targets</code></em> and <em><code>param</code></em></h2></hgroup><article  id="sysargs-combines-targets-and-param" class="smaller">
+</article></slide><slide class=''><hgroup><h2><em><code>SYSargs</code></em>: <em><code>targets</code></em> &amp; <em><code>param</code></em></h2></hgroup><article  id="sysargs-targets-param" class="smaller">
+
+<p><em><code>SYSargs</code></em> instances are constructed from a <em><code>targets</code></em> file and a <em><code>param</code></em> file. The <em><code>param</code></em> file contains the settings for running command-line software.</p>
 
 <pre class = 'prettyprint lang-r'>parampath &lt;- system.file(&quot;extdata&quot;, &quot;tophat.param&quot;, package=&quot;systemPipeR&quot;)
-args &lt;- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
-args</pre>
+(args &lt;- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath)))</pre>
 
 <pre >## An instance of &#39;SYSargs&#39; for running &#39;tophat&#39; on 18 samples</pre>
 
@@ -368,7 +369,7 @@ args</pre>
 
 <pre >## [1] &quot;software&quot;  &quot;reference&quot; &quot;sysargs&quot;</pre>
 
-<p>Autogenerates command-line arguments for a given software on first sample, here for <em><code>Tophat2</code></em>.</p>
+<p>Return command-line arguments for given software, here <em><code>Tophat2</code></em> for 1st sample.</p>
 
 <pre class = 'prettyprint lang-r'>sysargs(args)[1]</pre>
 
