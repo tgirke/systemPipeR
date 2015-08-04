@@ -188,7 +188,7 @@ library(help="systemPipeR")
 vignette("systemPipeR")
 ```
 
-## Targets file organizes samples {.smaller}
+## _`Targets`_ file organizes samples {.smaller}
 
 Structure of _`targets`_ file for single-end (SE) library
 ```{r show_targetsSE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
