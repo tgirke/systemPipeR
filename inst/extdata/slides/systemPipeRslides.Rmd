@@ -138,7 +138,7 @@ workflow_name/            # *.Rnw/*.Rmd scripts and targets file
                 results/  # analysis result files
 ```
 <br></br>
-The above structure can be customized as needed, but for first time users it is easier to leave it unchanged.
+The above structure can be customized as needed, but for first time users it is easier to leave it as is.
 
 ## Run workflows 
 
