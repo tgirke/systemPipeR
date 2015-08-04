@@ -1,5 +1,5 @@
 ---
-title: "_systemPipeR_"
+title: "systemPipeR"
 author: "Author: Thomas Girke (thomas.girke@ucr.edu)"
 date: "July 22, 2015" 
 output:
