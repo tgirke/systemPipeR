@@ -137,6 +137,8 @@ workflow_name/            # *.Rnw/*.Rmd scripts and targets file
                 data/     # inputs e.g. FASTQ, reference, annotations
                 results/  # analysis result files
 ```
+<br></br>
+The workflow structure can be changed as needed, but for first time users it is easier to follow this structure.
 
 ## Run workflows 
 
