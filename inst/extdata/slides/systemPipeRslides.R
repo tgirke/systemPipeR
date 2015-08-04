@@ -16,11 +16,11 @@ library("systemPipeR"); library("systemPipeRdata")
 
 ## ----show_targetsSE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
-read.delim(targetspath, comment.char = "#")[1:4,1:5]
+read.delim(targetspath, comment.char = "#")[1:3,1:5]
 
 ## ----show_targetsPE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-read.delim(targetspath, comment.char = "#")[1:4,1:4]
+read.delim(targetspath, comment.char = "#")[1:3,1:4]
 
 ## ----sysargs_instance, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE----
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
