@@ -76,7 +76,7 @@ Outline
 
 - Each _`SYSargs`_ instance is constructed from a _`targets`_ file and a _`param`_ file.
 
-- Only input provided by user is first _`targets`_ file. Subsequent _`targets`_ instances are created automatically. 
+- Only input provided by user is initial _`targets`_ file. Subsequent _`targets`_ instances are created automatically. 
 
 - Any number of predefined or custom workflow steps are supported.
 
