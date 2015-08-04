@@ -104,9 +104,9 @@ Outline
 
 ## _`systemPipeRdata`_: template workflows
 
-- Helper package to generate with a single command NGS workflow templates 
-- Includes sample data for testing
-- Workflows can be changed and/or extended by user
+- Helper package to generate with a single command NGS workflow templates for _`systemPipeR`_ environment. 
+- Includes sample data for testing.
+- Workflows can be changed and extended by user.
 
 ## RNA-Seq workflow template
 
