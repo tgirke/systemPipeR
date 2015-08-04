@@ -262,7 +262,7 @@ workflow_name/            # *.Rnw/*.Rmd scripts, targets file, etc.
 ### </b>
 ```
 <br></br>
-The above structure can be customized as needed, but for first-time users it is easier to keep structural changes to a minimum.
+The above structure can be customized as needed, but for first-time users it is easier to keep changes to a minimum.
 
 ## Run workflows 
 
