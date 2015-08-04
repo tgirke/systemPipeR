@@ -34,6 +34,7 @@ Outline
 - <div class="white">__Introduction__</div>
 - Motivation
 - Design
+- Templates
 - Getting started
 
 ## Introduction 
@@ -49,9 +50,21 @@ Outline
 - Introduction
 - <div class="white">__Motivation__</div>
 - Design
+- Templates
 - Getting started
 
-## Motivation and advantages 
+## Motivation
+
+- Many NGS applications share the same or very similar analysis routines such as: 
+    - Read QC and preprocessing
+    - Alignments
+    - Quantification
+    - Feature annotation routines
+    - Enrichment analysis
+- Thus, a common workflow environment has many advantages in imporving efficiency, standardization and reproducibility
+
+
+## Advantages of _`systemPipeR`_
 
 - Facilitates design of complex NGS workflows involving multiple R/Bioconductor packages [@Huber2015-ag].
 - Makes NGS analysis with Bioconductor utilities more accessible to new users
@@ -65,6 +78,7 @@ Outline
 - Introduction
 - Motivation
 - <div class="white">__Design__</div>
+- Templates
 - Getting started
 
 ## Workflow design in _`systemPipeR`_ {.flexbox .vcenter .smaller}
@@ -80,12 +94,74 @@ Outline
 
 - Any number of predefined or custom workflow steps are supported.
 
+Outline``
+=======================
+- Introduction
+- Motivation
+- Design
+- <div class="white">__Templates__</div>
+- Getting started
+
+## _`systemPipeRdata`_: template workflows
+
+- Helper package to generate with a single command NGS workflow templates 
+- Includes sample data for testing
+- Workflows can be changed and/or extended by user
+
+## RNA-Seq workflow template
+
+1. Read preprocessing
+    + Quality filtering (trimming)
+    + FASTQ quality report
+2. Alignments: _`rsubread`_, _`Bowtie2/Tophat2`_
+3. Alignment statistics
+4. Read counting per annotation
+5. Sample-wise correlation analysis 
+5. DEG analysis with _`edgeR`_ or _`DESeq2`_
+6. Enrichment analysis of GO terms or other annotation types
+7. Gene-wise cluster analysis
+
+## VAR-Seq workflow template
+
+1. Read preprocessing
+    + Quality filtering (trimming)
+    + FASTQ quality report
+2. Alignments: _`gsnap`_, _`bwa`_
+3. Alignment statistics
+4. Variant calling: _`VariantTools`_, _`GATK`_, _`BCFtools`_
+5. Variant filtering: _`VariantTools`_ and _`VariantAnnotation`_
+6. Variant annotation: _`VariantAnnotation`_
+7. Combine results from many samples
+8. Summary statistics of samples
+
+## ChIP-Seq workflow template
+
+1. Read preprocessing
+    + Quality filtering and/or trimming
+    + FASTQ quality report
+2. Alignments: _`rsubread`_, _`Bowtie2`_
+3. Alignment statistics
+4. Genome-wide coverage statistics
+5. Peak calling
+6. Peak annotation with genomic context
+7. Differential binding analysis
+8. Enrichment analysis of GO terms or other annotation types
+9. Motif analysis
+
+## Under development
+
+Workflow templates for
+
+- miRNA-Seq
+- BS-Seq
+- BS-Seq
 
 Outline
 =======================
 - Introduction
 - Motivation
 - Design
+- Templates
 - <div class="white">__Getting Started__</div>
 
 ## Install and load packages {.smaller}
