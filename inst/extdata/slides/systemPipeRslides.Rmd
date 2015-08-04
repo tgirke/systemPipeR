@@ -32,8 +32,8 @@ echo "library(rmarkdown); library(knitr); render('systemPipeRslides.Rmd', ioslid
 Outline
 =======================
 - <div class="white">__Introduction__</div>
-- Design
 - Motivation
+- Design
 - Getting started
 
 ## Introduction 
@@ -47,8 +47,24 @@ Outline
 Outline
 =======================
 - Introduction
-- <div class="white">__Design__</div>
+- <div class="white">__Motivation__</div>
+- Design
+- Getting started
+
+## Motivation and advantages 
+
+- Facilitates design of complex NGS workflows involving multiple R/Bioconductor packages [@Huber2015-ag].
+- Makes NGS analysis with Bioconductor utilities more accessible to new users
+- Simplifies usage of command-line software from within R
+- Reduces complexity of using compute clusters for R and command-line software
+- Accelerates runtime of workflows via parallelzation on computer systems with mutiple CPU cores and/or multiple compute nodes
+- Automates generation of analysis reports to improve reproducibility
+
+Outline
+=======================
+- Introduction
 - Motivation
+- <div class="white">__Design__</div>
 - Getting started
 
 ## Workflow design in _`systemPipeR`_ {.flexbox .vcenter .smaller}
@@ -67,24 +83,8 @@ Outline
 Outline
 =======================
 - Introduction
-- Design
-- <div class="white">__Motivation__</div>
-- Getting started
-
-## Motivation and advantages 
-
-- Facilitates design of complex NGS workflows involving multiple R/Bioconductor packages [@Huber2015-ag].
-- Makes NGS analysis with Bioconductor utilities more accessible to new users
-- Simplifies usage of command-line software from within R
-- Reduces complexity of using compute clusters for R and command-line software
-- Accelerates runtime of workflows via parallelzation on computer systems with mutiple CPU cores and/or multiple compute nodes
-- Automates generation of analysis reports to improve reproducibility
-
-Outline
-=======================
-- Introduction
-- Design
 - Motivation
+- Design
 - <div class="white">__Getting Started__</div>
 
 ## Install and load packages {.smaller}
