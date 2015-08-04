@@ -23,6 +23,12 @@ read.delim(targetspath, comment.char = "#")[1:4,1:5]
 ## $ echo 'library(systemPipeRdata);
 ##         genWorkenvir(workflow="varseq", mydirname=NULL)' | R --slave
 
+## ----workflow_template_structure, eval=FALSE-----------------------------
+## workflow_name/            # any name
+##                 param/    # parameter files
+##                 data/     # inputs e.g. FASTQ, reference, annotations
+##                 results/  # analysis result files
+
 ## ----run_make, eval=FALSE, engine="sh"-----------------------------------
 ## $ make -B
 
