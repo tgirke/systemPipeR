@@ -59,7 +59,7 @@ Outline
     - Read QC and preprocessing
     - Alignments
     - Quantification
-    - Feature annotation routines
+    - Feature annotations
     - Enrichment analysis
 - Thus, a common workflow environment has many advantages for improving efficiency, standardization and reproducibility
 
