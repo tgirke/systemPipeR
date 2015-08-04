@@ -173,17 +173,28 @@ biocLite("systemPipeR")
 biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
 ```
 
-Load packages
+Load packages and accessing help
 ```{r load_systemPipeR_hidden, eval=TRUE, include=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
 library("systemPipeR"); library("systemPipeRdata")
 ```
 ```{r load_systemPipeR_print, eval=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE}
-library("systemPipeR"); library("systemPipeRdata")
+library("systemPipeR")
+library("systemPipeRdata")
+library(help="systemPipeR")
+vignette("systemPipeR")
 ```
 
-Structure of _`targets`_ file
-```{r show_targets, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
+## Targets file organizes samples
+
+Structure of _`targets`_ file single-end (SE) library
+```{r show_targetsSE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+read.delim(targetspath, comment.char = "#")[1:4,1:5]
+```
+
+Structure of _`targets`_ file paired-end (PE) library
+```{r show_targetsPE, eval=TRUE, messages=FALSE, warnings=FALSE, cache=TRUE}
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:4,1:5]
 ```
 
