@@ -101,7 +101,6 @@ Outline
 - Design
 - <div class="white">__Templates__</div>
 - Getting started
-    + test
 
 ## _`systemPipeRdata`_: template workflows
 
