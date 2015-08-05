@@ -20,7 +20,7 @@ export(
     ## Data sets
 
     ## Import/exports
-    "readComp", "writeTargetsout",
+    "readComp", "writeTargetsout", "writeTargetsRef",
 
     ## Utilities
     "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
