@@ -42,6 +42,9 @@ and the columns from \code{targetsout(x)}.
 \author{
 Thomas Girke
 }
+\seealso{
+\code{writeTargetsRef}
+}
 \examples{
 ## Create SYSargs object
 param <- system.file("extdata", "tophat.param", package="systemPipeR")

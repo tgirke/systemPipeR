@@ -1,0 +1,26 @@
+## Parameter file for macs2
+## Uses MACS2: https://github.com/taoliu/MACS/
+## Useful web site: http://barcwiki.wi.mit.edu/wiki/SOPs/chip_seq_peaks
+## Download: https://pypi.python.org/pypi/MACS2
+## Command-line sample:
+##         macs2 callpeak -t <ChIP.bam> -c <Control.bam> -f BAM -g 1.2e8 -n <test> -B -q 0.01
+## Values in <...> reference column titles in targets file
+PairSet	Name	Value
+modules	NA	python/2.7.5
+software	NA	macs2 callpeak
+cores	NA	NA
+reference	NA	NA
+infile1	-t	<FileName1>
+infile1	path	NA
+infile2	NA	NA
+infile2	path	NA
+outfile1	-n	<FileName1>
+outfile1	path	./results/
+outfile1	remove	NA
+outfile1	append	_summits.bed
+outfile1	outextension	_peaks.bed
+other	NA	-f BAM -g 1.2e8 -B -q 0.01
+
+
+
+
