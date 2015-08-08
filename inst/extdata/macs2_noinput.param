@@ -6,7 +6,7 @@
 ##         macs2 callpeak -t <ChIP.bam> -c <Control.bam> -f BAM -g 1.2e8 -n <test> -B -q 0.01
 ## Values in <...> reference column titles in targets file
 PairSet	Name	Value
-modules	NA	python/2.7.5
+modules	NA	NA
 software	NA	macs2 callpeak
 cores	NA	NA
 reference	NA	NA
@@ -17,9 +17,9 @@ infile2	path	NA
 outfile1	-n	<FileName1>
 outfile1	path	./results/
 outfile1	remove	NA
-outfile1	append	_summits.bed
-outfile1	outextension	_peaks.bed
-other	NA	-f BAM -g 1.2e8 -B -q 0.01
+outfile1	append	_macs2
+outfile1	outextension	_macs2_peaks.xls
+other	NA	-f BAM -g 1.2e8 -B -q 0.01 --nomodel --shiftsize 100
 
 
 
