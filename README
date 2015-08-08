@@ -1,5 +1,8 @@
 changelog
-	version 1.3.17 - 1.3.20
+	version 1.3.21 - 1.3.22
+        - added writeTargetsRef and mergeBamByFactor
+	
+    version 1.3.17 - 1.3.10
 	    - Converted main vignette to R Markdown
         - Instructions to download sample data via systemPipeRdata
         - Fix for missing systemPipeRdata on build system
