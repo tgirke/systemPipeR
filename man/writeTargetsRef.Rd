@@ -39,7 +39,7 @@ Note, sample rows not assigned reference samples are removed automatically.
 Thomas Girke
 }
 \seealso{
-\code{writeTargetsout}
+\code{writeTargetsout}, \code{mergeBamByFactor}
 }
 \examples{
 ## Path to input targets file
