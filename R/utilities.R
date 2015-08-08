@@ -229,9 +229,9 @@ mergeBamByFactor <- function(args, mergefactor=targetsin(args)$Factor, overwrite
     
     ## Generate collapsed BAM files
     for(i in seq(along=filelist_merge)) {
-        mergeBam(filelist_merge[[i]], outname, indexDestination=TRUE, overwrite=overwrite, ...)
+        mergeBam(filelist_merge[[i]], outname_vec[i], indexDestination=TRUE, overwrite=overwrite, ...)
         if(silent!=TRUE) {
-            cat("Merged BAM files:", basename(filelist_merge[[i]]), "and saved to file", basename(outname), "\n\n")
+            cat("Merged BAM files:", basename(filelist_merge[[i]]), "and saved to file", basename(outname_vec[i]), "\n\n")
         }
     }
     
