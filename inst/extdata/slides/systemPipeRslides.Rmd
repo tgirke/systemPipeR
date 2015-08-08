@@ -143,7 +143,7 @@ Outline
 2. Alignments: _`rsubread`_, _`Bowtie2`_
 3. Alignment statistics
 4. Genome-wide coverage statistics
-5. Peak calling
+5. Peak calling: _`MACS2`_, _`BayesPeak`_
 6. Peak annotation with genomic context
 7. Differential binding analysis
 8. Enrichment analysis of GO terms or other annotation types
