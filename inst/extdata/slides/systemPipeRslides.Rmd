@@ -286,6 +286,7 @@ $ make -B
 - Workflow templates with support for both PDF (.Rnw) and HTML (.Rmd) reports
 - Workflow templates for additional NGS applications (see [here](#14))
 - [docopt](https://github.com/docopt/docopt.R) support for generating _`.param`_ files
+- Additional visualization functions
 - Streamline support of very complex experimental designs
 
 ## References {.smaller}
