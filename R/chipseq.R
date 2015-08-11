@@ -107,16 +107,16 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ########################################################
 ## Convenience function to perform read counting over serveral different
 ## range sets, e.g. peak ranges or feature types
-countRangeset <- function(bfl, rangefiles, extension="_countDF.xls", ...) {
+countRangeset <- function(bfl, args, ...) {
     ## Input validity checks
     if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
-    if(class(rangefiles)!="character") stop("'rangefiles' needs to be of class 'character'.")
-    absent_peak_file <- rangefiles[!file.exists(rangefiles)]
-    if(length(absent_peak_file)!=0) stop("The following files assigned to 'rangefiles' do not exist: ", paste(basename(absent_peak_file), collapse=", ")) 
+    if(class(args)!="SYSargs") stop("'args' needs to be of class 'SYSargs'.")
+    absent_peak_file <- infile1(args)[!file.exists(infile1(args))]
+    if(length(absent_peak_file)!=0) stop("The following files assigned to 'infile1(args)' do not exist: ", paste(basename(absent_peak_file), collapse=", ")) 
     ## Perform read counting for each peak set
-    countDFnames <- paste0(rangefiles, extension); names(countDFnames) <- names(rangefiles)
-    for(i in seq(along=rangefiles)) {
-        df <- read.delim(rangefiles[i], comment="#")
+    countDFnames <- outpaths(args)
+    for(i in seq(along=infile1(args))) {
+        df <- read.delim(infile1(args)[i], comment="#")
         peaks <- as(df, "GRanges")
         names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
         peaks <- split(peaks, names(peaks))
@@ -128,7 +128,7 @@ countRangeset <- function(bfl, rangefiles, extension="_countDF.xls", ...) {
     return(countDFnames)
 }
 ## Usage:
-# countDFnames <- countRangeset(bfl, rangefiles, extension="_countDF.xls", mode="Union", ignore.strand=TRUE)
+# countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
 
 ################################################################################
 ## Iterative edgeR/DESeq2 analysis over counts sets from different range sets ##
