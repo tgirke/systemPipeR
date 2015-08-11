@@ -10,29 +10,26 @@ is performed with the \code{summarizeOverlaps} function from the \code{GenomicAl
 package. The resulting count tables are directly saved to files.
 }
 \usage{
-countRangeset(bfl, rangefiles, extension = "_countDF.xls", ...)
+countRangeset(bfl, args, ...)
 }
 \arguments{
   \item{bfl}{
 \code{BamFileList} object containing paths to one or more BAM files.
 }
-  \item{rangefiles}{
-Character vector containing paths to tabular range data files (e.g. peak
-ranges). The files need to contain proper columns titles to coerce with
+  \item{args}{
+Object of class \code{SYSargs} where \code{infile1(args)} specifies the
+paths to the tabular range data files (e.g. peak ranges) used for counting. 
+The files need to contain proper columns titles to coerce with
 \code{as(..., "GRanges")} to \code{GRanges} objects after importing them
 with \code{read.delim}.
-}
-  \item{extension}{
-Chracter string specifying the file extensions of the result files.
 }
   \item{\dots}{
 Arguments to be passed on to internally used \code{summarizeOverlaps} function.
 }
 }
 \value{
-Named character vector containing the paths to the resulting count table files. 
-The base name of the count files is the same as the corresponding input files 
-specified under \code{rangefiles} and the value of \code{extension} appended. 
+Named character vector containing the paths from \code{outpaths(args)} to the 
+resulting count table files. 
 }
 \author{
 Thomas Girke
@@ -48,12 +45,11 @@ args_bam <- systemArgs(sysma=param, mytargets=targets)
 bfl <- BamFileList(outpaths(args_bam), yieldSize=50000, index=character())
 
 \dontrun{
-## Paths to range files
-args_peak <- systemArgs(sysma="param/macs2_noinput.param", mytargets="targets_mergeBamByFactor.txt")
-rangefiles <- outpaths(args_peak)
+## SYSargs with paths to range data and count files
+args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.txt")
 
 ## Iterative read counting
-countDFnames <- countRangeset(bfl, rangefiles, extension="_countDF.xls", mode="Union", ignore.strand=TRUE)
+countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
 }
 }
 \keyword{ utilities }
