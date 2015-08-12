@@ -1,5 +1,8 @@
 changelog
-	version 1.3.21 - 1.3.22
+	version 1.3.23
+        - vignette updates
+	
+    version 1.3.21 - 1.3.22
         - added writeTargetsRef and mergeBamByFactor
 	
     version 1.3.17 - 1.3.10

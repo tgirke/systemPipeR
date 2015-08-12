@@ -4,8 +4,7 @@
 Read counting for several range sets
 }
 \description{
-Convenience function to perform read counting over serveral different range
-sets, e.g. peak range sets or feature types. Internally, the read counting
+Convenience function to perform read counting iteratively for serveral range sets, e.g. peak range sets or feature types. Internally, the read counting
 is performed with the \code{summarizeOverlaps} function from the \code{GenomicAlignments}
 package. The resulting count tables are directly saved to files.
 }
@@ -50,6 +49,8 @@ args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.
 
 ## Iterative read counting
 countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
+writeTargetsout(x=args, file="targets_countDF.txt", overwrite=TRUE)
+
 }
 }
 \keyword{ utilities }
