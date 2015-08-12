@@ -19,7 +19,8 @@ outfile1	path	./results/
 outfile1	remove	NA
 outfile1	append	_macs2
 outfile1	outextension	_macs2_peaks.xls
-other	NA	-f BAM -g 1.2e8 -B -q 0.01 --nomodel --shiftsize 100
+other	NA	-f BAM -g 1.2e8 -B -q 0.01 --nomodel
+
 
 
 
