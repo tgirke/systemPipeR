@@ -41,8 +41,6 @@ varSummary(args)
 \value{
 	Tabular output files.
 }
-\references{
-}
 \author{
 Thomas Girke
 }

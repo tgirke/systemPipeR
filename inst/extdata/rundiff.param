@@ -1,0 +1,25 @@
+## Parameter file for performing read counting across many range sets. 
+## This is a dummy file to support within the systemPipeR workflow 
+## R-based functions that read from input files and write to output files 
+## Values in <...> reference column titles in targets file
+## PairSet 'type' row specifies whether sofware is commandline (system=TRUE) or R (system=FALSE). If line is ommited 'commandline' will be used
+PairSet	Name	Value
+type	system	FALSE
+modules		
+software	NA	runDiff
+cores	-p	4
+other	NA	
+outfile1	-o	<FileName1>
+outfile1	path	./results/
+outfile1	remove	.countDF.xls
+outfile1	append	.edgeR.xls
+outfile1	outextension	.edgeR.xls
+reference	NA	NA
+infile1	NA	<FileName1>
+infile1	path	NA
+infile2	NA	<FileName2>
+infile2	path	NA
+
+
+
+
