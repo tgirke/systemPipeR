@@ -53,7 +53,7 @@ unlink("test.db")
 @
 
 \title{ChIP-Seq project report template: Some Descriptive Title}
-\author{Project ID: ChIPseq\_PI\_Name\_Organism\_Jun2014 \\
+\author{Project ID: ChIPseq\_PI\_Name\_Organism\_Jun2015 \\
 	Project PI: First Last (first.last@inst.edu)\\
         Author of Report: First Last (first.last@inst.edu)}
 \maketitle
@@ -84,7 +84,7 @@ source("systemPipeChIPseq_Fct.R")
 \subsection{Experiment definition provided by \Robject{targets} file}
 The \href{run:targets.txt}{\Robject{targets}} file defines all FASTQ files and sample comparisons of the analysis workflow. 
 <<eval=TRUE>>=
-targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+targetspath <- system.file("extdata", "targets_chip.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 @
@@ -99,7 +99,7 @@ quality cutoffs and mean quality distribution. The results are written to a PDF 
 \href{run:./results/fastqReport.pdf}{\Robject{fastqReport.pdf}}.
 
 <<eval=FALSE>>=
-args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+args <- systemArgs(sysma="param/bowtieSE.param", mytargets="targets_chip.txt")
 fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 seeFastqPlot(fqlist)
@@ -116,7 +116,7 @@ dev.off()
 \subsection{Read mapping with \Rfunction{Bowtie2}}
 The NGS reads of this project will be aligned against the reference genome sequence using \Robject{Bowtie2} \citep{Langmead2012-bs}. The parameter settings of the aligner are defined in the \Robject{tophat.param} file.
 <<eval=FALSE>>=
-args <- systemArgs(sysma="bowtieSE.param", mytargets="targets.txt")
+args <- systemArgs(sysma="param/bowtieSE.param", mytargets="targets_chip.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 @
 Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
@@ -126,6 +126,8 @@ system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
                   resourceList=resources)
+runCommandline(args)
+writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
 @
 Check whether all BAM files have been created
 <<eval=FALSE>>=
@@ -150,20 +152,135 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 	    urlfile="./results/IGVurl.txt")
 @
 
-\section{Peak calling}
-To be continued ...
+\section{Peak calling with MACS2} 
+\subsection{Merge BAM files of replicates prior to peak calling}
+Merging BAM files of technical and/or biological replicates can improve the sensitivity of the peak calling by increasing the depth of read coverage. The \Rfunction{mergeBamByFactor} function merges BAM files based on grouping information specified by a \Rfunction{factor}, here the \Rfunarg{Factor} column of the imported targets file. It also returns an updated \Rfunarg{SYSargs} object containing the paths to the merged BAM files as well as to any unmerged files without replicates. This step can be skipped if merging of BAM files is not desired. 
+<<eval=FALSE>>=
+args <- systemArgs(sysma=NULL, mytargets="targets_bam.txt")
+args_merge <- mergeBamByFactor(args, overwrite=TRUE)
+writeTargetsout(x=args_merge, file="targets_mergeBamByFactor.txt", overwrite=TRUE)
+@
+
+\subsection{Peak calling without input/reference sample}
+<<eval=FALSE>>=
+args <- systemArgs(sysma="param/macs2_noinput.param", mytargets="targets_mergeBamByFactor.txt")
+sysargs(args)[1] # Command-line parameters for first FASTQ file
+runCommandline(args)
+file.exists(outpaths(args))
+writeTargetsout(x=args, file="targets_macs.txt", overwrite=TRUE)
+@
+
+\subsection{Peak calling with input/reference sample}
+<<eval=FALSE>>=
+writeTargetsRef(infile="targets_mergeBamByFactor.txt", outfile="targets_bam_ref.txt", silent=FALSE, overwrite=TRUE)
+args <- systemArgs(sysma="param/macs2.param", mytargets="targets_bam_ref.txt")
+sysargs(args)[1] # Command-line parameters for first FASTQ file
+runCommandline(args)
+file.exists(outpaths(args))
+writeTargetsout(x=args, file="targets_macs.txt", overwrite=TRUE)
+@
 
 \section{Annotate peaks with genomic context}
-To be continued ...
+\subsection{Annotation with \Rpackage{ChIPpeakAnno} package}
+<<eval=FALSE>>=
+library(ChIPpeakAnno); library(GenomicFeatures)
+args <- systemArgs(sysma="param/annotate_peaks.param", mytargets="targets_macs.txt")
+txdb <- loadDb("./data/tair10.sqlite")
+ge <- genes(txdb, columns=c("tx_name", "gene_id", "tx_type")) 
+for(i in seq(along=args)) {
+    peaksGR <- as(read.delim(infile1(args)[i], comment="#"), "GRanges")
+    annotatedPeak <- annotatePeakInBatch(peaksGR, AnnotationData=genes(txdb))
+    df <- data.frame(as.data.frame(annotatedPeak), as.data.frame(values(ge[values(annotatedPeak)$feature,])))
+    write.table(df, outpaths(args[i]), quote=FALSE, row.names=FALSE, sep="\t")
+}
+writeTargetsout(x=args, file="targets_peakanno.txt", overwrite=TRUE)
+## Perform previous step with full genome annotation from Biomart
+# txdb <- makeTxDbFromBiomart(biomart="ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
+# tx <- transcripts(txdb, columns=c("tx_name", "gene_id", "tx_type")) 
+# ge <- genes(txdb, columns=c("tx_name", "gene_id", "tx_type")) # works as well 
+# seqlevels(ge) <- c("Chr1", "Chr2", "Chr3", "Chr4", "Chr5", "ChrC", "ChrM")
+# table(mcols(tx)$tx_type)
+# tx <- tx[!duplicated(unstrsplit(values(tx)$gene_id, sep=",")) # Keeps only first transcript model for each gene]
+# annotatedPeak <- annotatePeakInBatch(macsOutput, AnnotationData = tx)
+@
+
+\subsection{Annotation with \Rpackage{ChIPseeker} package}
+Same as in previous step but using the \Rpackage{ChIPseeker} package for annotating the peaks.
+<<eval=FALSE>>=
+library(ChIPseeker)
+txdb <- loadDb("./data/tair10.sqlite")
+for(i in seq(along=args)) {
+    peakAnno <- annotatePeak(infile1(args)[i], TxDb=txdb, verbose=FALSE)
+    df <- as.data.frame(peakAnno)
+    write.table(df, outpaths(args[i]), quote=FALSE, row.names=FALSE, sep="\t")
+}
+writeTargetsout(x=args, file="targets_peakanno.txt", overwrite=TRUE)
+@
+
+Summary plots provided by the \Rpackage{ChIPseeker} package. Here applied to only one sample.
+<<eval=FALSE>>=
+peak <- readPeakFile(outpaths(args)[1])
+covplot(peak, weightCol="X.log10.pvalue.")
+peakHeatmap(outpaths(args)[1], TxDb=txdb, upstream=1000, downstream=1000, color="red")
+plotAvgProf2(outpaths(args)[1], TxDb=txdb, upstream=1000, downstream=1000, xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
+@
+
+\section{Count reads overlapping peak regions}
+<<eval=FALSE>>=
+library(GenomicRanges)
+args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.txt")
+args_bam <- systemArgs(sysma=NULL, mytargets="targets_bam.txt")
+bfl <- BamFileList(outpaths(args_bam), yieldSize=50000, index=character())
+countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
+writeTargetsout(x=args, file="targets_countDF.txt", overwrite=TRUE)
+@
 
 \section{Differential binding analysis of peaks}
 To be continued ...
 
+<<eval=FALSE>>=
+args_diff <- systemArgs(sysma="param/rundiff.param", mytargets="targets_countDF.txt")
+cmp <- readComp(file=args_bam, format="matrix") 
+dbrlist <- runDiff(args=args_diff, diffFct=run_edgeR, targets=targetsin(args_bam), cmp=cmp[[1]], independent=TRUE, dbrfilter=c(Fold=2, FDR=1))
+writeTargetsout(x=args_diff, file="targets_rundiff.txt", overwrite=TRUE)
+@
+
 \section{GO term enrichment analysis}
-To be continued ...
+The following performs GO term enrichment analysis for all annotated peak sets disregarding the differential binding results. 
+<<eval=FALSE>>=
+args <- systemArgs(sysma="param/macs2.param", mytargets="targets_bam_ref.txt")
+args_anno <- systemArgs(sysma="param/annotate_peaks.param", mytargets="targets_chip_anno.txt")
+annofiles <- paste0(outpaths(args), ".annotated.xls"); names(annofiles) <- names(outpaths(args))
+gene_ids <- sapply(names(annofiles), function(x) unique(as.character(read.delim(annofiles[x])[,"gene_id"])))
+load("data/GO/catdb.RData")
+BatchResult <- GOCluster_Report(catdb=catdb, setlist=gene_ids, method="all", id_type="gene", CLSZ=2, cutoff=0.9, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+@
 
 \section{Motif analysis}
-To be continued ...
+
+\subsection{Parse DNA sequences of peak regions from genome}
+<<eval=FALSE>>=
+library(Biostrings); library(seqLogo); library(BCRANK)
+for(i in seq(along=rangefiles)) {
+    df <- read.delim(rangefiles[i], comment="#")
+    peaks <- as(df, "GRanges")
+    names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
+    pseq <- getSeq(FaFile("./data/tair10.fasta"), peaks)
+    names(pseq) <- names(peaks)
+    writeXStringSet(pseq, paste0(rangefiles[i], ".fasta")) 
+}
+@
+
+\subsection{Motif discovery with \Rpackage{BCRANK}}
+<<eval=FALSE>>=
+set.seed(0)
+BCRANKout <- bcrank(paste0(rangefiles[1], ".fasta"), restarts=25, use.P1=TRUE, use.P2=TRUE)
+toptable(BCRANKout)
+topMotif <- toptable(BCRANKout, 1)
+weightMatrix <- pwm(topMotif, normalize = FALSE)
+weightMatrixNormalized <- pwm(topMotif, normalize = TRUE)
+seqLogo(weightMatrixNormalized)
+@
 
 \section{Version Information}
 <<sessionInfo, results='asis'>>=
@@ -171,7 +288,7 @@ toLatex(sessionInfo())
 @
 
 \section{Funding}
-This project was supported by funds from the National Institutes of Health (NIH).
+This project was supported by funds from the National Institutes of Health (NIH) and the National Science Foundation (NSF).
 
 \bibliography{bibtex}
 
