@@ -1,7 +1,7 @@
 ## Parameter file for Bowtie2 SE
 ## Values in <...> reference column titles in targets file
 PairSet	Name	Value
-modules	NA	bowtie2/2.1.0
+modules	NA	bowtie2/2.2.5
 software	NA	bowtie2
 cores	-p	4
 other	NA	-k 50 --non-deterministic
