@@ -669,7 +669,7 @@ Workflow includes following steps:
 1. Read preprocessing
     + Quality filtering (trimming)
     + FASTQ quality report
-2. Alignments: Tophat 2 (or any other RNA-Seq aligner)
+2. Alignments: Tophat2 (or any other RNA-Seq aligner)
 3. Alignment stats 
 4. Read counting 
 5. Sample-wise correlation analysis
@@ -694,7 +694,16 @@ Next, run the chosen sample workflow _`systemPipeRNAseq_single`_ ([PDF](https://
 
 Workflow includes following steps:
 
-To be completed...
+1. Read preprocessing
+    + Quality filtering (trimming)
+    + FASTQ quality report
+2. Alignments: Bowtie2 or rsubread
+3. Alignment stats 
+4. Peak calling: MACS2, BayesPeak 
+5. Peak annotation with genomic context
+6. Differential binding analysis
+7. GO term enrichment analysis
+8. Motif analysis
 
 <div align="right">[Back to Table of Contents]()</div>
 
