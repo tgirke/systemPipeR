@@ -795,7 +795,7 @@ setwd(&quot;rnaseq&quot;)</code></pre>
 <li>Quality filtering (trimming)</li>
 <li>FASTQ quality report</li>
 </ul></li>
-<li>Alignments: Tophat2 (or any other RNA-Seq aligner)</li>
+<li>Alignments: <em><code>Tophat2</code></em> (or any other RNA-Seq aligner)</li>
 <li>Alignment stats</li>
 <li>Read counting</li>
 <li>Sample-wise correlation analysis</li>
@@ -827,9 +827,9 @@ setwd(&quot;chipseq&quot;)</code></pre>
 <li>Quality filtering (trimming)</li>
 <li>FASTQ quality report</li>
 </ul></li>
-<li>Alignments: Bowtie2 or rsubread</li>
+<li>Alignments: <em><code>Bowtie2</code></em> or <em><code>rsubread</code></em></li>
 <li>Alignment stats</li>
-<li>Peak calling: MACS2, BayesPeak</li>
+<li>Peak calling: <em><code>MACS2</code></em>, <em><code>BayesPeak</code></em></li>
 <li>Peak annotation with genomic context</li>
 <li>Differential binding analysis</li>
 <li>GO term enrichment analysis</li>
@@ -857,19 +857,18 @@ setwd(&quot;varseq&quot;)</code></pre>
 <p>Next, run the chosen sample workflow <em><code>systemPipeVARseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rnw">Rnw</a>) by executing from the command-line <em><code>make -B</code></em> within the <em><code>varseq</code></em> directory. Alternatively, one can run the code from the provided <em><code>*.Rnw</code></em> template file from within R interactively.</p>
 <p>Workflow includes following steps:</p>
 <ol style="list-style-type: decimal">
-<li>Read preprocessing
+<li>Read preprocessing:
 <ul>
 <li>Quality filtering (trimming)</li>
 <li>FASTQ quality report</li>
 </ul></li>
-<li>Alignments: gsnap, bwa<code>*</code></li>
-<li>Variant calling: VariantTools, GATK<code>*</code>, BCFtools<code>*</code></li>
-<li>Variant filtering: VariantTools and VariantAnnotation</li>
-<li>Variant annotation: VariantAnnotation</li>
+<li>Alignments: <em><code>gsnap</code></em>, <em><code>bwa</code></em></li>
+<li>Variant calling: <em><code>VariantTools</code></em>, <em><code>GATK_</code>, </em><code>BCFtools</code>_</li>
+<li>Variant filtering: <em><code>VariantTools</code></em> and <em><code>VariantAnnotation</code></em></li>
+<li>Variant annotation: <em><code>VariantAnnotation</code></em></li>
 <li>Combine results from many samples</li>
 <li>Summary statistics of samples</li>
 </ol>
-<code>*</code>not evaluated because required software is not available on all systems.
 <div align="right">
 <a href>Back to Table of Contents</a>
 </div>

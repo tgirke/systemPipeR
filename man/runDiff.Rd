@@ -7,7 +7,8 @@ Differential abundance analysis for many range sets
 Convenience wrapper function for \code{run_edgeR} and \code{run_DESeq2} to
 perform differential expression or abundance analysis iteratively for several
 count tables. The latter can be peak calling results for several samples or
-counts generated for different genomic feature types.
+counts generated for different genomic feature types. The function also returns 
+the filtering results and plots from \code{filterDEGs}. 
 }
 \usage{
 runDiff(args, diffFct, targets, cmp, dbrfilter, ...)
@@ -29,16 +30,16 @@ Can be \code{diffFct=run_edgeR} or \code{diffFct=run_DESeq2}.
 	\code{character matrix} where comparisons are defined in two columns. This matrix should be generated with \code{readComp()} from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
 }
   \item{dbrfilter}{
-	Named vector with filter cutoffs of format \code{c(Fold=2, FDR=1)} where \code{Fold} refers to the fold change cutoff (unlogged) and \code{FDR} to the p-value cutoff.
+	Named vector with filter cutoffs of format \code{c(Fold=2, FDR=1)} where \code{Fold} refers to the fold change cutoff (unlogged) and \code{FDR} to the p-value cutoff. Those values are passed on to the \code{filterDEGs} function.
 }
   \item{\dots}{
 Arguments to be passed on to the internally used \code{run_edgeR} or \code{run_DESeq2} function.
 }
 }
 \value{
-Returns \code{list} containing the \code{filterDEG} results for each
+Returns \code{list} containing the \code{filterDEGs} results for each
 count table. Each result set is a \code{list} with four components 
-which are described under \code{?filterDEG}. The result files
+which are described under \code{?filterDEGs}. The result files
 contain the \code{edgeR} or \code{DESeq2} results from the comparisons
 specified under \code{cmp}. The base names of the result files are the 
 same as the corresponding input files specified under \code{countfiles} 
@@ -48,7 +49,7 @@ and the value of \code{extension} appended.
 Thomas Girke
 }
 \seealso{
-\code{run_edgeR}, \code{run_DESeq2}, \code{filterDEG}
+\code{run_edgeR}, \code{run_DESeq2}, \code{filterDEGs}
 }
 \examples{
 ## Paths to BAM files
