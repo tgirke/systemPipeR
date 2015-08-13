@@ -4,7 +4,7 @@
 Filter and plot DEG results
 }
 \description{
-Filters and plots DEG results for a given set of sample comparisons. The gene idenifiers of all (i) Up_or_Down, (ii) Up and (iii) Down regulated genes are stored as separate list components and the corresponding summary statistics, stored in a fourth list component, is plotted in form of a stacked bar plot.
+Filters and plots DEG results for a given set of sample comparisons. The gene idenifiers of all (i) Up_or_Down, (ii) Up and (iii) Down regulated genes are stored as separate list components, while the corresponding summary statistics, stored in a fourth list component, is plotted in form of a stacked bar plot.
 }
 \usage{
 filterDEGs(degDF, filter, plot = TRUE)
