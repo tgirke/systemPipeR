@@ -284,9 +284,9 @@ BatchResult <- GOCluster_Report(catdb=catdb, setlist=gene_ids, method="all", id_
 @
 
 \section{Motif analysis}
+\subsection{Parse DNA sequences of peak regions from genome}
 Enrichment analysis of known DNA binding motifs or \textit{de novo} discovery of novel motifs requires the DNA sequences of the peak regions. To parse the corresponding sequences from the reference genome, the \Rfunction{getSeq} function from the \Rpackage{Biostrings} package can be used. The example parses the sequences for each peak set and saves the results to separate FASTQ files, one for each peak set. In addition, the sequences in the FASTA files are ranked (sorted) by increasing p-values as expected by some motif discovery tools, such as \Rpackage{BCRANK}.
 
-\subsection{Parse DNA sequences of peak regions from genome}
 <<eval=FALSE>>=
 library(Biostrings); library(seqLogo); library(BCRANK)
 args <- systemArgs(sysma="param/annotate_peaks.param", mytargets="targets_macs.txt")
