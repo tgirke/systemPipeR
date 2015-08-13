@@ -107,7 +107,7 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ########################################################
 ## Convenience function to perform read counting over serveral different
 ## range sets, e.g. peak ranges or feature types
-countRangeset <- function(bfl, args, ...) {
+countRangeset <- function(bfl, args, format="tabular", ...) {
     ## Input validity checks
     if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
     if(class(args)!="SYSargs") stop("'args' needs to be of class 'SYSargs'.")
@@ -116,8 +116,14 @@ countRangeset <- function(bfl, args, ...) {
     ## Perform read counting for each peak set
     countDFnames <- outpaths(args)
     for(i in seq(along=infile1(args))) {
-        df <- read.delim(infile1(args)[i], comment="#")
-        peaks <- as(df, "GRanges")
+        if(format=="tabular") {
+            df <- read.delim(infile1(args)[i], comment="#")
+            peaks <- as(df, "GRanges")
+		} else if(format=="bed") {
+            peaks <- import.bed(infile1(args)[i])
+        } else {
+            stop("Input file format not supported.")
+        }
         names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
         peaks <- split(peaks, names(peaks))
         countDF <- summarizeOverlaps(peaks, bfl, ...)
