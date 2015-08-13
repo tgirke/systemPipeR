@@ -724,7 +724,7 @@ Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://
 
 Workflow includes following steps:
 
-1. Read preprocessing:
+1. Read preprocessing
     + Quality filtering (trimming)
     + FASTQ quality report
 2. Alignments: _`gsnap`_, _`bwa`_
