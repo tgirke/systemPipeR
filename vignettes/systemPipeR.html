@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 13 August, 2015</em></h4>
+<h4 class="date"><em>Last update: 15 August, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -560,7 +560,7 @@ saveDb(txdb, file=&quot;./data/tair10.sqlite&quot;)</code></pre>
 <div align="right">
 <a href>Back to Table of Contents</a>
 </div>
-<p>Read counting with <em><code>summarizeOverlaps</code></em> in parallel mode with multiple cores</p>
+<p>The following performs read counting with <em><code>summarizeOverlaps</code></em> in parallel mode with multiple cores.</p>
 <pre class="r"><code>library(BiocParallel)
 txdb &lt;- loadDb(&quot;./data/tair10.sqlite&quot;)
 eByg &lt;- exonsBy(txdb, by=&quot;gene&quot;)
@@ -572,6 +572,7 @@ rownames(countDFeByg) &lt;- names(rowRanges(counteByg[[1]])); colnames(countDFeB
 rpkmDFeByg &lt;- apply(countDFeByg, 2, function(x) returnRPKM(counts=x, ranges=eByg))
 write.table(countDFeByg, &quot;results/countDFeByg.xls&quot;, col.names=NA, quote=FALSE, sep=&quot;\t&quot;)
 write.table(rpkmDFeByg, &quot;results/rpkmDFeByg.xls&quot;, col.names=NA, quote=FALSE, sep=&quot;\t&quot;)</code></pre>
+<p>Please note, in addition to read counts this step generates RPKM normalized expression values. For most statistical differential expression or abundance analysis methods, such as <em><code>edgeR</code></em> or <em><code>DESeq2</code></em>, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, <em>e.g.</em> manually comparing the expression levels of different genes or features.</p>
 <div align="right">
 <a href>Back to Table of Contents</a>
 </div>
