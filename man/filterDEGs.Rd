@@ -22,18 +22,18 @@ filterDEGs(degDF, filter, plot = TRUE)
 }
 \details{
 Currently, there seems to be no community standard how to calculate fold
-changes of genes to refer to them as up or down regulated. To be consistent,
-the corresponding functions in \code{systemPipeR}, such as \code{filterDEGs},
-use here the following definition.  Genes with positive logFC values are
-classified as \code{up} regulated and genes with negative logFC values as
-\code{down} regulated. This means if a comparison among two samples \code{a}
-and \code{b} is specified in the corresponding targets file as \code{a-b} then
-a gene with a positive logFC is higher expressed in sample \code{a} than in
-sample \code{b}, and vice versa. To inverse this assignment, users want to
-change the specification of their chosen sample comparison(s) in the targets file
-accordingly, e.g. change \code{a-b} to \code{b-a}. Alternatively, one can swap
-the column order of the matix assigned to the \code{cmp} argument of the
-\code{run_edgeR} or \code{run_DESeq2} functions.
+changes of genes to unambiguously refer to them as up or down regulated. To be
+consistent, the corresponding functions in \code{systemPipeR}, such as
+\code{filterDEGs}, use here the following definition.  Genes with positive
+logFC values are classified as \code{up} regulated and genes with negative
+logFC values as \code{down} regulated. This means if a comparison among two
+samples \code{a} and \code{b} is specified in the corresponding targets file as
+\code{a-b} then a gene with a positive logFC is higher expressed in sample
+\code{a} than in sample \code{b}, and vice versa. To inverse this assignment,
+users want to change the specification of their chosen sample comparison(s) in
+the targets file accordingly, e.g. change \code{a-b} to \code{b-a}.
+Alternatively, one can swap the column order of the matix assigned to the
+\code{cmp} argument of the \code{run_edgeR} or \code{run_DESeq2} functions.
 }
 \value{
 Returns \code{list} with four components
