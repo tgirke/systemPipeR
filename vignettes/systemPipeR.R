@@ -250,14 +250,23 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## write.table(assays(countDFmiR)$counts, "results/countDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 ## write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 
-## ----sample_tree_, eval=TRUE---------------------------------------------
-library(ape,  warn.conflicts=FALSE)
-rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
-rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
-rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
-d <- cor(rpkmDFeByg, method="spearman")
-hc <- hclust(as.dist(1-d))
-plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
+## ----sample_tree_rlog, eval=TRUE-----------------------------------------
+library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+countDFpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+countDF <- as.matrix(read.table(countDFpath))
+colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
+d <- cor(assay(rlog(dds)), method="spearman")
+hc <- hclust(dist(1-d))
+plot.phylo(as.phylo(hc), type="p", edge.col=4, edge.width=3, show.node.label=TRUE, no.margin=TRUE)
+
+## ----sample_tree_rpkm, eval=FALSE----------------------------------------
+## rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
+## rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
+## rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
+## d <- cor(rpkmDFeByg, method="spearman")
+## hc <- hclust(as.dist(1-d))
+## plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
 
 ## ----edger_wrapper, eval=TRUE--------------------------------------------
 targets <- read.delim(targetspath, comment="#")

@@ -181,13 +181,14 @@ read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
 Note, for most statistical differential expression or abundance analysis methods, such as \Rpackage{edgeR} or \Rpackage{DESeq2}, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, \textit{e.g.} manually comparing the expression levels among different genes or features. 
 
 \subsection{Sample-wise correlation analysis}
-The following computes the sample-wise Spearman correlation coefficients from the RPKM normalized expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \Rfunction{hclust} function and the result is plotted as a dendrogram (\href{run:./results/sample_tree.pdf}{sample\_tree.pdf}). 
+The following computes the sample-wise Spearman correlation coefficients from the \Rfunarg{rlog} normalized expression values generated with the \Rpackage{DESeq2} package. After transformation to a distance matrix, hierarchical clustering is performed with the \Rfunction{hclust} function and the result is plotted as a dendrogram (\href{run:./results/sample_tree.pdf}{sample\_tree.pdf}). 
 <<eval=FALSE>>=
-library(ape)
-rpkmDFeByg <- read.delim("./results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[,-19]
-rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
-d <- cor(rpkmDFeByg, method="spearman")
-hc <- hclust(as.dist(1-d))
+library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
+colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
+d <- cor(assay(rlog(dds)), method="spearman")
+hc <- hclust(dist(1-d))
 pdf("results/sample_tree.pdf")
 plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
 dev.off()
@@ -218,7 +219,7 @@ edgeDF <- data.frame(edgeDF, Desc=descv[rownames(edgeDF)], check.names=FALSE)
 write.table(edgeDF, "./results/edgeRglm_allcomp.xls", quote=FALSE, sep="\t", col.names = NA)
 @
 
-Filter and plot DEG results for up and down regulated genes
+Filter and plot DEG results for up and down regulated genes. The definition of '\textit{up}' and '\textit{down}' is given in the corresponding help file. To open it, type \Rfunction{?filterDEGs} in the R console. 
 <<eval=FALSE>>=
 edgeDF <- read.delim("results/edgeRglm_allcomp.xls", row.names=1, check.names=FALSE) 
 pdf("results/DEGcounts.pdf")
