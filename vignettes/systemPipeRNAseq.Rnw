@@ -153,7 +153,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 
 \section{Read quantification per annotation range}
 \subsection{Read counting with \Rfunction{summarizeOverlaps} in parallel mode using multiple cores}
-Reads overlapping with annotation ranges of interest are counted for each sample using the \Rfunction{summarizeOverlaps} function \citep{Lawrence2013-kt}. The read counting is preformed for exonic gene regions in a non-strand-specific manner while ignoring overlaps among different genes. Subsequently, the expression count values are normalized by \textit{reads per kp per million mapped reads} (RPKM). The raw read count table (\href{run:./results/countDFeByg.xls}{countDFeByg.xls}) and the correspoding RPKM table (\href{run:./results/rpkmDFeByg.xls}{rpkmDFeByg.xls}) are written to separate files in the \Robject{results} directory of this project. Parallelization is achieved with the \Rpackage{BiocParallel} package, here using 8 CPU cores.
+Reads overlapping with annotation ranges of interest are counted for each sample using the \Rfunction{summarizeOverlaps} function \citep{Lawrence2013-kt}. The read counting is preformed for exonic gene regions in a non-strand-specific manner while ignoring overlaps among different genes. Subsequently, the expression count values are normalized by \textit{reads per kp per million mapped reads} (RPKM). The raw read count table (\href{run:./results/countDFeByg.xls}{countDFeByg.xls}) and the correspoding RPKM table (\href{run:./results/rpkmDFeByg.xls}{rpkmDFeByg.xls}) are written to separate files in the \Robject{results} directory of this project. Parallelization is achieved with the \Rpackage{BiocParallel} package, here using 8 CPU cores. 
 <<eval=FALSE>>=
 library("GenomicFeatures"); library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
@@ -178,6 +178,7 @@ Sample of data slice of RPKM table
 <<eval=FALSE>>=
 read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
 @
+Note, for most statistical differential expression or abundance analysis methods, such as \Rpackage{edgeR} or \Rpackage{DESeq2}, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, \textit{e.g.} manually comparing the expression levels among different genes or features. 
 
 \subsection{Sample-wise correlation analysis}
 The following computes the sample-wise Spearman correlation coefficients from the RPKM normalized expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \Rfunction{hclust} function and the result is plotted as a dendrogram (\href{run:./results/sample_tree.pdf}{sample\_tree.pdf}). 
