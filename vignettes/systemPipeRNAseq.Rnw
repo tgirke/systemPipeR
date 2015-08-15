@@ -178,6 +178,7 @@ Sample of data slice of RPKM table
 <<eval=FALSE>>=
 read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
 @
+Note, for most statistical differential expression or abundance analysis methods, such as \Rpackage{edgeR} or \Rpackage{DESeq2}, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, \textit{e.g.} manually comparing the expression levels among different genes or features. 
 
 \subsection{Sample-wise correlation analysis}
 The following computes the sample-wise Spearman correlation coefficients from the RPKM normalized expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \Rfunction{hclust} function and the result is plotted as a dendrogram (\href{run:./results/sample_tree.pdf}{sample\_tree.pdf}). 
