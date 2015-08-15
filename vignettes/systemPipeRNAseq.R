@@ -76,11 +76,12 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  library(ape)
-#  rpkmDFeByg <- read.delim("./results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[,-19]
-#  rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
-#  d <- cor(rpkmDFeByg, method="spearman")
-#  hc <- hclust(as.dist(1-d))
+#  library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+#  countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
+#  colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+#  dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
+#  d <- cor(assay(rlog(dds)), method="spearman")
+#  hc <- hclust(dist(1-d))
 #  pdf("results/sample_tree.pdf")
 #  plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
 #  dev.off()
