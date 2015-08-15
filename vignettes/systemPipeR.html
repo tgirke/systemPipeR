@@ -615,7 +615,7 @@ write.table(rpkmDFmiR, &quot;results/rpkmDFmiR.xls&quot;, col.names=NA, quote=FA
 <div id="correlation-analysis-of-samples" class="section level2">
 <h2><span class="header-section-number">3.10</span> Correlation analysis of samples</h2>
 <p>The following computes the sample-wise Spearman correlation coefficients from the <em><code>rlog</code></em> normalized expression values generated with the <em><code>DESeq2</code></em> package. After transformation to a distance matrix, hierarchical clustering is performed with the <em><code>hclust</code></em> function and the result is plotted as a dendrogram (<a href="./results/sample_tree.pdf">sample_tree.pdf</a>).</p>
-<pre class="r"><code>library(DESeq2, quietly=TRUE)
+<pre class="r"><code>library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
 countDFpath &lt;- system.file(&quot;extdata&quot;, &quot;countDFeByg.xls&quot;, package=&quot;systemPipeR&quot;)
 countDF &lt;- as.matrix(read.table(countDFpath))
 colData &lt;- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
@@ -631,9 +631,8 @@ plot.phylo(as.phylo(hc), type=&quot;p&quot;, edge.col=4, edge.width=3, show.node
 <strong>Figure 3:</strong> Correlation dendrogram of samples for <em><code>rlog</code></em> values.
 </div>
 <p></br></p>
-<p>Alternatively, the clustering can be performed with <em><code>RPKM</code></em> normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often realatively similar.</p>
-<pre class="r"><code>library(ape,  warn.conflicts=FALSE)
-rpkmDFeBygpath &lt;- system.file(&quot;extdata&quot;, &quot;rpkmDFeByg.xls&quot;, package=&quot;systemPipeR&quot;)
+<p>Alternatively, the clustering can be performed with <em><code>RPKM</code></em> normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar.</p>
+<pre class="r"><code>rpkmDFeBygpath &lt;- system.file(&quot;extdata&quot;, &quot;rpkmDFeByg.xls&quot;, package=&quot;systemPipeR&quot;)
 rpkmDFeByg &lt;- read.table(rpkmDFeBygpath, check.names=FALSE)
 rpkmDFeByg &lt;- rpkmDFeByg[rowMeans(rpkmDFeByg) &gt; 50,]
 d &lt;- cor(rpkmDFeByg, method=&quot;spearman&quot;)
