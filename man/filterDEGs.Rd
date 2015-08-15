@@ -39,7 +39,7 @@ assigned to the \code{cmp} argument of the \code{run_edgeR} or
 \code{run_DESeq2} functions. Users should also be aware that for logFC values
 close to zero (noise range), the direction of the fold change (sign of logFC)
 can be very sensitive to minor differences in the normalization method, while
-this is as much more robust for more pronounced changes or higher absolute logFC
+this assignment is much more robust for more pronounced changes or higher absolute logFC
 values. 
 }
 \value{
