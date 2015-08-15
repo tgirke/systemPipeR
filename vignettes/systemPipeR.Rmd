@@ -525,7 +525,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col=4, edge.width=3, show.node.label=TRU
 
 <div align="center">**Figure 3:** Correlation dendrogram of samples for _`rlog`_ values. </div></br>
 
-Alternatively, the clustering can be performed with _`RPKM`_ normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often realatively similar. 
+Alternatively, the clustering can be performed with _`RPKM`_ normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar. 
 
 ```{r sample_tree_rpkm, eval=FALSE}
 rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
