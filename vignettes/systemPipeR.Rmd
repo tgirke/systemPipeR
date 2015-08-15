@@ -456,7 +456,7 @@ saveDb(txdb, file="./data/tair10.sqlite")
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
-Read counting with _`summarizeOverlaps`_ in parallel mode with multiple cores
+The following performs read counting with _`summarizeOverlaps`_ in parallel mode with multiple cores. 
 ```{r read_counting_multicore, eval=FALSE}
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
@@ -470,6 +470,8 @@ rpkmDFeByg <- apply(countDFeByg, 2, function(x) returnRPKM(counts=x, ranges=eByg
 write.table(countDFeByg, "results/countDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
 write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
 ```
+Please note, in addition to read counts this step generates RPKM normalized expression values. For most statistical differential expression or abundance analysis methods, such as _`edgeR`_ or _`DESeq2`_, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, _e.g._ manually comparing the expression levels of different genes or features. 
+
 <div align="right">[Back to Table of Contents]()</div>
 
 Read counting with _`summarizeOverlaps`_ using multiple nodes of a cluster
