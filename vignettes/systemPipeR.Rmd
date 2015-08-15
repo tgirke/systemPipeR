@@ -510,8 +510,24 @@ write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="
 <div align="right">[Back to Table of Contents]()</div>
 
 ## Correlation analysis of samples
-The following computes the sample-wise Spearman correlation coefficients from the RPKM normalized expression values. After transformation to a distance matrix, hierarchical clustering is performed with the _`hclust`_ function and the result is plotted as a dendrogram ([sample\_tree.pdf](./results/sample_tree.pdf)). 
-```{r sample_tree_, eval=TRUE}
+The following computes the sample-wise Spearman correlation coefficients from the _`rlog`_ normalized expression values generated with the _`DESeq2`_ package. After transformation to a distance matrix, hierarchical clustering is performed with the _`hclust`_ function and the result is plotted as a dendrogram ([sample\_tree.pdf](./results/sample_tree.pdf)). 
+
+```{r sample_tree_rlog, eval=TRUE}
+library(DESeq2, quietly=TRUE)
+countDFpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+countDF <- as.matrix(read.table(countDFpath))
+colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
+d <- cor(assay(rlog(dds)), method="spearman")
+hc <- hclust(dist(1-d))
+plot.phylo(as.phylo(hc), type="p", edge.col=4, edge.width=3, show.node.label=TRUE, no.margin=TRUE)
+```
+
+<div align="center">**Figure 3:** Correlation dendrogram of samples for _`rlog`_ values. </div></br>
+
+Alternatively, the clustering can be performed with _`RPKM`_ normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often realatively similar. 
+
+```{r sample_tree_rpkm, eval=FALSE}
 library(ape,  warn.conflicts=FALSE)
 rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
 rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
@@ -520,7 +536,6 @@ d <- cor(rpkmDFeByg, method="spearman")
 hc <- hclust(as.dist(1-d))
 plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
 ```
-<div align="center">**Figure 3:** Correlation dendrogram of samples. </div></br>
 
 <div align="right">[Back to Table of Contents]()</div>
 
@@ -542,7 +557,7 @@ countDFeByg <- read.delim(countDFeBygpath, row.names=1)
 edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 ```
 
-Filter and plot DEG results for up and down regulated genes. Because of the small size of the toy data set used by this vignette, the _FDR_ value has been set to a relatively high threshold (here 10%). More commonly used _FDR_ cutoffs are 1% or 5%.
+Filter and plot DEG results for up and down regulated genes. Because of the small size of the toy data set used by this vignette, the _FDR_ value has been set to a relatively high threshold (here 10%). More commonly used _FDR_ cutoffs are 1% or 5%. The definition of '_up_' and '_down_' is given in the corresponding help file. To open it, type _`?filterDEGs`_ in the R console. 
 ```{r edger_deg_counts, eval=TRUE}
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 ```
