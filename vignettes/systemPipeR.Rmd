@@ -510,7 +510,7 @@ write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="
 <div align="right">[Back to Table of Contents]()</div>
 
 ## Correlation analysis of samples
-The following computes the sample-wise Spearman correlation coefficients from the _`rlog`_ normalized expression values generated with the _`DESeq2`_ package. After transformation to a distance matrix, hierarchical clustering is performed with the _`hclust`_ function and the result is plotted as a dendrogram ([sample\_tree.pdf](./results/sample_tree.pdf)). 
+The following computes the sample-wise Spearman correlation coefficients from the _`rlog`_ (regularized-logarithm) transformed expression values generated with the _`DESeq2`_ package. After transformation to a distance matrix, hierarchical clustering is performed with the _`hclust`_ function and the result is plotted as a dendrogram ([sample\_tree.pdf](./results/sample_tree.pdf)). 
 
 ```{r sample_tree_rlog, eval=TRUE}
 library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
