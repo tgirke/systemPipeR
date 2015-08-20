@@ -21,7 +21,7 @@ filterDEGs(degDF, filter, plot = TRUE)
 }
 }
 \details{
-Currently, there is no community standard how to calculate fold changes (here
+Currently, there is no community standard available how to calculate fold changes (here
 logFC) of genomic ranges, such as gene or feature ranges, to unambiguously refer
 to them as features with increased or decreased read abundandce; or in case of
 gene expression experiments to up or down regulated genes, respectively. To be
