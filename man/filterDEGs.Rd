@@ -21,26 +21,26 @@ filterDEGs(degDF, filter, plot = TRUE)
 }
 }
 \details{
-Currently, there is no community standard how to calculate fold changes (here
-logFC) of genomic ranges, such as gene or feature ranges, to unambiguously refer
-to them as features with increased or decreased read abundandce; or in case of
-gene expression experiments to up or down regulated genes, respectively. To be
-consistent within \code{systemPipeR}, the corresponding functions, such as
-\code{filterDEGs}, use here the following definition. Genomic ranges with
-positive logFC values are classified as \code{up} and those with negative logFC
-values as \code{down}.  This means if a comparison among two samples \code{a}
-and \code{b} is specified in the corresponding targets file as \code{a-b} then
-the feature with a positive logFC has a higher _normalized_ read
-count value in sample \code{a} than in sample \code{b}, and vice versa. To
-inverse this assignment, users want to change the specification of their chosen
-sample comparison(s) in the targets file accordingly, e.g. change \code{a-b} to
-\code{b-a}. Alternatively, one can swap the column order of the matrix
-assigned to the \code{cmp} argument of the \code{run_edgeR} or
-\code{run_DESeq2} functions. Users should also be aware that for logFC values
-close to zero (noise range), the direction of the fold change (sign of logFC)
-can be very sensitive to minor differences in the normalization method, while
-this assignment is much more robust for more pronounced changes or higher absolute logFC
-values. 
+Currently, there is no community standard available how to calculate fold
+changes (here logFC) of genomic ranges, such as gene or feature ranges, to
+unambiguously refer to them as features with increased or decreased read
+abundandce; or in case of gene expression experiments to up or down regulated
+genes, respectively. To be consistent within \code{systemPipeR}, the
+corresponding functions, such as \code{filterDEGs}, use here the following
+definition. Genomic ranges with positive logFC values are classified as
+\code{up} and those with negative logFC values as \code{down}.  This means if a
+comparison among two samples \code{a} and \code{b} is specified in the
+corresponding targets file as \code{a-b} then the feature with a positive logFC
+has a higher _normalized_ read count value in sample \code{a} than in sample
+\code{b}, and vice versa. To inverse this assignment, users want to change the
+specification of their chosen sample comparison(s) in the targets file
+accordingly, e.g. change \code{a-b} to \code{b-a}. Alternatively, one can swap
+the column order of the matrix assigned to the \code{cmp} argument of the
+\code{run_edgeR} or \code{run_DESeq2} functions. Users should also be aware
+that for logFC values close to zero (noise range), the direction of the fold
+change (sign of logFC) can be very sensitive to minor differences in the
+normalization method, while this assignment is much more robust for more
+pronounced changes or higher absolute logFC values. 
 }
 \value{
 Returns \code{list} with four components
