@@ -251,7 +251,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 
 ## ----sample_tree_rlog, eval=TRUE-----------------------------------------
-library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+library(DESeq2, warn.conflicts=FALSE, quietly=TRUE); library(ape, warn.conflicts=FALSE)
 countDFpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDF <- as.matrix(read.table(countDFpath))
 colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
