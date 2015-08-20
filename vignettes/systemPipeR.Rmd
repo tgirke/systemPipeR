@@ -513,7 +513,7 @@ write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="
 The following computes the sample-wise Spearman correlation coefficients from the _`rlog`_ (regularized-logarithm) transformed expression values generated with the _`DESeq2`_ package. After transformation to a distance matrix, hierarchical clustering is performed with the _`hclust`_ function and the result is plotted as a dendrogram ([sample\_tree.pdf](./results/sample_tree.pdf)). 
 
 ```{r sample_tree_rlog, eval=TRUE}
-library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+library(DESeq2, warn.conflicts=FALSE, quietly=TRUE); library(ape, warn.conflicts=FALSE)
 countDFpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDF <- as.matrix(read.table(countDFpath))
 colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
@@ -744,7 +744,7 @@ Workflow includes following steps:
     + Quality filtering (trimming)
     + FASTQ quality report
 2. Alignments: _`gsnap`_, _`bwa`_
-3. Variant calling: _`VariantTools`_, _`GATK_`, _`BCFtools`_
+3. Variant calling: _`VariantTools`_, _`GATK`_, _`BCFtools`_
 4. Variant filtering: _`VariantTools`_ and _`VariantAnnotation`_
 5. Variant annotation: _`VariantAnnotation`_
 6. Combine results from many samples
