@@ -7,7 +7,7 @@ Generate feature ranges from TxDb
 Function to generate various feature types from \code{TxDb} objects including
 \code{intergenic}, \code{promoter}, \code{intron}, \code{exon}, \code{cds},
 \code{5'/3'UTR} and different \code{transcript} types. The latter contains 
-as many transcript types available in the \code{tx_type} column when extracting
+as many transcript types as available in the \code{tx_type} column when extracting
 transcripts from \code{TxDb} objects as follows: 
 \code{transcripts(txdb, c("tx_name", "gene_id", "tx_type"))}
 }
