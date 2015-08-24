@@ -1,5 +1,5 @@
 ## IMPORTS
-import(rjson, GenomicRanges, SummarizedExperiment, Rsamtools, Biostrings, ShortRead, grid, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, BatchJobs, methods)
+import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, Biostrings, ShortRead, grid, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap, BatchJobs, methods)
 ## S4 Classes
 exportClasses(
     "SYSargs", "catDB", "VENNset", "INTERSECTset"
@@ -29,5 +29,5 @@ export(
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
     "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
     "preprocessReads", "filterVars", "variantReport", "combineVarReports", 
-    "varSummary", "countRangeset", "runDiff"
+    "varSummary", "countRangeset", "runDiff", "genFeatures"
 ) 
