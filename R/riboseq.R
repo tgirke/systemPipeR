@@ -1,7 +1,7 @@
 ######################################################
 ## Generate various feature types from TxDb objects ##
 ######################################################
-genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, verbose=TRUE) {
+genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, downstream=0, verbose=TRUE) {
     ## Check validity of inputs
     supported_features <- c("tx_type", "promoter", "intron", "exon", "cds", "fiveUTR", "threeUTR", "intergenic")
     if(tolower(featuretype[1])=="all") featuretype <- supported_features
@@ -20,25 +20,38 @@ genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, ve
         tx_type <- unique(mcols(tx)$tx_type)
         for(i in seq_along(tx_type)) {
             tmp <- tx[mcols(tx)$tx_type==tx_type[i]]
-            tmp <- reduce(split(tmp, as.character(mcols(tmp)$gene_id))) 
-            tmp <- unlist(tmp)
-            feature_id <- paste(names(tmp), tx_type[i], sep=":")
-		    mcols(tmp) <- data.frame(feature_by=names(tmp), featuretype_id=feature_id, featuretype=tx_type[i])
-	        names(tmp) <- seq_along(tmp)
-		    featuresGRl <- c(featuresGRl, GRangesList(tmp=tmp))
-            names(featuresGRl)[length(featuresGRl)] <- tx_type[i]
+            if(reduce_ranges==TRUE) {
+                tmp <- reduce(split(tmp, as.character(mcols(tmp)$gene_id))) 
+                tmp <- unlist(tmp)
+                feature_id <- paste(names(tmp), ":", tx_type[i], "_red", sep="")
+		        mcols(tmp) <- DataFrame(feature_by=names(tmp), featuretype_id=feature_id, featuretype=paste0(tx_type[i], "_red"))
+	            names(tmp) <- seq_along(tmp)
+		        featuresGRl <- c(featuresGRl, GRangesList(tmp=tmp))
+                names(featuresGRl)[length(featuresGRl)] <- paste0(tx_type[i], "_red")
+            } else {
+		        mcols(tmp) <- DataFrame(feature_by=mcols(tmp)$gene_id, featuretype_id=mcols(tmp)$tx_name, featuretype=tx_type[i])
+                featuresGRl <- c(featuresGRl, GRangesList(tmp=tmp))
+	            names(tmp) <- seq_along(tmp)
+                names(featuresGRl)[length(featuresGRl)] <- tx_type[i]
+            }
         }
         if(verbose==TRUE) cat("Created feature ranges:", paste(tx_type, collapse=", "), "\n")
     }
 
     ## Create promoter ranges reduced by gene
 	if("promoter" %in% featuretype) {
-		mypromoters <- suppressWarnings(unlist(reduce(promoters(transcriptsBy(txdb, "gene"), upstream, downstream))))
-		mypromoters <- trim(mypromoters)
-        feature_id <- paste0(names(mypromoters), ":P")
-        mcols(mypromoters) <- data.frame(feature_by=names(mypromoters), featuretype_id=feature_id, featuretype="promoter")
-	    names(mypromoters) <- seq_along(mypromoters)
-		featuresGRl <- c(featuresGRl, GRangesList("promoter"=mypromoters))
+        if(reduce_ranges==TRUE) {
+		    mypromoters <- suppressWarnings(unlist(reduce(promoters(transcriptsBy(txdb, "gene"), upstream, downstream))))
+		    mypromoters <- trim(mypromoters)
+            feature_id <- paste0(names(mypromoters), ":P_red")
+            mcols(mypromoters) <- DataFrame(feature_by=names(mypromoters), featuretype_id=feature_id, featuretype="promoter_red")
+	        names(mypromoters) <- seq_along(mypromoters)
+		    featuresGRl <- c(featuresGRl, GRangesList("promoter_red"=mypromoters))
+        } else {
+            mypromoters <- suppressWarnings(promoters(txdb, upstream, downstream, columns=c("tx_name", "gene_id", "tx_type")))
+            mcols(mypromoters) <- DataFrame(feature_by=as(mcols(mypromoters)$gene_id, "CharacterList"), featuretype_id=mcols(mypromoters)$tx_name, featuretype="promoter")
+		    featuresGRl <- c(featuresGRl, GRangesList("promoter"=mypromoters))
+        }
         if(verbose==TRUE) cat("Created feature ranges: promoter", "\n")
 	}
     
@@ -53,30 +66,51 @@ genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, ve
         ge_id_intron <- rep(names(intron_count), intron_count)
         myintrons <- unlist(myintrons)
         myintrons <- split(myintrons, ge_id_intron) # Introns by gene
-        ## Reduce introns by gene, use gene ID for naming and append counter
-        myintrons <- reduce(myintrons) 
-        intron_red_count <- sapply(width(myintrons), length) 
-        ge_id_red_intron <- rep(names(intron_red_count), intron_red_count)
-        feature_id <- paste(ge_id_red_intron, sprintf("I%03d", unlist(sapply(as.integer(intron_red_count), function(x) seq(from=1, to=x)))), sep=":")
-        myintrons <- unlist(myintrons) 
-		mcols(myintrons) <- data.frame(feature_by=ge_id_red_intron, featuretype_id=feature_id, featuretype="intron")
-	    names(myintrons) <- seq_along(myintrons)
-		featuresGRl <- c(featuresGRl, GRangesList("intron"=myintrons))
+        if(reduce_ranges==TRUE) {
+            ## Reduce introns by gene, use gene ID for naming and append counter
+            myintrons <- reduce(myintrons) 
+            intron_red_count <- sapply(width(myintrons), length) 
+            ge_id_red_intron <- rep(names(intron_red_count), intron_red_count)
+            feature_id <- paste(ge_id_red_intron, sprintf("I%03d_red", unlist(sapply(as.integer(intron_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            myintrons <- unlist(myintrons) 
+		    mcols(myintrons) <- DataFrame(feature_by=ge_id_red_intron, featuretype_id=feature_id, featuretype="intron_red")
+	        names(myintrons) <- seq_along(myintrons)
+		    featuresGRl <- c(featuresGRl, GRangesList("intron_red"=myintrons))
+        } else {
+            intron_red_count <- sapply(width(myintrons), length) 
+            ge_id_red_intron <- rep(names(intron_red_count), intron_red_count)
+            feature_id <- paste(ge_id_red_intron, sprintf("I%03d", unlist(sapply(as.integer(intron_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            myintrons <- unlist(myintrons) 
+		    mcols(myintrons) <- DataFrame(feature_by=as(ge_id_red_intron, "CharacterList"), featuretype_id=feature_id, featuretype="intron")
+	        names(myintrons) <- seq_along(myintrons)
+		    featuresGRl <- c(featuresGRl, GRangesList("intron"=myintrons))
+        }
         if(verbose==TRUE) cat("Created feature ranges: intron", "\n")
 	}
     
-    ## Create cds exon ranges reduced by gene 
+    ## Create exon ranges reduced by gene 
 	if("exon" %in% featuretype) {
-        ## CDS by gene
+        ## exons by gene
 		myexons <- exonsBy(txdb, "gene")
-	    myexons <- reduce(myexons)
-        exon_red_count <- sapply(width(myexons), length) 
-        ge_id_red_exon <- rep(names(exon_red_count), exon_red_count)
-        feature_id <- paste(ge_id_red_exon, sprintf("E%03d", unlist(sapply(as.integer(exon_red_count), function(x) seq(from=1, to=x)))), sep=":")
-        myexons <- unlist(myexons) 
-		mcols(myexons) <- data.frame(feature_by=ge_id_red_exon, featuretype_id=feature_id, featuretype="exon")
-	    names(myexons) <- seq_along(myexons)
-		featuresGRl <- c(featuresGRl, GRangesList("exon"=myexons))
+        if(reduce_ranges==TRUE) {
+	        myexons <- reduce(myexons)
+            exon_red_count <- sapply(width(myexons), length) 
+            ge_id_red_exon <- rep(names(exon_red_count), exon_red_count)
+            feature_id <- paste(ge_id_red_exon, sprintf("E%03d_red", unlist(sapply(as.integer(exon_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            myexons <- unlist(myexons) 
+		    mcols(myexons) <- DataFrame(feature_by=ge_id_red_exon, featuretype_id=feature_id, featuretype="exon_red")
+	        names(myexons) <- seq_along(myexons)
+		    featuresGRl <- c(featuresGRl, GRangesList("exon_red"=myexons))
+        } else {
+            exon_red_count <- sapply(width(myexons), length) 
+            ge_id_red_exon <- rep(names(exon_red_count), exon_red_count)
+            feature_id <- paste(ge_id_red_exon, sprintf("E%03d", unlist(sapply(as.integer(exon_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            myexons <- unlist(myexons) 
+		    mcols(myexons) <- DataFrame(feature_by=as(ge_id_red_exon, "CharacterList"), featuretype_id=feature_id, featuretype="exon")
+	        names(myexons) <- seq_along(myexons)
+		    featuresGRl <- c(featuresGRl, GRangesList("exon"=myexons))
+        
+        }
         if(verbose==TRUE) cat("Created feature ranges: exon", "\n")
     }
     
@@ -84,14 +118,24 @@ genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, ve
 	if("cds" %in% featuretype) {
         ## CDS by gene
 		mycds <- cdsBy(txdb, "gene")
-	    mycds <- reduce(mycds)
-        cds_red_count <- sapply(width(mycds), length) 
-        ge_id_red_cds <- rep(names(cds_red_count), cds_red_count)
-        feature_id <- paste(ge_id_red_cds, sprintf("CDS%03d", unlist(sapply(as.integer(cds_red_count), function(x) seq(from=1, to=x)))), sep=":")
-        mycds <- unlist(mycds) 
-		mcols(mycds) <- data.frame(feature_by=ge_id_red_cds, featuretype_id=feature_id, featuretype="cds")
-	    names(mycds) <- seq_along(mycds)
-		featuresGRl <- c(featuresGRl, GRangesList("cds"=mycds))
+        if(reduce_ranges==TRUE) {
+	        mycds <- reduce(mycds)
+            cds_red_count <- sapply(width(mycds), length) 
+            ge_id_red_cds <- rep(names(cds_red_count), cds_red_count)
+            feature_id <- paste(ge_id_red_cds, sprintf("CDS%03d_red", unlist(sapply(as.integer(cds_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            mycds <- unlist(mycds) 
+		    mcols(mycds) <- DataFrame(feature_by=ge_id_red_cds, featuretype_id=feature_id, featuretype="cds_red")
+	        names(mycds) <- seq_along(mycds)
+		    featuresGRl <- c(featuresGRl, GRangesList("cds_red"=mycds))
+        } else {
+            cds_red_count <- sapply(width(mycds), length) 
+            ge_id_red_cds <- rep(names(cds_red_count), cds_red_count)
+            feature_id <- paste(ge_id_red_cds, sprintf("CDS%03d", unlist(sapply(as.integer(cds_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            mycds <- unlist(mycds) 
+		    mcols(mycds) <- DataFrame(feature_by=as(ge_id_red_cds, "CharacterList"), featuretype_id=feature_id, featuretype="cds")
+	        names(mycds) <- seq_along(mycds)
+		    featuresGRl <- c(featuresGRl, GRangesList("cds"=mycds))
+        }
         if(verbose==TRUE) cat("Created feature ranges: cds", "\n")
     }
 
@@ -106,15 +150,25 @@ genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, ve
         ge_id_utr <- rep(names(utr_count), utr_count)
         myfiveutr <- unlist(myfiveutr)
         myfiveutr <- split(myfiveutr, ge_id_utr) # UTRs by gene
-        ## Reduce introns by gene, use gene ID for naming and append counter
-        myfiveutr <- reduce(myfiveutr) 
-        utr_red_count <- sapply(width(myfiveutr), length) 
-        ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
-        feature_id <- paste(ge_id_red_utr, sprintf("fiveUTR%03d", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
-        myfiveutr <- unlist(myfiveutr) 
-		mcols(myfiveutr) <- data.frame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="fiveUTR")
-	    names(myfiveutr) <- seq_along(myfiveutr)
-		featuresGRl <- c(featuresGRl, GRangesList("fiveUTR"=myfiveutr))
+        if(reduce_ranges==TRUE) {
+            ## Reduce introns by gene, use gene ID for naming and append counter
+            myfiveutr <- reduce(myfiveutr) 
+            utr_red_count <- sapply(width(myfiveutr), length) 
+            ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
+            feature_id <- paste(ge_id_red_utr, sprintf("fiveUTR%03d_red", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            myfiveutr <- unlist(myfiveutr) 
+		    mcols(myfiveutr) <- DataFrame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="fiveUTR_red")
+	        names(myfiveutr) <- seq_along(myfiveutr)
+		    featuresGRl <- c(featuresGRl, GRangesList("fiveUTR_red"=myfiveutr))
+        } else {
+            utr_red_count <- sapply(width(myfiveutr), length) 
+            ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
+            feature_id <- paste(ge_id_red_utr, sprintf("fiveUTR%03d", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            myfiveutr <- unlist(myfiveutr) 
+		    mcols(myfiveutr) <- DataFrame(feature_by=as(ge_id_red_utr, "CharacterList"), featuretype_id=feature_id, featuretype="fiveUTR")
+	        names(myfiveutr) <- seq_along(myfiveutr)
+		    featuresGRl <- c(featuresGRl, GRangesList("fiveUTR"=myfiveutr))
+        }    
         if(verbose==TRUE) cat("Created feature ranges: fiveUTR", "\n")
 	}
     
@@ -129,15 +183,25 @@ genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, ve
         ge_id_utr <- rep(names(utr_count), utr_count)
         mythreeutr <- unlist(mythreeutr)
         mythreeutr <- split(mythreeutr, ge_id_utr) # UTRs by gene
-        ## Reduce introns by gene, use gene ID for naming and append counter
-        mythreeutr <- reduce(mythreeutr) 
-        utr_red_count <- sapply(width(mythreeutr), length) 
-        ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
-        feature_id <- paste(ge_id_red_utr, sprintf("threeUTR%03d", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
-        mythreeutr <- unlist(mythreeutr) 
-		mcols(mythreeutr) <- data.frame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="threeUTR")
-	    names(mythreeutr) <- seq_along(mythreeutr)
-		featuresGRl <- c(featuresGRl, GRangesList("threeUTR"=mythreeutr))
+        if(reduce_ranges==TRUE) {
+            ## Reduce introns by gene, use gene ID for naming and append counter
+            mythreeutr <- reduce(mythreeutr) 
+            utr_red_count <- sapply(width(mythreeutr), length) 
+            ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
+            feature_id <- paste(ge_id_red_utr, sprintf("threeUTR%03d_red", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            mythreeutr <- unlist(mythreeutr) 
+		    mcols(mythreeutr) <- DataFrame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="threeUTR_red")
+	        names(mythreeutr) <- seq_along(mythreeutr)
+		    featuresGRl <- c(featuresGRl, GRangesList("threeUTR_red"=mythreeutr))
+        } else {
+            utr_red_count <- sapply(width(mythreeutr), length) 
+            ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
+            feature_id <- paste(ge_id_red_utr, sprintf("threeUTR%03d", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
+            mythreeutr <- unlist(mythreeutr) 
+		    mcols(mythreeutr) <- DataFrame(feature_by=as(ge_id_red_utr, "CharacterList"), featuretype_id=feature_id, featuretype="threeUTR")
+	        names(mythreeutr) <- seq_along(mythreeutr)
+		    featuresGRl <- c(featuresGRl, GRangesList("threeUTR"=mythreeutr))
+        }
         if(verbose==TRUE) cat("Created feature ranges: threeUTR", "\n")
 	}
 
@@ -155,8 +219,12 @@ genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, ve
         myintergenics <- myintergenics[strand(myintergenics)=="*"] # Removes chromosome ranges created by gaps when seqlengths available
         index <- findOverlaps(ge, myintergenics, minoverlap=0)
         myids <- tapply(myids[as.matrix(index)[,1]], as.matrix(index)[,2], paste, collapse="__")
-		mcols(myintergenics) <- data.frame(feature_by=sprintf("INTER%08d", seq_along(myids)), featuretype_id=as.character(myids), featuretype="intergenic")
-	    names(myintergenics) <- seq_along(myintergenics)
+        if(reduce_ranges==TRUE) {
+		    mcols(myintergenics) <- DataFrame(feature_by=sprintf("INTER%08d", seq_along(myids)), featuretype_id=as.character(myids), featuretype="intergenic")
+	    } else {
+		    mcols(myintergenics) <- DataFrame(feature_by=as(sprintf("INTER%08d", seq_along(myids)), "CharacterList"), featuretype_id=as.character(myids), featuretype="intergenic")
+        }
+        names(myintergenics) <- seq_along(myintergenics)
 		featuresGRl <- c(featuresGRl, GRangesList("intergenic"=myintergenics))
         if(verbose==TRUE) cat("Created feature ranges: intergenic", "\n")
 	}
@@ -167,5 +235,5 @@ genFeatures <- function(txdb, featuretype="all", upstream=1000, downstream=0, ve
 ## Usage:
 # file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
 # txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
-# feat <- genFeatures(txdb, featuretype="all", upstream=1000, downstream=0, verbose=TRUE)
+# feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, verbose=TRUE)
 
