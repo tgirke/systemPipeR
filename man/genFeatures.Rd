@@ -25,11 +25,11 @@ genFeatures(txdb, featuretype = "all", reduce_ranges, upstream = 1000, downstrea
 }
   \item{featuretype}{
 Feature types can be specified by assigning a \code{character} vector containing 
-any of the following: c("tx_type", "promoter", "intron", "exon", "cds", "fiveUTR", "threeUTR", "intergenic")/
+any of the following: c("tx_type", "promoter", "intron", "exon", "cds", "fiveUTR", "threeUTR", "intergenic").
 The default \code{all} is a shorthand to select all supported features.
 }
   \item{reduce_ranges}{
-If set to \code{TRUE} feature ranges will be reduced on the gene level. As a result 
+If set to \code{TRUE} the feature ranges will be reduced on the gene level. As a result 
 overlapping feature components of the same type and from the same gene will be
 merged to a single range, e.g. two overlapping exons from the same gene are merged 
 to one. Intergenic ranges are not affected by this setting. Note, all reduced feature
