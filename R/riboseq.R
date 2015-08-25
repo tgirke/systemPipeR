@@ -49,6 +49,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
 		    featuresGRl <- c(featuresGRl, GRangesList("promoter_red"=mypromoters))
         } else {
             mypromoters <- suppressWarnings(promoters(txdb, upstream, downstream, columns=c("tx_name", "gene_id", "tx_type")))
+		    mypromoters <- trim(mypromoters)
             mcols(mypromoters) <- DataFrame(feature_by=as(mcols(mypromoters)$gene_id, "CharacterList"), featuretype_id=mcols(mypromoters)$tx_name, featuretype="promoter")
 		    featuresGRl <- c(featuresGRl, GRangesList("promoter"=mypromoters))
         }
