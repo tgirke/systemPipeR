@@ -49,7 +49,12 @@ start site.
 }
 \value{
 The results are returned as a \code{GRangesList} where each component is a
-\code{GRanges} object containing the range set of each feature type. 
+\code{GRanges} object containing the range set of each feature type. Intergenic
+ranges are assigned unique identifiers and recorded in the \code{featuretype_id} 
+column of the metadata block. For this the ids of their adjacent genes are concatenated with two 
+underscores as separator. If the adjacent genes overlap with other genes then 
+their identifiers are included in the id string as well and separated by a single
+underscore.  
 }
 \author{
 Thomas Girke
@@ -67,6 +72,9 @@ feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE, upstream=1000,
 
 ## List extracted feature types
 names(feat)
+
+## Obtain feature lists by genes, here for promoter
+split(feat$promoter, unlist(mcols(feat$promoter)$feature_by))
 
 ## Return all features in single GRanges object
 unlist(feat)
