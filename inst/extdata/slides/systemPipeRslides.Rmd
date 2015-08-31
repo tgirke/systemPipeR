@@ -114,7 +114,7 @@ Outline
     + Quality filtering (trimming)
     + FASTQ quality report
 2. Alignments: _`rsubread`_, _`Bowtie2/Tophat2`_
-    + <span style="font-size: 24px;">Available soon: alignment free approaches with [Kallisto](http://pachterlab.github.io/kallisto/) or [artemis](https://github.com/RamsinghLab/artemis)</span>
+    + <span style="font-size: 24px;">Available soon: alignment free approaches with [Kallisto](http://pachterlab.github.io/kallisto/) via [artemis](https://github.com/RamsinghLab/artemis) or [sleuth](https://github.com/pachterlab/sleuth)</span>
 3. Alignment statistics
 4. Read counting per annotation
 5. Sample-wise correlation analysis 
