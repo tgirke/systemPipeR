@@ -5,13 +5,14 @@ Read counts for feature categories
 }
 \description{
 Counts how many reads in short read alignment files (BAM format) overlap with
-entire annotation categories (here feature types, e.g. combined exonic
-or itergenic ranges). By default the read counts are reported for the sense and
-anitsense strand of each feature type separately. To minimize memory
-consumption, the BAM files are processed in a stream using utilities from the
-\code{Rsamtools} and \code{GenomicAlignment} packages.  The counts can be
-reported for each read length separately or as a single value for reads of any
-length. Subsequently, the counting results can be plotted with the associated
+entire annotation categories. This utility is useful for analyzing the
+distribution of the read mappings across feature types, e.g. coding versus non-coding
+genes. By default the read counts are reported for the sense and anitsense
+strand of each feature type separately. To minimize memory consumption, the
+BAM files are processed in a stream using utilities from the \code{Rsamtools}
+and \code{GenomicAlignment} packages.  The counts can be reported for each
+read length separately or as a single value for reads of any length.
+Subsequently, the counting results can be plotted with the associated
 \code{plotfeaturetypeCounts} function.
 }
 \usage{
