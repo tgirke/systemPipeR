@@ -376,12 +376,12 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
     featuretypelength <- featuretypelength[!is.na(featuretypelength)]
     x <- x[, !colnames(x) %in% "Featuretypelength"]
         
-    ## Get total numbers of total aligned reads per sample
+    ## Get numbers of total aligned reads per sample
     N_total_aligned_DF <- x[x$Featuretype=="N_total_aligned",]
     if(colnames(N_total_aligned_DF)[4]!="anyreadlength") N_total_aligned_DF <- data.frame(N_total_aligned_DF[,1:3], anyreadlength=rowSums(N_total_aligned_DF[,-c(1:3)]))
     N_total_aligned <- tapply(as.numeric(as.vector(N_total_aligned_DF[,4])), N_total_aligned_DF$SampleName, sum)
 
-    ## Eliminate total read counts in plots
+    ## Eliminate total read counts to not show them in plots
     if(drop_N_total_aligned==TRUE) x <- x[x$Featuretype!="N_total_aligned",]
     
     ## Sum up read length counts if 'anyreadlength=TRUE'  
