@@ -64,8 +64,7 @@ unlink("test.db")
 \textcolor{red}{Note: this workflow is currently under construction!}
 
 \subsection{Background and objectives}
-This workflow contains most of the analysis steps developed for the Ribo-Seq study from \cite{Juntawong2014-ny}. To improve reusability and adapt to the latest
-software resources (\textit{e.g.} latest versions of R or short read aligners), the code need to be revised. Thus, results  
+This workflow contains most of the relevant data analysis steps developed for the Ribo-Seq study from \cite{Juntawong2014-ny}. To improve re-usability and adapt to the latest software versions (\textit{e.g.} R or short read aligners), the code had to be revised accordingly. Thus, the results obtained here are not expected to be identical with the published ones of the original paper. 
 ...
 
 \subsection{Experimental design}
