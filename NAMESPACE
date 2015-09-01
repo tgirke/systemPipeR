@@ -29,5 +29,6 @@ export(
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
     "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
     "preprocessReads", "filterVars", "variantReport", "combineVarReports", 
-    "varSummary", "countRangeset", "runDiff", "genFeatures"
+    "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
+    "featuretypeCounts"
 ) 
