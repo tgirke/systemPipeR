@@ -416,6 +416,12 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
     ## Define plotting order of samples
     x[,1] <- factor(x[,1], levels=unique(x[,1]), ordered=TRUE) 
     
+    ## Label for count axis
+    if(length(scale_count_val)==0 & length(scale_length_val)==0) axis_label <- "Raw counts"
+    if(length(scale_count_val)>0 & length(scale_length_val)>0) axis_label <- paste("Counts normalized per", scale_count_val, "reads", "and", scale_length_val, "bp feature length")
+    if(length(scale_count_val)>0 & length(scale_length_val)==0) axis_label <- paste("Counts normalized per", scale_count_val, "reads") 
+    if(length(scale_count_val)==0 & length(scale_length_val)>0) axis_label <- paste("Counts normalized per", scale_length_val, "bp feature length")
+
     ## Plot without read length resolution
     if(colnames(x)[4]=="anyreadlength") {
         x[,3] <- factor(x[,3], levels=sort(as.character(unique(x[,3])), decreasing=TRUE), ordered=TRUE) # Defines plotting order of bars!!!
@@ -423,6 +429,7 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
         myplot <- ggplot(x, aes(x=Feature, y=Counts)) + 
                         geom_bar(aes(fill=Strand), position="stack", stat="identity") + 
                         facet_wrap(~SampleName) + 
+                        scale_y_continuous(axis_label) +
                         theme(axis.text.x=element_text(angle = -90, hjust = 0, vjust=0.4)) +
                         coord_flip()
                         
@@ -462,7 +469,11 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
                              theme(axis.text.x=element_text(angle=-90, hjust=0, vjust=0.4)) +
                              ggtitle(featureCountslist[[i]][1,1])
             ## Assure same scale for all panels if scales="fixed"
-            if(scales=="fixed") myplot <- myplot + ylim(0, mymax)
+            if(scales=="fixed") {
+                myplot <- myplot + scale_y_continuous(axis_label, limits=c(0, mymax)) 
+           } else {
+                myplot <- myplot + scale_y_continuous(axis_label) 
+           }
             myplotlist[[i]] <- myplot
         }
     
