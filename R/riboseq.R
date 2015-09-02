@@ -368,7 +368,7 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
 # write.table(featureCounts2, "results/featureCounts2.xls", quote=FALSE, row.names=FALSE, sep="\t")
 
 ## Plot distribution of reads across feature types
-plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=10^3) { 
+plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=NULL) { 
     ## Input validity checks
     if(class(x)!="data.frame") stop("x needs to be object of class 'data.frame'")
     if(any(colnames(x)[1:3]!=c("SampleName", "Strand", "Featuretype"))) stop("First three column names need to be: 'SampleName', 'Strand', 'Featuretype'")
