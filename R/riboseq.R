@@ -262,8 +262,11 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
     feature <- names(grl)
     featurewithtotal <- c(names(grl), "N_total_aligned")
     for(j in seq(along=bfl)) {
-        myMA <- matrix(rep(0, length(featurewithtotal)*length(readlength)), nrow=length(featurewithtotal), ncol=length(readlength), dimnames=list(featurewithtotal, readlength))
-        if(is.null(readlength[1])) colnames(myMA) <- "anyreadlength"
+        if(is.null(readlength[1])) {
+            myMA <- matrix(rep(0, length(featurewithtotal)*1), nrow=length(featurewithtotal), ncol=1, dimnames=list(featurewithtotal, "anyreadlength"))
+        } else {
+            myMA <- matrix(rep(0, length(featurewithtotal)*length(readlength)), nrow=length(featurewithtotal), ncol=length(readlength), dimnames=list(featurewithtotal, readlength))
+        }
         myMAsense <- myMA
         bf <- open(bfl[[j]])
         while(isIncomplete(bf)) {
