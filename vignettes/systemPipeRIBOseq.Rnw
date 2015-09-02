@@ -197,7 +197,7 @@ p <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts.pdf", g
 \begin{figure}[H]
   \centering
    \includegraphics[width=18cm]{featureCounts.pdf}
-   \caption{Read distribution plot across annotation features.}
+   \caption{Read distribution plot across annotation features for any read length.}
    \label{fig:fastqcounts}
 \end{figure}
 
@@ -206,6 +206,12 @@ Generate and plot feature counts for specific read lengths
 fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
 p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE)
 @
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=18cm]{featureCounts2.pdf}
+   \caption{Read distribution plot across annotation features for specific read lengths.}
+   \label{fig:fastqcounts}
+\end{figure}
 
 \section{Read quantification per annotation range}
 \subsection{Read counting with \Rfunction{summarizeOverlaps} in parallel mode using multiple cores}
