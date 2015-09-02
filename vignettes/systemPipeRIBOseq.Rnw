@@ -189,16 +189,22 @@ txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
 feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, verbose=TRUE)
 @
 
-Generate and plot feature counts for specific read lengths
-<<eval=FALSE>>=
-fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-p <- plotfeaturetypeCounts(x=fc, graphicsfile="featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE)
-@
-
 Generate and plot feature counts for any read length  
 <<eval=FALSE>>=
-fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
-p2 <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE)
+fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
+p <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+@
+\begin{figure}[H]
+  \centering
+   \includegraphics[width=18cm]{featureCounts.pdf}
+   \caption{Read distribution plot across annotation features.}
+   \label{fig:fastqcounts}
+\end{figure}
+
+Generate and plot feature counts for specific read lengths
+<<eval=FALSE>>=
+fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
+p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE)
 @
 
 \section{Read quantification per annotation range}
