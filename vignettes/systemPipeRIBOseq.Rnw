@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{RNA-Seq Report Template}
+%\VignetteIndexEntry{Ribo-Seq Report Template}
 %\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap}
 %\VignetteKeywords{compute cluster, pipeline, reports}
 %\VignetteEngine{knitr::knitr}
@@ -53,7 +53,7 @@ unlink("test.db")
 @
 
 \title{Ribo-Seq project report template: Some Descriptive Title}
-\author{Project ID: RNAseq\_PI\_Name\_Organism\_Aug2015 \\
+\author{Project ID: RIBOseq\_PI\_Name\_Organism\_Aug2015 \\
 	Project PI: First Last (first.last@inst.edu)\\
         Author of Report: First Last (first.last@inst.edu)}
 \maketitle
