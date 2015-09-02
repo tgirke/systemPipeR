@@ -70,7 +70,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-#  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE)
+#  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library("GenomicFeatures"); library(BiocParallel)
