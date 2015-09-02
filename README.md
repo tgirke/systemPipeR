@@ -35,6 +35,7 @@ Templates for setting up custom project reports are provided as _*.Rnw_
 files in the [vignettes](https://github.com/tgirke/systemPipeR/tree/master/vignettes) subdirectory of this package. The
 corresponding PDFs of these report templates are linked here:
 [systemPipeRNAseq](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRNAseq.pdf?raw=true),
+[systemPipeRIBOseq](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRIBOseq.pdf?raw=true),
 [systemPipeChIPseq](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeChIPseq.pdf?raw=true)
 and
 [systemPipeVARseq](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeVARseq.pdf?raw=true).
