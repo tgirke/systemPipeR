@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{RNA-Seq Report Template}
+%\VignetteIndexEntry{RNA-Seq Workflow Template}
 %\VignetteDepends{rjson, ggplot2, limma, edgeR, GOstats, GO.db, annotate, pheatmap}
 %\VignetteKeywords{compute cluster, pipeline, reports}
 %\VignetteEngine{knitr::knitr}
