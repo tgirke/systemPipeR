@@ -32,11 +32,11 @@ Genomic ranges provided as \code{GRangesList} typically generated form
 same way as multi component features. 
 }
   \item{resizereads}{
-Positive integer defining to which length alignments should be resized prior to the 
+Positive integer defining the length alignments should be resized to prior to the 
 coverage calculation. \code{NULL} will omit the resizing step. 
 }
   \item{readlengthrange}{
-Positive integer of length 2 determining reads of which length range to use for
+Positive integer of length 2 determining the read length range to use for
 the coverage calculation. Reads falling outside of the specified length range
 will be excluded from the coverage calculation. For instance,
 \code{readlengthrange=c(30:40)} will base the coverage calculation on reads
@@ -54,14 +54,14 @@ Defines the summary statistics to use for binning. The default is \code{method=m
 If set to \code{TRUE}, a coverage matrix with single nucleotide resolution will be
 returned for any number of transcripts centered around precise anchor points in
 a genome annotation, such a stop/start codons or transcription start sites. For instance, a 
-coverage matrix 20bps upstream and downstream of the stop and start codons can be 
+matrix with coverage information 20bps upstream and downstream of the stop/start codons can be 
 obtained with \code{fixedmatrix=TRUE, upstream=20, downstream=20} along with a \code{grl} 
 instance containing the CDS exon ranges required for this operation, e.g. generated 
 with \code{cdsBy(txdb, "tx")}.
 }
   \item{resizefeatures}{
 Needs to be set to \code{TRUE} when \code{fixedmatrix=TRUE}. Internally, this will use
-the \code{systemPipeR::.resizeFeature} functions to extend single and multi component
+the \code{systemPipeR::.resizeFeature} function to extend single and multi component
 features at their most left and most right end coordinates. The corresponding extension 
 values are specified under the \code{upstream} and \code{downstream} arguments.
 }
@@ -85,8 +85,8 @@ If set to \code{TRUE} any existing file assigned to \code{outfile} will be overw
 }
 }
 \value{
-The function allows to return the following four distinct outputs. The settings to obtain
-these result instances are illustrated in the example section below.
+The function allows to return the following four distinct outputs. The settings to return
+these instances are illustrated in the example section below.
 \item{A.}{\code{data.frame} containing binned coverage}
 \item{B.}{\code{data.frame} containing coverage with single nucleotide resolution around
 anchor points such as start and stop codons.}
