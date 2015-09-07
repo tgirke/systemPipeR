@@ -179,7 +179,9 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 @
 
 \section{Read distribution across genomic features}
-The following provides utilities useful for evaluating read distributions across genomic feature types. 
+The \Rfunction{genFeatures} function generates a variety of feature types from
+\Robject{TxDb} objects using utilities provided by the
+\Rpackage{GenomicFeatures} package. 
 
 \subsection{Obtain feature types}
 The first step is the generation of the feature type ranges based on annotations provided by a GFF file that can be transformed into a \Robject{TxDb} object. This includes ranges for mRNAs, exons, introns, UTRs, CDSs, miRNAs, rRNAs, tRNAs, promoter and intergenic regions. In addition, any number of custom annotations can be included in this routine.
@@ -191,7 +193,19 @@ feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, 
 @
 
 \subsection{Count and plot reads of any length}
-Generate and plot feature counts for any read length  
+The \Rfunction{featuretypeCounts} function counts how many reads in short read
+alignment files (BAM format) overlap with entire annotation categories. This
+utility is useful for analyzing the distribution of the read mappings across
+feature types, \textit{e.g.} coding versus non-coding genes. By default the
+read counts are reported for the sense and antisense strand of each feature
+type separately. To minimize memory consumption, the BAM files are processed in
+a stream using utilities from the \Rpackage{Rsamtools} and
+\Rpackage{GenomicAlignment} packages.  The counts can be reported for each read
+length separately or as a single value for reads of any length.  Subsequently,
+the counting results can be plotted with the associated
+\Rfunction{plotfeaturetypeCounts} function.
+
+The following generates and plots feature counts for any read length.
 <<eval=FALSE>>=
 fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
 p <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
@@ -216,7 +230,18 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsfo
    \label{fig:fastqcounts}
 \end{figure}
 
-\section{Compute and plot read coverage of transcripts}
+\section{Genomic read coverage by transripts or CDSs}
+The \Rfunction{featureCoverage} function computes the read coverage along
+single and multi component features based on genomic alignments. The coverage
+segments of component features are spliced to continuous ranges, such as exons
+to transcripts or CDSs to ORFs. The results can be obtained with single
+nucleotide resolution (\textit{e.g.} around start and stop codons) or as mean coverage
+of relative bin sizes, such as 100 bins for each feature. The latter allows
+comparisons of coverage trends among transcripts of variable length. Additionally, 
+the results can be obtained for single or many features (\textit{e.g.} any number of
+transcritpts) at once. Visualization of the coverage results is facilitated by
+the downstream \Rfunction{plotfeatureCoverage} function. 
+
 \subsection{Binned CDS coverage to compare many transcripts}
 
 <<eval=FALSE>>=
