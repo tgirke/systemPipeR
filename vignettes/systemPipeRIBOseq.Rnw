@@ -230,7 +230,7 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsfo
    \label{fig:fastqcounts}
 \end{figure}
 
-\section{Genomic read coverage by transripts or CDSs}
+\section{Genomic read coverage along transripts or CDSs}
 The \Rfunction{featureCoverage} function computes the read coverage along
 single and multi component features based on genomic alignments. The coverage
 segments of component features are spliced to continuous ranges, such as exons
@@ -265,7 +265,7 @@ fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resi
                          resizefeatures=TRUE, upstream=20, downstream=20)
 @
 
-\subsection{Full resolution coverage along transcripts}
+\subsection{Nucleotide level coverage along entire transcripts/CDSs}
 <<eval=FALSE>>=
 fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
                          readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE, 
