@@ -136,19 +136,16 @@ fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resi
                     resizefeatures=TRUE, upstream=20, downstream=20)
 
 ## (B) Coverage matrix upstream and downstream of start/stop codons
-grl <- cdsBy(txdb, "tx", use.names=TRUE)
 fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
-                    readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
+                    readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
                     resizefeatures=TRUE, upstream=20, downstream=20)
 
 ## (C) Combined matrix for both binned and start/stop codon 
-grl <- cdsBy(txdb, "tx", use.names=TRUE)
 fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
                     readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
                     resizefeatures=TRUE, upstream=20, downstream=20)
 
 ## (D) Rle coverage objects one for each query feature
-grl <- cdsBy(txdb, "tx", use.names=TRUE)
 fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
                     readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE, 
                     resizefeatures=TRUE, upstream=20, downstream=20)
