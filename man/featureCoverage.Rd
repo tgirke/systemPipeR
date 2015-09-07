@@ -86,12 +86,30 @@ If set to \code{TRUE} any existing file assigned to \code{outfile} will be overw
 }
 \value{
 The function allows to return the following four distinct outputs. The settings to return
-these instances are illustrated in the example section below.
-\item{A.}{\code{data.frame} containing binned coverage}
-\item{B.}{\code{data.frame} containing coverage with single nucleotide resolution around
-anchor points such as start and stop codons.}
-\item{C.}{\code{data.frame} containing combined results of A. and B.}
-\item{D.}{\code{Rle} list containing full coverage of each query feature}
+these instances are illustrated below in the example section.
+\item{(A)}{\code{data.frame} containing binned coverage where rows are features and columns 
+coverage bins. The first four columns contain (i) the sample names, (ii) the number of 
+total aligned reads in the corresponding BAM files (useful for normalization), (iii) the
+feature IDs, (iv) strand of the coverage. All following columns are numeric and contain
+the actual coverage data for the sense and antisense strand of each feature. 
+}
+\item{(B)}{\code{data.frame} containing coverage with single nucleotide
+resolution around anchor points such as start and stop codons. The two matrix
+components are appended column-wise. To clearly distinguish the two data components, 
+they are separated by a specialty column containing pipe characters. The first four 
+columns are the same as described under (A). The column title for the
+anchor point is 0. For instance, if the features are CDSs then the first 0 corresponds to the
+first nucleotide of the start codon and the second 0 to the last nucleotide of
+the stop codon. Upstream and downstream positions are indicated by negative and
+positive column numbers, respectively.
+} 
+\item{(C)}{\code{data.frame} containing combined results of (A) and (B) where the
+first set of columns contains to the coverage around the start codons, the second one
+the binned coverage of the CDSs and the third one the coverage around the stop codons 
+separated by the same pipe columns mentioned under (B).
+}
+\item{(D)}{\code{Rle} list containing the nucleotide level coverage of each feature
+}
 }
 \author{
 Thomas Girke
