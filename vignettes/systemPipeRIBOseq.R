@@ -73,6 +73,27 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  grl <- cdsBy(txdb, "tx", use.names=TRUE)
+#  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
+#                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE,
+#                           resizefeatures=TRUE, upstream=20, downstream=20)
+
+## ----eval=FALSE------------------------------------------------------------------------------
+#  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
+#                           readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE,
+#                           resizefeatures=TRUE, upstream=20, downstream=20)
+
+## ----eval=FALSE------------------------------------------------------------------------------
+#  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
+#                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE,
+#                           resizefeatures=TRUE, upstream=20, downstream=20)
+
+## ----eval=FALSE------------------------------------------------------------------------------
+#  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
+#                           readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE,
+#                           resizefeatures=TRUE, upstream=20, downstream=20)
+
+## ----eval=FALSE------------------------------------------------------------------------------
 #  library("GenomicFeatures"); library(BiocParallel)
 #  txdb <- loadDb("./data/tair10.sqlite")
 #  eByg <- exonsBy(txdb, by=c("gene"))

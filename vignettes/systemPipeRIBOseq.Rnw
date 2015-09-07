@@ -64,7 +64,7 @@ unlink("test.db")
 \textcolor{red}{Note: this workflow is currently under construction!}
 
 \subsection{Background and objectives}
-This workflow contains most of the relevant data analysis steps used by the study from \cite{Juntawong2014-ny}. It includes functionalities for both Ribo-Seq and ribosome footprinting (RF-Seq) experiments. To improve re-usability and adapt to the mose recent versions of software (\textit{e.g.} R, Bioconductor and short read aligners), the code has been optimized accordingly. Thus, the results obtained here are expected to be similar but not necessarily identical with the published ones described in the original paper. 
+This workflow contains most of the relevant data analysis steps described by \cite{Juntawong2014-ny}. It includes functionalities for processing both Ribo-Seq and ribosome footprinting (RF-Seq) experiments. To improve re-usability and adapt to recent versions of software (\textit{e.g.} R, Bioconductor and short read aligners), the code has been optimized accordingly. Thus, the results obtained with the updated code are expected to be similar but not necessarily identical with the published ones described in the original paper. 
 
 \subsection{Experimental design}
 Typically, users want to specify here all information relevant for the analysis of their NGS study. This includes detailed descriptions of FASTQ files, experimental design, reference genome, gene annotations, etc.  
@@ -181,6 +181,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 \section{Read distribution across genomic features}
 The following provides utilities useful for evaluating read distributions across genomic feature types. 
 
+\subsection{Obtain feature types}
 The first step is the generation of the feature type ranges based on annotations provided by a GFF file that can be transformed into a \Robject{TxDb} object. This includes ranges for mRNAs, exons, introns, UTRs, CDSs, miRNAs, rRNAs, tRNAs, promoter and intergenic regions. In addition, any number of custom annotations can be included in this routine.
 <<eval=FALSE>>=
 library(GenomicFeatures)
@@ -189,6 +190,7 @@ txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
 feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, verbose=TRUE)
 @
 
+\subsection{Count and plot reads of any length}
 Generate and plot feature counts for any read length  
 <<eval=FALSE>>=
 fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
@@ -201,6 +203,7 @@ p <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts.pdf", g
    \label{fig:fastqcounts}
 \end{figure}
 
+\subsection{Count and plot reads of specific lengths}
 Generate and plot feature counts for specific read lengths
 <<eval=FALSE>>=
 fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
@@ -212,6 +215,37 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsfo
    \caption{Read distribution plot across annotation features for specific read lengths.}
    \label{fig:fastqcounts}
 \end{figure}
+
+\section{Compute and plot read coverage of transcripts}
+\subsection{Binned CDS coverage to compare many transcripts}
+
+<<eval=FALSE>>=
+grl <- cdsBy(txdb, "tx", use.names=TRUE)
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20)
+@
+
+\subsection{Coverage upstream and downstream of start and stop codons}
+<<eval=FALSE>>=
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20)
+@
+
+\subsection{Combined coverage for both binned CDS and start/stop codons} 
+<<eval=FALSE>>=
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20)
+@
+
+\subsection{Full resolution coverage along transcripts}
+<<eval=FALSE>>=
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20)
+@
 
 \section{Read quantification per annotation range}
 \subsection{Read counting with \Rfunction{summarizeOverlaps} in parallel mode using multiple cores}
