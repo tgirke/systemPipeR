@@ -104,11 +104,11 @@ targets
 \section{Read preprocessing}
 
 \subsection{Quality filtering and adaptor trimming}
-The following custome function trims adaptors hierarchically from the longest
-to the shortest match from the right end of each read. The argument
+The following custom function trims adaptors hierarchically from the longest
+to the shortest match of the right end of the reads. The argument
 \Rfunction{minpatternlength} defines the shortest adaptor match to consider in
 this iterative process. In addition, the function removes reads containing Ns
-or homopolymer regions.  More detailed information on read preprocessing is
+or homopolymer regions. More detailed information on read preprocessing is
 provided in \Rpackage{systemPipeR}'s main vignette.
 <<eval=FALSE, messages=FALSE, warning=FALSE, cache=TRUE>>=
 args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
@@ -230,6 +230,10 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsfo
    \caption{Read distribution plot across annotation features for specific read lengths.}
    \label{fig:fastqcounts}
 \end{figure}
+
+\section{Adding custom features to workflow}
+\subsection{Predicting uORFs in 5' UTR regions}
+Will be added as soon as I find time to write the help file. 
 
 \section{Genomic read coverage along transripts or CDSs}
 The \Rfunction{featureCoverage} function computes the read coverage along
@@ -455,6 +459,9 @@ dev.off()
    \caption{Heat map with hierarchical clustering dendrograms of DEGs.}
    \label{fig:heatmap}
 \end{figure}
+
+\section{Differential ribosome binding analysis (rranlational efficiency)}
+To be added...
 
 \section{Version Information}
 <<sessionInfo, results='asis'>>=
