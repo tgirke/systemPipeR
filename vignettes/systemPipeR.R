@@ -350,6 +350,11 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ## genWorkenvir(workflow="varseq")
 ## setwd("varseq")
 
+## ----genRibo_workflow_single, eval=FALSE---------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow="riboseq")
+## setwd("riboseq")
+
 ## ----sessionInfo---------------------------------------------------------
 sessionInfo()
 
