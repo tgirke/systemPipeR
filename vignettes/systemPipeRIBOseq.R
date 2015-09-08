@@ -76,22 +76,30 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  grl <- cdsBy(txdb, "tx", use.names=TRUE)
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE,
-#                           resizefeatures=TRUE, upstream=20, downstream=20)
+#                           resizefeatures=TRUE, upstream=20, downstream=20,
+#                           outfile="results/featureCoverage.xls", overwrite=TRUE)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
+#  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE,
-#                           resizefeatures=TRUE, upstream=20, downstream=20)
+#                           resizefeatures=TRUE, upstream=20, downstream=20,
+#                           outfile="results/featureCoverage.xls", overwrite=TRUE)
+#  pdf("./results/featurePlot.pdf", height=12, width=24)
+#  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
+#  dev.off()
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE,
-#                           resizefeatures=TRUE, upstream=20, downstream=20)
+#                           resizefeatures=TRUE, upstream=20, downstream=20,
+#                           outfile="results/featureCoverage.xls", overwrite=TRUE)
+#  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE,
 #                           resizefeatures=TRUE, upstream=20, downstream=20)
+#  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library("GenomicFeatures"); library(BiocParallel)
