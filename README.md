@@ -15,6 +15,12 @@ user-friendliness of many typical analysis workflows in the NGS area.
 To install the package, please use the _biocLite_ method as instructed 
 [_here_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html).
 
+To obtain the most recent updates immediately, one can install it directly from
+github as follows.
+```s
+source("http://bioconductor.org/biocLite.R")
+biocLite("tgirke/systemPipeR", build_vignettes=TRUE, dependencies=TRUE)
+```
 
 #### Usage
 Instructions for running _systemPipeR_ are given in its main
