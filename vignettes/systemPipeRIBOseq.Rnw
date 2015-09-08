@@ -460,7 +460,7 @@ dev.off()
    \label{fig:heatmap}
 \end{figure}
 
-\section{Differential ribosome binding analysis (rranlational efficiency)}
+\section{Differential ribosome binding analysis (tranlational efficiency)}
 To be added...
 
 \section{Version Information}
