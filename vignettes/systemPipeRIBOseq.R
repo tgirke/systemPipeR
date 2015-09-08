@@ -13,8 +13,8 @@ library(systemPipeR)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library(systemPipeRdata)
-#  genWorkenvir(workflow="chipseq")
-#  setwd("chipseq")
+#  genWorkenvir(workflow="ribseq")
+#  setwd("riboseq")
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  source("systemPipeRIBOseq_Fct.R")
@@ -23,6 +23,13 @@ library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
+
+## ----eval=FALSE, messages=FALSE, warning=FALSE, cache=TRUE-----------------------------------
+#  args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
+#  preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)", batchsize=100000)
+#  iterTrim <- "systemPipeR::.iterTrimbatch(fq, pattern='ACACGTCT', minpatternlength=6, Nnumber=1, polyhomo=20, minreadlength=16)"
+#  preprocessReads(args=args, Fct="iterTrim", batchsize=100000, overwrite=TRUE, compress=TRUE)
+#  writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
