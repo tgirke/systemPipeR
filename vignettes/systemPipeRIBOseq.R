@@ -28,7 +28,7 @@ targets
 #  args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
 #  fctpath <- system.file("extdata", "custom_Fct.R", package="systemPipeR")
 #  source(fctpath)
-#  iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=100)"
+#  iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=100)"
 #  preprocessReads(args=args, Fct=iterTrim, batchsize=100000, overwrite=TRUE, compress=TRUE)
 #  writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
 
