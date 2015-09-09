@@ -152,7 +152,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library(pheatmap)
 #  geneids <- unique(as.character(unlist(DEG_list[[1]])))
-#  y <- rpkmDFeByg[geneids, ]
+#  y <- assay(rlog(dds))[geneids, ]
 #  pdf("heatmap1.pdf")
 #  pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
 #  dev.off()
