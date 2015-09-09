@@ -149,12 +149,28 @@ Outline
 8. Enrichment analysis of GO terms or other annotation types
 9. Motif analysis
 
+## Ribo-Seq workflow template {.smaller}
+
+1. Read preprocessing
+    + Adaptor trimming and quality filtering
+    + FASTQ quality report
+2. Alignments: _`Tophat2`_ (or any other RNA-Seq aligner)
+3. Alignment stats
+4. Compute read distribution across genomic features
+5. Adding custom features to workflow (e.g. uORFs)
+6. Genomic read coverage along transcripts
+7. Read counting 
+8. Sample-wise correlation analysis
+9. Analysis of differentially expressed genes (DEGs)
+10. GO term enrichment analysis
+11. Gene-wise clustering
+12. Differential ribosome binding (translational efficiency)
+
 ## Coming soon
 
 Workflow templates for:
 
 - miRNA-Seq
-- Ribo-Seq
 - BS-Seq
 
 Outline
