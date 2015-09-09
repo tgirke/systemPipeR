@@ -39,7 +39,7 @@ BiocStyle::latex(use.unsrturl=FALSE)
 \fancyhead{}
 \fancyfoot{}
 \rhead{\nouppercase{\leftmark}}
-\lhead{\textit{systemPipeR ChIP-Seq Report}}
+\lhead{\textit{systemPipeR ChIP-Seq Workflow}}
 \rfoot{\thepage}
 
 \begin{document}
@@ -52,7 +52,7 @@ options(formatR.arrow=TRUE, width=95)
 unlink("test.db")
 @
 
-\title{ChIP-Seq project report template: Some Descriptive Title}
+\title{ChIP-Seq workflow template: Some Descriptive Title}
 \author{Project ID: ChIPseq\_PI\_Name\_Organism\_Jun2015 \\
 	Project PI: First Last (first.last@inst.edu)\\
         Author of Report: First Last (first.last@inst.edu)}
