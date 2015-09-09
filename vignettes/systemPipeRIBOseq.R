@@ -24,14 +24,6 @@ targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 
-## ----eval=FALSE, messages=FALSE, warning=FALSE, cache=TRUE-----------------------------------
-#  args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
-#  fctpath <- system.file("extdata", "custom_Fct.R", package="systemPipeR")
-#  source(fctpath)
-#  iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=100)"
-#  preprocessReads(args=args, Fct=iterTrim, batchsize=100000, overwrite=TRUE, compress=TRUE)
-#  writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
-
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
 #  fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
@@ -208,7 +200,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library(pheatmap)
 #  geneids <- unique(as.character(unlist(DEG_list[[1]])))
-#  y <- rpkmDFeByg[geneids, ]
+#  y <- assay(rlog(dds))[geneids, ]
 #  pdf("heatmap1.pdf")
 #  pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
 #  dev.off()
