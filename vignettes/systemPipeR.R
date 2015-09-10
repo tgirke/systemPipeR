@@ -241,7 +241,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 ## ----read_counting_mirna, eval=FALSE-------------------------------------
 ## system("wget ftp://mirbase.org/pub/mirbase/19/genomes/My_species.gff3 -P ./data/")
-## gff <- import.gff("./data/My_species.gff3", asRangedData=FALSE)
+## gff <- import.gff("./data/My_species.gff3")
 ## gff <- split(gff, elementMetadata(gff)$ID)
 ## bams <- names(bampaths); names(bams) <- targets$SampleName
 ## bfl <- BamFileList(bams, yieldSize=50000, index=character())
