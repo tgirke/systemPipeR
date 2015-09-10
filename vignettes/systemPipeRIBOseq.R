@@ -25,14 +25,14 @@ targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+#  args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 #  fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
 #  pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 #  seeFastqPlot(fqlist)
 #  dev.off()
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+#  args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 #  sysargs(args)[1] # Command-line parameters for first FASTQ file
 
 ## ----eval=FALSE------------------------------------------------------------------------------
@@ -66,11 +66,11 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
-#  p <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+#  p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-#  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
+#  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  grl <- cdsBy(txdb, "tx", use.names=TRUE)
@@ -84,16 +84,16 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #                           readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE,
 #                           resizefeatures=TRUE, upstream=20, downstream=20,
 #                           outfile="results/featureCoverage.xls", overwrite=TRUE)
-#  pdf("./results/featurePlot.pdf", height=12, width=24)
 #  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
-#  dev.off()
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE,
 #                           resizefeatures=TRUE, upstream=20, downstream=20,
 #                           outfile="results/featureCoverage.xls", overwrite=TRUE)
+#  pdf("./results/featurePlot.pdf", height=12, width=24)
 #  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
+#  dev.off()
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
@@ -136,7 +136,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library(edgeR)
-#  countDF <- read.delim("countDFeByg.xls", row.names=1, check.names=FALSE)
+#  countDF <- read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)
 #  targets <- read.delim("targets.txt", comment="#")
 #  cmp <- readComp(file="targets.txt", format="matrix", delim="-")
 #  edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
