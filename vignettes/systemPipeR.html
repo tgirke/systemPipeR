@@ -603,7 +603,7 @@ rownames(countDFeByg) &lt;- names(rowRanges(counteByg[[1]])); colnames(countDFeB
 <h2><span class="header-section-number">3.9</span> Read counting for miRNA profiling experiments</h2>
 <p>Download miRNA genes from miRBase</p>
 <pre class="r"><code>system(&quot;wget ftp://mirbase.org/pub/mirbase/19/genomes/My_species.gff3 -P ./data/&quot;)
-gff &lt;- import.gff(&quot;./data/My_species.gff3&quot;, asRangedData=FALSE)
+gff &lt;- import.gff(&quot;./data/My_species.gff3&quot;)
 gff &lt;- split(gff, elementMetadata(gff)$ID)
 bams &lt;- names(bampaths); names(bams) &lt;- targets$SampleName
 bfl &lt;- BamFileList(bams, yieldSize=50000, index=character())
@@ -772,7 +772,7 @@ goBarplot(gos, gocat=&quot;CC&quot;)</code></pre>
 </div>
 <div id="clustering-and-heat-maps" class="section level2">
 <h2><span class="header-section-number">3.15</span> Clustering and heat maps</h2>
-<p>The following example performs hierarchical clustering on the <em><code>rlog</code></em> normalized expression matrix subsetted by the DEGs identified in the above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.</p>
+<p>The following example performs hierarchical clustering on the <em><code>rlog</code></em> transformed expression matrix subsetted by the DEGs identified in the above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.</p>
 <pre class="r"><code>library(pheatmap)
 geneids &lt;- unique(as.character(unlist(DEG_list[[1]])))
 y &lt;- assay(rlog(dds))[geneids, ]
