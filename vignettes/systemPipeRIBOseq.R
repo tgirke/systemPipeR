@@ -84,7 +84,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #                           readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE,
 #                           resizefeatures=TRUE, upstream=20, downstream=20,
 #                           outfile="results/featureCoverage.xls", overwrite=TRUE)
-#  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
+#  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
@@ -92,7 +92,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #                           resizefeatures=TRUE, upstream=20, downstream=20,
 #                           outfile="results/featureCoverage.xls", overwrite=TRUE)
 #  pdf("./results/featurePlot.pdf", height=12, width=24)
-#  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
+#  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 #  dev.off()
 
 ## ----eval=FALSE------------------------------------------------------------------------------
