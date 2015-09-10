@@ -210,7 +210,7 @@ cmp <- readComp(file="targets.txt", format="matrix", delim="-")
 edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 @
 
-Add functional descriptions
+Add custom functional descriptions. Skip this step if \Robject{desc.xls} is not available.
 <<eval=FALSE>>=
 desc <- read.delim("data/desc.xls") 
 desc <- desc[!duplicated(desc[,1]),]
