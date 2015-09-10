@@ -25,7 +25,7 @@ targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
+#  args <- systemArgs(sysma="param/tophat.param", mytargets="targets_trim.txt")
 #  fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
 #  pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 #  seeFastqPlot(fqlist)

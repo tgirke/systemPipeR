@@ -129,7 +129,7 @@ quality cutoffs and mean quality distribution. The results are written to a PDF 
 \href{run:./results/fastqReport.pdf}{\Robject{fastqReport.pdf}}.
 
 <<eval=FALSE>>=
-args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
+args <- systemArgs(sysma="param/tophat.param", mytargets="targets_trim.txt")
 fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 seeFastqPlot(fqlist)
@@ -352,7 +352,7 @@ cmp <- readComp(file="targets.txt", format="matrix", delim="-")
 edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 @
 
-Add functional descriptions
+Add custom functional descriptions. Skip this step if \Robject{desc.xls} is not available. 
 <<eval=FALSE>>=
 desc <- read.delim("data/desc.xls") 
 desc <- desc[!duplicated(desc[,1]),]
