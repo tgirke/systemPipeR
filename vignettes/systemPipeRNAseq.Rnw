@@ -302,12 +302,12 @@ goBarplot(gos, gocat="CC")
 \end{figure}
 
 \section{Clustering and heat maps}
-The following example performs hierarchical clustering on the RPKM normalized expression matrix subsetted by the DEGs identified in the 
+The following example performs hierarchical clustering on the \Robject{rlog} normalized expression matrix subsetted by the DEGs identified in the 
 above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.
 <<eval=FALSE>>=
 library(pheatmap)
 geneids <- unique(as.character(unlist(DEG_list[[1]])))
-y <- rpkmDFeByg[geneids, ]
+y <- assay(rlog(dds))[geneids, ]
 pdf("heatmap1.pdf")
 pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
 dev.off()
