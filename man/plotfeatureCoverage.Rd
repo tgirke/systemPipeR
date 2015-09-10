@@ -11,7 +11,7 @@ using methods such as \code{mean}, while the data from multiple samples will
 be plotted in separate panels.  
 }
 \usage{
-plotfeatureCoverage(covMA, method = mean, scales = "fixed", scale_count_val = 10^6)
+plotfeatureCoverage(covMA, method = mean, scales = "fixed", extendylim=2, scale_count_val = 10^6)
 }
 \arguments{
   \item{covMA}{
@@ -29,6 +29,11 @@ For details see \code{ggplot2::facet_wrap}. The default \code{fixed} assures a
 constant scale across all bar plot panels, while \code{free} uses the optimum
 scale within each bar plot panel. To evaluate plots in all their details, it
 may be necessary to generate two graphics files one for each scaling option. 
+}
+  \item{extendylim}{
+ Allows to extend the upper limit of the y axis when \code{scales=fixed}. Internally, the 
+function identifies the maximum value in the data and then multiplies this maximum value 
+by the value provided under \code{extendylim}. The default is set to \code{extendylim=2}.
 }
   \item{scale_count_val}{
 Scales (normalizes) the read counts to a fixed value of aligned reads
