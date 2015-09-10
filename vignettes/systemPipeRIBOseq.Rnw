@@ -129,7 +129,7 @@ quality cutoffs and mean quality distribution. The results are written to a PDF 
 \href{run:./results/fastqReport.pdf}{\Robject{fastqReport.pdf}}.
 
 <<eval=FALSE>>=
-args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 seeFastqPlot(fqlist)
@@ -146,7 +146,7 @@ dev.off()
 \subsection{Read mapping with \Rfunction{Bowtie2/Tophat2}}
 The NGS reads of this project will be aligned against the reference genome sequence using \Robject{Bowtie2/TopHat2} \citep{Kim2013-vg, Langmead2012-bs}. The parameter settings of the aligner are defined in the \Robject{tophat.param} file.
 <<eval=FALSE>>=
-args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 @
 Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 \Robject{qsub} processes each with 4 CPU cores).
@@ -211,7 +211,7 @@ the counting results can be plotted with the associated
 The following generates and plots feature counts for any read length.
 <<eval=FALSE>>=
 fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
-p <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
 @
 \begin{figure}[H]
   \centering
@@ -224,7 +224,7 @@ p <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts.pdf", g
 Generate and plot feature counts for specific read lengths
 <<eval=FALSE>>=
 fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
+p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
 @
 \begin{figure}[H]
   \centering
@@ -265,6 +265,15 @@ fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], res
                          readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
                          resizefeatures=TRUE, upstream=20, downstream=20, 
                          outfile="results/featureCoverage.xls", overwrite=TRUE)
+plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
+@
+
+\subsection{Combined coverage for both binned CDS and start/stop codons} 
+<<eval=FALSE>>=
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20,
+                         outfile="results/featureCoverage.xls", overwrite=TRUE)
 pdf("./results/featurePlot.pdf", height=12, width=24)
 plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
 dev.off()
@@ -275,15 +284,6 @@ dev.off()
    \caption{Feature coverage plot with single nucleotide resolution around start and stop codons and binned coverage between them.}
    \label{fig:fastqcounts}
 \end{figure}
-
-\subsection{Combined coverage for both binned CDS and start/stop codons} 
-<<eval=FALSE>>=
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
-                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
-                         resizefeatures=TRUE, upstream=20, downstream=20,
-                         outfile="results/featureCoverage.xls", overwrite=TRUE)
-plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
-@
 
 \subsection{Nucleotide level coverage along entire transcripts/CDSs}
 <<eval=FALSE>>=
@@ -346,7 +346,7 @@ dev.off()
 The analysis of differentially expressed genes (DEGs) is performed with the glm method from the \Rpackage{edgeR} package \citep{Robinson2010-uk}. The sample comparisons used by this analysis are defined in the header lines of the \href{run:targets.txt}{\Robject{targets}} file starting with \texttt{<CMP>}.
 <<eval=FALSE>>=
 library(edgeR)
-countDF <- read.delim("countDFeByg.xls", row.names=1, check.names=FALSE) 
+countDF <- read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE) 
 targets <- read.delim("targets.txt", comment="#")
 cmp <- readComp(file="targets.txt", format="matrix", delim="-")
 edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
