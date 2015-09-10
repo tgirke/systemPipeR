@@ -444,7 +444,7 @@ goBarplot(gos, gocat="CC")
 \end{figure}
 
 \section{Clustering and heat maps}
-The following example performs hierarchical clustering on the \Rfunarg{rlog} normalized expression matrix subsetted by the DEGs identified in the 
+The following example performs hierarchical clustering on the \Rfunarg{rlog} transformed expression matrix subsetted by the DEGs identified in the 
 above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.
 <<eval=FALSE>>=
 library(pheatmap)
