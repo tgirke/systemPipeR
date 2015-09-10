@@ -265,7 +265,7 @@ fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], res
                          readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
                          resizefeatures=TRUE, upstream=20, downstream=20, 
                          outfile="results/featureCoverage.xls", overwrite=TRUE)
-plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
+plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 @
 
 \subsection{Combined coverage for both binned CDS and start/stop codons} 
@@ -275,7 +275,7 @@ fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resi
                          resizefeatures=TRUE, upstream=20, downstream=20,
                          outfile="results/featureCoverage.xls", overwrite=TRUE)
 pdf("./results/featurePlot.pdf", height=12, width=24)
-plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
+plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 dev.off()
 @
 \begin{figure}[H]
