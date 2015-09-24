@@ -22,19 +22,19 @@ NGS WORKFLOWS
         - VAR-Seq
       The previous version of systemPipeR included only RNA-Seq as a complete workflow.
 
-    o Added data package 'systemPipeRdata' to generate workflow environments 
-      with a single command (genWorkenvir) containing all parameter files
-      and sample data required to run and test workflows. This will also 
-      allow evaluation of much more code examples in the vignettes 
-      during the package build/test process than this was possible in the past. 
+    o Added the data package 'systemPipeRdata' to generate systemPipeR workflow
+      environments with a single command (genWorkenvir) containing all parameter
+      files and sample data required to quickly test and run workflows. This change
+      will also allow evaluation of much more code examples in the vignettes during the
+      package build/test process than this was possible in the past. 
 
     o About 20 new functions have been added to the package. Some examples are:
         - Read pre-processor function with support for SE and PE reads
         - Parallelization option of detailed FASTQ quality reports
         - Read distribution plots across all features available in a 
-          genome annotation (e.g. featuretypeCounts) 
+          genome annotation (see ?featuretypeCounts) 
         - Visualization of coverage trends along transcripts summarized 
-          for any number of transcripts (e.g. featureCoverage)
+          for any number of transcripts (see ?featureCoverage)
         - Differential expression/binding analysis includes now DESeq2 as
           well as edgeR
 
