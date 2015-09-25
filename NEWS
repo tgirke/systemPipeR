@@ -20,13 +20,15 @@ NGS WORKFLOWS
         - Ribo-Seq and polyRibo-Seq 
         - ChIP-Seq
         - VAR-Seq
-      The previous version of systemPipeR included only RNA-Seq as a complete workflow.
+      The previous version of systemPipeR included only a complete workflow for
+      RNA-Seq.
 
     o Added the data package 'systemPipeRdata' to generate systemPipeR workflow
       environments with a single command (genWorkenvir) containing all parameter
-      files and sample data required to quickly test and run workflows. This change
-      will also allow evaluation of much more code examples in the vignettes during the
-      package build/test process than this was possible in the past. 
+      files and sample data required to quickly test and run workflows. This
+      change will also allow evaluation of much more code examples in the
+      vignettes during the package build/test process than this was possible in
+      the past. 
 
     o About 20 new functions have been added to the package. Some examples are:
         - Read pre-processor function with support for SE and PE reads
@@ -41,16 +43,17 @@ NGS WORKFLOWS
     o Added param templates for additional command-line software including, but 
       not limited to: BWA-MEM, GATK, BCFtools, MACS2
 
-    o Adaption of R Markdown for main vignette. Plans are to provide in the future 
-      the report templates for all workflows in both formats: Latex/PDF and R_Markdown/HTML.
+    o Adaption of R Markdown for main vignette. Plans are to provide in the
+      future the report templates for all workflows in both formats: Latex/PDF
+      and R_Markdown/HTML.
 
 WORFLOW FRAMEWORK
 
-    o Simplified design of complex analysis workflows. Workflow can now include 
+    o Simplified design of complex analysis workflows. Workflow can now include
       any number or combination of R and/or command-line steps
 
-    o Improvements to workflow automation and parallelization on single machines and
-      computer clusters. This also includes now many additional examples in the workflow 
-      vignettes.
+    o Improvements to workflow automation and parallelization on single
+      machines and computer clusters. This also includes now many additional
+      parallelization examples in the workflow vignettes.
 
 
