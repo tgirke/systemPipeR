@@ -49,7 +49,7 @@ NGS WORKFLOWS
 
 WORFLOW FRAMEWORK
 
-    o Simplified design of complex analysis workflows. Workflow can now include
+    o Simplified design of complex analysis workflows. Workflows can now include
       any number or combination of R and/or command-line steps
 
     o Improvements to workflow automation and parallelization on single
