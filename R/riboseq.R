@@ -866,7 +866,7 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
 ##################
 ## Predict ORFs ##
 ##################
-## (a) Function to predict ORFs in DNA sequences provided as DNAString/DNAStringSet objects
+## Function to predict ORFs in DNA sequences provided as DNAString/DNAStringSet objects
 ##     n: defines the number of ORFs to consider in each sequence sorted by length, 
 ##        default n=1 returns the longest ORF 
 predORF <- function(x, n=1, type="df", mode="orf", strand="sense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"), ...) {
@@ -874,25 +874,27 @@ predORF <- function(x, n=1, type="df", mode="orf", strand="sense", startcodon="A
     if(any(nchar(c(startcodon, stopcodon))!=3)) stop("startcodon and stopcodons can only contain 3-letter strings.")
 
     ## Function for predicting ORFs/CDSs on single sequence
-    .predORF <- function(x, n, type, mode, ...) {
+    .predORF <- function(x, n, mode, ...) {
 		if(class(x)=="DNAStringSet" & length(x)==1) x <- x[[1]]
         
         ## start/stop codon assignment
         if(tolower(strand)=="sense") {
-		    startcodon <- startcodon
+		    mystrand <- 1 # for +
+            startcodon <- startcodon
             stopcodon <- stopcodon
 		} else if(tolower(strand)=="antisense") {
             ## Reverse and complement start/stop plus swap their assignment
+		    mystrand <- 2 # for -
 		    stopcodon_temp <- as.character(reverseComplement(DNAStringSet(stopcodon)))
             startcodon_temp <- as.character(reverseComplement(DNAStringSet(startcodon)))
 		    stopcodon <- startcodon_temp
             startcodon <- stopcodon_temp
         
         } else {
-            stop("strand can only be assigned 'sense' or antisense")
+            stop("strand can only be assigned 'sense' or 'antisense'")
         }
 
-        ## Tripletize x 
+        ## Tripletize x for each frame 
         c1 <- as.character(suppressWarnings(codons(x)))
 		c2 <- as.character(suppressWarnings(codons(x[2:length(x)])))
 		c3 <- as.character(suppressWarnings(codons(x[3:length(x)])))
@@ -928,41 +930,50 @@ predORF <- function(x, n=1, type="df", mode="orf", strand="sense", startcodon="A
 		orfRanges <- orfRanges[rev(order(width(orfRanges)))]
 		
         ## Organize results in data.frame and also add info about frame of predicted ORF to downstream ORF e.g. prediction is uORF of 5'-UTR
-        if(tolower(type)=="df") {
-			orfRanges <- as.data.frame(orfRanges)
-	 		inframe <- (length(x) - orfRanges$end) / 3; inframe2 <- inframe
-			inframe2[abs((inframe - as.integer(inframe))) == 0] <- 1
-			inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(1/3, 2)] <- 2
-			inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(2/3, 2)] <- 3
-			orfRanges <- cbind(orfRanges, frame2ORF=inframe2)
-        ## IRanges is alternative
-		} else if(tolower(type)=="ir") {
-            orfRanges <- orfRanges
-		} else {
-            stop("type needs to be assigned 'df' or 'ir'")
-        }
+	    orfRanges <- as.data.frame(orfRanges)
+	 	inframe <- (length(x) - orfRanges$end) / 3; inframe2 <- inframe
+		inframe2[abs((inframe - as.integer(inframe))) == 0] <- 1
+		inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(1/3, 2)] <- 2
+		inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(2/3, 2)] <- 3
+		orfRanges <- cbind(ORF_ID=1:length(orfRanges[,1]), orfRanges, strand=mystrand, frame2ORF=inframe2)
 
         ## Return all ORFs 
         if(n=="all") {
 			return(orfRanges)
-        ## Return only longest ORF
+        ## Return only as man ORFs as specified under n sorted by decreasingly by length
 		} else if(is.numeric(n)) {
-			return(orfRanges[1:n, , drop=FALSE])
+			## Make sure subsetting does not exeed number of records in orfRanges
+            if(length(orfRanges[,1]) < n) { 
+                upperlimit <- length(orfRanges[,1]) 
+            } else { 
+                upperlimit <- n
+            }
+            return(orfRanges[1:upperlimit, , drop=FALSE])
 		} else {
             stop("n needs to be assigned positive integer or 'all'")
         }
 	}
-	if(class(x)=="DNAString") {
-		return(.predORF(x, n, type, mode, strand, startcodon, stopcodon))
-	}
+	
+    ## Run .predORF
+    if(class(x)=="DNAString") {
+		tmp <- .predORF(x, n, mode, strand, startcodon, stopcodon)
+		tmp[,"strand"] <- ifelse(as.numeric(tmp[,"strand"])==1, "+", "-")
+	    return(tmp)
+    }
 	if(class(x)=="DNAStringSet") {
-		tmp <- lapply(x, function(y) .predORF(y, n=n, type=type, mode=mode, strand, startcodon, stopcodon))
+		tmp <- lapply(x, function(y) .predORF(y, n=n, mode=mode, strand, startcodon, stopcodon))
 		names(tmp) <- names(x)
-		if(n==1 & tolower(type)=="df") {
-				return(data.frame(names=names(tmp), matrix(unlist(tmp), length(tmp), 4, dimnames=list(1:length(tmp), c("start", "end", "width", "frame2ORF")), byrow=TRUE)))
-		} else {
-			    return(tmp)
-		}
+	    tmpdf <- do.call("rbind", tmp); tmpdf <- data.frame(seqnames=rownames(tmpdf), tmpdf); rownames(tmpdf) <- NULL
+        tmpdf[,"strand"] <- ifelse(as.numeric(tmpdf[,"strand"])==1, "+", "-")
+		
+        if(tolower(type)=="df") {
+                return(tmpdf)
+        } else if(tolower(type)=="gr") {
+                tmpdf <- makeGRangesFromDataFrame(tmpdf, keep.extra.columns=TRUE)
+		        return(tmpdf)
+        } else {
+            stop("type can only be assigned 'df' of 'gr'")
+        }
 	}
 }
 # library(Biostrings)
