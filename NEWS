@@ -43,9 +43,9 @@ NGS WORKFLOWS
     o Added param templates for additional command-line software including, but 
       not limited to: BWA-MEM, GATK, BCFtools, MACS2
 
-    o Adoption of R Markdown for main vignette. Plans are to provide in the
-      future the report templates for all workflows in both formats: Latex/PDF
-      and R_Markdown/HTML.
+    o Adoption of R Markdown for main vignette. Future plans are to provide for
+      all workflows the report templates in both formats: Latex/PDF and
+      R_Markdown/HTML.
 
 WORFLOW FRAMEWORK
 
