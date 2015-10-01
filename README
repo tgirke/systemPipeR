@@ -1,4 +1,7 @@
 changelog
+    version 1.3.44
+        - added predORF
+
     version 1.3.35 - 1.3.43
         - added featureCoverage and plotfeatureCoverage
         - vignette updates
