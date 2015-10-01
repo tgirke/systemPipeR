@@ -636,7 +636,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
             binDFresult <- rbind(binDFresult, myDFbins) 
             exportDF <- myDFbins
         } 
-        ## Generat fixed matrix output
+        ## Generate fixed matrix output
         if(fixedmatrix==TRUE) {
             mycolnames <- c(-upstream:-1, 0, 1:downstream)
             fixedMAstartpos <- t(sapply(names(cov_posList), function(x) as.numeric(cov_posList[[x]])[1:(upstream+downstream+1)]))
@@ -867,11 +867,10 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
 ## Predict ORFs ##
 ##################
 ## Function to predict ORFs in DNA sequences provided as DNAString/DNAStringSet objects
-##     n: defines the number of ORFs to consider in each sequence sorted by length, 
-##        default n=1 returns the longest ORF 
-predORF <- function(x, n=1, type="df", mode="orf", strand="sense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"), ...) {
+predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA")) {
 	## Check input validity 
     if(any(nchar(c(startcodon, stopcodon))!=3)) stop("startcodon and stopcodons can only contain 3-letter strings.")
+    if(!toupper(mode) %in% c("ORF", "CDS")) stop("'mode' can only be assigned one of: 'orf' or 'cds'")
 
     ## Function for predicting ORFs/CDSs on single sequence
     .predORF <- function(x, n, mode, strand, ...) {
@@ -933,7 +932,7 @@ predORF <- function(x, n=1, type="df", mode="orf", strand="sense", startcodon="A
 		inframe2[abs((inframe - as.integer(inframe))) == 0] <- 1
 		inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(1/3, 2)] <- 2
 		inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(2/3, 2)] <- 3
-		orfRanges <- cbind(ORF_ID=1:length(orfRanges[,1]), orfRanges, strand=mystrand, frame2ORF=inframe2)
+		orfRanges <- cbind(subject_id=1:length(orfRanges[,1]), orfRanges, strand=mystrand, inframe2end=inframe2)
 
         ## Return all ORFs 
         if(n=="all") {
@@ -992,13 +991,14 @@ predORF <- function(x, n=1, type="df", mode="orf", strand="sense", startcodon="A
             ## combine and sort results
             tmpdf <- rbind(tmpdf_pos, tmpdf_neg)
             tmpdf[,"strand"] <- ifelse(as.numeric(tmpdf[,"strand"])==1, "+", "-")
-            tmpdf <- tmpdf[order(tmpdf$seqnames, tmpdf$ORF_ID), ]
+            tmpdf <- tmpdf[order(tmpdf$seqnames, tmpdf$subject_id), ]
         } else {
             stop("strand can only be assigned 'sense', 'antisense' or 'both'")
         }
 	    
         ## Return results in format defined by type
         if(tolower(type)=="df") {
+                rownames(tmpdf) <- NULL
                 return(tmpdf)
         } else if(tolower(type)=="gr") {
                 tmpdf <- makeGRangesFromDataFrame(tmpdf, keep.extra.columns=TRUE)
@@ -1011,52 +1011,52 @@ predORF <- function(x, n=1, type="df", mode="orf", strand="sense", startcodon="A
 # library(Biostrings)
 # file <- system.file("extdata", "someORF.fa", package="Biostrings")
 # dna <- readDNAStringSet(file)
-orf <- predORF(dna[1:4], n=1, type="df", mode="orf", strand="antisense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"))
+# orf <- predORF(dna[1:4], n=1, type="df", mode="orf", strand="antisense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"))
 
-## Function to return in gff (GRanges) specific range type (e.g. 5' UTRs) with minimum length
-returnRange <- function(gff, ignorespaces=c("ChrC", "ChrM"), rangetype="five_prime_UTR", minlength=100) {
-	gff <- gff[which(elementMetadata(gff)[,"type"]==rangetype),]
-	## Removal of specific chromosomes
-	gff <- gff[!as.character(seqnames(gff)) %in% ignorespaces] 
-	## Keep only longest 5' UTR among duplicates 
-	gff <- gff[order(elementMetadata(gff)[,"group"], rev(width(gff))),]
-	gff <- gff[!duplicated(elementMetadata(gff)[,"group"])] 
-	## Length filter
-	gff <- gff[width(gff) >= minlength] 
-}
-# returnRange(gff, ignorespaces=c("ChrC", "ChrM"), rangetype="five_prime_UTR", minlength=100) 
-
-## Function to scale ORF ranges to genome level in GRanges object 
-scaleRanges <- function(gr=gff_fpUTR, x=orf, type="gr", label="uORF") {
-	## Input checks
-	if(length(gr) != length(x[,1])) stop("gr and x need to have the same number of entries")
-	gr <- gr[rowSums(is.na(x)) == 0, ] # Remove NA ranges 
-	x <- x[rowSums(is.na(x)) == 0, ] # Remove NA ranges
-	x <- data.frame(names=x$names, start=start(gr), end=end(gr), startsub=x$start, endsub=x$end, strand=as.character(strand(gr)))
-
-	## Scaling for ranges on pos strand
-	start_scaled <- x$start + x$startsub - 1
-    end_scaled <- x$start + x$endsub - 1
-    x <- cbind(x, start_scaled, end_scaled)
-
-	## Scaling for ranges on neg strand
-	start_neg_scaled <- (x$end - x$endsub) + 1
-	end_neg_scaled <- (x$end - x$startsub) + 1
-	x[x$strand=="-", "start_scaled"] <- start_neg_scaled[x$strand=="-"]
-	x[x$strand=="-", "end_scaled"] <- end_neg_scaled[x$strand=="-"]
-	
-	## Output
-	if(type=="df") { 
-		return(x) 
-	}
-	if(type=="gr") { 
-		start(gr) <- x$start_scaled
-		end(gr) <- x$end_scaled
-		elementMetadata(gr)[,"type"] <- label
-		return(gr) 
-	}
-}
-# uorfs <- scaleRanges(gr=gff_fpUTR, x=orf, type="gr", label="uORF")
+# ## Function to return in gff (GRanges) specific range type (e.g. 5' UTRs) with minimum length
+# returnRange <- function(gff, ignorespaces=c("ChrC", "ChrM"), rangetype="five_prime_UTR", minlength=100) {
+# 	gff <- gff[which(elementMetadata(gff)[,"type"]==rangetype),]
+# 	## Removal of specific chromosomes
+# 	gff <- gff[!as.character(seqnames(gff)) %in% ignorespaces] 
+# 	## Keep only longest 5' UTR among duplicates 
+# 	gff <- gff[order(elementMetadata(gff)[,"group"], rev(width(gff))),]
+# 	gff <- gff[!duplicated(elementMetadata(gff)[,"group"])] 
+# 	## Length filter
+# 	gff <- gff[width(gff) >= minlength] 
+# }
+# # returnRange(gff, ignorespaces=c("ChrC", "ChrM"), rangetype="five_prime_UTR", minlength=100) 
+# 
+# ## Function to scale ORF ranges to genome level in GRanges object 
+# scaleRanges <- function(gr=gff_fpUTR, x=orf, type="gr", label="uORF") {
+# 	## Input checks
+# 	if(length(gr) != length(x[,1])) stop("gr and x need to have the same number of entries")
+# 	gr <- gr[rowSums(is.na(x)) == 0, ] # Remove NA ranges 
+# 	x <- x[rowSums(is.na(x)) == 0, ] # Remove NA ranges
+# 	x <- data.frame(names=x$names, start=start(gr), end=end(gr), startsub=x$start, endsub=x$end, strand=as.character(strand(gr)))
+# 
+# 	## Scaling for ranges on pos strand
+# 	start_scaled <- x$start + x$startsub - 1
+#     end_scaled <- x$start + x$endsub - 1
+#     x <- cbind(x, start_scaled, end_scaled)
+# 
+# 	## Scaling for ranges on neg strand
+# 	start_neg_scaled <- (x$end - x$endsub) + 1
+# 	end_neg_scaled <- (x$end - x$startsub) + 1
+# 	x[x$strand=="-", "start_scaled"] <- start_neg_scaled[x$strand=="-"]
+# 	x[x$strand=="-", "end_scaled"] <- end_neg_scaled[x$strand=="-"]
+# 	
+# 	## Output
+# 	if(type=="df") { 
+# 		return(x) 
+# 	}
+# 	if(type=="gr") { 
+# 		start(gr) <- x$start_scaled
+# 		end(gr) <- x$end_scaled
+# 		elementMetadata(gr)[,"type"] <- label
+# 		return(gr) 
+# 	}
+# }
+# # uorfs <- scaleRanges(gr=gff_fpUTR, x=orf, type="gr", label="uORF")
 
 
 
