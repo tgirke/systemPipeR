@@ -4,10 +4,11 @@ CHANGES IN VERSION 1.3
 OVERVIEW 
     systemPipeR is an R/Bioconductor package for building and running automated
     analysis workflows for a wide range of next generation sequence (NGS)
-    applications. Important features include automated report generation and
-    support for running both R and command-line software, such as NGS aligners
-    or peak/variant callers, on local computers or compute clusters. Efficient 
-    handling of complex sample sets and experimental designs is facilitated by a 
+    applications. Important features include a uniform workflow interface
+    across applications, automated report generation, and support for running
+    both R and command-line software, such as NGS aligners or peak/variant
+    callers, on local computers or compute clusters. Efficient handling of
+    complex sample sets and experimental designs is facilitated by a
     consistently implemented sample annotation infrastructure. 
     
     Due to the broad scope and application spectrum of systemPipeR, the
