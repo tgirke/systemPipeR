@@ -867,10 +867,11 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
 ## Predict ORFs ##
 ##################
 ## Function to predict ORFs in DNA sequences provided as DNAString/DNAStringSet objects
-predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA")) {
+predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disjoint=FALSE, startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA")) {
 	## Check input validity 
     if(any(nchar(c(startcodon, stopcodon))!=3)) stop("startcodon and stopcodons can only contain 3-letter strings.")
     if(!toupper(mode) %in% c("ORF", "CDS")) stop("'mode' can only be assigned one of: 'orf' or 'cds'")
+    if(length(names(x))==0 | any(duplicated(names(x)))) stop("Sequence name slot of x need be populated with unique names.")
 
     ## Function for predicting ORFs/CDSs on single sequence
     .predORF <- function(x, n, mode, strand, ...) {
@@ -889,6 +890,13 @@ predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="A
         
         } else {
             stop("strand can only be assigned 'sense', 'antisense' or 'both'")
+        }
+        
+        ## Sequences containing N are not processed
+        if(alphabetFrequency(x)["N"] > 0) {
+            orfRanges <- cbind(subject_id=numeric(), start=numeric(), end=numeric(), width=numeric(), strand=numeric(), inframe2end=numeric())
+            warning("Skipped sequence containing Ns.")
+            return(orfRanges)
         }
 
         ## Tripletize x for each frame 
@@ -932,21 +940,36 @@ predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="A
 		inframe2[abs((inframe - as.integer(inframe))) == 0] <- 1
 		inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(1/3, 2)] <- 2
 		inframe2[abs(round((inframe - as.integer(inframe)),2)) == round(2/3, 2)] <- 3
-		orfRanges <- cbind(subject_id=1:length(orfRanges[,1]), orfRanges, strand=mystrand, inframe2end=inframe2)
-
+		if(nrow(orfRanges)>0) {
+            orfRanges <- cbind(subject_id=1:length(orfRanges[,1]), orfRanges, strand=mystrand, inframe2end=inframe2)
+        } else {
+            orfRanges <- cbind(subject_id=numeric(), start=numeric(), end=numeric(), width=numeric(), strand=numeric(), inframe2end=numeric())
+        }
         ## Return all ORFs 
         if(n=="all") {
-			return(orfRanges)
-        ## Return only as man ORFs as specified under n sorted by decreasingly by length
-		} else if(is.numeric(n)) {
-			## Make sure subsetting does not exeed number of records in orfRanges
-            if(length(orfRanges[,1]) < n) { 
-                upperlimit <- length(orfRanges[,1]) 
-            } else { 
-                upperlimit <- n
+			## Subset to non-overlapping ORF set containing longest ORF
+            if(nrow(orfRanges) > 0 & longest_disjoint==TRUE) {
+                tmpgr <- GRanges(seqnames="dummy", IRanges(orfRanges[,2], orfRanges[,3]), strand="+")
+                orfRanges <- orfRanges[disjointBins(tmpgr)==1, , drop=FALSE]
+			    orfRanges[,1] <- 1:nrow(orfRanges)
             }
-            return(orfRanges[1:upperlimit, , drop=FALSE])
-		} else {
+            return(orfRanges)
+        ## Return only as man ORFs as specified under n sorted decreasingly by length
+		} else if(is.numeric(n)) {
+            ## Make sure subsetting does not exeed number of records in orfRanges
+            if(nrow(orfRanges) < n & nrow(orfRanges) != 0) { 
+                upperlimit <- length(orfRanges[,1]) 
+            } else if(nrow(orfRanges) > 0) { 
+                upperlimit <- n
+            } else {
+                upperlimit <- NULL
+            }
+            if(is.null(upperlimit)) {
+                return(orfRanges[upperlimit, , drop=FALSE])
+		    } else {
+                return(orfRanges[1:upperlimit, , drop=FALSE])
+            }
+        } else {
             stop("n needs to be assigned positive integer or 'all'")
         }
 	}
@@ -954,11 +977,11 @@ predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="A
     ## Run .predORF
     if(class(x)=="DNAString") {
         if(tolower(strand) == "sense" | tolower(strand) == "antisense") {
-		    tmp <- .predORF(x, n, mode, strand, startcodon, stopcodon)
+		    tmp <- .predORF(x, n, mode, strand, longest_disjoint, startcodon, stopcodon)
 		    tmp[,"strand"] <- ifelse(as.numeric(tmp[,"strand"])==1, "+", "-")
         } else if(tolower(strand) == "both") {
-		    tmp_pos <- .predORF(x, n, mode, strand="sense", startcodon, stopcodon)
-		    tmp_neg <- .predORF(x, n, mode, strand="antisense", startcodon, stopcodon)
+		    tmp_pos <- .predORF(x, n, mode, strand="sense", longest_disjoint, startcodon, stopcodon)
+		    tmp_neg <- .predORF(x, n, mode, strand="antisense", longest_disjoint, startcodon, stopcodon)
             tmp <- rbind(tmp_pos, tmp_neg)
 		    tmp[,"strand"] <- ifelse(as.numeric(tmp[,"strand"])==1, "+", "-")
         } else {
@@ -969,7 +992,7 @@ predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="A
     }
 	if(class(x)=="DNAStringSet") {
         if(tolower(strand) == "sense" | tolower(strand) == "antisense") {
-		    tmp <- lapply(x, function(y) .predORF(y, n=n, mode=mode, strand, startcodon, stopcodon))
+		    tmp <- lapply(x, function(y) .predORF(y, n=n, mode=mode, strand, longest_disjoint, startcodon, stopcodon))
 		    names(tmp) <- names(x)
 	        tmpdf <- do.call("rbind", tmp)
             rownames(tmpdf) <- NULL
@@ -977,13 +1000,13 @@ predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="A
             tmpdf[,"strand"] <- ifelse(as.numeric(tmpdf[,"strand"])==1, "+", "-")
         } else if(tolower(strand) == "both") {
 		    ## for sense strand
-            tmp_pos <- lapply(x, function(y) .predORF(y, n=n, mode=mode, strand="sense", startcodon, stopcodon))
+            tmp_pos <- lapply(x, function(y) .predORF(y, n=n, mode=mode, strand="sense", longest_disjoint, startcodon, stopcodon))
 		    names(tmp_pos) <- names(x)
 	        tmpdf_pos <- do.call("rbind", tmp_pos)
             rownames(tmpdf_pos) <- NULL
 		    ## for antisense strand
             tmpdf_pos <- data.frame(seqnames=rep(names(tmp_pos), sapply(tmp_pos, nrow)), tmpdf_pos)
-		    tmp_neg <- lapply(x, function(y) .predORF(y, n=n, mode=mode, strand="antisense", startcodon, stopcodon))
+		    tmp_neg <- lapply(x, function(y) .predORF(y, n=n, mode=mode, strand="antisense", longest_disjoint, startcodon, stopcodon))
 		    names(tmp_neg) <- names(x)
 	        tmpdf_neg <- do.call("rbind", tmp_neg)
             rownames(tmpdf_neg) <- NULL
@@ -1003,6 +1026,10 @@ predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="A
         } else if(tolower(type)=="gr") {
                 tmpdf <- makeGRangesFromDataFrame(tmpdf, keep.extra.columns=TRUE)
 		        return(tmpdf)
+        } else if(tolower(type)=="grl") {
+                tmpdf <- makeGRangesFromDataFrame(tmpdf, keep.extra.columns=TRUE)
+		        tmpdf <- split(tmpdf, as.character(seqnames(tmpdf)))
+                return(tmpdf)
         } else {
             stop("type can only be assigned 'df' of 'gr'")
         }
@@ -1013,50 +1040,96 @@ predORF <- function(x, n=1, type="gr", mode="orf", strand="sense", startcodon="A
 # dna <- readDNAStringSet(file)
 # orf <- predORF(dna[1:4], n=1, type="df", mode="orf", strand="antisense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"))
 
-# ## Function to return in gff (GRanges) specific range type (e.g. 5' UTRs) with minimum length
-# returnRange <- function(gff, ignorespaces=c("ChrC", "ChrM"), rangetype="five_prime_UTR", minlength=100) {
-# 	gff <- gff[which(elementMetadata(gff)[,"type"]==rangetype),]
-# 	## Removal of specific chromosomes
-# 	gff <- gff[!as.character(seqnames(gff)) %in% ignorespaces] 
-# 	## Keep only longest 5' UTR among duplicates 
-# 	gff <- gff[order(elementMetadata(gff)[,"group"], rev(width(gff))),]
-# 	gff <- gff[!duplicated(elementMetadata(gff)[,"group"])] 
-# 	## Length filter
-# 	gff <- gff[width(gff) >= minlength] 
-# }
-# # returnRange(gff, ignorespaces=c("ChrC", "ChrM"), rangetype="five_prime_UTR", minlength=100) 
-# 
-# ## Function to scale ORF ranges to genome level in GRanges object 
-# scaleRanges <- function(gr=gff_fpUTR, x=orf, type="gr", label="uORF") {
-# 	## Input checks
-# 	if(length(gr) != length(x[,1])) stop("gr and x need to have the same number of entries")
-# 	gr <- gr[rowSums(is.na(x)) == 0, ] # Remove NA ranges 
-# 	x <- x[rowSums(is.na(x)) == 0, ] # Remove NA ranges
-# 	x <- data.frame(names=x$names, start=start(gr), end=end(gr), startsub=x$start, endsub=x$end, strand=as.character(strand(gr)))
-# 
-# 	## Scaling for ranges on pos strand
-# 	start_scaled <- x$start + x$startsub - 1
-#     end_scaled <- x$start + x$endsub - 1
-#     x <- cbind(x, start_scaled, end_scaled)
-# 
-# 	## Scaling for ranges on neg strand
-# 	start_neg_scaled <- (x$end - x$endsub) + 1
-# 	end_neg_scaled <- (x$end - x$startsub) + 1
-# 	x[x$strand=="-", "start_scaled"] <- start_neg_scaled[x$strand=="-"]
-# 	x[x$strand=="-", "end_scaled"] <- end_neg_scaled[x$strand=="-"]
-# 	
-# 	## Output
-# 	if(type=="df") { 
-# 		return(x) 
-# 	}
-# 	if(type=="gr") { 
-# 		start(gr) <- x$start_scaled
-# 		end(gr) <- x$end_scaled
-# 		elementMetadata(gr)[,"type"] <- label
-# 		return(gr) 
-# 	}
-# }
-# # uorfs <- scaleRanges(gr=gff_fpUTR, x=orf, type="gr", label="uORF")
+
+######################################################
+## Scale feature level mappings to genome positions ##
+######################################################
+## Function to scale ranges within genomic features (query)
+## to corresponding genome positions (subject). The function
+## also accounts for intron insertions of compound features 
+## (e.g. between exons of transcribed regions) that are absent in 
+## the query ranges, but present in the corresponding subject ranges.
+scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
+    ## Both input objects need to be of class GRangesList
+    if(class(subject) != "GRangesList" | class(query) != "GRangesList") stop("Both subject and query need to be of class 'GRangesList'.")
+    ## All names(query) need to be present in names(subject)
+    if(any(!names(query) %in% names(subject))) stop("All 'names(query)' need to be present in 'names(subject)'.")
+
+    ## Perform scaling on single subject/query pair each containing on entry
+    .scaleRanges <- function(subject, query) {
+        ## Check for validity of query
+        if(length(query)>1) warning("Only the first range in 'query' will be used.")
+        query <- query[1]
+        if(sum(width(subject)) <= width(query)) stop("Sum of width of subject ranges cannot be smaller than width of query range.")
+    
+        ## Check for validity of subject
+        subjectstrand <- unique(as.character(strand(subject)))
+        if(length(subjectstrand) != 1) stop("More than one orientation detected. There can only be one.")
+        querystrand <- unique(as.character(strand(query)))
+    
+        ## Check for validity of seqnames
+        myseqname <- unique(as.character(seqnames(subject)))
+        if(length(myseqname) != 1) stop("More than one seqname detected. There can only be one.")
+    
+        ## Scale query range to range of subject ranges (of genomic feature) using interval trees from IRanges 
+        subject <- subject[order(start(subject))]
+        rangev <- paste("c(", paste(paste(start(subject), end(subject), sep=":"), collapse=", "),")", sep="")
+        rangev <- eval(parse(text=rangev)) 
+        names(rangev) <- seq_along(rangev)
+        if(subjectstrand=="+") rangev <- rangev[start(query):end(query)]
+        if(subjectstrand=="-") rangev <- rev(rangev)[start(query):end(query)]
+        ir <- reduce(IRanges(rangev, rangev))
+    
+        ## Set orientation properly
+        if(querystrand=="-" & subjectstrand=="-") mystrand <- "+"
+        if(querystrand=="+" & subjectstrand=="+") mystrand <- "+"
+        if(querystrand=="+" & subjectstrand=="-") mystrand <- "-"
+        if(querystrand=="-" & subjectstrand=="+") mystrand <- "-"
+    
+        ## Return result as GRanges 
+        if(mystrand=="+") { # Proper exon ranking for exons on +/- strand
+            gr <- GRanges(myseqname, ir[order(start(ir), decreasing=FALSE)], mystrand)
+        } else {
+            gr <- GRanges(myseqname, ir[order(start(ir), decreasing=TRUE)], mystrand) # 
+        }
+        mcols(gr) <- data.frame(type=type)
+        return(gr)
+    }
+
+    ## Run .scaleRanges on two GRangesLists as input
+    subject <- subject[names(query)] # Subset subject to entries in query
+    mygrl <- unlist(query)
+    myids1 <- rep(names(query), sapply(query, length))
+    myids2 <- paste(myids1, ":", start(mygrl), "_", end(mygrl), sep="")
+    mcols(mygrl) <- data.frame(type=type)
+    mygrl <- split(mygrl, seq_along(mygrl))
+    names(mygrl) <- myids2
+    for(i in seq_along(mygrl)) {
+        myentryid <- myids1[i]
+        suppressWarnings(mygrl[[i]] <- .scaleRanges(subject[[myentryid]], mygrl[[i]]))
+        if(verbose==TRUE) {
+            cat(paste0("Scaled range ", i, " of ", length(mygrl), " ranges: ", names(mygrl[i])), "\n")
+        }
+    }
+    ## If loop gets interrupted, output only completed results!
+    mygrl <- mygrl[1:i] 
+    return(mygrl)
+}
+## Usage for simple example
+# subject <- GRanges(seqnames="Chr1", IRanges(c(5,15,30),c(10,25,40)), strand="+") 
+# query <- GRanges(seqnames="myseq", IRanges(1, 9), strand="+")
+# scaleRanges(GRangesList(myid1=subject), GRangesList(myid1=query), type="test")
+
+## Usage for more complex example
+# library(GenomicFeatures)
+# gff <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
+# txdb <- makeTxDbFromGFF(file=gff, format="gff3", organism="Arabidopsis")
+# futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)
+# genome <- system.file("extdata/annotation", "tair10.fasta", package="systemPipeRdata")
+# dna <- extractTranscriptSeqs(FaFile(genome), futr)
+# uorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="sense")
+# grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
+# export.gff3(unlist(grl_scaled), "uorf.gff")
 
 
 

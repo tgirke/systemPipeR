@@ -30,5 +30,6 @@ export(
     "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
     "preprocessReads", "filterVars", "variantReport", "combineVarReports", 
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
-    "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF"
+    "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
+    "scaleRanges"
 ) 
