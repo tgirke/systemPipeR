@@ -1,18 +1,17 @@
 \name{scaleRanges}
 \alias{scaleRanges}
 \title{
-Scale ranges to genome coordinates
+Scale spliced ranges to genome coordinates
 }
 \description{
-Function to scale feature level ranges (query ranges) to their
-corresponding genome positions (subject ranges). The method accounts 
-for intron insertions in compound features (e.g. between exons of 
-transcribed regions) that are absent in the query ranges, but present 
-in the corresponding subject ranges. A use case example are uORFs 
-predicted in the 5' UTRs sequences using \code{predORF}. These query 
-ranges are given relative to the 5' UTR sequence. The function will 
-transform them to the corresponding genome coordinates, which may 
-contain introns.
+Function to scale mappings of spliced features (query ranges) to their
+corresponding genome coordinates (subject ranges). The method accounts for
+introns in the subject ranges that are absent in the query ranges. A use case
+example are uORFs predicted in the 5' UTRs sequences using \code{predORF}.
+These query ranges are given relative to the 5' UTR sequence. The
+\code{scaleRanges} function will scale them to the corresponding genome
+coordinates. This way they can be used in RNA-Seq expression experiments
+like other gene ranges. 
 }
 \usage{
 scaleRanges(subject, query, type = "custom", verbose = TRUE)

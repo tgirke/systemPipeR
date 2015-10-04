@@ -872,6 +872,9 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
     if(any(nchar(c(startcodon, stopcodon))!=3)) stop("startcodon and stopcodons can only contain 3-letter strings.")
     if(!toupper(mode) %in% c("ORF", "CDS")) stop("'mode' can only be assigned one of: 'orf' or 'cds'")
     if(length(names(x))==0 | any(duplicated(names(x)))) stop("Sequence name slot of x need be populated with unique names.")
+    
+    ## Remove sequence with less than 6 nucleotides in length
+    x <- x[width(x)>=6]
 
     ## Function for predicting ORFs/CDSs on single sequence
     .predORF <- function(x, n, mode, strand, ...) {
