@@ -1,6 +1,7 @@
 changelog
-    version 1.3.44
+    version 1.3.44 - 1.3.45
         - added predORF
+        - added scaleRanges
 
     version 1.3.35 - 1.3.43
         - added featureCoverage and plotfeatureCoverage
