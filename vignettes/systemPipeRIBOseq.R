@@ -73,6 +73,19 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
+#  gff <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
+#  txdb <- makeTxDbFromGFF(file=gff, format="gff3", organism="Arabidopsis")
+#  futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)
+#  genome <- system.file("extdata/annotation", "tair10.fasta", package="systemPipeRdata")
+#  dna <- extractTranscriptSeqs(FaFile(genome), futr)
+#  uorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="sense")
+
+## ----eval=FALSE------------------------------------------------------------------------------
+#  grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
+#  export.gff3(unlist(grl_scaled), "uorf.gff")
+
+## ----eval=FALSE------------------------------------------------------------------------------
 #  grl <- cdsBy(txdb, "tx", use.names=TRUE)
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE,

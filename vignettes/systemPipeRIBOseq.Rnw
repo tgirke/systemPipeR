@@ -64,7 +64,7 @@ unlink("test.db")
 \textcolor{red}{Note: this workflow is currently under construction!}
 
 \subsection{Background and objectives}
-This workflow contains most of the relevant data analysis steps described by \cite{Juntawong2014-ny}. It includes functionalities for processing both Ribo-Seq and ribosome footprinting (RF-Seq) experiments. To improve re-usability and adapt to recent versions of software (\textit{e.g.} R, Bioconductor and short read aligners), the code has been optimized accordingly. Thus, the results obtained with the updated code are expected to be similar but not necessarily identical with the published ones described in the original paper. 
+This workflow contains most of the data analysis steps described by \cite{Juntawong2014-ny}. It includes functionalities for processing both polyRibo-Seq and Ribo-Seq experiments. The former employs RNA bound to ribosomes and the latter uses the RNA fragments obtained from ribosome footprinting experiments. To improve re-usability and adapt to recent versions of software (\textit{e.g.} R, Bioconductor and short read aligners), the code has been optimized accordingly. Thus, the results obtained with the updated code are expected to be similar but not necessarily identical with the published results described in the original paper. 
 
 \subsection{Experimental design}
 Typically, users want to specify here all information relevant for the analysis of their NGS study. This includes detailed descriptions of FASTQ files, experimental design, reference genome, gene annotations, etc.  
@@ -238,11 +238,39 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", gr
 The function \Rfunction{predORF} can be used to identify open reading frames
 (ORFs) and coding sequences (CDSs) in DNA sequences provided as
 \Robject{DNAString} or \Robject{DNAStringSet} objects. The setting
-\Rfunction{mode='ORF'} returns continuous reading frames that begin with a
-start codon and ends with a stop codon, while \Rfunction{mode='CDS'} returns
+\Rfunarg{mode='ORF'} returns continuous reading frames that begin with a
+start codon and end with a stop codon, while \Rfunarg{mode='CDS'} returns
 continuous reading frames that do not need to begin or end with start or stop
-codons, respectively.
+codons, respectively. The argument \Rfunarg{n} defines the maximum number of ORFs 
+to return for each input sequence (\textit{e.g.} \Rfunarg{n=1} returns only the 
+longest ORF). If \Rfunarg{n="all"} and \Rfunarg{longest\_disjoint=TRUE}, then the 
+function will return all non-overlapping ORFs including the longest ORF.
 
+<<eval=FALSE>>=
+library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
+gff <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
+txdb <- makeTxDbFromGFF(file=gff, format="gff3", organism="Arabidopsis")
+futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)
+genome <- system.file("extdata/annotation", "tair10.fasta", package="systemPipeRdata")
+dna <- extractTranscriptSeqs(FaFile(genome), futr)
+uorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="sense")
+@
+
+To use the predicted ORF ranges for expression analysis given genome alignments
+as input, it is necessary to scale them to the corresponding genome
+coordinates. The function \Rfunction{scaleRanges} does this by transforming the
+mappings of spliced features (query ranges) to their corresponding genome
+coordinates (subject ranges). The method accounts for introns in the subject
+ranges that are absent in the query ranges. The above uORFs predicted in the
+provided 5' UTRs sequences using \Rfunction{predORF} are a typical use case
+for this application. These query ranges are given relative to the 5' UTR 
+sequences and \Rfunction{scaleRanges} will convert them to the corresponding 
+genome coordinates. 
+
+<<eval=FALSE>>=
+grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
+export.gff3(unlist(grl_scaled), "uorf.gff")
+@
 
 \section{Genomic read coverage along transripts or CDSs}
 The \Rfunction{featureCoverage} function computes the read coverage along
@@ -450,6 +478,9 @@ goBarplot(gos, gocat="CC")
    \label{fig:GOMF}
 \end{figure}
 
+\section{Differential ribosome binding analysis (tranlational efficiency)}
+To be added...
+
 \section{Clustering and heat maps}
 The following example performs hierarchical clustering on the \Rfunarg{rlog} transformed expression matrix subsetted by the DEGs identified in the 
 above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.
@@ -469,8 +500,6 @@ dev.off()
    \label{fig:heatmap}
 \end{figure}
 
-\section{Differential ribosome binding analysis (tranlational efficiency)}
-To be added...
 
 \section{Version Information}
 <<sessionInfo, results='asis'>>=
