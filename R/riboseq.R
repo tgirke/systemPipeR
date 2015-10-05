@@ -1059,7 +1059,7 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
     if(any(!names(query) %in% names(subject))) stop("All 'names(query)' need to be present in 'names(subject)'.")
 
     ## Perform scaling on single subject/query pair each containing on entry
-    .scaleRanges <- function(subject, query) {
+    .scaleRanges <- function(subject, query, returntype="df") {
         ## Check for validity of query
         if(length(query)>1) warning("Only the first range in 'query' will be used.")
         query <- query[1]
@@ -1089,34 +1089,42 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
         if(querystrand=="+" & subjectstrand=="-") mystrand <- "-"
         if(querystrand=="-" & subjectstrand=="+") mystrand <- "-"
     
-        ## Return result as GRanges 
+        ## Organize result as GRanges 
         if(mystrand=="+") { # Proper exon ranking for exons on +/- strand
             gr <- GRanges(myseqname, ir[order(start(ir), decreasing=FALSE)], mystrand)
         } else {
-            gr <- GRanges(myseqname, ir[order(start(ir), decreasing=TRUE)], mystrand) # 
+            gr <- GRanges(myseqname, ir[order(start(ir), decreasing=TRUE)], mystrand)  
         }
         mcols(gr) <- data.frame(type=type)
-        return(gr)
+        
+        ## Return results as data.frame or GRanges
+        if(returntype=="gr") return(gr)
+        if(returntype=="df") return(as.data.frame(gr))
     }
 
     ## Run .scaleRanges on two GRangesLists as input
     subject <- subject[names(query)] # Subset subject to entries in query
     mygrl <- unlist(query)
-    myids1 <- rep(names(query), sapply(query, length))
+    myids1 <- rep(names(query), sapply(start(query), length))
     myids2 <- paste(myids1, ":", start(mygrl), "_", end(mygrl), sep="")
     mcols(mygrl) <- data.frame(type=type)
     mygrl <- split(mygrl, seq_along(mygrl))
     names(mygrl) <- myids2
+    mylist <- as.list(character(length=length(mygrl))); names(mylist) <- names(mygrl) 
     for(i in seq_along(mygrl)) {
         myentryid <- myids1[i]
-        suppressWarnings(mygrl[[i]] <- .scaleRanges(subject[[myentryid]], mygrl[[i]]))
+        suppressWarnings(mylist[[i]] <- .scaleRanges(subject[[myentryid]], mygrl[[i]]))
         if(verbose==TRUE) {
             cat(paste0("Scaled range ", i, " of ", length(mygrl), " ranges: ", names(mygrl[i])), "\n")
         }
     }
     ## If loop gets interrupted, output only completed results!
-    mygrl <- mygrl[1:i] 
-    return(mygrl)
+    mylist <- mylist[1:i] 
+    gr <- makeGRangesFromDataFrame(do.call("rbind", mylist), keep.extra.columns=FALSE)
+    mcols(gr) <- DataFrame(feature_by=as(rep(names(mylist), sapply(mylist, nrow)), "CharacterList"), featuretype_id=names(gr), featuretype=type)
+    names(gr) <- NULL
+    grl <- split(gr, as.character(mcols(gr)$feature_by))
+    return(grl)
 }
 ## Usage for simple example
 # subject <- GRanges(seqnames="Chr1", IRanges(c(5,15,30),c(10,25,40)), strand="+") 
