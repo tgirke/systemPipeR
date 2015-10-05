@@ -235,7 +235,14 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", gr
 
 \section{Adding custom features to workflow}
 \subsection{Predicting uORFs in 5' UTR regions}
-Will be added as soon as I find time to write the help file. 
+The function \Rfunction{predORF} can be used to identify open reading frames
+(ORFs) and coding sequences (CDSs) in DNA sequences provided as
+\Robject{DNAString} or \Robject{DNAStringSet} objects. The setting
+\Rfunction{mode='ORF'} returns continuous reading frames that begin with a
+start codon and ends with a stop codon, while \Rfunction{mode='CDS'} returns
+continuous reading frames that do not need to begin or end with start or stop
+codons, respectively.
+
 
 \section{Genomic read coverage along transripts or CDSs}
 The \Rfunction{featureCoverage} function computes the read coverage along
