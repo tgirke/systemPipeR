@@ -244,7 +244,7 @@ continuous reading frames that do not need to begin or end with start or stop
 codons, respectively. The argument \Rfunarg{n} defines the maximum number of ORFs 
 to return for each input sequence (\textit{e.g.} \Rfunarg{n=1} returns only the 
 longest ORF). If \Rfunarg{n="all"} and \Rfunarg{longest\_disjoint=TRUE}, then the 
-function will return all non-overlapping ORFs including the longest ORF.
+function will return all non-overlapping ORFs including the longest ORF for each sequence.
 
 <<eval=FALSE>>=
 library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
