@@ -182,6 +182,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 @
 
 \section{Read distribution across genomic features}
+\label{featuretypes}
 The \Rfunction{genFeatures} function generates a variety of feature types from
 \Robject{TxDb} objects using utilities provided by the
 \Rpackage{GenomicFeatures} package. 
@@ -284,6 +285,12 @@ proteins. Typically, the returned protein sequences should start with a
 uORF containing three exons.
 <<eval=FALSE>>=
 translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
+@
+
+\subsection{Adding custom features to other feature types}
+If required the uORF ranges can be added to the feature type set obtained 
+in Section \ref{featuretypes}.
+<<eval=FALSE>>=
 @
 
 \section{Genomic read coverage along transripts or CDSs}
