@@ -238,13 +238,15 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", gr
 The function \Rfunction{predORF} can be used to identify open reading frames
 (ORFs) and coding sequences (CDSs) in DNA sequences provided as
 \Robject{DNAString} or \Robject{DNAStringSet} objects. The setting
-\Rfunarg{mode='ORF'} returns continuous reading frames that begin with a
-start codon and end with a stop codon, while \Rfunarg{mode='CDS'} returns
-continuous reading frames that do not need to begin or end with start or stop
-codons, respectively. The argument \Rfunarg{n} defines the maximum number of ORFs 
-to return for each input sequence (\textit{e.g.} \Rfunarg{n=1} returns only the 
-longest ORF). If \Rfunarg{n="all"} and \Rfunarg{longest\_disjoint=TRUE}, then the 
-function will return all non-overlapping ORFs including the longest ORF for each sequence.
+\Rfunarg{mode='ORF'} returns continuous reading frames that begin with a start
+codon and end with a stop codon, while \Rfunarg{mode='CDS'} returns continuous
+reading frames that do not need to begin or end with start or stop codons,
+respectively. Non-canonical start and stop condons are supported by allowing the
+user to prove any custom set of triplets under the \Rfunarg{startcodon} and \Rfunarg{stopcodon}
+arguments. The argument \Rfunarg{n} defines the maximum number of ORFs to return for each
+input sequence (\textit{e.g.} \Rfunarg{n=1} returns only the longest ORF). With
+\Rfunarg{n="all"} and \Rfunarg{longest\_disjoint=TRUE}, the function will
+return all non-overlapping ORFs including the longest ORF for each sequence.
 
 <<eval=FALSE>>=
 library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
@@ -265,11 +267,23 @@ ranges that are absent in the query ranges. The above uORFs predicted in the
 provided 5' UTRs sequences using \Rfunction{predORF} are a typical use case
 for this application. These query ranges are given relative to the 5' UTR 
 sequences and \Rfunction{scaleRanges} will convert them to the corresponding 
-genome coordinates. 
+genome coordinates. The resulting \Robject{GRangesList} object (here \Robject{grl\_scaled}) 
+can be directly used for read counting as described in Section \ref{readcounting}.
 
 <<eval=FALSE>>=
 grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
 export.gff3(unlist(grl_scaled), "uorf.gff")
+@
+
+To confirm the correctness of the obtained uORF ranges, one can parse their
+corresponding DNA sequences from the reference genome with the \Rfunction{getSeq}
+function and then translate them with the \Rfunction{translate} function into
+proteins. Typically, the returned protein sequences should start with a
+\texttt{M} (corresponding to start codon) and end with a \texttt{*}
+(corresponding to stop codon). The following example does this for a compound
+uORF containing three exons.
+<<eval=FALSE>>=
+translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
 @
 
 \section{Genomic read coverage along transripts or CDSs}
@@ -329,6 +343,7 @@ plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^
 @
 
 \section{Read quantification per annotation range}
+\label{readcounting}
 \subsection{Read counting with \Rfunction{summarizeOverlaps} in parallel mode using multiple cores}
 Reads overlapping with annotation ranges of interest are counted for each sample using the \Rfunction{summarizeOverlaps} function \citep{Lawrence2013-kt}. The read counting is preformed for exonic gene regions in a non-strand-specific manner while ignoring overlaps among different genes. Subsequently, the expression count values are normalized by \textit{reads per kp per million mapped reads} (RPKM). The raw read count table (\href{run:./results/countDFeByg.xls}{countDFeByg.xls}) and the correspoding RPKM table (\href{run:./results/rpkmDFeByg.xls}{rpkmDFeByg.xls}) are written to separate files in the \Robject{results} directory of this project. Parallelization is achieved with the \Rpackage{BiocParallel} package, here using 8 CPU cores.
 <<eval=FALSE>>=
