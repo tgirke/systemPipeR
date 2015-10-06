@@ -290,7 +290,10 @@ translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
 \subsection{Adding custom features to other feature types}
 If required the uORF ranges can be added to the feature type set obtained 
 in Section \ref{featuretypes}.
+
 <<eval=FALSE>>=
+feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
+feat <- c(feat, GRangesList("uORF"=unlist(grl_scaled)))
 @
 
 \section{Genomic read coverage along transripts or CDSs}
