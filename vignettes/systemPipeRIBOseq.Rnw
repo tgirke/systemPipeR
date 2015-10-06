@@ -236,6 +236,7 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", gr
 
 \section{Adding custom features to workflow}
 \subsection{Predicting uORFs in 5' UTR regions}
+\label{uorfs}
 The function \Rfunction{predORF} can be used to identify open reading frames
 (ORFs) and coding sequences (CDSs) in DNA sequences provided as
 \Robject{DNAString} or \Robject{DNAStringSet} objects. The setting
@@ -288,8 +289,9 @@ translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
 @
 
 \subsection{Adding custom features to other feature types}
-If required the uORF ranges can be added to the feature type set obtained 
-in Section \ref{featuretypes}.
+If required the any custom feature ranges can be added to the standard features
+generated in Section \ref{featuretypes}. The following does this for the uORF ranges
+predicted in Subsection \ref{uorfs}.
 
 <<eval=FALSE>>=
 feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
@@ -305,7 +307,7 @@ nucleotide resolution (\textit{e.g.} around start and stop codons) or as mean co
 of relative bin sizes, such as 100 bins for each feature. The latter allows
 comparisons of coverage trends among transcripts of variable length. Additionally, 
 the results can be obtained for single or many features (\textit{e.g.} any number of
-transcritpts) at once. Visualization of the coverage results is facilitated by
+transcripts) at once. Visualization of the coverage results is facilitated by
 the downstream \Rfunction{plotfeatureCoverage} function. 
 
 \subsection{Binned CDS coverage to compare many transcripts}
