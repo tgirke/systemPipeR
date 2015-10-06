@@ -89,6 +89,10 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
+#  feat <- c(feat, GRangesList("uORF"=unlist(grl_scaled)))
+
+## ----eval=FALSE------------------------------------------------------------------------------
 #  grl <- cdsBy(txdb, "tx", use.names=TRUE)
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE,
