@@ -597,7 +597,9 @@ toLatex(sessionInfo())
 @
 
 \section{Funding}
-This research was fundedby National Science Foundation Grants IOS-0750811 (to J.B.-S.) and MCB-1021969 (to J.B.-S. and T.G.). J.B. was funded by Marie Curie EuropeanEconomic Community Fellowship PIOF-GA-2012-327954.
+This research was funded by National Science Foundation Grants IOS-0750811 and
+MCB-1021969, and a Marie Curie European Economic Community Fellowship
+PIOF-GA-2012-327954.
 
 \bibliography{bibtex}
 
