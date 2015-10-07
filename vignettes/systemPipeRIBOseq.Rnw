@@ -597,7 +597,7 @@ toLatex(sessionInfo())
 @
 
 \section{Funding}
-This project was supported by funds from the National Institutes of Health (NIH).
+This research was fundedby National Science Foundation Grants IOS-0750811 (to J.B.-S.) and MCB-1021969 (to J.B.-S. and T.G.). J.B. was funded by Marie Curie EuropeanEconomic Community Fellowship PIOF-GA-2012-327954.
 
 \bibliography{bibtex}
 
