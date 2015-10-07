@@ -1,15 +1,17 @@
 ### systemPipeR: NGS workflow and report generation environment 
 
 [_systemPipeR_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html)
-is an R/Bioconductor package for building *end-to-end* analysis pipelines with
-automated report generation for next generation sequence (NGS) applications
-such as RNA-Seq, ChIP-Seq, VAR-Seq and many others. An important feature is
-support for running command-line software, such as NGS aligners, on both single
-machines or compute clusters. This includes both interactive job submissions or
-batch submissions to queuing systems of clusters.  Efficient handling of
-complex sample sets and experimental designs is facilitated by a well-defined
-sample annotation infrastructure which improves reproducibility and
-user-friendliness of many typical analysis workflows in the NGS area.
+is an R/Bioconductor package for building and running automated *end-to-end*
+analysis workflows for a wide range of next generation sequence (NGS)
+applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Important
+features include a uniform workflow interface across applications, automated
+report generation, and support for running both R and command-line software,
+such as NGS aligners or peak/variant callers, on local computers or compute
+clusters. This includes both interactive job submissions or batch submissions
+to queuing systems of clusters. Efficient handling of complex sample sets and
+experimental designs is facilitated by a well-defined sample annotation
+infrastructure which improves reproducibility and user-friendliness of many
+typical analysis workflows in the NGS area.
 
 #### Installation 
 To install the package, please use the _biocLite_ method as instructed 
