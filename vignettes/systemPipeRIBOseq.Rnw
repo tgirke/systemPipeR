@@ -99,7 +99,7 @@ ribosome footprints are typically $\sim$30 nucleotides long
 \citep{Ingolia2011-fc, Ingolia2009-cb, Juntawong2014-ny}.  However, their
 length can vary by several nucleotides depending upon the optimization of the
 RNA digestion step and various factors associated with translational
-regulation.  For quality control puposes of Ribo-Seq experiments it is also
+regulation.  For quality control purposes of Ribo-Seq experiments it is also
 useful to monitor the abundance of reads mapping to rRNA genes due to the high
 rRNA content of ribosomes. This information can be generated with the 
 \Rfunction{featuretypeCounts} function described above.
@@ -307,7 +307,7 @@ The function \Rfunction{predORF} can be used to identify open reading frames
 codon and end with a stop codon, while \Rfunarg{mode='CDS'} returns continuous
 reading frames that do not need to begin or end with start or stop codons,
 respectively. Non-canonical start and stop condons are supported by allowing the
-user to prove any custom set of triplets under the \Rfunarg{startcodon} and \Rfunarg{stopcodon}
+user to provide any custom set of triplets under the \Rfunarg{startcodon} and \Rfunarg{stopcodon}
 arguments. The argument \Rfunarg{n} defines the maximum number of ORFs to return for each
 input sequence (\textit{e.g.} \Rfunarg{n=1} returns only the longest ORF). With
 \Rfunarg{n="all"} and \Rfunarg{longest\_disjoint=TRUE}, the function will
