@@ -4,7 +4,7 @@
 is an R/Bioconductor package for building and running automated *end-to-end*
 analysis workflows for a wide range of next generation sequence (NGS)
 applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Important
-features include a uniform workflow interface across applications, automated
+features include a uniform workflow interface across different NGS applications, automated
 report generation, and support for running both R and command-line software,
 such as NGS aligners or peak/variant callers, on local computers or compute
 clusters. The latter supports interactive job submissions and batch submissions
