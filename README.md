@@ -7,7 +7,7 @@ applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Important
 features include a uniform workflow interface across applications, automated
 report generation, and support for running both R and command-line software,
 such as NGS aligners or peak/variant callers, on local computers or compute
-clusters. This supports interactive job submissions or batch submissions
+clusters. The latter supports interactive job submissions or batch submissions
 to queuing systems of clusters. Efficient handling of complex sample sets and
 experimental designs is facilitated by a well-defined sample annotation
 infrastructure which improves reproducibility and user-friendliness of many
