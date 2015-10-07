@@ -52,19 +52,78 @@ options(formatR.arrow=TRUE, width=95)
 unlink("test.db")
 @
 
-\title{Ribo-Seq workflow template: Some Descriptive Title}
-\author{Project ID: RIBOseq\_PI\_Name\_Organism\_Aug2015 \\
-	Project PI: First Last (first.last@inst.edu)\\
-        Author of Report: First Last (first.last@inst.edu)}
+\title{Analysis Workflow for Ribo-Seq and polyRibo-Seq Experiments}
+\author{Piyada Juntawong, Jeremie Bazin, Maureen Hummel, Julia Bailey-Serres and Thomas Girke \\
+        Email contact: thomas.girke@ucr.edu}
 \maketitle
 
 \tableofcontents
 
 \section{Introduction}
-\textcolor{red}{Note: this workflow is currently under construction!}
+Ribo-Seq and polyRibo-Seq are a specific form of RNA-Seq gene expression
+experiments that utilize RNA subpopulations directly bound to ribosomes. Their
+readout of gene expression provides a better approximation of downstream
+protein abundance profiles than standard RNA-Seq because the samples are
+enriched for RNA populations tightly linked with translational processes.
+polyRibo-Seq utilizes polyribosomal RNA isolates for sequencing, whereas
+Ribo-Seq is a footprinting approach restricted to sequencing RNA fragments
+protected by ribosomes \citep{Ingolia2009-cb}. 
 
 \subsection{Background and objectives}
-This workflow contains most of the data analysis steps described by \cite{Juntawong2014-ny}. It includes functionalities for processing both polyRibo-Seq and Ribo-Seq experiments. The former employs RNA bound to ribosomes and the latter uses the RNA fragments obtained from ribosome footprinting experiments. To improve re-usability and adapt to recent versions of software (\textit{e.g.} R, Bioconductor and short read aligners), the code has been optimized accordingly. Thus, the results obtained with the updated code are expected to be similar but not necessarily identical with the published results described in the original paper. 
+
+The workflow presented in this vignette contains most of the data analysis
+steps described by \cite{Juntawong2014-ny} including functionalities useful for
+processing both polyRibo-Seq and Ribo-Seq experiments. To improve re-usability
+and adapt to recent changes of software versions (\textit{e.g.} R, Bioconductor and
+short read aligners), the code has been optimized accordingly. Thus, the
+results obtained with the updated workflow are expected to be similar but not
+necessarily identical with the published results described in the original
+paper. 
+
+The most important analysis steps of this workflow include read preprocessing,
+read alignments against a reference genome, read counting for a wide range of
+genomic features (\textit{e.g.} CDSs, UTRs, uORFs, rRNAs, etc.), differential
+gene expression and differential ribosome binding analyses, as well as a
+variety of genome-wide summary plots for visualizing RNA expression trends.
+Functions are provided that enable evaluation of the quality of Ribo-seq data,
+discovery of novel expressed regions in the genomes and provide insights into
+gene regulation at the post-transcriptional and translational levels. For
+instance, the functions \Rfunction{genFeatures} and
+\Rfunction{featuretypeCounts} can be used to quantify  the expression output
+for all feature available in a genome annotation (\textit{e.g.} genes, introns,
+exons, miRNAs, intergenic regions, etc.). To determine the approximate read
+length of ribosome footprints in Ribo-Seq experiments, the feature type counts
+can be obtained and plotted for specific read lengths separately.  Typically,
+the most abundant read length obtained for translated features corresponds to
+the true footprint length occupied by the ribosomes for a given organism group.
+Based on the results from several Ribo-Seq studies, ribosome footprint are
+typically ~30 nucleotides long. However,  their length can vary by several
+nucleotides depending upon the optimization of the RNAse digestion and probably
+also factors associated with translational regulation. For Ribo-Seq experiments
+it is also useful to monitor the abundance of reads mapping to rRNA genes due
+to the high rRNA content of ribosomes. 
+
+Coverage trends along transcripts summarized for any number of transcripts can
+be obtained and plotted with the functions \Rfunction{featureCoverage} and
+\Rfunction{plotfeatureCoverage}, respectively. Their results allow monitoring
+of the phasing of ribosome movements along the triplets of coding sequences.
+Commonly, high quality data will display here for the first nucleotide of each
+codon the highest depth of coverage computed for the 5' ends of the aligned
+reads. 
+ 
+Ribo-seq data can also be used to evaluate aspects of translational control due
+to the ribosome occupancy in upstream open reading frames (uORFs). The latter
+are frequently present in (or near) the 5' UTRs of transcripts. The function
+\Rfunction{predORFs} identifies ORFs in the nucleotide sequences of transcripts or
+their subcomponents such as UTR regions. After scaling the resulting ORF
+coordinates back to the genome with \Rfunction{scaleRanges}, one can use these
+novel features (\textit{e.g.} uORFs) for the same expression analysis routines
+as for pre-existing annotations. For instance, in Ribo-Seq experiments one can
+systematically identify all transcripts containing ribosomes in their uORF
+regions. The binding of ribosomes in uORF regions may indicate a regulatory role 
+in the translation of the downstream main ORF and/or the translation of the 
+uORFs into functionally relevant peptides. 
+ 
 
 \subsection{Experimental design}
 Typically, users want to specify here all information relevant for the analysis of their NGS study. This includes detailed descriptions of FASTQ files, experimental design, reference genome, gene annotations, etc.  
