@@ -10,12 +10,10 @@ OVERVIEW
       for running both R and command-line software, such as NGS aligners or
       peak/variant callers, on local computers or compute clusters. Efficient
       handling of complex sample sets and experimental designs is facilitated by
-      a consistently implemented sample annotation infrastructure. 
-    
-    o Due to the broad scope and application spectrum of systemPipeR, the
-      package will remain under heavy development for quite some time. The most
-      important enhancements in the upcoming release are outlined below.
+      a consistently implemented sample annotation infrastructure.
 
+    o The most important enhancements in the upcoming release are outlined below.  
+    
 NGS WORKFLOWS
 
     o Added new end-to-end workflows for 3 additional NGS application areas: 
