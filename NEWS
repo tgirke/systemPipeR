@@ -39,7 +39,7 @@ NGS WORKFLOWS
           genome annotation (see ?featuretypeCounts) 
         - Visualization of coverage trends along transcripts summarized 
           for any number of transcripts (see ?featureCoverage)
-        - Functionalities to predict uORFs/sORFs and use them for expression profiling
+        - Functionalities to predict uORFs/sORFs and to use them for expression profiling
         - Differential expression/binding analysis includes now DESeq2 as
           well as edgeR
 
