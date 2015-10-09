@@ -1,19 +1,20 @@
 CHANGES IN VERSION 1.3
 ----------------------
 
-OVERVIEW 
-    systemPipeR is an R/Bioconductor package for building and running automated
-    analysis workflows for a wide range of next generation sequence (NGS)
-    applications. Important features include a uniform workflow interface
-    across different NGS applications, automated report generation, and support
-    for running both R and command-line software, such as NGS aligners or
-    peak/variant callers, on local computers or compute clusters. Efficient
-    handling of complex sample sets and experimental designs is facilitated by
-    a consistently implemented sample annotation infrastructure. 
+OVERVIEW
+
+    o systemPipeR is an R/Bioconductor package for building and running automated
+      analysis workflows for a wide range of next generation sequence (NGS)
+      applications. Important features include a uniform workflow interface
+      across different NGS applications, automated report generation, and support
+      for running both R and command-line software, such as NGS aligners or
+      peak/variant callers, on local computers or compute clusters. Efficient
+      handling of complex sample sets and experimental designs is facilitated by
+      a consistently implemented sample annotation infrastructure. 
     
-    Due to the broad scope and application spectrum of systemPipeR, the
-    package will remain under heavy development for quite some time. The most
-    important enhancements in the upcoming release are outlined below.
+    o Due to the broad scope and application spectrum of systemPipeR, the
+      package will remain under heavy development for quite some time. The most
+      important enhancements in the upcoming release are outlined below.
 
 NGS WORKFLOWS
 
@@ -38,6 +39,7 @@ NGS WORKFLOWS
           genome annotation (see ?featuretypeCounts) 
         - Visualization of coverage trends along transcripts summarized 
           for any number of transcripts (see ?featureCoverage)
+        - Functionalities to predict uORFs/sORFs and use them for expression profiling
         - Differential expression/binding analysis includes now DESeq2 as
           well as edgeR
 
