@@ -12,7 +12,8 @@ OVERVIEW
       handling of complex sample sets and experimental designs is facilitated by
       a consistently implemented sample annotation infrastructure.
 
-    o The most important enhancements in the upcoming release are outlined below.  
+    o The most important enhancements in the upcoming release of the package are 
+      outlined below.  
     
 NGS WORKFLOWS
 
