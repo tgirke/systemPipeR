@@ -569,7 +569,44 @@ goBarplot(gos, gocat="CC")
 \end{figure}
 
 \section{Differential ribosome binding analysis (tranlational efficiency)}
-To be added...
+
+For test purposes we generate here from the sample data used in this vignette a
+small test data set, where we include two types of RNA isolates
+(\Rfunarg{assays}): polyribosomal mRNA (\Rfunarg{Ribo}) and total mRNA
+(\Rfunarg{mRNA}). In addition, there are two treatments
+(\Rfunarg{conditions}): \Rfunarg{M1} and \Rfunarg{A1}. 
+
+<<eval=TRUE>>=
+library(DESeq2)
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
+countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
+countDFeByg <- read.delim(countDFeBygpath, row.names=1)
+coldata <- DataFrame(assay=factor(rep(c("Ribo","mRNA"), each=4)), 
+                condition=factor(rep(as.character(targetsin(args)$Factor[1:4]), 2)), 
+                row.names=as.character(targetsin(args)$SampleName)[1:8])
+coldata
+@
+
+Differences in translational efficiencies can be calculated by ratios of ratios
+for the two conditions: \\ $(Ribo\_A1 / mRNA\_A1) / (Ribo\_M1 / mRNA\_M1)$. The latter
+can be modeled with the \Rpackage{DESeq2} package using the design $~ assay +
+condition + assay:condition$, where the interaction term $assay:condition$
+represents the ratio of ratios. Using the likelihood ratio test of
+\Rpackage{DESeq2}, which removes the interaction term in the reduced model, one
+can test whether the translational efficiency (ribosome loading) is different
+in condition \Rfunarg{A1} than in \Rfunarg{M1} as follows.
+
+<<eval=TRUE>>=
+dds <- DESeqDataSetFromMatrix(countData=as.matrix(countDFeByg[,rownames(coldata)]), 
+                            colData = coldata, 
+                            design = ~ assay + condition + assay:condition)
+dds <- DESeq(dds, test="LRT", reduced = ~ assay + condition)
+res <- DESeq2::results(dds)
+head(res[order(res$padj),],4)
+# write.table(res, file="transleff.xls", quote=FALSE, col.names = NA, sep="\t")
+@
 
 \section{Clustering and heat maps}
 The following example performs hierarchical clustering on the \Rfunarg{rlog} transformed expression matrix subsetted by the DEGs identified in the 
