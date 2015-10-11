@@ -1,9 +1,10 @@
 changelog
-    version 1.3.44 - 1.3.48
+    version 1.3.44 - 1.3.49
         - added predORF
         - added scaleRanges
         - optimized performance of scaleRanges
         - vignette updates
+        - translational efficiency modeling with DESeq2
 
     version 1.3.35 - 1.3.43
         - added featureCoverage and plotfeatureCoverage

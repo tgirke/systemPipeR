@@ -24,14 +24,6 @@ targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 
-## ----eval=FALSE, messages=FALSE, warning=FALSE, cache=TRUE-----------------------------------
-#  args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
-#  fctpath <- system.file("extdata", "custom_Fct.R", package="systemPipeR")
-#  source(fctpath)
-#  iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=100)"
-#  preprocessReads(args=args, Fct=iterTrim, batchsize=100000, overwrite=TRUE, compress=TRUE)
-#  writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
-
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  args <- systemArgs(sysma="param/tophat.param", mytargets="targets_trim.txt")
 #  fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
@@ -224,6 +216,27 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  pdf("GOslimbarplotMF.pdf", height=8, width=10); goBarplot(gos, gocat="MF"); dev.off()
 #  goBarplot(gos, gocat="BP")
 #  goBarplot(gos, gocat="CC")
+
+## ----eval=TRUE-------------------------------------------------------------------------------
+library(DESeq2)
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
+countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
+countDFeByg <- read.delim(countDFeBygpath, row.names=1)
+coldata <- DataFrame(assay=factor(rep(c("Ribo","mRNA"), each=4)), 
+                condition=factor(rep(as.character(targetsin(args)$Factor[1:4]), 2)), 
+                row.names=as.character(targetsin(args)$SampleName)[1:8])
+coldata
+
+## ----eval=TRUE-------------------------------------------------------------------------------
+dds <- DESeqDataSetFromMatrix(countData=as.matrix(countDFeByg[,rownames(coldata)]), 
+                            colData = coldata, 
+                            design = ~ assay + condition + assay:condition)
+dds <- DESeq(dds, test="LRT", reduced = ~ assay + condition)
+res <- DESeq2::results(dds)
+head(res[order(res$padj),],4)
+# write.table(res, file="transleff.xls", quote=FALSE, col.names = NA, sep="\t")
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library(pheatmap)
