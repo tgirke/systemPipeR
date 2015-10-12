@@ -135,7 +135,11 @@ experimental design, reference genome, gene annotations, etc.
 
 \section{Load workflow environment}
 \subsection{Load packages and sample data}
-The \Rpackage{systemPipeR} package needs to be loaded to perform the analysis steps shown in this report \citep{Girke2014-oy}. 
+The \Rpackage{systemPipeR} package needs to be loaded to perform the analysis 
+steps shown in this report \citep{Girke2014-oy}. The package allows users
+to run the entire analysis workflow interactively or with a single command 
+while also generating the corresponding analysis report. For details
+see \Rpackage{systemPipeR's} main \href{http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html}{\textcolor{blue}{vignette}}.
 <<eval=TRUE>>=
 library(systemPipeR)
 @
