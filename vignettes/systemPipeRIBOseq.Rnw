@@ -289,7 +289,10 @@ p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.pdf", graph
 \end{figure}
 
 \subsection{Count and plot reads of specific lengths}
-Generate and plot feature counts for specific read lengths
+To determine the approximate read length of ribosome footprints in Ribo-Seq experiments, one 
+can generate and plot the feature counts for specific read lengths separately. Typically, the 
+most abundant read length obtained for translated features corresponds to the approximate footprint 
+length occupied by the ribosomes.
 <<eval=FALSE>>=
 fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
                          singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
@@ -584,13 +587,14 @@ goBarplot(gos, gocat="CC")
    \label{fig:GOMF}
 \end{figure}
 
-\section{Differential ribosome binding analysis (translational efficiency)}
-
-For test purposes the following generates a small test data set from the sample
-data used in this vignette, where two types of RNA samples (\Rfunarg{assays})
-are included: polyribosomal mRNA (\Rfunarg{Ribo}) and total mRNA
-(\Rfunarg{mRNA}). In addition, there are two treatments (\Rfunarg{conditions}):
-\Rfunarg{M1} and \Rfunarg{A1}. 
+\section{Differential ribosome loading analysis (translational efficiency)}
+Combinded with mRNA-Seq data, Ribo-Seq or polyRibo-Seq experiments can be used
+to study changes in translational efficiencies of genes and/or transcripts for
+different treatments. For test purposes the following generates a small test
+data set from the sample data used in this vignette, where two types of RNA
+samples (\Rfunarg{assays}) are considered: polyribosomal mRNA (\Rfunarg{Ribo})
+and total mRNA (\Rfunarg{mRNA}). In addition, there are two treatments
+(\Rfunarg{conditions}): \Rfunarg{M1} and \Rfunarg{A1}. 
 
 <<eval=TRUE>>=
 library(DESeq2)
@@ -606,9 +610,13 @@ coldata
 @
 
 Differences in translational efficiencies can be calculated by ratios of ratios
-for the two conditions: \\ $(Ribo\_A1 / mRNA\_A1) / (Ribo\_M1 / mRNA\_M1)$. 
-The latter can be modeled with the \Rpackage{DESeq2} package using the design $~ assay +
-condition + assay:condition$, where the interaction term $assay:condition$
+for the two conditions: \\
+\vspace{-0.4cm}
+\begin{center}
+$(Ribo\_A1 / mRNA\_A1) / (Ribo\_M1 / mRNA\_M1)$. 
+\end{center}
+The latter can be modeled with the \Rpackage{DESeq2} package using the design '$\sim assay +
+condition + assay:condition$', where the interaction term '$assay:condition$'
 represents the ratio of ratios. Using the likelihood ratio test of
 \Rpackage{DESeq2}, which removes the interaction term in the reduced model, one
 can test whether the translational efficiency (ribosome loading) is different
@@ -618,6 +626,7 @@ in condition \Rfunarg{A1} than in \Rfunarg{M1}.
 dds <- DESeqDataSetFromMatrix(countData=as.matrix(countDFeByg[,rownames(coldata)]), 
                             colData = coldata, 
                             design = ~ assay + condition + assay:condition)
+# model.matrix(~ assay + condition + assay:condition, coldata) # Corresponding design matrix
 dds <- DESeq(dds, test="LRT", reduced = ~ assay + condition)
 res <- DESeq2::results(dds)
 head(res[order(res$padj),],4)
