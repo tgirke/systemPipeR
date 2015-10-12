@@ -1142,5 +1142,16 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
 # grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
 # export.gff3(unlist(grl_scaled), "uorf.gff")
 
+#######################################
+## Translational Efficiency Analysis ##
+#######################################
+## Currently, this step is covered entire by the code given in the Ribo-Seq
+## workflow vignette using DESeq2 out of the box. The approach ended up being
+## very similar to some of time course analysis steps given in the DESeq2
+## vignette as well as some community discussions:
+##      https://support.bioconductor.org/p/61509/ also here
+##      https://support.bioconductor.org/p/67455/
+## To-dos: add convenience function similar to run_DESeq2 (or extend it)
+## to handle this analysis step for many experiment sets in a more convenient manner.
 
 
