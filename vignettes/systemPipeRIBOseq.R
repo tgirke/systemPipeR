@@ -247,6 +247,7 @@ coldata
 dds <- DESeqDataSetFromMatrix(countData=as.matrix(countDFeByg[,rownames(coldata)]), 
                             colData = coldata, 
                             design = ~ assay + condition + assay:condition)
+# model.matrix(~ assay + condition + assay:condition, coldata) # Corresponding design matrix
 dds <- DESeq(dds, test="LRT", reduced = ~ assay + condition)
 res <- DESeq2::results(dds)
 head(res[order(res$padj),],4)
