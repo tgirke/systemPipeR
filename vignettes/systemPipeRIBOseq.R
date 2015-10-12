@@ -62,15 +62,20 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  library(GenomicFeatures)
 #  file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
 #  txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
-#  feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, verbose=TRUE)
+#  feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0,
+#                      verbose=TRUE)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
-#  p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+#  fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat,
+#                          singleEnd=TRUE, readlength=NULL, type="data.frame")
+#  p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.pdf", graphicsformat="pdf",
+#                             scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
-#  fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-#  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
+#  fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat,
+#                           singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
+#  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf",
+#                              scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
@@ -151,7 +156,8 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  d <- cor(assay(rlog(dds)), method="spearman")
 #  hc <- hclust(dist(1-d))
 #  pdf("results/sample_tree.pdf")
-#  plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
+#  plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE,
+#             no.margin=TRUE)
 #  dev.off()
 
 ## ----eval=FALSE------------------------------------------------------------------------------
@@ -190,11 +196,15 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  listAttributes(m) # Choose data types you want to download
 #  go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
 #  go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
-#  go[go[,3]=="molecular_function", 3] <- "F"; go[go[,3]=="biological_process", 3] <- "P"; go[go[,3]=="cellular_component", 3] <- "C"
+#  go[go[,3]=="molecular_function", 3] <- "F"
+#  go[go[,3]=="biological_process", 3] <- "P"
+#  go[go[,3]=="cellular_component", 3] <- "C"
 #  go[1:4,]
 #  dir.create("./data/GO")
-#  write.table(go, "data/GO/GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
-#  catdb <- makeCATdb(myfile="data/GO/GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=NULL)
+#  write.table(go, "data/GO/GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE,
+#              col.names=FALSE, sep="\t")
+#  catdb <- makeCATdb(myfile="data/GO/GOannotationsBiomart_mod.txt", lib=NULL, org="",
+#                     colno=c(1,2,3), idconv=NULL)
 #  save(catdb, file="data/GO/catdb.RData")
 
 ## ----eval=FALSE------------------------------------------------------------------------------
@@ -205,10 +215,14 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  down <- DEG_list$Down; names(down) <- paste(names(down), "_down", sep="")
 #  DEGlist <- c(up_down, up, down)
 #  DEGlist <- DEGlist[sapply(DEGlist, length) > 0]
-#  BatchResult <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="all", id_type="gene", CLSZ=2, cutoff=0.9, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+#  BatchResult <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="all", id_type="gene",
+#                                  CLSZ=2, cutoff=0.9, gocats=c("MF", "BP", "CC"),
+#                                  recordSpecGO=NULL)
 #  library("biomaRt"); m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
 #  goslimvec <- as.character(getBM(attributes=c("goslim_goa_accession"), mart=m)[,1])
-#  BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim", id_type="gene", myslimv=goslimvec, CLSZ=10, cutoff=0.01, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+#  BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim", id_type="gene",
+#                                      myslimv=goslimvec, CLSZ=10, cutoff=0.01,
+#                                      gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
@@ -243,7 +257,8 @@ head(res[order(res$padj),],4)
 #  geneids <- unique(as.character(unlist(DEG_list[[1]])))
 #  y <- assay(rlog(dds))[geneids, ]
 #  pdf("heatmap1.pdf")
-#  pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
+#  pheatmap(y, scale="row", clustering_distance_rows="correlation",
+#           clustering_distance_cols="correlation")
 #  dev.off()
 
 ## ----sessionInfo, results='asis'-------------------------------------------------------------
