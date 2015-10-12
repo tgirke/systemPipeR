@@ -52,7 +52,7 @@ options(formatR.arrow=TRUE, width=95)
 unlink("test.db")
 @
 
-\title{Analysis Workflow for Ribo-Seq and polyRibo-Seq Experiments}
+\title{\Rpackage{systemPipeR} Workflow for Ribo-Seq and polyRibo-Seq Experiments}
 \author{Piyada Juntawong, Jeremie Bazin, Maureen Hummel, Julia Bailey-Serres and Thomas Girke \\
         Email contact: thomas.girke@ucr.edu}
 \maketitle
