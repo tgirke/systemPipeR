@@ -366,7 +366,7 @@ translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
 @
 
 \subsection{Adding custom features to other feature types}
-If required the any custom feature ranges can be added to the standard features
+If required custom feature ranges can be added to the standard features
 generated in Section \ref{featuretypes}. The following does this for the uORF ranges
 predicted in Subsection \ref{uorfs}.
 
