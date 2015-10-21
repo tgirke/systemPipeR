@@ -1,6 +1,7 @@
 changelog
     version 1.5.0 - 1.5.1
         - doc updates
+        - git mirror setup
 
     version 1.3.44 - 1.3.50
         - added predORF
