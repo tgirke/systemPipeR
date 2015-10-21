@@ -1063,7 +1063,7 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
         ## Check for validity of query
         if(length(query)>1) warning("Only the first range in 'query' will be used.")
         query <- query[1]
-        if(sum(width(subject)) <= width(query)) stop("Sum of width of subject ranges cannot be smaller than width of query range.")
+        if(sum(width(subject)) < width(query)) stop("Sum of width of subject ranges cannot be smaller than width of query range.")
     
         ## Check for validity of subject
         subjectstrand <- unique(as.character(strand(subject)))
