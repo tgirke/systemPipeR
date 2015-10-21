@@ -1,4 +1,7 @@
 changelog
+    version 1.4.0 - 1.4.1
+        - doc updates
+
     version 1.3.44 - 1.3.50
         - added predORF
         - added scaleRanges
