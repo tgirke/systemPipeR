@@ -17,6 +17,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Transcript ranges: each 'tx_type' as separate GRanges object (reduced by gene)
     if("tx_type" %in% featuretype) {
         tx <- transcripts(txdb, columns=c("tx_name", "gene_id", "tx_type"))
+        mcols(tx)$tx_type <- ifelse(is.na(mcols(tx)$tx_type), "transcript", mcols(tx)$tx_type)
         tx_type <- unique(mcols(tx)$tx_type)
         for(i in seq_along(tx_type)) {
             tmp <- tx[mcols(tx)$tx_type==tx_type[i]]
@@ -208,8 +209,10 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
 
     ## Create intergenic ranges
 	if("intergenic" %in% featuretype) {
-        if(verbose==TRUE & any(is.na(seqlengths(txdb)))) warning("seqlengths missing for: ", paste(head(names(seqlengths(txdb))[is.na(seqlengths(txdb))]), collapse=", "), ". Thus, corresponding chromosome end ranges will be missing in intergenic results.")
+        # if(verbose==TRUE & any(is.na(seqlengths(txdb)))) warning("seqlengths missing for: ", paste(head(names(seqlengths(txdb))[is.na(seqlengths(txdb))]), collapse=", "), ". Thus, corresponding chromosome end ranges will be missing in intergenic results.")
         ge <- genes(txdb)
+        myseqinfo <- seqinfo(ge)
+        seqlengths(ge) <- NA # Note: the following ignores chromosome end ranges
         mynames <- names(ge)
         strand(ge) <- "*"
 		ge <- reduce(ge, with.revmap=TRUE)
@@ -226,7 +229,8 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
 		    mcols(myintergenics) <- DataFrame(feature_by=as(sprintf("INTER%08d", seq_along(myids)), "CharacterList"), featuretype_id=as.character(myids), featuretype="intergenic")
         }
         names(myintergenics) <- seq_along(myintergenics)
-		featuresGRl <- c(featuresGRl, GRangesList("intergenic"=myintergenics))
+		seqinfo(myintergenics) <- myseqinfo
+        featuresGRl <- c(featuresGRl, GRangesList("intergenic"=myintergenics))
         if(verbose==TRUE) cat("Created feature ranges: intergenic", "\n")
 	}
 
