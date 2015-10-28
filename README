@@ -1,8 +1,9 @@
 changelog
-    version 1.5.0 - 1.5.3
+    version 1.5.0 - 1.5.4
         - doc updates
         - git mirror setup
         - fixed genFeatures for txdb instance from makeTxDbFromUCSC()
+        - fixed genFeatures for empty range sets
 
     version 1.3.44 - 1.3.50
         - added predORF
