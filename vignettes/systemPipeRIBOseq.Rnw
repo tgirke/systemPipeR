@@ -280,6 +280,7 @@ the counting results can be plotted with the associated
 
 The following generates and plots feature counts for any read length.
 <<eval=FALSE>>=
+library(ggplot2); library(grid)
 fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
                         singleEnd=TRUE, readlength=NULL, type="data.frame")
 p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.pdf", graphicsformat="pdf", 
@@ -298,7 +299,6 @@ can generate and plot the feature counts for specific read lengths separately. T
 most abundant read length obtained for translated features corresponds to the approximate footprint 
 length occupied by the ribosomes.
 <<eval=FALSE>>=
-library(ggplot2); library(grid)
 fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
                          singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
 p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf", 
