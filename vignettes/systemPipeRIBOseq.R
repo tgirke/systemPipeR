@@ -81,6 +81,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #                             scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  library(ggplot2); library(grid)
 #  fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat,
 #                           singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
 #  p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf",
@@ -121,6 +122,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  library(ggplot2); library(grid)
 #  fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
 #                           readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE,
 #                           resizefeatures=TRUE, upstream=20, downstream=20,
