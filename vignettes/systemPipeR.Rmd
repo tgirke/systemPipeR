@@ -91,13 +91,13 @@ Relevant workflow parameter files:
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) and [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from R using the `biocLite` install command. 
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from R using the _`biocLite`_ install command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be used to generate _`systemPipeR`_ workflow environments with a single command (see section [Workflow templates](#workflow-templates)) containing all parameter files and sample data required to quickly test and run workflows. 
 
     
 ```{r install, eval=FALSE}
 source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
-biocLite("systemPipeR") # Installs systemPipeR from Bioconductor 
-biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
+biocLite("systemPipeR") # Installs systemPipeR 
+biocLite("systemPipeRdata") # Installs systemPipeRdata
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
