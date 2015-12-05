@@ -1,4 +1,7 @@
 changelog
+    version 1.5.6
+        - vignette updates
+
     version 1.5.5
         - fixed extendylim in plotfeatureCoverage()
         - fixed error in featureCoverage when txdb/grl was created from gff with scaffolds not containing any genes
