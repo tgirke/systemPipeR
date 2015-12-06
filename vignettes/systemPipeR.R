@@ -35,7 +35,7 @@ suppressPackageStartupMessages({
 
 ## ----targetsSE, eval=TRUE------------------------------------------------
 library(systemPipeR)
-targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
 read.delim(targetspath, comment.char = "#")
 
 ## ----targetsPE, eval=TRUE------------------------------------------------
