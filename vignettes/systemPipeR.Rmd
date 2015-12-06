@@ -175,7 +175,7 @@ readLines(targetspath)[1:4]
 ```
 
 The function _`readComp`_ imports the comparison information and stores it in a _`list`_. Alternatively, _`readComp`_ can obtain the comparison information from the corresponding _`SYSargs`_ object (see below). 
-Note, these header lines are optional. They are mainly useful for controlling comparative analyses according to certain biological expectations, such as identifying differentially expressed genes in RNA-Seq experiments using simple pair-wise comparisons.
+Note, these header lines are optional. They are mainly useful for controlling comparative analyses according to certain biological expectations, such as identifying differentially expressed genes in RNA-Seq experiments based on simple pair-wise comparisons.
  
 ```{r targetscomp, eval=TRUE}
 readComp(file=targetspath, format="vector", delim="-")
@@ -183,21 +183,21 @@ readComp(file=targetspath, format="vector", delim="-")
 <div align="right">[Back to Table of Contents]()</div>
 
 ## Structure of _`param`_ file and _`SYSargs`_ container
-The _`param`_ file defines the parameters of the command-line software. The following shows the format of a sample _`param`_ file provided by this package. 
+The _`param`_ file defines the parameters of a chosen command-line software. The following shows the format of a sample _`param`_ file provided by this package. 
 
 ```{r param_structure, eval=TRUE}
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
 read.delim(parampath, comment.char = "#")
 ```
 
-The _`systemArgs`_ function imports the definitions of both the _`param`_ file and the _`targets`_ file, and stores all relevant information as _`SYSargs`_ object. To run the pipeline without command-line software, one can assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can start the _`systemPipeR`_ workflow with pre-generated BAM files by providing a targets file where the _`FileName`_ column gives the paths to the BAM files and _`sysma`_ is assigned _`NULL`_.
+The _`systemArgs`_ function imports the definitions of both the _`param`_ file and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_ S4 class object. To run the pipeline without command-line software, one can assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can start the _`systemPipeR`_ workflow with pre-generated BAM files by providing a targets file where the _`FileName`_ column gives the paths to the BAM files and _`sysma`_ is assigned _`NULL`_.
 
 ```{r param_import, eval=TRUE}
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args
 ```
 
-Several accessor functions are available that are named after the slot names of the _`SYSargs`_ object class.
+Several accessor functions are available that are named after the slot names of the _`SYSargs`_ object.
 ```{r sysarg_access, eval=TRUE}
 names(args)
 modules(args)
@@ -206,7 +206,7 @@ outpaths(args)[1]
 sysargs(args)[1]
 ```
 
-The content of the _`param`_ file can be returned as JSON object as follows (requires _`rjson`_ package).
+The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).
 ```{r sysarg_json, eval=TRUE}
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ```

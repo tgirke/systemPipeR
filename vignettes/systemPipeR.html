@@ -295,7 +295,7 @@ read.delim(targetspath, comment.char = &quot;#&quot;)[1:2,1:6]</code></pre>
 ## [2] &quot;# The following line(s) allow to specify the contrasts needed for comparative analyses, such as DEG identification. All possible comparisons can be specified with 'CMPset: ALL'.&quot;
 ## [3] &quot;# &lt;CMP&gt; CMPset1: M1-A1, M1-V1, A1-V1, M6-A6, M6-V6, A6-V6, M12-A12, M12-V12, A12-V12&quot;                                                                                             
 ## [4] &quot;# &lt;CMP&gt; CMPset2: ALL&quot;</code></pre>
-<p>The function <em><code>readComp</code></em> imports the comparison information and stores it in a <em><code>list</code></em>. Alternatively, <em><code>readComp</code></em> can obtain the comparison information from the corresponding <em><code>SYSargs</code></em> object (see below). Note, these header lines are optional. They are mainly useful for controlling comparative analyses according to certain biological expectations, such as identifying differentially expressed genes in RNA-Seq experiments using simple pair-wise comparisons.</p>
+<p>The function <em><code>readComp</code></em> imports the comparison information and stores it in a <em><code>list</code></em>. Alternatively, <em><code>readComp</code></em> can obtain the comparison information from the corresponding <em><code>SYSargs</code></em> object (see below). Note, these header lines are optional. They are mainly useful for controlling comparative analyses according to certain biological expectations, such as identifying differentially expressed genes in RNA-Seq experiments based on simple pair-wise comparisons.</p>
 <pre class="r"><code>readComp(file=targetspath, format=&quot;vector&quot;, delim=&quot;-&quot;)</code></pre>
 <pre><code>## $CMPset1
 ## [1] &quot;M1-A1&quot;   &quot;M1-V1&quot;   &quot;A1-V1&quot;   &quot;M6-A6&quot;   &quot;M6-V6&quot;   &quot;A6-V6&quot;   &quot;M12-A12&quot; &quot;M12-V12&quot; &quot;A12-V12&quot;
@@ -312,7 +312,7 @@ read.delim(targetspath, comment.char = &quot;#&quot;)[1:2,1:6]</code></pre>
 </div>
 <div id="structure-of-param-file-and-sysargs-container" class="section level2">
 <h2><span class="header-section-number">2.5</span> Structure of <em><code>param</code></em> file and <em><code>SYSargs</code></em> container</h2>
-<p>The <em><code>param</code></em> file defines the parameters of the command-line software. The following shows the format of a sample <em><code>param</code></em> file provided by this package.</p>
+<p>The <em><code>param</code></em> file defines the parameters of a chosen command-line software. The following shows the format of a sample <em><code>param</code></em> file provided by this package.</p>
 <pre class="r"><code>parampath &lt;- system.file(&quot;extdata&quot;, &quot;tophat.param&quot;, package=&quot;systemPipeR&quot;)
 read.delim(parampath, comment.char = &quot;#&quot;)</code></pre>
 <pre><code>##      PairSet         Name                                  Value
@@ -331,11 +331,11 @@ read.delim(parampath, comment.char = &quot;#&quot;)</code></pre>
 ## 13   infile1         path                                   &lt;NA&gt;
 ## 14   infile2         &lt;NA&gt;                            &lt;FileName2&gt;
 ## 15   infile2         path                                   &lt;NA&gt;</code></pre>
-<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information as <em><code>SYSargs</code></em> object. To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start the <em><code>systemPipeR</code></em> workflow with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column gives the paths to the BAM files and <em><code>sysma</code></em> is assigned <em><code>NULL</code></em>.</p>
+<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information in a <em><code>SYSargs</code></em> S4 class object. To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start the <em><code>systemPipeR</code></em> workflow with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column gives the paths to the BAM files and <em><code>sysma</code></em> is assigned <em><code>NULL</code></em>.</p>
 <pre class="r"><code>args &lt;- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args</code></pre>
 <pre><code>## An instance of 'SYSargs' for running 'tophat' on 18 samples</code></pre>
-<p>Several accessor functions are available that are named after the slot names of the <em><code>SYSargs</code></em> object class.</p>
+<p>Several accessor functions are available that are named after the slot names of the <em><code>SYSargs</code></em> object.</p>
 <pre class="r"><code>names(args)</code></pre>
 <pre><code>##  [1] &quot;targetsin&quot;     &quot;targetsout&quot;    &quot;targetsheader&quot; &quot;modules&quot;       &quot;software&quot;      &quot;cores&quot;        
 ##  [7] &quot;other&quot;         &quot;reference&quot;     &quot;results&quot;       &quot;infile1&quot;       &quot;infile2&quot;       &quot;outfile1&quot;     
@@ -350,7 +350,7 @@ args</code></pre>
 <pre class="r"><code>sysargs(args)[1]</code></pre>
 <pre><code>##                                                                                                                                                                                                                                                                                                  M1A 
 ## &quot;tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq&quot;</code></pre>
-<p>The content of the <em><code>param</code></em> file can be returned as JSON object as follows (requires <em><code>rjson</code></em> package).</p>
+<p>The content of the <em><code>param</code></em> file can also be returned as JSON object as follows (requires <em><code>rjson</code></em> package).</p>
 <pre class="r"><code>systemArgs(sysma=parampath, mytargets=targetspath, type=&quot;json&quot;)</code></pre>
 <pre><code>## [1] &quot;{\&quot;modules\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;bowtie2/2.2.5\&quot;,\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;tophat/2.0.14\&quot;},\&quot;software\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v1\&quot;:\&quot;tophat\&quot;},\&quot;cores\&quot;:{\&quot;n1\&quot;:\&quot;-p\&quot;,\&quot;v1\&quot;:\&quot;4\&quot;},\&quot;other\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v1\&quot;:\&quot;-g 1 --segment-length 25 -i 30 -I 3000\&quot;},\&quot;outfile1\&quot;:{\&quot;n1\&quot;:\&quot;-o\&quot;,\&quot;v2\&quot;:\&quot;&lt;FileName1&gt;\&quot;,\&quot;n3\&quot;:\&quot;path\&quot;,\&quot;v4\&quot;:\&quot;./results/\&quot;,\&quot;n5\&quot;:\&quot;remove\&quot;,\&quot;v1\&quot;:\&quot;\&quot;,\&quot;n2\&quot;:\&quot;append\&quot;,\&quot;v3\&quot;:\&quot;.tophat\&quot;,\&quot;n4\&quot;:\&quot;outextension\&quot;,\&quot;v5\&quot;:\&quot;.tophat/accepted_hits.bam\&quot;},\&quot;reference\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v1\&quot;:\&quot;./data/tair10.fasta\&quot;},\&quot;infile1\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;&lt;FileName1&gt;\&quot;,\&quot;n1\&quot;:\&quot;path\&quot;,\&quot;v2\&quot;:\&quot;\&quot;},\&quot;infile2\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;&lt;FileName2&gt;\&quot;,\&quot;n1\&quot;:\&quot;path\&quot;,\&quot;v2\&quot;:\&quot;\&quot;}}&quot;</code></pre>
 <div align="right">
