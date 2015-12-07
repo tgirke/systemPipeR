@@ -935,7 +935,7 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 		    mystrand <- 2 # for -
 		    stopcodon_temp <- as.character(reverseComplement(DNAStringSet(stopcodon)))
             startcodon_temp <- as.character(reverseComplement(DNAStringSet(startcodon)))
-		    stopcodon <- startcodon_temp
+		    stopcodon <- startcodon_temp 
             startcodon <- stopcodon_temp
         
         } else {
@@ -954,7 +954,7 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 		c2 <- as.character(suppressWarnings(codons(x[2:length(x)])))
 		c3 <- as.character(suppressWarnings(codons(x[3:length(x)])))
         
-        ## Identify position of stop/stop in tripletized x
+        ## Identify position of start/stop in tripletized x
 		startpos1 <- which(c1 %in% startcodon)
 		stoppos1 <- which(c1 %in% stopcodon)
 		startpos2 <- which(c2 %in% startcodon)
@@ -969,13 +969,25 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 		}
         
         ## Map tripletized matches back to sequence of x 
-		orfpos1 <- t(sapply(seq(along=startpos1), function(x) c((startpos1[x] * 3) -2, stoppos1[stoppos1 > startpos1[x]][1] * 3)))
-		if(length(orfpos1)==0) orfpos1 <- matrix(nrow = 0, ncol = 2)
-		orfpos2 <- t(sapply(seq(along=startpos2), function(x) c((startpos2[x] * 3) -1, (stoppos2[stoppos2 > startpos2[x]][1] * 3) + 1)))
-		if(length(orfpos2)==0) orfpos2 <- matrix(nrow = 0, ncol = 2)
-		orfpos3 <- t(sapply(seq(along=startpos3), function(x) c((startpos3[x] * 3) -0, (stoppos3[stoppos3 > startpos3[x]][1] * 3) + 2)))
-		if(length(orfpos3)==0) orfpos3 <- matrix(nrow = 0, ncol = 2)
-		orfRanges <- rbind(orfpos1, orfpos2, orfpos3)
+        if(tolower(strand)=="sense") {
+		    orfpos1 <- t(sapply(seq(along=startpos1), function(x) c((startpos1[x] * 3) -2, stoppos1[stoppos1 > startpos1[x]][1] * 3)))
+		    if(length(orfpos1)==0) orfpos1 <- matrix(nrow = 0, ncol = 2)
+		    orfpos2 <- t(sapply(seq(along=startpos2), function(x) c((startpos2[x] * 3) -1, (stoppos2[stoppos2 > startpos2[x]][1] * 3) + 1)))
+		    if(length(orfpos2)==0) orfpos2 <- matrix(nrow = 0, ncol = 2)
+		    orfpos3 <- t(sapply(seq(along=startpos3), function(x) c((startpos3[x] * 3) -0, (stoppos3[stoppos3 > startpos3[x]][1] * 3) + 2)))
+		    if(length(orfpos3)==0) orfpos3 <- matrix(nrow = 0, ncol = 2)
+		}
+        if(tolower(strand)=="antisense") { # Note, for antisense predictions startpos contain stop codons and stoppos contain start codons
+		    startpos1 <- sort(startpos1, decreasing = TRUE); startpos2 <- sort(startpos2, decreasing = TRUE); startpos3 <- sort(startpos3, decreasing = TRUE)
+		    stoppos1 <- sort(stoppos1, decreasing = TRUE); stoppos2 <- sort(stoppos2, decreasing = TRUE); stoppos3 <- sort(stoppos3, decreasing = TRUE)
+		    orfpos1 <- t(sapply(seq(along=stoppos1), function(x) c((startpos1[startpos1 < stoppos1[x]][1] * 3) -2, stoppos1[x] * 3)))
+		    if(length(orfpos1)==0) orfpos1 <- matrix(nrow = 0, ncol = 2)
+		    orfpos2 <- t(sapply(seq(along=stoppos2), function(x) c((startpos2[startpos2 < stoppos2[x]][1] * 3) -1, (stoppos2[x] * 3) + 1)))
+		    if(length(orfpos2)==0) orfpos2 <- matrix(nrow = 0, ncol = 2)
+		    orfpos3 <- t(sapply(seq(along=stoppos3), function(x) c((startpos3[startpos3 < stoppos3[x]][1] * 3) -0, (stoppos3[x] * 3) + 2)))
+		    if(length(orfpos3)==0) orfpos3 <- matrix(nrow = 0, ncol = 2)
+		}
+        orfRanges <- rbind(orfpos1, orfpos2, orfpos3)
 		orfRanges <- na.omit(orfRanges)
 		if(mode=="cds") { # Modifications required for mode=="cds"
 			orfRanges[,1] <- orfRanges[,1] + 3
@@ -1004,9 +1016,9 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 			    orfRanges[,1] <- 1:nrow(orfRanges)
             }
             return(orfRanges)
-        ## Return only as man ORFs as specified under n sorted decreasingly by length
+        ## Return only as many ORFs as specified under n sorted decreasingly by length
 		} else if(is.numeric(n)) {
-            ## Make sure subsetting does not exeed number of records in orfRanges
+            ## Make sure subsetting does not exceed number of records in orfRanges
             if(nrow(orfRanges) < n & nrow(orfRanges) != 0) { 
                 upperlimit <- length(orfRanges[,1]) 
             } else if(nrow(orfRanges) > 0) { 
