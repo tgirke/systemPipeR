@@ -95,6 +95,10 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
 
 ## ----eval=FALSE------------------------------------------------------------------------------
+#  feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
+#  feat <- c(feat, GRangesList("uORF"=unlist(grl_scaled)))
+
+## ----eval=FALSE------------------------------------------------------------------------------
 #  feat <- genFeatures(txdb, featuretype="intergenic", reduce_ranges=TRUE)
 #  intergenic <- feat$intergenic
 #  strand(intergenic) <- "+"
@@ -106,10 +110,6 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 #  grl_scaled_intergenic <- scaleRanges(subject=intergenic, query=sorf, type="sORF", verbose=TRUE)
 #  export.gff3(unlist(grl_scaled_intergenic), "sorf.gff")
 #  translate(getSeq(FaFile(genome), unlist(grl_scaled_intergenic)))
-
-## ----eval=FALSE------------------------------------------------------------------------------
-#  feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
-#  feat <- c(feat, GRangesList("uORF"=unlist(grl_scaled)))
 
 ## ----eval=FALSE------------------------------------------------------------------------------
 #  grl <- cdsBy(txdb, "tx", use.names=TRUE)
