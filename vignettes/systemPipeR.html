@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 05 December, 2015</em></h4>
+<h4 class="date"><em>Last update: 07 December, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <strong>Figure 1:</strong> Workflow design structure of <em>systemPipeR</em>
 </div>
 <p></br></p>
-<p>The intended way of running <em><code>sytemPipeR</code></em> workflows is via <em><code>*.Rnw</code></em> or <em><code>*.Rmd</code></em> files, which can be executed either line-wise in interactive mode or with a single command from R or the command-line using a <a href="https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/Makefile"><em><code>Makefile</code></em></a>. This way comprehensive and reproducible analysis reports in PDF or HTML format can be generated in a fully automated manner by making use of the highly functional reporting utilities available for R. Templates for setting up custom project reports are provided as <em><code>*.Rnw</code></em> files by the helper package <em><code>systemPipeRdata</code></em> and in the vignettes subdirectory of <em><code>systemPipeR</code></em>. The corresponding PDFs of these report templates are available here: <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRNAseq.pdf?raw=true"><em><code>systemPipeRNAseq</code></em></a>, <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRIBOseq.pdf?raw=true"><em><code>systemPipeRIBOseq</code></em></a>, <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeChIPseq.pdf?raw=true"><em><code>systemPipeChIPseq</code></em></a> and <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeVARseq.pdf?raw=true"><em><code>systemPipeVARseq</code></em></a>. To work with <em><code>*.Rnw</code></em> or <em><code>*.Rmd</code></em> files efficiently, basic knowledge of <a href="https://www.stat.uni-muenchen.de/~leisch/Sweave/"><em><code>Sweave</code></em></a> or <a href="http://yihui.name/knitr/"><em><code>knitr</code></em></a> and <a href="http://www.latex-project.org/"><em><code>Latex</code></em></a> or <a href="http://rmarkdown.rstudio.com/"><em><code>R Markdown v2</code></em></a> is required.</p>
+<p>The intended way of running <em><code>sytemPipeR</code></em> workflows is via <em><code>*.Rnw</code></em> or <em><code>*.Rmd</code></em> files, which can be executed either line-wise in interactive mode or with a single command from R or the command-line using a <a href="https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/Makefile"><em><code>Makefile</code></em></a>. This way comprehensive and reproducible analysis reports can be generated in PDF or HTML format in a fully automated manner by making use of the highly functional reporting utilities available for R. Templates for setting up custom project reports are provided as <em><code>*.Rnw</code></em> files by the helper package <em><code>systemPipeRdata</code></em> and in the vignettes subdirectory of <em><code>systemPipeR</code></em>. The corresponding PDFs of these report templates are available here: <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRNAseq.pdf?raw=true"><em><code>systemPipeRNAseq</code></em></a>, <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRIBOseq.pdf?raw=true"><em><code>systemPipeRIBOseq</code></em></a>, <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeChIPseq.pdf?raw=true"><em><code>systemPipeChIPseq</code></em></a> and <a href="https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeVARseq.pdf?raw=true"><em><code>systemPipeVARseq</code></em></a>. To work with <em><code>*.Rnw</code></em> or <em><code>*.Rmd</code></em> files efficiently, basic knowledge of <a href="https://www.stat.uni-muenchen.de/~leisch/Sweave/"><em><code>Sweave</code></em></a> or <a href="http://yihui.name/knitr/"><em><code>knitr</code></em></a> and <a href="http://www.latex-project.org/"><em><code>Latex</code></em></a> or <a href="http://rmarkdown.rstudio.com/"><em><code>R Markdown v2</code></em></a> is required.</p>
 <div align="right">
 <a href>Back to Table of Contents</a>
 </div>
@@ -952,8 +952,8 @@ setwd(&quot;riboseq&quot;)</code></pre>
 ## [1] parallel  stats4    stats     graphics  utils     datasets  grDevices methods   base     
 ## 
 ## other attached packages:
-##  [1] DESeq2_1.10.0              RcppArmadillo_0.6.200.2.0  Rcpp_0.12.2               
-##  [4] ape_3.3                    ggplot2_1.0.1              systemPipeR_1.4.5         
+##  [1] DESeq2_1.10.0              RcppArmadillo_0.6.300.2.0  Rcpp_0.12.2               
+##  [4] ape_3.4                    ggplot2_1.0.1              systemPipeR_1.5.7         
 ##  [7] RSQLite_1.0.0              DBI_0.3.1                  ShortRead_1.28.0          
 ## [10] GenomicAlignments_1.6.1    SummarizedExperiment_1.0.1 Biobase_2.30.0            
 ## [13] BiocParallel_1.4.0         Rsamtools_1.22.0           Biostrings_2.38.2         
@@ -968,7 +968,7 @@ setwd(&quot;riboseq&quot;)</code></pre>
 ## [13] colorspace_1.2-6       htmltools_0.2.6        Matrix_1.2-3           plyr_1.8.3            
 ## [17] GSEABase_1.32.0        XML_3.98-1.3           pheatmap_1.0.7         biomaRt_2.26.1        
 ## [21] genefilter_1.52.0      zlibbioc_1.16.0        xtable_1.8-0           GO.db_3.2.2           
-## [25] scales_0.3.0           brew_1.0-6             annotate_1.48.0        GenomicFeatures_1.22.5
+## [25] scales_0.3.0           brew_1.0-6             annotate_1.48.0        GenomicFeatures_1.22.6
 ## [29] nnet_7.3-11            proto_0.3-10           survival_2.38-3        magrittr_1.5          
 ## [33] evaluate_0.8           fail_1.3               nlme_3.1-122           MASS_7.3-45           
 ## [37] foreign_0.8-66         hwriter_1.3.2          GOstats_2.36.0         graph_1.48.0          
