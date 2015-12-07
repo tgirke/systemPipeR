@@ -977,7 +977,7 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 		    orfpos3 <- t(sapply(seq(along=startpos3), function(x) c((startpos3[x] * 3) -0, (stoppos3[stoppos3 > startpos3[x]][1] * 3) + 2)))
 		    if(length(orfpos3)==0) orfpos3 <- matrix(nrow = 0, ncol = 2)
 		}
-        if(tolower(strand)=="antisense") { # Note, for antisense predictions startpos contain stop codons and stoppos contain start codons
+        if(tolower(strand)=="antisense") { # Note - for antisense predictions startpos contain stop codons and stoppos contain start codons
 		    startpos1 <- sort(startpos1, decreasing = TRUE); startpos2 <- sort(startpos2, decreasing = TRUE); startpos3 <- sort(startpos3, decreasing = TRUE)
 		    stoppos1 <- sort(stoppos1, decreasing = TRUE); stoppos2 <- sort(stoppos2, decreasing = TRUE); stoppos3 <- sort(stoppos3, decreasing = TRUE)
 		    orfpos1 <- t(sapply(seq(along=stoppos1), function(x) c((startpos1[startpos1 < stoppos1[x]][1] * 3) -2, stoppos1[x] * 3)))
