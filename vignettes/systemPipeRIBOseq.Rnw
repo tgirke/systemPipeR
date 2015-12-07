@@ -366,22 +366,6 @@ containing three exons.
 translate(unlist(getSeq(FaFile(genome), grl_scaled[[7]])))
 @
 
-\subsection{Predicting sORFs in intergenic regions}
-The following identifies continuous ORFs in intergenic regions. Note, \Rfunction{predORF} can only identify continuous ORFs in a set of query sequences. The function does not identify and remove introns prior to the ORF prediction.
-<<eval=FALSE>>=
-feat <- genFeatures(txdb, featuretype="intergenic", reduce_ranges=TRUE)
-intergenic <- feat$intergenic
-strand(intergenic) <- "+"
-dna <- getSeq(FaFile(genome), intergenic)
-names(dna) <- mcols(intergenic)$feature_by
-sorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="both")
-sorf <- sorf[width(sorf) > 60] # Remove sORFs below length cutoff, here 60bp
-intergenic <- split(intergenic, mcols(intergenic)$feature_by)
-grl_scaled_intergenic <- scaleRanges(subject=intergenic, query=sorf, type="sORF", verbose=TRUE)
-export.gff3(unlist(grl_scaled_intergenic), "sorf.gff")
-translate(getSeq(FaFile(genome), unlist(grl_scaled_intergenic)))
-@
-
 \subsection{Adding custom features to other feature types}
 If required custom feature ranges can be added to the standard features
 generated in Section \ref{featuretypes}. The following does this for the uORF ranges
@@ -410,6 +394,37 @@ export.gff3(unlist(grl_scaled_intergenic), "sorf.gff")
 translate(getSeq(FaFile(genome), unlist(grl_scaled_intergenic)))
 @
 
+<<<<<<< HEAD
+\subsection{Adding custom features to other feature types}
+If required custom feature ranges can be added to the standard features
+generated in Section \ref{featuretypes}. The following does this for the uORF ranges
+predicted in Subsection \ref{uorfs}.
+
+<<eval=FALSE>>=
+feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
+feat <- c(feat, GRangesList("uORF"=unlist(grl_scaled)))
+@
+
+\subsection{Predicting sORFs in intergenic regions}
+The following identifies continuous ORFs in intergenic regions. Note,
+\Rfunction{predORF} can only identify continuous ORFs in query sequences. The
+function does not identify and remove introns prior to the ORF prediction.  
+<<eval=FALSE>>=
+feat <- genFeatures(txdb, featuretype="intergenic", reduce_ranges=TRUE)
+intergenic <- feat$intergenic
+strand(intergenic) <- "+"
+dna <- getSeq(FaFile(genome), intergenic)
+names(dna) <- mcols(intergenic)$feature_by
+sorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="both")
+sorf <- sorf[width(sorf) > 60] # Remove sORFs below length cutoff, here 60bp
+intergenic <- split(intergenic, mcols(intergenic)$feature_by)
+grl_scaled_intergenic <- scaleRanges(subject=intergenic, query=sorf, type="sORF", verbose=TRUE)
+export.gff3(unlist(grl_scaled_intergenic), "sorf.gff")
+translate(getSeq(FaFile(genome), unlist(grl_scaled_intergenic)))
+@
+
+=======
+>>>>>>> 84c9ec5... some edits
 \section{Genomic read coverage along transripts or CDSs}
 The \Rfunction{featureCoverage} function computes the read coverage along
 single and multi component features based on genomic alignments. The coverage
