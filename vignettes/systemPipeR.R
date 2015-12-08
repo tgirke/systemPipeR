@@ -58,10 +58,10 @@ args
 
 ## ----sysarg_access, eval=TRUE--------------------------------------------
 names(args)
+sysargs(args)[1]
 modules(args)
 cores(args)
 outpaths(args)[1]
-sysargs(args)[1]
 
 ## ----sysarg_json, eval=TRUE----------------------------------------------
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
@@ -69,7 +69,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## ----load_package, eval=FALSE--------------------------------------------
 ## library(systemPipeR)
 ## library(systemPipeRdata)
-## genWorkenvir(workflow="rnaseq")
+## genWorkenvir(workflow="rnaseq", mydirname=NULL)
 ## setwd("rnaseq")
 
 ## ----construct_sysargs, eval=FALSE---------------------------------------

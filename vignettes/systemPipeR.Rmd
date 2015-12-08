@@ -82,7 +82,7 @@ The intended way of running _`sytemPipeR`_ workflows is via _`*.Rnw`_ or _`*.Rmd
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from R using the _`biocLite`_ install command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be used to generate _`systemPipeR`_ workflow environments with a single command ([see below](#load-sample-data-and-workflow-templates)) containing all parameter files and sample data required to quickly test and run workflows. 
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the _`biocLite`_ install command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
 
     
 ```{r install, eval=FALSE}
@@ -104,16 +104,16 @@ vignette("systemPipeR") # Opens vignette
 ## Load sample data and workflow templates
 The mini sample FASTQ files used by this overview vignette as well as the associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ package as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) contains 18 paired-end (PE) read sets from _Arabidposis thaliana_ [@Howard2013-fq]. To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the _A. thalina_ genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set requires less than 200MB disk storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads. 
 
-The following loads one of the available NGS workflow templates (here RNA-Seq) into the user's current working directory. At the moment, the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for additional NGS applications will be provided in the future.
+The following generates a fully populated _`systemPipeR`_ workflow environment (here for RNA-Seq) in the current working directory of an R session. At this time the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for additional NGS applications will be provided in the future.
 ```{r genRna_workflow, eval=FALSE}
 library(systemPipeRdata)
 genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
 ```
 
-The working environment of the sample data loaded in previous step contains the following preconfigured directory structure: 
+The working environment of the sample data loaded in the previous step contains the following preconfigured directory structure. Directory names are indicated in  <span style="color:grey">_**grey**_</span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly. 
 
-* <span style="color:grey">_**workflow/**_</span> 
+* <span style="color:grey">_**workflow/**_</span> (_e.g._ _rnaseq/_) 
     + This is the directory of the R session running the workflow.
     + Run script ( _\*.Rnw_ or _\*.Rmd_) and sample annotation (_targets.txt_) files are located here.
     + Note, this directory can have any name (_e.g._ <span style="color:grey">_**rnaseq**_</span>, <span style="color:grey">_**varseq**_</span>). Changing its name does not require any modifications in the run script(s).
@@ -131,8 +131,6 @@ The working environment of the sample data loaded in previous step contains the 
             + Images and plots
             + etc.
 
-The sample workflows provided by the package are based on the above directory structure, where directory names are indicated in  <span style="color:grey">_**grey**_</span>. 
-Users can change this structure as needed, but need to adjust the code in their workflows accordingly. 
 
 The following parameter files are included in each workflow template: 
 
@@ -190,20 +188,20 @@ parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
 read.delim(parampath, comment.char = "#")
 ```
 
-The _`systemArgs`_ function imports the definitions of both the _`param`_ file and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_ S4 class object. To run the pipeline without command-line software, one can assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can start the _`systemPipeR`_ workflow with pre-generated BAM files by providing a targets file where the _`FileName`_ column gives the paths to the BAM files and _`sysma`_ is assigned _`NULL`_.
+The _`systemArgs`_ function imports the definitions of both the _`param`_ file and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_ object (S4 class). To run the pipeline without command-line software, one can assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can start the _`systemPipeR`_ workflow with pre-generated BAM files by providing a targets file where the _`FileName`_ column gives the paths to the BAM files.
 
 ```{r param_import, eval=TRUE}
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args
 ```
 
-Several accessor functions are available that are named after the slot names of the _`SYSargs`_ object.
+Several accessor methods are available that are named after the slot names of the _`SYSargs`_ object. Of particular interest is the _`sysargs()`_ method. It constructs the commands for the command-lined software specified in the _`param`_ file and the paths to the input samples (e.g. FASTQ files) in the _`targets`_ files. The example below shows the _`sysargs()`_ output for running TopHat2 on the first PE read sample. 
 ```{r sysarg_access, eval=TRUE}
 names(args)
+sysargs(args)[1]
 modules(args)
 cores(args)
 outpaths(args)[1]
-sysargs(args)[1]
 ```
 
 The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).
@@ -216,11 +214,11 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 ## Define environment settings and samples
 
-Load packages and generate workflow environment (here for RNA-Seq)
+A typical workflow starts with generating the expected environment settings. To simplify this task, one can load one of the _`systemPipeRdata`_ NGS workflows templates into the current working directory. The following does this for the _`rnaseq`_ template. The name of the resulting workflow directory can be specified under the _`mydirname`_ argument. The default _`NULL`_ uses the name of the chosen workflow. An error is issued if a directory of the same name and path exists already. On Linux and OS X systems the same can be achieved from the command-line of a terminal as shown [here](http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template). To use custom data, the user needs to modify the _`targets`_ file and if necessary update the _`param`_ file(s). A collection of pre-generated _`param`_ files is provided in the _`param`_ subdirectory of each workflow template.
 ```{r load_package, eval=FALSE}
 library(systemPipeR)
 library(systemPipeRdata)
-genWorkenvir(workflow="rnaseq")
+genWorkenvir(workflow="rnaseq", mydirname=NULL)
 setwd("rnaseq")
 ```
 
