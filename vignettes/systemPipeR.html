@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 07 December, 2015</em></h4>
+<h4 class="date"><em>Last update: 08 December, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <h1><span class="header-section-number">2</span> Getting Started</h1>
 <div id="installation" class="section level2">
 <h2><span class="header-section-number">2.1</span> Installation</h2>
-<p>The R software for running <a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code>systemPipeR</code></em></a> can be downloaded from <a href="http://cran.at.r-project.org/"><em>CRAN</em></a>. The <em><code>systemPipeR</code></em> environment can be installed from R using the <em><code>biocLite</code></em> install command. The associated data package <a href="https://github.com/tgirke/systemPipeRdata"><em><code>systemPipeRdata</code></em></a> can be used to generate <em><code>systemPipeR</code></em> workflow environments with a single command (<a href="#load-sample-data-and-workflow-templates">see below</a>) containing all parameter files and sample data required to quickly test and run workflows.</p>
+<p>The R software for running <a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code>systemPipeR</code></em></a> can be downloaded from <a href="http://cran.at.r-project.org/"><em>CRAN</em></a>. The <em><code>systemPipeR</code></em> environment can be installed from the R console using the <em><code>biocLite</code></em> install command. The associated data package <a href="https://github.com/tgirke/systemPipeRdata"><em><code>systemPipeRdata</code></em></a> can be installed the same way. The latter is a helper package for generating <em><code>systemPipeR</code></em> workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows.</p>
 <pre class="r"><code>source(&quot;http://bioconductor.org/biocLite.R&quot;) # Sources the biocLite.R installation script 
 biocLite(&quot;systemPipeR&quot;) # Installs systemPipeR 
 biocLite(&quot;systemPipeRdata&quot;) # Installs systemPipeRdata</code></pre>
@@ -194,13 +194,13 @@ vignette(&quot;systemPipeR&quot;) # Opens vignette</code></pre>
 <div id="load-sample-data-and-workflow-templates" class="section level2">
 <h2><span class="header-section-number">2.3</span> Load sample data and workflow templates</h2>
 <p>The mini sample FASTQ files used by this overview vignette as well as the associated workflow reporting vignettes can be loaded via the <em><code>systemPipeRdata</code></em> package as shown below. The chosen data set <a href="http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938"><code>SRP010938</code></a> contains 18 paired-end (PE) read sets from <em>Arabidposis thaliana</em> <span class="citation">(Howard et al. 2013)</span>. To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the <em>A. thalina</em> genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set requires less than 200MB disk storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads.</p>
-<p>The following loads one of the available NGS workflow templates (here RNA-Seq) into the user’s current working directory. At the moment, the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for additional NGS applications will be provided in the future.</p>
+<p>The following generates a fully populated <em><code>systemPipeR</code></em> workflow environment (here for RNA-Seq) in the current working directory of an R session. At this time the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for additional NGS applications will be provided in the future.</p>
 <pre class="r"><code>library(systemPipeRdata)
 genWorkenvir(workflow=&quot;rnaseq&quot;)
 setwd(&quot;rnaseq&quot;)</code></pre>
-<p>The working environment of the sample data loaded in previous step contains the following preconfigured directory structure:</p>
+<p>The working environment of the sample data loaded in the previous step contains the following preconfigured directory structure. Directory names are indicated in <span style="color:grey"><em><strong>grey</strong></em></span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly.</p>
 <ul>
-<li><span style="color:grey"><em><strong>workflow/</strong></em></span>
+<li><span style="color:grey"><em><strong>workflow/</strong></em></span> (<em>e.g.</em> <em>rnaseq/</em>)
 <ul>
 <li>This is the directory of the R session running the workflow.</li>
 <li>Run script ( <em>*.Rnw</em> or <em>*.Rmd</em>) and sample annotation (<em>targets.txt</em>) files are located here.</li>
@@ -228,7 +228,6 @@ setwd(&quot;rnaseq&quot;)</code></pre>
 </ul></li>
 </ul></li>
 </ul>
-<p>The sample workflows provided by the package are based on the above directory structure, where directory names are indicated in <span style="color:grey"><em><strong>grey</strong></em></span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly.</p>
 <p>The following parameter files are included in each workflow template:</p>
 <ol style="list-style-type: decimal">
 <li><em><code>targets.txt</code></em>: initial one provided by user; downstream <em><code>targets_*.txt</code></em> files are generated automatically</li>
@@ -331,15 +330,18 @@ read.delim(parampath, comment.char = &quot;#&quot;)</code></pre>
 ## 13   infile1         path                                   &lt;NA&gt;
 ## 14   infile2         &lt;NA&gt;                            &lt;FileName2&gt;
 ## 15   infile2         path                                   &lt;NA&gt;</code></pre>
-<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information in a <em><code>SYSargs</code></em> S4 class object. To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start the <em><code>systemPipeR</code></em> workflow with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column gives the paths to the BAM files and <em><code>sysma</code></em> is assigned <em><code>NULL</code></em>.</p>
+<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information in a <em><code>SYSargs</code></em> object (S4 class). To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start the <em><code>systemPipeR</code></em> workflow with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column gives the paths to the BAM files.</p>
 <pre class="r"><code>args &lt;- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args</code></pre>
 <pre><code>## An instance of 'SYSargs' for running 'tophat' on 18 samples</code></pre>
-<p>Several accessor functions are available that are named after the slot names of the <em><code>SYSargs</code></em> object.</p>
+<p>Several accessor methods are available that are named after the slot names of the <em><code>SYSargs</code></em> object. Of particular interest is the <em><code>sysargs()</code></em> method. It constructs the commands for the command-lined software specified in the <em><code>param</code></em> file and the paths to the input samples (e.g. FASTQ files) in the <em><code>targets</code></em> files. The example below shows the <em><code>sysargs()</code></em> output for running TopHat2 on the first PE read sample.</p>
 <pre class="r"><code>names(args)</code></pre>
 <pre><code>##  [1] &quot;targetsin&quot;     &quot;targetsout&quot;    &quot;targetsheader&quot; &quot;modules&quot;       &quot;software&quot;      &quot;cores&quot;        
 ##  [7] &quot;other&quot;         &quot;reference&quot;     &quot;results&quot;       &quot;infile1&quot;       &quot;infile2&quot;       &quot;outfile1&quot;     
 ## [13] &quot;sysargs&quot;       &quot;outpaths&quot;</code></pre>
+<pre class="r"><code>sysargs(args)[1]</code></pre>
+<pre><code>##                                                                                                                                                                                                                                                                                                  M1A 
+## &quot;tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq&quot;</code></pre>
 <pre class="r"><code>modules(args)</code></pre>
 <pre><code>## [1] &quot;bowtie2/2.2.5&quot; &quot;tophat/2.0.14&quot;</code></pre>
 <pre class="r"><code>cores(args)</code></pre>
@@ -347,9 +349,6 @@ args</code></pre>
 <pre class="r"><code>outpaths(args)[1]</code></pre>
 <pre><code>##                                                                                                                      M1A 
 ## &quot;/home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/results/SRR446027_1.fastq.tophat/accepted_hits.bam&quot;</code></pre>
-<pre class="r"><code>sysargs(args)[1]</code></pre>
-<pre><code>##                                                                                                                                                                                                                                                                                                  M1A 
-## &quot;tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq&quot;</code></pre>
 <p>The content of the <em><code>param</code></em> file can also be returned as JSON object as follows (requires <em><code>rjson</code></em> package).</p>
 <pre class="r"><code>systemArgs(sysma=parampath, mytargets=targetspath, type=&quot;json&quot;)</code></pre>
 <pre><code>## [1] &quot;{\&quot;modules\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;bowtie2/2.2.5\&quot;,\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;tophat/2.0.14\&quot;},\&quot;software\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v1\&quot;:\&quot;tophat\&quot;},\&quot;cores\&quot;:{\&quot;n1\&quot;:\&quot;-p\&quot;,\&quot;v1\&quot;:\&quot;4\&quot;},\&quot;other\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v1\&quot;:\&quot;-g 1 --segment-length 25 -i 30 -I 3000\&quot;},\&quot;outfile1\&quot;:{\&quot;n1\&quot;:\&quot;-o\&quot;,\&quot;v2\&quot;:\&quot;&lt;FileName1&gt;\&quot;,\&quot;n3\&quot;:\&quot;path\&quot;,\&quot;v4\&quot;:\&quot;./results/\&quot;,\&quot;n5\&quot;:\&quot;remove\&quot;,\&quot;v1\&quot;:\&quot;\&quot;,\&quot;n2\&quot;:\&quot;append\&quot;,\&quot;v3\&quot;:\&quot;.tophat\&quot;,\&quot;n4\&quot;:\&quot;outextension\&quot;,\&quot;v5\&quot;:\&quot;.tophat/accepted_hits.bam\&quot;},\&quot;reference\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v1\&quot;:\&quot;./data/tair10.fasta\&quot;},\&quot;infile1\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;&lt;FileName1&gt;\&quot;,\&quot;n1\&quot;:\&quot;path\&quot;,\&quot;v2\&quot;:\&quot;\&quot;},\&quot;infile2\&quot;:{\&quot;n1\&quot;:\&quot;\&quot;,\&quot;v2\&quot;:\&quot;&lt;FileName2&gt;\&quot;,\&quot;n1\&quot;:\&quot;path\&quot;,\&quot;v2\&quot;:\&quot;\&quot;}}&quot;</code></pre>
@@ -362,10 +361,10 @@ args</code></pre>
 <h1><span class="header-section-number">3</span> Workflow overview</h1>
 <div id="define-environment-settings-and-samples" class="section level2">
 <h2><span class="header-section-number">3.1</span> Define environment settings and samples</h2>
-<p>Load packages and generate workflow environment (here for RNA-Seq)</p>
+<p>A typical workflow starts with generating the expected environment settings. To simplify this task, one can load one of the <em><code>systemPipeRdata</code></em> NGS workflows templates into the current working directory. The following does this for the <em><code>rnaseq</code></em> template. The name of the resulting workflow directory can be specified under the <em><code>mydirname</code></em> argument. The default <em><code>NULL</code></em> uses the name of the chosen workflow. An error is issued if a directory of the same name and path exists already. On Linux and OS X systems the same can be achieved from the command-line of a terminal as shown <a href="http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template">here</a>. To use custom data, the user needs to modify the <em><code>targets</code></em> file and if necessary update the <em><code>param</code></em> file(s). A collection of pre-generated <em><code>param</code></em> files is provided in the <em><code>param</code></em> subdirectory of each workflow template.</p>
 <pre class="r"><code>library(systemPipeR)
 library(systemPipeRdata)
-genWorkenvir(workflow=&quot;rnaseq&quot;)
+genWorkenvir(workflow=&quot;rnaseq&quot;, mydirname=NULL)
 setwd(&quot;rnaseq&quot;)</code></pre>
 <p>Construct <em><code>SYSargs</code></em> object from <em><code>param</code></em> and <em><code>targets</code></em> files.</p>
 <pre class="r"><code>args &lt;- systemArgs(sysma=&quot;param/trim.param&quot;, mytargets=&quot;targets.txt&quot;)</code></pre>
