@@ -188,16 +188,35 @@ parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
 read.delim(parampath, comment.char = "#")
 ```
 
-The _`systemArgs`_ function imports the definitions of both the _`param`_ file and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_ object (S4 class). To run the pipeline without command-line software, one can assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can start the _`systemPipeR`_ workflow with pre-generated BAM files by providing a targets file where the _`FileName`_ column gives the paths to the BAM files.
+The _`systemArgs`_ function imports the definitions of both the _`param`_ file
+and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_
+object (S4 class). To run the pipeline without command-line software, one can
+assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can
+start _`systemPipeR`_ workflows with pre-generated BAM files by providing a
+targets file where the _`FileName`_ column provides the paths to the BAM files.
+Note, in the following the call of _`suppressWarnings()`_ is only relevant for 
+building this vignette. It should be removed in typical workflows.
 
 ```{r param_import, eval=TRUE}
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args
 ```
 
-Several accessor methods are available that are named after the slot names of the _`SYSargs`_ object. Of particular interest is the _`sysargs()`_ method. It constructs the commands for the command-lined software specified in the _`param`_ file and the paths to the input samples (e.g. FASTQ files) in the _`targets`_ files. The example below shows the _`sysargs()`_ output for running TopHat2 on the first PE read sample. 
+Several accessor methods are available that are named after the slot names of the _`SYSargs`_ object. 
 ```{r sysarg_access, eval=TRUE}
 names(args)
+```
+
+Of particular interest is the _`sysargs()`_ method. It constructs the system
+commands for running command-lined software as specified by a given _`param`_
+file combined with the paths to the input samples (_e.g._ FASTQ files) provided
+by a _`targets`_ file. The example below shows the _`sysargs()`_ output for
+running TopHat2 on the first PE read sample. Evaluating the output of
+_`sysargs()`_ can be very helpful for designing and debugging _`param`_ files
+of new command-line software or changing the parameter settings of existing
+ones.  
+
+```{r sysarg_access2, eval=TRUE}
 sysargs(args)[1]
 modules(args)
 cores(args)
@@ -214,7 +233,22 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 ## Define environment settings and samples
 
-A typical workflow starts with generating the expected environment settings. To simplify this task, one can load one of the _`systemPipeRdata`_ NGS workflows templates into the current working directory. The following does this for the _`rnaseq`_ template. The name of the resulting workflow directory can be specified under the _`mydirname`_ argument. The default _`NULL`_ uses the name of the chosen workflow. An error is issued if a directory of the same name and path exists already. On Linux and OS X systems the same can be achieved from the command-line of a terminal as shown [here](http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template). To use custom data, the user needs to modify the _`targets`_ file and if necessary update the _`param`_ file(s). A collection of pre-generated _`param`_ files is provided in the _`param`_ subdirectory of each workflow template.
+A typical workflow starts with generating the expected working environment
+containing the proper directory structure, input files and parameter settings.
+To simplify this task, one can load one of the existing NGS workflows templates
+provided by _`systemPipeRdata`_ into the current working directory. The
+following does this for the _`rnaseq`_ template. The name of the resulting
+workflow directory can be specified under the _`mydirname`_ argument. The
+default _`NULL`_ uses the name of the chosen workflow. An error is issued if a
+directory of the same name and path exists already. On Linux and OS X systems
+the same can be achieved from the command-line of a terminal as shown
+[here](http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template).
+To use custom data, the user needs to modify the _`targets`_ file and if
+necessary update the _`param`_ file(s). A collection of pre-generated _`param`_
+files is provided in the _`param`_ subdirectory of each workflow template. They
+are also available in the GitHub repository of _`systemPipeRdata`_ ([see
+here](https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param)).
+
 ```{r load_package, eval=FALSE}
 library(systemPipeR)
 library(systemPipeRdata)
@@ -241,7 +275,7 @@ the _`trimLRPatterns`_ function from the _`Biostrings`_ package.
 After the trimming step a new targets file is generated (here
 _`targets_trim.txt`_) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
-_`SYSargs`_ instance, \textit{e.g.} running the NGS alignments using the
+_`SYSargs`_ instance, _e.g._ running the NGS alignments with the
 trimmed FASTQ files.
  
 ```{r preprocessing, eval=FALSE}
@@ -270,6 +304,7 @@ useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution.  
+
 ```{r fastq_quality, eval=FALSE}
 fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
