@@ -58,6 +58,8 @@ args
 
 ## ----sysarg_access, eval=TRUE--------------------------------------------
 names(args)
+
+## ----sysarg_access2, eval=TRUE-------------------------------------------
 sysargs(args)[1]
 modules(args)
 cores(args)

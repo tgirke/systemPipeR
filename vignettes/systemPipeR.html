@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 08 December, 2015</em></h4>
+<h4 class="date"><em>Last update: 09 December, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -330,15 +330,16 @@ read.delim(parampath, comment.char = &quot;#&quot;)</code></pre>
 ## 13   infile1         path                                   &lt;NA&gt;
 ## 14   infile2         &lt;NA&gt;                            &lt;FileName2&gt;
 ## 15   infile2         path                                   &lt;NA&gt;</code></pre>
-<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information in a <em><code>SYSargs</code></em> object (S4 class). To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start the <em><code>systemPipeR</code></em> workflow with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column gives the paths to the BAM files.</p>
+<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information in a <em><code>SYSargs</code></em> object (S4 class). To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start <em><code>systemPipeR</code></em> workflows with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column provides the paths to the BAM files. Note, in the following the call of <em><code>suppressWarnings()</code></em> is only relevant for building this vignette. It should be removed in typical workflows.</p>
 <pre class="r"><code>args &lt;- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args</code></pre>
 <pre><code>## An instance of 'SYSargs' for running 'tophat' on 18 samples</code></pre>
-<p>Several accessor methods are available that are named after the slot names of the <em><code>SYSargs</code></em> object. Of particular interest is the <em><code>sysargs()</code></em> method. It constructs the commands for the command-lined software specified in the <em><code>param</code></em> file and the paths to the input samples (e.g. FASTQ files) in the <em><code>targets</code></em> files. The example below shows the <em><code>sysargs()</code></em> output for running TopHat2 on the first PE read sample.</p>
+<p>Several accessor methods are available that are named after the slot names of the <em><code>SYSargs</code></em> object.</p>
 <pre class="r"><code>names(args)</code></pre>
 <pre><code>##  [1] &quot;targetsin&quot;     &quot;targetsout&quot;    &quot;targetsheader&quot; &quot;modules&quot;       &quot;software&quot;      &quot;cores&quot;        
 ##  [7] &quot;other&quot;         &quot;reference&quot;     &quot;results&quot;       &quot;infile1&quot;       &quot;infile2&quot;       &quot;outfile1&quot;     
 ## [13] &quot;sysargs&quot;       &quot;outpaths&quot;</code></pre>
+<p>Of particular interest is the <em><code>sysargs()</code></em> method. It constructs the system commands for running command-lined software as specified by a given <em><code>param</code></em> file combined with the paths to the input samples (<em>e.g.</em> FASTQ files) provided by a <em><code>targets</code></em> file. The example below shows the <em><code>sysargs()</code></em> output for running TopHat2 on the first PE read sample. Evaluating the output of <em><code>sysargs()</code></em> can be very helpful for designing and debugging <em><code>param</code></em> files of new command-line software or changing the parameter settings of existing ones.</p>
 <pre class="r"><code>sysargs(args)[1]</code></pre>
 <pre><code>##                                                                                                                                                                                                                                                                                                  M1A 
 ## &quot;tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Software/systemPipeR_dev/systemPipeR/vignettes/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq&quot;</code></pre>
@@ -361,7 +362,7 @@ args</code></pre>
 <h1><span class="header-section-number">3</span> Workflow overview</h1>
 <div id="define-environment-settings-and-samples" class="section level2">
 <h2><span class="header-section-number">3.1</span> Define environment settings and samples</h2>
-<p>A typical workflow starts with generating the expected environment settings. To simplify this task, one can load one of the <em><code>systemPipeRdata</code></em> NGS workflows templates into the current working directory. The following does this for the <em><code>rnaseq</code></em> template. The name of the resulting workflow directory can be specified under the <em><code>mydirname</code></em> argument. The default <em><code>NULL</code></em> uses the name of the chosen workflow. An error is issued if a directory of the same name and path exists already. On Linux and OS X systems the same can be achieved from the command-line of a terminal as shown <a href="http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template">here</a>. To use custom data, the user needs to modify the <em><code>targets</code></em> file and if necessary update the <em><code>param</code></em> file(s). A collection of pre-generated <em><code>param</code></em> files is provided in the <em><code>param</code></em> subdirectory of each workflow template.</p>
+<p>A typical workflow starts with generating the expected working environment containing the proper directory structure, input files and parameter settings. To simplify this task, one can load one of the existing NGS workflows templates provided by <em><code>systemPipeRdata</code></em> into the current working directory. The following does this for the <em><code>rnaseq</code></em> template. The name of the resulting workflow directory can be specified under the <em><code>mydirname</code></em> argument. The default <em><code>NULL</code></em> uses the name of the chosen workflow. An error is issued if a directory of the same name and path exists already. On Linux and OS X systems the same can be achieved from the command-line of a terminal as shown <a href="http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template">here</a>. To use custom data, the user needs to modify the <em><code>targets</code></em> file and if necessary update the <em><code>param</code></em> file(s). A collection of pre-generated <em><code>param</code></em> files is provided in the <em><code>param</code></em> subdirectory of each workflow template. They are also available in the GitHub repository of <em><code>systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see here</a>).</p>
 <pre class="r"><code>library(systemPipeR)
 library(systemPipeRdata)
 genWorkenvir(workflow=&quot;rnaseq&quot;, mydirname=NULL)
@@ -374,7 +375,7 @@ setwd(&quot;rnaseq&quot;)</code></pre>
 </div>
 <div id="read-preprocessing" class="section level2">
 <h2><span class="header-section-number">3.2</span> Read Preprocessing</h2>
-<p>The function <em><code>preprocessReads</code></em> allows to apply predefined or custom read preprocessing functions to all FASTQ files referenced in a <em><code>SYSargs</code></em> container, such as quality filtering or adaptor trimming routines. The paths to the resulting output FASTQ files are stored in the <em><code>outpaths</code></em> slot of the <em><code>SYSargs</code></em> object. Internally, <em><code>preprocessReads</code></em> uses the <em><code>FastqStreamer</code></em> function from the <em><code>ShortRead</code></em> package to stream through large FASTQ files in a memory-efficient manner. The following example performs adaptor trimming with the <em><code>trimLRPatterns</code></em> function from the <em><code>Biostrings</code></em> package. After the trimming step a new targets file is generated (here <em><code>targets_trim.txt</code></em>) containing the paths to the trimmed FASTQ files. The new targets file can be used for the next workflow step with an updated <em><code>SYSargs</code></em> instance,  running the NGS alignments using the trimmed FASTQ files.</p>
+<p>The function <em><code>preprocessReads</code></em> allows to apply predefined or custom read preprocessing functions to all FASTQ files referenced in a <em><code>SYSargs</code></em> container, such as quality filtering or adaptor trimming routines. The paths to the resulting output FASTQ files are stored in the <em><code>outpaths</code></em> slot of the <em><code>SYSargs</code></em> object. Internally, <em><code>preprocessReads</code></em> uses the <em><code>FastqStreamer</code></em> function from the <em><code>ShortRead</code></em> package to stream through large FASTQ files in a memory-efficient manner. The following example performs adaptor trimming with the <em><code>trimLRPatterns</code></em> function from the <em><code>Biostrings</code></em> package. After the trimming step a new targets file is generated (here <em><code>targets_trim.txt</code></em>) containing the paths to the trimmed FASTQ files. The new targets file can be used for the next workflow step with an updated <em><code>SYSargs</code></em> instance, <em>e.g.</em> running the NGS alignments with the trimmed FASTQ files.</p>
 <pre class="r"><code>preprocessReads(args=args, Fct=&quot;trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)&quot;, 
                 batchsize=100000, overwrite=TRUE, compress=TRUE)
 writeTargetsout(x=args, file=&quot;targets_trim.txt&quot;)</code></pre>
@@ -648,7 +649,7 @@ plot.phylo(as.phylo(hc), type=&quot;p&quot;, edge.col=&quot;blue&quot;, edge.wid
 </div>
 <div id="deg-analysis-with-edger" class="section level2">
 <h2><span class="header-section-number">3.11</span> DEG analysis with <em><code>edgeR</code></em></h2>
-<p>The following <em><code>run_edgeR</code></em> function is a convenience wrapper for identifying differentially expressed genes (DEGs) in batch mode with <em><code>edgeR</code></em>’s GML method <span class="citation">(Robinson, McCarthy, and Smyth 2010)</span> for any number of pairwise sample comparisons specified under the <em><code>cmp</code></em> argument. Users are strongly encouraged to consult the <a href="\href%7Bhttp://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf"><em><code>edgeR</code></em></a> vignette for more detailed information on this topic and how to properly run <em><code>edgeR</code></em> on data sets with more complex experimental designs.</p>
+<p>The following <em><code>run_edgeR</code></em> function is a convenience wrapper for identifying differentially expressed genes (DEGs) in batch mode with <em><code>edgeR</code></em>’s GML method <span class="citation">(Robinson, McCarthy, and Smyth 2010)</span> for any number of pairwise sample comparisons specified under the <em><code>cmp</code></em> argument. Users are strongly encouraged to consult the <a href="\href{http://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf"><em><code>edgeR</code></em></a> vignette for more detailed information on this topic and how to properly run <em><code>edgeR</code></em> on data sets with more complex experimental designs.</p>
 <pre class="r"><code>targets &lt;- read.delim(targetspath, comment=&quot;#&quot;)
 cmp &lt;- readComp(file=targetspath, format=&quot;matrix&quot;, delim=&quot;-&quot;)
 cmp[[1]]</code></pre>
@@ -983,42 +984,40 @@ setwd(&quot;riboseq&quot;)</code></pre>
 <a href>Back to Table of Contents</a>
 </div>
 </div>
-<div id="references" class="section level1 unnumbered">
+<div id="references" class="section level1 references unnumbered">
 <h1>References</h1>
-<div id="refs" class="references">
 <div id="ref-Girke2014-oy">
 <p>Girke, Thomas. 2014. “systemPipeR: NGS Workflow and Report Generation Environment.” UC Riverside. <a href="https://github.com/tgirke/systemPipeR" class="uri">https://github.com/tgirke/systemPipeR</a>.</p>
 </div>
 <div id="ref-Howard2013-fq">
-<p>Howard, Brian E, Qiwen Hu, Ahmet Can Babaoglu, Manan Chandra, Monica Borghi, Xiaoping Tan, Luyan He, et al. 2013. “High-Throughput RNA Sequencing of Pseudomonas-Infected Arabidopsis Reveals Hidden Transcriptome Complexity and Novel Splice Variants.” <em>PLoS One</em> 8 (10): e74183. doi:<a href="http://doi.org/10.1371/journal.pone.0074183">10.1371/journal.pone.0074183</a>.</p>
+<p>Howard, Brian E, Qiwen Hu, Ahmet Can Babaoglu, Manan Chandra, Monica Borghi, Xiaoping Tan, Luyan He, et al. 2013. “High-Throughput RNA Sequencing of Pseudomonas-Infected Arabidopsis Reveals Hidden Transcriptome Complexity and Novel Splice Variants.” <em>PLoS One</em> 8 (10): e74183. <a href="http://doi.org/10.1371/journal.pone.0074183">doi:10.1371/journal.pone.0074183</a>.</p>
 </div>
 <div id="ref-Kim2013-vg">
-<p>Kim, Daehwan, Geo Pertea, Cole Trapnell, Harold Pimentel, Ryan Kelley, and Steven L Salzberg. 2013. “TopHat2: Accurate Alignment of Transcriptomes in the Presence of Insertions, Deletions and Gene Fusions.” <em>Genome Biol.</em> 14 (4): R36. doi:<a href="http://doi.org/10.1186/gb-2013-14-4-r36">10.1186/gb-2013-14-4-r36</a>.</p>
+<p>Kim, Daehwan, Geo Pertea, Cole Trapnell, Harold Pimentel, Ryan Kelley, and Steven L Salzberg. 2013. “TopHat2: Accurate Alignment of Transcriptomes in the Presence of Insertions, Deletions and Gene Fusions.” <em>Genome Biol.</em> 14 (4): R36. <a href="http://doi.org/10.1186/gb-2013-14-4-r36">doi:10.1186/gb-2013-14-4-r36</a>.</p>
 </div>
 <div id="ref-Langmead2012-bs">
-<p>Langmead, Ben, and Steven L Salzberg. 2012. “Fast Gapped-Read Alignment with Bowtie 2.” <em>Nat. Methods</em> 9 (4). Nature Publishing Group: 357–59. doi:<a href="http://doi.org/10.1038/nmeth.1923">10.1038/nmeth.1923</a>.</p>
+<p>Langmead, Ben, and Steven L Salzberg. 2012. “Fast Gapped-Read Alignment with Bowtie 2.” <em>Nat. Methods</em> 9 (4). Nature Publishing Group: 357–59. <a href="http://doi.org/10.1038/nmeth.1923">doi:10.1038/nmeth.1923</a>.</p>
 </div>
 <div id="ref-Lawrence2013-kt">
-<p>Lawrence, Michael, Wolfgang Huber, Hervé Pagès, Patrick Aboyoun, Marc Carlson, Robert Gentleman, Martin T Morgan, and Vincent J Carey. 2013. “Software for Computing and Annotating Genomic Ranges.” <em>PLoS Comput. Biol.</em> 9 (8): e1003118. doi:<a href="http://doi.org/10.1371/journal.pcbi.1003118">10.1371/journal.pcbi.1003118</a>.</p>
+<p>Lawrence, Michael, Wolfgang Huber, Hervé Pagès, Patrick Aboyoun, Marc Carlson, Robert Gentleman, Martin T Morgan, and Vincent J Carey. 2013. “Software for Computing and Annotating Genomic Ranges.” <em>PLoS Comput. Biol.</em> 9 (8): e1003118. <a href="http://doi.org/10.1371/journal.pcbi.1003118">doi:10.1371/journal.pcbi.1003118</a>.</p>
 </div>
 <div id="ref-Li2009-oc">
-<p>Li, H, and R Durbin. 2009. “Fast and Accurate Short Read Alignment with Burrows-Wheeler Transform.” <em>Bioinformatics</em> 25 (14): 1754–60. doi:<a href="http://doi.org/10.1093/bioinformatics/btp324">10.1093/bioinformatics/btp324</a>.</p>
+<p>Li, H, and R Durbin. 2009. “Fast and Accurate Short Read Alignment with Burrows-Wheeler Transform.” <em>Bioinformatics</em> 25 (14): 1754–60. <a href="http://doi.org/10.1093/bioinformatics/btp324">doi:10.1093/bioinformatics/btp324</a>.</p>
 </div>
 <div id="ref-Li2013-oy">
 <p>Li, Heng. 2013. “Aligning Sequence Reads, Clone Sequences and Assembly Contigs with BWA-MEM.” <em>ArXiv [Q-Bio.GN]</em>. <a href="http://arxiv.org/abs/1303.3997" class="uri">http://arxiv.org/abs/1303.3997</a>.</p>
 </div>
 <div id="ref-Liao2013-bn">
-<p>Liao, Yang, Gordon K Smyth, and Wei Shi. 2013. “The Subread Aligner: Fast, Accurate and Scalable Read Mapping by Seed-and-Vote.” <em>Nucleic Acids Res.</em> 41 (10): e108. doi:<a href="http://doi.org/10.1093/nar/gkt214">10.1093/nar/gkt214</a>.</p>
+<p>Liao, Yang, Gordon K Smyth, and Wei Shi. 2013. “The Subread Aligner: Fast, Accurate and Scalable Read Mapping by Seed-and-Vote.” <em>Nucleic Acids Res.</em> 41 (10): e108. <a href="http://doi.org/10.1093/nar/gkt214">doi:10.1093/nar/gkt214</a>.</p>
 </div>
 <div id="ref-Love2014-sh">
-<p>Love, Michael, Wolfgang Huber, and Simon Anders. 2014. “Moderated Estimation of Fold Change and Dispersion for RNA-seq Data with DESeq2.” <em>Genome Biol.</em> 15 (12): 550. doi:<a href="http://doi.org/10.1186/s13059-014-0550-8">10.1186/s13059-014-0550-8</a>.</p>
+<p>Love, Michael, Wolfgang Huber, and Simon Anders. 2014. “Moderated Estimation of Fold Change and Dispersion for RNA-seq Data with DESeq2.” <em>Genome Biol.</em> 15 (12): 550. <a href="http://doi.org/10.1186/s13059-014-0550-8">doi:10.1186/s13059-014-0550-8</a>.</p>
 </div>
 <div id="ref-Robinson2010-uk">
-<p>Robinson, M D, D J McCarthy, and G K Smyth. 2010. “EdgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.” <em>Bioinformatics</em> 26 (1): 139–40. doi:<a href="http://doi.org/10.1093/bioinformatics/btp616">10.1093/bioinformatics/btp616</a>.</p>
+<p>Robinson, M D, D J McCarthy, and G K Smyth. 2010. “EdgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.” <em>Bioinformatics</em> 26 (1): 139–40. <a href="http://doi.org/10.1093/bioinformatics/btp616">doi:10.1093/bioinformatics/btp616</a>.</p>
 </div>
 <div id="ref-Wu2010-iq">
-<p>Wu, T D, and S Nacu. 2010. “Fast and SNP-tolerant Detection of Complex Variants and Splicing in Short Reads.” <em>Bioinformatics</em> 26 (7): 873–81. doi:<a href="http://doi.org/10.1093/bioinformatics/btq057">10.1093/bioinformatics/btq057</a>.</p>
-</div>
+<p>Wu, T D, and S Nacu. 2010. “Fast and SNP-tolerant Detection of Complex Variants and Splicing in Short Reads.” <em>Bioinformatics</em> 26 (7): 873–81. <a href="http://doi.org/10.1093/bioinformatics/btq057">doi:10.1093/bioinformatics/btq057</a>.</p>
 </div>
 </div>
 
