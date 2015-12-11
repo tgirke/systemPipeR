@@ -241,12 +241,12 @@ following does this for the _`rnaseq`_ template. The name of the resulting
 workflow directory can be specified under the _`mydirname`_ argument. The
 default _`NULL`_ uses the name of the chosen workflow. An error is issued if a
 directory of the same name and path exists already. On Linux and OS X systems
-the same can be achieved from the command-line of a terminal as shown
+one can also create new workflow instances from the command-line of a terminal as shown
 [here](http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template).
-To use custom data, the user needs to modify the _`targets`_ file and if
-necessary update the _`param`_ file(s). A collection of pre-generated _`param`_
+To apply workflows to custom data, the user needs to modify the _`targets`_ file and if
+necessary update the corresponding _`param`_ file(s). A collection of pre-generated _`param`_
 files is provided in the _`param`_ subdirectory of each workflow template. They
-are also available in the GitHub repository of _`systemPipeRdata`_ ([see
+are also viewable in the GitHub repository of _`systemPipeRdata`_ ([see
 here](https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param)).
 
 ```{r load_package, eval=FALSE}
@@ -304,6 +304,11 @@ useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution.  
+The function _`seeFastq`_ computes the quality statistics and stores the results in a
+relatively small list object that can be saved to disk with _`save()`_ and
+reloaded with _`load()`_ for later plotting. The argument _`klength`_ specifies the
+k-mer length and _`batchsize`_ the number of reads to random sample from each
+FASTQ file.
 
 ```{r fastq_quality, eval=FALSE}
 fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
