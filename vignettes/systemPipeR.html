@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 09 December, 2015</em></h4>
+<h4 class="date"><em>Last update: 10 December, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -362,7 +362,7 @@ args</code></pre>
 <h1><span class="header-section-number">3</span> Workflow overview</h1>
 <div id="define-environment-settings-and-samples" class="section level2">
 <h2><span class="header-section-number">3.1</span> Define environment settings and samples</h2>
-<p>A typical workflow starts with generating the expected working environment containing the proper directory structure, input files and parameter settings. To simplify this task, one can load one of the existing NGS workflows templates provided by <em><code>systemPipeRdata</code></em> into the current working directory. The following does this for the <em><code>rnaseq</code></em> template. The name of the resulting workflow directory can be specified under the <em><code>mydirname</code></em> argument. The default <em><code>NULL</code></em> uses the name of the chosen workflow. An error is issued if a directory of the same name and path exists already. On Linux and OS X systems the same can be achieved from the command-line of a terminal as shown <a href="http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template">here</a>. To use custom data, the user needs to modify the <em><code>targets</code></em> file and if necessary update the <em><code>param</code></em> file(s). A collection of pre-generated <em><code>param</code></em> files is provided in the <em><code>param</code></em> subdirectory of each workflow template. They are also available in the GitHub repository of <em><code>systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see here</a>).</p>
+<p>A typical workflow starts with generating the expected working environment containing the proper directory structure, input files and parameter settings. To simplify this task, one can load one of the existing NGS workflows templates provided by <em><code>systemPipeRdata</code></em> into the current working directory. The following does this for the <em><code>rnaseq</code></em> template. The name of the resulting workflow directory can be specified under the <em><code>mydirname</code></em> argument. The default <em><code>NULL</code></em> uses the name of the chosen workflow. An error is issued if a directory of the same name and path exists already. On Linux and OS X systems one can also create new workflow instances from the command-line of a terminal as shown <a href="http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template">here</a>. To apply workflows to custom data, the user needs to modify the <em><code>targets</code></em> file and if necessary update the corresponding <em><code>param</code></em> file(s). A collection of pre-generated <em><code>param</code></em> files is provided in the <em><code>param</code></em> subdirectory of each workflow template. They are also viewable in the GitHub repository of <em><code>systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see here</a>).</p>
 <pre class="r"><code>library(systemPipeR)
 library(systemPipeRdata)
 genWorkenvir(workflow=&quot;rnaseq&quot;, mydirname=NULL)
@@ -393,7 +393,8 @@ writeTargetsout(x=args, file=&quot;targets_PEtrim.txt&quot;)</code></pre>
 </div>
 <div id="fastq-quality-report" class="section level2">
 <h2><span class="header-section-number">3.3</span> FASTQ quality report</h2>
-<p>The following <em><code>seeFastq</code></em> and <em><code>seeFastqPlot</code></em> functions generate and plot a series of useful quality statistics for a set of FASTQ files including per cycle quality box plots, base proportions, base-level quality trends, relative k-mer diversity, length and occurrence distribution of reads, number of reads above quality cutoffs and mean quality distribution.</p>
+<p>The following <em><code>seeFastq</code></em> and <em><code>seeFastqPlot</code></em> functions generate and plot a series of useful quality statistics for a set of FASTQ files including per cycle quality box plots, base proportions, base-level quality trends, relative k-mer diversity, length and occurrence distribution of reads, number of reads above quality cutoffs and mean quality distribution.<br />
+The function <em><code>seeFastq</code></em> computes the quality statistics and stores the results in a relatively small list object that can be saved to disk with <em><code>save()</code></em> and reloaded with <em><code>load()</code></em> for later plotting. The argument <em><code>klength</code></em> specifies the k-mer length and <em><code>batchsize</code></em> the number of reads to random sample from each FASTQ file.</p>
 <pre class="r"><code>fqlist &lt;- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
 pdf(&quot;./results/fastqReport.pdf&quot;, height=18, width=4*length(fqlist))
 seeFastqPlot(fqlist)
