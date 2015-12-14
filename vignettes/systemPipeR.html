@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title"><em>systemPipeR</em>: NGS workflow and report generation environment</h1>
 <h4 class="author"><em>Author: Thomas Girke (<a href="mailto:thomas.girke@ucr.edu">thomas.girke@ucr.edu</a>)</em></h4>
-<h4 class="date"><em>Last update: 10 December, 2015</em></h4>
+<h4 class="date"><em>Last update: 13 December, 2015</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -330,7 +330,7 @@ read.delim(parampath, comment.char = &quot;#&quot;)</code></pre>
 ## 13   infile1         path                                   &lt;NA&gt;
 ## 14   infile2         &lt;NA&gt;                            &lt;FileName2&gt;
 ## 15   infile2         path                                   &lt;NA&gt;</code></pre>
-<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information in a <em><code>SYSargs</code></em> object (S4 class). To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start <em><code>systemPipeR</code></em> workflows with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column provides the paths to the BAM files. Note, in the following the call of <em><code>suppressWarnings()</code></em> is only relevant for building this vignette. It should be removed in typical workflows.</p>
+<p>The <em><code>systemArgs</code></em> function imports the definitions of both the <em><code>param</code></em> file and the <em><code>targets</code></em> file, and stores all relevant information in a <em><code>SYSargs</code></em> object (S4 class). To run the pipeline without command-line software, one can assign <em><code>NULL</code></em> to <em><code>sysma</code></em> instead of a <em><code>param</code></em> file. In addition, one can start <em><code>systemPipeR</code></em> workflows with pre-generated BAM files by providing a targets file where the <em><code>FileName</code></em> column provides the paths to the BAM files. Note, in the following example the usage of <em><code>suppressWarnings()</code></em> is only relevant for building this vignette. In typical workflows it should be removed.</p>
 <pre class="r"><code>args &lt;- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args</code></pre>
 <pre><code>## An instance of 'SYSargs' for running 'tophat' on 18 samples</code></pre>
@@ -650,7 +650,7 @@ plot.phylo(as.phylo(hc), type=&quot;p&quot;, edge.col=&quot;blue&quot;, edge.wid
 </div>
 <div id="deg-analysis-with-edger" class="section level2">
 <h2><span class="header-section-number">3.11</span> DEG analysis with <em><code>edgeR</code></em></h2>
-<p>The following <em><code>run_edgeR</code></em> function is a convenience wrapper for identifying differentially expressed genes (DEGs) in batch mode with <em><code>edgeR</code></em>’s GML method <span class="citation">(Robinson, McCarthy, and Smyth 2010)</span> for any number of pairwise sample comparisons specified under the <em><code>cmp</code></em> argument. Users are strongly encouraged to consult the <a href="\href{http://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf"><em><code>edgeR</code></em></a> vignette for more detailed information on this topic and how to properly run <em><code>edgeR</code></em> on data sets with more complex experimental designs.</p>
+<p>The following <em><code>run_edgeR</code></em> function is a convenience wrapper for identifying differentially expressed genes (DEGs) in batch mode with <em><code>edgeR</code></em>’s GML method <span class="citation">(Robinson, McCarthy, and Smyth 2010)</span> for any number of pairwise sample comparisons specified under the <em><code>cmp</code></em> argument. Users are strongly encouraged to consult the <a href="\href%7Bhttp://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf"><em><code>edgeR</code></em></a> vignette for more detailed information on this topic and how to properly run <em><code>edgeR</code></em> on data sets with more complex experimental designs.</p>
 <pre class="r"><code>targets &lt;- read.delim(targetspath, comment=&quot;#&quot;)
 cmp &lt;- readComp(file=targetspath, format=&quot;matrix&quot;, delim=&quot;-&quot;)
 cmp[[1]]</code></pre>
@@ -985,40 +985,42 @@ setwd(&quot;riboseq&quot;)</code></pre>
 <a href>Back to Table of Contents</a>
 </div>
 </div>
-<div id="references" class="section level1 references unnumbered">
+<div id="references" class="section level1 unnumbered">
 <h1>References</h1>
+<div id="refs" class="references">
 <div id="ref-Girke2014-oy">
 <p>Girke, Thomas. 2014. “systemPipeR: NGS Workflow and Report Generation Environment.” UC Riverside. <a href="https://github.com/tgirke/systemPipeR" class="uri">https://github.com/tgirke/systemPipeR</a>.</p>
 </div>
 <div id="ref-Howard2013-fq">
-<p>Howard, Brian E, Qiwen Hu, Ahmet Can Babaoglu, Manan Chandra, Monica Borghi, Xiaoping Tan, Luyan He, et al. 2013. “High-Throughput RNA Sequencing of Pseudomonas-Infected Arabidopsis Reveals Hidden Transcriptome Complexity and Novel Splice Variants.” <em>PLoS One</em> 8 (10): e74183. <a href="http://doi.org/10.1371/journal.pone.0074183">doi:10.1371/journal.pone.0074183</a>.</p>
+<p>Howard, Brian E, Qiwen Hu, Ahmet Can Babaoglu, Manan Chandra, Monica Borghi, Xiaoping Tan, Luyan He, et al. 2013. “High-Throughput RNA Sequencing of Pseudomonas-Infected Arabidopsis Reveals Hidden Transcriptome Complexity and Novel Splice Variants.” <em>PLoS One</em> 8 (10): e74183. doi:<a href="http://doi.org/10.1371/journal.pone.0074183">10.1371/journal.pone.0074183</a>.</p>
 </div>
 <div id="ref-Kim2013-vg">
-<p>Kim, Daehwan, Geo Pertea, Cole Trapnell, Harold Pimentel, Ryan Kelley, and Steven L Salzberg. 2013. “TopHat2: Accurate Alignment of Transcriptomes in the Presence of Insertions, Deletions and Gene Fusions.” <em>Genome Biol.</em> 14 (4): R36. <a href="http://doi.org/10.1186/gb-2013-14-4-r36">doi:10.1186/gb-2013-14-4-r36</a>.</p>
+<p>Kim, Daehwan, Geo Pertea, Cole Trapnell, Harold Pimentel, Ryan Kelley, and Steven L Salzberg. 2013. “TopHat2: Accurate Alignment of Transcriptomes in the Presence of Insertions, Deletions and Gene Fusions.” <em>Genome Biol.</em> 14 (4): R36. doi:<a href="http://doi.org/10.1186/gb-2013-14-4-r36">10.1186/gb-2013-14-4-r36</a>.</p>
 </div>
 <div id="ref-Langmead2012-bs">
-<p>Langmead, Ben, and Steven L Salzberg. 2012. “Fast Gapped-Read Alignment with Bowtie 2.” <em>Nat. Methods</em> 9 (4). Nature Publishing Group: 357–59. <a href="http://doi.org/10.1038/nmeth.1923">doi:10.1038/nmeth.1923</a>.</p>
+<p>Langmead, Ben, and Steven L Salzberg. 2012. “Fast Gapped-Read Alignment with Bowtie 2.” <em>Nat. Methods</em> 9 (4). Nature Publishing Group: 357–59. doi:<a href="http://doi.org/10.1038/nmeth.1923">10.1038/nmeth.1923</a>.</p>
 </div>
 <div id="ref-Lawrence2013-kt">
-<p>Lawrence, Michael, Wolfgang Huber, Hervé Pagès, Patrick Aboyoun, Marc Carlson, Robert Gentleman, Martin T Morgan, and Vincent J Carey. 2013. “Software for Computing and Annotating Genomic Ranges.” <em>PLoS Comput. Biol.</em> 9 (8): e1003118. <a href="http://doi.org/10.1371/journal.pcbi.1003118">doi:10.1371/journal.pcbi.1003118</a>.</p>
+<p>Lawrence, Michael, Wolfgang Huber, Hervé Pagès, Patrick Aboyoun, Marc Carlson, Robert Gentleman, Martin T Morgan, and Vincent J Carey. 2013. “Software for Computing and Annotating Genomic Ranges.” <em>PLoS Comput. Biol.</em> 9 (8): e1003118. doi:<a href="http://doi.org/10.1371/journal.pcbi.1003118">10.1371/journal.pcbi.1003118</a>.</p>
 </div>
 <div id="ref-Li2009-oc">
-<p>Li, H, and R Durbin. 2009. “Fast and Accurate Short Read Alignment with Burrows-Wheeler Transform.” <em>Bioinformatics</em> 25 (14): 1754–60. <a href="http://doi.org/10.1093/bioinformatics/btp324">doi:10.1093/bioinformatics/btp324</a>.</p>
+<p>Li, H, and R Durbin. 2009. “Fast and Accurate Short Read Alignment with Burrows-Wheeler Transform.” <em>Bioinformatics</em> 25 (14): 1754–60. doi:<a href="http://doi.org/10.1093/bioinformatics/btp324">10.1093/bioinformatics/btp324</a>.</p>
 </div>
 <div id="ref-Li2013-oy">
 <p>Li, Heng. 2013. “Aligning Sequence Reads, Clone Sequences and Assembly Contigs with BWA-MEM.” <em>ArXiv [Q-Bio.GN]</em>. <a href="http://arxiv.org/abs/1303.3997" class="uri">http://arxiv.org/abs/1303.3997</a>.</p>
 </div>
 <div id="ref-Liao2013-bn">
-<p>Liao, Yang, Gordon K Smyth, and Wei Shi. 2013. “The Subread Aligner: Fast, Accurate and Scalable Read Mapping by Seed-and-Vote.” <em>Nucleic Acids Res.</em> 41 (10): e108. <a href="http://doi.org/10.1093/nar/gkt214">doi:10.1093/nar/gkt214</a>.</p>
+<p>Liao, Yang, Gordon K Smyth, and Wei Shi. 2013. “The Subread Aligner: Fast, Accurate and Scalable Read Mapping by Seed-and-Vote.” <em>Nucleic Acids Res.</em> 41 (10): e108. doi:<a href="http://doi.org/10.1093/nar/gkt214">10.1093/nar/gkt214</a>.</p>
 </div>
 <div id="ref-Love2014-sh">
-<p>Love, Michael, Wolfgang Huber, and Simon Anders. 2014. “Moderated Estimation of Fold Change and Dispersion for RNA-seq Data with DESeq2.” <em>Genome Biol.</em> 15 (12): 550. <a href="http://doi.org/10.1186/s13059-014-0550-8">doi:10.1186/s13059-014-0550-8</a>.</p>
+<p>Love, Michael, Wolfgang Huber, and Simon Anders. 2014. “Moderated Estimation of Fold Change and Dispersion for RNA-seq Data with DESeq2.” <em>Genome Biol.</em> 15 (12): 550. doi:<a href="http://doi.org/10.1186/s13059-014-0550-8">10.1186/s13059-014-0550-8</a>.</p>
 </div>
 <div id="ref-Robinson2010-uk">
-<p>Robinson, M D, D J McCarthy, and G K Smyth. 2010. “EdgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.” <em>Bioinformatics</em> 26 (1): 139–40. <a href="http://doi.org/10.1093/bioinformatics/btp616">doi:10.1093/bioinformatics/btp616</a>.</p>
+<p>Robinson, M D, D J McCarthy, and G K Smyth. 2010. “EdgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.” <em>Bioinformatics</em> 26 (1): 139–40. doi:<a href="http://doi.org/10.1093/bioinformatics/btp616">10.1093/bioinformatics/btp616</a>.</p>
 </div>
 <div id="ref-Wu2010-iq">
-<p>Wu, T D, and S Nacu. 2010. “Fast and SNP-tolerant Detection of Complex Variants and Splicing in Short Reads.” <em>Bioinformatics</em> 26 (7): 873–81. <a href="http://doi.org/10.1093/bioinformatics/btq057">doi:10.1093/bioinformatics/btq057</a>.</p>
+<p>Wu, T D, and S Nacu. 2010. “Fast and SNP-tolerant Detection of Complex Variants and Splicing in Short Reads.” <em>Bioinformatics</em> 26 (7): 873–81. doi:<a href="http://doi.org/10.1093/bioinformatics/btq057">10.1093/bioinformatics/btq057</a>.</p>
+</div>
 </div>
 </div>
 
