@@ -194,8 +194,8 @@ object (S4 class). To run the pipeline without command-line software, one can
 assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can
 start _`systemPipeR`_ workflows with pre-generated BAM files by providing a
 targets file where the _`FileName`_ column provides the paths to the BAM files.
-Note, in the following the call of _`suppressWarnings()`_ is only relevant for 
-building this vignette. It should be removed in typical workflows.
+Note, in the following example the usage of _`suppressWarnings()`_ is only relevant for 
+building this vignette. In typical workflows it should be removed.
 
 ```{r param_import, eval=TRUE}
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
