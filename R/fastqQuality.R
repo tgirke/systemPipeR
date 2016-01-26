@@ -199,7 +199,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
                 hstats <- data.frame(labels=myintervals[,1], Percent=iv)
                 hstats[,1] <- factor(hstats[,1], levels=unique(hstats[,1]), ordered=TRUE)
 		h <- ggplot(hstats, aes(labels, Percent)) +
-                        geom_histogram(fill="#0072B2", stat="identity") +
+                        geom_bar(fill="#0072B2", stat="identity") +
                         theme(legend.position = "none") +
                         xlab("Read Occurrence") +
                         ylab("% Reads")
