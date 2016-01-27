@@ -11,6 +11,8 @@ Depends: Rsamtools, Biostrings, ShortRead, methods
 Imports: BiocGenerics, GenomicRanges, GenomicFeatures, SummarizedExperiment, VariantAnnotation, rjson, ggplot2, grid, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap, BatchJobs
 Suggests: ape, RUnit, BiocStyle, knitr, rmarkdown, biomaRt, BiocParallel
 VignetteBuilder: knitr
-SystemRequirements: systemPipeR can be used to run external command-line software (e.g. short read aligners), but the corresponding tool needs to be installed on a system.
+SystemRequirements: systemPipeR can be used to run external 
+        command-line software (e.g. short read aligners), but the 
+        corresponding tool needs to be installed on a system.  
 License: Artistic-2.0
 URL: https://github.com/tgirke/systemPipeR
