@@ -1,6 +1,7 @@
 changelog
-    version 1.5.8
+    version 1.5.8 - 1.5.9
         - bugfix in seeFastqPlot caused by recent change in ggplot2
+        - fix in fstats component of seeFastq
 
     version 1.5.6 - 1.5.7
         - vignette updates
