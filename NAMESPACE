@@ -1,0 +1,35 @@
+## IMPORTS
+import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, Biostrings, ShortRead, ggplot2, grid, limma, edgeR, GOstats, GO.db, annotate, pheatmap, BatchJobs, methods)
+## S4 Classes
+exportClasses(
+    "SYSargs", "catDB", "VENNset", "INTERSECTset"
+)
+
+## Methods
+exportMethods(
+    "targetsin", "targetsout", "targetsheader", "modules", "software", "cores", 
+    "other", "reference", "results", "infile1", "infile2", "outfile1", "SampleName", 
+    "sysargs", "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
+    "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
+    "as.list" 
+)
+
+## Functions
+# exportPattern("^[[:alpha:]]+")
+export(
+    ## Data sets
+
+    ## Import/exports
+    "readComp", "writeTargetsout", "writeTargetsRef", "mergeBamByFactor",
+
+    ## Utilities
+    "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
+    "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
+    "modulelist", "run_edgeR", "run_DESeq2", "filterDEGs", "seeFastq", "seeFastqPlot",
+    "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
+    "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
+    "preprocessReads", "filterVars", "variantReport", "combineVarReports", 
+    "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
+    "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
+    "scaleRanges"
+) 
