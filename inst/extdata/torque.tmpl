@@ -1,0 +1,19 @@
+#PBS -N <%= job.name %>
+## merge standard error and output
+#PBS -j oe
+## direct streams to our logfile
+#PBS -o <%= log.file %>
+#PBS -l walltime=<%= resources$walltime %>,nodes=<%= resources$nodes %>,mem=<%= resources$memory %>
+##PBS -l walltime=<%= resources$walltime %>,nodes=<%= resources$nodes %>,vmem=<%= resources$memory %>M
+## specifies which queue to use, here 'highmem' 
+##PBS -q highmem
+## remove this line if your cluster does not support arrayjobs
+##PBS -t 1-<%= arrayjobs %>
+##PBS -e /dir/for/error/stream/error.txt
+##PBS -o /dir/for/out/stream/out.txt
+
+## Run R:
+## we merge R output with stdout from PBS, which gets then logged via -o option
+# module load R/3.2.1-dev
+R CMD BATCH --no-save --no-restore "<%= rscript %>" /dev/stdout 
+ 
