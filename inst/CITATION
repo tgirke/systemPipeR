@@ -1,0 +1,3 @@
+library(methods)
+library(knitcitations)
+bib_metadata("10.1186/s12859-016-1241-0")
