@@ -8,7 +8,7 @@ Execute SYSargs
 Function to execute system parameters specified in \code{SYSargs} object
 }
 \usage{
-runCommandline(args, runid = "01", ...)
+runCommandline(args, runid = "01", make_bam=TRUE, ...)
 }
 \arguments{
   \item{args}{
@@ -17,8 +17,11 @@ runCommandline(args, runid = "01", ...)
   \item{runid}{
 	Run identifier used for log file to track system call commands. Default is \code{"01"}.
 }
+  \item{make_bam}{
+	Autodetects SAM file outputs and converts them to sorted and indexed BAM files. Default is \code{make_bam=TRUE}. 
+}
   \item{\dots}{
-	Additional plotting arguments to pass on to \code{runCommandline()}.
+	Additional arguments to pass on to \code{runCommandline()}.
 }
 }
 \value{
