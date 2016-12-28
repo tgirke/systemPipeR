@@ -1,4 +1,10 @@
 changelog
+    version 1.9.2
+        - Added make_bam argument to runCommandline
+    
+    version 1.7.0 - 1.9.1
+        - vignette updates
+
     version 1.5.8 - 1.5.9
         - bugfix in seeFastqPlot caused by recent change in ggplot2
         - fix in fstats component of seeFastq

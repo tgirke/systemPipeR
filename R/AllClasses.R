@@ -320,7 +320,7 @@ writeTargetsout <- function(x, file="default", silent=FALSE, overwrite=FALSE, ..
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", ...) {
+runCommandline <- function(args, runid="01", make_bam=TRUE, ...) {
 	if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
 		for(j in modules(args)) moduleload(j) # loads specified software from module system
 	}	
@@ -352,16 +352,18 @@ runCommandline <- function(args, runid="01", ...) {
 			cat(commands[i], file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
 			cat(unlist(stdout), file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
 			## Conditional postprocessing of results
-			if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
-				asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
-				unlink(outfile1(args)[i])
-			} else if(grepl("vcf$|bcf$|xls$|bed$", outpaths(args)[i])) {
-                dump <- "do nothing"
-			} else { # If output is unindexed *.bam file (e.g. Tophat2)
-				sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
-        			indexBam(names(completed[i]))
-			}
-		}
+			if(make_bam==TRUE) {
+                if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
+				    asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
+				    unlink(outfile1(args)[i])
+			    } else if(grepl("vcf$|bcf$|xls$|bed$", outpaths(args)[i])) {
+                    dump <- "do nothing"
+			    } else { # If output is unindexed *.bam file (e.g. Tophat2)
+				    sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
+        			        indexBam(names(completed[i]))
+			    }
+		    }
+        }
 	}
 	bamcompleted <- gsub("sam$", "bam$", file.exists(outpaths(args)))
 	names(bamcompleted) <- SampleName(args)
