@@ -368,11 +368,12 @@ GOHyperGAll_Simplify <- function(GOHyperGAll_result, gocat="MF", cutoff=0.001, c
 ## gene expression clusters) and organizes the results in a single data frame.
 
 GOCluster_Report <- function(catdb, setlist, id_type="affy", method="all", CLSZ=10, cutoff=0.001, gocats=c("MF", "BP", "CC"), myslimv="default", correct=TRUE, recordSpecGO=NULL, ...) { # CLSZ: minimum cluster size; method: "all", "slim" or "simplify"; gocat: "MF", "BP" or "CC"; cutoff: adjusted p-value cutoff; recordSpecGO: argument to include one specific GOID in each of the 3 ontologies, e.g: recordSpecGO=c("GO:0003674", "GO:0008150", "GO:0005575")
-    	CL_DF <- data.frame(geneID=unlist(setlist), CLID=rep(names(setlist), sapply(setlist, length)), ClusterSize=rep(sapply(setlist, length), sapply(setlist, length)))
+    CL_DF <- data.frame(geneID=unlist(setlist), CLID=rep(names(setlist), sapply(setlist, length)), ClusterSize=rep(sapply(setlist, length), sapply(setlist, length)))
 	cluster_loop <- unique(as.vector(CL_DF[CL_DF[,3]>=CLSZ,2]))
-        if(length(cluster_loop[grep("CL", cluster_loop)])>0) {
-                cluster_loop <- paste("CL", sort(as.numeric(gsub("CL","", as.character(cluster_loop)))), sep="") 
-        }
+    # Next step included for historical reasons
+    if(all(gsub("(^CL).*", "\\1", cluster_loop) == "CL") & all(!is.na(suppressWarnings(as.numeric(gsub("^CL", "", cluster_loop)))))) {
+        cluster_loop <- paste("CL", sort(as.numeric(gsub("CL","", as.character(cluster_loop)))), sep="") 
+    }
 	if(method=="all") {
         	containerDF <- data.frame(CLID=NULL, CLSZ=NULL, GOID=NULL, NodeSize=NULL, SampleMatch=NULL, Phyper=NULL, Padj=NULL, Term=NULL, Ont=NULL, SampleKeys=NULL)
 		for(i in cluster_loop) {
