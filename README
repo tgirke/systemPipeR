@@ -1,5 +1,5 @@
 changelog
-    version 1.11.1
+    version 1.10.1
         - Fixed gene set naming problem in GOCluster_Report
     
     version 1.9.2
