@@ -200,12 +200,25 @@ modulelist <- function() {
 	system("bash -c \"module avail\"")
 }
 
-## Load software from module system
-moduleload <- function(module) { 
-	modpath <- system(paste("bash -c \"module load", module, "; export | grep '^declare -x PATH='\""), intern = TRUE) 
-	modpath <- gsub("^declare -x PATH=\"(.*)\"$", "\\1", modpath, perl = TRUE)
-	Sys.setenv(PATH=modpath) 
+## New version of load software from module system
+moduleload <- function(module, envir="PATH") { 
+    for(i in seq_along(envir)) {
+        modpath <- system(paste0("bash -c \"module load ", module, "; export | grep '^declare -x ", envir[i], "='\""), intern = TRUE) 
+        modpath <- gsub(paste0("^declare -x ", envir[i], "=\"(.*)\"$"), "\\1", modpath, perl = TRUE)
+        l <- list(modpath); names(l) <- envir[i]
+        do.call(Sys.setenv, l)
+    }
 }
+## Usage: 
+# moduleload(module="hisat2/2.0.1", envir="PATH)
+# moduleload(module="python", envir=c("PATH", "LD_LIBRARY_PATH", "PYTHONPATH"))
+
+## Old version of load software from module system
+# moduleload <- function(module) { 
+#	modpath <- system(paste("bash -c \"module load", module, "; export | grep '^declare -x PATH='\""), intern = TRUE) 
+#	modpath <- gsub("^declare -x PATH=\"(.*)\"$", "\\1", modpath, perl = TRUE)
+#	Sys.setenv(PATH=modpath) 
+# }
 
 #######################################################################
 ## Run edgeR GLM with entire count matrix or subsetted by comparison ##

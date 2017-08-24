@@ -1,4 +1,7 @@
 changelog
+    version 1.10.2
+        - Support for passing on several environmental variables in moduleload
+
     version 1.10.1
         - Fixed gene set naming problem in GOCluster_Report
     
