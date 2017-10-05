@@ -261,7 +261,8 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
             for(i in seq(along=ge)) myids[i] <- paste(mynames[revmaplist[[i]]], collapse="_")
             myintergenics <- gaps(ge)
             myintergenics <- myintergenics[strand(myintergenics)=="*"] # Removes chromosome ranges created by gaps when seqlengths available
-            index <- findOverlaps(ge, myintergenics, minoverlap=0)
+            # index <- findOverlaps(ge, myintergenics, minoverlap=0L) 
+            index <- findOverlaps(ge, myintergenics, maxgap=0L, minoverlap=0L) # change necessary since default in IRanges changed from maxgap=0L to maxgap=-1L
             myids <- tapply(myids[as.matrix(index)[,1]], as.matrix(index)[,2], paste, collapse="__")
             if(reduce_ranges==TRUE) {
                 mcols(myintergenics) <- DataFrame(feature_by=sprintf("INTER%08d", seq_along(myids)), featuretype_id=as.character(myids), featuretype="intergenic")
