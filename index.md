@@ -6,7 +6,6 @@ permalink: index.html
 summary: Website of the systemPipeR project. For questions email <a href="http://girke.bioinformatics.ucr.edu/">Thomas Girke</a>.
 ---
 
-<img align="right" title="gen242logo" src="pages/mydoc/GEN242_home_images/logo1.jpg"><img/>
 
 ## Abstract
             
