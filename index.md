@@ -33,7 +33,7 @@ all aspects of this project while supporting diversity. Extensive online
 tutorials will be provided to maximize the educational outreach of the
 activities. 
 
-The specific aims of this project are: (AIM 1) Enhancements to systemPipeR?s
+The specific aims of this project are: (AIM 1) Enhancements to systemPipeR's
 user interface and the workflow design framework will greatly simplify the
 process of running workflows, generating automated reports and designing new
 workflows. It will also improve user-friendliness to make systemPipeR equally
