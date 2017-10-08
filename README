@@ -2,6 +2,7 @@ changelog
     version 1.11.3
         - Fixed duplicated commits 
         - Adopted to new default setting of maxgap in findOverlaps
+        - Minor formatting improvements
     
     version 1.11.2
         - Support for passing on several environmental variables in moduleload
