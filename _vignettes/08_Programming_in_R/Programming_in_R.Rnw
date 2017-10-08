@@ -1,0 +1,965 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Latex Beamer Slide Presentation %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% (1) Beamer installation
+% Download the following 3 packages from 
+%       http://sourceforge.net/project/showfiles.php?group_id=92412
+% and save them in texmf tree of your home directory like this
+% (a) latex-beamer goes in      ~/texmf/tex/latex/beamer 
+% (b) pgf goes in               ~/texmf/tex/latex/pgf 
+% (c) xcolor goes in            ~/texmf/tex/latex/xcolor
+
+% (2) Beamer usage
+% Manual for Beamer and Prosper: http://latex.perseguers.ch/contrib/presentations/guidelines.pdf
+% Great quick start: http://www.math.umbc.edu/~rouben/beamer/quickstart.html 
+% Examples: http://latex-beamer.sourceforge.net/ 
+% Example: http://www-verimag.imag.fr/~lmorel/html/beamer.html
+% Manual: /home/tgirke/texmf/tex/latex/beamer/latex-beamer-3.06/doc/beameruserguide.pdf
+% Print handouts: cp myslides.pdf zzz.pdf; pdftops -expand zzz.pdf; psnup -4 -b6mm -f zzz.ps > zzzhandouts.ps; ps2pdf zzzhandouts.ps
+% generate PDF slide show with command:
+% pdflatex Programming_in_R.tex; bibtex Programming_in_R; pdflatex Programming_in_R.tex
+% echo 'Sweave("Programming_in_R.Rnw")' | R --slave; echo 'Stangle("Programming_in_R.Rnw")' | R --slave; pdflatex Programming_in_R.tex;  bibtex Programming_in_R; pdflatex Programming_in_R.tex
+
+\documentclass{beamer}
+% Load a theme (graphics, colors,...) for the presentation
+%\usepackage{beamerthemelined}
+%\usepackage{beamerthemetree}
+%\usetheme{default}
+\usetheme{umbc2}
+%\usepackage{beamerthemeclassic}
+
+% For images:
+\usepackage{graphicx}
+% For color in text
+\usepackage{color}
+
+% For wrapping long URLs properly (may not be necessary)
+\usepackage{url}
+
+% Define comment command, which allows to comment out text with this syntax: \comment{my comment}
+\newcommand{\comment}[1]{}
+
+% Use UMBC theme collection. Download theme from: http://www.math.umbc.edu/~rouben/beamer/beamer-umbc.tar.gz
+\useoutertheme{umbcfootline} 
+% Define footnote line, see details: http://www.math.umbc.edu/~rouben/beamer/quickstart-Z-H-9.html#node_sec_9
+\setfootline{\inserttitle \hfill \textit{\insertsection} \hfill \textit{\insertsubsection} \hfill Slide \insertframenumber/\inserttotalframenumber}
+
+% BibTex Settings
+\usepackage{natbib}
+\renewcommand\refname{Bibliography} % Defines title of bibliography   
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+% Sweave settings
+\SweaveOpts{echo=FALSE}
+\usepackage{listings}
+
+\hypersetup{pdfpagemode=FullScreen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Programming in R}
+\subtitle{Data Analysis in Genome Biology \\GEN242}
+\author{Thomas Girke}
+\date{April 16, 2015}
+
+\begin{document}
+\frame{\titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Creates Separate Outline Slide at Beginning
+%\section{Outline}
+\frame{\scriptsize \tableofcontents}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Define to generate outline slide automatically at start of every new section
+\AtBeginSection[]
+{
+   \begin{frame}
+       \frametitle{Outline}
+	\scriptsize
+       \tableofcontents[currentsection]
+   \end{frame}
+}
+% Same effect at subsection level
+\AtBeginSubsection[]
+{
+   \begin{frame}
+       \frametitle{Outline}
+       \tableofcontents[currentsection,currentsubsection]
+   \end{frame}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Programming in R}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Why Programming in R?}
+\vspace{0cm} 
+\begin{itemize}
+	\item Complete statistical package and programming language
+	\item Reproducible research
+	\item Efficient data structures make programming very easy
+	\item Ease of implementing custom functions
+	\item Powerful graphics
+	\item Access to fast growing number of analysis packages
+	\item Most widely used language in bioinformatics
+	\item Is standard for data mining and biostatistical analysis
+	\item Technical advantages: free, open-source, available for all OSs
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Online Manuals}
+\begin{center}
+UCR R Manuals: \href{http://manuals.bioinformatics.ucr.edu/home/programming-in-r}{{\beamerbutton{Link}}}
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Control Structures}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Important Operators}
+\begin{itemize}
+	\item Comparison operators
+	\begin{itemize}
+		\item \texttt{==} (equal)
+		\item \texttt{!=} (not equal)
+		\item \texttt{>} (greater than)
+		\item \texttt{>=} (greater than or equal)
+		\item \texttt{<} (less than)
+		\item \texttt{<=} (less than or equal)
+	\end{itemize}
+\vspace{0.2cm}
+	\item Logical operators
+	\begin{itemize}
+		\item \texttt{\&} (and)
+		\item \texttt{|} (or) 
+		\item \texttt{!} (not)
+	\end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Conditional Executions: \Rfunction{if} statements}
+\scriptsize
+An \Rfunction{if} statement operates on length-one logical vectors.\\
+\vspace{0.2cm}
+\textcolor{blue}{Syntax}
+<<label=Contitional executions 1, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+if(TRUE) { 
+	statements_1 
+} else { 
+	statements_2 
+}
+@
+\vspace{0.2cm}
+\textcolor{blue}{Example}
+<<label=Contitional executions 2, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+if(1==0) { 
+	print(1) 
+} else { 
+	print(2) 
+}
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Conditional Executions: \Rfunction{ifelse} Statements}
+\scriptsize
+The \Rfunction{ifelse} statement operates on vectors.\\
+\vspace{0.2cm}
+\textcolor{blue}{Syntax}
+<<label=Contitional executions 3, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+ifelse(test, true_value, false_value)
+@
+\vspace{0.2cm}
+\textcolor{blue}{Example}
+<<label=Contitional executions 4, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+x <- 1:10 
+ifelse(x<5, x, 0)
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Loops}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{\Rfunction{for} Loops}
+\scriptsize
+\vspace{0.3cm}
+Iterates over elements of a looping vector.\\
+\scriptsize
+\vspace{0.1cm}
+\textcolor{blue}{Syntax}
+<<label=loops 1, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+for(variable in sequence) { 
+	statements 
+}
+@
+\vspace{0.2cm}
+\textcolor{blue}{Example}
+<<label=loops 2, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+mydf <- iris
+myve <- NULL
+for(i in seq(along=mydf[,1])) {
+	myve <- c(myve, mean(as.numeric(mydf[i,1:3])))
+}
+myve[1:8]
+@
+\vspace{0.2cm}
+\textcolor{blue}{Inject into objecs is much faster than append approach with \Rfunction{c}, \Rfunction{cbind}, etc.}
+<<label=loops 3, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+myve <- numeric(length(mydf[,1]))
+for(i in seq(along=myve)) {
+	myve[i] <- mean(as.numeric(mydf[i,1:3]))
+}
+myve[1:8]
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Conditional Stop of Loops}
+\scriptsize
+The \Rfunction{stop} function can be used to break out of a loop (or a function) when a condition becomes \texttt{TRUE} and print an error message. \\
+\vspace{0.3cm}
+\textcolor{blue}{Example}
+<<label=loops 4, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+x <- 1:10
+z <- NULL
+for(i in seq(along=x)) { 
+	if(x[i] < 5) { 
+		z <- c(z, x[i]-1)  
+	} else { 
+		stop("values need to be <5") 
+	}
+}
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{\Rfunction{while} Loops}
+\scriptsize
+Iterates as long as a condition is true.\\
+\vspace{0.4cm}
+\textcolor{blue}{Syntax}
+<<label=loops 5, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+while(condition) {
+	statements
+}
+@
+\vspace{0.2cm}
+\textcolor{blue}{Example}
+<<label=loops 6, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+z <- 0
+while(z<5) { 
+	z <- z + 2
+	print(z)  
+}
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{The \Rfunction{apply} Function Family: \Rfunction{apply}}
+\scriptsize
+\textcolor{blue}{Syntax}
+<<label=loops 7, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+apply(X, MARGIN, FUN, ARGs)
+@
+Arguments
+\begin{itemize}
+	\item \texttt{X}: \texttt{array, matrix or data.frame}
+	\item \texttt{MARGIN}: \texttt{1} for rows, \texttt{2} for columns
+	\item \texttt{FUN}: one or more functions
+	\item \texttt{ARGs}: possible arguments for functions
+\end{itemize}
+\vspace{0.2cm}
+\textcolor{blue}{Example}
+<<label=loops 8, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+apply(iris[1:8,1:3], 1, mean)
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{The \Rfunction{apply} Function Family: \Rfunction{tapply}}
+\scriptsize
+Applies a function to vector components that are defined by a factor.\\
+\vspace{0.2cm}
+\textcolor{blue}{Syntax}
+<<label=loops 9, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+tapply(vector, factor, FUN)
+@
+\vspace{0.2cm}
+\textcolor{blue}{Example}
+<<label=loops 10, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+iris[1:2,]
+tapply(iris$Sepal.Length, iris$Species, mean)
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{The \Rfunction{apply} Function Family: \Rfunction{sapply} and \Rfunction{lapply}}
+\scriptsize
+\vspace{0.2cm}
+Both apply a function to vector or list objects. The function \Rfunction{lapply} always returns a list objects, while \Rfunction{sapply} tries to return vector or matrix objects when this is possible. \\
+\vspace{0.2cm}
+\textcolor{blue}{Examples}
+<<label=loops 11, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+x <- list(a = 1:10, beta = exp(-3:3), logic = c(TRUE,FALSE,FALSE,TRUE))
+lapply(x, mean)
+sapply(x, mean)
+@
+\textcolor{blue}{Often used in combination with a function definition}
+<<label=loops 12, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+lapply(names(x), function(x) mean(x))
+sapply(names(x), function(x) mean(x))
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Function Overview}
+\scriptsize
+A very useful feature of the R environment is the possibility to expand existing functions and to easily write custom functions. In fact, most of the R software can be viewed as a series of R functions.\\
+\scriptsize
+\vspace{0.3cm}
+\textcolor{blue}{Syntax to define functions}
+<<label=fct 1, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+myfct <- function(arg1, arg2, ...) { 
+	function_body 
+}
+@
+\vspace{0.3cm}
+\textcolor{blue}{Syntax to call functions}
+<<label=fct 2, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+myfct(arg1=..., arg2=...)
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Function Syntax Rules}
+\scriptsize
+\begin{itemize}
+	\item[General]Functions are defined by (1) assignment with the keyword \Rfunction{function}, (2) the declaration of arguments/variables (\Rfunction{arg1, arg2, ...}) and (3) the definition of operations (\Rfunction{function\_body}) that perform computations on the provided arguments. A function name needs to be assigned to call the function.
+	\item[Naming] Function names can be almost anything. However, the usage of names of existing functions should be avoided.
+	\item[Arguments] It is often useful to provide default values for arguments (e.g.: \Rfunction{arg1=1:10}). This way they don't need to be provided in a function call. The argument list can also be left empty (\Rfunction{myfct <- function() { fct\_body }}) when a function is expected to return always the same value(s). The argument \Rfunction{'...'} can be used to allow one function to pass on argument settings to another.
+	\item[Body] The actual expressions (commands/operations) are defined in the function body which should be enclosed by braces. The individual commands are separated by semicolons or new lines (preferred).
+	\item[Usage] Functions are called by their name followed by parentheses containing possible argument names. Empty parenthesis after the function name will result in an error message when a function requires certain arguments to be provided by the user. The function name alone will print the definition of a function.
+	\item[Scope] Variables created inside a function exist only for the life time of a function. Thus, they are not accessible outside of the function. To force variables in functions to exist globally, one can use the double assignment operator: \Rfunction{'$<<-$'}. 
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Function: Examples}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{Define sample function}
+<<label=fct 3, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+myfct <- function(x1, x2=5) { 
+	z1 <- x1 / x1
+	z2 <- x2 * x2
+        myvec <- c(z1, z2) 
+        return(myvec)
+} 
+@
+\vspace{0.1cm}
+\textcolor{blue}{Function usage}
+<<label=fct 4, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## Apply function to values 2 and 5
+myfct(x1=2, x2=5) 
+## Run without argument names
+myfct(2, 5) 
+## Makes use of default value '5'
+myfct(x1=2) 
+## Print function definition 
+# myfct 
+@
+\vspace{0.3cm}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Useful Utilities}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Debugging Utilities}
+\small
+Several debugging utilities are available for R. They include:
+\begin{itemize}
+	\item \texttt{traceback}
+	\item \texttt{browser}
+	\item \texttt{options(error=recover)}
+	\item \texttt{options(error=NULL)}
+	\item \texttt{debug}
+\end{itemize}
+The Debugging in R page \href{http://www.stats.uwo.ca/faculty/murdoch/software/debuggingR/}{{\beamerbutton{Link}}} provides an overview of the available resources.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Regular Expressions}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{R's regular expression utilities work similar as in other languages. To learn how to use them in R, one can consult the main help page on this topic with \texttt{?regexp}.}
+<<label=Expression Evaluation, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## The grep function can be used for finding patterns in strings, here letter 
+## 'A' in vector 'month.name'.
+month.name[grep("A", month.name)] 
+## Example for using regular expressions to substitute a pattern by another 
+## one using a back reference. Remember: single escapes '\' need to be double 
+## escaped '\\' in R.
+gsub('(i.*a)', 'xxx_\\1', "virginica", perl = TRUE) 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Interpreting a Character String as Expression}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{Some useful examples}
+<<label=Expression Evaluation, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## Generates vector of object names in session
+mylist <- ls()
+## Prints name of 1st entry
+mylist[1] 
+## Executes 1st entry as expression
+get(mylist[1]) 
+# Alternative approach
+eval(parse(text=mylist[1])) 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Replacement, Split and Paste Functions for Strings}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{Selected examples}
+<<label=Split, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## Substitution with back reference which inserts in this example 
+## an '_' character
+x <- gsub("(a)","\\1_", month.name[1], perl=T) 
+x
+## Split string on inserted character from above
+strsplit(x,"_") 
+## Reverse a character string by splitting first all characters 
+## into vector fields
+paste(rev(unlist(strsplit(x, NULL))), collapse="") 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Time, Date and Sleep}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{Selected examples}
+<<label=Time, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## Returns CPU (and other) times that an expression used (here ls)
+system.time(ls()) 
+## Return the current system date and time
+date() 
+## Pause execution of R expressions for a given number of 
+## seconds (e.g. in loop)
+Sys.sleep(1) 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Import of Specific File Lines with Regular Expression}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{The following example demonstrates the retrieval of specific lines from an external file with a regular expression. First, an external file is created with the \texttt{cat} function, all lines of this file are imported into a vector with \texttt{readLines}, the specific elements (lines) are then retieved with the \texttt{grep} function, and the resulting lines are split into vector fields with \texttt{strsplit}.}
+<<label=Time, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+cat(month.name, file="zzz.txt", sep="\n")
+x <- readLines("zzz.txt")
+x[1:6] 
+x <- x[c(grep("^J", as.character(x), perl = TRUE))]
+t(as.data.frame(strsplit(x, "u")))
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Calling External Software}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Run External Command-line Software}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{Example for running blastall from R}
+<<label=running scripts, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+system("blastall -p blastp -i seq.fasta -d uniprot -o seq.blastp")
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Running R Scripts}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Options to Execute R Scripts}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{Executing R scripts from the R console}
+<<label=running scripts, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+source("my_script.R")
+@
+\textcolor{blue}{Execute an R script from command-line}
+\begin{Schunk}
+\begin{Sinput}
+Rscript my_script.R # or just ./myscript.R after making it executable
+R CMD BATCH my_script.R # Alternative way 1 
+R --slave < my_script.R # Alternative way 2
+\end{Sinput}
+\end{Schunk}
+\textcolor{blue}{Passing command-line arguments to R programs. In the given example the number 10 is passed on from the command-line as an argument to the R script which is used to return to STDOUT the first 10 rows of the iris sample data. If several arguments are provided, they will be interpreted as one string and need to be split in R with the strsplit function. A more detailed example can be found here: \href{http://manuals.bioinformatics.ucr.edu/home/ht-seq\#TOC-Quality-Reports-of-FASTQ-Files-}{{\beamerbutton{Link}}}}
+\begin{Schunk}
+\begin{Sinput}
+## Create R script named 'test.R'
+##################################
+myarg <- commandArgs()
+print(iris[1:myarg, ])
+##################################
+
+## Then run it from the command-line
+Rscript test.R 10
+\end{Sinput}
+\end{Schunk}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Exercises}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 1: for loop}
+\scriptsize
+\begin{itemize}
+	\item[Task 1.1:] \textcolor{blue}{Compute the mean of each row in \texttt{myMA} by applying the mean function in a \texttt{for} loop}
+\end{itemize}
+<<label=Exercise 1.1, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+myMA <- matrix(rnorm(500), 100, 5, dimnames=list(1:100, paste("C", 1:5, sep="")))
+myve_for <- NULL
+for(i in seq(along=myMA[,1])) {
+	myve_for <- c(myve_for, mean(as.numeric(myMA[i, ])))
+}
+myResult <- cbind(myMA, mean_for=myve_for)
+myResult[1:4, ]
+@ 
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 1: while loop}
+\scriptsize
+\begin{itemize}
+	\item[Task 1.2:] \textcolor{blue}{Compute the mean of each row in \texttt{myMA} by applying the mean function in a \texttt{while} loop}
+\end{itemize}
+<<label=Exercise 1.2, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+z <- 1
+myve_while <- NULL
+while(z <= length(myMA[,1])) {
+	myve_while <- c(myve_while, mean(as.numeric(myMA[z, ])))
+	z <- z + 1
+}
+myResult <- cbind(myMA, mean_for=myve_for, mean_while=myve_while)
+myResult[1:4, -c(1,2)]
+@
+\begin{itemize}
+	\item[Task 1.3:] \textcolor{blue}{Confirm that the results from both mean calculations are identical}
+\end{itemize}
+<<label=Exercise 1.3, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+all(myResult[,6] == myResult[,7])
+@ 
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 1: apply loop and avoiding loops in R}
+\scriptsize
+\begin{itemize}
+	\item[Task 1.4:] \textcolor{blue}{Compute the mean of each row in myMA by applying the mean function in an \texttt{apply} loop}
+\end{itemize}
+<<label=Exercise 1.4, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+myve_apply <- apply(myMA, 1, mean)
+myResult <- cbind(myMA, mean_for=myve_for, mean_while=myve_while, mean_apply=myve_apply)
+myResult[1:4, -c(1,2)]
+@
+\begin{itemize}
+	\item[Task 1.5:] \textcolor{blue}{When operating on large data sets it is much faster to use the rowMeans function}
+\end{itemize}
+<<label=Exercise 1.5, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+mymean <- rowMeans(myMA)
+myResult <- cbind(myMA, mean_for=myve_for, mean_while=myve_while, mean_apply=myve_apply, mean_int=mymean)
+myResult[1:4, -c(1,2,3)]
+@ 
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 2: functions}
+\scriptsize
+\begin{itemize}
+	\item[Task 2.1:] \textcolor{blue}{Use the following code as basis to implement a function that allows the user to compute the mean for any combination of columns in a matrix or data frame. The first argument of this function should specify the input data set, the second the mathematical function to be passed on (e.g. mean, sd, max) and the third one should allow the selection of the columns by providing a grouping vector.} 
+\end{itemize}
+<<label=Exercise 2.1, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+myMA <- matrix(rnorm(100000), 10000, 10, dimnames=list(1:10000, paste("C", 1:10, sep="")))
+myMA[1:2,]
+myList <- tapply(colnames(myMA), c(1,1,1,2,2,2,3,3,4,4), list) 
+names(myList) <- sapply(myList, paste, collapse="_")
+myMAmean <- sapply(myList, function(x) apply(myMA[,x], 1, mean))
+myMAmean[1:4,] 
+@
+
+<<label=Exercise 2.1, eval=FALSE, echo=FALSE, keep.source=TRUE>>=
+myMAcomp <- function(myMA=myMA, group=c(1,1,1,2,2,2,3,3,4,4), myfct=mean) {
+	myList <- tapply(colnames(myMA), group, list)
+	names(myList) <- sapply(myList, paste, collapse="_")
+	myMAmean <- sapply(myList, function(x) apply(myMA[, x, drop=FALSE], 1, myfct))
+	return(myMAmean)
+}
+myMAcomp(myMA=myMA, group=c(1,1,1,2,2,2,3,3,4,4), myfct=mean)[1:2,] 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 3: nested loops to generate similarity matrices}
+\scriptsize
+\begin{itemize}
+	\item[Task 3.1:] \textcolor{blue}{Create a sample list populated with character vectors of different lengths}
+\end{itemize}
+<<label=Exercise 3.1, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+setlist <- lapply(11:30, function(x) sample(letters, x, replace=TRUE))
+names(setlist) <- paste("S", seq(along=setlist), sep="") 
+setlist[1:6]
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 3: nested loops to generate similarity matrices}
+\scriptsize
+\begin{itemize}
+	\item[Task 3.2:] \textcolor{blue}{Compute the length for all pairwise intersects of the vectors stored in \texttt{setlist}. The intersects can be determined with the \texttt{\%in\%} function like this: \texttt{sum(setlist[[1]] \%in\% setlist[[2]])}}
+\end{itemize}
+<<label=Exercise 3.2, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+setlist <- sapply(setlist, unique)
+olMA <- sapply(names(setlist), function(x) sapply(names(setlist), 
+               function(y) sum(setlist[[x]] %in% setlist[[y]])))
+olMA[1:12,] 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 3: nested loops to generate similarity matrices}
+\vspace{0.3cm}
+\scriptsize
+\begin{itemize}
+	\item[Task 3.3:] \textcolor{blue}{Plot the resulting intersect matrix as heat map. The \texttt{image} or the \texttt{heatmap.2} function from the \texttt{gplots} library can be used for this.} 
+\end{itemize}
+<<fig=true, width=5.5, height=4.5, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+image(olMA)
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Building R Packages}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Short Overview of Package Building Process}
+\scriptsize
+\vspace{0.4cm}
+\textcolor{blue}{Automatic package building with the package.skeleton function. The given example will create a directory named \texttt{mypackage} containing the skeleton of the package for all functions, methods and classes defined in the R script(s) passed on to the \texttt{code\_files} argument. The basic structure of the package directory is described here: \href{http://manuals.bioinformatics.ucr.edu/home/programming-in-r\#Progr\_pack}{{\beamerbutton{Link}}}. The package directory will also contain a file named \texttt{Read-and-delete-me} with instructions for completing the package:}
+<<label=running scripts, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+package.skeleton(name="mypackage", code_files=c("script1.R", "script2.R"))
+@
+\textcolor{blue}{Once a package skeleton is available one can build the package from the command-line (Linux/OS X). This will create a tarball of the package with its version number encoded in the file name. Subequently, the package tarball needs to be checked for errors with:}
+\begin{Schunk}
+\begin{Sinput}
+R CMD build mypackage
+R CMD check mypackage_1.0.tar.gz
+\end{Sinput}
+\end{Schunk}
+\textcolor{blue}{Install package from source}
+<<label=running scripts, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+install.packages("mypackage_1.0.tar.gz", repos=NULL) 
+@
+\textcolor{blue}{For more details see here: \href{http://manuals.bioinformatics.ucr.edu/home/programming-in-r\#Progr\_pack}{{\beamerbutton{Link}}}}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Exercise 4: build your own R package}
+\scriptsize
+\begin{itemize}
+	\item[Task 4.1:] \textcolor{blue}{Save one or more of your functions to a file called \texttt{script.R} and build the package with the \texttt{package.skeleton} function.}
+\end{itemize}
+<<label=Exercise 4.1, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+package.skeleton(name="mypackage", code_files=c("script1.R"), namespace=TRUE)
+@
+\begin{itemize}
+	\item[Task 4.2:] \textcolor{blue}{Build tarball of the package}
+\end{itemize}
+\begin{Schunk}
+\begin{Sinput}
+system("R CMD build mypackage")
+\end{Sinput}
+\end{Schunk}
+\begin{itemize}
+	\item[Task 4.3:] \textcolor{blue}{Install and use package}
+\end{itemize}
+<<label=Exercise 4.3, eval=FALSE, echo=TRUE, keep.source=TRUE>>=
+install.packages("mypackage_1.0.tar.gz", repos=NULL, type="source")
+library(mypackage)
+?myMAcomp # Opens help for function defined by mypackage
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Homework}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\vspace{0.4cm}
+	\frametitle{Homework Assignment 4}
+\scriptsize
+\begin{itemize}
+	\item[(1)] Write a RevComp() function that returns the reverse and complement of a DNA sequence string.
+	\item[] Include an argument that will allow to return only the reversed sequence, the complemented sequence or the reversed and complemented sequence. The following R functions will be useful for the implementation: \\
+	\vspace{0.1cm}
+	\texttt{
+	\begin{Schunk}
+			 \hspace{0.16cm} > x <- c("ATGCATTGGACGTTAG") \\  
+			 \hspace{0.45cm} > x <- substring(x, 1:nchar(x), 1:nchar(x))  \\
+			 \hspace{0.45cm} > x <- rev(x) \\
+			 \hspace{0.45cm} > x <- paste(x, collapse="") \\
+			 \hspace{0.45cm} > chartr("ATGC", "TACG", x) 
+	\end{Schunk}
+	}
+	\item[(2)] Write a function that applies the RevComp() function to many sequences stored in a vector. \\
+	\item[(3)] Write a function that will translate one or many DNA sequences in all three reading frames into proteins. The following commands will simplify this task:\\
+	\vspace{0.1cm}
+	\texttt{
+	\begin{Schunk}
+                        \hspace{0.16cm} > AAdf <- read.table(file="\href{http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/AA.txt}{{\textcolor{blue}{AA.txt}}}", header=T, sep="$\backslash$t") \\
+                        \hspace{0.45cm} > AAv <- as.character(AAdf[,2]); names(AAv) <- AAdf[,1] \\
+                        \hspace{0.45cm} > y <- gsub("(...)", "$\backslash\backslash$1\_", x) \\
+			\hspace{0.45cm} > y <- unlist(strsplit(y, "\_")) \\
+			\hspace{0.45cm} > y <- y[grep("$^{\wedge}$...\$", y)] \\
+			\hspace{0.45cm} > AAv[y] \\
+	\end{Schunk}
+	}
+	\item Submit the 3 functions in one well structured and annotated R script to the instructor. The script should include instructions on how to use the functions.
+\end{itemize}
+<<label=Rev&Comp, eval=FALSE, echo=FALSE, keep.source=TRUE>>=
+x <- c("ATGCATTGGACGTTAG")  
+x <- substring(x, 1:nchar(x), 1:nchar(x)) 
+x <- rev(x) 
+x <- paste(x, collapse="") 
+chartr("ATGC", "TACG", x) 
+@
+<<label=Translate, eval=FALSE, echo=FALSE, keep.source=TRUE>>=
+AAdf <- read.table(file="http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/AA.txt", header=T, sep="\t")
+AAv <- as.character(AAdf[,2]); names(AAv) <- AAdf[,1] 
+y <- gsub("(...)", "\\1_", x) 
+y <- unlist(strsplit(y, "_")) 
+y <- y[grep("^...$", y)] 
+AAv[y] 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\LaTeX}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{What Is \LaTeX?}
+\begin{itemize}
+	\item Originally developed in the early 1980s by Leslie Lamport. 
+	\item \LaTeX\ is a document markup language and document preparation system for the TeX typesetting program.
+	\item Developed for mathematicians, statisticians, engineers and computer scientists.
+	\item High quality of typesetting for scientific articles. 
+	\item Programmable environment. 
+	\item Many efficient cross-referencing facilities for equations, tables, figures, bibliographies, etc.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{How Does It Work?}
+\begin{itemize}
+	\item Write in your favourite text editor, \textit{e.g.}: Vim or Emacs. 
+	\item Install \LaTeX\ distribution for your OS
+		\begin{itemize}
+			\item Windows: \href{http://miktex.org/}{{\textcolor{blue}{MiKTeX}}}
+			\item Linux: \href{http://www.latex-project.org/ftp.html}{{\textcolor{blue}{Latex Project Site}}}
+			\item Mac OS X: \href{http://www.uoregon.edu/~koch/texshop/}{{\textcolor{blue}{TexShop}}}
+		\end{itemize}
+	\item \LaTeX\ manuals (very incomplete selection)
+		\begin{itemize}
+			\item List of Manuals on \href{http://www.latex-project.org/}{{\textcolor{blue}{Latex Project Site}}}
+			\item \href{http://ctan.tug.org/tex-archive/info/lshort/english/lshort.pdf}{{\textcolor{blue}{The Not So Short Introduction to LaTeX}}}
+			\item \href{http://www.andy-roberts.net/misc/latex/}{{\textcolor{blue}{Getting to grips with LaTeX}}}
+		\end{itemize}
+	\item Packages
+		\begin{itemize}
+			\item An almost complete list: \href{http://www.ctan.org/tex-archive/help/Catalogue/bytopic.html}{{\textcolor{blue}{Online TeX Catalogue}}}
+		\end{itemize}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Documents and References}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Bibtex: The Ultimate Reference Management Tool}
+\begin{itemize}
+	\item Sample Latex file: \texttt{example.tex}
+	\item Convert to PDF with command: \texttt{pdflatex example.tex}
+	\item To include references from MyBibTex.bib database, the following command sequence needs to be executed: \\
+	\texttt{pdflatex example.tex; bibtex example; pdflatex example.tex}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Examples of BibTex Citations}
+\begin{itemize}
+	\item Citation in parentheses \citep{Grant2006a, Schwacke2003a, Miteva2006a}
+	\item Citation of \cite{Grant2006a, Schwacke2003a, Miteva2006a}
+	\item Extended citation \citep[][J Chem Inf Model, 46, 1912-1918]{Grant2006a}
+	\item Footnote citation with more detail \citep{Grant2006a}\footnote{\citep[][J Chem Inf Model]{Grant2006a}}
+	\item ...
+\end{itemize}
+The reference list for these citations appears automatically at a defined position, here the end of the document.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Sweave: R/Latex Hybrid Code for Reproducible Research}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\footnotesize
+\begin{frame}
+	\frametitle{R's \texttt{Sweave} Function Integrates R with Latex}
+\begin{itemize}
+	\item 'Sweave' provides a flexible framework for mixing Latex and R code for automatic generation of scientific documents.  
+	\item It does this by identifying R code chunks - starting with \textcolor{blue}{$<<>>=$} and ending with \textcolor{blue}{$@$} - and replaces them with the corresponding R output in \LaTeX\ format, e.g. commands, data objects, plots. 
+	\item The user organizes the hybrid code in a *.Rnw file, while the \texttt{Sweave()} function converts this file into a typical Latex *.tex file.   
+	\item A quick learning exercise:
+	\begin{itemize}
+		\item Download sample hybrid file \texttt{Sweave-test-1.Rnw}
+		\item Run in R command \texttt{Sweave("Sweave-test-1.Rnw")}
+		\item Convert generated \texttt{Sweave-test-1.tex} to PDF with \texttt{pdflatex Sweave-test-1.tex}
+	\end{itemize}
+	\item \href{http://www.stat.auckland.ac.nz/~dscott/782/Sweave-manual-20060104.pdf}{{\textcolor{blue}{Sweave User Manual}}}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Examples}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Structure of *.Rnw Hybrid File}
+\footnotesize
+\hspace{1cm}Latex \textcolor{blue}{$\backslash Sexpr\{pi\}$} Latex Latex Latex Latex Latex Latex \\
+\hspace{1cm}Latex Latex Latex Latex Latex Latex Latex Latex Latex \\
+\hspace{1cm}Latex Latex Latex Latex Latex Latex Latex Latex Latex \\
+\hspace{1cm}\textcolor{blue}{$<<>>=$ \\
+\hspace{1cm}R R R R R R R R R R R R R R R R R R R R R R R R \\
+\hspace{1cm}R R R R R R R R R R R R R R R R R R R R R R R R \\
+\hspace{1cm}@} \\
+\hspace{1cm}Latex Latex Latex Latex Latex Latex Latex Latex Latex \\
+\hspace{1cm}Latex Latex Latex Latex Latex Latex Latex Latex Latex \\
+\hspace{1cm}Latex Latex Latex Latex Latex Latex Latex Latex Latex \\
+\hspace{1cm}\textcolor{blue}{$<<>>=$ \\
+\hspace{1cm}R R R R R R R R R R R R R R R R R R R R R R R R \\
+\hspace{1cm}R R R R R R R R R R R R R R R R R R R R R R R R \\
+\hspace{1cm}@}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim] % required for Sweave
+	\frametitle{Convert *.Rnw to *.tex to *.pdf}
+\footnotesize
+\begin{enumerate}
+	\item Create *.tex file
+<<echo=TRUE, eval=FALSE>>=
+Sweave("mydoc.Rnw") 
+@
+	\item Create R source file with code chunks (optional)
+<<label=test, echo=TRUE, eval=FALSE>>=
+Stangle("mydoc.Rnw") 
+@
+	\item Gernerate PDF with bibliography
+<<echo=TRUE, eval=FALSE>>=
+system("pdflatex mydoc.tex; bibtex mydoc; pdflatex mydoc.tex") 
+@
+\end{enumerate}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim] % required for Sweave
+% \begin{frame}[fragile] % required for Sweave
+	\frametitle{Code Chunk Options}
+\scriptsize
+Important options that can be included in code chunk start tag: 
+\begin{lstlisting}
+	<<>>=
+\end{lstlisting}
+\begin{itemize}
+	\item[label:] optional name for code chunk. 
+	\item[echo:] shows command if set to TRUE. Default is TRUE.
+  	\item[fig:] shows plots automatically if set to TRUE. Alternatively, one can use standard R code to save graphics to files and point to them in Latex source code. 
+  	\item[eval:] if FALSE, the variables and functions in code chunk are not evaluated. 
+  	\item[prefix:] if TRUE, generated file names have a common prefix.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim] % required for Sweave
+% \begin{frame}[fragile] % required for Sweave
+	\frametitle{Printing R Commands and Output}
+\scriptsize
+\textcolor{blue}{Beamer Slide Setting}
+\begin{lstlisting}
+	\begin{frame}[containsverbatim]
+\end{lstlisting}
+\textcolor{blue}{R Code Chunks}
+\begin{lstlisting}
+	> <<echo=TRUE>>=
+	> 1:10
+	> @
+\end{lstlisting}
+\textcolor{blue}{Result in PDF}
+<<echo=FALSE>>=
+options(width=60)
+@
+<<label=test1, echo=TRUE>>=
+1:10 
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim] % required for xtable!!!!
+	\frametitle{Including Tables with \texttt{xtable()}}
+\scriptsize
+\textcolor{blue}{Code Chunk}
+\begin{lstlisting}
+	<<echo=FALSE>>=
+	library(xtable)
+	xtable(iris[1:4,])
+	@
+\end{lstlisting}
+\textcolor{blue}{Result in PDF}
+<<echo=FALSE, results=tex>>=
+library(xtable)
+xtable(iris[1:4,])
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim] % required for xtable!!!!
+	\frametitle{Including Graphics}
+\vspace{1cm}
+\scriptsize
+\textcolor{blue}{Code Chunk}
+\begin{lstlisting}
+  <<fig=true, width=4.5, height=3.5, eval=TRUE, echo=TRUE>>=
+  barplot(1:10, beside=TRUE, col="green")
+  @
+\end{lstlisting}
+\textcolor{blue}{Result in PDF}
+<<fig=true, width=4.5, height=3.5, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+barplot(1:10, beside=TRUE, col="green")
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Session Information}
+\tiny
+<<eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+sessionInfo()
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% REFERENCE LIST %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\newblock{\hskip .11em plus .33em minus .07em} % Important line to support typical BibTex behavior in Beamer slide presentation
+\begin{frame}[allowframebreaks]{Bibliography: to Demo BibTeX}
+\scriptsize 
+\bibliographystyle{/Users/tgirke/GoogleDrive/Manuscripts/BibTeX/elsart-harv.bst} % Uses style file "elsart-harv.bst" (Plant Physiology) AND requires in preamble \usepackage{natbib}; many more styles can be found at http://jo.irisson.free.fr/bstdatabase/
+\bibliography{/Users/tgirke/GoogleDrive/Manuscripts/BibTeX/MyBibTex.bib} % Expects bibliography file "MyBibTex.bib"
+% \nocite{Mistry2007a, Smola2003a, vanderWalt2006a, Ruan2008a, Ivanciuc2007a, Pugalenthi2008a, Wu2009a, Sankararaman2008a, Alterovitz2009a, Salzberg2008a} % includes selected references without citing them
+% \nocite{*} % includes all references from a bibtex database
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% REFERENCE LIST %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
+
+

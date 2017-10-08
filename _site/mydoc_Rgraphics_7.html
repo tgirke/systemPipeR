@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content=" ">
+<title>7. Genome Graphics | systemPipeR Website</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> systemPipeR Project Website</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html" target="_blank">Bioc</a></li>
+                
+                
+                
+                <li><a href="https://github.com/tgirke/systemPipeR" target="_blank">GitHub Repo</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://cran.r-project.org/" target="_blank">CRAN</a></li>
+                        
+                        
+                        
+                        <li><a href="http://bioconductor.org/" target="_blank">Bioconductor</a></li>
+                        
+                        
+                        
+                        <li><a href="http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual" target="_blank">R & Bioconductor Manual</a></li>
+                        
+                        
+                        
+                        <li><a href="https://guides.github.com/activities/hello-world/" target="_blank">GitHub</a></li>
+                        
+                        
+                        
+                        <li><a href="http://hpcc.ucr.edu/" target="_blank">HPC Center (HPCC)</a></li>
+                        
+                        
+                        
+                        <li><a href="http://girke.bioinformatics.ucr.edu/" target="_blank">Girke Lab</a></li>
+                        
+                        
+                        
+                        <li><a href="http://idratherbewriting.com/documentation-theme-jekyll" target="_blank">Jekyll Doc Theme</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:thomas.girke@ucr.edu?subject=systemPipeR Website feedback&body=I have some feedback about the 7. Genome Graphics page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="7. Genome Graphics">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3" id="tg-sb-sidebar">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle"><center><font color="#26466D" size="6">systemPipeR</font></center> <center><font color="#8b9299" size="3">...</font></center></li>
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home</a>
+        <ul>
+            
+            
+            
+            <li><a href="index.html">Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_syllabus.html">Syllabus</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Internal</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_internal.html">Internal Resources</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Schedule</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_schedule.html">Course Schedule</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Lecture Slides</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_slides_01.html">Course Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_02.html">Molbiol Basics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_03.html">Databases and Software</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_04.html">DNA Sequencing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_05.html">Introduction to R</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_06.html">Sequence Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_07.html">Programming in R</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_08.html">Multiple Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_09.html">Short Read Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_10.html">NGS Analysis Basics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_11.html">Gene Expression Analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_12.html">NGS Workflows</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_13.html">ChIP-Seq Overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_14.html">VAR-Seq Overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_15.html">Sequence Assembly</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_16.html">Gene Annotation and Ontologies</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_17.html">Cluster Analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_18.html">Profile HMMs</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_slides_19.html">Introduction to Phylogenetics</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Homework</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_homework_01.html">HW1 - Online Tools</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_homework_02.html">HW2 - Biocluster/Linux</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_homework_03.html">HW3 - Introduction to R</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_homework_04.html">HW4 - Pairwise Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_09.html">HW5 - Programming in R</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_08.html">HW6 - Sequence Analysis</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">GitHub</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_tutorial_01.html">Table of Content</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_01.html#github-in-gen242">GitHub in GEN242</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_01.html#installing-git">Installation</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_01.html#git-basics-from-command-line">Git from Command-line</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_01.html#github-basics-from-command-line">GitHub from Command-line</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_01.html#using-github-from-rstudio">GitHub from RStudio</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Linux & HPCC Cluster</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html">Table of Content</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#hpcc-cluster-overview">HPCC Cluster</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#linux-basics">Linux Basics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#software-and-module-system">Software & Module System</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#big-data-storage">Big Data Storage</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#queuing-system-slurm">Queueing System Slurm</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#textcode-editors">Text Editors</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#vim-r-tmux-essentials">Vim-R-Tmux</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_tutorial_02.html#nvim-r-tmux">Nvim-R-Tmux</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Introduction to R</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_Rbasics_01.html">1. Overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_02.html">2. R Package Repositories</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_03.html">3. Installation of R Packages</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_04.html">4. Getting Around</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_05.html">5. Basic Syntax</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_06.html">6. Data Types</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_07.html">7. Data Objects</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_08.html">8. Important Utilities</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_09.html">9. Operators and Calculations</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_10.html">10. Reading and Writing External Data</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_11.html">11. Useful R Functions</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_12.html">12. dplyr Environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_13.html">13. SQLite Databases</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_14.html">14. Graphics in R</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_15.html">15. Analysis Routine</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_16.html">16. R Markdown</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_17.html">17. Shiny Web Apps</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_18.html">18. Session Info</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rbasics_19.html">19. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Programming in R</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_01.html">1. Overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_02.html">2. Control Structures</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_03.html">3. Loops</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_04.html">4. Functions</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_05.html">5. Useful Utilities</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_06.html">6. Running R Scripts</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_07.html">7. Building R Packages</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_08.html">8. Programming Exercises</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_09.html">9. Homework 5</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_10.html">10. Session Info</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Programming_in_R_11.html">11. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">NGS Analysis Basics</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_Rsequences_01.html">1. Overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_02.html">2. Package Requirements</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_03.html">3. Strings in R Base</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_04.html">4. Sequences in Bioconductor</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_05.html">5. NGS Sequences</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_06.html">6. Range Operations</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_07.html">7. Transcript Ranges</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_08.html">8. Homework 6</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_09.html">9. Session Info</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rsequences_10.html">10. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">NGS Workflow Overview</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_1.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_2.html">2. Getting Started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_3.html">3. Workflow overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_4.html">4. Workflow templates</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_5.html">5. Version information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_6.html">6. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">RNA-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_02.html">2. Samples and environment settings</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_05.html">5. Read quantification</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_06.html">6. Analysis of DEGs</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_07.html">7. GO term enrichment analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_08.html">8. Clustering and heat maps</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_09.html">9. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_10.html">10. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_11.html">11. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">ChIP-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_05.html">5. Utilities for coverage data</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_06.html">6. Peak calling with MACS2</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_07.html">7. Annotate peaks with genomic context</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_08.html">8. Count reads overlapping peaks</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_09.html">9. Differential binding analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_10.html">10. GO term enrichment analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_11.html">11. Motif analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_14.html">14. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">VAR-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Graphics and Visualization</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_Rgraphics_1.html">1. Overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rgraphics_2.html">2. Base Graphics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rgraphics_3.html">3. Grid Graphics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rgraphics_4.html">4. lattice Graphics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rgraphics_5.html">5. ggplot2 Graphics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rgraphics_6.html">6. Specialty Graphics</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="mydoc_Rgraphics_7.html">7. Genome Graphics</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rgraphics_8.html">8. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Cluster Analysis</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_Rclustering_1.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rclustering_2.html">2. Data Preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rclustering_3.html">3. Clustering Algorithms</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rclustering_4.html">4. Clustering Exercises</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rclustering_5.html">5. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_Rclustering_6.html">6. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Paper Presentations</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_paper_presentations.html">Paper Presentations</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Course Projects</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_project_intro.html">Overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_project_chipseq1.html">ChIP-Seq1 - Motif Prediction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_project_chipseq2.html">ChIP-Seq2 - Peak Callers</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_project_rnaseq1.html">RNA-Seq1 - Aligners</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_project_rnaseq2.html">RNA-Seq2 - DEG Methods</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_project_varseq1.html">VAR-Seq1 - Functional Prediction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_project_data.html">Project Data</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9" id="tg-sb-content">
+        <div class="post-header">
+   <h1 class="post-title-main">7. Genome Graphics</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+<!--
+    
+
+    <a target="_blank" href="https://github.com/tgirke/systemPipeR/blob/gh-pages/pages//mydoc_Rgraphics_7.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+-->
+    
+
+  <h2 id="ggbio"><code class="highlighter-rouge">ggbio</code></h2>
+
+<ul>
+  <li>What is <code class="highlighter-rouge">ggbio</code>?
+    <ul>
+      <li>A programmable genome browser environment</li>
+    </ul>
+  </li>
+  <li>Genome broswer concepts
+    <ul>
+      <li>A genome browser is a visulalization tool for plotting different types of genomic data in separate tracks along chromosomes.</li>
+      <li>The <code class="highlighter-rouge">ggbio</code> package (Yin et al., 2012) facilitates plotting of complex genome data objects, such as read alignments (SAM/BAM), genomic context/annotation information (gff/txdb), variant calls (VCF/BCF), and more. To easily compare these data sets, it extends the faceting facility of <code class="highlighter-rouge">ggplot2</code> to genome browser-like tracks.</li>
+      <li>Most of the core object types for handling genomic data with R/Bioconductor are supported: <code class="highlighter-rouge">GRanges</code>, <code class="highlighter-rouge">GAlignments</code>, <code class="highlighter-rouge">VCF</code>, etc. For more details, see Table 1.1 of the <code class="highlighter-rouge">ggbio</code> vignette <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/ggbio/inst/doc/ggbio.pdf">here</a>.</li>
+      <li><code class="highlighter-rouge">ggbio</code>’s convenience plotting function is <code class="highlighter-rouge">autoplot</code>. For more customizable plots, one can use the generic <code class="highlighter-rouge">ggplot</code> function.</li>
+      <li>Apart from the standard <code class="highlighter-rouge">ggplot2</code> plotting components, <code class="highlighter-rouge">ggbio</code> defines serval new components useful for genomic data visualization. A detailed list is given in Table 1.2 of the vignette <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/ggbio/inst/doc/ggbio.pdf">here</a>.</li>
+      <li>Useful web sites:
+        <ul>
+          <li><a href="http://www.tengfei.name/ggbio/docs/">ggbio manual</a></li>
+          <li><a href="http://www.tengfei.name/ggbio/docs/man/">ggbio functions</a></li>
+          <li><a href="http://www.tengfei.name/ggbio/docs/man/autoplot-method.html">autoplot demo</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="tracks-aligning-plots-along-chromosomes">Tracks: aligning plots along chromosomes</h3>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggbio</span><span class="p">)</span><span class="w">
+</span><span class="n">df1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sin</span><span class="p">((</span><span class="m">1</span><span class="o">:</span><span class="m">100</span><span class="p">)</span><span class="o">/</span><span class="m">20</span><span class="p">)</span><span class="o">*</span><span class="m">10</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="m">1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">qplot</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df1</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">score</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"line"</span><span class="p">)</span><span class="w">
+</span><span class="n">df2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span><span class="o">:</span><span class="m">120</span><span class="p">,</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sin</span><span class="p">((</span><span class="m">30</span><span class="o">:</span><span class="m">120</span><span class="p">)</span><span class="o">/</span><span class="m">20</span><span class="p">)</span><span class="o">*</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnorm</span><span class="p">(</span><span class="m">120-30</span><span class="w"> </span><span class="m">+1</span><span class="p">))</span><span class="w">
+</span><span class="n">p</span><span class="m">2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df2</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">score</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_line</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">geom_point</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">))</span><span class="w">
+</span><span class="n">tracks</span><span class="p">(</span><span class="n">time1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">time2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xlim</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">40</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">theme_tracks_sunset</span><span class="p">()</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="./pages/mydoc/Rgraphics_files/ggbio_align-1.png" width="672" /></p>
+
+<h3 id="plotting-genomic-ranges">Plotting genomic ranges</h3>
+
+<p><code class="highlighter-rouge">GRanges</code> objects are essential for storing alignment or annotation ranges in R/Bioconductor. The following creates a sample <code class="highlighter-rouge">GRanges</code> object and plots its content.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">GenomicRanges</span><span class="p">)</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">1</span><span class="p">);</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">100</span><span class="p">;</span><span class="w"> </span><span class="n">gr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GRanges</span><span class="p">(</span><span class="n">seqnames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"chr1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"chr2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"chr3"</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w"> </span><span class="n">IRanges</span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">300</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="m">70</span><span class="o">:</span><span class="m">75</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)),</span><span class="w"> </span><span class="n">strand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"+"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-"</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnorm</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">),</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rnorm</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> </span><span class="m">30</span><span class="p">),</span><span class="w"> </span><span class="n">sample</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"Normal"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Tumor"</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w"> </span><span class="n">pair</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="nb">letters</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w">
+</span><span class="n">autoplot</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">),</span><span class="w"> </span><span class="n">facets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">seqnames</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="./pages/mydoc/Rgraphics_files/ggbio_granges-1.png" width="672" /></p>
+
+<h3 id="plotting-coverage">Plotting coverage</h3>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">autoplot</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">),</span><span class="w"> </span><span class="n">facets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">seqnames</span><span class="p">,</span><span class="w"> </span><span class="n">stat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"coverage"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>## Scale for 'x' is already present. Adding another scale for 'x', which will replace the existing
+## scale.
+</code></pre>
+</div>
+
+<p><img src="./pages/mydoc/Rgraphics_files/ggbio_coverage-1.png" width="672" /></p>
+
+<h3 id="mirrored-coverage">Mirrored coverage</h3>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">pos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="n">coverage</span><span class="p">(</span><span class="n">gr</span><span class="p">[</span><span class="n">strand</span><span class="p">(</span><span class="n">gr</span><span class="p">)</span><span class="o">==</span><span class="s2">"+"</span><span class="p">]),</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">)</span><span class="w">
+</span><span class="n">pos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">Chr</span><span class="o">=</span><span class="nf">rep</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">pos</span><span class="p">),</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="p">)),</span><span class="w"> </span><span class="n">Strand</span><span class="o">=</span><span class="nf">rep</span><span class="p">(</span><span class="s2">"+"</span><span class="p">,</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">pos</span><span class="p">))),</span><span class="w"> </span><span class="n">Position</span><span class="o">=</span><span class="n">unlist</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span><span class="w"> </span><span class="n">Coverage</span><span class="o">=</span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">pos</span><span class="p">)))</span><span class="w">
+</span><span class="n">neg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="n">coverage</span><span class="p">(</span><span class="n">gr</span><span class="p">[</span><span class="n">strand</span><span class="p">(</span><span class="n">gr</span><span class="p">)</span><span class="o">==</span><span class="s2">"-"</span><span class="p">]),</span><span class="w"> </span><span class="n">as.numeric</span><span class="p">)</span><span class="w">
+</span><span class="n">neg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">Chr</span><span class="o">=</span><span class="nf">rep</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">neg</span><span class="p">),</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="n">neg</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="p">)),</span><span class="w"> </span><span class="n">Strand</span><span class="o">=</span><span class="nf">rep</span><span class="p">(</span><span class="s2">"-"</span><span class="p">,</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">neg</span><span class="p">))),</span><span class="w"> </span><span class="n">Position</span><span class="o">=</span><span class="n">unlist</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">neg</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">x</span><span class="p">))),</span><span class="w"> </span><span class="n">Coverage</span><span class="o">=-</span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">neg</span><span class="p">)))</span><span class="w">
+</span><span class="n">covdf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rbind</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="w"> </span><span class="n">neg</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">(</span><span class="n">covdf</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">Position</span><span class="p">,</span><span class="w"> </span><span class="n">Coverage</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="o">=</span><span class="n">Strand</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+	    </span><span class="n">geom_bar</span><span class="p">(</span><span class="n">stat</span><span class="o">=</span><span class="s2">"identity"</span><span class="p">,</span><span class="w"> </span><span class="n">position</span><span class="o">=</span><span class="s2">"identity"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="n">Chr</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="./pages/mydoc/Rgraphics_files/ggbio_mirrored_coverage-1.png" width="672" /></p>
+
+<h2 id="circular-genome-plots">Circular genome plots</h2>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">ggplot</span><span class="p">(</span><span class="n">gr</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">layout_circle</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seqnames</span><span class="p">),</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rect"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="./pages/mydoc/Rgraphics_files/ggbio_circular1-1.png" width="672" /></p>
+
+<p>More complex circular example</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">seqlengths</span><span class="p">(</span><span class="n">gr</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">400</span><span class="p">,</span><span class="w"> </span><span class="m">500</span><span class="p">,</span><span class="w"> </span><span class="m">700</span><span class="p">)</span><span class="w">
+</span><span class="n">values</span><span class="p">(</span><span class="n">gr</span><span class="p">)</span><span class="o">$</span><span class="n">to.gr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gr</span><span class="p">[</span><span class="n">sample</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">gr</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">gr</span><span class="p">))]</span><span class="w">
+</span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">gr</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">)</span><span class="w">
+</span><span class="n">gr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="w">
+</span><span class="n">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">layout_circle</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ideo"</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gray70"</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">trackWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">layout_circle</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bar"</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">trackWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w">
+                </span><span class="n">aes</span><span class="p">(</span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">score</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">score</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">layout_circle</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"point"</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"red"</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14</span><span class="p">,</span><span class="w">
+                </span><span class="n">trackWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">score</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">layout_circle</span><span class="p">(</span><span class="n">gr</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"link"</span><span class="p">,</span><span class="w"> </span><span class="n">linked.to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"to.gr"</span><span class="p">,</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">trackWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<center><img title="vim-r" src="./pages/mydoc/Rgraphics_files/circularplot.png" /></center>
+
+<h3 id="alignments-and-variants">Alignments and variants</h3>
+
+<p>To make the following example work, please download and unpack this <a href="http://biocluster.ucr.edu/~tgirke/HTML_Presentations/Manuals/Workshop_Dec_12_16_2013/Rgraphics/data.zip">data archive</a> containing GFF, BAM and VCF sample files.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">rtracklayer</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">GenomicFeatures</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">Rsamtools</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">GenomicAlignments</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
+</span><span class="n">ga</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readGAlignments</span><span class="p">(</span><span class="s2">"./data/SRR064167.fastq.bam"</span><span class="p">,</span><span class="w"> </span><span class="n">use.names</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">param</span><span class="o">=</span><span class="n">ScanBamParam</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="n">GRanges</span><span class="p">(</span><span class="s2">"Chr5"</span><span class="p">,</span><span class="w"> </span><span class="n">IRanges</span><span class="p">(</span><span class="m">4000</span><span class="p">,</span><span class="w"> </span><span class="m">8000</span><span class="p">))))</span><span class="w">
+</span><span class="n">p</span><span class="m">1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">autoplot</span><span class="p">(</span><span class="n">ga</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rect"</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="m">2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">autoplot</span><span class="p">(</span><span class="n">ga</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"line"</span><span class="p">,</span><span class="w"> </span><span class="n">stat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"coverage"</span><span class="p">)</span><span class="w">
+</span><span class="n">vcf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readVcf</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s2">"data/varianttools_gnsap.vcf"</span><span class="p">,</span><span class="w"> </span><span class="n">genome</span><span class="o">=</span><span class="s2">"ATH1"</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="m">3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">autoplot</span><span class="p">(</span><span class="n">vcf</span><span class="p">[</span><span class="n">seqnames</span><span class="p">(</span><span class="n">vcf</span><span class="p">)</span><span class="o">==</span><span class="s2">"Chr5"</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"fixed"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xlim</span><span class="p">(</span><span class="m">4000</span><span class="p">,</span><span class="w"> </span><span class="m">8000</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">theme</span><span class="p">(</span><span class="n">legend.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"none"</span><span class="p">,</span><span class="w"> </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_blank</span><span class="p">(),</span><span class="w"> </span><span class="n">axis.ticks.y</span><span class="o">=</span><span class="n">element_blank</span><span class="p">())</span><span class="w">
+</span><span class="n">txdb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">makeTxDbFromGFF</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s2">"./data/TAIR10_GFF3_trunc.gff"</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="o">=</span><span class="s2">"gff3"</span><span class="p">)</span><span class="w">
+</span><span class="n">p</span><span class="m">4</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">autoplot</span><span class="p">(</span><span class="n">txdb</span><span class="p">,</span><span class="w"> </span><span class="n">which</span><span class="o">=</span><span class="n">GRanges</span><span class="p">(</span><span class="s2">"Chr5"</span><span class="p">,</span><span class="w"> </span><span class="n">IRanges</span><span class="p">(</span><span class="m">4000</span><span class="p">,</span><span class="w"> </span><span class="m">8000</span><span class="p">)),</span><span class="w"> </span><span class="n">names.expr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gene_id"</span><span class="p">)</span><span class="w">
+</span><span class="n">tracks</span><span class="p">(</span><span class="n">Reads</span><span class="o">=</span><span class="n">p</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">Coverage</span><span class="o">=</span><span class="n">p</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">Variant</span><span class="o">=</span><span class="n">p</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">Transcripts</span><span class="o">=</span><span class="n">p</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">heights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="m">0.2</span><span class="p">,</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="m">0.35</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ylab</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><img src="./pages/mydoc/Rgraphics_files/ggbio_align_variants-1.png" width="672" /></p>
+
+<h2 id="additional-examples">Additional examples</h2>
+
+<p>See <code class="highlighter-rouge">autoplot</code> demo <a href="http://www.tengfei.name/ggbio/docs/man/autoplot-method.html">here</a></p>
+
+<h2 id="additional-genome-graphics">Additional genome graphics</h2>
+
+<ul>
+  <li><a href="http://www.bioconductor.org/packages/devel/bioc/html/Gviz.html"><code class="highlighter-rouge">Gviz</code></a></li>
+  <li><a href="http://cran.us.r-project.org/web/packages/RCircos/index.html"><code class="highlighter-rouge">RCircos</code></a> (Zhang et al., 2013)</li>
+  <li><a href="http://bioconductor.org/packages/release/bioc/html/GenomeGraphs.html"><code class="highlighter-rouge">Genome Graphs</code></a></li>
+  <li><a href="http://genoplotr.r-forge.r-project.org/"><code class="highlighter-rouge">genoPlotR</code></a></li>
+</ul>
+
+<h2 id="genome-browser-igv">Genome Browser: IGV</h2>
+
+<p>View genome data in IGV</p>
+
+<ul>
+  <li>Download and open <a href="http://software.broadinstitute.org/software/igv/download">IGV</a></li>
+  <li>Select in menu in top left corner <em>A. thaliana</em> (TAIR10)</li>
+  <li>Upload the following indexed/sorted Bam files with <code class="highlighter-rouge">File -&gt; Load from URL...</code></li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>http://faculty.ucr.edu/~tgirke/HTML_Presentations/Manuals/Workshop_Dec_6_10_2012/Rrnaseq/results/SRR064154.fastq.bam
+http://faculty.ucr.edu/~tgirke/HTML_Presentations/Manuals/Workshop_Dec_6_10_2012/Rrnaseq/results/SRR064155.fastq.bam
+http://faculty.ucr.edu/~tgirke/HTML_Presentations/Manuals/Workshop_Dec_6_10_2012/Rrnaseq/results/SRR064166.fastq.bam
+http://faculty.ucr.edu/~tgirke/HTML_Presentations/Manuals/Workshop_Dec_6_10_2012/Rrnaseq/results/SRR064167.fastq.bam
+</code></pre>
+</div>
+
+<ul>
+  <li>To view area of interest, enter its coordinates <code class="highlighter-rouge">Chr1:49,457-51,457</code> in position menu on top.</li>
+</ul>
+
+<center><img title="vim-r" src="./pages/mydoc/Rgraphics_files/igv_peak_3.png" /></center>
+
+<h3 id="create-symbolic-links">Create symbolic links</h3>
+
+<p>For viewing BAM files in IGV as part of <code class="highlighter-rouge">systemPipeR</code> workflows.</p>
+
+<ul>
+  <li><code class="highlighter-rouge">systemPipeR</code>: utilities for building NGS analysis <a href="https://github.com/tgirke/systemPipeR">pipelines</a></li>
+</ul>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"somedir/"</span><span class="p">),</span><span class="w"> 
+            </span><span class="n">urlbase</span><span class="o">=</span><span class="s2">"http://myserver.edu/~username/"</span><span class="p">,</span><span class="w">
+            </span><span class="n">urlfile</span><span class="o">=</span><span class="s2">"IGVurl.txt"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<h3 id="controlling-igv-from-r">Controlling IGV from R</h3>
+
+<p>Note this may not work on all systems.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">SRAdb</span><span class="p">)</span><span class="w">
+</span><span class="n">startIGV</span><span class="p">(</span><span class="s2">"lm"</span><span class="p">)</span><span class="w">
+</span><span class="n">sock</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">IGVsocket</span><span class="p">()</span><span class="w">
+</span><span class="n">session</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">IGVsession</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="n">myurls</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">sessionFile</span><span class="o">=</span><span class="s2">"session.xml"</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">genome</span><span class="o">=</span><span class="s2">"A. thaliana (TAIR10)"</span><span class="p">)</span><span class="w">
+</span><span class="n">IGVload</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="w"> </span><span class="n">session</span><span class="p">)</span><span class="w">
+</span><span class="n">IGVgoto</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="w"> </span><span class="s1">'Chr1:45296-47019'</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br /><center><a href="mydoc_Rgraphics_6.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
+<a href="mydoc_Rgraphics_8.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2017 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Wed May 31 12:32:55 2017<br/> Site last generated: Oct 8, 2017 <br />
+<!--
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+-->
+</div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+
+</body>
+
+</html>

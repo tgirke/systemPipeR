@@ -1,0 +1,46 @@
+##fileformat=VCFv4.1
+##source=VariantAnnotation 1.8.5
+##phasing=unphased
+##fileDate=20131129
+##FORMAT=<ID=AD,Number=2,Type=Integer,Description="Allelic depths (number of reads in each observed allele)">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Total read depth">
+##FORMAT=<ID=FT,Number=1,Type=String,Description="Variant filters">
+##FORMAT=<ID=n.read.pos,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=n.read.pos.ref,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=raw.count,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=raw.count.ref,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=raw.count.total,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=mean.quality,Number=1,Type=Float,Description="">
+##FORMAT=<ID=mean.quality.ref,Number=1,Type=Float,Description="">
+##FORMAT=<ID=count.pos,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=count.pos.ref,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=count.neg,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=count.neg.ref,Number=1,Type=Integer,Description="">
+##FORMAT=<ID=read.pos.mean,Number=1,Type=Float,Description="">
+##FORMAT=<ID=read.pos.mean.ref,Number=1,Type=Float,Description="">
+##FORMAT=<ID=read.pos.var,Number=1,Type=Float,Description="">
+##FORMAT=<ID=read.pos.var.ref,Number=1,Type=Float,Description="">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	gsnap
+Chr1	49080	.	T	C	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,33:33:11:0:35:0:35:30.969696969697:22:0:13:0:23.6:68.04
+Chr1	63526	.	C	T	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,15:15:5:0:16:0:16:32.6:4:0:12:0:15.75:98.4708333333334
+Chr1	63527	.	T	G	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,15:15:5:0:16:0:16:33.2666666666667:4:0:12:0:15.25:92.1041666666667
+Chr1	73838	.	A	G	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,22:22:8:0:24:0:24:33.0454545454545:20:0:4:0:13.2916666666667:45.0272493961353
+Chr2	6110	.	A	T	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,466:466:42:0:498:0:498:31.5751072961373:315:0:183:0:20.9558232931727:91.2880777511961
+Chr2	77574	.	G	A	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,14:14:5:0:14:0:14:32.5714285714286:10:0:4:0:17.2142857142857:86.8222135007849
+Chr2	79137	.	C	A	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,13:13:5:0:13:0:13:32:2:0:11:0:19.9230769230769:253.154339250493
+Chr2	82580	.	C	T	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,48:48:10:0:50:0:50:30.4791666666667:46:0:4:0:22.56:90.8015020408164
+Chr2	82934	.	T	A	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,47:47:11:0:50:0:50:32.9148936170213:34:0:16:0:19.72:100.590987755102
+Chr2	95375	.	C	T	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.mean.ref:read.pos.var	0,146:146:26:1:158:1:159:31.9041095890411:65:1:93:0:15.8354430379747:7:95.7992533451993
+Chr3	44649	.	A	G	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,22:22:5:0:22:0:22:32:17:0:5:0:20.2272727272727:116.714580873672
+Chr3	44729	.	T	G	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,43:43:13:0:44:0:44:32.5116279069767:41:0:3:0:11.9772727272727:47.9635426676917
+Chr3	87665	.	A	G	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,20:20:5:0:21:0:21:33:18:0:3:0:27.6666666666667:59.0055555555556
+Chr4	11538	.	A	C	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,13:13:5:0:13:0:13:32.6923076923077:2:0:11:0:18.5384615384615:153.908777120316
+Chr4	11691	.	T	A	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,28:28:5:0:30:0:30:32.3571428571429:8:0:22:0:19.2333333333333:22.3202681992337
+Chr4	37319	.	G	A	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,160:160:27:0:168:0:169:31.90625:29:0:139:0:18.922619047619:87.1500572409603
+Chr4	38232	.	T	C	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,470:470:31:0:484:0:484:32.6808510638298:21:0:463:0:12.0599173553719:61.5004223671069
+Chr5	6455	.	T	C	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,39:39:11:0:39:0:39:32.4102564102564:2:0:37:0:19.7948717948718:43.8472611509048
+Chr5	77562	.	C	T	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,12:12:5:0:12:0:12:33:7:0:5:0:22.5833333333333:226.265782828283
+Chr5	92898	.	G	T	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,13:13:5:0:13:0:13:31.9230769230769:7:0:6:0:24.5384615384615:97.4472386587771
+Chr5	99467	.	A	G	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,19:19:6:0:19:0:19:32.3684210526316:7:0:12:0:20.0526315789474:59.6141889812249
+ChrM	11749	.	T	G	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,91:91:16:0:97:0:97:31.7362637362637:33:0:64:0:15.4020618556701:83.838990594112
+ChrM	60559	.	C	T	.	.	.	AD:DP:n.read.pos:n.read.pos.ref:raw.count:raw.count.ref:raw.count.total:mean.quality:count.pos:count.pos.ref:count.neg:count.neg.ref:read.pos.mean:read.pos.var	0,8:8:5:0:9:0:9:31.875:4:0:5:0:12.7777777777778:91.3533950617284

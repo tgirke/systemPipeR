@@ -1,0 +1,23 @@
+\BOOKMARK [1][]{section.1}{1 Introduction}{}% 1
+\BOOKMARK [1][]{section.2}{2 Sample definitions and environment settings}{}% 2
+\BOOKMARK [2][]{subsection.2.1}{2.1 Environment settings and input data}{section.2}% 3
+\BOOKMARK [2][]{subsection.2.2}{2.2 Required packages and resources}{section.2}% 4
+\BOOKMARK [2][]{subsection.2.3}{2.3 Experiment definition provided by targets file}{section.2}% 5
+\BOOKMARK [1][]{section.3}{3 Read preprocessing}{}% 6
+\BOOKMARK [2][]{subsection.3.1}{3.1 FASTQ quality report}{section.3}% 7
+\BOOKMARK [1][]{section.4}{4 Alignments}{}% 8
+\BOOKMARK [2][]{subsection.4.1}{4.1 Read mapping with Bowtie2/Tophat2}{section.4}% 9
+\BOOKMARK [2][]{subsection.4.2}{4.2 Read and alignment stats}{section.4}% 10
+\BOOKMARK [2][]{subsection.4.3}{4.3 Create symbolic links for viewing BAM files in IGV}{section.4}% 11
+\BOOKMARK [1][]{section.5}{5 Read quantification per annotation range}{}% 12
+\BOOKMARK [2][]{subsection.5.1}{5.1 Read counting with summarizeOverlaps in parallel mode using multiple cores}{section.5}% 13
+\BOOKMARK [2][]{subsection.5.2}{5.2 Sample-wise correlation analysis}{section.5}% 14
+\BOOKMARK [1][]{section.6}{6 Analysis of differentially expressed genes with edgeR}{}% 15
+\BOOKMARK [2][]{subsection.6.1}{6.1 GO term enrichment analysis of DEGs}{section.6}% 16
+\BOOKMARK [3][]{subsubsection.6.1.1}{6.1.1 Obtain gene-to-GO mappings}{subsection.6.1}% 17
+\BOOKMARK [3][]{subsubsection.6.1.2}{6.1.2 Batch GO term enrichment analysis}{subsection.6.1}% 18
+\BOOKMARK [3][]{subsubsection.6.1.3}{6.1.3 Plot batch GO term results}{subsection.6.1}% 19
+\BOOKMARK [1][]{section.7}{7 Clustering and heat maps}{}% 20
+\BOOKMARK [1][]{section.8}{8 Version Information}{}% 21
+\BOOKMARK [1][]{section.9}{9 Funding}{}% 22
+\BOOKMARK [1][]{section.10}{10 References}{}% 23

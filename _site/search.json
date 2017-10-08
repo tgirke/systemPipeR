@@ -1,0 +1,1599 @@
+[
+
+
+
+
+
+
+{
+"title": "Project Website of systemPipeR Package",
+"tags": "",
+"keywords": "",
+"url": "index.html",
+"summary": "Website of the systemPipeR project. For questions email <a href="http://girke.bioinformatics.ucr.edu/">Thomas Girke</a>."
+}
+,
+
+
+
+{
+"title": "Programming in R  &lt;br&gt; &lt;br&gt; 1. Overview",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Control Structures",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Loops",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Functions",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Useful Utilities",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Running R Scripts",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. Building R Packages",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. Programming Exercises",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "9. Homework 5",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "10. Session Info",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "11. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Programming_in_R_11.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Introduction to R  &lt;br&gt; &lt;br&gt; 1. Overview",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. R Package Repositories",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Installation of R Packages",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Getting Around",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Basic Syntax",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Data Types",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. Data Objects",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. Important Utilities",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "9. Operators and Calculations",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "10. Reading and Writing External Data",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "11. Useful R Functions",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_11.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "12. dplyr Environment",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_12.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "13. SQLite Databases",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_13.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "14. Graphics in R",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_14.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "15. Analysis Routine",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_15.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "16. R Markdown",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_16.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "17. Shiny Web Apps",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_17.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "18. Session Info",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_18.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "19. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rbasics_19.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Cluster Analysis in R  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rclustering_1.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Data Preprocessing",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rclustering_2.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Clustering Algorithms",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rclustering_3.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Clustering Exercises",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rclustering_4.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Version Information",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rclustering_5.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rclustering_6.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Graphics and Data Visualization in R  &lt;br&gt; &lt;br&gt; 1. Overview",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_1.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Base Graphics",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_2.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Grid Graphics",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_3.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. lattice Graphics",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_4.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. ggplot2 Graphics",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_5.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Specialty Graphics",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_6.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. Genome Graphics",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_7.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rgraphics_8.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "NGS Analysis Basics &lt;br&gt; &lt;br&gt; 1. Overview",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Package Requirements",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Strings in R Base",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Sequences in Bioconductor",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. NGS Sequences",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Range Operations",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. Transcript Ranges",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. Homework 6",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "9. Session Info",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "10. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_Rsequences_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "HW1 - Online Databases and Software",
+"tags": "",
+"keywords": "",
+"url": "mydoc_homework_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "HW2 - Introduction to Biocluster and Linux",
+"tags": "",
+"keywords": "",
+"url": "mydoc_homework_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "HW3 - Introduction to R",
+"tags": "",
+"keywords": "",
+"url": "mydoc_homework_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "HW4 - Pairwise Alignments",
+"tags": "",
+"keywords": "",
+"url": "mydoc_homework_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Internal Resources",
+"tags": "",
+"keywords": "",
+"url": "mydoc_internal.html",
+"summary": "This page provides a link to password protected resources that are only accessible to students of this class."
+}
+,
+
+
+
+{
+"title": "Student Paper Presentations",
+"tags": "",
+"keywords": "",
+"url": "mydoc_paper_presentations.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "ChIP-Seq1 - Motif Prediction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_project_chipseq1.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "ChIP-Seq2 - Peak Callers",
+"tags": "",
+"keywords": "",
+"url": "mydoc_project_chipseq2.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Data Management for Course Projects",
+"tags": "",
+"keywords": "",
+"url": "mydoc_project_data.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Overview of Course Projects",
+"tags": "",
+"keywords": "",
+"url": "mydoc_project_intro.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "RNA-Seq1 - RNA-Seq Aligners",
+"tags": "",
+"keywords": "",
+"url": "mydoc_project_rnaseq1.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "RNA-Seq2 - RNA-Seq Aligners",
+"tags": "",
+"keywords": "",
+"url": "mydoc_project_rnaseq2.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "VAR-Seq1 - Functional Prediction of Variants",
+"tags": "",
+"keywords": "",
+"url": "mydoc_project_varseq1.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Course Schedule",
+"tags": "",
+"keywords": "",
+"url": "mydoc_schedule.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Scroll layout",
+"tags": "special_layouts",
+"keywords": "json, scrolling, scrollto, jquery plugin",
+"url": "jsmydoc_scroll.html",
+"summary": "This page demonstrates how you the integration of a script called ScrollTo, which is used here to link definitions of a JSON code sample to a list of definitions for that particular term. The scenario here is that the JSON blocks are really long, with extensive nesting and subnesting, which makes it difficult for tables below the JSON to adequately explain the term in a usable way."
+}
+,
+
+
+
+{
+"title": "Course Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Molecular Biology Essentials",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Databases and Software for Genome Biology",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Sequencing Technologies",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Introduction to R",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Sequence Alignments and Similarity Searching",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Programming in R",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Multiple Sequence Alignments",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Short Read Alignments",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Sequence Analysis with R and Bioconductor",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Analysis of Gene Expression Data",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_11.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Introduction to NGS Workflows",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_12.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "ChIP-Seq Overview",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_13.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "VAR-Seq Overview",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_14.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Assembly of Genomes and Transcriptomes",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_15.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Gene Annotation, Ontologies and Enrichment Methods",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_16.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Cluster Analysis",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_17.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Profile HMMs for Sequence Family Modeling",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_18.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Introduction to Phylogenetics",
+"tags": "",
+"keywords": "",
+"url": "mydoc_slides_19.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Syllabus - GEN242",
+"tags": "",
+"keywords": "",
+"url": "mydoc_syllabus.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "ChIP-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Workflow environment",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Read preprocessing",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Alignments",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Utilities for coverage data",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Peak calling with MACS2",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. Annotate peaks with genomic context",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. Count reads overlapping peaks",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "9. Differential binding analysis",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "10. GO term enrichment analysis",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "11. Motif analysis",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_11.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "12. Version Information",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_12.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "13. Funding",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_13.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "14. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_14.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "15. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeChIPseq_15.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "RNA-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Samples and environment settings",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Read preprocessing",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Alignments",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Read quantification",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Analysis of DEGs",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. GO term enrichment analysis",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. Clustering and heat maps",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "9. Version Information",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "10. Funding",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "11. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRNAseq_11.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Designing and Running NGS Workflows  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeR_1.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Getting Started",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeR_2.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Workflow overview",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeR_3.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Workflow templates",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeR_4.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Version information",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeR_5.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeR_6.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "VAR-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Workflow environment",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Read preprocessing",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Alignments",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Variant calling",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Filter variants",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. Annotate filtered variants",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. Combine annotation results among samples",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "9. Summary statistics of variants",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "VAR-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_1.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "10. Venn diagram of variants",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "11. Plot variants programmatically",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_11.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "12. Version Information",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_12.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "13. Funding",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_13.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "14. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_14.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Funding",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_2.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeVARseq_3.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "GitHub Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_tutorial_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Introduction to HPCC Cluster and Linux",
+"tags": "",
+"keywords": "",
+"url": "mydoc_tutorial_02.html",
+"summary": ""
+}
+,
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+"title": "Sample post",
+"tags": "newsgetting_started",
+"keywords": "",
+"url": "samplepost.html",
+"summary": "This is some summary frontmatter for my sample post."
+}
+,
+
+
+{
+"title": "Welcome to Jekyll!",
+"tags": "news",
+"keywords": "",
+"url": "myupdate.html",
+"summary": ""
+}
+,
+
+
+{
+"title": "Test post from last year",
+"tags": "news",
+"keywords": "",
+"url": "test-post-from-last-year.html",
+"summary": ""
+}
+
+
+
+]

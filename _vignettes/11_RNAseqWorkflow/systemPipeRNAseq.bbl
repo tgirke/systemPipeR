@@ -1,0 +1,66 @@
+\begin{thebibliography}{6}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Girke(2014)]{Girke2014-oy}
+Thomas Girke.
+\newblock {systemPipeR}: {NGS} workflow and report generation environment,
+  28~June 2014.
+\newblock URL \url{https://github.com/tgirke/systemPipeR}.
+
+\bibitem[Howard et~al.(2013)Howard, Hu, Babaoglu, Chandra, Borghi, Tan, He,
+  Winter-Sederoff, Gassmann, Veronese, and Heber]{Howard2013-fq}
+Brian~E Howard, Qiwen Hu, Ahmet~Can Babaoglu, Manan Chandra, Monica Borghi,
+  Xiaoping Tan, Luyan He, Heike Winter-Sederoff, Walter Gassmann, Paola
+  Veronese, and Steffen Heber.
+\newblock High-throughput {RNA} sequencing of pseudomonas-infected arabidopsis
+  reveals hidden transcriptome complexity and novel splice variants.
+\newblock \emph{PLoS One}, 8\penalty0 (10):\penalty0 e74183, 1~October 2013.
+\newblock ISSN 1932-6203.
+\newblock \doi{10.1371/journal.pone.0074183}.
+\newblock URL \url{http://dx.doi.org/10.1371/journal.pone.0074183}.
+
+\bibitem[Kim et~al.(2013)Kim, Pertea, Trapnell, Pimentel, Kelley, and
+  Salzberg]{Kim2013-vg}
+Daehwan Kim, Geo Pertea, Cole Trapnell, Harold Pimentel, Ryan Kelley, and
+  Steven~L Salzberg.
+\newblock {TopHat2}: accurate alignment of transcriptomes in the presence of
+  insertions, deletions and gene fusions.
+\newblock \emph{Genome Biol.}, 14\penalty0 (4):\penalty0 R36, 25~April 2013.
+\newblock ISSN 1465-6906.
+\newblock \doi{10.1186/gb-2013-14-4-r36}.
+\newblock URL \url{http://dx.doi.org/10.1186/gb-2013-14-4-r36}.
+
+\bibitem[Langmead and Salzberg(2012)]{Langmead2012-bs}
+Ben Langmead and Steven~L Salzberg.
+\newblock Fast gapped-read alignment with bowtie 2.
+\newblock \emph{Nat. Methods}, 9\penalty0 (4):\penalty0 357--359, April 2012.
+\newblock ISSN 1548-7091.
+\newblock \doi{10.1038/nmeth.1923}.
+\newblock URL \url{http://dx.doi.org/10.1038/nmeth.1923}.
+
+\bibitem[Lawrence et~al.(2013)Lawrence, Huber, Pag\`{e}s, Aboyoun, Carlson,
+  Gentleman, Morgan, and Carey]{Lawrence2013-kt}
+Michael Lawrence, Wolfgang Huber, Herv\'{e} Pag\`{e}s, Patrick Aboyoun, Marc
+  Carlson, Robert Gentleman, Martin~T Morgan, and Vincent~J Carey.
+\newblock Software for computing and annotating genomic ranges.
+\newblock \emph{PLoS Comput. Biol.}, 9\penalty0 (8):\penalty0 e1003118,
+  8~August 2013.
+\newblock ISSN 1553-734X.
+\newblock \doi{10.1371/journal.pcbi.1003118}.
+\newblock URL \url{http://dx.doi.org/10.1371/journal.pcbi.1003118}.
+
+\bibitem[Robinson et~al.(2010)Robinson, McCarthy, and Smyth]{Robinson2010-uk}
+M~D Robinson, D~J McCarthy, and G~K Smyth.
+\newblock edger: a bioconductor package for differential expression analysis of
+  digital gene expression data.
+\newblock \emph{Bioinformatics}, 26\penalty0 (1):\penalty0 139--140, January
+  2010.
+\newblock ISSN 1367-4803.
+\newblock \doi{10.1093/bioinformatics/btp616}.
+\newblock URL \url{http://dx.doi.org/10.1093/bioinformatics/btp616}.
+
+\end{thebibliography}

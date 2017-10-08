@@ -1,0 +1,698 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: sidebar
+  product: <center><font color="#26466D" size="6">systemPipeR</font></center>
+  version: <center><font color="#8b9299" size="3">...</font></center>
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage
+      output: pdf
+      type: frontmatter
+
+  - title: Home
+    output: web, pdf
+    folderitems:
+
+    - title: Introduction
+      url: /index.html
+      output: web, pdf
+      type: homepage
+
+    - title: Syllabus
+      url: /mydoc_syllabus.html
+      output: web, pdf
+  
+  - title: Internal
+    output: web, pdf
+    folderitems:
+
+    - title: Internal Resources
+      url: /mydoc_internal.html
+      output: web, pdf
+
+  - title: Schedule
+    output: web, pdf
+    folderitems:
+
+    - title: Course Schedule
+      url: /mydoc_schedule.html
+      output: web, pdf
+  
+  - title: Lecture Slides
+    output: web
+    folderitems:
+
+    - title: Course Introduction
+      url: /mydoc_slides_01.html
+      output: web
+    
+    - title: Molbiol Basics
+      url: /mydoc_slides_02.html
+      output: web
+    
+    - title: Databases and Software
+      url: /mydoc_slides_03.html
+      output: web
+    
+    - title: DNA Sequencing
+      url: /mydoc_slides_04.html
+      output: web
+    
+    - title: Introduction to R
+      url: /mydoc_slides_05.html
+      output: web
+    
+    - title: Sequence Alignments
+      url: /mydoc_slides_06.html
+      output: web
+    
+    - title: Programming in R
+      url: /mydoc_slides_07.html
+      output: web
+    
+    - title: Multiple Alignments
+      url: /mydoc_slides_08.html
+      output: web
+    
+    - title: Short Read Alignments
+      url: /mydoc_slides_09.html
+      output: web
+    
+    - title: NGS Analysis Basics
+      url: /mydoc_slides_10.html
+      output: web
+    
+    - title: Gene Expression Analysis
+      url: /mydoc_slides_11.html
+      output: web
+    
+    - title: NGS Workflows
+      url: /mydoc_slides_12.html
+      output: web
+    
+    - title: ChIP-Seq Overview
+      url: /mydoc_slides_13.html
+      output: web
+    
+    - title: VAR-Seq Overview
+      url: /mydoc_slides_14.html
+      output: web
+    
+    - title: Sequence Assembly
+      url: /mydoc_slides_15.html
+      output: web
+    
+    - title: Gene Annotation and Ontologies
+      url: /mydoc_slides_16.html
+      output: web
+    
+    - title: Cluster Analysis
+      url: /mydoc_slides_17.html
+      output: web
+    
+    - title: Profile HMMs
+      url: /mydoc_slides_18.html
+      output: web
+    
+    - title: Introduction to Phylogenetics
+      url: /mydoc_slides_19.html
+      output: web
+    
+  - title: Homework
+    output: web
+    folderitems:
+    
+    - title: HW1 - Online Tools
+      url: /mydoc_homework_01.html
+      output: web
+    
+    - title: HW2 - Biocluster/Linux
+      url: /mydoc_homework_02.html
+      output: web
+      
+    - title: HW3 - Introduction to R
+      url: /mydoc_homework_03.html
+      output: web
+    
+    - title: HW4 - Pairwise Alignments
+      url: /mydoc_homework_04.html
+      output: web
+    
+    - title: HW5 - Programming in R
+      url: /mydoc_Programming_in_R_09.html
+      output: web
+    
+    - title: HW6 - Sequence Analysis
+      url: /mydoc_Rsequences_08.html
+      output: web
+  
+  - title: GitHub
+    output: web
+    folderitems:
+    
+    - title: Table of Content
+      url: /mydoc_tutorial_01.html
+      output: web
+    
+    - title: GitHub in GEN242
+      url: /mydoc_tutorial_01.html#github-in-gen242
+      output: web
+    
+    - title: Installation
+      url: /mydoc_tutorial_01.html#installing-git
+      output: web
+    
+    - title: Git from Command-line
+      url: /mydoc_tutorial_01.html#git-basics-from-command-line
+      output: web
+    
+    - title: GitHub from Command-line
+      url: /mydoc_tutorial_01.html#github-basics-from-command-line
+      output: web
+    
+    - title: GitHub from RStudio
+      url: /mydoc_tutorial_01.html#using-github-from-rstudio
+      output: web
+
+  - title: Linux & HPCC Cluster
+    output: web
+    folderitems:
+    
+    - title: Table of Content
+      url: /mydoc_tutorial_02.html
+      output: web
+    
+    - title: HPCC Cluster
+      url: /mydoc_tutorial_02.html#hpcc-cluster-overview
+      output: web
+    
+    - title: Linux Basics
+      url: /mydoc_tutorial_02.html#linux-basics
+      output: web
+    
+    - title: Software & Module System
+      url: /mydoc_tutorial_02.html#software-and-module-system
+      output: web
+    
+    - title: Big Data Storage
+      url: /mydoc_tutorial_02.html#big-data-storage
+      output: web
+    
+    - title: Queueing System Slurm
+      url: /mydoc_tutorial_02.html#queuing-system-slurm
+      output: web
+    
+    - title: Text Editors
+      url: /mydoc_tutorial_02.html#textcode-editors
+      output: web
+    
+    - title: Vim-R-Tmux
+      url: /mydoc_tutorial_02.html#vim-r-tmux-essentials
+      output: web
+    
+    - title: Nvim-R-Tmux
+      url: /mydoc_tutorial_02.html#nvim-r-tmux
+      output: web
+    
+  - title: Introduction to R
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Overview
+      url: /mydoc_Rbasics_01.html
+      output: web
+
+    - title: 2. R Package Repositories
+      url: /mydoc_Rbasics_02.html
+      output: web
+
+    - title: 3. Installation of R Packages
+      url: /mydoc_Rbasics_03.html
+      output: web
+
+    - title: 4. Getting Around
+      url: /mydoc_Rbasics_04.html
+      output: web
+
+    - title: 5. Basic Syntax
+      url: /mydoc_Rbasics_05.html
+      output: web
+
+    - title: 6. Data Types 
+      url: /mydoc_Rbasics_06.html
+      output: web
+
+    - title: 7. Data Objects
+      url: /mydoc_Rbasics_07.html
+      output: web
+
+    - title: 8. Important Utilities
+      url: /mydoc_Rbasics_08.html
+      output: web
+
+    - title: 9. Operators and Calculations
+      url: /mydoc_Rbasics_09.html
+      output: web
+
+    - title: 10. Reading and Writing External Data
+      url: /mydoc_Rbasics_10.html
+      output: web
+
+    - title: 11. Useful R Functions
+      url: /mydoc_Rbasics_11.html
+      output: web
+
+    - title: 12. dplyr Environment
+      url: /mydoc_Rbasics_12.html
+      output: web
+
+    - title: 13. SQLite Databases
+      url: /mydoc_Rbasics_13.html
+      output: web
+
+    - title: 14. Graphics in R
+      url: /mydoc_Rbasics_14.html
+      output: web
+
+    - title: 15. Analysis Routine
+      url: /mydoc_Rbasics_15.html
+      output: web
+
+    - title: 16. R Markdown
+      url: /mydoc_Rbasics_16.html
+      output: web
+
+    - title: 17. Shiny Web Apps
+      url: /mydoc_Rbasics_17.html
+      output: web
+
+    - title: 18. Session Info
+      url: /mydoc_Rbasics_18.html
+      output: web
+
+    - title: 19. References
+      url: /mydoc_Rbasics_19.html
+      output: web
+
+  - title: Programming in R
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Overview
+      url: /mydoc_Programming_in_R_01.html
+      output: web
+
+    - title: 2. Control Structures
+      url: /mydoc_Programming_in_R_02.html
+      output: web
+
+    - title: 3. Loops
+      url: /mydoc_Programming_in_R_03.html
+      output: web
+
+    - title: 4. Functions
+      url: /mydoc_Programming_in_R_04.html
+      output: web
+
+    - title: 5. Useful Utilities
+      url: /mydoc_Programming_in_R_05.html
+      output: web
+
+    - title: 6. Running R Scripts
+      url: /mydoc_Programming_in_R_06.html
+      output: web
+
+    - title: 7. Building R Packages
+      url: /mydoc_Programming_in_R_07.html
+      output: web
+
+    - title: 8. Programming Exercises
+      url: /mydoc_Programming_in_R_08.html
+      output: web
+
+    - title: 9. Homework 5
+      url: /mydoc_Programming_in_R_09.html
+      output: web
+
+    - title: 10. Session Info
+      url: /mydoc_Programming_in_R_10.html
+      output: web
+
+    - title: 11. References
+      url: /mydoc_Programming_in_R_11.html
+      output: web
+
+  - title: NGS Analysis Basics
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Overview
+      url: /mydoc_Rsequences_01.html
+      output: web
+
+    - title: 2. Package Requirements
+      url: /mydoc_Rsequences_02.html
+      output: web
+
+    - title: 3. Strings in R Base
+      url: /mydoc_Rsequences_03.html
+      output: web
+
+    - title: 4. Sequences in Bioconductor
+      url: /mydoc_Rsequences_04.html
+      output: web
+
+    - title: 5. NGS Sequences
+      url: /mydoc_Rsequences_05.html
+      output: web
+
+    - title: 6. Range Operations  
+      url: /mydoc_Rsequences_06.html
+      output: web
+
+    - title: 7. Transcript Ranges
+      url: /mydoc_Rsequences_07.html
+      output: web
+
+    - title: 8. Homework 6
+      url: /mydoc_Rsequences_08.html
+      output: web
+
+    - title: 9. Session Info
+      url: /mydoc_Rsequences_09.html
+      output: web
+
+    - title: 10. References
+      url: /mydoc_Rsequences_10.html
+      output: web
+
+  - title: NGS Workflow Overview
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Introduction
+      url: /mydoc_systemPipeR_1.html
+      output: web
+
+    - title: 2. Getting Started
+      url: /mydoc_systemPipeR_2.html
+      output: web
+
+    - title: 3. Workflow overview
+      url: /mydoc_systemPipeR_3.html
+      output: web
+
+    - title: 4. Workflow templates
+      url: /mydoc_systemPipeR_4.html
+      output: web
+
+    - title: 5. Version information
+      url: /mydoc_systemPipeR_5.html
+      output: web
+
+    - title: 6. References
+      url: /mydoc_systemPipeR_6.html
+      output: web
+
+  - title: RNA-Seq Workflow
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Introduction
+      url: /mydoc_systemPipeRNAseq_01.html
+      output: web
+
+    - title: 2. Samples and environment settings
+      url: /mydoc_systemPipeRNAseq_02.html
+      output: web
+
+    - title: 3. Read preprocessing
+      url: /mydoc_systemPipeRNAseq_03.html
+      output: web
+
+    - title: 4. Alignments
+      url: /mydoc_systemPipeRNAseq_04.html
+      output: web
+
+    - title: 5. Read quantification
+      url: /mydoc_systemPipeRNAseq_05.html
+      output: web
+
+    - title: 6. Analysis of DEGs
+      url: /mydoc_systemPipeRNAseq_06.html
+      output: web
+
+    - title: 7. GO term enrichment analysis
+      url: /mydoc_systemPipeRNAseq_07.html
+      output: web
+
+    - title: 8. Clustering and heat maps
+      url: /mydoc_systemPipeRNAseq_08.html
+      output: web
+
+    - title: 9. Version Information
+      url: /mydoc_systemPipeRNAseq_09.html
+      output: web
+
+    - title: 10. Funding
+      url: /mydoc_systemPipeRNAseq_10.html
+      output: web
+
+    - title: 11. References
+      url: /mydoc_systemPipeRNAseq_11.html
+      output: web
+
+  - title: ChIP-Seq Workflow
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Introduction
+      url: /mydoc_systemPipeChIPseq_01.html
+      output: web
+
+    - title: 2. Workflow environment
+      url: /mydoc_systemPipeChIPseq_02.html
+      output: web
+
+    - title: 3. Read preprocessing
+      url: /mydoc_systemPipeChIPseq_03.html
+      output: web
+
+    - title: 4. Alignments
+      url: /mydoc_systemPipeChIPseq_04.html
+      output: web
+
+    - title: 5. Utilities for coverage data
+      url: /mydoc_systemPipeChIPseq_05.html
+      output: web
+
+    - title: 6. Peak calling with MACS2
+      url: /mydoc_systemPipeChIPseq_06.html
+      output: web
+
+    - title: 7. Annotate peaks with genomic context
+      url: /mydoc_systemPipeChIPseq_07.html
+      output: web
+
+    - title: 8. Count reads overlapping peaks
+      url: /mydoc_systemPipeChIPseq_08.html
+      output: web
+
+    - title: 9. Differential binding analysis
+      url: /mydoc_systemPipeChIPseq_09.html
+      output: web
+
+    - title: 10. GO term enrichment analysis
+      url: /mydoc_systemPipeChIPseq_10.html
+      output: web
+
+    - title: 11. Motif analysis
+      url: /mydoc_systemPipeChIPseq_11.html
+      output: web
+
+    - title: 12. Version Information
+      url: /mydoc_systemPipeChIPseq_12.html
+      output: web
+
+    - title: 13. Funding
+      url: /mydoc_systemPipeChIPseq_13.html
+      output: web
+
+    - title: 14. References
+      url: /mydoc_systemPipeChIPseq_14.html
+      output: web
+
+  - title: VAR-Seq Workflow
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Introduction
+      url: /mydoc_systemPipeVARseq_01.html
+      output: web
+
+    - title: 2. Workflow environment
+      url: /mydoc_systemPipeVARseq_02.html
+      output: web
+
+    - title: 3. Read preprocessing
+      url: /mydoc_systemPipeVARseq_03.html
+      output: web
+
+    - title: 4. Alignments
+      url: /mydoc_systemPipeVARseq_04.html
+      output: web
+
+    - title: 5. Variant calling
+      url: /mydoc_systemPipeVARseq_05.html
+      output: web
+
+    - title: 6. Filter variants
+      url: /mydoc_systemPipeVARseq_06.html
+      output: web
+
+    - title: 7. Annotate filtered variants
+      url: /mydoc_systemPipeVARseq_07.html
+      output: web
+
+    - title: 8. Combine annotation results among samples
+      url: /mydoc_systemPipeVARseq_08.html
+      output: web
+
+    - title: 9. Summary statistics of variants
+      url: /mydoc_systemPipeVARseq_09.html
+      output: web
+
+    - title: 10. Venn diagram of variants
+      url: /mydoc_systemPipeVARseq_10.html
+      output: web
+
+    - title: 11. Plot variants programmatically 
+      url: /mydoc_systemPipeVARseq_11.html
+      output: web
+
+    - title: 12. Version Information
+      url: /mydoc_systemPipeVARseq_12.html
+      output: web
+
+    - title: 13. Funding
+      url: /mydoc_systemPipeVARseq_13.html
+      output: web
+
+    - title: 14. References
+      url: /mydoc_systemPipeVARseq_14.html
+      output: web
+
+  - title: Graphics and Visualization
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Overview
+      url: /mydoc_Rgraphics_1.html
+      output: web
+
+    - title: 2. Base Graphics
+      url: /mydoc_Rgraphics_2.html
+      output: web
+
+    - title: 3. Grid Graphics
+      url: /mydoc_Rgraphics_3.html
+      output: web
+
+    - title: 4. lattice Graphics
+      url: /mydoc_Rgraphics_4.html
+      output: web
+
+    - title: 5. ggplot2 Graphics
+      url: /mydoc_Rgraphics_5.html
+      output: web
+
+    - title: 6. Specialty Graphics
+      url: /mydoc_Rgraphics_6.html
+      output: web
+
+    - title: 7. Genome Graphics
+      url: /mydoc_Rgraphics_7.html
+      output: web
+
+    - title: 8. References
+      url: /mydoc_Rgraphics_8.html
+      output: web
+
+  - title: Cluster Analysis
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Introduction
+      url: /mydoc_Rclustering_1.html
+      output: web
+
+    - title: 2. Data Preprocessing
+      url: /mydoc_Rclustering_2.html
+      output: web
+
+    - title: 3. Clustering Algorithms
+      url: /mydoc_Rclustering_3.html
+      output: web
+
+    - title: 4. Clustering Exercises
+      url: /mydoc_Rclustering_4.html
+      output: web
+
+    - title: 5. Version Information
+      url: /mydoc_Rclustering_5.html
+      output: web
+
+    - title: 6. References
+      url: /mydoc_Rclustering_6.html
+      output: web
+
+  - title: Paper Presentations
+    output: web
+    folderitems:
+    
+    - title: Paper Presentations
+      url: /mydoc_paper_presentations.html
+      output: web
+
+  - title: Course Projects
+    output: web
+    folderitems:
+    
+    - title: Overview
+      url: /mydoc_project_intro.html
+      output: web
+    
+    - title: ChIP-Seq1 - Motif Prediction
+      url: /mydoc_project_chipseq1.html
+      output: web
+    
+    - title: ChIP-Seq2 - Peak Callers
+      url: /mydoc_project_chipseq2.html
+      output: web
+    
+    - title: RNA-Seq1 - Aligners
+      url: /mydoc_project_rnaseq1.html
+      output: web
+    
+    - title: RNA-Seq2 - DEG Methods
+      url: /mydoc_project_rnaseq2.html
+      output: web
+    
+    - title: VAR-Seq1 - Functional Prediction
+      url: /mydoc_project_varseq1.html
+      output: web
+    
+    - title: Project Data
+      url: /mydoc_project_data.html
+      output: web
+    

@@ -1,0 +1,883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  
+  <url>
+    <loc>http://localhost:4000/samplepost.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/myupdate.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/test-post-from-last-year.html</loc>
+  </url>
+  
+  
+
+
+  
+  
+  
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/index.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Programming_in_R_11.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_11.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_12.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_13.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_14.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_15.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_16.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_17.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_18.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rbasics_19.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rclustering_1.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rclustering_2.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rclustering_3.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rclustering_4.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rclustering_5.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rclustering_6.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_1.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_2.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_3.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_4.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_5.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_6.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_7.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rgraphics_8.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_Rsequences_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_homework_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_homework_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_homework_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_homework_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_internal.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_paper_presentations.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_project_chipseq1.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_project_chipseq2.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_project_data.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_project_intro.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_project_rnaseq1.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_project_rnaseq2.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_project_varseq1.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_schedule.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/js/mydoc_scroll.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_11.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_12.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_13.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_14.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_15.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_16.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_17.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_18.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_slides_19.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_syllabus.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_11.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_12.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_13.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_14.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeChIPseq_15.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRNAseq_11.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeR_1.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeR_2.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeR_3.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeR_4.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeR_5.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeR_6.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_1.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_11.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_12.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_13.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_14.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_2.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeVARseq_3.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_tutorial_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_tutorial_02.html</loc>
+  </url>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</urlset>

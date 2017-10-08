@@ -1,0 +1,797 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Latex Beamer Slide Presentation %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% (1) Beamer installation
+% Download the following 3 packages from 
+%       http://sourceforge.net/project/showfiles.php?group_id=92412
+% and save them in texmf tree of your home directory like this
+% (a) latex-beamer goes in      ~/texmf/tex/latex/beamer 
+% (b) pgf goes in               ~/texmf/tex/latex/pgf 
+% (c) xcolor goes in            ~/texmf/tex/latex/xcolor
+
+% (2) Beamer usage
+% Manual for Beamer and Prosper: http://latex.perseguers.ch/contrib/presentations/guidelines.pdf
+% Great quick start: http://www.math.umbc.edu/~rouben/beamer/quickstart.html 
+% Examples: http://latex-beamer.sourceforge.net/ 
+% Example: http://www-verimag.imag.fr/~lmorel/html/beamer.html
+% Manual: /home/tgirke/texmf/tex/latex/beamer/latex-beamer-3.06/doc/beameruserguide.pdf
+% Print handouts: cp myslides.pdf zzz.pdf; pdftops -expand zzz.pdf; psnup -4 -b6mm -f zzz.ps > zzzhandouts.ps; ps2pdf zzzhandouts.ps
+% generate PDF slide show with command:
+% pdflatex clustering.tex; bibtex clustering; pdflatex clustering.tex
+% echo 'Sweave("clustering.Rnw")' | R --slave; echo 'Stangle("clustering.Rnw")' | R --slave; pdflatex clustering.tex; bibtex clustering; pdflatex clustering.tex
+
+\documentclass{beamer}
+% Load a theme (graphics, colors,...) for the presentation
+%\usepackage{beamerthemelined}
+%\usepackage{beamerthemetree}
+%\usetheme{default}
+\usetheme{umbc2}
+%\usepackage{beamerthemeclassic}
+
+% BibTex Settings
+\usepackage{natbib}
+\renewcommand\refname{References and Books} % Defines title of bibliography
+
+% For images:
+\usepackage{graphicx}
+% For color in text
+\usepackage{color}
+
+% For wrapping long URLs properly (may not be necessary)
+\usepackage{url}
+
+% Define comment command, which allows to comment out text with this syntax: \comment{my comment}
+\newcommand{\comment}[1]{}
+
+% Use UMBC theme collection. Download theme from: http://www.math.umbc.edu/~rouben/beamer/beamer-umbc.tar.gz
+\useoutertheme{umbcfootline} 
+% Define footnote line, see details: http://www.math.umbc.edu/~rouben/beamer/quickstart-Z-H-9.html#node_sec_9
+\setfootline{\inserttitle \hfill \textit{\insertsection} \hfill \textit{\insertsubsection} \hfill Slide \insertframenumber/\inserttotalframenumber}
+
+% BibTex Settings
+\usepackage{natbib}
+\renewcommand\refname{Bibliography} % Defines title of bibliography   
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+% Increase print area on slides
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}}
+
+% Sweave settings
+\SweaveOpts{echo=FALSE}
+\usepackage{listings}
+
+\hypersetup{pdfpagemode=FullScreen}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Clustering and Data Mining}
+\subtitle{Data Analysis in Genome Biology \\GEN242}
+\author{Thomas Girke}
+\date{May 7, 2015}
+
+\begin{document}
+\SweaveOpts{engine=R,eps=FALSE,pdf=TRUE,strip.white=all}
+\SweaveOpts{prefix=TRUE,prefix.string=fig-,include=TRUE}
+\setkeys{Gin}{width=0.5\textwidth}
+\frame{\titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Creates Separate Outline Slide at Beginning
+%\section{Outline}
+\frame{\tableofcontents}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Define to generate outline slide automatically at start of every new section
+\AtBeginSection[]
+{
+   \begin{frame}
+       \frametitle{Outline}
+       \tableofcontents[currentsection]
+   \end{frame}
+}
+% Same effect at subsection level
+%\AtBeginSubsection[]
+%{
+%   \begin{frame}
+%       \frametitle{Outline}
+%       \tableofcontents[currentsection,currentsubsection]
+%   \end{frame}
+%}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{What is Clustering?}
+\begin{itemize}
+	\item Clustering is the classification of data objects into similarity groups (clusters) according to a defined distance measure. 
+	\vspace{0.3cm}
+	\item It is used in many fields, such as machine learning, data mining, pattern recognition, image analysis, genomics, systems biology, etc. 
+	\vspace{0.3cm}
+	\item Machine learning typically regards data clustering as a form of unsupervised learning.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Why Clustering and Data Mining in R?}
+\begin{itemize}
+	\item Efficient data structures and functions for clustering
+	\item Reproducible and programmable
+	\item Comprehensive set of clustering and machine learning libraries 
+	\item Integration with many other data analysis tools
+\end{itemize}
+\begin{itemize}
+        \item[] \hspace{-0.9cm}\textcolor{blue}{Useful Links}
+        \item Cluster Task Views \href{http://cran.cnr.berkeley.edu/web/views/Cluster.html}{{\beamerbutton{Link}}}
+        \item Machine Learning Task Views \href{http://cran.cnr.berkeley.edu/web/views/MachineLearning.html}{{\beamerbutton{Link}}}
+        \item UCR Manual \href{http://manuals.bioinformatics.ucr.edu/home/R\_BioCondManual\#TOC-Clustering-and-Data-Mining-in-R}{{\beamerbutton{Link}}}
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data Preprocessing}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Data Transformations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Data Transformations \hspace{2.5cm}\small{\textcolor{red}{Choice depends on data set!}}}
+\begin{itemize}
+	\item Center \& standardize
+	\begin{enumerate}
+		\item Center: subtract from each value the mean of the corresponding vector
+		\item Standardize: devide by standard deviation
+	\end{enumerate} 
+	\hspace{1.5cm} \textcolor{red}{$\Rightarrow$} $Mean = 0$ and $STDEV = 1$
+	\item Center \& scale with the \texttt{scale()} function
+	\begin{enumerate}
+		\item Center: subtract from each value the mean of the corresponding vector
+		\item Scale: divide centered vector by their root mean square (rms) 
+		\begin{displaymath}
+			x_{rms} = \sqrt[]{\frac{1}{n-1}\sum_{i=1}^{n}{x_{i}{^2}}}
+		\end{displaymath}
+	\end{enumerate} 
+	\hspace{1.5cm} \textcolor{red}{$\Rightarrow$} $Mean = 0$ and $STDEV = 1$
+	\item Log transformation 
+	\item Rank transformation: replace measured values by ranks 
+	\item No transformation
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Distance Methods}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Distance Methods \hspace{2.5cm}\small{\textcolor{red}{List of most common ones!}}}
+\small
+\begin{itemize}
+	\item Euclidean distance for two profiles X and Y
+		\begin{displaymath}
+			d(X,Y) = \sqrt[]{ \sum_{i=1}^{n}{(x_{i}-y_{i})^2} }
+		\end{displaymath}
+		\textcolor{red}{Disadvantages}: not scale invariant, not for negative correlations
+	\item Maximum, Manhattan, Canberra, binary, Minowski, ...
+	\item Correlation-based distance: $1-r$
+		\begin{itemize}
+			\item Pearson correlation coefficient (PCC)
+				\begin{displaymath}
+					r = \frac{n\sum_{i=1}^{n}{x_{i}y_{i}} - \sum_{i=1}^{n}{x_{i}} \sum_{i=1}^{n}{y_{i}}}{ \sqrt[]{(\sum_{i=1}^{n}{x_{i}^2} - (\sum_{i=1}^{n}{x_{i})^2}) (\sum_{i=1}^{n}{y_{i}^2} - (\sum_{i=1}^{n}{y_{i})^2})} }
+			         \end{displaymath}
+				\hspace{1.5cm}\textcolor{red}{Disadvantage}: outlier sensitive 
+			\item Spearman correlation coefficient (SCC)\\
+				\hspace{1.5cm}Same calculation as PCC but with ranked values!
+		\end{itemize}
+\end{itemize}
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{There Are Many more Distance Measures}
+\small
+\begin{itemize}
+	\item If the distances among items are quantifiable, then clustering is possible.
+	\item Choose the most accurate and meaningful distance measure for a given field of application.
+	\item If uncertain then choose several distance measures and compare the results. 
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Cluster Linkage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Cluster Linkage}
+\begin{center}
+\includegraphics[width=80mm] {./images/linkage.pdf} \\
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hierarchical Clustering}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Hierarchical Clustering Steps} 
+\begin{enumerate}
+	\item Identify clusters (items) with closest distance  
+	\item Join them to new clusters
+	\item Compute distance between clusters (items)
+	\item Return to step 1
+\end{enumerate}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Hierarchical Clustering \hspace{2.5cm}\small{\textcolor{red}{Agglomerative Approach}}}
+\begin{center}
+\includegraphics[width=80mm] {./images/hierarchical.pdf} \\
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Hierarchical Clustering Result with Heatmap}
+\begin{center}
+\includegraphics[width=65mm] {./images/heatmap.pdf} \\
+\end{center}
+\vspace{-0.5cm}
+\begin{itemize}
+	\scriptsize
+	\item A heatmap is a color coded table. To visually identify patterns, the rows and columns of a heatmap are often sorted by hierarchical clustering trees.  
+	\item In case of gene expression data, the row tree usually represents the genes, the column tree the treatments and the colors in the heat table represent the intensities or ratios of the underlying gene expression data set.
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Approaches}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Hierarchical Clustering Approaches}
+\begin{enumerate}
+	\item Agglomerative approach (bottom-up)
+		\begin{itemize}
+			\item[] \texttt{hclust()} and \texttt{agnes()}
+		\end{itemize}
+	\item Divisive approach (top-down)
+		\begin{itemize}
+			\item[] \texttt{diana()}
+		\end{itemize}
+\end{enumerate}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Tree Cutting}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Tree Cutting to Obtain Discrete Clusters}
+\begin{enumerate}
+	\item Node height in tree
+	\item Number of clusters
+	\item Search tree nodes by distance cutoff
+\end{enumerate}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: \Rfunction{hclust} and \Rfunction{heatmap.2}}
+\tiny 
+\begin{figure}
+  \centering
+<<label=hclustshort, fig=TRUE, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+library(gplots) 
+y <- matrix(rnorm(500), 100, 5, dimnames=list(paste("g", 1:100, sep=""), paste("t", 1:5, sep=""))) 
+heatmap.2(y) # Shortcut to final result
+@
+\label{fig:hclust1}
+\end{figure}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: Stepwise Approach with Tree Cutting}
+\tiny 
+\begin{changemargin}{-0.6cm}{-0.8cm}
+\begin{figure}
+  \centering
+<<label=hclust_stepwise, fig=TRUE, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## Row- and column-wise clustering 
+hr <- hclust(as.dist(1-cor(t(y), method="pearson")), method="complete")
+hc <- hclust(as.dist(1-cor(y, method="spearman")), method="complete") 
+## Tree cutting
+mycl <- cutree(hr, h=max(hr$height)/1.5); mycolhc <- rainbow(length(unique(mycl)), start=0.1, end=0.9); mycolhc <- mycolhc[as.vector(mycl)] 
+## Plot heatmap 
+mycol <- colorpanel(40, "darkblue", "yellow", "white") # or try redgreen(75)
+heatmap.2(y, Rowv=as.dendrogram(hr), Colv=as.dendrogram(hc), col=mycol, scale="row", density.info="none", trace="none", RowSideColors=mycolhc) 
+@
+\label{fig:heatmap2}
+\end{figure}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Non-Hierarchical Clustering}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Non-Hierarchical Clustering}
+\begin{center}
+	Selected Examples
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{K-Means}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{K-Means Clustering} 
+\begin{enumerate}
+	\item Choose the number of k clusters   
+	\item Randomly assign items to the k clusters
+	\item Calculate new centroid for each of the k clusters
+	\item Calculate the distance of all items to the k centroids
+	\item Assign items to closest centroid
+	\item Repeat until clusters assignments are stable
+\end{enumerate}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{K-Means}
+\hspace{0cm}
+\vspace{-0.5cm}
+\begin{center}
+\includegraphics[width=60mm] {./images/kmeans.pdf} \\
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: Clustering with \Rfunction{kmeans} Function}
+\scriptsize 
+\begin{changemargin}{-0.6cm}{-0.8cm}
+<<label=kmeans, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+km <- kmeans(t(scale(t(y))), 3)
+km$cluster 
+@
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Fuzzy C-Means Clustering} 
+\begin{enumerate}
+	\item In contrast to strict (hard) clustering approaches, fuzzy (soft) clustering methods allow multiple cluster memberships of the clustered items. 
+	\item This is commonly achieved by assigning to each item a weight of belonging to each cluster. 
+	\item Thus, items at the edge of a cluster, may be in a cluster to a lesser degree than items at the center of a cluster. 
+	\item Typically, each item has as many coefficients (weights) as there are clusters that sum up for each item to one.
+\end{enumerate}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: Fuzzy Clustering with \Rfunction{fanny}}
+\scriptsize 
+\begin{changemargin}{-0.6cm}{-0.8cm}
+<<label=kmeans, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+library(cluster) # Loads the cluster library.
+fannyy <- fanny(y, k=4, metric = "euclidean", memb.exp = 1.2)
+round(fannyy$membership, 2)[1:4,]
+fannyy$clustering 
+@
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Principal Component Analysis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Principal Component Analysis (PCA)}
+Principal components analysis (PCA) is a data reduction technique that allows to simplify multidimensional data sets to 2 or 3 dimensions for plotting purposes and visual variance analysis.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Basic PCA Steps}
+	\begin{itemize}
+	\item Center (and standardize) data
+	\item First principal component axis
+			\begin{itemize}
+				\item Across centroid of data cloud
+				\item Distance of each point to that line is minimized, so that it crosses the maximum variation of the data cloud
+			\end{itemize}
+	\item Second principal component axis 
+			\begin{itemize}
+				\item Orthogonal to first principal component
+				\item Along maximum variation in the data
+			\end{itemize}
+	\item 1$^{st}$ PCA axis becomes x-axis and 2$^{nd}$ PCA axis y-axis 
+	\item Continue process until the necessary number of principal components is obtained 
+	\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{PCA on Two-Dimensional Data Set}
+\hspace{0cm}
+\vspace{-0.5cm}
+\begin{center}
+\includegraphics[width=100mm] {./images/pca.pdf} \\
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Identifies the Amount of Variability between Components}
+Example
+\begin{center}
+\begin{tabular}{ l c c c c }
+        \hline
+        \textbf{Principal Component}&\textbf{1$^{st}$}&\textbf{2$^{nd}$}&\textbf{3$^{rd}$}&\textbf{Other}\\
+        \hline
+        Proportion of Variance&62\%&34\%&3\%&rest\\
+        \hline
+\end{tabular}\\
+\vspace{1cm}
+1$^{st}$ and 2$^{nd}$ principal components explain 96\% of variance.
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: PCA}
+\vspace{0.4cm}
+\tiny 
+\begin{changemargin}{-0.6cm}{-0.8cm}
+\begin{figure}
+  \centering
+<<label=pca, fig=TRUE, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+pca <- prcomp(y, scale=T)
+summary(pca) # Prints variance summary for all principal components
+plot(pca$x, pch=20, col="blue", type="n") # To plot dots, drop type="n"
+text(pca$x, rownames(pca$x), cex=0.8)
+@
+\label{fig:pca}
+\end{figure}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Multidimensional Scaling}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Multidimensional Scaling (MDS)}
+\begin{itemize}
+	\item Alternative dimensionality reduction approach
+	\item Represents distances in 2D or 3D space
+	\item Starts from distance matrix (PCA uses data points)
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: MDS with \Rfunction{cmdscale}}
+\vspace{0.4cm}
+\tiny 
+\begin{changemargin}{-0.6cm}{-0.8cm}
+\textcolor{blue}{The following example performs MDS analysis on the geographic distances among European cities.}
+\begin{figure}
+\centering
+<<label=mds, fig=TRUE, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+loc <- cmdscale(eurodist) 
+plot(loc[,1], -loc[,2], type="n", xlab="", ylab="", main="cmdscale(eurodist)")
+text(loc[,1], -loc[,2], rownames(loc), cex=0.8) 
+@
+\label{fig:mds}
+\end{figure}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Biclustering}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Biclustering}
+\small
+Finds in matrix subgroups of rows and columns which are as similar as possible to each other and as different as possible to the remaining data points.
+\begin{center}
+\includegraphics[width=85mm] {./images/biclust.pdf} \\
+\Large{Unclustered} \hspace{0.9cm} \huge{$\Rightarrow$} \hspace{0.8cm} \Large{Clustered}\\
+
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Similarity Measures for Clustering Results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Similarity Among Cluster Sets}
+\small
+\begin{itemize}
+	\item Compare the numbers of identical and unique item pairs appearing in cluster sets
+	\item Achieved by counting the number of item pairs found in both clustering sets \texttt{(a)} as well as the pairs appearing only in the first \texttt{(b)} or the second \texttt{(c)} set. 
+	\item With this a similarity coefficient, such as the Jaccard index, can be computed. The latter is defined as the size of the intersect divided by the size of the union of two sample sets: \texttt{a/(a+b+c)}. 
+	\item In case of partitioning results, the Jaccard Index measures how frequently pairs of items are joined together in two clustering data sets and how often pairs are observed only in one set. 
+	\item Related coefficient are the Rand Index and the Adjusted Rand Index. These indices also consider the number of pairs \texttt{(d)} that are not joined together in any of the clusters in both sets. 
+\end{itemize}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: Jaccard Index for Cluster Sets}
+\vspace{0.4cm}
+\tiny 
+\begin{changemargin}{-0.6cm}{-0.8cm}
+\textcolor{blue}{The following imports the \Rfunction{cindex()} function and computes the Jaccard Index for two sample clusters.}
+<<label=jac, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+source("http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/clusterIndex.R") 
+library(cluster); y <- matrix(rnorm(5000), 1000, 5, dimnames=list(paste("g", 1:1000, sep=""), paste("t", 1:5, sep=""))); clarax <- clara(y, 49); clV1 <- clarax$clustering; clarax <- clara(y, 50); clV2 <- clarax$clustering 
+ci <- cindex(clV1=clV1, clV2=clV2, self=FALSE, minSZ=1, method="jaccard")
+ci[2:3] # Returns Jaccard index and variables used to compute it 
+@
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% slide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Example: Clustering Cluster Sets with Jaccard Index}
+\vspace{0.4cm}
+\tiny 
+\begin{changemargin}{-0.6cm}{-0.8cm}
+\textcolor{blue}{The following example shows how one can cluster entire cluster result sets. First, 10 sample cluster results are created with Clara using k-values from 3 to 12. The results are stored as named clustering vectors in a list object. Then a nested sapply loop is used to generate a similarity matrix of Jaccard Indices for the clustering results. After converting the result into a distance matrix, hierarchical clustering is performed with \Rfunction{hclust}.}
+\begin{figure}
+\centering
+<<label=jaccl, fig=TRUE, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+clVlist <- lapply(3:12, function(x) clara(y[1:30, ], k=x)$clustering); names(clVlist) <- paste("k", "=", 3:12)
+d <- sapply(names(clVlist), function(x) sapply(names(clVlist), function(y) cindex(clV1=clVlist[[y]], clV2=clVlist[[x]], method="jaccard")[[3]]))
+hv <- hclust(as.dist(1-d))
+plot(as.dendrogram(hv), edgePar=list(col=3, lwd=4), horiz=T, main="Similarities of 10 Clara Clustering Results for k: 3-12") 
+@
+\label{fig:jaccl}
+\end{figure}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Remember: There Are Many Additional Techniques!}
+\begin{center}
+	Additional details can be found in the Clustering Section of the R/Bioc Manual \href{http://manuals.bioinformatics.ucr.edu/home/R\_BioCondManual\#TOC-Clustering-and-Data-Mining-in-R}{{\beamerbutton{Link}}}
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Clustering Exercises}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Data Preprocessing}
+\scriptsize
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Scaling and Distance Matrices}
+<<label=scaling, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## Sample data set
+set.seed(1410)
+y <- matrix(rnorm(50), 10, 5, dimnames=list(paste("g", 1:10, sep=""), 
+            paste("t", 1:5, sep="")))
+dim(y)
+## Scaling
+yscaled <- t(scale(t(y))) # Centers and scales y row-wise
+apply(yscaled, 1, sd)
+@
+<<label=dist1, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+## Euclidean distance matrix
+dist(y[1:4,], method = "euclidean")
+@
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Correlation-based Distances}
+\scriptsize
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Correlation matrix}
+<<label=dist2, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+c <- cor(t(y), method="pearson")
+as.matrix(c)[1:4,1:4]
+@
+\vspace{0.3cm}
+\textcolor{blue}{Correlation-based distance matrix}
+<<label=dist2, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+d <- as.dist(1-c)
+as.matrix(d)[1:4,1:4]
+@
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Hierarchical Clustering with \texttt{hclust} I}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Hierarchical clustering with complete linkage and basic tree plotting}
+<<hclust1, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+hr <- hclust(d, method = "complete", members=NULL)
+names(hr)
+par(mfrow = c(1, 2)); plot(hr, hang = 0.1); plot(hr, hang = -1) 
+@
+\begin{center}
+\includegraphics[width=60mm] {clustering-hclust1.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Tree Plotting I}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Plot trees horizontally}
+<<hclust2, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+plot(as.dendrogram(hr), edgePar=list(col=3, lwd=4), horiz=T) 
+@
+\begin{center}
+\includegraphics[width=60mm] {clustering-hclust2.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Tree Plotting II}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{The \texttt{ape} library provides more advanced features for tree plotting}
+<<hclust3, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+library(ape) 
+plot.phylo(as.phylo(hr), type="p", edge.col=4, edge.width=2, 
+           show.node.label=TRUE, no.margin=TRUE)
+@
+\begin{center}
+\includegraphics[width=60mm] {clustering-hclust3.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Tree Cutting}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Accessing information in \texttt{hclust} objects }
+<<hclust4, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+hr
+## Print row labels in the order they appear in the tree
+hr$labels[hr$order] 
+@
+\textcolor{blue}{Tree cutting with \texttt{cutree}}
+<<hclust5, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+mycl <- cutree(hr, h=max(hr$height)/2)
+mycl[hr$labels[hr$order]] 
+@
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Heatmaps with \Rfunction{heatmap.2}}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{All in one step: clustering and heatmap plotting}
+<<heat1, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+library(gplots)
+heatmap.2(y, col=redgreen(75))
+@
+\begin{center}
+\includegraphics[width=60mm] {clustering-heat1.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Heatmaps with \Rfunction{pheatmap}}
+\scriptsize
+\vspace{0cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{All in one step: clustering and heatmap plotting}
+<<heatp, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+library(pheatmap); library("RColorBrewer")
+png("clustering-heatp.png"); pheatmap(y, color=brewer.pal(9,"Blues")); dev.off()
+@
+\begin{center}
+\includegraphics[width=60mm] {clustering-heatp.png}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Customizing Heatmaps}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Customizes row and column clustering and shows tree cutting result in row color bar. Additional color schemes can be found here \href{http://manuals.bioinformatics.ucr.edu/home/R\_BioCondManual\#clustering\_hc\_submap}{{\beamerbutton{Link}}}}
+<<heat2, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+hc <- hclust(as.dist(1-cor(y, method="spearman")), method="complete")
+mycol <- colorpanel(40, "darkblue", "yellow", "white")
+heatmap.2(y, Rowv=as.dendrogram(hr), Colv=as.dendrogram(hc), col=mycol,
+          scale="row", density.info="none", trace="none", 
+          RowSideColors=as.character(mycl))
+@
+\begin{center}
+\includegraphics[width=60mm] {clustering-heat2.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{K-Means Clustering with PAM}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Runs K-means clustering with PAM (partitioning around medoids) algorithm and shows result in color bar of hierarchical clustering result from before.} 
+<<kmeans, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+library(cluster)
+pamy <- pam(d, 4)
+(kmcol <- pamy$clustering)
+heatmap.2(y, Rowv=as.dendrogram(hr), Colv=as.dendrogram(hc), col=mycol,
+          scale="row", density.info="none", trace="none", 
+          RowSideColors=as.character(kmcol))
+@
+\begin{center}
+\includegraphics[width=45mm] {clustering-kmeans.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{K-Means Fuzzy Clustering}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Runs k-means fuzzy clustering} 
+<<fuzzy, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+library(cluster)
+fannyy <- fanny(d, k=4, memb.exp = 1.5)
+round(fannyy$membership, 2)[1:4,]
+fannyy$clustering 
+## Returns multiple cluster memberships for coefficient above a certain 
+## value (here >0.1)
+fannyyMA <- round(fannyy$membership, 2) > 0.10 
+apply(fannyyMA, 1, function(x) paste(which(x), collapse="_"))
+@
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Multidimensional Scaling (MDS) }
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Performs MDS analysis on the geographic distances between European cities}
+<<mds, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+loc <- cmdscale(eurodist) 
+## Plots the MDS results in 2D plot. The minus is required in this example to 
+## flip the plotting orientation.
+plot(loc[,1], -loc[,2], type="n", xlab="", ylab="", main="cmdscale(eurodist)")
+text(loc[,1], -loc[,2], rownames(loc), cex=0.8) 
+@
+\begin{center}
+\includegraphics[width=55mm] {clustering-mds.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]
+	\frametitle{Principal Component Analysis (PCA)}
+\scriptsize
+\vspace{0.3cm}
+\begin{changemargin}{-0.5cm}{-0.5cm}
+\textcolor{blue}{Performs PCA analysis after scaling the data. It returns a list with class \texttt{prcomp} that contains five components: (1) the standard deviations (sdev) of the principal components, (2) the matrix of eigenvectors (rotation), (3) the principal component data (x), (4) the centering (center) and (5) scaling (scale) used.}
+<<pca, fig=TRUE, include=FALSE, eval=TRUE, echo=TRUE, keep.source=TRUE, prefix.string=clustering>>=
+library(scatterplot3d)
+pca <- prcomp(y, scale=TRUE)
+names(pca)
+summary(pca) # Prints variance summary for all principal components.
+scatterplot3d(pca$x[,1:3], pch=20, color="blue") 
+@
+\vspace{-0.6cm}
+\begin{center}
+\includegraphics[width=40mm] {clustering-pca.pdf}
+\end{center}
+\end{changemargin}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+	\frametitle{Additional Exercises}
+\begin{center}
+        See here \href{http://manuals.bioinformatics.ucr.edu/home/R\_BioCondManual\#TOC-Clustering-Exercises}{{\beamerbutton{Link}}}
+\end{center}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[containsverbatim]  
+	\frametitle{Session Information}
+\tiny
+<<eval=TRUE, echo=TRUE, keep.source=TRUE>>=
+sessionInfo()
+@
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}
+

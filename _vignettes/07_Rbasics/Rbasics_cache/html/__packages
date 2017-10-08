@@ -1,0 +1,16 @@
+base
+BiocStyle
+limma
+ggplot2
+DBI
+RSQLite
+gplots
+knitr
+dplyr
+data.table
+nycflights13
+tibble
+readr
+tidyverse
+tidyr
+purrr
