@@ -37,6 +37,8 @@ experiments. By combining the capabilities of many R/Bioconductor and
 command-line tools, it makes efficient use of existing software resources
 without limiting the user to a set of predefined methods or environments. 
 
+<center><img title="spr_overview" src="pages/mydoc/miscellaneous_images/spr_overview.png"><img/></center>
+
 ### Availability
 _systemPipeR_ is freely available for all common operating systems from
 [Bioconductor](http://bioconductor.org/packages/systemPipeR). Its GitHub 
