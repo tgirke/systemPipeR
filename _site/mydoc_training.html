@@ -823,9 +823,46 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="tutorials">Tutorials</h2>
+  <h2 id="slide-shows">Slide Shows</h2>
 
-<p>To be added …</p>
+<ul>
+  <li><a href="https://docs.google.com/presentation/d/175aup31LvnbIJUAvEEoSkpGsKgtBJ2RpQYd0Gs23dLo/embed?start=false&amp;loop=false&amp;delayms=60000">Overview Slide Show - 2016</a></li>
+  <li><a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/tgirke/systemPipeR/master/inst/extdata/slides/systemPipeRslides.html">Overview Slide Show - 2015</a></li>
+</ul>
+
+<h2 id="material-for-bioc2016-tutorial">Material for Bioc2016 Tutorial</h2>
+<ul>
+  <li><a href="https://docs.google.com/presentation/d/175aup31LvnbIJUAvEEoSkpGsKgtBJ2RpQYd0Gs23dLo/embed?start=false&amp;loop=false&amp;delayms=60000">Intro Slide Show</a></li>
+  <li>Tutorial Material
+    <ul>
+      <li>Introduction to <code class="highlighter-rouge">systemPipeR</code>
+        <ul>
+          <li><a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/tgirke/systemPipeRdata/master_github_deprecated/vignettes/systemPipeR_Intro.html">HTML</a></li>
+          <li><a href="https://raw.githubusercontent.com/tgirke/systemPipeRdata/master_github_deprecated/vignettes/systemPipeR_Intro.pdf">PDF</a></li>
+          <li><a href="https://raw.githubusercontent.com/tgirke/systemPipeRdata/master_github_deprecated/vignettes/systemPipeR_Intro.Rmd">Rmd</a></li>
+        </ul>
+      </li>
+      <li>Demo Workflow: RIBO-Seq
+        <ul>
+          <li><a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/tgirke/systemPipeRdata/master_github_deprecated/inst/extdata/workflows/riboseq/systemPipeRIBOseq.html">HTML</a></li>
+          <li><a href="https://raw.githubusercontent.com/tgirke/systemPipeRdata/master_github_deprecated/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf">PDF</a></li>
+          <li><a href="https://raw.githubusercontent.com/tgirke/systemPipeRdata/master_github_deprecated/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd">Rmd</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="installation">Installation</h3>
+<p>Please install <em>systemPipeRdata</em> from this GitHub repository as shown below. This package provides the data and <code class="highlighter-rouge">Rmd</code> files for the tutorial. 
+Its parent package <em>systemPipeR</em> is a dependency and it should install along with all its own dependencies automatically. If it doesn’t then please also
+run the last <code class="highlighter-rouge">biocLite</code> install command given below.</p>
+
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="nb">source</span><span class="o">(</span><span class="s2">"http://bioconductor.org/biocLite.R"</span><span class="o">)</span>
+biocLite<span class="o">(</span><span class="s2">"tgirke/systemPipeRdata"</span>, <span class="nv">build_vignettes</span><span class="o">=</span>TRUE, <span class="nv">dependencies</span><span class="o">=</span>TRUE<span class="o">)</span>
+biocLite<span class="o">(</span><span class="s2">"systemPipeR"</span><span class="o">)</span>
+</code></pre>
+</div>
 
 
 
