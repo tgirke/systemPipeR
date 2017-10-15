@@ -2,8 +2,8 @@
 
 entries:
 - title: sidebar
-  product: <center><font color="#26466D" size="6">systemPipeR</font></center>
-  version: <center><font color="#8b9299" size="3">...</font></center>
+  product: <center><font color="#7a1f1f" size="6">systemPipeR</font></center>
+  version: <center><font color="#8b9299" size="3">Development Version</font></center>
   folders:
 
   - title:
