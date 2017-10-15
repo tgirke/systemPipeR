@@ -8,6 +8,7 @@ summary: Website of the systemPipeR project. For questions email <a href="http:/
 
 
 ## Overview
+
             
 ### Motivation
 
@@ -16,6 +17,7 @@ major obstacle to the efficient utilization of the technology.  While
 substantial effort has been invested on the development of software dedicated
 to the individual analysis steps of NGS experiments, insufficient resources are
 currently available for integrating the individual software components within
+<img align="right" title="spr_overview" src="pages/mydoc/miscellaneous_images/spr_overview_35.png"><img/>
 the widely used R/Bioconductor environment into automated workflows capable of
 running the analysis of most types of NGS applications from start-to-finish in
 a time-efficient and reproducible manner. 
@@ -27,7 +29,7 @@ running end-to-end analysis workflows with automated report generation for a
 wide range of NGS applications. Its unique features include a uniform workflow
 interface across different NGS applications, automated report generation, and
 support for running both R and command-line software on local computers and
-computer clusters.  A flexible sample annotation infrastructure efficiently
+computer clusters. A flexible sample annotation infrastructure efficiently
 handles complex sample sets and experimental designs. To simplify the analysis
 of widely used NGS applications, the package provides pre-configured workflows
 and reporting templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Additional
@@ -37,7 +39,6 @@ experiments. By combining the capabilities of many R/Bioconductor and
 command-line tools, it makes efficient use of existing software resources
 without limiting the user to a set of predefined methods or environments. 
 
-<center><img title="spr_overview" src="pages/mydoc/miscellaneous_images/spr_overview.png"><img/></center>
 
 ### Availability
 _systemPipeR_ is freely available for all common operating systems from
