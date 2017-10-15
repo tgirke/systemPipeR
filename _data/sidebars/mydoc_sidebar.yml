@@ -224,7 +224,7 @@ entries:
       url: /mydoc_systemPipeVARseq_14.html
       output: web
   
-  - title: RIBO-Seq
+  - title: RIBO-Seq Workflow
     output: web, pdf
     folderitems:
 
