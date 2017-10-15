@@ -17,6 +17,39 @@
 
 
 {
+"title": "Acknowledgement",
+"tags": "",
+"keywords": "",
+"url": "mydoc_acknowledgement.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Participants",
+"tags": "",
+"keywords": "",
+"url": "mydoc_contacts.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Publications",
+"tags": "",
+"keywords": "",
+"url": "mydoc_publications.html",
+"summary": ""
+}
+,
+
+
+
+{
 "title": "Scroll layout",
 "tags": "special_layouts",
 "keywords": "json, scrolling, scrollto, jquery plugin",
@@ -186,6 +219,182 @@
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeChIPseq_15.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "RIBO-Seq Workflow &lt;br&gt; &lt;br&gt; 1. Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_01.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "2. Load workflow template",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_02.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "3. Read preprocessing",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_03.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "4. Alignments",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_04.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "5. Read distribution across genomic features",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_05.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "6. Adding custom features to workflow",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_06.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "7. Genomic read coverage along transripts or CDSs",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_07.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "8. Read quantification per annotation range",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_08.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "9. Analysis of differentially expressed genes with `edgeR`",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_09.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "10. GO term enrichment analysis of DEGs}",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_10.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "11. Differential ribosome loading analysis (translational efficiency)",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_11.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "12. Clustering and heat maps",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_12.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "13. Render report in HTML and PDF format",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_13.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "14. Version Information",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_14.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "15. Funding",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_15.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "16. References",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeRIBOseq_16.html",
 "summary": ""
 }
 ,
@@ -560,6 +769,17 @@
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeVARseq_3.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Training",
+"tags": "",
+"keywords": "",
+"url": "mydoc_training.html",
 "summary": ""
 }
 ,

@@ -34,6 +34,24 @@
   
   
   <url>
+    <loc>http://localhost:4000/mydoc_acknowledgement.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_contacts.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_publications.html</loc>
+  </url>
+  
+  
+  
+  <url>
     <loc>http://localhost:4000/js/mydoc_scroll.html</loc>
   </url>
   
@@ -125,6 +143,102 @@
   
   <url>
     <loc>http://localhost:4000/mydoc_systemPipeChIPseq_15.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_01.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_02.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_03.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_04.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_05.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_06.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_07.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_08.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_09.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_10.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_11.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_12.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_13.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_14.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_15.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_systemPipeRIBOseq_16.html</loc>
   </url>
   
   
@@ -329,6 +443,12 @@
   
   <url>
     <loc>http://localhost:4000/mydoc_systemPipeVARseq_3.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_training.html</loc>
   </url>
   
   

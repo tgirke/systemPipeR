@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content=" ">
+<title>4. Alignments | systemPipeR Website</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-red.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> Data Analysis Workflow Environment</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html" target="_blank">Bioc</a></li>
+                
+                
+                
+                <li><a href="https://github.com/tgirke/systemPipeR" target="_blank">GitHub Repo</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://cran.r-project.org/" target="_blank">CRAN</a></li>
+                        
+                        
+                        
+                        <li><a href="http://bioconductor.org/" target="_blank">Bioconductor</a></li>
+                        
+                        
+                        
+                        <li><a href="http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual" target="_blank">R & Bioconductor Manual</a></li>
+                        
+                        
+                        
+                        <li><a href="https://guides.github.com/activities/hello-world/" target="_blank">GitHub</a></li>
+                        
+                        
+                        
+                        <li><a href="http://hpcc.ucr.edu/" target="_blank">HPC Center (HPCC)</a></li>
+                        
+                        
+                        
+                        <li><a href="http://girke.bioinformatics.ucr.edu/" target="_blank">Girke Lab</a></li>
+                        
+                        
+                        
+                        <li><a href="http://idratherbewriting.com/documentation-theme-jekyll" target="_blank">Jekyll Doc Theme</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:thomas.girke@ucr.edu?subject=systemPipeR Website feedback&body=I have some feedback about the 4. Alignments page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="4. Alignments">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3" id="tg-sb-sidebar">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle"><center><font color="#7a1f1f" size="6"><i>systemPipeR</i></font></center> <center><font color="#8b9299" size="3">Development Version</font></center></li>
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home</a>
+        <ul>
+            
+            
+            
+            <li><a href="index.html">Introduction</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">NGS Workflow Overview</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_1.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_2.html">2. Getting Started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_3.html">3. Workflow overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_4.html">4. Workflow templates</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_5.html">5. Version information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_6.html">6. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">RNA-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_02.html">2. Samples and environment settings</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_05.html">5. Read quantification</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_06.html">6. Analysis of DEGs</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_07.html">7. GO term enrichment analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_08.html">8. Clustering and heat maps</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_09.html">9. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_10.html">10. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRNAseq_11.html">11. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">ChIP-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_05.html">5. Utilities for coverage data</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_06.html">6. Peak calling with MACS2</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_07.html">7. Annotate peaks with genomic context</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_08.html">8. Count reads overlapping peaks</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_09.html">9. Differential binding analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_10.html">10. GO term enrichment analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_11.html">11. Motif analysis</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeChIPseq_14.html">14. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">VAR-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">RIBO-Seq</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_02.html">2. Load workflow template</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="mydoc_systemPipeRIBOseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_05.html">5. Read distribution across genomic features</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_06.html">6. Adding custom features to workflow</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_07.html">7. Genomic read coverage along transripts or CDSs</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_08.html">8. Read quantification per annotation range</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_09.html">9. Analysis of differentially expressed genes with `edgeR`</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_10.html">10. GO term enrichment analysis of DEGs}</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_11.html">11. Differential ribosome loading analysis (translational efficiency)</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_12.html">12. Clustering and heat maps</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_13.html">13. Render report in HTML and PDF format</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_14.html">14. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_15.html">15. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeRIBOseq_16.html">16. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Training Events</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_training.html">Training Events</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Publications</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_publications.html">Publications</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Acknowledgement</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_acknowledgement.html">Acknowledgement</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Contacts</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_contacts.html">Contacts</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9" id="tg-sb-content">
+        <div class="post-header">
+   <h1 class="post-title-main">4. Alignments</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+<!--
+    
+
+    <a target="_blank" href="https://github.com/tgirke/systemPipeR/blob/gh-pages/pages//mydoc_systemPipeRIBOseq_04.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+-->
+    
+
+  <h2 id="read-mapping-with-bowtie2tophat2">Read mapping with <code class="highlighter-rouge">Bowtie2/Tophat2</code></h2>
+<p>The NGS reads of this project will be aligned against the reference genome
+sequence using <code class="highlighter-rouge">Bowtie2/TopHat2</code> (Kim et al., 2013; Langmead et al., 2012). The
+parameter settings of the aligner are defined in the <code class="highlighter-rouge">tophat.param</code>
+file.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_trim.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="c1"># Command-line parameters for first FASTQ file
+</span></code></pre>
+</div>
+
+<p>Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 <code class="highlighter-rouge">qsub</code> processes each with 4 CPU cores).</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">moduleload</span><span class="p">(</span><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
+</span><span class="n">system</span><span class="p">(</span><span class="s2">"bowtie2-build ./data/tair10.fasta ./data/tair10.fasta"</span><span class="p">)</span><span class="w">
+</span><span class="n">resources</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">walltime</span><span class="o">=</span><span class="s2">"20:00:00"</span><span class="p">,</span><span class="w"> </span><span class="n">nodes</span><span class="o">=</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"1:ppn="</span><span class="p">,</span><span class="w"> </span><span class="n">cores</span><span class="p">(</span><span class="n">args</span><span class="p">)),</span><span class="w"> </span><span class="n">memory</span><span class="o">=</span><span class="s2">"10gb"</span><span class="p">)</span><span class="w">
+</span><span class="n">reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clusterRun</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">conffile</span><span class="o">=</span><span class="s2">".BatchJobs.R"</span><span class="p">,</span><span class="w"> </span><span class="n">template</span><span class="o">=</span><span class="s2">"torque.tmpl"</span><span class="p">,</span><span class="w"> </span><span class="n">Njobs</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">runid</span><span class="o">=</span><span class="s2">"01"</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">resourceList</span><span class="o">=</span><span class="n">resources</span><span class="p">)</span><span class="w">
+</span><span class="n">waitForJobs</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<h2 id="read-mapping-with-hisat2">Read mapping with <code class="highlighter-rouge">HISAT2</code></h2>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/hisat2.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># args &lt;- systemArgs(sysma="param/hisat2.param", mytargets="targets_trim.txt")
+</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="c1"># Command-line parameters for first FASTQ file
+</span><span class="n">moduleload</span><span class="p">(</span><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
+</span><span class="n">system</span><span class="p">(</span><span class="s2">"hisat2-build ./data/tair10.fasta ./data/tair10.fasta"</span><span class="p">)</span><span class="w">
+</span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>Check whether all BAM files have been created</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
+</span></code></pre>
+</div>
+
+<h2 id="read-and-alignment-stats">Read and alignment stats</h2>
+<p>The following provides an overview of the number of reads in each sample and how many of them aligned to the reference.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">read_statsDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">alignStats</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span><span class="w"> 
+</span><span class="n">write.table</span><span class="p">(</span><span class="n">read_statsDF</span><span class="p">,</span><span class="w"> </span><span class="s2">"results/alignStats.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">quote</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">read.table</span><span class="p">(</span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"alignStats.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s2">"systemPipeR"</span><span class="p">),</span><span class="w"> </span><span class="n">header</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,]</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##   FileName Nreads2x Nalign Perc_Aligned Nalign_Primary Perc_Aligned_Primary
+## 1      M1A   192918 177961     92.24697         177961             92.24697
+## 2      M1B   197484 159378     80.70426         159378             80.70426
+## 3      A1A   189870 176055     92.72397         176055             92.72397
+## 4      A1B   188854 147768     78.24457         147768             78.24457
+</code></pre>
+</div>
+
+<h2 id="create-symbolic-links-for-viewing-bam-files-in-igv">Create symbolic links for viewing BAM files in IGV</h2>
+
+<p>The <code class="highlighter-rouge">symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
+genome browser such as IGV. The corresponding URLs are written to a file
+with a path specified under <code class="highlighter-rouge">urlfile</code> in the <code class="highlighter-rouge">results</code> directory.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"projects/tests/"</span><span class="p">),</span><span class="w"> 
+            </span><span class="n">urlbase</span><span class="o">=</span><span class="s2">"http://biocluster.ucr.edu/~tgirke/"</span><span class="p">,</span><span class="w"> 
+	        </span><span class="n">urlfile</span><span class="o">=</span><span class="s2">"./results/IGVurl.txt"</span><span class="p">)</span><span class="w">
+</span></code></pre>
+</div>
+
+<p><br /><br /><center><a href="mydoc_systemPipeRIBOseq_03.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
+<a href="mydoc_systemPipeRIBOseq_05.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2017 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sun Oct 15 13:21:42 2017<br/> Site last generated: Oct 15, 2017 <br />
+<!--
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+-->
+</div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+
+</body>
+
+</html>
