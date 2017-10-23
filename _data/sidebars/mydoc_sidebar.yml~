@@ -28,34 +28,6 @@ entries:
       output: web, pdf
       type: homepage
   
-  - title: systemPipeR
-    output: web, pdf
-    folderitems:
-
-    - title: 1. Introduction
-      url: /mydoc_systemPipeR_1.html
-      output: web
-
-    - title: 2. Getting Started
-      url: /mydoc_systemPipeR_2.html
-      output: web
-
-    - title: 3. Workflow overview
-      url: /mydoc_systemPipeR_3.html
-      output: web
-
-    - title: 4. Workflow templates
-      url: /mydoc_systemPipeR_4.html
-      output: web
-
-    - title: 5. Version information
-      url: /mydoc_systemPipeR_5.html
-      output: web
-
-    - title: 6. References
-      url: /mydoc_systemPipeR_6.html
-      output: web
-
   - title: NGS Workflow Overview
     output: web, pdf
     folderitems:
@@ -318,58 +290,6 @@ entries:
 
     - title: 16. References
       url: /mydoc_systemPipeRIBOseq_16.html
-      output: web
-
-  - title: Authoring
-    output: web, pdf
-    folderitems:
-
-    - title: 1. Prerequisites
-      url: /mydoc_AuthoringRmdVignettes_01.html
-      output: web
-
-    - title: 2. Getting started
-      url: /mydoc_AuthoringRmdVignettes_02.html
-      output: web
-
-    - title: 3. Document header
-      url: /mydoc_AuthoringRmdVignettes_03.html
-      output: web
-
-    - title: 4. Style macros
-      url: /mydoc_AuthoringRmdVignettes_04.html
-      output: web
-
-    - title: 5. Code chunks
-      url: /mydoc_AuthoringRmdVignettes_05.html
-      output: web
-
-    - title: 6. Figures
-      url: /mydoc_AuthoringRmdVignettes_06.html
-      output: web
-
-    - title: 7. Tables
-      url: /mydoc_AuthoringRmdVignettes_07.html
-      output: web
-
-    - title: 8. Equations
-      url: /mydoc_AuthoringRmdVignettes_08.html
-      output: web
-
-    - title: 9. Cross-references
-      url: /mydoc_AuthoringRmdVignettes_09.html
-      output: web
-
-    - title: 10. Margin notes
-      url: /mydoc_AuthoringRmdVignettes_10.html
-      output: web
-
-    - title: 11. Session info {.unnumbered}
-      url: /mydoc_AuthoringRmdVignettes_11.html
-      output: web
-
-    - title: 12. References
-      url: /mydoc_AuthoringRmdVignettes_12.html
       output: web
 
   - title: Training Events

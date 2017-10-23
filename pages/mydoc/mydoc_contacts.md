@@ -1,5 +1,5 @@
 ---
-title: Participants
+title: Contacts
 sidebar: mydoc_sidebar
 permalink: mydoc_contacts.html
 ---
