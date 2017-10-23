@@ -1,10 +1,10 @@
 ---
 title: systemPipeR - NGS workflow and report generation environment  <br> <br> 1. Introduction
-last_updated: Sun Oct 22 17:32:11 2017
+last_updated: Sun Oct 22 17:33:57 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_1.html
 ---
-Author: Daniel Cassol and Thomas Girke (thomas.girke@ucr.edu)
+Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
 Last update: 22 October, 2017 
 
