@@ -1,6 +1,6 @@
 ---
 title: systemPipeR - NGS workflow and report generation environment  <br> <br> 1. Introduction
-last_updated: Sun Oct 22 17:03:27 2017
+last_updated: Sun Oct 22 17:19:27 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_1.html
 ---
