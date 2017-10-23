@@ -1,6 +1,6 @@
 ---
 title: 4. Workflow templates
-last_updated: Thu May  4 12:05:43 2017
+last_updated: Sun Oct 22 17:03:27 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_4.html
 ---

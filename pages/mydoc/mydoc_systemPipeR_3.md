@@ -1,18 +1,33 @@
 ---
 title: 3. Workflow overview
-last_updated: Thu May  4 12:05:43 2017
+last_updated: Sun Oct 22 17:03:27 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_3.html
 ---
 
 ## Define environment settings and samples
 
-Load packages and generate workflow environment (here for RNA-Seq)
+A typical workflow starts with generating the expected working environment
+containing the proper directory structure, input files and parameter settings.
+To simplify this task, one can load one of the existing NGS workflows templates
+provided by _`systemPipeRdata`_ into the current working directory. The
+following does this for the _`rnaseq`_ template. The name of the resulting
+workflow directory can be specified under the _`mydirname`_ argument. The
+default _`NULL`_ uses the name of the chosen workflow. An error is issued if a
+directory of the same name and path exists already. On Linux and OS X systems
+one can also create new workflow instances from the command-line of a terminal as shown
+[here](http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template).
+To apply workflows to custom data, the user needs to modify the _`targets`_ file and if
+necessary update the corresponding _`param`_ file(s). A collection of pre-generated _`param`_
+files is provided in the _`param`_ subdirectory of each workflow template. They
+are also viewable in the GitHub repository of _`systemPipeRdata`_ ([see
+here](https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param)).
+
 
 ```r
 library(systemPipeR)
 library(systemPipeRdata)
-genWorkenvir(workflow="rnaseq")
+genWorkenvir(workflow="rnaseq", mydirname=NULL)
 setwd("rnaseq")
 ```
 
@@ -35,7 +50,7 @@ the _`trimLRPatterns`_ function from the _`Biostrings`_ package.
 After the trimming step a new targets file is generated (here
 _`targets_trim.txt`_) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
-_`SYSargs`_ instance, _e.g._ running the NGS alignments using the
+_`SYSargs`_ instance, _e.g._ running the NGS alignments with the
 trimmed FASTQ files.
  
 
@@ -65,6 +80,12 @@ useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution.  
+The function _`seeFastq`_ computes the quality statistics and stores the results in a
+relatively small list object that can be saved to disk with _`save()`_ and
+reloaded with _`load()`_ for later plotting. The argument _`klength`_ specifies the
+k-mer length and _`batchsize`_ the number of reads to random sample from each
+FASTQ file.
+
 
 ```r
 fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
@@ -72,9 +93,9 @@ pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 seeFastqPlot(fqlist)
 dev.off()
 ```
-![](./pages/mydoc/systemPipeR_files/fastqReport.png)
-<div align="center">**Figure 2:** FASTQ quality report </div>
 
+![](./pages/mydoc/systemPipeR_files/fastqReport.png)
+<div align="center"><b>Figure 2:</b> FASTQ quality report. To zoom in, rigth click image and open it in a separate browser tab. </div>
 
 
 Parallelization of QC report on single machine with multiple cores
@@ -128,7 +149,6 @@ Alternatively, the computation can be greatly accelerated by processing many fil
 resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
 reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01", 
 		  resourceList=resources)
-
 waitForJobs(reg)
 ```
 
@@ -336,9 +356,9 @@ hc <- hclust(dist(1-d))
 plot.phylo(as.phylo(hc), type="p", edge.col=4, edge.width=3, show.node.label=TRUE, no.margin=TRUE)
 ```
 
-<img src="./pages/mydoc/systemPipeR_files/sample_tree_rlog-1.png" width="672" />
+<img src="./pages/mydoc/systemPipeR_files/sample_tree_rlog-1.png" width="100%" />
 
-<div align="center">**Figure 3:** Correlation dendrogram of samples for _`rlog`_ values. </div>
+<div align="center"><b>Figure 3:</b> Correlation dendrogram of samples for <i>rlog</i> values. </div>
 
 Alternatively, the clustering can be performed with _`RPKM`_ normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar. 
 
@@ -398,8 +418,8 @@ Filter and plot DEG results for up and down regulated genes. Because of the smal
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 ```
 
-<img src="./pages/mydoc/systemPipeR_files/edger_deg_counts-1.png" width="672" />
-<div align="center">**Figure 4:** Up and down regulated DEGs identified by _`edgeR`_. </div>
+<img src="./pages/mydoc/systemPipeR_files/edger_deg_counts-1.png" width="100%"  class="widefigure" />
+<div align="center"><b>Figure 4:</b> Up and down regulated DEGs identified by <i>edgeR</i>. </div>
 
 
 ```r
@@ -441,8 +461,8 @@ Filter and plot DEG results for up and down regulated genes.
 DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
 ```
 
-<img src="./pages/mydoc/systemPipeR_files/deseq2_deg_counts-1.png" width="672" />
-<div align="center">**Figure 5:** Up and down regulated DEGs identified by _`DESeq2`_. </div>
+<img src="./pages/mydoc/systemPipeR_files/deseq2_deg_counts-1.png" width="100%"  class="widefigure" />
+<div align="center"><b>Figure 5:</b> Up and down regulated DEGs identified by <i>DESeq2</i>. </div>
 
 
 ## Venn Diagrams
@@ -454,8 +474,8 @@ vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
 vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
 ```
 
-<img src="./pages/mydoc/systemPipeR_files/vennplot-1.png" width="672" />
-<div align="center">**Figure 6:** Venn Diagram for 4 Up and Down DEG Sets. </div>
+<img src="./pages/mydoc/systemPipeR_files/vennplot-1.png" width="100%" />
+<div align="center"><b>Figure 6:</b> Venn Diagram for 4 Up and Down DEG Sets. </div>
 
 
 ## GO term enrichment analysis of DEGs
@@ -504,7 +524,7 @@ goBarplot(gos, gocat="BP")
 goBarplot(gos, gocat="CC")
 ```
 ![](./pages/mydoc/systemPipeR_files/GOslimbarplotMF.png)
-<div align="center">**Figure 7:** GO Slim Barplot for MF Ontology.</div>
+<div align="center"><b>Figure 7:</b> GO Slim Barplot for MF Ontology.</div>
 
 
 
@@ -521,7 +541,7 @@ pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_dist
 dev.off()
 ```
 ![](./pages/mydoc/systemPipeR_files/heatmap1.png)
-<div align="center">**Figure 8:** Heat map with hierarchical clustering dendrograms of DEGs.</div>
+<div align="center"><b>Figure 8:</b> Heat map with hierarchical clustering dendrograms of DEGs.</div>
 
 
 <br><br><center><a href="mydoc_systemPipeR_2.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

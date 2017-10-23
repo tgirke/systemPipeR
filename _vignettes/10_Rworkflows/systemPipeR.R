@@ -1,3 +1,5 @@
+## pre code {
+
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
 options(width=100, max.print=1000)
@@ -58,10 +60,12 @@ args
 
 ## ----sysarg_access, eval=TRUE--------------------------------------------
 names(args)
+
+## ----sysarg_access2, eval=TRUE-------------------------------------------
+sysargs(args)[1]
 modules(args)
 cores(args)
 outpaths(args)[1]
-sysargs(args)[1]
 
 ## ----sysarg_json, eval=TRUE----------------------------------------------
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
@@ -69,7 +73,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## ----load_package, eval=FALSE--------------------------------------------
 ## library(systemPipeR)
 ## library(systemPipeRdata)
-## genWorkenvir(workflow="rnaseq")
+## genWorkenvir(workflow="rnaseq", mydirname=NULL)
 ## setwd("rnaseq")
 
 ## ----construct_sysargs, eval=FALSE---------------------------------------
@@ -126,7 +130,6 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
 ## reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
 ## 		  resourceList=resources)
-## 
 ## waitForJobs(reg)
 
 ## ----process_monitoring, eval=FALSE--------------------------------------
@@ -277,7 +280,7 @@ countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipe
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
 edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 
-## ----edger_deg_counts, eval=TRUE-----------------------------------------
+## ----edger_deg_counts, fig.wide=TRUE, eval=TRUE--------------------------
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 
 ## ----edger_deg_stats, eval=TRUE------------------------------------------
@@ -287,7 +290,7 @@ DEG_list$Summary[1:4,]
 ## ----deseq2_wrapper, eval=TRUE-------------------------------------------
 degseqDF <- run_DESeq2(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE)
 
-## ----deseq2_deg_counts, eval=TRUE----------------------------------------
+## ----deseq2_deg_counts, fig.wide=TRUE, eval=TRUE-------------------------
 DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
 
 ## ----vennplot, eval=TRUE-------------------------------------------------

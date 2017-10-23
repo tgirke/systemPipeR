@@ -1,14 +1,13 @@
 ---
 title: 2. Getting Started
-last_updated: Thu May  4 12:05:43 2017
+last_updated: Sun Oct 22 17:03:27 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from R using the _`biocLite`_ install command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be used to generate _`systemPipeR`_ workflow environments with a single command ([see below](#load-sample-data-and-workflow-templates)) containing all parameter files and sample data required to quickly test and run workflows. 
-
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from R using the _`biocLite`_ install command. The associated data package [_`systemPipeRdata`_](http://bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) can be used to generate _`systemPipeR`_ workflow environments with a single command ([see below](#load-sample-data-and-workflow-templates)) containing all parameter files and sample data required to quickly test and run workflows. 
     
 
 ```r
@@ -31,15 +30,16 @@ The mini sample FASTQ files used by this overview vignette as well as the associ
 
 The following loads one of the available NGS workflow templates (here RNA-Seq) into the user's current working directory. At the moment, the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for additional NGS applications will be provided in the future.
 
+
 ```r
 library(systemPipeRdata)
 genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
 ```
 
-The working environment of the sample data loaded in previous step contains the following preconfigured directory structure: 
+The working environment of the sample data loaded in the previous step contains the following preconfigured directory structure. Directory names are indicated in  <span style="color:grey">_**grey**_</span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly. 
 
-* <span style="color:grey">_**workflow/**_</span> 
+* <span style="color:grey">_**workflow/**_</span> (_e.g._ _rnaseq/_) 
     + This is the directory of the R session running the workflow.
     + Run script ( _\*.Rnw_ or _\*.Rmd_) and sample annotation (_targets.txt_) files are located here.
     + Note, this directory can have any name (_e.g._ <span style="color:grey">_**rnaseq**_</span>, <span style="color:grey">_**varseq**_</span>). Changing its name does not require any modifications in the run script(s).
@@ -57,8 +57,6 @@ The working environment of the sample data loaded in previous step contains the 
             + Images and plots
             + etc.
 
-The sample workflows provided by the package are based on the above directory structure, where directory names are indicated in  <span style="color:grey">_**grey**_</span>. 
-Users can change this structure as needed, but need to adjust the code in their workflows accordingly. 
 
 The following parameter files are included in each workflow template: 
 
@@ -182,7 +180,14 @@ read.delim(parampath, comment.char = "#")
 ## 15   infile2         path                                   <NA>
 ```
 
-The _`systemArgs`_ function imports the definitions of both the _`param`_ file and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_ S4 class object. To run the pipeline without command-line software, one can assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can start the _`systemPipeR`_ workflow with pre-generated BAM files by providing a targets file where the _`FileName`_ column gives the paths to the BAM files and _`sysma`_ is assigned _`NULL`_.
+The _`systemArgs`_ function imports the definitions of both the _`param`_ file
+and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_
+S4 class object. To run the pipeline without command-line software, one can
+assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can
+start _`systemPipeR`_ workflows with pre-generated BAM files by providing a
+targets file where the _`FileName`_ column provides the paths to the BAM files.
+Note, in the following example the usage of _`suppressWarnings()`_ is only
+relevant for building this vignette. In typical workflows it should be removed.
 
 
 ```r
@@ -194,7 +199,8 @@ args
 ## An instance of 'SYSargs' for running 'tophat' on 18 samples
 ```
 
-Several accessor functions are available that are named after the slot names of the _`SYSargs`_ object.
+Several accessor methods are available that are named after the slot names of the _`SYSargs`_ object.
+
 
 ```r
 names(args)
@@ -204,6 +210,25 @@ names(args)
 ##  [1] "targetsin"     "targetsout"    "targetsheader" "modules"       "software"      "cores"        
 ##  [7] "other"         "reference"     "results"       "infile1"       "infile2"       "outfile1"     
 ## [13] "sysargs"       "outpaths"
+```
+
+Of particular interest is the _`sysargs()`_ method. It constructs the system
+commands for running command-lined software as specified by a given _`param`_
+file combined with the paths to the input samples (_e.g._ FASTQ files) provided
+by a _`targets`_ file. The example below shows the _`sysargs()`_ output for
+running TopHat2 on the first PE read sample. Evaluating the output of
+_`sysargs()`_ can be very helpful for designing and debugging _`param`_ files
+of new command-line software or changing the parameter settings of existing
+ones.  
+
+
+```r
+sysargs(args)[1]
+```
+
+```
+##                                                                                                                                                                                                                                                                                                                        M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
 ```
 
 ```r
@@ -227,17 +252,8 @@ outpaths(args)[1]
 ```
 
 ```
-##                                                                                                                     M1A 
-## "/home/tgirke/Dropbox/Teaching/GEN242/2017/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
-```
-
-```r
-sysargs(args)[1]
-```
-
-```
-##                                                                                                                                                                                                                                                                                                M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Teaching/GEN242/2017/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Teaching/GEN242/2017/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
+##                                                                                                                                 M1A 
+## "/home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
 ```
 
 The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).

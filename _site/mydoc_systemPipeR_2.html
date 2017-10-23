@@ -707,6 +707,98 @@
         
     
     <li>
+        <a href="#">Authoring</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_01.html">1. Prerequisites</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_02.html">2. Getting started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_03.html">3. Document header</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_04.html">4. Style macros</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_05.html">5. Code chunks</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_06.html">6. Figures</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_07.html">7. Tables</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_08.html">8. Equations</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_09.html">9. Cross-references</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_10.html">10. Margin notes</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_11.html">11. Session info {.unnumbered}</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_AuthoringRmdVignettes_12.html">12. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
         <a href="#">Training Events</a>
         <ul>
             
@@ -825,7 +917,7 @@ $('#toc').on('click', 'a', function() {
 
   <h2 id="installation">Installation</h2>
 
-<p>The R software for running <a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code class="highlighter-rouge">systemPipeR</code></em></a> can be downloaded from <a href="http://cran.at.r-project.org/"><em>CRAN</em></a>. The <em><code class="highlighter-rouge">systemPipeR</code></em> environment can be installed from R using the <em><code class="highlighter-rouge">biocLite</code></em> install command. The associated data package <a href="https://github.com/tgirke/systemPipeRdata"><em><code class="highlighter-rouge">systemPipeRdata</code></em></a> can be used to generate <em><code class="highlighter-rouge">systemPipeR</code></em> workflow environments with a single command (<a href="#load-sample-data-and-workflow-templates">see below</a>) containing all parameter files and sample data required to quickly test and run workflows.</p>
+<p>The R software for running <a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code class="highlighter-rouge">systemPipeR</code></em></a> can be downloaded from <a href="http://cran.at.r-project.org/"><em>CRAN</em></a>. The <em><code class="highlighter-rouge">systemPipeR</code></em> environment can be installed from R using the <em><code class="highlighter-rouge">biocLite</code></em> install command. The associated data package <a href="http://bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html"><em><code class="highlighter-rouge">systemPipeRdata</code></em></a> can be used to generate <em><code class="highlighter-rouge">systemPipeR</code></em> workflow environments with a single command (<a href="#load-sample-data-and-workflow-templates">see below</a>) containing all parameter files and sample data required to quickly test and run workflows.</p>
 
 <div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"http://bioconductor.org/biocLite.R"</span><span class="p">)</span><span class="w"> </span><span class="c1"># Sources the biocLite.R installation script 
 </span><span class="n">biocLite</span><span class="p">(</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w"> </span><span class="c1"># Installs systemPipeR 
@@ -852,10 +944,10 @@ $('#toc').on('click', 'a', function() {
 </span></code></pre>
 </div>
 
-<p>The working environment of the sample data loaded in previous step contains the following preconfigured directory structure:</p>
+<p>The working environment of the sample data loaded in the previous step contains the following preconfigured directory structure. Directory names are indicated in  <span style="color:grey"><em><strong>grey</strong></em></span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly.</p>
 
 <ul>
-  <li><span style="color:grey"><em><strong>workflow/</strong></em></span>
+  <li><span style="color:grey"><em><strong>workflow/</strong></em></span> (<em>e.g.</em> <em>rnaseq/</em>)
     <ul>
       <li>This is the directory of the R session running the workflow.</li>
       <li>Run script ( <em>*.Rnw</em> or <em>*.Rmd</em>) and sample annotation (<em>targets.txt</em>) files are located here.</li>
@@ -888,9 +980,6 @@ $('#toc').on('click', 'a', function() {
     </ul>
   </li>
 </ul>
-
-<p>The sample workflows provided by the package are based on the above directory structure, where directory names are indicated in  <span style="color:grey"><em><strong>grey</strong></em></span>. 
-Users can change this structure as needed, but need to adjust the code in their workflows accordingly.</p>
 
 <p>The following parameter files are included in each workflow template:</p>
 
@@ -1013,7 +1102,14 @@ Note, these header lines are optional. They are mainly useful for controlling co
 </code></pre>
 </div>
 
-<p>The <em><code class="highlighter-rouge">systemArgs</code></em> function imports the definitions of both the <em><code class="highlighter-rouge">param</code></em> file and the <em><code class="highlighter-rouge">targets</code></em> file, and stores all relevant information in a <em><code class="highlighter-rouge">SYSargs</code></em> S4 class object. To run the pipeline without command-line software, one can assign <em><code class="highlighter-rouge">NULL</code></em> to <em><code class="highlighter-rouge">sysma</code></em> instead of a <em><code class="highlighter-rouge">param</code></em> file. In addition, one can start the <em><code class="highlighter-rouge">systemPipeR</code></em> workflow with pre-generated BAM files by providing a targets file where the <em><code class="highlighter-rouge">FileName</code></em> column gives the paths to the BAM files and <em><code class="highlighter-rouge">sysma</code></em> is assigned <em><code class="highlighter-rouge">NULL</code></em>.</p>
+<p>The <em><code class="highlighter-rouge">systemArgs</code></em> function imports the definitions of both the <em><code class="highlighter-rouge">param</code></em> file
+and the <em><code class="highlighter-rouge">targets</code></em> file, and stores all relevant information in a <em><code class="highlighter-rouge">SYSargs</code></em>
+S4 class object. To run the pipeline without command-line software, one can
+assign <em><code class="highlighter-rouge">NULL</code></em> to <em><code class="highlighter-rouge">sysma</code></em> instead of a <em><code class="highlighter-rouge">param</code></em> file. In addition, one can
+start <em><code class="highlighter-rouge">systemPipeR</code></em> workflows with pre-generated BAM files by providing a
+targets file where the <em><code class="highlighter-rouge">FileName</code></em> column provides the paths to the BAM files.
+Note, in the following example the usage of <em><code class="highlighter-rouge">suppressWarnings()</code></em> is only
+relevant for building this vignette. In typical workflows it should be removed.</p>
 
 <div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">suppressWarnings</span><span class="p">(</span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="n">targetspath</span><span class="p">))</span><span class="w">
 </span><span class="n">args</span><span class="w">
@@ -1024,7 +1120,7 @@ Note, these header lines are optional. They are mainly useful for controlling co
 </code></pre>
 </div>
 
-<p>Several accessor functions are available that are named after the slot names of the <em><code class="highlighter-rouge">SYSargs</code></em> object.</p>
+<p>Several accessor methods are available that are named after the slot names of the <em><code class="highlighter-rouge">SYSargs</code></em> object.</p>
 
 <div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
 </span></code></pre>
@@ -1033,6 +1129,24 @@ Note, these header lines are optional. They are mainly useful for controlling co
 <div class="highlighter-rouge"><pre class="highlight"><code>##  [1] "targetsin"     "targetsout"    "targetsheader" "modules"       "software"      "cores"        
 ##  [7] "other"         "reference"     "results"       "infile1"       "infile2"       "outfile1"     
 ## [13] "sysargs"       "outpaths"
+</code></pre>
+</div>
+
+<p>Of particular interest is the <em><code class="highlighter-rouge">sysargs()</code></em> method. It constructs the system
+commands for running command-lined software as specified by a given <em><code class="highlighter-rouge">param</code></em>
+file combined with the paths to the input samples (<em>e.g.</em> FASTQ files) provided
+by a <em><code class="highlighter-rouge">targets</code></em> file. The example below shows the <em><code class="highlighter-rouge">sysargs()</code></em> output for
+running TopHat2 on the first PE read sample. Evaluating the output of
+<em><code class="highlighter-rouge">sysargs()</code></em> can be very helpful for designing and debugging <em><code class="highlighter-rouge">param</code></em> files
+of new command-line software or changing the parameter settings of existing
+ones.</p>
+
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>##                                                                                                                                                                                                                                                                                                                        M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
 </code></pre>
 </div>
 
@@ -1056,17 +1170,8 @@ Note, these header lines are optional. They are mainly useful for controlling co
 </span></code></pre>
 </div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>##                                                                                                                     M1A 
-## "/home/tgirke/Dropbox/Teaching/GEN242/2017/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
-</code></pre>
-</div>
-
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
-</span></code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>##                                                                                                                                                                                                                                                                                                M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Teaching/GEN242/2017/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Teaching/GEN242/2017/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
+<div class="highlighter-rouge"><pre class="highlight"><code>##                                                                                                                                 M1A 
+## "/home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
 </code></pre>
 </div>
 
@@ -1098,7 +1203,7 @@ Note, these header lines are optional. They are mainly useful for controlling co
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Thu May  4 12:05:43 2017<br/> Site last generated: Oct 15, 2017 <br />
+<span>Page last updated:</span> Sun Oct 22 17:03:27 2017<br/> Site last generated: Oct 22, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->
