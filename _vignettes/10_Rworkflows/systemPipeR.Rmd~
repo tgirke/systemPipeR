@@ -1,6 +1,6 @@
 ---
 title: "_systemPipeR_: NGS workflow and report generation environment" 
-author: "Author: Thomas Girke (thomas.girke@ucr.edu)"
+author: "Author: Daniel Cassol and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
   BiocStyle::html_document:
@@ -60,8 +60,6 @@ suppressPackageStartupMessages({
     library(ape)
 })
 ```
-
-Note: the most recent version of this tutorial can be found <a href="https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeR.html">here</a> and a short overview slide show [here](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeR/master/inst/extdata/slides/systemPipeRslides.html).
 
 # Introduction
 

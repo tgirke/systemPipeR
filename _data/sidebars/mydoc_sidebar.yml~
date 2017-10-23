@@ -28,34 +28,6 @@ entries:
       output: web, pdf
       type: homepage
   
-  - title: systemPipeR
-    output: web, pdf
-    folderitems:
-
-    - title: 1. Introduction
-      url: /mydoc_systemPipeR_1.html
-      output: web
-
-    - title: 2. Getting Started
-      url: /mydoc_systemPipeR_2.html
-      output: web
-
-    - title: 3. Workflow overview
-      url: /mydoc_systemPipeR_3.html
-      output: web
-
-    - title: 4. Workflow templates
-      url: /mydoc_systemPipeR_4.html
-      output: web
-
-    - title: 5. Version information
-      url: /mydoc_systemPipeR_5.html
-      output: web
-
-    - title: 6. References
-      url: /mydoc_systemPipeR_6.html
-      output: web
-
   - title: NGS Workflow Overview
     output: web, pdf
     folderitems:

@@ -1,6 +1,6 @@
 ---
 title: "_systemPipeR_: NGS workflow and report generation environment" 
-author: "Author: Thomas Girke (thomas.girke@ucr.edu)"
+author: "Author: Daniel Cassol and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
   BiocStyle::html_document:
