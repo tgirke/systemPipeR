@@ -19,8 +19,9 @@ bibliography: bibtex.bib
 
 <!--
 - Compile from command-line
-Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRNAseq.knit.md 12; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('pdf_document'))"
+Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRNAseq.knit.md 12; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::pdf_document'))"
 -->
+
 
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
