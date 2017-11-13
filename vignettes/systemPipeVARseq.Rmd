@@ -19,7 +19,7 @@ bibliography: bibtex.bib
 
 <!--
 - Compile from command-line
-Rscript -e "rmarkdown::render('systemPipeVARseq.Rmd', c('html_document'), clean=F); knitr::knit('systemPipeVARseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeVARseq.knit.md 14; Rscript -e "rmarkdown::render('systemPipeVARseq.Rmd', c('pdf_document'))"
+Rscript -e "rmarkdown::render('systemPipeVARseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeVARseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeVARseq.knit.md 14; Rscript -e "rmarkdown::render('systemPipeVARseq.Rmd', c('BiocStyle::pdf_document'))"
 -->
 
 ```{r style, echo = FALSE, results = 'asis'}
