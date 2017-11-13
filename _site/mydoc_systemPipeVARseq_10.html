@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -828,7 +828,7 @@ identify common and unique variants reported for different samples
 and/or variant callers. The below generates a 4-way venn diagram
 comparing four sampes for each of the two variant callers.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/annotate_vars.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_gatk_filtered.txt"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/annotate_vars.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_gatk_filtered.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">varlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sapply</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">))[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">],</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">read.delim</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="n">x</span><span class="p">])</span><span class="o">$</span><span class="n">VARID</span><span class="p">))</span><span class="w">
 </span><span class="n">vennset_gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">overLapper</span><span class="p">(</span><span class="n">varlist</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"vennsets"</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/annotate_vars.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_sambcf_filtered.txt"</span><span class="p">)</span><span class="w">
@@ -840,8 +840,7 @@ comparing four sampes for each of the two variant callers.</p>
 </span><span class="n">pdf</span><span class="p">(</span><span class="s2">"./results/vennplot_var.pdf"</span><span class="p">)</span><span class="w">
 </span><span class="n">vennPlot</span><span class="p">(</span><span class="nf">list</span><span class="p">(</span><span class="n">vennset_gatk</span><span class="p">,</span><span class="w"> </span><span class="n">vennset_bcf</span><span class="p">,</span><span class="w"> </span><span class="n">vennset_vartools</span><span class="p">),</span><span class="w"> </span><span class="n">mymain</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="n">mysub</span><span class="o">=</span><span class="s2">"GATK: red; BCFtools: blue; VariantTools: green"</span><span class="p">,</span><span class="w"> </span><span class="n">colmode</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">ccol</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"red"</span><span class="p">,</span><span class="w"> </span><span class="s2">"blue"</span><span class="p">,</span><span class="w"> </span><span class="s2">"green"</span><span class="p">))</span><span class="w">
 </span><span class="n">dev.off</span><span class="p">()</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeVARseq_files/vennplot_var.png" alt="" /></p>
 <div align="center">Figure 2: Venn Diagram for 4 samples from GATK and BCFtools</div>
@@ -864,7 +863,7 @@ comparing four sampes for each of the two variant callers.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Wed May 10 21:42:55 2017<br/> Site last generated: Oct 22, 2017 <br />
+<span>Page last updated:</span> Wed May 10 21:42:55 2017<br/> Site last generated: Nov 12, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

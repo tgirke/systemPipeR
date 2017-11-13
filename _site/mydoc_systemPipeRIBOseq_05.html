@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -834,12 +834,11 @@ annotations provided by a GFF file that can be transformed into a
 CDSs, miRNAs, rRNAs, tRNAs, promoter and intergenic regions. In addition, any
 number of custom annotations can be included in this routine.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">GenomicFeatures</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">GenomicFeatures</span><span class="p">)</span><span class="w">
 </span><span class="n">txdb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">makeTxDbFromGFF</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s2">"data/tair10.gff"</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="o">=</span><span class="s2">"gff3"</span><span class="p">,</span><span class="w"> </span><span class="n">organism</span><span class="o">=</span><span class="s2">"Arabidopsis"</span><span class="p">)</span><span class="w">
 </span><span class="n">feat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">genFeatures</span><span class="p">(</span><span class="n">txdb</span><span class="p">,</span><span class="w"> </span><span class="n">featuretype</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span><span class="w"> </span><span class="n">reduce_ranges</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">upstream</span><span class="o">=</span><span class="m">1000</span><span class="p">,</span><span class="w"> </span><span class="n">downstream</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="w"> 
                     </span><span class="n">verbose</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="count-and-plot-reads-of-any-length">Count and plot reads of any length</h2>
 <p>The <code class="highlighter-rouge">featuretypeCounts</code> function counts how many reads in short read
@@ -856,13 +855,12 @@ the counting results can be plotted with the associated
 
 <p>The following generates and plots feature counts for any read length.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="w">
 </span><span class="n">fc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">featuretypeCounts</span><span class="p">(</span><span class="n">bfl</span><span class="o">=</span><span class="n">BamFileList</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">yieldSize</span><span class="o">=</span><span class="m">50000</span><span class="p">),</span><span class="w"> </span><span class="n">grl</span><span class="o">=</span><span class="n">feat</span><span class="p">,</span><span class="w"> 
                         </span><span class="n">singleEnd</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">readlength</span><span class="o">=</span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"data.frame"</span><span class="p">)</span><span class="w">
 </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plotfeaturetypeCounts</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">fc</span><span class="p">,</span><span class="w"> </span><span class="n">graphicsfile</span><span class="o">=</span><span class="s2">"results/featureCounts.png"</span><span class="p">,</span><span class="w"> </span><span class="n">graphicsformat</span><span class="o">=</span><span class="s2">"png"</span><span class="p">,</span><span class="w"> 
                            </span><span class="n">scales</span><span class="o">=</span><span class="s2">"fixed"</span><span class="p">,</span><span class="w"> </span><span class="n">anyreadlength</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">scale_length_val</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeRIBOseq_files/featureCounts.png" alt="" /></p>
 <div align="center">Figure 2: Read distribution plot across annotation features for any read length.</div>
@@ -874,12 +872,11 @@ can generate and plot the feature counts for specific read lengths separately. T
 most abundant read length obtained for translated features corresponds to the approximate footprint 
 length occupied by the ribosomes.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">fc2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">featuretypeCounts</span><span class="p">(</span><span class="n">bfl</span><span class="o">=</span><span class="n">BamFileList</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">yieldSize</span><span class="o">=</span><span class="m">50000</span><span class="p">),</span><span class="w"> </span><span class="n">grl</span><span class="o">=</span><span class="n">feat</span><span class="p">,</span><span class="w"> 
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fc2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">featuretypeCounts</span><span class="p">(</span><span class="n">bfl</span><span class="o">=</span><span class="n">BamFileList</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">yieldSize</span><span class="o">=</span><span class="m">50000</span><span class="p">),</span><span class="w"> </span><span class="n">grl</span><span class="o">=</span><span class="n">feat</span><span class="p">,</span><span class="w"> 
                          </span><span class="n">singleEnd</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">readlength</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">74</span><span class="o">:</span><span class="m">76</span><span class="p">,</span><span class="m">99</span><span class="o">:</span><span class="m">102</span><span class="p">),</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"data.frame"</span><span class="p">)</span><span class="w">
 </span><span class="n">p</span><span class="m">2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plotfeaturetypeCounts</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">fc2</span><span class="p">,</span><span class="w"> </span><span class="n">graphicsfile</span><span class="o">=</span><span class="s2">"results/featureCounts2.png"</span><span class="p">,</span><span class="w"> </span><span class="n">graphicsformat</span><span class="o">=</span><span class="s2">"png"</span><span class="p">,</span><span class="w"> 
                             </span><span class="n">scales</span><span class="o">=</span><span class="s2">"fixed"</span><span class="p">,</span><span class="w"> </span><span class="n">anyreadlength</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">scale_length_val</span><span class="o">=</span><span class="kc">NULL</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeRIBOseq_files/featureCounts2.png" alt="" /></p>
 <div align="center">Figure 3: Read distribution plot across annotation features for specific read lengths.</div>
@@ -902,7 +899,7 @@ length occupied by the ribosomes.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sun Oct 15 13:21:42 2017<br/> Site last generated: Oct 22, 2017 <br />
+<span>Page last updated:</span> Sun Oct 15 13:21:42 2017<br/> Site last generated: Nov 12, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->
