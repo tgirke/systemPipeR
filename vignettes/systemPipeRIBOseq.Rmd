@@ -3,10 +3,10 @@ title: "RIBO-Seq Workflow"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
+  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteIndexEntry{RIBO-Seq Workflow}
@@ -328,7 +328,7 @@ p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png", graph
                            scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
 ```
 
-![](featureCounts.pdf)
+![](featureCounts.png)
 <div align="center">Figure 2: Read distribution plot across annotation features for any read length.</div></br>
 
 ## Count and plot reads of specific lengths
@@ -345,7 +345,7 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png", gr
                             scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
 ```
 
-![](featureCounts2.pdf)
+![](featureCounts2.png)
 <div align="center">Figure 3: Read distribution plot across annotation features for specific read lengths.</div></br>
 
 
@@ -479,7 +479,7 @@ plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale
 dev.off()
 ```
 
-![](featurePlot.pdf)
+![](featurePlot.png)
 <div align="center">Figure 4: Feature coverage plot with single nucleotide resolution around start and stop codons and binned coverage between them.</div></br>
 
 
@@ -563,7 +563,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 dev.off()
 ```
 
-![](sample_tree.pdf)
+![](sample_tree.png)
 <div align="center">Figure 5: Correlation dendrogram of samples.</div></br>
 
 
@@ -606,7 +606,7 @@ dev.off()
 write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", row.names=FALSE)
 ```
 
-![](DEGcounts.pdf)
+![](DEGcounts.png)
 
 <div align="center">Figure 6: Up and down regulated DEGs.</div></br>
 
@@ -624,7 +624,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 dev.off()
 ```
 
-![](vennplot.pdf)
+![](vennplot.png)
 
 <div align="center">Figure 7: Venn Diagram for 4 Up and Down DEG Sets</div></br>
 
