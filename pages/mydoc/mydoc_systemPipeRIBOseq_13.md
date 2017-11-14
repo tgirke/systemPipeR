@@ -1,6 +1,6 @@
 ---
 title: 13. Render report in HTML and PDF format
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Mon Nov 13 16:18:42 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_13.html
 ---

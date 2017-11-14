@@ -23,7 +23,6 @@ suppressPackageStartupMessages({
 ## genWorkenvir(workflow="varseq")
 ## setwd("varseq")
 
-## ----genVar_workflow_command_line, eval=FALSE, engine="sh"---------------
 ## Rscript -e "systemPipeRdata::genWorkenvir(workflow='varseq')"
 
 ## ----node_environment, eval=FALSE----------------------------------------

@@ -23,7 +23,6 @@ suppressPackageStartupMessages({
 ## genWorkenvir(workflow="rnaseq")
 ## setwd("rnaseq")
 
-## ----genRna_workflow_command_line, eval=FALSE, engine="sh"---------------
 ## Rscript -e "systemPipeRdata::genWorkenvir(workflow='rnaseq')"
 
 ## ----node_environment, eval=FALSE----------------------------------------

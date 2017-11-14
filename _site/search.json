@@ -226,7 +226,7 @@
 
 
 {
-"title": "RIBO-Seq Workflow &lt;br&gt; &lt;br&gt; 1. Introduction",
+"title": "RIBO-Seq Workflow  &lt;br&gt; &lt;br&gt; 1. Introduction",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeRIBOseq_01.html",
@@ -589,7 +589,7 @@
 
 
 {
-"title": "VAR-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"title": "VAR-Seq Workflow Template   &lt;br&gt; &lt;br&gt; 1. Introduction",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeVARseq_01.html",
@@ -688,17 +688,6 @@
 
 
 {
-"title": "VAR-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
-"tags": "",
-"keywords": "",
-"url": "mydoc_systemPipeVARseq_1.html",
-"summary": ""
-}
-,
-
-
-
-{
 "title": "10. Venn diagram of variants",
 "tags": "",
 "keywords": "",
@@ -747,28 +736,6 @@
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeVARseq_14.html",
-"summary": ""
-}
-,
-
-
-
-{
-"title": "2. Funding",
-"tags": "",
-"keywords": "",
-"url": "mydoc_systemPipeVARseq_2.html",
-"summary": ""
-}
-,
-
-
-
-{
-"title": "3. References",
-"tags": "",
-"keywords": "",
-"url": "mydoc_systemPipeVARseq_3.html",
 "summary": ""
 }
 ,

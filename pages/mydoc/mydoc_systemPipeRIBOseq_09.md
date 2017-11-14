@@ -1,6 +1,6 @@
 ---
 title: 9. Analysis of differentially expressed genes with `edgeR`
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Mon Nov 13 16:18:42 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_09.html
 ---
@@ -46,6 +46,7 @@ write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", 
 ```
 
 ![](./pages/mydoc/systemPipeRIBOseq_files/DEGcounts.png)
+
 <div align="center">Figure 6: Up and down regulated DEGs.</div>
 
 The function `overLapper` can compute Venn intersects for large
@@ -64,6 +65,7 @@ dev.off()
 ```
 
 ![](./pages/mydoc/systemPipeRIBOseq_files/vennplot.png)
+
 <div align="center">Figure 7: Venn Diagram for 4 Up and Down DEG Sets</div>
 
 <br><br><center><a href="mydoc_systemPipeRIBOseq_08.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

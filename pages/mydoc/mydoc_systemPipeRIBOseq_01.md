@@ -1,12 +1,12 @@
 ---
-title: RIBO-Seq Workflow <br> <br> 1. Introduction
-last_updated: Sun Oct 15 13:21:42 2017
+title: RIBO-Seq Workflow  <br> <br> 1. Introduction
+last_updated: Mon Nov 13 16:18:42 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_01.html
 ---
-First/last name (first.last@ucr.edu)
+Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 15 October, 2017 
+Last update: 13 November, 2017 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeRIBOseq.html){:target="_blank"} ],

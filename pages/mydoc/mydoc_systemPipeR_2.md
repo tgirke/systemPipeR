@@ -1,6 +1,6 @@
 ---
 title: 2. Getting Started
-last_updated: Sun Oct 22 17:33:57 2017
+last_updated: Mon Nov 13 16:03:01 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
@@ -227,8 +227,8 @@ sysargs(args)[1]
 ```
 
 ```
-##                                                                                                                                                                                                                                                                                                                        M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
+##                                                                                                                                                                                                                                                                                                      M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/vignettes/systemPipeR-gh-pages/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/dcassol/vignettes/systemPipeR-gh-pages/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
 ```
 
 ```r
@@ -252,8 +252,8 @@ outpaths(args)[1]
 ```
 
 ```
-##                                                                                                                                 M1A 
-## "/home/tgirke/Dropbox/Software/systemPipeR/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
+##                                                                                                                        M1A 
+## "/home/dcassol/vignettes/systemPipeR-gh-pages/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
 ```
 
 The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).

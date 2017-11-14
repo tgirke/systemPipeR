@@ -432,3 +432,4 @@ md2Jekyll(mdfile=myargs[6], sidebartitle=NULL, sidebarpos=as.numeric(myargs[7]),
 # $ Rscript ../md2jekyll.R bioassayR.knit.md 8
 
 
+
