@@ -1,6 +1,6 @@
 ---
 title: systemPipeR - NGS workflow and report generation environment  <br> <br> 1. Introduction
-last_updated: Mon Nov 13 16:03:01 2017
+last_updated: Mon Nov 13 18:33:55 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_1.html
 ---
@@ -8,7 +8,12 @@ Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu
 
 Last update: 13 November, 2017 
 
-
+Alternative formats of this tutorial:
+[ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeR.html){:target="_blank"} ],
+[ [PDF](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeR.pdf){:target="_blank"} ],
+[ [.Rmd](https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/_vignettes/10_Rworkflows/systemPipeR.Rmd){:target="_blank"} ],
+[ [.R](https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/_vignettes/10_Rworkflows/systemPipeR.R){:target="_blank"} ],
+[ [Slides](http://girke.bioinformatics.ucr.edu/systemPipeR/mydoc_slides_12.html){:target="_blank"} ] 
 
 
 [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) provides utilities for building and running automated end-to-end analysis workflows for a wide range of next generation sequence (NGS) applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq (H Backman et al., 2016). Important features include a uniform workflow interface across different NGS applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters. The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, _`systemPipeR`_ can be used with most command-line aligners such as `BWA` (Li , 2013; Li et al., 2009), `TopHat2` (Kim et al., 2013) and `Bowtie2` (Langmead et al., 2012), as well as the R-based NGS aligners [_`Rsubread`_](http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html) (Liao et al., 2013) and [_`gsnap (gmapR)`_](http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html) (Wu et al., 2010). Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental designs is facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area (Lawrence et al., 2013). 
