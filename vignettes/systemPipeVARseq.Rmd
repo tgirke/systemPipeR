@@ -3,16 +3,15 @@ title: "VAR-Seq Workflow Template "
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
+  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
-  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
+  %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{_systemPipeR_: NGS workflow and report generation environment}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-
 fontsize: 14pt
 bibliography: bibtex.bib
 ---
