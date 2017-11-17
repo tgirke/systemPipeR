@@ -19,9 +19,8 @@ bibliography: bibtex.bib
 
 <!--
 - Compile from command-line
-Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRNAseq.knit.md 12; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::pdf_document'))"
+Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRNAseq.knit.md 12; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('pdf_document'))"
 -->
-
 
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
@@ -330,7 +329,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 dev.off()
 ```
 
-![](sample_tree.png)
+![](sample_tree.pdf)
 <div align="center">Figure 2: Correlation dendrogram of samples</div></br>
 
 # Analysis of DEGs
@@ -377,7 +376,7 @@ dev.off()
 write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", row.names=FALSE)
 ```
 
-![](DEGcounts.png)
+![](DEGcounts.pdf)
 <div align="center">Figure 3: Up and down regulated DEGs with FDR of 1%</div></br>
 
 ## Venn diagrams of DEG sets
@@ -397,7 +396,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 dev.off()
 ```
 
-![](vennplot.png)
+![](vennplot.pdf)
 <div align="center">Figure 4: Venn Diagram for 4 Up and Down DEG Sets</div></br>
 
 # GO term enrichment analysis
@@ -476,7 +475,7 @@ goBarplot(gos, gocat="BP")
 goBarplot(gos, gocat="CC")
 ```
 
-![](GOslimbarplotMF.png)
+![](GOslimbarplotMF.pdf)
 <div align="center">Figure 5: GO Slim Barplot for MF Ontology</div></br>
 
 # Clustering and heat maps
@@ -495,7 +494,7 @@ pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_dist
 dev.off()
 ```
 
-![](heatmap1.png)
+![](heatmap1.pdf)
 <div align="center">Figure 6: Heat Map with Hierarchical Clustering Dendrograms of DEGs</div></br>
 
 # Version Information
