@@ -3,10 +3,10 @@ title: "_systemPipeR_: NGS workflow and report generation environment"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
+  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -16,6 +16,14 @@ fontsize: 14pt
 bibliography: bibtex.bib
 ---
 
+```{css}
+pre code {
+  white-space: pre !important;
+  overflow-x: scroll !important;
+  word-break: keep-all !important;
+  word-wrap: initial !important;
+}
+```
 
 <!--
 %% \VignetteEngine{knitr::rmarkdown}

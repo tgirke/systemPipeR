@@ -3,10 +3,10 @@ title: "ChIP-Seq Workflow Template"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
+  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -21,6 +21,14 @@ bibliography: bibtex.bib
 Rscript -e "rmarkdown::render('systemPipeChIPseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeChIPseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeChIPseq.knit.md 13; Rscript -e "rmarkdown::render('systemPipeChIPseq.Rmd', c('BiocStyle::pdf_document'))"
 -->
 
+```{css}
+pre code {
+  white-space: pre !important;
+  overflow-x: scroll !important;
+  word-break: keep-all !important;
+  word-wrap: initial !important;
+}
+```
 
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
