@@ -1,0 +1,793 @@
+---
+title: "RIBO-Seq Workflow" 
+author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  BiocStyle::html_document:
+    toc_float: true
+    code_folding: show
+  BiocStyle::pdf_document: default
+package: systemPipeR
+vignette: |
+  %\VignetteIndexEntry{RIBO-Seq Workflow}
+  %\VignetteEncoding{UTF-8}
+  
+  %\VignetteEngine{knitr::rmarkdown}
+fontsize: 14pt
+bibliography: bibtex.bib
+---
+
+<!--
+- Compile from command-line
+Rscript -e "rmarkdown::render('systemPipeRIBOseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeRIBOseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRIBOseq.knit.md 6; Rscript -e "rmarkdown::render('systemPipeRIBOseq.Rmd', c('BiocStyle::pdf_document'))"
+-->
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+options(width=100, max.print=1000)
+knitr::opts_chunk$set(
+    eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
+```
+
+```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+suppressPackageStartupMessages({
+    library(systemPipeR)
+    library(BiocParallel)
+    library(Biostrings)
+    library(Rsamtools)
+    library(GenomicRanges)
+    library(ggplot2)
+    library(GenomicAlignments)
+    library(ShortRead)
+    library(ape)
+})
+```
+
+# Introduction
+
+Ribo-Seq and polyRibo-Seq are a specific form of RNA-Seq gene expression
+experiments utilizing mRNA subpopulations directly bound to ribosomes.
+Compared to standard RNA-Seq, their readout of gene expression provides a
+better approximation of downstream protein abundance profiles due to their
+close association with translational processes. The most important difference
+among the two is that polyRibo-Seq utilizes polyribosomal RNA for sequencing,
+whereas Ribo-Seq is a footprinting approach restricted to sequencing RNA
+fragments protected by ribosomes [@Ingolia2009-cb; @Aspden2014-uu; @Juntawong2015-ru}. 
+
+The workflow presented in this vignette contains most of the data analysis
+steps described by [@Juntawong2014-ny] including functionalities useful for
+processing both polyRibo-Seq and Ribo-Seq experiments. To improve re-usability
+and adapt to recent changes of software versions (_e.g._ R, Bioconductor and
+short read aligners), the code has been optimized accordingly. Thus, the
+results obtained with the updated workflow are expected to be similar but not
+necessarily identical with the published results described in the original
+paper. 
+
+Relevant analysis steps of this workflow include read preprocessing, read
+alignments against a reference genome, counting of reads overlapping with a
+wide range of genomic features (_e.g._ CDSs, UTRs, uORFs, rRNAs, etc.),
+differential gene expression and differential ribosome binding analyses, as
+well as a variety of genome-wide summary plots for visualizing RNA expression
+trends. Functions are provided for evaluating the quality of Ribo-seq data,
+for identifying novel expressed regions in the genomes, and for gaining
+insights into gene regulation at the post-transcriptional and translational
+levels. For example, the functions `genFeatures` and
+`featuretypeCounts` can be used to quantify the expression output for
+all feature types included in a genome annotation (`e.g.` genes,
+introns, exons, miRNAs, intergenic regions, etc.). To determine the approximate
+read length of ribosome footprints in Ribo-Seq experiments, these feature type
+counts can be obtained and plotted for specific read lengths separately.
+Typically, the most abundant read length obtained for translated features
+corresponds to the approximate footprint length occupied by the ribosomes of a
+given organism group. Based on the results from several Ribo-Seq studies, these
+ribosome footprints are typically ~30 nucleotides long
+[@Ingolia2011-fc; @Ingolia2009-cb; @Juntawong2014-ny].  However, their
+length can vary by several nucleotides depending upon the optimization of the
+RNA digestion step and various factors associated with translational
+regulation.  For quality control purposes of Ribo-Seq experiments it is also
+useful to monitor the abundance of reads mapping to rRNA genes due to the high
+rRNA content of ribosomes. This information can be generated with the 
+`featuretypeCounts` function described above.
+
+Coverage trends along transcripts summarized for any number of transcripts can
+be obtained and plotted with the functions `featureCoverage` and
+`plotfeatureCoverage`, respectively. Their results allow monitoring
+of the phasing of ribosome movements along triplets of coding sequences.
+Commonly, high quality data will display here for the first nucleotide of each
+codon the highest depth of coverage computed for the 5' ends of the aligned
+reads. 
+ 
+Ribo-seq data can also be used to evaluate various aspects of translational
+control due to ribosome occupancy in upstream open reading frames (uORFs). The
+latter are frequently present in (or near) 5' UTRs of transcripts. For this,
+the function `predORFs` can be used to identify ORFs in the
+nucleotide sequences of transcripts or their subcomponents such as UTR regions.
+After scaling the resulting ORF coordinates back to the corresponding genome
+locations using `scaleRanges`, one can use these novel features
+(_e.g._ uORFs) for expression analysis routines similar to those
+employed for pre-existing annotations, such as the exonic regions of genes. For
+instance, in Ribo-Seq experiments one can use this approach to systematically identify all
+transcripts occupied by ribosomes in their uORF regions. The binding of
+ribosomes to uORF regions may indicate a regulatory role in the translation of
+the downstream main ORFs and/or translation of the uORFs into functionally
+relevant peptides. 
+
+## Experimental design
+Typically, users want to specify here all information relevant for the analysis
+of their NGS study. This includes detailed descriptions of FASTQ files,
+experimental design, reference genome, gene annotations, etc.  
+
+# Load workflow template
+
+The following loads one of the available NGS workflow templates (here RIBO-Seq)
+into the user's current working directory. At the moment, the package includes
+workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for
+additional NGS applications will be provided in the future.
+The sample data are described [here](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html#load-sample-data-and-workflow-templates).
+
+```{r genRibo_workflow, eval=FALSE}
+library(systemPipeRdata)
+genWorkenvir(workflow="riboseq", bam=TRUE)
+setwd("riboseq")
+```
+## Download latest version of this tutorial
+
+In case there is a newer version of this tutorial, download its `systemPipeRIBOseq.Rmd` source and open it in your R IDE (e.g. vim-r or RStudio).
+
+
+```{r download_latest, eval=FALSE}
+download.file("https://raw.githubusercontent.com/tgirke/systemPipeRdata/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd", "systemPipeRIBOseq.Rmd")
+```
+
+## Load packages and sample data
+The `systemPipeR` package needs to be loaded to perform the analysis 
+steps shown in this report [@Girke2014-oy]. The package allows users
+to run the entire analysis workflow interactively or with a single command 
+while also generating the corresponding analysis report. For details
+see `systemPipeR's` main [vignette](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html).
+
+```{r load_systempiper, eval=TRUE}
+library(systemPipeR)
+```
+
+In the workflow environments generated by `genWorkenvir` all data
+inputs are stored in a `data/` directory and all analysis results will
+be written to a separate `results/` directory, while the
+`systemPipeRIBOseq.Rmd` script and the `targets` file are
+expected to be located in the parent directory. The R session is expected to
+run from this parent directory. Additional parameter files are stored under
+`param/`.
+
+To work with real data, users want to organize their own data similarly and
+substitute all test data for their own data. To rerun an established workflow
+on new data, the initial `targets` file along with the corresponding
+FASTQ files are usually the only inputs the user needs to provide.
+
+If applicable users can load custom functions not provided by
+`systemPipeR`. Skip this step if this is not the case.
+
+```{r source_helper_fcts, eval=FALSE}
+source("systemPipeRIBOseq_Fct.R")
+```
+
+## Experiment definition provided by `targets` file
+The `targets` file defines all FASTQ files and sample comparisons of the analysis workflow. 
+
+```{r load_targets, eval=TRUE}
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+targets <- read.delim(targetspath, comment.char = "#")[,1:4]
+targets
+```
+
+# Read preprocessing
+
+## Quality filtering and adaptor trimming
+The following custom function trims adaptors hierarchically from the longest to
+the shortest match of the right end of the reads. If
+`internalmatch=TRUE` then internal matches will trigger the same
+behavior.  The argument `minpatternlength` defines the shortest
+adaptor match to consider in this iterative process. In addition, the function
+removes reads containing Ns or homopolymer regions. More detailed information
+on read preprocessing is provided in `systemPipeR's` main vignette.
+
+```{r fastq_trimming, eval=FALSE}
+args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
+fctpath <- system.file("extdata", "custom_Fct.R", package="systemPipeR")
+source(fctpath)
+iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, 
+                             Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)" 
+preprocessReads(args=args, Fct=iterTrim, batchsize=100000, overwrite=TRUE, compress=TRUE)
+writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
+```
+
+## FASTQ quality report
+The following `seeFastq` and `seeFastqPlot` functions generate and plot a series of
+useful quality statistics for a set of FASTQ files including per cycle quality
+box plots, base proportions, base-level quality trends, relative k-mer
+diversity, length and occurrence distribution of reads, number of reads above
+quality cutoffs and mean quality distribution. The results are written to a PDF file named 
+`fastqReport.png`.
+
+```{r fastq_report, eval=FALSE}
+args <- systemArgs(sysma=NULL, mytargets="targets_trim.txt")
+fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
+png("./results/fastqReport.png", height=18, width=4*length(fqlist), units="in", res=72)
+seeFastqPlot(fqlist)
+dev.off()
+```
+
+![](fastqReport.png)
+<div align="center"><b>Figure 2:</b> FASTQ quality report. To zoom in, rigth click image and open it in a separate browser tab. </div></br>
+
+# Alignments
+
+## Read mapping with `Bowtie2/Tophat2`
+The NGS reads of this project will be aligned against the reference genome
+sequence using `Bowtie2/TopHat2` [@Kim2013-vg; @Langmead2012-bs]. The
+parameter settings of the aligner are defined in the `tophat.param`
+file.
+
+```{r tophat_alignment1, eval=FALSE}
+args <- systemArgs(sysma="param/tophat.param", mytargets="targets_trim.txt")
+sysargs(args)[1] # Command-line parameters for first FASTQ file
+```
+
+Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 `qsub` processes each with 4 CPU cores).
+
+```{r tophat_alignment2, eval=FALSE, warning=FALSE, message=FALSE}
+moduleload(modules(args))
+system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
+resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
+reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", 
+                  resourceList=resources)
+waitForJobs(reg)
+```
+
+## Read mapping with `HISAT2`
+
+```{r hisat2_alignment, eval=FALSE}
+args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
+# args <- systemArgs(sysma="param/hisat2.param", mytargets="targets_trim.txt")
+sysargs(args)[1] # Command-line parameters for first FASTQ file
+moduleload(modules(args))
+system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
+runCommandline(args=args)
+```
+
+Check whether all BAM files have been created
+
+```{r check_files_exist, eval=FALSE}
+file.exists(outpaths(args))
+```
+
+## Read and alignment stats
+The following provides an overview of the number of reads in each sample and how many of them aligned to the reference.
+
+```{r align_stats, eval=FALSE}
+read_statsDF <- alignStats(args=args) 
+write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+```
+
+```{r align_stats_view, eval=TRUE}
+read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
+```
+
+## Create symbolic links for viewing BAM files in IGV
+
+The `symLink2bam` function creates symbolic links to view the BAM alignment files in a
+genome browser such as IGV. The corresponding URLs are written to a file
+with a path specified under `urlfile` in the `results` directory.
+
+```{r bam_urls, eval=FALSE}
+symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/tests/"), 
+            urlbase="http://biocluster.ucr.edu/~tgirke/", 
+	        urlfile="./results/IGVurl.txt")
+```
+
+# Read distribution across genomic features
+
+The `genFeatures` function generates a variety of feature types from
+`TxDb` objects using utilities provided by the `GenomicFeatures` package. 
+
+## Obtain feature types
+
+The first step is the generation of the feature type ranges based on
+annotations provided by a GFF file that can be transformed into a
+`TxDb` object. This includes ranges for mRNAs, exons, introns, UTRs,
+CDSs, miRNAs, rRNAs, tRNAs, promoter and intergenic regions. In addition, any
+number of custom annotations can be included in this routine.
+
+```{r genFeatures, eval=FALSE}
+library(GenomicFeatures)
+txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff3", organism="Arabidopsis")
+feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, 
+                    verbose=TRUE)
+```
+
+## Count and plot reads of any length
+The `featuretypeCounts` function counts how many reads in short read
+alignment files (BAM format) overlap with entire annotation categories. This
+utility is useful for analyzing the distribution of the read mappings across
+feature types, _e.g._ coding versus non-coding genes. By default the
+read counts are reported for the sense and antisense strand of each feature
+type separately. To minimize memory consumption, the BAM files are processed in
+a stream using utilities from the `Rsamtools` and
+`GenomicAlignment` packages.  The counts can be reported for each read
+length separately or as a single value for reads of any length.  Subsequently,
+the counting results can be plotted with the associated
+`plotfeaturetypeCounts` function.
+
+The following generates and plots feature counts for any read length.
+
+```{r featuretypeCounts, eval=FALSE}
+library(ggplot2); library(grid)
+fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
+                        singleEnd=TRUE, readlength=NULL, type="data.frame")
+p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png", graphicsformat="png", 
+                           scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+```
+
+![](featureCounts.png)
+<div align="center">Figure 2: Read distribution plot across annotation features for any read length.</div></br>
+
+## Count and plot reads of specific lengths
+
+To determine the approximate read length of ribosome footprints in Ribo-Seq experiments, one 
+can generate and plot the feature counts for specific read lengths separately. Typically, the 
+most abundant read length obtained for translated features corresponds to the approximate footprint 
+length occupied by the ribosomes.
+
+```{r featuretypeCounts_length, eval=FALSE}
+fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
+                         singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
+p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png", graphicsformat="png", 
+                            scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
+```
+
+![](featureCounts2.png)
+<div align="center">Figure 3: Read distribution plot across annotation features for specific read lengths.</div></br>
+
+
+# Adding custom features to workflow
+
+## Predicting uORFs in 5' UTR regions
+
+The function `predORF` can be used to identify open reading frames
+(ORFs) and coding sequences (CDSs) in DNA sequences provided as
+`DNAString` or `DNAStringSet` objects. The setting
+`mode='ORF'` returns continuous reading frames that begin with a start
+codon and end with a stop codon, while `mode='CDS'` returns continuous
+reading frames that do not need to begin or end with start or stop codons,
+respectively. Non-canonical start and stop condons are supported by allowing the
+user to provide any custom set of triplets under the `startcodon` and `stopcodon`
+arguments (`i.e.` non-ATG start codons). The argument `n` defines the maximum number of ORFs to return for each
+input sequence (_e.g._ `n=1` returns only the longest ORF). It also
+supports the identification of overlapping and nested ORFs. Alternatively, one 
+can return all non-overlapping ORFs including the longest ORF for each input
+sequence with `n="all"` and `longest_disjoint=TRUE`.
+
+```{r pred_orf, eval=FALSE}
+library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
+txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff3", organism="Arabidopsis")
+futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)
+dna <- extractTranscriptSeqs(FaFile("data/tair10.fasta"), futr)
+uorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="sense")
+```
+
+To use the predicted ORF ranges for expression analysis given genome alignments
+as input, it is necessary to scale them to the corresponding genome
+coordinates. The function `scaleRanges` does this by transforming the
+mappings of spliced features (query ranges) to their corresponding genome
+coordinates (subject ranges). The method accounts for introns in the subject
+ranges that are absent in the query ranges. The above uORFs predicted in the
+provided 5' UTRs sequences using `predORF` are a typical use case
+for this application. These query ranges are given relative to the 5' UTR 
+sequences and `scaleRanges` will convert them to the corresponding 
+genome coordinates. The resulting `GRangesList` object (here `grl_scaled`) 
+can be directly used for read counting.
+
+```{r scale_ranges, eval=FALSE}
+grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
+export.gff3(unlist(grl_scaled), "results/uorf.gff")
+```
+
+To confirm the correctness of the obtained uORF ranges, one can parse their
+corresponding DNA sequences from the reference genome with the `getSeq`
+function and then translate them with the `translate` function into
+proteins. Typically, the returned protein sequences should start with a
+`M` (corresponding to start codon) and end with `*`
+(corresponding to stop codon). The following example does this for a single uORF 
+containing three exons.
+
+```{r translate1, eval=FALSE}
+translate(unlist(getSeq(FaFile("data/tair10.fasta"), grl_scaled[[7]])))
+```
+
+## Adding custom features to other feature types
+
+If required custom feature ranges can be added to the standard features
+generated with the `genFeatures` function above. The following does this for the uORF ranges
+predicted with `predORF`.
+
+```{r add_features, eval=FALSE}
+feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
+feat <- c(feat, GRangesList("uORF"=unlist(grl_scaled)))
+```
+
+## Predicting sORFs in intergenic regions
+The following identifies continuous ORFs in intergenic regions. Note,
+`predORF` can only identify continuous ORFs in query sequences. The
+function does not identify and remove introns prior to the ORF prediction.  
+
+```{r pred_sorf, eval=FALSE}
+feat <- genFeatures(txdb, featuretype="intergenic", reduce_ranges=TRUE)
+intergenic <- feat$intergenic
+strand(intergenic) <- "+"
+dna <- getSeq(FaFile("data/tair10.fasta"), intergenic)
+names(dna) <- mcols(intergenic)$feature_by
+sorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="both")
+sorf <- sorf[width(sorf) > 60] # Remove sORFs below length cutoff, here 60bp
+intergenic <- split(intergenic, mcols(intergenic)$feature_by)
+grl_scaled_intergenic <- scaleRanges(subject=intergenic, query=sorf, type="sORF", verbose=TRUE)
+export.gff3(unlist(grl_scaled_intergenic), "sorf.gff")
+translate(getSeq(FaFile("data/tair10.fasta"), unlist(grl_scaled_intergenic)))
+```
+
+# Genomic read coverage along transripts or CDSs
+The `featureCoverage` function computes the read coverage along
+single and multi component features based on genomic alignments. The coverage
+segments of component features are spliced to continuous ranges, such as exons
+to transcripts or CDSs to ORFs. The results can be obtained with single
+nucleotide resolution (_e.g._ around start and stop codons) or as mean coverage
+of relative bin sizes, such as 100 bins for each feature. The latter allows
+comparisons of coverage trends among transcripts of variable length. Additionally, 
+the results can be obtained for single or many features (_e.g._ any number of
+transcripts) at once. Visualization of the coverage results is facilitated by
+the downstream `plotfeatureCoverage` function. 
+
+## Binned CDS coverage to compare many transcripts
+
+```{r coverage_binned1, eval=FALSE}
+grl <- cdsBy(txdb, "tx", use.names=TRUE)
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20,
+                         outfile="results/featureCoverage.xls", overwrite=TRUE)
+```
+
+## Coverage upstream and downstream of start and stop codons
+
+```{r coverage_binned2, eval=FALSE}
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20, 
+                         outfile="results/featureCoverage.xls", overwrite=TRUE)
+plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
+```
+
+## Combined coverage for both binned CDS and start/stop codons
+
+```{r coverage_binned3, eval=FALSE}
+library(ggplot2); library(grid)
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:4], resizereads=NULL, 
+                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
+                         resizefeatures=TRUE, upstream=20, downstream=20,
+                         outfile="results/featureCoverage.xls", overwrite=TRUE)
+png("./results/featurePlot.png", height=12, width=24, units="in", res=72)
+plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
+dev.off()
+```
+
+![](featurePlot.png)
+<div align="center">Figure 4: Feature coverage plot with single nucleotide resolution around start and stop codons and binned coverage between them.</div></br>
+
+
+## Nucleotide level coverage along entire transcripts/CDSs
+
+```{r coverage_nuc_level, eval=FALSE}
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1], resizereads=NULL, 
+                        readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE, 
+                        resizefeatures=TRUE, upstream=20, downstream=20, outfile=NULL)
+```
+
+# Read quantification per annotation range
+
+## Read counting with `summarizeOverlaps` in parallel mode using multiple cores
+
+Reads overlapping with annotation ranges of interest are counted for each
+sample using the `summarizeOverlaps` function [@Lawrence2013-kt]. The
+read counting is preformed for exonic gene regions in a non-strand-specific
+manner while ignoring overlaps among different genes. Subsequently, the
+expression count values are normalized by \textit{reads per kp per million
+mapped reads} (RPKM). The raw read count table (`countDFeByg.xls`) and the correspoding
+RPKM table (`rpkmDFeByg.xls`) are written to
+separate files in the `results` directory of this project.
+Parallelization is achieved with the `BiocParallel` package, here
+using 8 CPU cores.
+
+```{r read_counting, eval=FALSE}
+library("GenomicFeatures"); library(BiocParallel)
+txdb <- loadDb("./data/tair10.sqlite")
+eByg <- exonsBy(txdb, by=c("gene"))
+bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+multicoreParam <- MulticoreParam(workers=8); register(multicoreParam); registered()
+counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", 
+                                               ignore.strand=TRUE, 
+                                               inter.feature=FALSE, 
+                                               singleEnd=TRUE)) 
+countDFeByg <- sapply(seq(along=counteByg), function(x) assays(counteByg[[x]])$counts)
+rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(bfl)
+rpkmDFeByg <- apply(countDFeByg, 2, function(x) returnRPKM(counts=x, ranges=eByg))
+write.table(countDFeByg, "results/countDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
+write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
+```
+
+Sample of data slice of count table
+
+```{r read_counting_view, eval=FALSE}
+read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:5]
+```
+
+Sample of data slice of RPKM table
+
+```{r read_rpkm_view, eval=FALSE}
+read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
+```
+
+Note, for most statistical differential expression or abundance analysis
+methods, such as `edgeR` or `DESeq2`, the raw count values
+should be used as input. The usage of RPKM values should be restricted to
+specialty applications required by some users, _e.g._ manually comparing
+the expression levels among different genes or features. 
+
+## Sample-wise correlation analysis
+
+The following computes the sample-wise Spearman correlation coefficients from
+the `rlog` transformed expression values generated with the
+`DESeq2` package. After transformation to a distance matrix,
+hierarchical clustering is performed with the `hclust` function and
+the result is plotted as a dendrogram and written to a file named `sample_tree.png`
+in the `results` directory. 
+
+```{r sample_tree, eval=FALSE}
+library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
+colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
+d <- cor(assay(rlog(dds)), method="spearman")
+hc <- hclust(dist(1-d))
+png("results/sample_tree.pdf")
+plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, 
+           no.margin=TRUE)
+dev.off()
+```
+
+![](sample_tree.png)
+<div align="center">Figure 5: Correlation dendrogram of samples.</div></br>
+
+
+# Analysis of differentially expressed genes with `edgeR`
+
+The analysis of differentially expressed genes (DEGs) is performed with the glm
+method from the `edgeR` package [@Robinson2010-uk]. The sample
+comparisons used by this analysis are defined in the header lines of the
+`targets.txt` file starting with `<CMP>`.
+
+```{r deg_edger, eval=FALSE}
+library(edgeR)
+countDF <- read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE) 
+targets <- read.delim("targets.txt", comment="#")
+cmp <- readComp(file="targets.txt", format="matrix", delim="-")
+edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
+```
+
+Add functional gene descriptions, here from `biomaRt`. 
+
+```{r add_descr, eval=FALSE}
+library("biomaRt")
+m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
+desc <- getBM(attributes=c("tair_locus", "description"), mart=m)
+desc <- desc[!duplicated(desc[,1]),]
+descv <- as.character(desc[,2]); names(descv) <- as.character(desc[,1])
+edgeDF <- data.frame(edgeDF, Desc=descv[rownames(edgeDF)], check.names=FALSE)
+write.table(edgeDF, "./results/edgeRglm_allcomp.xls", quote=FALSE, sep="\t", col.names = NA)
+```
+
+Filter and plot DEG results for up and down regulated genes. The definition of
+`up` and `down` is given in the corresponding help file. To
+open it, type `?filterDEGs` in the R console. 
+
+```{r filter_degs, eval=FALSE}
+edgeDF <- read.delim("results/edgeRglm_allcomp.xls", row.names=1, check.names=FALSE) 
+png("./results/DEGcounts.png", height=10, width=10, units="in", res=72)
+DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=20))
+dev.off()
+write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", row.names=FALSE)
+```
+
+![](DEGcounts.png)
+
+<div align="center">Figure 6: Up and down regulated DEGs.</div></br>
+
+The function `overLapper` can compute Venn intersects for large
+numbers of sample sets (up to 20 or more) and `vennPlot` can plot 2-5
+way Venn diagrams. A useful feature is the possiblity to combine the counts
+from several Venn comparisons with the same number of sample sets in a single
+Venn diagram (here for 4 up and down DEG sets).
+
+```{r venn_diagram, eval=FALSE}
+vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
+vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
+png("results/vennplot.png")
+vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
+dev.off()
+```
+
+![](vennplot.png)
+
+<div align="center">Figure 7: Venn Diagram for 4 Up and Down DEG Sets</div></br>
+
+# GO term enrichment analysis of DEGs}
+
+## Obtain gene-to-GO mappings
+The following shows how to obtain gene-to-GO mappings from `biomaRt`
+(here for _A. thaliana_) and how to organize them for the downstream GO
+term enrichment analysis. Alternatively, the gene-to-GO mappings can be
+obtained for many organisms from Bioconductor's `*.db` genome
+annotation packages or GO annotation files provided by various genome
+databases. For each annotation this relatively slow preprocessing step needs to
+be performed only once. Subsequently, the preprocessed data can be loaded with
+the `load` function as shown in the next subsection. 
+
+```{r get_go_annot, eval=FALSE}
+library("biomaRt")
+listMarts() # To choose BioMart database
+listMarts(host="plants.ensembl.org")
+m <- useMart("plants_mart", host="plants.ensembl.org")
+listDatasets(m)
+m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
+listAttributes(m) # Choose data types you want to download
+go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
+go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
+go[go[,3]=="molecular_function", 3] <- "F"; go[go[,3]=="biological_process", 3] <- "P"; go[go[,3]=="cellular_component", 3] <- "C"
+go[1:4,]
+dir.create("./data/GO")
+write.table(go, "data/GO/GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
+catdb <- makeCATdb(myfile="data/GO/GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=NULL)
+save(catdb, file="data/GO/catdb.RData")
+```
+
+## Batch GO term enrichment analysis
+
+Apply the enrichment analysis to the DEG sets obtained the above differential
+expression analysis. Note, in the following example the `FDR` filter is set
+here to an unreasonably high value, simply because of the small size of the toy
+data set used in this vignette. Batch enrichment analysis of many gene sets is
+performed with the function. When `method=all`, it returns all GO terms passing
+the p-value cutoff specified under the `cutoff` arguments. When `method=slim`,
+it returns only the GO terms specified under the `myslimv` argument. The given
+example shows how a GO slim vector for a specific organism can be obtained from
+BioMart.
+
+```{r go_enrich, eval=FALSE, warning=FALSE, message=FALSE}
+library("biomaRt")
+library(BBmisc) # Defines suppressAll()
+load("data/GO/catdb.RData")
+DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
+up_down <- DEG_list$UporDown; names(up_down) <- paste(names(up_down), "_up_down", sep="")
+up <- DEG_list$Up; names(up) <- paste(names(up), "_up", sep="")
+down <- DEG_list$Down; names(down) <- paste(names(down), "_down", sep="")
+DEGlist <- c(up_down, up, down)
+DEGlist <- DEGlist[sapply(DEGlist, length) > 0]
+BatchResult <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="all", id_type="gene", CLSZ=2, cutoff=0.9, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+library("biomaRt")
+m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
+goslimvec <- as.character(getBM(attributes=c("goslim_goa_accession"), mart=m)[,1])
+BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim", id_type="gene", myslimv=goslimvec, CLSZ=10, cutoff=0.01, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+```
+
+The `data.frame` generated by `GOCluster` can be plotted with the `goBarplot` function. Because of the
+variable size of the sample sets, it may not always be desirable to show
+the results from different DEG sets in the same bar plot. Plotting
+single sample sets is achieved by subsetting the input data frame as
+shown in the first line of the following example.
+
+```{r go_plot, eval=FALSE}
+gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
+gos <- BatchResultslim
+png("./results/GOslimbarplotMF.png", height=12, width=12, units="in", res=72)
+goBarplot(gos, gocat="MF")
+dev.off()
+goBarplot(gos, gocat="BP")
+goBarplot(gos, gocat="CC")
+```
+
+![](GOslimbarplotMF.png)
+<div align="center">Figure 8: GO Slim Barplot for MF Ontology.</div></br>
+
+# Differential ribosome loading analysis (translational efficiency)
+
+Combinded with mRNA-Seq data, Ribo-Seq or polyRibo-Seq experiments can be used
+to study changes in translational efficiencies of genes and/or transcripts for
+different treatments. For test purposes the following generates a small test
+data set from the sample data used in this vignette, where two types of RNA
+samples (`assays`) are considered: polyribosomal mRNA (`Ribo`)
+and total mRNA (`mRNA`). In addition, there are two treatments
+(`conditions`): `M1` and `A1`. 
+
+```{r diff_loading, eval=TRUE}
+library(DESeq2)
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
+countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
+countDFeByg <- read.delim(countDFeBygpath, row.names=1)
+coldata <- DataFrame(assay=factor(rep(c("Ribo","mRNA"), each=4)), 
+                condition=factor(rep(as.character(targetsin(args)$Factor[1:4]), 2)), 
+                row.names=as.character(targetsin(args)$SampleName)[1:8])
+coldata
+```
+
+Differences in translational efficiencies can be calculated by ratios of ratios
+for the two conditions: 
+
+$$(Ribo\_A1 / mRNA\_A1) / (Ribo\_M1 / mRNA\_M1)$$
+
+
+The latter can be modeled with the `DESeq2` package using the design $\sim assay + condition + assay:condition$, 
+where the interaction term $assay:condition$
+represents the ratio of ratios. Using the likelihood ratio test of
+`DESeq2`, which removes the interaction term in the reduced model, one
+can test whether the translational efficiency (ribosome loading) is different
+in condition `A1` than in `M1`.
+
+```{r diff_translational_eff, eval=TRUE}
+dds <- DESeqDataSetFromMatrix(countData=as.matrix(countDFeByg[,rownames(coldata)]), 
+                            colData = coldata, 
+                            design = ~ assay + condition + assay:condition)
+# model.matrix(~ assay + condition + assay:condition, coldata) # Corresponding design matrix
+dds <- DESeq(dds, test="LRT", reduced = ~ assay + condition)
+res <- DESeq2::results(dds)
+head(res[order(res$padj),],4)
+# write.table(res, file="transleff.xls", quote=FALSE, col.names = NA, sep="\t")
+```
+
+# Clustering and heat maps
+
+The following example performs hierarchical clustering on the `rlog` transformed expression matrix subsetted by the DEGs identified in the 
+above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.
+
+```{r heatmap, eval=FALSE}
+library(pheatmap)
+geneids <- unique(as.character(unlist(DEG_list[[1]])))
+y <- assay(rlog(dds))[geneids, ]
+png("heatmap1.png")
+pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
+dev.off()
+```
+
+![](heatmap1.png)
+<div align="center">Figure 9: Heat map with hierarchical clustering dendrograms of DEGs</div></br>
+
+# Render report in HTML and PDF format
+
+```{r render_report, eval=FALSE}
+rmarkdown::render("systemPipeRIBOseq.Rmd", "html_document")
+rmarkdown::render("systemPipeRIBOseq.Rmd", "pdf_document")
+```
+
+
+# Version Information
+
+```{r sessionInfo}
+sessionInfo()
+```
+
+# Funding
+This research was funded by National Science Foundation Grants IOS-0750811 and
+MCB-1021969, and a Marie Curie European Economic Community Fellowship
+PIOF-GA-2012-327954.
+
+# References
+
