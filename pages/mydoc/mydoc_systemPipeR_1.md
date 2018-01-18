@@ -1,12 +1,12 @@
 ---
 title: systemPipeR - NGS workflow and report generation environment  <br> <br> 1. Introduction
-last_updated: Sun Oct 22 17:33:57 2017
+last_updated: Mon Nov 13 18:33:55 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_1.html
 ---
 Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 22 October, 2017 
+Last update: 13 November, 2017 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeR.html){:target="_blank"} ],

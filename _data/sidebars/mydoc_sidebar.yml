@@ -164,66 +164,6 @@ entries:
       url: /mydoc_systemPipeChIPseq_14.html
       output: web
 
-  - title: VAR-Seq Workflow
-    output: web, pdf
-    folderitems:
-
-    - title: 1. Introduction
-      url: /mydoc_systemPipeVARseq_01.html
-      output: web
-
-    - title: 2. Workflow environment
-      url: /mydoc_systemPipeVARseq_02.html
-      output: web
-
-    - title: 3. Read preprocessing
-      url: /mydoc_systemPipeVARseq_03.html
-      output: web
-
-    - title: 4. Alignments
-      url: /mydoc_systemPipeVARseq_04.html
-      output: web
-
-    - title: 5. Variant calling
-      url: /mydoc_systemPipeVARseq_05.html
-      output: web
-
-    - title: 6. Filter variants
-      url: /mydoc_systemPipeVARseq_06.html
-      output: web
-
-    - title: 7. Annotate filtered variants
-      url: /mydoc_systemPipeVARseq_07.html
-      output: web
-
-    - title: 8. Combine annotation results among samples
-      url: /mydoc_systemPipeVARseq_08.html
-      output: web
-
-    - title: 9. Summary statistics of variants
-      url: /mydoc_systemPipeVARseq_09.html
-      output: web
-
-    - title: 10. Venn diagram of variants
-      url: /mydoc_systemPipeVARseq_10.html
-      output: web
-
-    - title: 11. Plot variants programmatically 
-      url: /mydoc_systemPipeVARseq_11.html
-      output: web
-
-    - title: 12. Version Information
-      url: /mydoc_systemPipeVARseq_12.html
-      output: web
-
-    - title: 13. Funding
-      url: /mydoc_systemPipeVARseq_13.html
-      output: web
-
-    - title: 14. References
-      url: /mydoc_systemPipeVARseq_14.html
-      output: web
-  
   - title: RIBO-Seq Workflow
     output: web, pdf
     folderitems:
@@ -292,6 +232,67 @@ entries:
       url: /mydoc_systemPipeRIBOseq_16.html
       output: web
 
+  - title: VAR-Seq Workflow
+    output: web, pdf
+    folderitems:
+
+    - title: 1. Introduction
+      url: /mydoc_systemPipeVARseq_01.html
+      output: web
+
+    - title: 2. Workflow environment
+      url: /mydoc_systemPipeVARseq_02.html
+      output: web
+
+    - title: 3. Read preprocessing
+      url: /mydoc_systemPipeVARseq_03.html
+      output: web
+
+    - title: 4. Alignments
+      url: /mydoc_systemPipeVARseq_04.html
+      output: web
+
+    - title: 5. Variant calling
+      url: /mydoc_systemPipeVARseq_05.html
+      output: web
+
+    - title: 6. Filter variants
+      url: /mydoc_systemPipeVARseq_06.html
+      output: web
+
+    - title: 7. Annotate filtered variants
+      url: /mydoc_systemPipeVARseq_07.html
+      output: web
+
+    - title: 8. Combine annotation results among samples
+      url: /mydoc_systemPipeVARseq_08.html
+      output: web
+
+    - title: 9. Summary statistics of variants
+      url: /mydoc_systemPipeVARseq_09.html
+      output: web
+
+    - title: 10. Venn diagram of variants
+      url: /mydoc_systemPipeVARseq_10.html
+      output: web
+
+    - title: 11. Plot variants programmatically 
+      url: /mydoc_systemPipeVARseq_11.html
+      output: web
+
+    - title: 12. Version Information
+      url: /mydoc_systemPipeVARseq_12.html
+      output: web
+
+    - title: 13. Funding
+      url: /mydoc_systemPipeVARseq_13.html
+      output: web
+
+    - title: 14. References
+      url: /mydoc_systemPipeVARseq_14.html
+      output: web
+
+
   - title: Training Events
     output: web, pdf
     folderitems:
@@ -323,4 +324,4 @@ entries:
     - title: Contacts
       url: /mydoc_contacts.html
       output: web
-    
+  

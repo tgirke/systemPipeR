@@ -1,6 +1,6 @@
 ---
 title: 4. Alignments
-last_updated: Sat Jun 10 11:34:52 2017
+last_updated: Mon Nov 13 16:23:52 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_04.html
 ---

@@ -10,13 +10,11 @@ Biostrings
 Rsamtools
 BiocParallel
 Biobase
+matrixStats
+DelayedArray
 SummarizedExperiment
 GenomicAlignments
 ShortRead
-DBI
-RSQLite
 systemPipeR
 ggplot2
 ape
-matrixStats
-DelayedArray

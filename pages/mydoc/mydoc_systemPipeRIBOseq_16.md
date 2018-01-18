@@ -1,6 +1,6 @@
 ---
 title: 16. References
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Mon Nov 13 16:18:42 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_16.html
 ---
@@ -14,6 +14,21 @@ permalink: mydoc_systemPipeRIBOseq_16.html
 7. Langmead, Ben, Salzberg, Steven L (2012) Fast gapped-read alignment with Bowtie 2. Nat. Methods, 9: 357--359; [URL](http://dx.doi.org/10.1038/nmeth.1923)
 8. Lawrence, Michael, Huber, Wolfgang, Pag\`{e}s, Herv\'{e}, Aboyoun, Patrick, Carlson, Marc, Gentleman, Robert, Morgan, Martin T, Carey, Vincent J (2013) Software for computing and annotating genomic ranges. PLoS Comput. Biol., 9: e1003118; [URL](http://dx.doi.org/10.1371/journal.pcbi.1003118)
 9. Robinson, M D, McCarthy, D J, Smyth, G K (2010) edgeR: a Bioconductor package for differential expression analysis of digital gene expression data. Bioinformatics, 26: 139--140; [URL](http://dx.doi.org/10.1093/bioinformatics/btp616)
-
+10. NA
+11. NA
+12. NA
+13. NA
+14. NA
+15. NA
+16. NA
+17. NA
+18. NA
+19. NA
+20. NA
+21. NA
+22. NA
+23. NA
+24. NA
+25. NA
 <br><br><center><a href="mydoc_systemPipeRIBOseq_15.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeRIBOseq_01.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

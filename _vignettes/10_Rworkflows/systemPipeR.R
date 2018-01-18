@@ -1,5 +1,3 @@
-## pre code {
-
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
 options(width=100, max.print=1000)

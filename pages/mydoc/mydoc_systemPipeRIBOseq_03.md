@@ -1,6 +1,6 @@
 ---
 title: 3. Read preprocessing
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Mon Nov 13 16:18:42 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_03.html
 ---
@@ -43,7 +43,7 @@ dev.off()
 ```
 
 ![](./pages/mydoc/systemPipeRIBOseq_files/fastqReport.png)
-<div align="center">Figure 1: FASTQ quality report for 18 samples</div>
+<div align="center"><b>Figure 2:</b> FASTQ quality report. To zoom in, rigth click image and open it in a separate browser tab. </div>
 
 <br><br><center><a href="mydoc_systemPipeRIBOseq_02.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeRIBOseq_04.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -481,112 +481,6 @@
         
     
     <li>
-        <a href="#">VAR-Seq Workflow</a>
-        <ul>
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
-            
-            
-            
-            
-            
-            
-            <li class="active"><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
-    
-    <li>
         <a href="#">RIBO-Seq Workflow</a>
         <ul>
             
@@ -698,6 +592,112 @@
             
             
             <li><a href="mydoc_systemPipeRIBOseq_16.html">16. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">VAR-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
             
             
             
@@ -843,7 +843,7 @@ current working directory. Samples files for <code class="highlighter-rouge">gat
 <code class="highlighter-rouge">gatk_run.sh</code> are available in the <code class="highlighter-rouge">param</code> subdirectory
 provided by <code class="highlighter-rouge">systemPipeRdata</code>.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">moduleload</span><span class="p">(</span><span class="s2">"picard/1.130"</span><span class="p">);</span><span class="w"> </span><span class="n">moduleload</span><span class="p">(</span><span class="s2">"samtools/1.3"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">moduleload</span><span class="p">(</span><span class="s2">"picard/1.130"</span><span class="p">);</span><span class="w"> </span><span class="n">moduleload</span><span class="p">(</span><span class="s2">"samtools/1.3"</span><span class="p">)</span><span class="w">
 </span><span class="n">system</span><span class="p">(</span><span class="s2">"picard CreateSequenceDictionary R=./data/tair10.fasta O=./data/tair10.dict"</span><span class="p">)</span><span class="w">
 </span><span class="n">system</span><span class="p">(</span><span class="s2">"samtools faidx data/tair10.fasta"</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/gatk.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_bam.txt"</span><span class="p">)</span><span class="w">
@@ -851,10 +851,9 @@ provided by <code class="highlighter-rouge">systemPipeRdata</code>.</p>
 </span><span class="n">reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clusterRun</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">conffile</span><span class="o">=</span><span class="s2">".BatchJobs.R"</span><span class="p">,</span><span class="w"> </span><span class="n">template</span><span class="o">=</span><span class="s2">"slurm.tmpl"</span><span class="p">,</span><span class="w"> </span><span class="n">Njobs</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">runid</span><span class="o">=</span><span class="s2">"01"</span><span class="p">,</span><span class="w">
                   </span><span class="n">resourceList</span><span class="o">=</span><span class="n">resources</span><span class="p">)</span><span class="w">
 </span><span class="n">waitForJobs</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span><span class="w">
-</span><span class="c1"># unlink(outfile1(args), recursive = TRUE, force = TRUE)
+</span><span class="c1"># unlink(outfile1(args), recursive = TRUE, force = TRUE)</span><span class="w">
 </span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_gatk.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="variant-calling-with-bcftools">Variant calling with <code class="highlighter-rouge">BCFtools</code></h2>
 
@@ -862,19 +861,18 @@ provided by <code class="highlighter-rouge">systemPipeRdata</code>.</p>
 in the current working directory the parameter file <code class="highlighter-rouge">sambcf.param</code> and the bash script 
 <code class="highlighter-rouge">sambcf_run.sh</code>.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/sambcf.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_bam.txt"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/sambcf.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_bam.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">resources</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">walltime</span><span class="o">=</span><span class="s2">"00:20:00"</span><span class="p">,</span><span class="w"> </span><span class="n">ntasks</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">ncpus</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">memory</span><span class="o">=</span><span class="s2">"6G"</span><span class="p">)</span><span class="w">
 </span><span class="n">reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clusterRun</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">conffile</span><span class="o">=</span><span class="s2">".BatchJobs.R"</span><span class="p">,</span><span class="w"> </span><span class="n">template</span><span class="o">=</span><span class="s2">"slurm.tmpl"</span><span class="p">,</span><span class="w"> </span><span class="n">Njobs</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">runid</span><span class="o">=</span><span class="s2">"01"</span><span class="p">,</span><span class="w">
                   </span><span class="n">resourceList</span><span class="o">=</span><span class="n">resources</span><span class="p">)</span><span class="w">
 </span><span class="n">waitForJobs</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span><span class="w">
-</span><span class="c1"># unlink(outfile1(args), recursive = TRUE, force = TRUE)
+</span><span class="c1"># unlink(outfile1(args), recursive = TRUE, force = TRUE)</span><span class="w">
 </span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_sambcf.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="variant-calling-with-varianttools">Variant calling with <code class="highlighter-rouge">VariantTools</code></h2>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">gmapR</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">BiocParallel</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">BatchJobs</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">gmapR</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">BiocParallel</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">BatchJobs</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/vartools.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_gsnap_bam.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">f</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="n">library</span><span class="p">(</span><span class="n">VariantTools</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">gmapR</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
@@ -891,22 +889,20 @@ in the current working directory the parameter file <code class="highlighter-rou
 </span><span class="n">register</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="w">
 </span><span class="n">d</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bplapply</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="n">along</span><span class="o">=</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w">
 </span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_vartools.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="inspect-vcf-file">Inspect VCF file</h2>
 
 <p>VCF files can be imported into R with the <code class="highlighter-rouge">readVcf</code> function. Both <code class="highlighter-rouge">VCF</code> and <code class="highlighter-rouge">VRanges</code> objects provide
 convenient data structure for working with variant data (<em>e.g.</em> SNP quality filtering).</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/filter_gatk.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_gatk.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">vcf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readVcf</span><span class="p">(</span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="s2">"A. thaliana"</span><span class="p">)</span><span class="w">
 </span><span class="n">vcf</span><span class="w">
 </span><span class="n">vr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">vcf</span><span class="p">,</span><span class="w"> </span><span class="s2">"VRanges"</span><span class="p">)</span><span class="w">
 </span><span class="n">vr</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeVARseq_04.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeVARseq_06.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -926,7 +922,7 @@ convenient data structure for working with variant data (<em>e.g.</em> SNP quali
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Wed May 10 21:42:55 2017<br/> Site last generated: Oct 22, 2017 <br />
+<span>Page last updated:</span> Mon Nov 13 16:21:47 2017<br/> Site last generated: Nov 14, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

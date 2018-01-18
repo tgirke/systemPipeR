@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -481,112 +481,6 @@
         
     
     <li>
-        <a href="#">VAR-Seq Workflow</a>
-        <ul>
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
-    
-    <li>
         <a href="#">RIBO-Seq Workflow</a>
         <ul>
             
@@ -698,6 +592,112 @@
             
             
             <li><a href="mydoc_systemPipeRIBOseq_16.html">16. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">VAR-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
             
             
             
@@ -827,19 +827,17 @@ $('#toc').on('click', 'a', function() {
 
 <p>The <code class="highlighter-rouge">targets</code> file defines all FASTQ files and sample comparisons of the analysis workflow.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets_chip.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets_chip.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">)]</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>##                   FileName SampleName Factor SampleLong SampleReference
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                   FileName SampleName Factor SampleLong SampleReference
 ## 1 ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A                
 ## 2 ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B                
 ## 3 ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A             M1A
 ## 4 ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B             M1B
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="read-quality-filtering-and-trimming">Read quality filtering and trimming</h2>
 
@@ -849,15 +847,14 @@ apply it with <code class="highlighter-rouge">preprocessReads</code> in batch mo
 corresponding <code class="highlighter-rouge">SYSargs</code> instance (<code class="highlighter-rouge">args</code> object below). More detailed information on
 read preprocessing is provided in <code class="highlighter-rouge">systemPipeR's</code> main vignette.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/trim.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_chip.txt"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/trim.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_chip.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">filterFct</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">fq</span><span class="p">,</span><span class="w"> </span><span class="n">cutoff</span><span class="o">=</span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">Nexceptions</span><span class="o">=</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="n">qcount</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rowSums</span><span class="p">(</span><span class="n">as</span><span class="p">(</span><span class="n">quality</span><span class="p">(</span><span class="n">fq</span><span class="p">),</span><span class="w"> </span><span class="s2">"matrix"</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">cutoff</span><span class="p">)</span><span class="w">
-    </span><span class="n">fq</span><span class="p">[</span><span class="n">qcount</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">Nexceptions</span><span class="p">]</span><span class="w"> </span><span class="c1"># Retains reads where Phred scores are &gt;= cutoff with N exceptions
+    </span><span class="n">fq</span><span class="p">[</span><span class="n">qcount</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">Nexceptions</span><span class="p">]</span><span class="w"> </span><span class="c1"># Retains reads where Phred scores are &gt;= cutoff with N exceptions</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span><span class="n">preprocessReads</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">Fct</span><span class="o">=</span><span class="s2">"filterFct(fq, cutoff=20, Nexceptions=0)"</span><span class="p">,</span><span class="w"> </span><span class="n">batchsize</span><span class="o">=</span><span class="m">100000</span><span class="p">)</span><span class="w">
 </span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_chip_trim.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="fastq-quality-report">FASTQ quality report</h2>
 
@@ -868,7 +865,7 @@ diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
 written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</code>.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_chip.txt"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_chip.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="n">BiocParallel</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">BatchJobs</span><span class="p">)</span><span class="w">
 </span><span class="n">f</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
@@ -882,8 +879,7 @@ written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</cod
 </span><span class="n">pdf</span><span class="p">(</span><span class="s2">"./results/fastqReport.pdf"</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="m">4</span><span class="o">*</span><span class="nf">length</span><span class="p">(</span><span class="n">fqlist</span><span class="p">))</span><span class="w">
 </span><span class="n">seeFastqPlot</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">fqlist</span><span class="p">,</span><span class="w"> </span><span class="n">recursive</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">))</span><span class="w">
 </span><span class="n">dev.off</span><span class="p">()</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeChIPseq_files/fastqReport.png" alt="" /></p>
 <div align="center">Figure 1: FASTQ quality report for 18 samples</div>
@@ -906,7 +902,7 @@ written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</cod
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Jun 10 11:34:52 2017<br/> Site last generated: Oct 22, 2017 <br />
+<span>Page last updated:</span> Mon Nov 13 16:23:52 2017<br/> Site last generated: Nov 14, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

@@ -23,7 +23,6 @@ suppressPackageStartupMessages({
 ## genWorkenvir(workflow="chipseq")
 ## setwd("chipseq")
 
-## ----genChip_workflow_command_line, eval=FALSE, engine="sh"--------------
 ## Rscript -e "systemPipeRdata::genWorkenvir(workflow='chipseq')"
 
 ## ----node_environment, eval=FALSE----------------------------------------

@@ -1,6 +1,6 @@
 ---
 title: 8. Clustering and heat maps
-last_updated: Mon Jun  5 21:16:33 2017
+last_updated: Mon Nov 13 18:37:51 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_08.html
 ---

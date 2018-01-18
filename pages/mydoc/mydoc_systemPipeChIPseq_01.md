@@ -1,18 +1,18 @@
 ---
 title: ChIP-Seq Workflow Template  <br> <br> 1. Introduction
-last_updated: Sat Jun 10 11:34:52 2017
+last_updated: Mon Nov 13 16:23:52 2017
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_01.html
 ---
-First/last name (first.last@ucr.edu)
+Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 10 June, 2017 
+Last update: 13 November, 2017 
 
 Alternative formats of this tutorial:
-[ [HTML](http://girke.bioinformatics.ucr.edu/GEN242/pages/mydoc/systemPipeChIPseq.html){:target="_blank"} ],
-[ [PDF](http://girke.bioinformatics.ucr.edu/GEN242/pages/mydoc/systemPipeChIPseq.pdf){:target="_blank"} ],
-[ [.Rmd](https://raw.githubusercontent.com/tgirke/GEN242/gh-pages/_vignettes/12_ChIPseqWorkflow/systemPipeChIPseq.Rmd){:target="_blank"} ],
-[ [.R](https://raw.githubusercontent.com/tgirke/GEN242/gh-pages/_vignettes/12_ChIPseqWorkflow/systemPipeChIPseq.R){:target="_blank"} ]
+[ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeChIPseq.html){:target="_blank"} ],
+[ [PDF](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeChIPseq.pdf){:target="_blank"} ],
+[ [.Rmd](https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/_vignettes/12_ChIPseqWorkflow/systemPipeChIPseq.Rmd){:target="_blank"} ],
+[ [.R](https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/_vignettes/12_ChIPseqWorkflow/systemPipeChIPseq.R){:target="_blank"} ]
 
 
 Users want to provide here background information about the design of their ChIP-Seq project.

@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -481,112 +481,6 @@
         
     
     <li>
-        <a href="#">VAR-Seq Workflow</a>
-        <ul>
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
-    
-    <li>
         <a href="#">RIBO-Seq Workflow</a>
         <ul>
             
@@ -698,6 +592,112 @@
             
             
             <li><a href="mydoc_systemPipeRIBOseq_16.html">16. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">VAR-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
             
             
             
@@ -829,13 +829,12 @@ Internally, it calls the functions <code class="highlighter-rouge">run_edgeR</co
 the filtering results and plots from the downstream <code class="highlighter-rouge">filterDEGs</code> function using 
 the fold change and FDR cutoffs provided under the <code class="highlighter-rouge">dbrfilter</code> argument.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args_diff</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/rundiff.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_countDF.txt"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args_diff</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/rundiff.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_countDF.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">cmp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readComp</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">args_bam</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="o">=</span><span class="s2">"matrix"</span><span class="p">)</span><span class="w"> 
 </span><span class="n">dbrlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runDiff</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args_diff</span><span class="p">,</span><span class="w"> </span><span class="n">diffFct</span><span class="o">=</span><span class="n">run_edgeR</span><span class="p">,</span><span class="w"> </span><span class="n">targets</span><span class="o">=</span><span class="n">targetsin</span><span class="p">(</span><span class="n">args_bam</span><span class="p">),</span><span class="w"> 
                     </span><span class="n">cmp</span><span class="o">=</span><span class="n">cmp</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">independent</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">dbrfilter</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="n">Fold</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">FDR</span><span class="o">=</span><span class="m">1</span><span class="p">))</span><span class="w">
 </span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args_diff</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_rundiff.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeChIPseq_08.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeChIPseq_10.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -855,7 +854,7 @@ the fold change and FDR cutoffs provided under the <code class="highlighter-roug
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Jun 10 11:34:52 2017<br/> Site last generated: Oct 22, 2017 <br />
+<span>Page last updated:</span> Mon Nov 13 16:23:52 2017<br/> Site last generated: Nov 14, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

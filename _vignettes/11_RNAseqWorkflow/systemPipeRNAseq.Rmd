@@ -1,26 +1,27 @@
 ---
-title: RNA-Seq Workflow Template 
-author: "First/last name (first.last@ucr.edu)"
+title: "RNA-Seq Workflow Template" 
+author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  html_document:
-    toc: true
-    toc_float:
-        collapsed: true
-        smooth_scroll: true
-    toc_depth: 3
-    fig_caption: yes
+  BiocStyle::pdf_document: default
+  BiocStyle::html_document:
+    toc_float: true
     code_folding: show
-    number_sections: true
-
+package: systemPipeR
+vignette: |
+  %\VignetteIndexEntry{RNA-Seq Workflow}
+  %\VignetteEncoding{UTF-8}
+  
+  %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
 ---
 
 <!--
 - Compile from command-line
-Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRNAseq.knit.md 12; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('pdf_document'))"
+Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRNAseq.knit.md 12; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::pdf_document'))"
 -->
+
 
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()

@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -481,112 +481,6 @@
         
     
     <li>
-        <a href="#">VAR-Seq Workflow</a>
-        <ul>
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li class="active"><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
-    
-    <li>
         <a href="#">RIBO-Seq Workflow</a>
         <ul>
             
@@ -698,6 +592,112 @@
             
             
             <li><a href="mydoc_systemPipeRIBOseq_16.html">16. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">VAR-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
             
             
             
@@ -825,7 +825,7 @@ $('#toc').on('click', 'a', function() {
 
   <p>The following plots a selected variant with <code class="highlighter-rouge">ggbio</code>.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggbio</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggbio</span><span class="p">)</span><span class="w">
 </span><span class="n">mychr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"ChrC"</span><span class="p">;</span><span class="w"> </span><span class="n">mystart</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">11000</span><span class="p">;</span><span class="w"> </span><span class="n">myend</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">13000</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/bwa.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
 </span><span class="n">ga</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readGAlignments</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">use.names</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">param</span><span class="o">=</span><span class="n">ScanBamParam</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="n">GRanges</span><span class="p">(</span><span class="n">mychr</span><span class="p">,</span><span class="w"> </span><span class="n">IRanges</span><span class="p">(</span><span class="n">mystart</span><span class="p">,</span><span class="w"> </span><span class="n">myend</span><span class="p">))))</span><span class="w">
@@ -836,8 +836,7 @@ $('#toc').on('click', 'a', function() {
 </span><span class="n">png</span><span class="p">(</span><span class="s2">"./results/plot_variant.png"</span><span class="p">)</span><span class="w">
 </span><span class="n">tracks</span><span class="p">(</span><span class="n">Reads</span><span class="o">=</span><span class="n">p</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">Coverage</span><span class="o">=</span><span class="n">p</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">Variant</span><span class="o">=</span><span class="n">p</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">Transcripts</span><span class="o">=</span><span class="n">p</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">heights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="m">0.2</span><span class="p">,</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span><span class="w"> </span><span class="m">0.35</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">ylab</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span><span class="w">
 </span><span class="n">dev.off</span><span class="p">()</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeVARseq_files/plot_variant.png" alt="" /></p>
 <div align="center">Figure 3: Plot variants with programmatically.</div>
@@ -860,7 +859,7 @@ $('#toc').on('click', 'a', function() {
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Wed May 10 21:42:55 2017<br/> Site last generated: Oct 22, 2017 <br />
+<span>Page last updated:</span> Mon Nov 13 16:21:47 2017<br/> Site last generated: Nov 14, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

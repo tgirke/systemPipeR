@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -481,112 +481,6 @@
         
     
     <li>
-        <a href="#">VAR-Seq Workflow</a>
-        <ul>
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
-    
-    <li>
         <a href="#">RIBO-Seq Workflow</a>
         <ul>
             
@@ -698,6 +592,112 @@
             
             
             <li><a href="mydoc_systemPipeRIBOseq_16.html">16. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">VAR-Seq Workflow</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_01.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_02.html">2. Workflow environment</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_03.html">3. Read preprocessing</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_04.html">4. Alignments</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_05.html">5. Variant calling</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_06.html">6. Filter variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_07.html">7. Annotate filtered variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_08.html">8. Combine annotation results among samples</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_09.html">9. Summary statistics of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_10.html">10. Venn diagram of variants</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_11.html">11. Plot variants programmatically</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_12.html">12. Version Information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_13.html">13. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeVARseq_14.html">14. References</a></li>
             
             
             
@@ -852,17 +852,15 @@ into the user’s current working directory. At the moment, the package includes
 workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for
 additional NGS applications will be provided in the future.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeRdata</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeRdata</span><span class="p">)</span><span class="w">
 </span><span class="n">genWorkenvir</span><span class="p">(</span><span class="n">workflow</span><span class="o">=</span><span class="s2">"rnaseq"</span><span class="p">)</span><span class="w">
 </span><span class="n">setwd</span><span class="p">(</span><span class="s2">"rnaseq"</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p>Alternatively, this can be done from the command-line as follows:</p>
 
-<div class="language-sh highlighter-rouge"><pre class="highlight"><code>Rscript -e <span class="s2">"systemPipeRdata::genWorkenvir(workflow='rnaseq')"</span>
-</code></pre>
-</div>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Rscript <span class="nt">-e</span> <span class="s2">"systemPipeRdata::genWorkenvir(workflow='rnaseq')"</span>
+</code></pre></div></div>
 
 <p>Now open the R markdown script <code class="highlighter-rouge">systemPipeRNAseq.Rmd</code>in your R IDE (<em>e.g.</em>
 vim-r or RStudio) and run the workflow as outlined below. If you work under
@@ -872,47 +870,42 @@ script can then be sent from Vim on the login (head) node to an open R session r
 on the corresponding computer node. This is important since Tmux sessions
 should not be run on the computer nodes.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="c1"># push `F2` on your keyboard to open interactive R session
-</span><span class="n">q</span><span class="p">(</span><span class="s2">"no"</span><span class="p">)</span><span class="w"> </span><span class="c1"># closes R session on head node
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># push `F2` on your keyboard to open interactive R session</span><span class="w">
+</span><span class="n">q</span><span class="p">(</span><span class="s2">"no"</span><span class="p">)</span><span class="w"> </span><span class="c1"># closes R session on head node</span><span class="w">
 </span><span class="n">srun</span><span class="w"> </span><span class="o">--</span><span class="n">x</span><span class="m">11</span><span class="w"> </span><span class="o">--</span><span class="n">partition</span><span class="o">=</span><span class="n">intel</span><span class="w"> </span><span class="o">--</span><span class="n">mem</span><span class="o">=</span><span class="m">2</span><span class="n">gb</span><span class="w"> </span><span class="o">--</span><span class="n">cpus</span><span class="o">-</span><span class="n">per</span><span class="o">-</span><span class="n">task</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">--</span><span class="n">ntasks</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">--</span><span class="n">time</span><span class="w"> </span><span class="m">2</span><span class="o">:</span><span class="m">00</span><span class="o">:</span><span class="m">00</span><span class="w"> </span><span class="o">--</span><span class="n">pty</span><span class="w"> </span><span class="n">bash</span><span class="w"> </span><span class="o">-</span><span class="n">l</span><span class="w">
 </span><span class="n">R</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p>Now check whether your R session is running on a computer node of the cluster and not on a head node.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">system</span><span class="p">(</span><span class="s2">"hostname"</span><span class="p">)</span><span class="w"> </span><span class="c1"># should return name of a compute node starting with i or c 
-</span><span class="n">getwd</span><span class="p">()</span><span class="w"> </span><span class="c1"># checks current working directory of R session
-</span><span class="n">dir</span><span class="p">()</span><span class="w"> </span><span class="c1"># returns content of current working directory
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">system</span><span class="p">(</span><span class="s2">"hostname"</span><span class="p">)</span><span class="w"> </span><span class="c1"># should return name of a compute node starting with i or c </span><span class="w">
+</span><span class="n">getwd</span><span class="p">()</span><span class="w"> </span><span class="c1"># checks current working directory of R session</span><span class="w">
+</span><span class="n">dir</span><span class="p">()</span><span class="w"> </span><span class="c1"># returns content of current working directory</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="required-packages-and-resources">Required packages and resources</h2>
 
 <p>The <code class="highlighter-rouge">systemPipeR</code> package needs to be loaded to perform the analysis steps shown in
 this report (H Backman et al., 2016).</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p>If applicable load custom functions not provided by</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"systemPipeRNAseq_Fct.R"</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"systemPipeRNAseq_Fct.R"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 <h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="highlighter-rouge">targets</code> file</h2>
 
 <p>The <code class="highlighter-rouge">targets</code> file defines all FASTQ files and sample
 comparisons of the analysis workflow.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)[,</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
 </span><span class="n">targets</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>##                    FileName SampleName Factor SampleLong
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                    FileName SampleName Factor SampleLong
 ## 1  ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A
 ## 2  ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B
 ## 3  ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A
@@ -931,8 +924,7 @@ comparisons of the analysis workflow.</p>
 ## 16 ./data/SRR446042_1.fastq       A12B    A12  Avr.12h.B
 ## 17 ./data/SRR446043_1.fastq       V12A    V12  Vir.12h.A
 ## 18 ./data/SRR446044_1.fastq       V12B    V12  Vir.12h.B
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeRNAseq_01.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeRNAseq_03.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -952,7 +944,7 @@ comparisons of the analysis workflow.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Mon Jun  5 21:16:33 2017<br/> Site last generated: Oct 22, 2017 <br />
+<span>Page last updated:</span> Mon Nov 13 18:37:51 2017<br/> Site last generated: Nov 14, 2017 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->
