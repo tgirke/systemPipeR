@@ -608,12 +608,12 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
 
         ## Extract coverage for gr components. 
         ## Sense coverage
-        # cov_posreg <- suppressWarnings(Views(cov_pos, as(gr, "RangesList"))) # delete 
-        cov_posreg <- suppressWarnings(Views(cov_pos[names(as(gr, "RangesList"))], as(gr, "RangesList"))) # Update 22-Nov-15: cov_pos needs to be subsetted by seqnames in RangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
+        # cov_posreg <- suppressWarnings(Views(cov_pos, as(gr, "IntegerRangesList"))) # delete 
+        cov_posreg <- suppressWarnings(Views(cov_pos[names(as(gr, "IntegerRangesList"))], as(gr, "IntegerRangesList"))) # Update 22-Nov-15: cov_pos needs to be subsetted by seqnames in IntegerRangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
         cov_posreg <- cov_posreg[sapply(cov_posreg, length) > 0] # Removes empty components (chr) 
         ## Antisense coverage
-        # cov_negreg <- suppressWarnings(Views(cov_neg, as(gr, "RangesList"))) # delete
-        cov_negreg <- suppressWarnings(Views(cov_neg[names(as(gr, "RangesList"))], as(gr, "RangesList"))) # Update 22-Nov-15: cov_neg needs to be subsetted by seqnames in RangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
+        # cov_negreg <- suppressWarnings(Views(cov_neg, as(gr, "IntegerRangesList"))) # delete
+        cov_negreg <- suppressWarnings(Views(cov_neg[names(as(gr, "IntegerRangesList"))], as(gr, "IntegerRangesList"))) # Update 22-Nov-15: cov_neg needs to be subsetted by seqnames in IntegerRangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
         cov_negreg <- cov_negreg[sapply(cov_negreg, length) > 0] # Removes empty components (chr) 
         
         ## Collapse (splice) multicomponent coverage ranges, e.g. cds exons to full cds   
