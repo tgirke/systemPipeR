@@ -554,7 +554,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
         if(file.exists(outfile) & overwrite==TRUE) unlink(outfile)
     }
     if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'")
-    if(class(grl)!="GRangesList") stop("'grl' needs to be GRangesList object.")
+    if(!is(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
     if(!is.null(readlengthrange)) {
         if(is.numeric(readlengthrange) & length(readlengthrange)!=2) stop("'readlengthrange' needs to be assigned NULL or numeric vector of length 2")
         if(!is.numeric(readlengthrange)) stop("'readlengthrange' needs to be assigned NULL or numeric vector of length 2")
@@ -752,7 +752,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
 ## such as exons in CDSs or transcripts so that only the first and last components 
 ## get extended. Single component features will be extended the same way.
 .resizeFeature <- function(grl, upstream, downstream, component_resort=TRUE) { 
-    if(class(grl)!="GRangesList") stop("'grl' needs to be GRangesList object.")
+    if(!is(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
     gr <- unlist(grl)    
     if(!all(names(grl) %in% unique(names(gr)))) stop("None or not all components in grl are named.")
     
@@ -1114,7 +1114,7 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 ## the query ranges, but present in the corresponding subject ranges.
 scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
     ## Both input objects need to be of class GRangesList
-    if(class(subject) != "GRangesList" | class(query) != "GRangesList") stop("Both subject and query need to be of class 'GRangesList'.")
+    if(!is(subject, "GRangesList") | !is(query, "GRangesList")) stop("Both subject and query need to be GRangesList objects.")
     ## All names(query) need to be present in names(subject)
     if(any(!names(query) %in% names(subject))) stop("All 'names(query)' need to be present in 'names(subject)'.")
 
