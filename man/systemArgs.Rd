@@ -56,12 +56,13 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 ## Execute SYSargs on single machine
 runCommandline(args=args)
 
-## Execute SYSargs on multiple machines of a compute cluster 
-resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
+## Execute SYSargs on multiple machines of a compute cluster (example: SLURM)
+resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)    
+waitForJobs(reg=reg) 
 
 ## Monitor progress of submitted jobs
-showStatus(reg)
+getStatus(reg=reg)
 file.exists(outpaths(args))
 sapply(1:length(args), function(x) loadResult(reg, x)) # Works once all jobs have completed successfully.
 

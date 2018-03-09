@@ -18,7 +18,7 @@ runCommandline(args, runid = "01", make_bam=TRUE, ...)
 	Run identifier used for log file to track system call commands. Default is \code{"01"}.
 }
   \item{make_bam}{
-	Autodetects SAM file outputs and converts them to sorted and indexed BAM files. Default is \code{make_bam=TRUE}. 
+	Autodetects SAM file outputs and converts them to sorted and indexed BAM files. Default is \code{make_bam=FALSE}. 
 }
   \item{\dots}{
 	Additional arguments to pass on to \code{runCommandline()}.
@@ -44,8 +44,8 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 runCommandline(args=args)
 
 ## Execute SYSargs on multiple machines of a compute cluster 
-resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
+resources <- list(walltime=5400, ntasks=1, ncpus=cores(args), memory=10240)  
+reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
 
 ## Monitor progress of submitted jobs
 showStatus(reg)

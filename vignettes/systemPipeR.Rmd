@@ -3,10 +3,10 @@ title: "_systemPipeR_: NGS workflow and report generation environment"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
+  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
-  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -16,14 +16,6 @@ fontsize: 14pt
 bibliography: bibtex.bib
 ---
 
-```{css}
-pre code {
-  white-space: pre !important;
-  overflow-x: scroll !important;
-  word-break: keep-all !important;
-  word-wrap: initial !important;
-}
-```
 
 <!--
 %% \VignetteEngine{knitr::rmarkdown}
@@ -141,8 +133,8 @@ The following parameter files are included in each workflow template:
 2. _`*.param`_: defines parameter for input/output file operations, _e.g._ _`trim.param`_, _`bwa.param`_, _`vartools.parm`_, ...
 3. _`*_run.sh`_: optional bash script, _e.g._: _`gatk_run.sh`_
 4. Compute cluster environment (skip on single machine):
-    + _`.BatchJobs`_: defines type of scheduler for _`BatchJobs`_
-    + _`*.tmpl`_: specifies parameters of scheduler used by a system, _e.g._ Torque, SGE, StarCluster, Slurm, etc.
+    + _`.batchtools.conf`_: defines type of scheduler for _`batchtools`_
+    + _`*.tmpl`_: specifies parameters of scheduler used by a system, _e.g._ Torque, SGE, Slurm, etc.
 
 
 ## Structure of _`targets`_ file
@@ -358,18 +350,17 @@ Execute _`SYSargs`_ on a single machine without submitting to a queuing system o
 bampaths <- runCommandline(args=args)
 ```
 
-Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from _`cores(args)`_ is passed on to the submission command, here _`nodes`_ in the _`resources`_ list object. The number of independent parallel cluster processes is defined under the _`Njobs`_ argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores. Note, _`clusterRun`_ can be used with most queueing systems as it is based on utilities from the _`BatchJobs`_ package which supports the use of template files (_`*.tmpl`_) for defining the run parameters of different schedulers. To run the following code, one needs to have both a conf file (see _`.BatchJob`_ samples [here](https://code.google.com/p/batchjobs/wiki/DortmundUsage)) and a template file (see _`*.tmpl`_ samples [here](https://github.com/tudo-r/BatchJobs/tree/master/examples)) for the queueing available on a system. The following example uses the sample conf and template files for the Torque scheduler provided by this package.  
+Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from _`cores(args)`_ is passed on to the submission command, here _`nodes`_ in the _`resources`_ list object. The number of independent parallel cluster processes is defined under the _`Njobs`_ argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores. Note, _`clusterRun`_ can be used with most queueing systems as it is based on utilities from the _`batchtools`_ package which supports the use of template files (_`*.tmpl`_) for defining the run parameters of different schedulers. To run the following code, one needs to have both a conf file (see _`.BatchJob`_ samples [here](https://github.com/mllg/batchtools) and a template file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) for the queueing available on a system. The following example uses the sample conf and template files for the Torque scheduler provided by this package.  
 
 ```{r run_bowtie_parallel, eval=FALSE}
-resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01", 
-		  resourceList=resources)
-waitForJobs(reg)
+resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
+waitForJobs(reg=reg)  
 ```
 
 Useful commands for monitoring progress of submitted jobs
 ```{r process_monitoring, eval=FALSE}
-showStatus(reg)
+getStatus(reg=reg)
 file.exists(outpaths(args))
 sapply(1:length(args), function(x) loadResult(reg, x)) # Works after job completion
 ```
@@ -393,7 +384,7 @@ read_statsList <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=
 read_statsDF <- do.call("rbind", read_statsList)
 ```
 
-Parallelization of read/alignment stats via scheduler (_e.g._ Torque) across several compute nodes 
+Parallelization of read/alignment stats via scheduler (_e.g._ Slurm) across several compute nodes 
 ```{r align_stats_parallel_cluster, eval=FALSE}
 library(BiocParallel); library(BatchJobs)
 f <- function(x) {
@@ -428,10 +419,7 @@ bampaths <- runCommandline(args=args)
 
 Alternatively, submit the job to compute nodes.
 ```{r bowtie2_cluster, eval=FALSE}
-resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01", 
-		  resourceList=resources)
-waitForJobs(reg)
+resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)                                                  reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources) waitForJobs(reg=reg) 
 ```
 
 ### Alignment with _`BWA-MEM`_ (_e.g._ for VAR-Seq)
@@ -504,7 +492,7 @@ Read counting with _`summarizeOverlaps`_ using multiple nodes of a cluster
 ```{r read_counting_multinode, eval=FALSE}
 library(BiocParallel)
 f <- function(x) {
-    library(systemPipeR); library(BiocParallel); library(GenomicFeatures)
+    library(systemPipeR); library(BiocParallel); library(GenomicFeatures); library(BachJobs)
     txdb <- loadDb("./data/tair10.sqlite")
     eByg <- exonsBy(txdb, by="gene")
     args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")

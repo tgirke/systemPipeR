@@ -93,7 +93,7 @@ Alternatively, this can be done from the command-line as follows:
 Rscript -e "systemPipeRdata::genWorkenvir(workflow='rnaseq')"
 ```
 
-Now open the R markdown script `systemPipeRNAseq.Rmd` in your R IDE (_e.g._
+Now open the R markdown script `systemPipeRNAseq.Rmd`in your R IDE (_e.g._
 vim-r or RStudio) and run the workflow as outlined below. If you work under
 Vim-R-Tmux, the following command sequence will connect the user in an
 interactive session with a node on the cluster. The code of the `Rmd`
@@ -204,10 +204,9 @@ Submission of alignment jobs to compute cluster, here using 72 CPU cores
 ```{r tophat_alignment2, eval=FALSE}
 moduleload(modules(args))
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-                  resourceList=resources)
-waitForJobs(reg)
+resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
+waitForJobs(reg=reg) 
 ```
 
 ## Read mapping with `HISAT2`
@@ -217,10 +216,9 @@ args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 moduleload(modules(args))
 system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-                  resourceList=resources)
-waitForJobs(reg)
+resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
+waitForJobs(reg=reg)  
 ```
 
 Check whether all BAM files have been created
