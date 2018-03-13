@@ -464,12 +464,9 @@ clusterRun <- function (args, FUN = runCommandline, conf.file = ".batchtools.con
 	## Validity checks of inputs
     if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
 	if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
-    if(!file.exists(conf.file)) stop("Need to point under 'conf.file' argument to proper config file.
-	                                 See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html.
+    if(!file.exists(conf.file)) stop("Need to point under 'conf.file' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html.
                                      Note: in this file *.tmpl needs to point to a valid template file.")
-    if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file.
-	                                 Sample template files for different schedulers are available
-                					 here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
+    if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
     ## batchtools routines
 
     f <- function(i, args, ...) FUN(args=args[i], ...)

@@ -13,8 +13,8 @@ Depends: Rsamtools, Biostrings, ShortRead, methods
 Imports: BiocGenerics, GenomicRanges, GenomicFeatures,
         SummarizedExperiment, VariantAnnotation, rjson, ggplot2, grid,
         limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap,
-        batchtools
-Suggests: ape, RUnit, BiocStyle, knitr, rmarkdown, biomaRt,
+        batchtools, BiocStyle
+Suggests: ape, RUnit, knitr, rmarkdown, biomaRt,
         BiocParallel
 VignetteBuilder: knitr
 SystemRequirements: systemPipeR can be used to run external
