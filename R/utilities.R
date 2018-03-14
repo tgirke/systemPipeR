@@ -197,13 +197,13 @@ readComp <- function(file, format="vector", delim="-") {
 #################################
 ## List software available in module system
 modulelist <- function() {
-	system("bash -c \"module avail\"")
+	system("bash -lc \"module avail\"")
 }
 
 ## New version of load software from module system
 moduleload <- function(module, envir="PATH") { 
     for(i in seq_along(envir)) {
-        modpath <- system(paste0("bash -c \"module load ", module, "; export | grep '^declare -x ", envir[i], "='\""), intern = TRUE) 
+        modpath <- system(paste0("bash -lc \"module load ", module, "; export | grep '^declare -x ", envir[i], "='\""), intern = TRUE) 
         modpath <- gsub(paste0("^declare -x ", envir[i], "=\"(.*)\"$"), "\\1", modpath, perl = TRUE)
         l <- list(modpath); names(l) <- envir[i]
         do.call(Sys.setenv, l)
