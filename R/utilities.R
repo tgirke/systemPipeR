@@ -329,7 +329,7 @@ modulelist <- function() {
 }
 
 ## Load software from module system
-moduleload <- function(module,envir=NA) {
+moduleload <- function(module,envir="PATH") {
   module("load",module)
   warning("The function moduleload will be deprecated in future releases, please refer to the documentation for proper useage.")
 }
