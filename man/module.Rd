@@ -1,11 +1,13 @@
 \name{module}
 \alias{module}
 \title{
-New interface to use the Environment Modules package from Unix 
+Interface to allow full use of the Environment Modules system for Unix
 }
 \description{
-Function to be able to use the Environment Modules package (http://modules.sourceforge.net/) in R environment.
-The function \code{module} is a tool that allows an easy shell initialization with the pre-defined settings,modifies the environment during the session, loading or unloading a specific application, list all the package initialized in the current session, and list all the application software available in the system. Also, the user can remove all the application for the current session.
+The function \code{module} enables use of the Environment Modules system (http://modules.sourceforge.net/) from within the R environment.
+By default the user's login shell environment (ie. \dQuote{bash -l}) will be used to initialize the current session.
+The module function can also; load or unload specific software, list all the loaded software within the current session, and list all the applications available for loading from the module system.
+Lastly, the module function can remove all loaded software from the current session.
 }
 
 \usage{
@@ -33,17 +35,17 @@ module("avail")
 ## List loaded software in the current session
 module("list")
 
-## List and load to the current session all the software pre-defined in the shell's initialization file 
-module("init")
-
-## Example for loading software into the shell environment 
+## Example for loading a software into the shell environment
 module("load","tophat") 
 
-## Example for remove software from the shell environment
+## Example for removing software from the shell environment
 module("unload", "tophat")
 
 ## Clear all of the software from the shell’s initialization files
 module("clear")
+
+## List and load all the software loaded in users default login shell into the current session (default)
+module("init")
 }
 }
 \keyword{ utilities }
