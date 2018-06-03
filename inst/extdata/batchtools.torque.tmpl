@@ -4,67 +4,16 @@
 resources$walltime = asInt(resources$walltime, lower = 60L, upper = 3600L * 672L)
 resources$memory = asInt(resources$memory, lower = 100L, upper = 64L * 1024L)
 resources$ncpus = if (is.null(resources$ncpus)) 1L else asInt(resources$ncpus, lower = 1L)
-resources$modules = if (is.null(resources$modules)) character(0L) else assertCharacter(resources$modules, any.missing = FALSE)
-resources$R = if (is.null(resources$R)) "R/3.4.1-gcc49-base" else assertString(resources$R)
-resources$omp.threads = if (is.null(resources$omp.threads)) 1L else asInt(resources$omp.threads, lower = 1L)
-resources$blas.threads = if (is.null(resources$blas.threads)) 1L else asInt(resources$blas.threads, lower = 1L)
 
-if (!is.null(resources$type)) assertString(resources$type)
-if (resources$memory > 15000)
-    resources$type = "quad"
-
-use.mpi = (resources$pm.backend %??% "default") == "mpi"
-
-## first string of queue, selected by walltime
 walltimes = 3600L * c(1L, 8L, 48L, 672L)
-queue = c("short", "med", "long", "ultralong")[wf(resources$walltime <= walltimes)]
-## check default modules
-modules.default = c(binutils = "binutils/2.25", gcc = "gcc/4.9.3", openblas = "openblas/0.2.17")
-modules = resources$modules
-for (i in seq_along(modules.default)) {
-  if (!any(grepl(paste0("^", names(modules.default[i]), "/?[0-9\\.]*$"), modules))) {
-    modules = paste(modules, modules.default[i])
-  }
-}
-## add R
-modules = paste(modules, resources$R)
-## add mpi
-if (use.mpi)
-  modules = paste(modules, "openmpi/gcc4.9.x")
 
-## very ugly hack because we cannot log to data (nobackup) filesystem on lido,
-## only home fs is available
-## unfortunately there seems to be no generic solution
-## does log path start with /data/?
-log.file = log.file
-if (length(grep("^/data/", log.file)) > 0L) {
-  ## strip that
-  log.file = substr(log.file, 7L, nchar(log.file))
-  ## find next forward slash
-  i = regexpr("/", log.file)
-  if (i != -1) {
-    ## this must be "user": e.g. /data/bischl/...
-    user = substr(log.file, 1L, i-1L)
-    ## put together
-    log.file = sprintf("/home/%s/nobackup%s", user, substr(log.file, i, nchar(log.file)))
-  }
-}
 -%>
 
 #PBS -N <%= job.name %>
 #PBS -o <%= log.file %>
-#PBS -l walltime=<%= resources$walltime %>,nodes=<%= if (use.mpi) resources$ncpus else 1 %>:ppn=<%= if (use.mpi) 1 else resources$ncpus %><%= if (!is.null(resources$type)) paste0(":", resources$type) %>,vmem=<%= resources$memory %>M
-#PBS -q <%= queue %>
+#PBS -l walltime=<%= resources$walltime %>,nodes=<%= 1:ppn=resources$ncpus %>,mem=<%= resources$memory %>
 #PBS -j oe
-<%= if (array.jobs) sprintf("#PBS -t 1-%i", nrow(jobs)) else "" %>
 
-## setup modules
-source /sysdata/shared/sfw/Modules/default/init/bash
-module add <%= modules %>
-
-## create our own temp dir (and clean it up later), lido does not do this automatically
-mkdir /scratch/${USER}-${PBS_JOBID}
-export TMPDIR=/scratch/${USER}-${PBS_JOBID}
 
 <%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
 <%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
@@ -74,9 +23,66 @@ export TMPDIR=/scratch/${USER}-${PBS_JOBID}
 export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 
 ## run R
-<%= if (use.mpi) "mpirun -np 1 " else "" %>Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
+Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
 
-## Cleanup
-rm -rf /scratch/${USER}-${PBS_JOBID}
-
+###############################################################################################
  
+#!/bin/bash
+<%
+## Check some resources and set sane defaults
+resources$modules = if (is.null(resources$modules)) character(0L) else assertCharacter(resources$modules, any.missing = FALSE)
+modules = resources$modules
+for (i in seq_along(modules.default)) {
+  if (!any(grepl(paste0("^", names(modules[i]), "/?[0-9\\.]*$"), modules))) {
+    modules = paste(modules, modulest[i])
+  }
+}
+## add R
+modules = paste(modules, resources$modules)
+
+-%>
+
+#PBS -N <%= job.name %>
+#PBS -o <%= log.file %>
+#PBS -l walltime=<%= resources$walltime %>,nodes=<%= 1:ppn=resources$ncpus %>,mem=<%= resources$memory %>
+#PBS -j oe
+
+
+module add <%= modules %>
+
+
+<%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
+<%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
+<%= sprintf("export MKL_NUM_THREADS=%i", resources$blas.threads) -%>
+
+## export value of DEBUGME environemnt var to slave
+export DEBUGME=<%= Sys.getenv("DEBUGME") %>
+
+## run R
+Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
+
+
+
+
+
+
+
+#!/bin/bash
+
+#PBS -N <%= job.name %>
+#PBS -o <%= log.file %>
+#PBS -l walltime=<%= resources$walltime %>,nodes=1:ppn=<%=resources$ncpus %>,mem=<%= resources$memory %>
+#PBS -j oe
+
+module load R/3.4.2
+
+<%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
+<%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
+<%= sprintf("export MKL_NUM_THREADS=%i", resources$blas.threads) -%>
+
+## export value of DEBUGME environemnt var to slave
+export DEBUGME=<%= Sys.getenv("DEBUGME") %>
+
+## run R
+Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
+
