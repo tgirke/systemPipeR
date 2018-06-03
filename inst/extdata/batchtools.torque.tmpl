@@ -1,80 +1,11 @@
-#!/bin/bash
-<%
-## Check some resources and set sane defaults
-resources$walltime = asInt(resources$walltime, lower = 60L, upper = 3600L * 672L)
-resources$memory = asInt(resources$memory, lower = 100L, upper = 64L * 1024L)
-resources$ncpus = if (is.null(resources$ncpus)) 1L else asInt(resources$ncpus, lower = 1L)
-
-walltimes = 3600L * c(1L, 8L, 48L, 672L)
-
--%>
-
-#PBS -N <%= job.name %>
-#PBS -o <%= log.file %>
-#PBS -l walltime=<%= resources$walltime %>,nodes=<%= 1:ppn=resources$ncpus %>,mem=<%= resources$memory %>
-#PBS -j oe
-
-
-<%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
-<%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
-<%= sprintf("export MKL_NUM_THREADS=%i", resources$blas.threads) -%>
-
-## export value of DEBUGME environemnt var to slave
-export DEBUGME=<%= Sys.getenv("DEBUGME") %>
-
-## run R
-Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
-
-###############################################################################################
- 
-#!/bin/bash
-<%
-## Check some resources and set sane defaults
-resources$modules = if (is.null(resources$modules)) character(0L) else assertCharacter(resources$modules, any.missing = FALSE)
-modules = resources$modules
-for (i in seq_along(modules.default)) {
-  if (!any(grepl(paste0("^", names(modules[i]), "/?[0-9\\.]*$"), modules))) {
-    modules = paste(modules, modulest[i])
-  }
-}
-## add R
-modules = paste(modules, resources$modules)
-
--%>
-
-#PBS -N <%= job.name %>
-#PBS -o <%= log.file %>
-#PBS -l walltime=<%= resources$walltime %>,nodes=<%= 1:ppn=resources$ncpus %>,mem=<%= resources$memory %>
-#PBS -j oe
-
-
-module add <%= modules %>
-
-
-<%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
-<%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
-<%= sprintf("export MKL_NUM_THREADS=%i", resources$blas.threads) -%>
-
-## export value of DEBUGME environemnt var to slave
-export DEBUGME=<%= Sys.getenv("DEBUGME") %>
-
-## run R
-Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
-
-
-
-
-
-
-
-#!/bin/bash
+#!/bin/bash -l
 
 #PBS -N <%= job.name %>
 #PBS -o <%= log.file %>
 #PBS -l walltime=<%= resources$walltime %>,nodes=1:ppn=<%=resources$ncpus %>,mem=<%= resources$memory %>
 #PBS -j oe
 
-module load R/3.4.2
+module load R/3.5.0
 
 <%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
 <%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
