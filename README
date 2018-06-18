@@ -1,4 +1,7 @@
 changelog
+    version 1.15.1
+        - Updated description file 
+    
     version 1.11.3
         - Fixed duplicated commits 
         - Adopted to new default setting of maxgap in findOverlaps
