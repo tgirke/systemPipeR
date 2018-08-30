@@ -20,8 +20,9 @@ To install the package, please use the _biocLite_ method as instructed
 To obtain the most recent updates immediately, one can install it directly from
 github as follows:
 ```s
-source("http://bioconductor.org/biocLite.R")
-biocLite("tgirke/systemPipeR", build_vignettes=TRUE, dependencies=TRUE)
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("tgirke/systemPipeR", build_vignettes=TRUE, dependencies=TRUE)
 ```
 
 #### Usage

@@ -87,8 +87,8 @@ The R software for running [_`systemPipeR`_](http://www.bioconductor.org/package
     
 ```{r install, eval=FALSE}
 source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
-biocLite("systemPipeR") # Installs systemPipeR 
-biocLite("systemPipeRdata") # Installs systemPipeRdata
+BiocManager::install("systemPipeR") # Installs systemPipeR 
+BiocManager::install("systemPipeRdata") # Installs systemPipeRdata
 ```
 <div align="right">[Back to Table of Contents]()</div>
 
