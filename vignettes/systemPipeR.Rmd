@@ -86,7 +86,8 @@ The R software for running [_`systemPipeR`_](http://www.bioconductor.org/package
 
     
 ```{r install, eval=FALSE}
-source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
+if (!requireNamespace("BiocManager", quietly=TRUE)) # Sources the biocLite.R installation script 
+    install.packages("BiocManager") # Sources the biocLite.R installation script 
 BiocManager::install("systemPipeR") # Installs systemPipeR 
 BiocManager::install("systemPipeRdata") # Installs systemPipeRdata
 ```

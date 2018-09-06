@@ -20,9 +20,10 @@ suppressPackageStartupMessages({
 })
 
 ## ----install, eval=FALSE-------------------------------------------------
-## source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script
-## biocLite("systemPipeR") # Installs systemPipeR from Bioconductor
-## biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
+## if (!requireNamespace("BiocManager", quietly=TRUE)) # Sources the biocLite.R installation script
+    ## install.packages("BiocManager") # Sources the biocLite.R installation script
+## BiocManager::install("systemPipeR") # Installs systemPipeR from Bioconductor
+## BiocManager::install("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
 
 ## ----documentation, eval=FALSE-------------------------------------------
 ## library("systemPipeR") # Loads the package

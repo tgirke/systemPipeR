@@ -1,7 +1,8 @@
 ## ----install, eval=FALSE-------------------------------------------------
-## source("http://bioconductor.org/biocLite.R")
-## biocLite("systemPipeR")
-## biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
+## if (!requireNamespace("BiocManager", quietly=TRUE))
+    ## install.packages("BiocManager")
+## BiocManager::install("systemPipeR")
+## BiocManager::install("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
 
 ## ----load_systemPipeR_hidden, eval=TRUE, include=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----
 library("systemPipeR"); library("systemPipeRdata")
