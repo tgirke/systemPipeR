@@ -1,7 +1,7 @@
 ## ----install, eval=FALSE-------------------------------------------------
 ## if (!requireNamespace("BiocManager", quietly=TRUE))
     ## install.packages("BiocManager")
-## BiocManager::install("systemPipeR")
+## BiocManager::install("systemPipeR") # Install systemPipeR from Bioconductor
 ## BiocManager::install("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
 
 ## ----load_systemPipeR_hidden, eval=TRUE, include=FALSE, messages=FALSE, warnings=FALSE, cache=TRUE----

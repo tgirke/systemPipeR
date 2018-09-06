@@ -187,7 +187,7 @@ Install required packages
 ```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-BiocManager::install("systemPipeR")
+BiocManager::install("systemPipeR") # Install systemPipeR from Bioconductor
 BiocManager::install("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
 ```
 
