@@ -135,7 +135,6 @@ setwd("riboseq")
 
 In case there is a newer version of this tutorial, download its `systemPipeRIBOseq.Rmd` source and open it in your R IDE (e.g. vim-r or RStudio).
 
-
 ```{r download_latest, eval=FALSE}
 download.file("https://raw.githubusercontent.com/tgirke/systemPipeRdata/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd", "systemPipeRIBOseq.Rmd")
 ```
@@ -195,8 +194,7 @@ on read preprocessing is provided in `systemPipeR's` main vignette.
 args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
 fctpath <- system.file("extdata", "custom_Fct.R", package="systemPipeR")
 source(fctpath)
-iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, 
-                             Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)" 
+iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)" 
 preprocessReads(args=args, Fct=iterTrim, batchsize=100000, overwrite=TRUE, compress=TRUE)
 writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
 ```
@@ -238,7 +236,7 @@ Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 `qs
 ```{r tophat_alignment2, eval=FALSE, warning=FALSE, message=FALSE}
 moduleload(modules(args))
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
 reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
 waitForJobs(reg=reg)  
 ```
@@ -279,9 +277,9 @@ genome browser such as IGV. The corresponding URLs are written to a file
 with a path specified under `urlfile` in the `results` directory.
 
 ```{r bam_urls, eval=FALSE}
-symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/tests/"), 
-            urlbase="http://biocluster.ucr.edu/~tgirke/", 
-	        urlfile="./results/IGVurl.txt")
+symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/tests/"),
+            urlbase="http://biocluster.ucr.edu/~tgirke/",
+            urlfile="./results/IGVurl.txt")
 ```
 
 # Read distribution across genomic features
@@ -300,8 +298,8 @@ number of custom annotations can be included in this routine.
 ```{r genFeatures, eval=FALSE}
 library(GenomicFeatures)
 txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff3", organism="Arabidopsis")
-feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, 
-                    verbose=TRUE)
+feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, 
+                    downstream=0, verbose=TRUE)
 ```
 
 ## Count and plot reads of any length
@@ -323,8 +321,9 @@ The following generates and plots feature counts for any read length.
 library(ggplot2); library(grid)
 fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
                         singleEnd=TRUE, readlength=NULL, type="data.frame")
-p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png", graphicsformat="png", 
-                           scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png", 
+                           graphicsformat="png", scales="fixed", anyreadlength=TRUE, 
+                           scale_length_val=NULL)
 ```
 
 ![](featureCounts.png)
@@ -340,8 +339,9 @@ length occupied by the ribosomes.
 ```{r featuretypeCounts_length, eval=FALSE}
 fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
                          singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png", graphicsformat="png", 
-                            scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
+p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png",
+                            graphicsformat="png", scales="fixed", anyreadlength=FALSE,
+                            scale_length_val=NULL)
 ```
 
 ![](featureCounts2.png)
@@ -449,30 +449,32 @@ the downstream `plotfeatureCoverage` function.
 
 ```{r coverage_binned1, eval=FALSE}
 grl <- cdsBy(txdb, "tx", use.names=TRUE)
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
-                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE, 
-                         resizefeatures=TRUE, upstream=20, downstream=20,
-                         outfile="results/featureCoverage.xls", overwrite=TRUE)
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4],
+                        resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean,
+                        fixedmatrix=FALSE, resizefeatures=TRUE, upstream=20,
+                        downstream=20, outfile="results/featureCoverage.xls",
+                        overwrite=TRUE)
 ```
 
 ## Coverage upstream and downstream of start and stop codons
 
 ```{r coverage_binned2, eval=FALSE}
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], resizereads=NULL, 
-                         readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
-                         resizefeatures=TRUE, upstream=20, downstream=20, 
-                         outfile="results/featureCoverage.xls", overwrite=TRUE)
-plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE,
+                        resizefeatures=TRUE, upstream=20, downstream=20,
+                        outfile="results/featureCoverage.xls", overwrite=TRUE)
+plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2,
+                    scale_count_val=10^6)
 ```
 
 ## Combined coverage for both binned CDS and start/stop codons
 
 ```{r coverage_binned3, eval=FALSE}
 library(ggplot2); library(grid)
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:4], resizereads=NULL, 
-                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
-                         resizefeatures=TRUE, upstream=20, downstream=20,
-                         outfile="results/featureCoverage.xls", overwrite=TRUE)
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:4],
+                        resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean,
+                        fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20,
+                        downstream=20,outfile="results/featureCoverage.xls",
+                        overwrite=TRUE)
 png("./results/featurePlot.png", height=12, width=24, units="in", res=72)
 plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 dev.off()
@@ -485,9 +487,10 @@ dev.off()
 ## Nucleotide level coverage along entire transcripts/CDSs
 
 ```{r coverage_nuc_level, eval=FALSE}
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1], resizereads=NULL, 
-                        readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE, 
-                        resizefeatures=TRUE, upstream=20, downstream=20, outfile=NULL)
+fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1],
+                        resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean,
+                        fixedmatrix=FALSE, resizefeatures=TRUE, upstream=20,
+                        downstream=20, outfile=NULL)
 ```
 
 # Read quantification per annotation range
@@ -723,8 +726,8 @@ countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipe
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
 coldata <- DataFrame(assay=factor(rep(c("Ribo","mRNA"), each=4)), 
-                condition=factor(rep(as.character(targetsin(args)$Factor[1:4]), 2)), 
-                row.names=as.character(targetsin(args)$SampleName)[1:8])
+                     condition=factor(rep(as.character(targetsin(args)$Factor[1:4]), 2)), 
+                     row.names=as.character(targetsin(args)$SampleName)[1:8])
 coldata
 ```
 
@@ -775,7 +778,6 @@ dev.off()
 rmarkdown::render("systemPipeRIBOseq.Rmd", "html_document")
 rmarkdown::render("systemPipeRIBOseq.Rmd", "pdf_document")
 ```
-
 
 # Version Information
 

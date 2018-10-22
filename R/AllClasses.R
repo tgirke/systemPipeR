@@ -477,7 +477,7 @@ clusterRun <- function (args, FUN = runCommandline, conf.file = ".batchtools.con
     return(reg)                                                                                                                                                                                             
 }
 ## Usage: 
-# resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240) 
+# resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
 # reg <- clusterRun(args, conf.file = ".batchtools.conf.R", template = "batchtools.slurm.tmpl, runid="01", resourceList=resources)
 # waitForJobs(reg=reg)
 # getStatus(reg=reg)  

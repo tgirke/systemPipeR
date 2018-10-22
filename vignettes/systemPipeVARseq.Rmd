@@ -95,7 +95,6 @@ FASTQ files are usually the only inputs the user needs to provide.
 Now open the R markdown script `systemPipeVARseq.Rmd`in your R IDE (_e.g._ vim-r or RStudio) and 
 run the workflow as outlined below. 
 
-
 ### Run R session on computer node
 
 After opening the `Rmd` file of this workflow in Vim and attaching a connected
@@ -143,7 +142,6 @@ targets <- read.delim(targetspath, comment.char = "#")
 targets[,-c(5,6)]
 ```
 
-
 ## Read quality filtering and trimming
 
 The following removes reads with low quality base calls (here Phred
@@ -158,7 +156,6 @@ filterFct <- function(fq, cutoff=20, Nexceptions=0) {
 preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)", batchsize=100000)
 writeTargetsout(x=args, file="targets_PEtrim.txt", overwrite=TRUE)
 ```
-
 
 ## FASTQ quality report
 
@@ -194,7 +191,6 @@ args <- systemArgs(sysma="param/bwa.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 ```
 
-
 Runs the alignments sequentially (_e.g._ on a single machine)
 
 ```{r bwa_serial, eval=FALSE}
@@ -210,7 +206,7 @@ here using 72 CPU cores (18 `qsub` processes each with 4 CPU cores).
 ```{r bwa_parallel, eval=FALSE}
 moduleload(modules(args))
 system("bwa index -a bwtsw ./data/tair10.fasta")
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)   
 reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
 waitForJobs(reg=reg) 
 writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
@@ -246,7 +242,6 @@ d <- bplapply(seq(along=args), f)
 writeTargetsout(x=args, file="targets_gsnap_bam.txt", overwrite=TRUE)
 ```
 
-
 ## Read and alignment stats
 
 The following generates a summary table of the number of reads in each
@@ -256,7 +251,6 @@ sample and how many of them aligned to the reference.
 read_statsDF <- alignStats(args=args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 ```
-
 
 ## Create symbolic links for viewing BAM files in IGV
 
@@ -269,7 +263,6 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/gen242/"),
             urlbase="http://biocluster.ucr.edu/~tgirke/", 
             urlfile="./results/IGVurl.txt")
 ```
-
 
 # Variant calling
 
@@ -298,8 +291,9 @@ moduleload("picard/1.130"); moduleload("samtools/1.3")
 system("picard CreateSequenceDictionary R=./data/tair10.fasta O=./data/tair10.dict")
 system("samtools faidx data/tair10.fasta")
 args <- systemArgs(sysma="param/gatk.param", mytargets="targets_bam.txt")
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
-reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)   
+reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", 
+                  runid="01", resourceList=resources)
 waitForJobs(reg=reg) 
 # unlink(outfile1(args), recursive = TRUE, force = TRUE)
 writeTargetsout(x=args, file="targets_gatk.txt", overwrite=TRUE)
@@ -313,8 +307,9 @@ in the current working directory the parameter file `sambcf.param` and the bash 
 
 ```{r run_bcftools, eval=FALSE}
 args <- systemArgs(sysma="param/sambcf.param", mytargets="targets_bam.txt")
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
-reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)  
+reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl",
+                  runid="01", resourceList=resources)
 waitForJobs(reg=reg) 
 # unlink(outfile1(args), recursive = TRUE, force = TRUE)
 writeTargetsout(x=args, file="targets_sambcf.txt", overwrite=TRUE)
@@ -369,8 +364,6 @@ The parameter files (`filter_gatk.param`, `filter_sambcf.param` and
 `filter_vartools.param`), used in the filtering steps, define the paths to 
 the input and output VCF files which are stored in new `SYSargs` instances.  
 
-
-
 ## Filter variants called by `GATK` 
 
 The below example filters for variants that are supported by `>=x`
@@ -390,7 +383,6 @@ filter <- "totalDepth(vr) >= 2 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSum
 suppressAll(filterVars(args, filter, varcaller="gatk", organism="A. thaliana"))
 writeTargetsout(x=args, file="targets_gatk_filtered.txt", overwrite=TRUE)
 ```
-
 
 ## Filter variants called by `BCFtools`  
 
@@ -423,6 +415,7 @@ writeTargetsout(x=args, file="targets_vartools_filtered.txt", overwrite=TRUE)
 ```
 
 Check filtering outcome for one sample
+
 ```{r check_filter, eval=FALSE}
 length(as(readVcf(infile1(args)[1], genome="Ath"), "VRanges")[,1])
 length(as(readVcf(outpaths(args)[1], genome="Ath"), "VRanges")[,1])
@@ -587,10 +580,13 @@ The following plots a selected variant with `ggbio`.
 library(ggbio)
 mychr <- "ChrC"; mystart <- 11000; myend <- 13000
 args <- systemArgs(sysma="param/bwa.param", mytargets="targets.txt")
-ga <- readGAlignments(outpaths(args)[1], use.names=TRUE, param=ScanBamParam(which=GRanges(mychr, IRanges(mystart, myend))))
+ga <- readGAlignments(outpaths(args)[1], use.names=TRUE, 
+                      param=ScanBamParam(which=GRanges(mychr, IRanges(mystart, myend))))
 p1 <- autoplot(ga, geom = "rect")
 p2 <- autoplot(ga, geom = "line", stat = "coverage")
-p3 <- autoplot(vcf[seqnames(vcf)==mychr], type = "fixed") + xlim(mystart, myend) + theme(legend.position = "none", axis.text.y = element_blank(), axis.ticks.y=element_blank())
+p3 <- autoplot(vcf[seqnames(vcf)==mychr], type = "fixed") + 
+                xlim(mystart, myend) + theme(legend.position = "none", 
+                    axis.text.y = element_blank(), axis.ticks.y=element_blank())
 p4 <- autoplot(txdb, which=GRanges(mychr, IRanges(mystart, myend)), names.expr = "gene_id")
 png("./results/plot_variant.png")
 tracks(Reads=p1, Coverage=p2, Variant=p3, Transcripts=p4, heights = c(0.3, 0.2, 0.1, 0.35)) + ylab("")

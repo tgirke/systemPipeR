@@ -197,14 +197,13 @@ args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 ```
 
-
 Submission of alignment jobs to compute cluster, here using 72 CPU cores
 (18 `qsub` processes each with 4 CPU cores).
 
 ```{r tophat_alignment2, eval=FALSE}
 moduleload(modules(args))
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)  
 reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
 waitForJobs(reg=reg) 
 ```
@@ -216,7 +215,7 @@ args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 moduleload(modules(args))
 system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)   
 reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
 waitForJobs(reg=reg)  
 ```
@@ -242,7 +241,6 @@ The following shows the alignment statistics for a sample file provided by the `
 ```{r align_stats_view, eval=TRUE}
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 ```
-
 
 ## Create symbolic links for viewing BAM files in IGV
 
@@ -292,6 +290,7 @@ write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep
 ```
 
 Sample of data slice of count table
+
 ```{r view_counts, eval=FALSE}
 read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:5]
 ```
@@ -337,7 +336,6 @@ The analysis of differentially expressed genes (DEGs) is performed with
 the glm method of the `edgeR` package [@Robinson2010-uk]. The sample
 comparisons used by this analysis are defined in the header lines of the 
 `targets.txt` file starting with `<CMP>`.
-
 
 ## Run `edgeR`
 
@@ -440,7 +438,6 @@ the p-value cutoff specified under the `cutoff` arguments. When `method=slim`,
 it returns only the GO terms specified under the `myslimv` argument. The given
 example shows how a GO slim vector for a specific organism can be obtained from
 BioMart.
-
 
 ```{r go_enrich, eval=FALSE}
 library("biomaRt")

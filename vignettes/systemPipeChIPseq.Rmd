@@ -217,7 +217,7 @@ sysargs(args)[1] # Command-line parameters for first FASTQ file
 moduleload(modules(args)) # Skip if a module system is not used
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta") 
         # Indexes reference genome
-resources <- list(walltime=5400, ntasks=1, ncpus=cores(args), memory=10240)  
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)   
 reg <- clusterRun(args, conf.file=".batchtools.conf.R", runid="01",
                   template="batchtools.slurm.tmpl", resourceList=resources)    
 getStatus(reg=reg) 

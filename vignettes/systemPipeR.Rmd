@@ -16,7 +16,6 @@ fontsize: 14pt
 bibliography: bibtex.bib
 ---
 
-
 <!--
 %% \VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{Overview Vignette}
@@ -72,8 +71,6 @@ A central concept for designing workflows within the _`sytemPipeR`_ environment 
 <div align="center"><b>Figure 1:</b> Workflow design structure of <i>systemPipeR</i> </div></br>
 
 The intended way of running _`systemPipeR`_ workflows is via _`*.Rnw`_ or _`*.Rmd`_ files, which can be executed either line-wise in interactive mode or with a single command from R or the command-line using a [_`Makefile`_](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/Makefile). This way comprehensive and reproducible analysis reports in PDF or HTML format can be generated in a fully automated manner by making use of the highly functional reporting utilities available for R. Templates for setting up custom project reports are provided as _`*.Rnw`_ files by the helper package _`systemPipeRdata`_ and in the vignettes subdirectory of _`systemPipeR`_. The corresponding PDFs of these report templates are available here: [_`systemPipeRNAseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRNAseq.pdf?raw=true), [_`systemPipeRIBOseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRIBOseq.pdf?raw=true), [_`systemPipeChIPseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeChIPseq.pdf?raw=true) and [_`systemPipeVARseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeVARseq.pdf?raw=true). To work with _`*.Rnw`_ or _`*.Rmd`_ files efficiently, basic knowledge of [_`Sweave`_](https://www.stat.uni-muenchen.de/~leisch/Sweave/) or [_`knitr`_](http://yihui.name/knitr/) and [_`Latex`_](http://www.latex-project.org/) or [_`R Markdown v2`_](http://rmarkdown.rstudio.com/) is required. 
-
-
 
 # Getting Started
 
@@ -353,7 +350,7 @@ bampaths <- runCommandline(args=args)
 Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from _`cores(args)`_ is passed on to the submission command, here _`nodes`_ in the _`resources`_ list object. The number of independent parallel cluster processes is defined under the _`Njobs`_ argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores. Note, _`clusterRun`_ can be used with most queueing systems as it is based on utilities from the _`batchtools`_ package which supports the use of template files (_`*.tmpl`_) for defining the run parameters of different schedulers. To run the following code, one needs to have both a conf file (see _`.BatchJob`_ samples [here](https://github.com/mllg/batchtools) and a template file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) for the queueing available on a system. The following example uses the sample conf and template files for the Torque scheduler provided by this package.  
 
 ```{r run_bowtie_parallel, eval=FALSE}
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)   
 reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
 waitForJobs(reg=reg)  
 ```
@@ -419,7 +416,7 @@ bampaths <- runCommandline(args=args)
 
 Alternatively, submit the job to compute nodes.
 ```{r bowtie2_cluster, eval=FALSE}
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)                                                  reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources) waitForJobs(reg=reg) 
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)                                                   reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources) waitForJobs(reg=reg) 
 ```
 
 ### Alignment with _`BWA-MEM`_ (_e.g._ for VAR-Seq)

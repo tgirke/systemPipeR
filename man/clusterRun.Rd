@@ -61,7 +61,7 @@ runCommandline(args=args)
 ## read the instructions above how to obtain the corresponding files for other schedulers. 
 file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
 file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)  
 reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
 waitForJobs(reg=reg) 
 
