@@ -45,7 +45,7 @@ module("load","tophat")
 ## Example for removing software from the shell environment
 module("unload", "tophat")
 
-## Clear all of the software from the shell’s initialization files
+## Clear all of the software from the shell's initialization files
 module("clear")
 
 ## List and load all the software loaded in users default login shell into the current session (default)
