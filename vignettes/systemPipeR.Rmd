@@ -76,12 +76,13 @@ The intended way of running _`systemPipeR`_ workflows is via _`*.Rnw`_ or _`*.Rm
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from R using the _`biocLite`_ install command. The associated data package [_`systemPipeRdata`_](http://bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) can be used to generate _`systemPipeR`_ workflow environments with a single command ([see below](#load-sample-data-and-workflow-templates)) containing all parameter files and sample data required to quickly test and run workflows. 
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from R using the _`BiocManager::install`_ command. The associated data package [_`systemPipeRdata`_](http://bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) can be used to generate _`systemPipeR`_ workflow environments with a single command ([see below](#load-sample-data-and-workflow-templates)) containing all parameter files and sample data required to quickly test and run workflows. 
     
 ```{r install, eval=FALSE}
-source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
-biocLite("systemPipeR") # Installs systemPipeR 
-biocLite("systemPipeRdata") # Installs systemPipeRdata
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("systemPipeR") # Installs systemPipeR 
+BiocManager::install("systemPipeRdata") # Installs systemPipeRdata
 ```
 
 ## Loading package and documentation
