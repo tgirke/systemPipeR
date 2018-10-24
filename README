@@ -1,4 +1,7 @@
 changelog
+    version 1.15.3
+        - Fixed typo in vignette
+
     version 1.15.1
         - Updated description file 
     
