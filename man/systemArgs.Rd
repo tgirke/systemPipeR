@@ -56,10 +56,9 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 ## Execute SYSargs on single machine
 runCommandline(args=args)
 
-## Execute SYSargs on multiple machines of a compute cluster (example: SLURM)
-resources <- list(walltime=1200, ntasks=1, ncpus=cores(args), memory=10240)  
-reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)    
-waitForJobs(reg=reg) 
+## Execute SYSargs on multiple machines of a compute cluster
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+reg <- clusterRun(args, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)
@@ -67,8 +66,7 @@ file.exists(outpaths(args))
 sapply(1:length(args), function(x) loadResult(reg, x)) # Works once all jobs have completed successfully.
 
 ## Alignment stats
-read_statsDF <- alignStats(fqpaths=infile1(args), bampaths=outpaths(args), fqgz=TRUE) 
-read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
+read_statsDF <- alignStats(args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 
 ## Write outpaths to new targets file for next SYSargs step

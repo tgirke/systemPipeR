@@ -33,9 +33,9 @@ log.file = normalizePath(log.file, winslash = "/", mustWork = FALSE)
 <%= if (!is.null(resources$partition)) sprintf(paste0("#SBATCH --partition='", resources$partition, "'")) %>
 <%= if (array.jobs) sprintf("#SBATCH --array=1-%i", nrow(jobs)) else "" %>
 
-## specify which queue on biocluster, one of 'batch', 'highmem', 'highmem', 'gpu', 'mygroup'
+## specify which queue on biocluster, one of 'batch', 'highmem', 'intel', 'gpu', 'mygroup'
 #SBATCH -p short
-##SBATCH -p batch,higmen 
+##SBATCH -p batch,intel 
 
 ## Initialize work environment like
 ## source /etc/profile

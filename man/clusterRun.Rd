@@ -4,10 +4,10 @@
 Submit command-line tools to cluster
 }
 \description{
-Submits non-R command-line software to queueing/scheduling systems of compute clusters using run specifications defined by functions similar to \code{runCommandline}. \code{runCluster} can be used with most queueing systems since it is based on utilities from the \code{batchtools} package which supports the use of template files (\code{*.tmpl}) for defining the run parameters of the different schedulers. The path to the \code{*.tmpl} file needs to be specified in a conf file provided under the \code{conf.file} argument.
+Submits non-R command-line software to queueing/scheduling systems of compute clusters using run specifications defined by functions similar to \code{runCommandline}. \code{clusterRun} can be used with most queueing systems since it is based on utilities from the \code{batchtools} package which supports the use of template files (\code{*.tmpl}) for defining the run parameters of the different schedulers. The path to the \code{*.tmpl} file needs to be specified in a conf file provided under the \code{conffile} argument.
 }
 \usage{
-clusterRun(args, FUN=runCommandline, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList)   
+clusterRun(args, FUN=runCommandline, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList)
 }
 \arguments{
   \item{args}{
@@ -16,27 +16,27 @@ clusterRun(args, FUN=runCommandline, conf.file=".batchtools.conf.R", template="b
   \item{FUN}{
 	Accpets functions such as \code{runCommandline(args, ...)} where the \code{args} argument is mandatory and needs to be of class \code{SYSargs}.
 }
-  \item{conf.file}{
-	Path to conf file (default location \code{./.batchtools.conf.R}). This file contains in its simplest form just one command, such as this line for the Slurm scheduler: 
-        \code{cluster.functions <- makeClusterFunctionsSlurm(template="batchtools.slurm.tmpl")}.
-For more detailed information visit this page: https://mllg.github.io/batchtools/index.html
+  \item{conffile}{
+	Path to conf file (default location \code{./.batchtools.conf.R}). This file contains in its simplest form just one command, such as this line for the Slurm scheduler: \code{cluster.functions <- makeClusterFunctionsSlurm(template="batchtools.slurm.tmpl")}. For more detailed information visit this page: https://mllg.github.io/batchtools/index.html
 }
   \item{template}{
 	The template files for a specific queueing/scheduling systems can be downloaded from here: 
-https://github.com/mllg/batchtools/tree/master/inst/templates
+https://github.com/mllg/batchtools/tree/master/inst/templates. Slurm, PBS/Torque, and Sun Grid Engine (SGE) templates are provided.
+}
+  \item{Njobs}{
+	Interger defining the number of cluster jobs. For instance, if \code{args} contains 18 command-line jobs and \code{Njobs=9}, then the function will distribute them accross 9 cluster jobs each running 2 command-line jobs. To increase the number of CPU cores used by each process, one can do this under the corresonding argument of the command-line tool, e.g. \code{-p} argument for Tophat.
 }
   \item{runid}{
 	Run identifier used for log file to track system call commands. Default is \code{"01"}.
 }
   \item{resourceList}{
-	\code{List} for reserving for each cluster job sufficient computing resources including memory (Megabyte), number of nodes, CPU cores, walltime (minutes), e-mail, etc. For more details, one can consult the template file for each queueing/scheduling system. 
+	\code{List} for reserving for each cluster job sufficient computing resources including memory (Megabyte), number of nodes, CPU cores, walltime (minutes), etc. For more details, one can consult the template file for each queueing/scheduling system. 
 }
 }
 \value{Object of class \code{Registry}, as well as files and directories created by the executed command-line tools.
 }
 \references{
-For more details on \code{batchtools}, please consult the following page:
-https://github.com/mllg/batchtools/
+For more details on \code{batchtools}, please consult the following page: https://github.com/mllg/batchtools/
 }
 \author{
 Thomas Girke
@@ -60,19 +60,18 @@ runCommandline(args=args)
 ## example uses the conf and template files for the Torque scheduler. Please
 ## read the instructions above how to obtain the corresponding files for other schedulers. 
 file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
-file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
-resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)  
-reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
-waitForJobs(reg=reg) 
+file.copy(system.file("extdata", "hisat2.param", package="systemPipeR"), ".")
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+reg <- clusterRun(args, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)
+waitForJobs(reg=reg)
 file.exists(outpaths(args))
 sapply(1:length(args), function(x) loadResult(reg, x)) # Works once all jobs have completed successfully.
 
 ## Alignment stats
-read_statsDF <- alignStats(fqpaths=tophatargs$infile1, bampaths=bampaths, fqgz=TRUE) 
-read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
+read_statsDF <- alignStats(args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 }
 }

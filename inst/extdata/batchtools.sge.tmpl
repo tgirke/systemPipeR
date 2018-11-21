@@ -17,7 +17,7 @@
 #$ -V
 
 ## Use correct queue
-#$ -q <%= resources$queue %>
+##$ -q <%= resources$queue %>
 
 ## Export value of DEBUGME environemnt var to slave
 export DEBUGME=<%= Sys.getenv("DEBUGME") %>

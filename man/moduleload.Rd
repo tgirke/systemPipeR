@@ -37,4 +37,3 @@ moduleload(module="python", envir=c("PATH", "LD_LIBRARY_PATH", "PYTHONPATH"))
 }
 }
 \keyword{ utilities }
-

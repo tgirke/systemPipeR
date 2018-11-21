@@ -422,19 +422,19 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 ## Usage:
 # qsubRun(args=args, qsubargs=qsubargs, Nqsubs=1, package="systemPipeR")
 
-###########################################################################################
-## BatchJobs-based function to submit runCommandline jobs to queuing system of a cluster ##
-###########################################################################################
-## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
+# ###########################################################################################
+# ## BatchJobs-based function to submit runCommandline jobs to queuing system of a cluster ##
+# ###########################################################################################
+# ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
 # clusterRun <- function(args, FUN=runCommandline, conffile=".BatchJobs.R", template="torque.tmpl", Njobs, runid="01", resourceList) {
 # 	## Validity checks of inputs
 # 	if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
 # 	if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
-# 	if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file.
-# 	                                 See sample here: https://code.google.com/p/batchjobs/wiki/DortmundUsage.
+# 	if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. 
+# 	                                 See sample here: https://code.google.com/p/batchjobs/wiki/DortmundUsage. 
 # 					 Note: in this file *.tmpl needs to point to a valid template file.")
-# 	if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file.
-# 	                                 Sample template files for different schedulers are available
+# 	if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. 
+# 	                                 Sample template files for different schedulers are available 
 # 					 here: https://github.com/tudo-r/BatchJobs/tree/master/examples")
 # 	## BachJobs routines
 # 	loadConfig(conffile = conffile)
@@ -449,35 +449,35 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 # 	done <- submitJobs(reg, ids=Njobs, resources=resourceList)
 # 	return(reg)
 # }
-## Usage: 
-# resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
-# reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
-# waitForJobs(reg)
-
+# ## Usage: 
+# # resources <- list(walltime="00:25:00", nodes=paste0("1:ppn=", cores(args)), memory="2gb")
+# # reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01", resourceList=resources)
+# # waitForJobs(reg)
 
 ###########################################################################################
 ## batchtools-based function to submit runCommandline jobs to queuing system of a cluster ##
 ###########################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
-clusterRun <- function (args, FUN = runCommandline, conf.file = ".batchtools.conf.R",
-                        template = "batchtools.slurm.tmpl", runid = "01", resourceList) {                                                                                                     
-	## Validity checks of inputs
-    if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
-	if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
-    if(!file.exists(conf.file)) stop("Need to point under 'conf.file' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html.
+clusterRun <- function (args, FUN = runCommandline, conffile = ".batchtools.conf.R",
+                        template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
+  ## Validity checks of inputs
+  if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
+  if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
+  if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html.
                                      Note: in this file *.tmpl needs to point to a valid template file.")
-    if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
-    ## batchtools routines
-
-    f <- function(i, args, ...) FUN(args=args[i], ...)
-    logdir1 <- paste0(normalizePath(results(args)), "/submitargs", runid, "_BJdb_", paste(sample(0:9, 4), collapse = ""))                                                                               
-    reg <- makeRegistry(file.dir = logdir1, conf.file = ".batchtools.conf.R", packages = "systemPipeR")                                                                                                 
-    ids <- batchMap(fun = f, seq(along = args), more.args = list(args = args, runid = runid), reg=reg)                                                                                                  
-    done <- submitJobs(ids=ids, reg=reg, resources = resourceList)                                                                                                                                      
-    return(reg)                                                                                                                                                                                             
+  if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
+  
+  ## batchtools routines
+  f <- function(i, args, ...) FUN(args=args[i], ...)
+  logdir1 <- paste0(normalizePath(results(args)), "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
+  reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
+  ids <- batchMap(fun = f, seq(along = args), more.args = list(args = args, runid = runid), reg=reg)
+  ids[, chunk := chunk(job.id, n.chunks = Njobs, shuffle = FALSE)]
+  done <- submitJobs(ids=ids, reg=reg, resources = resourceList)
+  return(reg)
 }
 ## Usage: 
-# resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
-# reg <- clusterRun(args, conf.file = ".batchtools.conf.R", template = "batchtools.slurm.tmpl, runid="01", resourceList=resources)
-# waitForJobs(reg=reg)
+# resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
+# reg <- clusterRun(args, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl, Njobs=18, runid="01", resourceList=resources)
 # getStatus(reg=reg)  
+# waitForJobs(reg=reg)

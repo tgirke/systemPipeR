@@ -70,10 +70,11 @@ The intended way of running \Rpackage{sytemPipeR} workflows is via \Robject{*.Rn
 \section{Getting Started}
 
 \subsection{Installation}
-The R software for running \Rpackage{systemPipeR} can be downloaded from CRAN (\url{http://cran.at.r-project.org/}). The \Rpackage{systemPipeR} package can be installed from R using the \Rfunction{biocLite} install command. 
+The R software for running \Rpackage{systemPipeR} can be downloaded from CRAN (\url{http://cran.at.r-project.org/}). The \Rpackage{systemPipeR} package can be installed from R with:
 <<eval=FALSE>>=
-source("http://bioconductor.org/biocLite.R") # Sources the biocLite.R installation script 
-biocLite("systemPipeR") # Installs the package
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("systemPipeR")
 @
 
 \subsection{Loading the Package and Documentation}
