@@ -90,7 +90,7 @@ A central concept for designing workflows within the _`sytemPipeR`_ environment 
 ![](SystemPipeR_Workflow.png)
 <div align="center">**Figure 1:** Workflow design structure of *systemPipeR* </div></br>
 
-The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ files, which can be executed either line-wise in interactive mode or with a single command from R. This way comprehensive and reproducible analysis reports can be generated in PDF or HTML format in a fully automated manner by making use of the highly functional reporting utilities available for R. Templates for setting up custom project reports are provided as _`*.Rdm`_ files by the helper package _`systemPipeRdata`_ and in the vignettes subdirectory of _`systemPipeR`_. The corresponding PDFs of these report templates are available here: [_`systemPipeRNAseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRNAseq.pdf?raw=true), [_`systemPipeRIBOseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRIBOseq.pdf?raw=true), [_`systemPipeChIPseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeChIPseq.pdf?raw=true) and [_`systemPipeVARseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeVARseq.pdf?raw=true). To work with _`*.Rnw`_ or _`*.Rmd`_ files efficiently, basic knowledge of [_`Sweave`_](https://www.stat.uni-muenchen.de/~leisch/Sweave/) or [_`knitr`_](http://yihui.name/knitr/) and [_`Latex`_](http://www.latex-project.org/) or [_`R Markdown v2`_](http://rmarkdown.rstudio.com/) is required. 
+The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ or _`*.Rnw`_ files, which can be executed either line-wise in interactive mode or with a single command from R or the command-line using a [_`Makefile`_](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/Makefile). This way comprehensive and reproducible analysis reports can be generated in PDF or HTML format in a fully automated manner by making use of the highly functional reporting utilities available for R. Templates for setting up custom project reports are provided as _`*.Rmd`_ files by the helper package _`systemPipeRdata`_ and in the vignettes subdirectory of _`systemPipeR`_. The corresponding PDFs of these report templates are available here: [_`systemPipeRNAseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRNAseq.pdf?raw=true), [_`systemPipeRIBOseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeRIBOseq.pdf?raw=true), [_`systemPipeChIPseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeChIPseq.pdf?raw=true) and [_`systemPipeVARseq`_](https://github.com/tgirke/systemPipeR/blob/master/vignettes/systemPipeVARseq.pdf?raw=true). To work with _`*.Rnw`_ or _`*.Rmd`_ files efficiently, basic knowledge of [_`Sweave`_](https://www.stat.uni-muenchen.de/~leisch/Sweave/) or [_`knitr`_](http://yihui.name/knitr/) and [_`Latex`_](http://www.latex-project.org/) or [_`R Markdown v2`_](http://rmarkdown.rstudio.com/) is required. 
 
 # Getting Started
 
@@ -171,7 +171,7 @@ To work with custom data, users need to generate a _`targets`_ file containing t
 
 ```{r targetsPE, eval=TRUE}
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-read.delim(targetspath, comment.char = "#")
+read.delim(targetspath, comment.char = "#")[1:2,1:6]
 ```
 
 ### Sample comparisons
@@ -354,11 +354,16 @@ f <- function(x) {
     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
     seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
 }
-funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-register(param)
-fqlist <- bplapply(seq(along=args), f)
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+fqlist <- bplapply(seq(along=args), f, BPPARAM = param)
 seeFastqPlot(unlist(fqlist, recursive=FALSE))
+
+#funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
+#param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+#register(param)
+#fqlist <- bplapply(seq(along=args), f)
+#seeFastqPlot(unlist(fqlist, recursive=FALSE))
 ```
 
 ## Alignment with _`Tophat2`_
