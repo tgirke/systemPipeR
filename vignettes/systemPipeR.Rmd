@@ -336,6 +336,7 @@ dev.off()
 ![](fastqReport.png)
 <div align="center">**Figure 2:** FASTQ quality report </div></br>
 
+
 Parallelization of QC report on single machine with multiple cores
 
 ```{r fastq_quality_parallel_single, eval=FALSE}
@@ -358,12 +359,6 @@ resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
 param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
 fqlist <- bplapply(seq(along=args), f, BPPARAM = param)
 seeFastqPlot(unlist(fqlist, recursive=FALSE))
-
-#funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-#param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-#register(param)
-#fqlist <- bplapply(seq(along=args), f)
-#seeFastqPlot(unlist(fqlist, recursive=FALSE))
 ```
 
 ## Alignment with _`Tophat2`_
@@ -428,19 +423,13 @@ Parallelization of read/alignment stats via scheduler (_e.g._ Slurm) across seve
 library(BiocParallel); library(batchtools)
 f <- function(x) {
     library(systemPipeR)
-    args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+    args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
     alignStats(args[x])
 }
 resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
 param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
 read_statsList <- bplapply(seq(along=args), f, BPPARAM = param)
 read_statsDF <- do.call("rbind", read_statsList)
-
-# funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-# param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-# register(param)
-# read_statsList <- bplapply(seq(along=args), f)
-# read_statsDF <- do.call("rbind", read_statsList)
 ```
 
 ## Create symbolic links for viewing BAM files in IGV
@@ -460,7 +449,7 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 The following example runs _`Bowtie2`_ as a single process without submitting it to a cluster.
 
 ```{r bowtie2, eval=FALSE}
-args <- systemArgs(sysma="bowtieSE.param", mytargets="targets.txt")
+args <- systemArgs(sysma="param/bowtieSE.param", mytargets="targets.txt")
 moduleload(modules(args)) # Skip if module system is not available
 bampaths <- runCommandline(args=args)
 ```
@@ -509,7 +498,7 @@ args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
 gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=TRUE)
 f <- function(x) {
     library(gmapR); library(systemPipeR)
-    args <- systemArgs(sysma="gsnap.param", mytargets="targetsPE.txt")
+    args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
     gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=FALSE)
     p <- GsnapParam(genome=gmapGenome, unique_only=TRUE, molecule="DNA", max_mismatches=3)
     o <- gsnap(input_a=infile1(args)[x], input_b=infile2(args)[x], params=p, output=outfile1(args)[x])
@@ -517,11 +506,6 @@ f <- function(x) {
 resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
 param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
 d <- bplapply(seq(along=args), f, BPPARAM = param)
-
-# funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-# param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-# register(param)
-# d <- bplapply(seq(along=args), f)
 ```
 
 ## Read counting for mRNA profiling experiments
@@ -563,7 +547,7 @@ f <- function(x) {
     library(systemPipeR); library(BiocParallel); library(GenomicFeatures)
     txdb <- loadDb("./data/tair10.sqlite")
     eByg <- exonsBy(txdb, by="gene")
-    args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+    args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
     bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
 }
@@ -573,15 +557,6 @@ counteByg <- bplapply(seq(along=args), f, BPPARAM = param)
 countDFeByg <- sapply(seq(along=counteByg),
                       function(x) assays(counteByg[[x]])$counts)
 rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
-
-
-# funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-# param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-# register(param)
-# counteByg <- bplapply(seq(along=args), f) 
-# countDFeByg <- sapply(seq(along=counteByg), 
-#                       function(x) assays(counteByg[[x]])$counts)
-# rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
 ```
 
 ## Read counting for miRNA profiling experiments
@@ -617,6 +592,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col=4, edge.width=3, show.node.label=TRU
 ```
 
 <div align="center">**Figure 3:** Correlation dendrogram of samples for _`rlog`_ values. </div></br>
+
 
 Alternatively, the clustering can be performed with _`RPKM`_ normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar. 
 
@@ -657,6 +633,7 @@ DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 
 <div align="center">**Figure 4:** Up and down regulated DEGs identified by _`edgeR`_. </div></br>
 
+
 ```{r edger_deg_stats, eval=TRUE}
 names(DEG_list)
 DEG_list$Summary[1:4,]
@@ -684,6 +661,7 @@ DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
 
 <div align="center">**Figure 5:** Up and down regulated DEGs identified by _`DESeq2`_. </div></br>
 
+
 ## Venn Diagrams
 
 The function _`overLapper`_ can compute Venn intersects for large numbers of sample sets (up to 20 or more) and _`vennPlot`_ can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
@@ -695,6 +673,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ```
 
 <div align="center">**Figure 6:** Venn Diagram for 4 Up and Down DEG Sets. </div></br>
+
 
 ## GO term enrichment analysis of DEGs
 
@@ -749,6 +728,7 @@ goBarplot(gos, gocat="CC")
 ![](GOslimbarplotMF.png)
 <div align="center">**Figure 7:** GO Slim Barplot for MF Ontology.</div></br>
 
+
 ## Clustering and heat maps
 
 The following example performs hierarchical clustering on the _`rlog`_ transformed expression matrix subsetted by the DEGs identified in the 
@@ -765,6 +745,7 @@ dev.off()
 
 ![](heatmap1.png)
 <div align="center">**Figure 8:** Heat map with hierarchical clustering dendrograms of DEGs.</div></br>
+
 
 # Workflow templates
 
