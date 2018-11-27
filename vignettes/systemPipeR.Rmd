@@ -3,10 +3,10 @@ title: "_systemPipeR_: NGS workflow and report generation environment"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
+  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -96,7 +96,7 @@ The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ or _`*.Rnw
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the _`BiocManager::install`_ command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
 
 ```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
@@ -150,7 +150,7 @@ The following parameter files are included in each workflow template:
 2. _`*.param`_: defines parameter for input/output file operations, _e.g._ _`trim.param`_, _`bwa.param`_, _`vartools.parm`_, ...
 3. _`*_run.sh`_: optional bash script, _e.g._: _`gatk_run.sh`_
 4. Compute cluster environment (skip on single machine):
-    + _`.batchtools.conf.R`_: defines type of scheduler for _`batchtools`_
+    + _`.batchtools.conf.R`_: defines type of scheduler for _`batchtools`_. Note, it is necessary to point the right template accordingly to the cluster in use.
     + _`*.tmpl`_: specifies parameters of scheduler used by a system, _e.g._ Torque, SGE, Slurm, etc.
 
 ## Structure of _`targets`_ file
