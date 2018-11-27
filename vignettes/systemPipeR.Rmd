@@ -431,11 +431,16 @@ f <- function(x) {
     args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
     alignStats(args[x])
 }
-funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-register(param)
-read_statsList <- bplapply(seq(along=args), f)
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+read_statsList <- bplapply(seq(along=args), f, BPPARAM = param)
 read_statsDF <- do.call("rbind", read_statsList)
+
+# funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
+# param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+# register(param)
+# read_statsList <- bplapply(seq(along=args), f)
+# read_statsDF <- do.call("rbind", read_statsList)
 ```
 
 ## Create symbolic links for viewing BAM files in IGV
@@ -509,10 +514,14 @@ f <- function(x) {
     p <- GsnapParam(genome=gmapGenome, unique_only=TRUE, molecule="DNA", max_mismatches=3)
     o <- gsnap(input_a=infile1(args)[x], input_b=infile2(args)[x], params=p, output=outfile1(args)[x])
 }
-funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-register(param)
-d <- bplapply(seq(along=args), f)
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+d <- bplapply(seq(along=args), f, BPPARAM = param)
+
+# funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
+# param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+# register(param)
+# d <- bplapply(seq(along=args), f)
 ```
 
 ## Read counting for mRNA profiling experiments
@@ -558,13 +567,21 @@ f <- function(x) {
     bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
 }
-funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
-param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-register(param)
-counteByg <- bplapply(seq(along=args), f) 
-countDFeByg <- sapply(seq(along=counteByg), 
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+counteByg <- bplapply(seq(along=args), f, BPPARAM = param)
+countDFeByg <- sapply(seq(along=counteByg),
                       function(x) assays(counteByg[[x]])$counts)
 rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
+
+
+# funs <- makeClusterFunctionsSlurm("batchtools.slurm.tmpl")
+# param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
+# register(param)
+# counteByg <- bplapply(seq(along=args), f) 
+# countDFeByg <- sapply(seq(along=counteByg), 
+#                       function(x) assays(counteByg[[x]])$counts)
+# rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
 ```
 
 ## Read counting for miRNA profiling experiments
