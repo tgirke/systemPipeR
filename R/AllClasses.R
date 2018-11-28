@@ -458,7 +458,7 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 ## batchtools-based function to submit runCommandline jobs to queuing system of a cluster ##
 ###########################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
-clusterRun2 <- function (args, FUN = runCommandline, conffile = ".batchtools.conf.R",
+clusterRun <- function (args, FUN = runCommandline, conffile = ".batchtools.conf.R",
                         template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
   ## Validity checks of inputs
   if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
