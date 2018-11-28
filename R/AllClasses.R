@@ -472,7 +472,8 @@ clusterRun <- function (args, FUN = runCommandline, conffile = ".batchtools.conf
   logdir1 <- paste0(normalizePath(results(args)), "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
   reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
   ids <- batchMap(fun = f, seq(along = args), more.args = list(args = args, runid = runid), reg=reg)
-  ids[, chunk := chunk(job.id, n.chunks = Njobs, shuffle = FALSE)]
+  chunk <- ids[, chunk := chunk(job.id, n.chunks = Njobs, shuffle = FALSE)]
+  ids$chunk <- chunk
   done <- submitJobs(ids=ids, reg=reg, resources = resourceList)
   return(reg)
 }
