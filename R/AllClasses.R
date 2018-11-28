@@ -473,7 +473,7 @@ clusterRun <- function (args, FUN = runCommandline, conffile = ".batchtools.conf
   reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
   ids <- batchMap(fun = f, seq(along = args), more.args = list(args = args, runid = runid), reg=reg)
   print(ids)
-  chunk <- ids[, chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)]
+  chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
   print(chunk)
   ids$chunk <- chunk
   print(ids)
