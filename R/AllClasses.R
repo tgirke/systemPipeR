@@ -458,7 +458,7 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 ## batchtools-based function to submit runCommandline jobs to queuing system of a cluster ##
 ###########################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
-clusterRun <- function (args, FUN = runCommandline, conffile = ".batchtools.conf.R",
+clusterRun2 <- function (args, FUN = runCommandline, conffile = ".batchtools.conf.R",
                         template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
   ## Validity checks of inputs
   if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
@@ -472,8 +472,11 @@ clusterRun <- function (args, FUN = runCommandline, conffile = ".batchtools.conf
   logdir1 <- paste0(normalizePath(results(args)), "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
   reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
   ids <- batchMap(fun = f, seq(along = args), more.args = list(args = args, runid = runid), reg=reg)
+  print(ids)
   chunk <- ids[, chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)]
+  print(chunk)
   ids$chunk <- chunk
+  print(ids)
   done <- submitJobs(ids=ids, reg=reg, resources = resourceList)
   return(reg)
 }
