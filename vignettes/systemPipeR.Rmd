@@ -833,7 +833,7 @@ Workflow includes following steps:
 
 ### VAR-Seq workflow for computer cluster
 
-The workflow template provided for this step is called _`systemPipeVARseq.Rnw`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd)).
+The workflow template provided for this step is called _`systemPipeVARseq.Rmd`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd)).
 It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Slurm as scheduler. 
 
 ## Ribo-Seq sample

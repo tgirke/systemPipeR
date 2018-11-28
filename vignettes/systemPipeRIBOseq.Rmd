@@ -3,19 +3,27 @@ title: "RIBO-Seq Workflow"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
+  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
-  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteIndexEntry{RIBO-Seq Workflow}
   %\VignetteEncoding{UTF-8}
-  
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
 ---
+
+```{css, echo=FALSE}
+pre code {
+white-space: pre !important;
+overflow-x: scroll !important;
+word-break: keep-all !important;
+word-wrap: initial !important;
+}
+```
 
 <!--
 - Compile from command-line
@@ -24,10 +32,11 @@ Rscript -e "rmarkdown::render('systemPipeRIBOseq.Rmd', c('BiocStyle::html_docume
 
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
-options(width=100, max.print=1000)
+options(width=60, max.print=1000)
 knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
-    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
@@ -114,6 +123,7 @@ the downstream main ORFs and/or translation of the uORFs into functionally
 relevant peptides. 
 
 ## Experimental design
+
 Typically, users want to specify here all information relevant for the analysis
 of their NGS study. This includes detailed descriptions of FASTQ files,
 experimental design, reference genome, gene annotations, etc.  
@@ -131,6 +141,7 @@ library(systemPipeRdata)
 genWorkenvir(workflow="riboseq", bam=TRUE)
 setwd("riboseq")
 ```
+
 ## Download latest version of this tutorial
 
 In case there is a newer version of this tutorial, download its `systemPipeRIBOseq.Rmd` source and open it in your R IDE (e.g. vim-r or RStudio).
@@ -140,6 +151,7 @@ download.file("https://raw.githubusercontent.com/tgirke/systemPipeRdata/master/i
 ```
 
 ## Load packages and sample data
+
 The `systemPipeR` package needs to be loaded to perform the analysis 
 steps shown in this report [@Girke2014-oy]. The package allows users
 to run the entire analysis workflow interactively or with a single command 
@@ -171,6 +183,7 @@ source("systemPipeRIBOseq_Fct.R")
 ```
 
 ## Experiment definition provided by `targets` file
+
 The `targets` file defines all FASTQ files and sample comparisons of the analysis workflow. 
 
 ```{r load_targets, eval=TRUE}
@@ -182,6 +195,7 @@ targets
 # Read preprocessing
 
 ## Quality filtering and adaptor trimming
+
 The following custom function trims adaptors hierarchically from the longest to
 the shortest match of the right end of the reads. If
 `internalmatch=TRUE` then internal matches will trigger the same
@@ -200,6 +214,7 @@ writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
 ```
 
 ## FASTQ quality report
+
 The following `seeFastq` and `seeFastqPlot` functions generate and plot a series of
 useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
@@ -221,6 +236,7 @@ dev.off()
 # Alignments
 
 ## Read mapping with `Bowtie2/Tophat2`
+
 The NGS reads of this project will be aligned against the reference genome
 sequence using `Bowtie2/TopHat2` [@Kim2013-vg; @Langmead2012-bs]. The
 parameter settings of the aligner are defined in the `tophat.param`
@@ -237,8 +253,9 @@ Submission of alignment jobs to compute cluster, here using 72 CPU cores (18 `qs
 moduleload(modules(args))
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
 resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
-reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
-waitForJobs(reg=reg)  
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+getStatus(reg=reg) 
+waitForJobs(reg=reg) 
 ```
 
 ## Read mapping with `HISAT2`
@@ -259,6 +276,7 @@ file.exists(outpaths(args))
 ```
 
 ## Read and alignment stats
+
 The following provides an overview of the number of reads in each sample and how many of them aligned to the reference.
 
 ```{r align_stats, eval=FALSE}
@@ -303,6 +321,7 @@ feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000,
 ```
 
 ## Count and plot reads of any length
+
 The `featuretypeCounts` function counts how many reads in short read
 alignment files (BAM format) overlap with entire annotation categories. This
 utility is useful for analyzing the distribution of the read mappings across
@@ -347,21 +366,16 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png",
 ![](featureCounts2.png)
 <div align="center">Figure 3: Read distribution plot across annotation features for specific read lengths.</div></br>
 
-
 # Adding custom features to workflow
 
 ## Predicting uORFs in 5' UTR regions
 
 The function `predORF` can be used to identify open reading frames
 (ORFs) and coding sequences (CDSs) in DNA sequences provided as
-`DNAString` or `DNAStringSet` objects. The setting
-`mode='ORF'` returns continuous reading frames that begin with a start
-codon and end with a stop codon, while `mode='CDS'` returns continuous
-reading frames that do not need to begin or end with start or stop codons,
+`DNAString` or `DNAStringSet` objects. The setting `mode='ORF'` returns continuous reading frames that begin with a start codon and end with a stop codon, while `mode='CDS'` returns continuous reading frames that do not need to begin or end with start or stop codons,
 respectively. Non-canonical start and stop condons are supported by allowing the
 user to provide any custom set of triplets under the `startcodon` and `stopcodon`
-arguments (`i.e.` non-ATG start codons). The argument `n` defines the maximum number of ORFs to return for each
-input sequence (_e.g._ `n=1` returns only the longest ORF). It also
+arguments (`i.e.` non-ATG start codons). The argument `n` defines the maximum number of ORFs to return for each input sequence (_e.g._ `n=1` returns only the longest ORF). It also
 supports the identification of overlapping and nested ORFs. Alternatively, one 
 can return all non-overlapping ORFs including the longest ORF for each input
 sequence with `n="all"` and `longest_disjoint=TRUE`.
@@ -395,9 +409,7 @@ To confirm the correctness of the obtained uORF ranges, one can parse their
 corresponding DNA sequences from the reference genome with the `getSeq`
 function and then translate them with the `translate` function into
 proteins. Typically, the returned protein sequences should start with a
-`M` (corresponding to start codon) and end with `*`
-(corresponding to stop codon). The following example does this for a single uORF 
-containing three exons.
+`M` (corresponding to start codon) and end with `*` (corresponding to stop codon). The following example does this for a single uORF containing three exons.
 
 ```{r translate1, eval=FALSE}
 translate(unlist(getSeq(FaFile("data/tair10.fasta"), grl_scaled[[7]])))
@@ -405,9 +417,7 @@ translate(unlist(getSeq(FaFile("data/tair10.fasta"), grl_scaled[[7]])))
 
 ## Adding custom features to other feature types
 
-If required custom feature ranges can be added to the standard features
-generated with the `genFeatures` function above. The following does this for the uORF ranges
-predicted with `predORF`.
+If required custom feature ranges can be added to the standard features generated with the `genFeatures` function above. The following does this for the uORF ranges predicted with `predORF`.
 
 ```{r add_features, eval=FALSE}
 feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE)
@@ -415,6 +425,7 @@ feat <- c(feat, GRangesList("uORF"=unlist(grl_scaled)))
 ```
 
 ## Predicting sORFs in intergenic regions
+
 The following identifies continuous ORFs in intergenic regions. Note,
 `predORF` can only identify continuous ORFs in query sequences. The
 function does not identify and remove introns prior to the ORF prediction.  
@@ -434,6 +445,7 @@ translate(getSeq(FaFile("data/tair10.fasta"), unlist(grl_scaled_intergenic)))
 ```
 
 # Genomic read coverage along transripts or CDSs
+
 The `featureCoverage` function computes the read coverage along
 single and multi component features based on genomic alignments. The coverage
 segments of component features are spliced to continuous ranges, such as exons
@@ -609,7 +621,6 @@ write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", 
 ```
 
 ![](DEGcounts.png)
-
 <div align="center">Figure 6: Up and down regulated DEGs.</div></br>
 
 The function `overLapper` can compute Venn intersects for large
@@ -627,10 +638,9 @@ dev.off()
 ```
 
 ![](vennplot.png)
-
 <div align="center">Figure 7: Venn Diagram for 4 Up and Down DEG Sets</div></br>
 
-# GO term enrichment analysis of DEGs}
+# GO term enrichment analysis of DEGs
 
 ## Obtain gene-to-GO mappings
 The following shows how to obtain gene-to-GO mappings from `biomaRt`
@@ -737,12 +747,7 @@ for the two conditions:
 $$(Ribo\_A1 / mRNA\_A1) / (Ribo\_M1 / mRNA\_M1)$$
 
 
-The latter can be modeled with the `DESeq2` package using the design $\sim assay + condition + assay:condition$, 
-where the interaction term $assay:condition$
-represents the ratio of ratios. Using the likelihood ratio test of
-`DESeq2`, which removes the interaction term in the reduced model, one
-can test whether the translational efficiency (ribosome loading) is different
-in condition `A1` than in `M1`.
+The latter can be modeled with the `DESeq2` package using the design $\sim assay + condition + assay:condition$, where the interaction term $assay:condition$ represents the ratio of ratios. Using the likelihood ratio test of `DESeq2`, which removes the interaction term in the reduced model, one can test whether the translational efficiency (ribosome loading) is different in condition `A1` than in `M1`.
 
 ```{r diff_translational_eff, eval=TRUE}
 dds <- DESeqDataSetFromMatrix(countData=as.matrix(countDFeByg[,rownames(coldata)]), 
