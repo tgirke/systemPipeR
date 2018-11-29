@@ -13,6 +13,6 @@ Suggests: ape, RUnit, BiocStyle, knitr, rmarkdown, biomaRt, BiocParallel (>= 1.1
 VignetteBuilder: knitr
 SystemRequirements: systemPipeR can be used to run external 
         command-line software (e.g. short read aligners), but the 
-        corresponding tool needs to be installed on a system.  
+        corresponding tool needs to be installed on a system.
 License: Artistic-2.0
 URL: http://tgirke.github.io/systemPipeR

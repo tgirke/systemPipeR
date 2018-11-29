@@ -50,6 +50,7 @@ suppressPackageStartupMessages({
     library(GenomicAlignments)
     library(ShortRead)
     library(ape)
+    library(batchtools)
 })
 ```
 

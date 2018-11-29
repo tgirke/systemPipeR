@@ -50,6 +50,7 @@ suppressPackageStartupMessages({
     library(GenomicAlignments)
     library(ShortRead)
     library(ape)
+    library(batchtools)
 })
 ```
 
@@ -304,7 +305,7 @@ moduleload("picard/1.130"); moduleload("samtools/1.3")
 system("picard CreateSequenceDictionary R=./data/tair10.fasta O=./data/tair10.dict")
 system("samtools faidx data/tair10.fasta")
 args <- systemArgs(sysma="param/gatk.param", mytargets="targets_bam.txt")
-resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
 reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
 getStatus(reg=reg) 
 waitForJobs(reg=reg) 
@@ -320,7 +321,7 @@ in the current working directory the parameter file `sambcf.param` and the bash 
 
 ```{r run_bcftools, eval=FALSE}
 args <- systemArgs(sysma="param/sambcf.param", mytargets="targets_bam.txt")
-resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
 reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
 getStatus(reg=reg) 
 waitForJobs(reg=reg)  
