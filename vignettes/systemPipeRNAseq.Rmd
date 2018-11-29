@@ -11,24 +11,32 @@ package: systemPipeR
 vignette: |
   %\VignetteIndexEntry{RNA-Seq Workflow}
   %\VignetteEncoding{UTF-8}
-  
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
 ---
+
+```{css, echo=FALSE}
+pre code {
+white-space: pre !important;
+overflow-x: scroll !important;
+word-break: keep-all !important;
+word-wrap: initial !important;
+}
+```
 
 <!--
 - Compile from command-line
 Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeRNAseq.knit.md 12; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::pdf_document'))"
 -->
 
-
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
-options(width=100, max.print=1000)
+options(width=60, max.print=1000)
 knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
-    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
@@ -49,7 +57,6 @@ suppressPackageStartupMessages({
 
 Users want to provide here background information about the design of their RNA-Seq project.
 
-
 # Samples and environment settings
 
 ## Environment settings and input data
@@ -58,8 +65,7 @@ Typically, the user wants to record here the sources and versions of the
 reference genome sequence along with the corresponding annotations. In
 the provided sample data set all data inputs are stored in a `data`
 subdirectory and all results will be written to a separate `results` directory,
-while the `systemPipeRNAseq.Rmd` script and the `targets` file are expected to be located in the parent
-directory. The R session is expected to run from this parent directory.
+while the `systemPipeRNAseq.Rmd` script and the `targets` file are expected to be located in the parent directory. The R session is expected to run from this parent directory.
 
 To run this sample report, mini sample FASTQ and reference genome files
 can be downloaded from
@@ -125,11 +131,12 @@ this report [@H_Backman2016-bt].
 library(systemPipeR)
 ```
 
-If applicable load custom functions not provided by
+If applicable load custom functions not provided by `systemPipeR` package.
 
 ```{r source_helper_fcts, eval=FALSE}
 source("systemPipeRNAseq_Fct.R")
 ```
+
 ## Experiment definition provided by `targets` file
 
 The `targets` file defines all FASTQ files and sample
@@ -183,7 +190,6 @@ dev.off()
 ![](fastqReport.png)
 <div align="center">Figure 1: FASTQ quality report for 18 samples</div></br>
 
-
 # Alignments
 
 ## Read mapping with `Bowtie2/Tophat2` 
@@ -203,9 +209,10 @@ Submission of alignment jobs to compute cluster, here using 72 CPU cores
 ```{r tophat_alignment2, eval=FALSE}
 moduleload(modules(args))
 system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)  
-reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
-waitForJobs(reg=reg) 
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+getStatus(reg=reg) 
+waitForJobs(reg=reg)  
 ```
 
 ## Read mapping with `HISAT2`
@@ -215,12 +222,13 @@ args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
 sysargs(args)[1] # Command-line parameters for first FASTQ file
 moduleload(modules(args))
 system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)   
-reg <- clusterRun(args, conf.file=".batchtools.conf.R", template="batchtools.slurm.tmpl", runid="01",resourceList=resources)
+resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+getStatus(reg=reg) 
 waitForJobs(reg=reg)  
 ```
 
-Check whether all BAM files have been created
+Check whether all BAM files have been created.
 
 ```{r check_files_exist, eval=FALSE}
 file.exists(outpaths(args))
@@ -254,7 +262,6 @@ symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 	        urlfile="./results/IGVurl.txt")
 ```
 
-
 # Read quantification
 
 ## Read counting with `summarizeOverlaps` in parallel mode using multiple cores
@@ -265,9 +272,7 @@ preformed for exonic gene regions in a non-strand-specific manner while
 ignoring overlaps among different genes. Subsequently, the expression
 count values are normalized by *reads per kp per million mapped reads*
 (RPKM). The raw read count table (`countDFeByg.xls`) and the correspoding 
-RPKM table (`rpkmDFeByg.xls`) are written
-to separate files in the directory of this project. Parallelization is
-achieved with the `BiocParallel` package, here using 8 CPU cores.
+RPKM table (`rpkmDFeByg.xls`) are written to separate files in the directory of this project. Parallelization is achieved with the `BiocParallel` package, here using 8 CPU cores.
 
 ```{r read_counting1, eval=FALSE}
 library("GenomicFeatures"); library(BiocParallel)
@@ -383,7 +388,6 @@ sets (up to 20 or more) and plots 2-5 way Venn diagrams. A useful
 feature is the possiblity to combine the counts from several Venn
 comparisons with the same number of sample sets in a single Venn diagram
 (here for 4 up and down DEG sets).
-
 
 ```{r venn_diagram, eval=FALSE}
 vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")

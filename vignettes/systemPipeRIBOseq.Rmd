@@ -3,10 +3,10 @@ title: "RIBO-Seq Workflow"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
+  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteIndexEntry{RIBO-Seq Workflow}
@@ -197,10 +197,7 @@ targets
 ## Quality filtering and adaptor trimming
 
 The following custom function trims adaptors hierarchically from the longest to
-the shortest match of the right end of the reads. If
-`internalmatch=TRUE` then internal matches will trigger the same
-behavior.  The argument `minpatternlength` defines the shortest
-adaptor match to consider in this iterative process. In addition, the function
+the shortest match of the right end of the reads. If `internalmatch=TRUE` then internal matches will trigger the same behavior.  The argument `minpatternlength` defines the shortest adaptor match to consider in this iterative process. In addition, the function
 removes reads containing Ns or homopolymer regions. More detailed information
 on read preprocessing is provided in `systemPipeR's` main vignette.
 
@@ -219,8 +216,7 @@ The following `seeFastq` and `seeFastqPlot` functions generate and plot a series
 useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads above
-quality cutoffs and mean quality distribution. The results are written to a PDF file named 
-`fastqReport.png`.
+quality cutoffs and mean quality distribution. The results are written to a PDF file named `fastqReport.png`.
 
 ```{r fastq_report, eval=FALSE}
 args <- systemArgs(sysma=NULL, mytargets="targets_trim.txt")
@@ -269,7 +265,7 @@ system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
 runCommandline(args=args)
 ```
 
-Check whether all BAM files have been created
+Check whether all BAM files have been created.
 
 ```{r check_files_exist, eval=FALSE}
 file.exists(outpaths(args))
@@ -350,10 +346,7 @@ p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png",
 
 ## Count and plot reads of specific lengths
 
-To determine the approximate read length of ribosome footprints in Ribo-Seq experiments, one 
-can generate and plot the feature counts for specific read lengths separately. Typically, the 
-most abundant read length obtained for translated features corresponds to the approximate footprint 
-length occupied by the ribosomes.
+To determine the approximate read length of ribosome footprints in Ribo-Seq experiments, one can generate and plot the feature counts for specific read lengths separately. Typically, the most abundant read length obtained for translated features corresponds to the approximate footprint length occupied by the ribosomes.
 
 ```{r featuretypeCounts_length, eval=FALSE}
 fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
@@ -370,15 +363,7 @@ p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png",
 
 ## Predicting uORFs in 5' UTR regions
 
-The function `predORF` can be used to identify open reading frames
-(ORFs) and coding sequences (CDSs) in DNA sequences provided as
-`DNAString` or `DNAStringSet` objects. The setting `mode='ORF'` returns continuous reading frames that begin with a start codon and end with a stop codon, while `mode='CDS'` returns continuous reading frames that do not need to begin or end with start or stop codons,
-respectively. Non-canonical start and stop condons are supported by allowing the
-user to provide any custom set of triplets under the `startcodon` and `stopcodon`
-arguments (`i.e.` non-ATG start codons). The argument `n` defines the maximum number of ORFs to return for each input sequence (_e.g._ `n=1` returns only the longest ORF). It also
-supports the identification of overlapping and nested ORFs. Alternatively, one 
-can return all non-overlapping ORFs including the longest ORF for each input
-sequence with `n="all"` and `longest_disjoint=TRUE`.
+The function `predORF` can be used to identify open reading frames (ORFs) and coding sequences (CDSs) in DNA sequences provided as `DNAString` or `DNAStringSet` objects. The setting `mode='ORF'` returns continuous reading frames that begin with a start codon and end with a stop codon, while `mode='CDS'` returns continuous reading frames that do not need to begin or end with start or stop codons, respectively. Non-canonical start and stop condons are supported by allowing the user to provide any custom set of triplets under the `startcodon` and `stopcodon` arguments (`i.e.` non-ATG start codons). The argument `n` defines the maximum number of ORFs to return for each input sequence (_e.g._ `n=1` returns only the longest ORF). It also supports the identification of overlapping and nested ORFs. Alternatively, onecan return all non-overlapping ORFs including the longest ORF for each input sequence with `n="all"` and `longest_disjoint=TRUE`.
 
 ```{r pred_orf, eval=FALSE}
 library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
@@ -494,7 +479,6 @@ dev.off()
 
 ![](featurePlot.png)
 <div align="center">Figure 4: Feature coverage plot with single nucleotide resolution around start and stop codons and binned coverage between them.</div></br>
-
 
 ## Nucleotide level coverage along entire transcripts/CDSs
 
@@ -643,6 +627,7 @@ dev.off()
 # GO term enrichment analysis of DEGs
 
 ## Obtain gene-to-GO mappings
+
 The following shows how to obtain gene-to-GO mappings from `biomaRt`
 (here for _A. thaliana_) and how to organize them for the downstream GO
 term enrichment analysis. Alternatively, the gene-to-GO mappings can be
