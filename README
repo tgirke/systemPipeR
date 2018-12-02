@@ -4,7 +4,7 @@ changelog
 	- Upadate help files related to clusterRun function examples
 	- Update runCommanline function to handle the stop in the module function (system with no Environment Modules)
 	- New templates to SGE, Slurm and Torque clusters
-	- vignette updates (Rnw to Rmd)
+	- Switched all vignettes to R markdown (*.Rmd)
 
     version 1.15.4
         - Updated module function to latest version
