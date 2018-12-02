@@ -2,6 +2,7 @@ changelog
     version 1.15.5
         - Updated clusterRun function by recent batchtools package
 	- Upadate help files related to clusterRun function examples
+	- Update runCommanline function to handle the stop in the module function (system with no Environment Modules)
 	- New templates to SGE, Slurm and Torque clusters
 	- vignette updates (Rnw to Rmd)
 
