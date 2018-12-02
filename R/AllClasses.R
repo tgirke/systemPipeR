@@ -321,10 +321,18 @@ writeTargetsout <- function(x, file="default", silent=FALSE, overwrite=FALSE, ..
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
 runCommandline <- function(args, runid="01", make_bam=TRUE, ...) {
-	if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
-	# if(system("module -V", ignore.stderr=TRUE)==1) { # Returns 1 if module system is present. This is a better solution, but run some test before committing it!
+  if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
+    ## Check if "Environment Modules" is installed in the system
+    ## "Environment Modules" is not available
+    if(suppressWarnings(system("module -V", ignore.stderr=TRUE))!=1) {
+      warning("Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.")
+    } else {
+      ## "Environment Modules" is available and proceed the module load
+      if(suppressWarnings(system("module -V", ignore.stderr=TRUE))==1) { # Returns 1 if module system is present.
         for(j in modules(args)) moduleload(j) # loads specified software from module system
-	}	
+      }
+    }
+  }
 	commands <- sysargs(args)
 	completed <- file.exists(outpaths(args))
 	names(completed) <- outpaths(args)
