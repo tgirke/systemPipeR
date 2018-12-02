@@ -162,7 +162,7 @@ read preprocessing is provided in `systemPipeR's` main vignette.
 ```{r proprocess_reads, eval=FALSE, messages=FALSE, warning=FALSE, cache=TRUE}
 args <- systemArgs(sysma="param/trim.param", mytargets="targets_chip.txt")
 filterFct <- function(fq, cutoff=20, Nexceptions=0) {
-    qcount <- rowSums(as(quality(fq), "matrix") <= cutoff)
+    qcount <- rowSums(as(quality(fq), "matrix") <= cutoff, na.rm=TRUE)
     fq[qcount <= Nexceptions] 
     # Retains reads where Phred scores are >= cutoff with N exceptions
 }

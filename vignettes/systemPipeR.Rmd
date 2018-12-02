@@ -305,7 +305,7 @@ in batch mode with the _'preprocessReads'_ function (here on paired-end reads).
 ```{r custom_preprocessing, eval=FALSE}
 args <- systemArgs(sysma="param/trimPE.param", mytargets="targetsPE.txt")
 filterFct <- function(fq, cutoff=20, Nexceptions=0) {
-    qcount <- rowSums(as(quality(fq), "matrix") <= cutoff)
+    qcount <- rowSums(as(quality(fq), "matrix") <= cutoff, na.rm=TRUE)
     # Retains reads where Phred scores are >= cutoff with N exceptions
     fq[qcount <= Nexceptions] 
 }
