@@ -1,8 +1,0 @@
-@HD	VN:1.4	SO:unsorted
-@SQ	SN:Chr1	LN:100000	UR:file:/rhome/tgirke/Projects/github/systemPipeR_tests/./data/tair10.fasta	M5:2f3682e44f2fac19d66e41279d1dcaba
-@SQ	SN:Chr2	LN:100000	UR:file:/rhome/tgirke/Projects/github/systemPipeR_tests/./data/tair10.fasta	M5:c0a7a37fc43f17edbb5145d1ec2eeca8
-@SQ	SN:Chr3	LN:100000	UR:file:/rhome/tgirke/Projects/github/systemPipeR_tests/./data/tair10.fasta	M5:029986e1f46553d412f2ed2609c0901a
-@SQ	SN:Chr4	LN:100000	UR:file:/rhome/tgirke/Projects/github/systemPipeR_tests/./data/tair10.fasta	M5:47f14c4b7b163ac75cdeaba9d90b2169
-@SQ	SN:Chr5	LN:100000	UR:file:/rhome/tgirke/Projects/github/systemPipeR_tests/./data/tair10.fasta	M5:1d3140934dca6516e7abdb4a79d3287b
-@SQ	SN:ChrC	LN:100000	UR:file:/rhome/tgirke/Projects/github/systemPipeR_tests/./data/tair10.fasta	M5:ab45c794f69c15e496b17bde0bf9f031
-@SQ	SN:ChrM	LN:100000	UR:file:/rhome/tgirke/Projects/github/systemPipeR_tests/./data/tair10.fasta	M5:12f024752f9bc8701e9fb2f4905def0a
