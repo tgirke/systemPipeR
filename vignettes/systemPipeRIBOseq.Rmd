@@ -228,7 +228,7 @@ dev.off()
 ```
 
 ![](fastqReport.png)
-<div align="center"><b>Figure 2:</b> FASTQ quality report. To zoom in, rigth click image and open it in a separate browser tab. </div></br>
+<div align="center"><b>Figure 1:</b> FASTQ quality report. To zoom in, rigth click image and open it in a separate browser tab. </div></br>
 
 # Alignments
 

@@ -1,0 +1,21 @@
+## Parameter file for Bowtie2 SE
+## Values in <...> reference column titles in targets file
+PairSet	Name	Value
+modules	NA	bowtie2/2.2.5
+software	NA	bowtie2
+cores	-p	4
+other	NA	-k 50 --non-deterministic
+reference	-x	./data/tair10.fasta
+infile1	-U	<FileName1>
+infile1	path	NA
+infile2	NA	<FileName2>
+infile2	path	NA
+outfile1	-S	<FileName1>
+outfile1	path	./results/
+outfile1	remove	NA
+outfile1	append	.sam
+outfile1	outextension	.bam
+
+
+
+

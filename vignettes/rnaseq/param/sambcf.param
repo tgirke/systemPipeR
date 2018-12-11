@@ -1,0 +1,23 @@
+## Parameter file for running BCFtools from systemPipeR
+## Expects sambcf_run.sh file in current working directory
+## The path to the reference genome needs to be set in sambcf_run.sh
+## Values in <...> reference column titles in targets file
+PairSet	Name	Value
+modules	NA	NA
+software	NA	bash_commands
+cores	NA	NA
+reference	NA	NA
+infile1	d1='	<FileName1>
+infile1	path	NA
+infile2	NA	NA
+infile2	path	NA
+outfile1	' ; d2='	<FileName1>
+outfile1	path	./results/
+outfile1	remove	NA
+outfile1	append	.sambcf
+outfile1	outextension	.sambcf.vcf
+other	NA	'; mkdir -p $d2; cp sambcf_run.sh $d2; cp $d1 $d2/myfile.fastq.bam; cp $d1.bai $d2/myfile.fastq.bam.bai; cd $d2; bash sambcf_run.sh; cp $d2/sambcf.vcf $d2.vcf
+
+
+
+
