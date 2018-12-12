@@ -63,7 +63,7 @@ better approximation of downstream protein abundance profiles due to their
 close association with translational processes. The most important difference
 among the two is that polyRibo-Seq utilizes polyribosomal RNA for sequencing,
 whereas Ribo-Seq is a footprinting approach restricted to sequencing RNA
-fragments protected by ribosomes [@Ingolia2009-cb; @Aspden2014-uu; @Juntawong2015-ru}. 
+fragments protected by ribosomes [@Ingolia2009-cb; @Aspden2014-uu; @Juntawong2015-ru]. 
 
 The workflow presented in this vignette contains most of the data analysis
 steps described by [@Juntawong2014-ny] including functionalities useful for
@@ -646,7 +646,7 @@ m <- useMart("plants_mart", host="plants.ensembl.org")
 listDatasets(m)
 m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
 listAttributes(m) # Choose data types you want to download
-go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
+go <- getBM(attributes=c("go_id", "tair_locus", "namespace_1003"), mart=m)
 go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
 go[go[,3]=="molecular_function", 3] <- "F"; go[go[,3]=="biological_process", 3] <- "P"; go[go[,3]=="cellular_component", 3] <- "C"
 go[1:4,]
