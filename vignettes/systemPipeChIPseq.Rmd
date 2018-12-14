@@ -320,6 +320,13 @@ args_merge <- mergeBamByFactor(args, overwrite=TRUE)
 writeTargetsout(x=args_merge, file="targets_mergeBamByFactor.txt", overwrite=TRUE)
 ```
 
+```{r call_peaks_macs_envVar_settings, eval=FALSE}
+# Skip if a module system is not used
+module("list")
+module("unload", "miniconda2")
+module("load", "python/2.7.14") # Make sure to set up your enviroment variable for MACS2 
+```
+
 ## Peak calling without input/reference sample
 
 MACS2 can perform peak calling on ChIP-Seq data with and without input
@@ -328,13 +335,6 @@ input on all samples specified in the corresponding `args` object. Note, due to
 the small size of the sample data, MACS2 needs to be run here with the
 `nomodel` setting. For real data sets, users want to remove this parameter 
 in the corresponding `*.param` file(s).
-
-```{r call_peaks_macs_envVar_settings, eval=FALSE}
-# Skip if a module system is not used
-module("list")
-module("unload", "miniconda2")
-module("load", "python/2.7.14") # Make sure to set up your enviroment variable for MACS2 
-```
 
 ```{r call_peaks_macs_noref, eval=FALSE}
 args <- systemArgs(sysma="param/macs2_noinput.param", 
