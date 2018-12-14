@@ -187,6 +187,7 @@ f <- function(x) {
     args <- systemArgs(sysma="param/tophat.param", mytargets="targets_chip.txt")
     seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
 }
+moduleload(modules(args)) # Skip if a module system is not used
 resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
 param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
 fqlist <- bplapply(seq(along=args), f, BPPARAM = param)
@@ -198,7 +199,6 @@ dev.off()
 
 ![](fastqReport.png)
 <div align="center">Figure 1: FASTQ quality report for 18 samples</div></br>
-
 
 # Alignments
 
@@ -328,6 +328,13 @@ input on all samples specified in the corresponding `args` object. Note, due to
 the small size of the sample data, MACS2 needs to be run here with the
 `nomodel` setting. For real data sets, users want to remove this parameter 
 in the corresponding `*.param` file(s).
+
+```{r call_peaks_macs_envVar_settings, eval=FALSE}
+# Skip if a module system is not used
+module("list")
+module("unload", "miniconda2")
+module("load", "python/2.7.14") # Make sure to set up your enviroment variable for MACS2 
+```
 
 ```{r call_peaks_macs_noref, eval=FALSE}
 args <- systemArgs(sysma="param/macs2_noinput.param", 
