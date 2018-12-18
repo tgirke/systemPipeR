@@ -1,15 +1,16 @@
 ---
 title: "systemPipeR"
-author: "Author: Thomas Girke (thomas.girke@ucr.edu)"
-date: "July 22, 2015" 
+author: 'Author: Thomas Girke (thomas.girke@ucr.edu)'
+date: "July 22, 2015"
 output:
+  beamer_presentation: default
   ioslides_presentation:
     keep_md: yes
     logo: logo.png
     toc: yes
     toc_depth: 2
     widescreen: yes
-subtitle: "NGS workflow and report generation environment" 
+subtitle: NGS workflow and report generation environment
 bibliography: bibtex.bib
 ---
 
