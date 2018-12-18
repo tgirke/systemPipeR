@@ -1,4 +1,7 @@
 changelog
+    version 1.17.1
+        - Improved vignette instructions
+    
     version 1.15.3
         - Fixed typo in vignette
 
