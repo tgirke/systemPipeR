@@ -1,4 +1,7 @@
 changelog
+     version 1.17.2
+        - Added "ImmunoOncology" to biocViews in Description File
+    
     version 1.17.1
         - Improved vignette instructions
     
