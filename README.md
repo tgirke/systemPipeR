@@ -15,7 +15,7 @@ typical analysis workflows in the NGS area.
 
 #### Installation 
 To install the package, please use the _`BiocManager::install`_ command:
-```s
+```
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install("systemPipeR")
@@ -23,7 +23,7 @@ BiocManager::install("systemPipeR")
 
 To obtain the most recent updates immediately, one can install it directly from
 github as follow:
-```s
+```
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install("tgirke/systemPipeR", build_vignettes=TRUE, dependencies=TRUE)
