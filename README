@@ -1,4 +1,7 @@
 changelog
+     version 1.17.3
+        - Switched all vignettes to R markdown (*.Rmd) followed by small updates
+
      version 1.17.2
         - Added "ImmunoOncology" to biocViews in Description File
     
