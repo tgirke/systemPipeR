@@ -1,5 +1,5 @@
 ---
-title: "VAR-Seq Workflow Template " 
+title: "VAR-Seq Workflow Template" 
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -10,7 +10,7 @@ output:
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{_systemPipeR_: NGS workflow and report generation environment}
+  %\VignetteIndexEntry{VAR-Seq Workflow Template}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
@@ -111,8 +111,11 @@ After opening the `Rmd` file of this workflow in Vim and attaching a connected
 R session via the `F2` (or other) key, use the following command sequence to run your R
 session on a computer node.
 
-```{r node_environment, eval=FALSE}
+```{r closeR, eval=FALSE}
 q("no") # closes R session on head node
+```
+
+```{bash node_environment, eval=FALSE}
 srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
 module load R/3.4.2
 R

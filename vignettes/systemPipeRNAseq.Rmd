@@ -108,10 +108,13 @@ script can then be sent from Vim on the login (head) node to an open R session r
 on the corresponding computer node. This is important since Tmux sessions
 should not be run on the computer nodes. 
 
-```{r node_environment, eval=FALSE}
-# push `F2` on your keyboard to open interactive R session
+```{r closeR, eval=FALSE}
 q("no") # closes R session on head node
-srun --x11 --partition=intel --mem=2gb --cpus-per-task 1 --ntasks 1 --time 2:00:00 --pty bash -l
+```
+
+```{bash node_environment, eval=FALSE}
+srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
+module load R/3.4.2
 R
 ```
 
