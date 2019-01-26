@@ -1,4 +1,7 @@
 changelog
+     version 1.17.4
+        - Bugfix in vignettes (systemPipeRNAseq, systemPipeVARseq, and systemPipeChIPseq)
+
      version 1.17.3
         - Switched all vignettes to R markdown (*.Rmd) followed by small updates
 

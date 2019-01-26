@@ -1,14 +1,16 @@
+## pre code {
+
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
-options(width=100, max.print=1000)
+options(width=60, max.print=1000)
 knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
-    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
 
 ## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE-------------------
 suppressPackageStartupMessages({
     library(systemPipeR)
-    library(systemPipeRdata)
     library(BiocParallel)
     library(Biostrings)
     library(Rsamtools)
@@ -17,13 +19,13 @@ suppressPackageStartupMessages({
     library(GenomicAlignments)
     library(ShortRead)
     library(ape)
+    library(batchtools)
 })
 
 ## ----install, eval=FALSE-------------------------------------------------
-## if (!requireNamespace("BiocManager", quietly=TRUE))
-    ## install.packages("BiocManager")
-## BiocManager::install("systemPipeR") # Install systemPipeR from Bioconductor
-## BiocManager::install("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE) # From github
+## if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
+## BiocManager::install("systemPipeR")
+## BiocManager::install("systemPipeRdata")
 
 ## ----documentation, eval=FALSE-------------------------------------------
 ## library("systemPipeR") # Loads the package
@@ -37,14 +39,14 @@ suppressPackageStartupMessages({
 
 ## ----targetsSE, eval=TRUE------------------------------------------------
 library(systemPipeR)
-targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
 read.delim(targetspath, comment.char = "#")
 
 ## ----targetsPE, eval=TRUE------------------------------------------------
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")[1:2,1:6]
 
-## ----comment_lines, eval=TRUE--------------------------------------------
+## ----comment_lines, echo=TRUE--------------------------------------------
 readLines(targetspath)[1:4]
 
 ## ----targetscomp, eval=TRUE----------------------------------------------
@@ -60,10 +62,12 @@ args
 
 ## ----sysarg_access, eval=TRUE--------------------------------------------
 names(args)
+
+## ----sysarg_access2, eval=TRUE-------------------------------------------
+sysargs(args)[1]
 modules(args)
 cores(args)
 outpaths(args)[1]
-sysargs(args)[1]
 
 ## ----sysarg_json, eval=TRUE----------------------------------------------
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
@@ -71,24 +75,27 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## ----load_package, eval=FALSE--------------------------------------------
 ## library(systemPipeR)
 ## library(systemPipeRdata)
-## genWorkenvir(workflow="rnaseq")
+## genWorkenvir(workflow="rnaseq", mydirname=NULL)
 ## setwd("rnaseq")
 
 ## ----construct_sysargs, eval=FALSE---------------------------------------
 ## args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
 
 ## ----preprocessing, eval=FALSE-------------------------------------------
-## preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)",
+## preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA',
+##                 subject=fq)",
 ##                 batchsize=100000, overwrite=TRUE, compress=TRUE)
 ## writeTargetsout(x=args, file="targets_trim.txt")
 
 ## ----custom_preprocessing, eval=FALSE------------------------------------
 ## args <- systemArgs(sysma="param/trimPE.param", mytargets="targetsPE.txt")
 ## filterFct <- function(fq, cutoff=20, Nexceptions=0) {
-##     qcount <- rowSums(as(quality(fq), "matrix") <= cutoff)
-##     fq[qcount <= Nexceptions] # Retains reads where Phred scores are >= cutoff with N exceptions
+##     qcount <- rowSums(as(quality(fq), "matrix") <= cutoff, na.rm=TRUE)
+##     # Retains reads where Phred scores are >= cutoff with N exceptions
+##     fq[qcount <= Nexceptions]
 ## }
-## preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)", batchsize=100000)
+## preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)",
+##                 batchsize=100000)
 ## writeTargetsout(x=args, file="targets_PEtrim.txt")
 
 ## ----fastq_quality, eval=FALSE-------------------------------------------
@@ -104,16 +111,15 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## seeFastqPlot(unlist(fqlist, recursive=FALSE))
 
 ## ----fastq_quality_parallel_cluster, eval=FALSE--------------------------
-## library(BiocParallel); library(BatchJobs)
+## library(BiocParallel); library(batchtools)
 ## f <- function(x) {
 ##     library(systemPipeR)
 ##     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 ##     seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
 ## }
-## funs <- makeClusterFunctionsTorque("torque.tmpl")
-## param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-## register(param)
-## fqlist <- bplapply(seq(along=args), f)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+## fqlist <- bplapply(seq(along=args), f, BPPARAM = param)
 ## seeFastqPlot(unlist(fqlist, recursive=FALSE))
 
 ## ----bowtie_index, eval=FALSE--------------------------------------------
@@ -125,15 +131,15 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## bampaths <- runCommandline(args=args)
 
 ## ----run_bowtie_parallel, eval=FALSE-------------------------------------
-## resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
-## reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
-##                   resourceList=resources)
-## waitForJobs(reg)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+## waitForJobs(reg=reg)
 
 ## ----process_monitoring, eval=FALSE--------------------------------------
-## showStatus(reg)
+## getStatus(reg=reg)
 ## file.exists(outpaths(args))
-## sapply(1:length(args), function(x) loadResult(reg, x)) # Works after job completion
+## sapply(1:length(args), function(x) loadResult(reg, id=x))
+## # Works after job completion
 
 ## ----align_stats1, eval=FALSE--------------------------------------------
 ## read_statsDF <- alignStats(args)
@@ -144,20 +150,20 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 ## ----align_stats_parallel, eval=FALSE------------------------------------
 ## f <- function(x) alignStats(args[x])
-## read_statsList <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
+## read_statsList <- bplapply(seq(along=args), f,
+##                            BPPARAM = MulticoreParam(workers=8))
 ## read_statsDF <- do.call("rbind", read_statsList)
 
 ## ----align_stats_parallel_cluster, eval=FALSE----------------------------
-## library(BiocParallel); library(BatchJobs)
+## library(BiocParallel); library(batchtools)
 ## f <- function(x) {
 ##     library(systemPipeR)
-##     args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+##     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 ##     alignStats(args[x])
 ## }
-## funs <- makeClusterFunctionsTorque("torque.tmpl")
-## param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-## register(param)
-## read_statsList <- bplapply(seq(along=args), f)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+## read_statsList <- bplapply(seq(along=args), f, BPPARAM = param)
 ## read_statsDF <- do.call("rbind", read_statsList)
 
 ## ----igv, eval=FALSE-----------------------------------------------------
@@ -166,15 +172,14 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ##         urlfile="IGVurl.txt")
 
 ## ----bowtie2, eval=FALSE-------------------------------------------------
-## args <- systemArgs(sysma="bowtieSE.param", mytargets="targets.txt")
+## args <- systemArgs(sysma="param/bowtieSE.param", mytargets="targets.txt")
 ## moduleload(modules(args)) # Skip if module system is not available
 ## bampaths <- runCommandline(args=args)
 
 ## ----bowtie2_cluster, eval=FALSE-----------------------------------------
-## resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
-## reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
-##                   resourceList=resources)
-## waitForJobs(reg)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+## waitForJobs(reg=reg)
 
 ## ----bwamem_cluster, eval=FALSE------------------------------------------
 ## args <- systemArgs(sysma="param/bwa.param", mytargets="targets.txt")
@@ -185,31 +190,30 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## ----rsubread, eval=FALSE------------------------------------------------
 ## library(Rsubread)
 ## args <- systemArgs(sysma="param/rsubread.param", mytargets="targets.txt")
-## buildindex(basename=reference(args), reference=reference(args)) # Build indexed reference genome
-## align(index=reference(args), readfile1=infile1(args)[1:4], input_format="FASTQ",
-##       output_file=outfile1(args)[1:4], output_format="SAM", nthreads=8, indels=1, TH1=2)
+## # Build indexed reference genome
+## buildindex(basename=reference(args), reference=reference(args))
+## align(index=reference(args), readfile1=infile1(args), input_format="FASTQ",
+##       output_file=outfile1(args), output_format="SAM", nthreads=8, indels=1, TH1=2)
 ## for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gsub(".sam", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
 
 ## ----gsnap, eval=FALSE---------------------------------------------------
-## library(gmapR); library(BiocParallel); library(BatchJobs)
+## library(gmapR); library(BiocParallel); library(batchtools)
 ## args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
 ## gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=TRUE)
 ## f <- function(x) {
 ##     library(gmapR); library(systemPipeR)
-##     args <- systemArgs(sysma="gsnap.param", mytargets="targetsPE.txt")
+##     args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
 ##     gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=FALSE)
 ##     p <- GsnapParam(genome=gmapGenome, unique_only=TRUE, molecule="DNA", max_mismatches=3)
 ##     o <- gsnap(input_a=infile1(args)[x], input_b=infile2(args)[x], params=p, output=outfile1(args)[x])
 ## }
-## funs <- makeClusterFunctionsTorque("torque.tmpl")
-## param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-## register(param)
-## d <- bplapply(seq(along=args), f)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+## d <- bplapply(seq(along=args), f, BPPARAM = param)
 
 ## ----create_txdb, eval=FALSE---------------------------------------------
-## library(gmapR); library(BiocParallel); library(BatchJobs)
 ## library(GenomicFeatures)
-## txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="A. thaliana")
+## txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="Arabidopsis thaliana")
 ## saveDb(txdb, file="./data/tair10.sqlite")
 
 ## ----read_counting_multicore, eval=FALSE---------------------------------
@@ -218,8 +222,11 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## eByg <- exonsBy(txdb, by="gene")
 ## bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
 ## multicoreParam <- MulticoreParam(workers=4); register(multicoreParam); registered()
-## counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)) # Note: for strand-specific RNA-Seq set 'ignore.strand=FALSE' and for PE data set 'singleEnd=FALSE'
-## countDFeByg <- sapply(seq(along=counteByg), function(x) assays(counteByg[[x]])$counts)
+## counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE))
+## 
+## # Note: for strand-specific RNA-Seq set 'ignore.strand=FALSE' and for PE data set 'singleEnd=FALSE'
+## countDFeByg <- sapply(seq(along=counteByg),
+##                       function(x) assays(counteByg[[x]])$counts)
 ## rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(bfl)
 ## rpkmDFeByg <- apply(countDFeByg, 2, function(x) returnRPKM(counts=x, ranges=eByg))
 ## write.table(countDFeByg, "results/countDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
@@ -231,36 +238,46 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ##     library(systemPipeR); library(BiocParallel); library(GenomicFeatures)
 ##     txdb <- loadDb("./data/tair10.sqlite")
 ##     eByg <- exonsBy(txdb, by="gene")
-##     args <- systemArgs(sysma="tophat.param", mytargets="targets.txt")
+##     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 ##     bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
 ##     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
 ## }
-## funs <- makeClusterFunctionsTorque("torque.tmpl")
-## param <- BatchJobsParam(length(args), resources=list(walltime="20:00:00", nodes="1:ppn=1", memory="6gb"), cluster.functions=funs)
-## register(param)
-## counteByg <- bplapply(seq(along=args), f)
-## countDFeByg <- sapply(seq(along=counteByg), function(x) assays(counteByg[[x]])$counts)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+## counteByg <- bplapply(seq(along=args), f, BPPARAM = param)
+## countDFeByg <- sapply(seq(along=counteByg),
+##                       function(x) assays(counteByg[[x]])$counts)
 ## rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
 
 ## ----read_counting_mirna, eval=FALSE-------------------------------------
 ## system("wget ftp://mirbase.org/pub/mirbase/19/genomes/My_species.gff3 -P ./data/")
-## gff <- import.gff("./data/My_species.gff3", asRangedData=FALSE)
+## gff <- import.gff("./data/My_species.gff3")
 ## gff <- split(gff, elementMetadata(gff)$ID)
 ## bams <- names(bampaths); names(bams) <- targets$SampleName
 ## bfl <- BamFileList(bams, yieldSize=50000, index=character())
 ## countDFmiR <- summarizeOverlaps(gff, bfl, mode="Union", ignore.strand=FALSE, inter.feature=FALSE) # Note: inter.feature=FALSE important since pre and mature miRNA ranges overlap
-## rpkmDFmiR <- apply(countDFmiR, 2, function(x) returnRPKM(counts=x, gffsub=gff))
+## rpkmDFmiR <- apply(countDFmiR, 2,
+##                    function(x) returnRPKM(counts=x, gffsub=gff))
 ## write.table(assays(countDFmiR)$counts, "results/countDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 ## write.table(rpkmDFmiR, "results/rpkmDFmiR.xls", col.names=NA, quote=FALSE, sep="\t")
 
-## ----sample_tree_, eval=TRUE---------------------------------------------
-library(ape,  warn.conflicts=FALSE)
-rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
-rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
-rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
-d <- cor(rpkmDFeByg, method="spearman")
-hc <- hclust(as.dist(1-d))
-plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
+## ----sample_tree_rlog, eval=TRUE-----------------------------------------
+library(DESeq2, warn.conflicts=FALSE, quietly=TRUE); library(ape, warn.conflicts=FALSE)
+countDFpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
+countDF <- as.matrix(read.table(countDFpath))
+colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
+d <- cor(assay(rlog(dds)), method="spearman")
+hc <- hclust(dist(1-d))
+plot.phylo(as.phylo(hc), type="p", edge.col=4, edge.width=3, show.node.label=TRUE, no.margin=TRUE)
+
+## ----sample_tree_rpkm, eval=FALSE----------------------------------------
+## rpkmDFeBygpath <- system.file("extdata", "rpkmDFeByg.xls", package="systemPipeR")
+## rpkmDFeByg <- read.table(rpkmDFeBygpath, check.names=FALSE)
+## rpkmDFeByg <- rpkmDFeByg[rowMeans(rpkmDFeByg) > 50,]
+## d <- cor(rpkmDFeByg, method="spearman")
+## hc <- hclust(as.dist(1-d))
+## plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
 
 ## ----edger_wrapper, eval=TRUE--------------------------------------------
 targets <- read.delim(targetspath, comment="#")
@@ -291,11 +308,15 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ## ----get_go_biomart, eval=FALSE------------------------------------------
 ## library("biomaRt")
 ## listMarts() # To choose BioMart database
-## m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m)
-## m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
+## listMarts(host="plants.ensembl.org")
+## m <- useMart("plants_mart", host="plants.ensembl.org")
+## listDatasets(m)
+## m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
 ## listAttributes(m) # Choose data types you want to download
-## go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
+## go <- getBM(attributes=c("go_id", "tair_locus", "namespace_1003"), mart=m)
 ## go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
+## go[go[,3]=="molecular_function", 3] <- "F"; go[go[,3]=="biological_process", 3] <- "P"; go[go[,3]=="cellular_component", 3] <- "C"
+## go[1:4,]
 ## dir.create("./data/GO")
 ## write.table(go, "data/GO/GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
 ## catdb <- makeCATdb(myfile="data/GO/GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=NULL)
@@ -310,7 +331,8 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ## DEGlist <- c(up_down, up, down)
 ## DEGlist <- DEGlist[sapply(DEGlist, length) > 0]
 ## BatchResult <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="all", id_type="gene", CLSZ=2, cutoff=0.9, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
-## library("biomaRt"); m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
+## library("biomaRt")
+## m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
 ## goslimvec <- as.character(getBM(attributes=c("goslim_goa_accession"), mart=m)[,1])
 ## BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim", id_type="gene", myslimv=goslimvec, CLSZ=10, cutoff=0.01, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
 
@@ -324,15 +346,30 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 ## ----hierarchical_clustering, eval=FALSE---------------------------------
 ## library(pheatmap)
 ## geneids <- unique(as.character(unlist(DEG_list[[1]])))
-## y <- rpkmDFeByg[geneids, ]
+## y <- assay(rlog(dds))[geneids, ]
 ## pdf("heatmap1.pdf")
 ## pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
 ## dev.off()
 
+## ----genRna_workflow_single, eval=FALSE----------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow="rnaseq")
+## setwd("rnaseq")
+
+## ----genChip_workflow_single, eval=FALSE---------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow="chipseq")
+## setwd("chipseq")
+
 ## ----genVar_workflow_single, eval=FALSE----------------------------------
-## setwd("../")
+## library(systemPipeRdata)
 ## genWorkenvir(workflow="varseq")
 ## setwd("varseq")
+
+## ----genRibo_workflow_single, eval=FALSE---------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow="riboseq")
+## setwd("riboseq")
 
 ## ----sessionInfo---------------------------------------------------------
 sessionInfo()
