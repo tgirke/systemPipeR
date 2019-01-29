@@ -1,5 +1,5 @@
 ---
-title: "RIBO-Seq Workflow" 
+title: "RIBO-Seq Workflow Template" 
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -9,7 +9,7 @@ output:
   BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
-  %\VignetteIndexEntry{RIBO-Seq Workflow}
+  %\VignetteIndexEntry{RIBO-Seq Workflow Template}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt

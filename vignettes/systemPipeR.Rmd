@@ -1,5 +1,5 @@
 ---
-title: "_systemPipeR_: NGS workflow and report generation environment" 
+title: "systemPipeR: NGS workflow and report generation environment" 
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -10,7 +10,7 @@ output:
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{_systemPipeR_: NGS workflow and report generation environment}
+  %\VignetteIndexEntry{systemPipeR: NGS workflow and report generation environment}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib

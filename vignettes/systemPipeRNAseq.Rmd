@@ -3,13 +3,13 @@ title: "RNA-Seq Workflow Template"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
+  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
-  %\VignetteIndexEntry{RNA-Seq Workflow}
+  %\VignetteIndexEntry{RNA-Seq Workflow Template}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
