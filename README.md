@@ -31,7 +31,7 @@ BiocManager::install("tgirke/systemPipeR", build_vignettes=TRUE, dependencies=TR
 
 #### Usage
 Instructions for running _systemPipeR_ are given in its main
-[_vignette_](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/vignette_archive/systemPipeR.pdf) (manual).
+[_vignette_](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/vignette_archive/systemPipeR.html) (manual).
 The sample data set used in the vignette are provided by the data package [_systemPipeRdata_](https://github.com/tgirke/systemPipeRdata).
 The expected format to define NGS samples (_e.g._ FASTQ files) and their
 labels are given in
@@ -45,11 +45,11 @@ for _Tophat2_:
 [_tophat.param_](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/tophat.param).
 Templates for setting up custom project reports are provided by [_systemPipeRdata_](https://github.com/tgirke/systemPipeRdata).
 The corresponding PDFs of these report templates are linked here:
-[systemPipeRNAseq](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf),
-[systemPipeRIBOseq](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf),
-[systemPipeChIPseq](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf)
+[systemPipeRNAseq](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.html),
+[systemPipeRIBOseq](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.html),
+[systemPipeChIPseq](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.html)
 and
-[systemPipeVARseq](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf).
+[systemPipeVARseq](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.html).
 
 #### Slides
 + [Overview Slide Show](https://htmlpreview.github.io/?https://raw.githubusercontent.com/tgirke/systemPipeR/master/inst/extdata/slides/systemPipeRslides.html).
