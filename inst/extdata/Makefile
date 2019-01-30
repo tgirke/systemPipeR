@@ -2,24 +2,32 @@
 ## Makefile to execute systemPipeR and generate PDF Report ##
 #############################################################
 ## Usage:
-## (1) Change value assigned to 'MAIN" to base name of your *.Rnw source file 
+## (1) Change value assigned to 'MAIN" to base name of your *.Rmd source file 
 ## (2) To run workflow, execute from command-line 
 ##		$ make # or make all
 ## (3) To clean up directory, execute from command-line 
 ## 		$ make clean
 
 ## Define suffixes used for file interconversions
-.SUFFIXES: .tex .pdf .Rnw .R
+.SUFFIXES: .tex .pdf .Rnw .R .Rmd
 
-MAIN = systemPipeRNAseq
+MAIN = systemPipeR
+
+#######################################
+## Build PDF report with Rmd/Latex ##
+#######################################
+all: $(MAIN).pdf
+
+.Rmd.pdf:
+	Rscript -e "rmarkdown::render('$<', c('BiocStyle::pdf_document'))"
 
 #######################################
 ## Build PDF report with knitr/Latex ##
 #######################################
-all: $(MAIN).pdf 
-
-.Rnw.pdf:
-	R CMD Sweave --engine=knitr::knitr --pdf $<
+# all: $(MAIN).pdf 
+#
+# .Rnw.pdf:
+#	R CMD Sweave --engine=knitr::knitr --pdf $<
 
 ########################################
 ## Build PDF report with Sweave/Latex ##
@@ -43,5 +51,5 @@ all: $(MAIN).pdf
 ########################
 clean:
 	rm -fv $(MAIN).aux $(MAIN).log $(MAIN).bbl $(MAIN).blg $(MAIN).out $(MAIN).toc $(MAIN).tex
-	rm -fv $(MAIN)-*.pdf $(MAIN)-*.png $(MAIN)-*.jpg
+	rm -fv $(MAIN)-*.pdf $(MAIN)-*.png $(MAIN)-*.jpg $(MAIN)-*.html
 	rm -fv *~ 
