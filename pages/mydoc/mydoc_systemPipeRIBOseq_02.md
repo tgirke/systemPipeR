@@ -1,6 +1,6 @@
 ---
 title: 2. Load workflow template
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Sat Feb  2 11:49:31 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_02.html
 ---
@@ -14,25 +14,27 @@ The sample data are described [here](http://www.bioconductor.org/packages/devel/
 
 ```r
 library(systemPipeRdata)
-genWorkenvir(workflow="riboseq", bam=TRUE)
+genWorkenvir(workflow = "riboseq", bam = TRUE)
 setwd("riboseq")
 ```
+
 ## Download latest version of this tutorial
 
 In case there is a newer version of this tutorial, download its `systemPipeRIBOseq.Rmd` source and open it in your R IDE (e.g. vim-r or RStudio).
 
 
-
 ```r
-download.file("https://raw.githubusercontent.com/tgirke/systemPipeRdata/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd", "systemPipeRIBOseq.Rmd")
+download.file("https://raw.githubusercontent.com/tgirke/systemPipeRdata/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd", 
+    "systemPipeRIBOseq.Rmd")
 ```
 
 ## Load packages and sample data
+
 The `systemPipeR` package needs to be loaded to perform the analysis 
 steps shown in this report (Girke , 2014). The package allows users
 to run the entire analysis workflow interactively or with a single command 
 while also generating the corresponding analysis report. For details
-see `systemPipeR's` main (vignette)(http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html).
+see `systemPipeR's` main [vignette](http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html).
 
 
 ```r
@@ -61,12 +63,13 @@ source("systemPipeRIBOseq_Fct.R")
 ```
 
 ## Experiment definition provided by `targets` file
+
 The `targets` file defines all FASTQ files and sample comparisons of the analysis workflow. 
 
 
 ```r
-targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
-targets <- read.delim(targetspath, comment.char = "#")[,1:4]
+targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
+targets <- read.delim(targetspath, comment.char = "#")[, 1:4]
 targets
 ```
 

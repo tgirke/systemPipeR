@@ -1,9 +1,12 @@
+## pre code {
+
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
-options(width=100, max.print=1000)
+options(width=60, max.print=1000)
 knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
-    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
 
 ## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE-------------------
 suppressPackageStartupMessages({
@@ -16,6 +19,7 @@ suppressPackageStartupMessages({
     library(GenomicAlignments)
     library(ShortRead)
     library(ape)
+    library(batchtools)
 })
 
 ## ----genRibo_workflow, eval=FALSE----------------------------------------
@@ -41,8 +45,7 @@ targets
 ## args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
 ## fctpath <- system.file("extdata", "custom_Fct.R", package="systemPipeR")
 ## source(fctpath)
-## iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6,
-##                              Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)"
+## iterTrim <- ".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)"
 ## preprocessReads(args=args, Fct=iterTrim, batchsize=100000, overwrite=TRUE, compress=TRUE)
 ## writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
 
@@ -60,10 +63,10 @@ targets
 ## ----tophat_alignment2, eval=FALSE, warning=FALSE, message=FALSE---------
 ## moduleload(modules(args))
 ## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-## resources <- list(walltime="20:00:00", nodes=paste0("1:ppn=", cores(args)), memory="10gb")
-## reg <- clusterRun(args, conffile=".BatchJobs.R", template="torque.tmpl", Njobs=18, runid="01",
-##                   resourceList=resources)
-## waitForJobs(reg)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+## getStatus(reg=reg)
+## waitForJobs(reg=reg)
 
 ## ----hisat2_alignment, eval=FALSE----------------------------------------
 ## args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
@@ -86,26 +89,28 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## ----bam_urls, eval=FALSE------------------------------------------------
 ## symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/tests/"),
 ##             urlbase="http://biocluster.ucr.edu/~tgirke/",
-## 	        urlfile="./results/IGVurl.txt")
+##             urlfile="./results/IGVurl.txt")
 
 ## ----genFeatures, eval=FALSE---------------------------------------------
 ## library(GenomicFeatures)
 ## txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff3", organism="Arabidopsis")
-## feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0,
-##                     verbose=TRUE)
+## feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000,
+##                     downstream=0, verbose=TRUE)
 
 ## ----featuretypeCounts, eval=FALSE---------------------------------------
 ## library(ggplot2); library(grid)
 ## fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat,
 ##                         singleEnd=TRUE, readlength=NULL, type="data.frame")
-## p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png", graphicsformat="png",
-##                            scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+## p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png",
+##                            graphicsformat="png", scales="fixed", anyreadlength=TRUE,
+##                            scale_length_val=NULL)
 
 ## ----featuretypeCounts_length, eval=FALSE--------------------------------
 ## fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat,
 ##                          singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-## p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png", graphicsformat="png",
-##                             scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
+## p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png",
+##                             graphicsformat="png", scales="fixed", anyreadlength=FALSE,
+##                             scale_length_val=NULL)
 
 ## ----pred_orf, eval=FALSE------------------------------------------------
 ## library(systemPipeRdata); library(GenomicFeatures); library(rtracklayer)
@@ -140,32 +145,35 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 
 ## ----coverage_binned1, eval=FALSE----------------------------------------
 ## grl <- cdsBy(txdb, "tx", use.names=TRUE)
-## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL,
-##                          readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE,
-##                          resizefeatures=TRUE, upstream=20, downstream=20,
-##                          outfile="results/featureCoverage.xls", overwrite=TRUE)
+## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4],
+##                         resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean,
+##                         fixedmatrix=FALSE, resizefeatures=TRUE, upstream=20,
+##                         downstream=20, outfile="results/featureCoverage.xls",
+##                         overwrite=TRUE)
 
 ## ----coverage_binned2, eval=FALSE----------------------------------------
-## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], resizereads=NULL,
-##                          readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE,
-##                          resizefeatures=TRUE, upstream=20, downstream=20,
-##                          outfile="results/featureCoverage.xls", overwrite=TRUE)
-## plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
+## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE,
+##                         resizefeatures=TRUE, upstream=20, downstream=20,
+##                         outfile="results/featureCoverage.xls", overwrite=TRUE)
+## plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2,
+##                     scale_count_val=10^6)
 
 ## ----coverage_binned3, eval=FALSE----------------------------------------
 ## library(ggplot2); library(grid)
-## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:4], resizereads=NULL,
-##                          readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE,
-##                          resizefeatures=TRUE, upstream=20, downstream=20,
-##                          outfile="results/featureCoverage.xls", overwrite=TRUE)
+## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:4],
+##                         resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean,
+##                         fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20,
+##                         downstream=20,outfile="results/featureCoverage.xls",
+##                         overwrite=TRUE)
 ## png("./results/featurePlot.png", height=12, width=24, units="in", res=72)
 ## plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 ## dev.off()
 
 ## ----coverage_nuc_level, eval=FALSE--------------------------------------
-## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1], resizereads=NULL,
-##                         readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE,
-##                         resizefeatures=TRUE, upstream=20, downstream=20, outfile=NULL)
+## fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1],
+##                         resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean,
+##                         fixedmatrix=FALSE, resizefeatures=TRUE, upstream=20,
+##                         downstream=20, outfile=NULL)
 
 ## ----read_counting, eval=FALSE-------------------------------------------
 ## library("GenomicFeatures"); library(BiocParallel)
@@ -239,7 +247,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## listDatasets(m)
 ## m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
 ## listAttributes(m) # Choose data types you want to download
-## go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
+## go <- getBM(attributes=c("go_id", "tair_locus", "namespace_1003"), mart=m)
 ## go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
 ## go[go[,3]=="molecular_function", 3] <- "F"; go[go[,3]=="biological_process", 3] <- "P"; go[go[,3]=="cellular_component", 3] <- "C"
 ## go[1:4,]
@@ -281,8 +289,8 @@ countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipe
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 countDFeByg <- read.delim(countDFeBygpath, row.names=1)
 coldata <- DataFrame(assay=factor(rep(c("Ribo","mRNA"), each=4)), 
-                condition=factor(rep(as.character(targetsin(args)$Factor[1:4]), 2)), 
-                row.names=as.character(targetsin(args)$SampleName)[1:8])
+                     condition=factor(rep(as.character(targetsin(args)$Factor[1:4]), 2)), 
+                     row.names=as.character(targetsin(args)$SampleName)[1:8])
 coldata
 
 ## ----diff_translational_eff, eval=TRUE-----------------------------------

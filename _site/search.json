@@ -226,7 +226,7 @@
 
 
 {
-"title": "RIBO-Seq Workflow &lt;br&gt; &lt;br&gt; 1. Introduction",
+"title": "RIBO-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeRIBOseq_01.html",
@@ -325,7 +325,7 @@
 
 
 {
-"title": "10. GO term enrichment analysis of DEGs}",
+"title": "10. GO term enrichment analysis of DEGs",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeRIBOseq_10.html",
@@ -794,35 +794,16 @@
 
 
 
-
-
 {
-"title": "Sample post",
-"tags": "newsgetting_started",
+"title": "",
+"tags": "",
 "keywords": "",
-"url": "samplepost.html",
-"summary": "This is some summary frontmatter for my sample post."
-}
-,
-
-
-{
-"title": "Welcome to Jekyll!",
-"tags": "news",
-"keywords": "",
-"url": "myupdate.html",
+"url": "assetscssstyle.css",
 "summary": ""
 }
-,
 
 
-{
-"title": "Test post from last year",
-"tags": "news",
-"keywords": "",
-"url": "test-post-from-last-year.html",
-"summary": ""
-}
+
 
 
 

@@ -1,9 +1,10 @@
 ---
 title: 7. Genomic read coverage along transripts or CDSs
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Sat Feb  2 11:49:31 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_07.html
 ---
+
 The `featureCoverage` function computes the read coverage along
 single and multi component features based on genomic alignments. The coverage
 segments of component features are spliced to continuous ranges, such as exons
@@ -19,49 +20,56 @@ the downstream `plotfeatureCoverage` function.
 
 
 ```r
-grl <- cdsBy(txdb, "tx", use.names=TRUE)
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
-                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE, 
-                         resizefeatures=TRUE, upstream=20, downstream=20,
-                         outfile="results/featureCoverage.xls", overwrite=TRUE)
+grl <- cdsBy(txdb, "tx", use.names = TRUE)
+fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:2]), 
+    grl = grl[1:4], resizereads = NULL, readlengthrange = NULL, 
+    Nbins = 20, method = mean, fixedmatrix = FALSE, resizefeatures = TRUE, 
+    upstream = 20, downstream = 20, outfile = "results/featureCoverage.xls", 
+    overwrite = TRUE)
 ```
 
 ## Coverage upstream and downstream of start and stop codons
 
 
 ```r
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:12], resizereads=NULL, 
-                         readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
-                         resizefeatures=TRUE, upstream=20, downstream=20, 
-                         outfile="results/featureCoverage.xls", overwrite=TRUE)
-plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
+fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:4]), 
+    grl = grl[1:12], resizereads = NULL, readlengthrange = NULL, 
+    Nbins = NULL, method = mean, fixedmatrix = TRUE, resizefeatures = TRUE, 
+    upstream = 20, downstream = 20, outfile = "results/featureCoverage.xls", 
+    overwrite = TRUE)
+plotfeatureCoverage(covMA = fcov, method = mean, scales = "fixed", 
+    extendylim = 2, scale_count_val = 10^6)
 ```
 
 ## Combined coverage for both binned CDS and start/stop codons
 
 
 ```r
-library(ggplot2); library(grid)
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:4]), grl=grl[1:4], resizereads=NULL, 
-                         readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
-                         resizefeatures=TRUE, upstream=20, downstream=20,
-                         outfile="results/featureCoverage.xls", overwrite=TRUE)
-png("./results/featurePlot.png", height=12, width=24, units="in", res=72)
-plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
+library(ggplot2)
+library(grid)
+fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:4]), 
+    grl = grl[1:4], resizereads = NULL, readlengthrange = NULL, 
+    Nbins = 20, method = mean, fixedmatrix = TRUE, resizefeatures = TRUE, 
+    upstream = 20, downstream = 20, outfile = "results/featureCoverage.xls", 
+    overwrite = TRUE)
+png("./results/featurePlot.png", height = 12, width = 24, units = "in", 
+    res = 72)
+plotfeatureCoverage(covMA = fcov, method = mean, scales = "fixed", 
+    extendylim = 2, scale_count_val = 10^6)
 dev.off()
 ```
 
 ![](./pages/mydoc/systemPipeRIBOseq_files/featurePlot.png)
 <div align="center">Figure 4: Feature coverage plot with single nucleotide resolution around start and stop codons and binned coverage between them.</div>
 
-
 ## Nucleotide level coverage along entire transcripts/CDSs
 
 
 ```r
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1], resizereads=NULL, 
-                        readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE, 
-                        resizefeatures=TRUE, upstream=20, downstream=20, outfile=NULL)
+fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:2]), 
+    grl = grl[1], resizereads = NULL, readlengthrange = NULL, 
+    Nbins = NULL, method = mean, fixedmatrix = FALSE, resizefeatures = TRUE, 
+    upstream = 20, downstream = 20, outfile = NULL)
 ```
 
 <br><br><center><a href="mydoc_systemPipeRIBOseq_06.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

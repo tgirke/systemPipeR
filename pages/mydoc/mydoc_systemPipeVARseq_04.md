@@ -1,6 +1,6 @@
 ---
 title: 4. Alignments
-last_updated: Wed May 10 21:42:55 2017
+last_updated: Sat Feb  2 11:47:13 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_04.html
 ---
@@ -14,10 +14,9 @@ defined in the `bwa.param` file.
 
 
 ```r
-args <- systemArgs(sysma="param/bwa.param", mytargets="targets.txt")
-sysargs(args)[1] # Command-line parameters for first FASTQ file
+args <- systemArgs(sysma = "param/bwa.param", mytargets = "targets.txt")
+sysargs(args)[1]  # Command-line parameters for first FASTQ file
 ```
-
 
 Runs the alignments sequentially (_e.g._ on a single machine)
 
@@ -25,8 +24,8 @@ Runs the alignments sequentially (_e.g._ on a single machine)
 ```r
 moduleload(modules(args))
 system("bwa index -a bwtsw ./data/tair10.fasta")
-bampaths <- runCommandline(args=args)
-writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
+bampaths <- runCommandline(args = args)
+writeTargetsout(x = args, file = "targets_bam.txt", overwrite = TRUE)
 ```
 
 Alternatively, the alignment jobs can be submitted to a compute cluster,
@@ -36,11 +35,13 @@ here using 72 CPU cores (18 `qsub` processes each with 4 CPU cores).
 ```r
 moduleload(modules(args))
 system("bwa index -a bwtsw ./data/tair10.fasta")
-resources <- list(walltime="1:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-                  resourceList=resources)
-waitForJobs(reg)
-writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
+resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
+    memory = 1024)
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
+    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
+getStatus(reg = reg)
+waitForJobs(reg = reg)
+writeTargetsout(x = args, file = "targets_bam.txt", overwrite = TRUE)
 ```
 
 Check whether all BAM files have been created
@@ -58,23 +59,30 @@ multiple nodes of a computer cluster that uses Torque as scheduler.
 
 
 ```r
-library(gmapR); library(BiocParallel); library(BatchJobs)
-args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
-gmapGenome <- GmapGenome(systemPipeR::reference(args), directory="data", name="gmap_tair10chr", create=TRUE)
+library(gmapR)
+library(BiocParallel)
+library(batchtools)
+args <- systemArgs(sysma = "param/gsnap.param", mytargets = "targetsPE.txt")
+gmapGenome <- GmapGenome(systemPipeR::reference(args), directory = "data", 
+    name = "gmap_tair10chr", create = TRUE)
 f <- function(x) {
-    library(gmapR); library(systemPipeR)
-    args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
-    gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr", create=FALSE)
-    p <- GsnapParam(genome=gmapGenome, unique_only=TRUE, molecule="DNA", max_mismatches=3)
-    o <- gsnap(input_a=infile1(args)[x], input_b=infile2(args)[x], params=p, output=outfile1(args)[x])
+    library(gmapR)
+    library(systemPipeR)
+    args <- systemArgs(sysma = "param/gsnap.param", mytargets = "targetsPE.txt")
+    gmapGenome <- GmapGenome(reference(args), directory = "data", 
+        name = "gmap_tair10chr", create = FALSE)
+    p <- GsnapParam(genome = gmapGenome, unique_only = TRUE, 
+        molecule = "DNA", max_mismatches = 3)
+    o <- gsnap(input_a = infile1(args)[x], input_b = infile2(args)[x], 
+        params = p, output = outfile1(args)[x])
 }
-funs <- makeClusterFunctionsSLURM("slurm.tmpl")
-param <- BatchJobsParam(length(args), resources=list(walltime="00:20:00", ntasks=1, ncpus=1, memory="6G"), cluster.functions=funs)
-register(param)
-d <- bplapply(seq(along=args), f)
-writeTargetsout(x=args, file="targets_gsnap_bam.txt", overwrite=TRUE)
+resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
+    memory = 1024)
+param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", 
+    resources = resources)
+d <- bplapply(seq(along = args), f, BPPARAM = param)
+writeTargetsout(x = args, file = "targets_gsnap_bam.txt", overwrite = TRUE)
 ```
-
 
 ## Read and alignment stats
 
@@ -83,10 +91,10 @@ sample and how many of them aligned to the reference.
 
 
 ```r
-read_statsDF <- alignStats(args=args) 
-write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+read_statsDF <- alignStats(args = args)
+write.table(read_statsDF, "results/alignStats.xls", row.names = FALSE, 
+    quote = FALSE, sep = "\t")
 ```
-
 
 ## Create symbolic links for viewing BAM files in IGV
 
@@ -96,11 +104,9 @@ with a path specified under `urlfile`, here `IGVurl.txt`.
 
 
 ```r
-symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/gen242/"), 
-            urlbase="http://biocluster.ucr.edu/~tgirke/", 
-            urlfile="./results/IGVurl.txt")
+symLink2bam(sysargs = args, htmldir = c("~/.html/", "projects/gen242/"), 
+    urlbase = "http://biocluster.ucr.edu/~tgirke/", urlfile = "./results/IGVurl.txt")
 ```
-
 
 <br><br><center><a href="mydoc_systemPipeVARseq_03.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeVARseq_05.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

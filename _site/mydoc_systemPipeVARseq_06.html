@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -844,15 +844,16 @@ very small, the chosen settings are unreasonabley relaxed. A more
 reasonable filter setting is given in the line below (here commented
 out).</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">BBmisc</span><span class="p">)</span><span class="w"> </span><span class="c1"># Defines suppressAll()
-</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/filter_gatk.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_gatk.txt"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">BBmisc</span><span class="p">)</span><span class="w">  </span><span class="c1"># Defines suppressAll()</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/filter_gatk.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_gatk.txt"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
 </span><span class="n">filter</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"totalDepth(vr) &gt;= 2 &amp; (altDepth(vr) / totalDepth(vr) &gt;= 0.8) &amp; rowSums(softFilterMatrix(vr))&gt;=1"</span><span class="w">
-</span><span class="c1"># filter &lt;- "totalDepth(vr) &gt;= 20 &amp; (altDepth(vr) / totalDepth(vr) &gt;= 0.8) &amp; rowSums(softFilterMatrix(vr))==6"
-</span><span class="n">suppressAll</span><span class="p">(</span><span class="n">filterVars</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="n">varcaller</span><span class="o">=</span><span class="s2">"gatk"</span><span class="p">,</span><span class="w"> </span><span class="n">organism</span><span class="o">=</span><span class="s2">"A. thaliana"</span><span class="p">))</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_gatk_filtered.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span><span class="c1"># filter &lt;- 'totalDepth(vr) &gt;= 20 &amp; (altDepth(vr) /</span><span class="w">
+</span><span class="c1"># totalDepth(vr) &gt;= 0.8) &amp; rowSums(softFilterMatrix(vr))==6'</span><span class="w">
+</span><span class="n">suppressAll</span><span class="p">(</span><span class="n">filterVars</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="n">varcaller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk"</span><span class="p">,</span><span class="w"> </span><span class="n">organism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"A. thaliana"</span><span class="p">))</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_gatk_filtered.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="filter-variants-called-by-bcftools">Filter variants called by <code class="highlighter-rouge">BCFtools</code></h2>
 
@@ -860,13 +861,15 @@ out).</p>
 similar parameter settings as in the previous filtering of the GATK
 results.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/filter_sambcf.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_sambcf.txt"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/filter_sambcf.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_sambcf.txt"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
 </span><span class="n">filter</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"rowSums(vr) &gt;= 2 &amp; (rowSums(vr[,3:4])/rowSums(vr[,1:4]) &gt;= 0.8)"</span><span class="w">
-</span><span class="c1"># filter &lt;- "rowSums(vr) &gt;= 20 &amp; (rowSums(vr[,3:4])/rowSums(vr[,1:4]) &gt;= 0.8)"
-</span><span class="n">suppressAll</span><span class="p">(</span><span class="n">filterVars</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="n">varcaller</span><span class="o">=</span><span class="s2">"bcftools"</span><span class="p">,</span><span class="w"> </span><span class="n">organism</span><span class="o">=</span><span class="s2">"A. thaliana"</span><span class="p">))</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_sambcf_filtered.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span><span class="c1"># filter &lt;- 'rowSums(vr) &gt;= 20 &amp;</span><span class="w">
+</span><span class="c1"># (rowSums(vr[,3:4])/rowSums(vr[,1:4]) &gt;= 0.8)'</span><span class="w">
+</span><span class="n">suppressAll</span><span class="p">(</span><span class="n">filterVars</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="n">varcaller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bcftools"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">organism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"A. thaliana"</span><span class="p">))</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_sambcf_filtered.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="filter-variants-called-by-varianttools">Filter variants called by <code class="highlighter-rouge">VariantTools</code></h2>
 
@@ -874,22 +877,26 @@ results.</p>
 similar parameter settings as in the previous filtering of the GATK
 results.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">BBmisc</span><span class="p">)</span><span class="w"> </span><span class="c1"># Defines suppressAll()
-</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/filter_vartools.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_vartools.txt"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">BBmisc</span><span class="p">)</span><span class="w">  </span><span class="c1"># Defines suppressAll()</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/filter_vartools.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_vartools.txt"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
 </span><span class="n">filter</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"(values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;= 2 &amp; (values(vr)$n.read.pos / (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;= 0.8)"</span><span class="w">
-</span><span class="c1"># filter &lt;- "(values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;= 20 &amp; (values(vr)$n.read.pos / (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;= 0.8)"
-</span><span class="n">filterVars</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="n">varcaller</span><span class="o">=</span><span class="s2">"vartools"</span><span class="p">,</span><span class="w"> </span><span class="n">organism</span><span class="o">=</span><span class="s2">"A. thaliana"</span><span class="p">)</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_vartools_filtered.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span><span class="c1"># filter &lt;- '(values(vr)$n.read.pos.ref +</span><span class="w">
+</span><span class="c1"># values(vr)$n.read.pos) &gt;= 20 &amp; (values(vr)$n.read.pos /</span><span class="w">
+</span><span class="c1"># (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;=</span><span class="w">
+</span><span class="c1"># 0.8)'</span><span class="w">
+</span><span class="n">filterVars</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">,</span><span class="w"> </span><span class="n">varcaller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"vartools"</span><span class="p">,</span><span class="w"> </span><span class="n">organism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"A. thaliana"</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_vartools_filtered.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p>Check filtering outcome for one sample</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">as</span><span class="p">(</span><span class="n">readVcf</span><span class="p">(</span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">genome</span><span class="o">=</span><span class="s2">"Ath"</span><span class="p">),</span><span class="w"> </span><span class="s2">"VRanges"</span><span class="p">)[,</span><span class="m">1</span><span class="p">])</span><span class="w">
-</span><span class="nf">length</span><span class="p">(</span><span class="n">as</span><span class="p">(</span><span class="n">readVcf</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">genome</span><span class="o">=</span><span class="s2">"Ath"</span><span class="p">),</span><span class="w"> </span><span class="s2">"VRanges"</span><span class="p">)[,</span><span class="m">1</span><span class="p">])</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">length</span><span class="p">(</span><span class="n">as</span><span class="p">(</span><span class="n">readVcf</span><span class="p">(</span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">genome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Ath"</span><span class="p">),</span><span class="w"> </span><span class="s2">"VRanges"</span><span class="p">)[,</span><span class="w"> 
+    </span><span class="m">1</span><span class="p">])</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">as</span><span class="p">(</span><span class="n">readVcf</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">genome</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Ath"</span><span class="p">),</span><span class="w"> </span><span class="s2">"VRanges"</span><span class="p">)[,</span><span class="w"> 
+    </span><span class="m">1</span><span class="p">])</span><span class="w">
+</span></code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeVARseq_05.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeVARseq_07.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -908,8 +915,8 @@ results.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Wed May 10 21:42:55 2017<br/> Site last generated: Oct 22, 2017 <br />
+               &copy;2019 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Feb  2 11:47:13 2019<br/> Site last generated: Feb 2, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

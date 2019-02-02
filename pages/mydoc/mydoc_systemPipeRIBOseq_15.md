@@ -1,6 +1,6 @@
 ---
 title: 15. Funding
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Sat Feb  2 11:49:31 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_15.html
 ---

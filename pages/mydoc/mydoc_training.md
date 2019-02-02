@@ -25,17 +25,10 @@ permalink: mydoc_training.html
 
 ### Installation 
 Please install _systemPipeRdata_ from this GitHub repository as shown below. This package provides the data and `Rmd` files for the tutorial. 
-Its parent package _systemPipeR_ is a dependency and it should install along with all its own dependencies automatically. If it doesn't then please also
-run the last `biocLite` install command given below.
+Its parent package _systemPipeR_ is a dependency and it should install along with all its own dependencies automatically. If it doesn't then please also install the package, using the BiocManager::install command given below.
 
-```sh
-source("http://bioconductor.org/biocLite.R")
-biocLite("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE)
-biocLite("systemPipeR")
 ```
-
-
-
-
-
-
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("tgirke/systemPipeRdata", build_vignettes=TRUE, dependencies=TRUE)
+```

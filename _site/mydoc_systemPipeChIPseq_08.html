@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -829,14 +829,13 @@ the read counting is performed with the <code class="highlighter-rouge">summariz
 <code class="highlighter-rouge">GenomicAlignments</code> package. The resulting count tables are directly saved to 
 files, one for each peak set.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">GenomicRanges</span><span class="p">)</span><span class="w">
-</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/count_rangesets.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_macs.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">args_bam</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_bam.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">bfl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">BamFileList</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args_bam</span><span class="p">),</span><span class="w"> </span><span class="n">yieldSize</span><span class="o">=</span><span class="m">50000</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="o">=</span><span class="n">character</span><span class="p">())</span><span class="w">
-</span><span class="n">countDFnames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">countRangeset</span><span class="p">(</span><span class="n">bfl</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">mode</span><span class="o">=</span><span class="s2">"Union"</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.strand</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_countDF.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">GenomicRanges</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/count_rangesets.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_macs.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">args_bam</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">bfl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">BamFileList</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args_bam</span><span class="p">),</span><span class="w"> </span><span class="n">yieldSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50000</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">character</span><span class="p">())</span><span class="w">
+</span><span class="n">countDFnames</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">countRangeset</span><span class="p">(</span><span class="n">bfl</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Union"</span><span class="p">,</span><span class="w"> </span><span class="n">ignore.strand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_countDF.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeChIPseq_07.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeChIPseq_09.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -855,8 +854,8 @@ files, one for each peak set.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Jun 10 11:34:52 2017<br/> Site last generated: Oct 22, 2017 <br />
+               &copy;2019 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Feb  2 11:43:49 2019<br/> Site last generated: Feb 2, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

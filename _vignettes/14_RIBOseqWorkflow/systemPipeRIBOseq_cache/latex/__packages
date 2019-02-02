@@ -18,4 +18,6 @@ ShortRead
 systemPipeR
 ggplot2
 ape
+data.table
+batchtools
 DESeq2

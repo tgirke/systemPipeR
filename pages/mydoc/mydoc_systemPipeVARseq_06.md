@@ -1,6 +1,6 @@
 ---
 title: 6. Filter variants
-last_updated: Wed May 10 21:42:55 2017
+last_updated: Sat Feb  2 11:47:13 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_06.html
 ---
@@ -16,8 +16,6 @@ The parameter files (`filter_gatk.param`, `filter_sambcf.param` and
 `filter_vartools.param`), used in the filtering steps, define the paths to 
 the input and output VCF files which are stored in new `SYSargs` instances.  
 
-
-
 ## Filter variants called by `GATK` 
 
 The below example filters for variants that are supported by `>=x`
@@ -31,14 +29,15 @@ out).
 
 ```r
 library(VariantAnnotation)
-library(BBmisc) # Defines suppressAll()
-args <- systemArgs(sysma="param/filter_gatk.param", mytargets="targets_gatk.txt")[1:4]
+library(BBmisc)  # Defines suppressAll()
+args <- systemArgs(sysma = "param/filter_gatk.param", mytargets = "targets_gatk.txt")[1:4]
 filter <- "totalDepth(vr) >= 2 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))>=1"
-# filter <- "totalDepth(vr) >= 20 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==6"
-suppressAll(filterVars(args, filter, varcaller="gatk", organism="A. thaliana"))
-writeTargetsout(x=args, file="targets_gatk_filtered.txt", overwrite=TRUE)
+# filter <- 'totalDepth(vr) >= 20 & (altDepth(vr) /
+# totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==6'
+suppressAll(filterVars(args, filter, varcaller = "gatk", organism = "A. thaliana"))
+writeTargetsout(x = args, file = "targets_gatk_filtered.txt", 
+    overwrite = TRUE)
 ```
-
 
 ## Filter variants called by `BCFtools`  
 
@@ -48,11 +47,14 @@ results.
 
 
 ```r
-args <- systemArgs(sysma="param/filter_sambcf.param", mytargets="targets_sambcf.txt")[1:4]
+args <- systemArgs(sysma = "param/filter_sambcf.param", mytargets = "targets_sambcf.txt")[1:4]
 filter <- "rowSums(vr) >= 2 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
-# filter <- "rowSums(vr) >= 20 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
-suppressAll(filterVars(args, filter, varcaller="bcftools", organism="A. thaliana"))
-writeTargetsout(x=args, file="targets_sambcf_filtered.txt", overwrite=TRUE)
+# filter <- 'rowSums(vr) >= 20 &
+# (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)'
+suppressAll(filterVars(args, filter, varcaller = "bcftools", 
+    organism = "A. thaliana"))
+writeTargetsout(x = args, file = "targets_sambcf_filtered.txt", 
+    overwrite = TRUE)
 ```
 
 ## Filter variants called by `VariantTools` 
@@ -64,19 +66,26 @@ results.
 
 ```r
 library(VariantAnnotation)
-library(BBmisc) # Defines suppressAll()
-args <- systemArgs(sysma="param/filter_vartools.param", mytargets="targets_vartools.txt")[1:4]
+library(BBmisc)  # Defines suppressAll()
+args <- systemArgs(sysma = "param/filter_vartools.param", mytargets = "targets_vartools.txt")[1:4]
 filter <- "(values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 2 & (values(vr)$n.read.pos / (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 0.8)"
-# filter <- "(values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 20 & (values(vr)$n.read.pos / (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >= 0.8)"
-filterVars(args, filter, varcaller="vartools", organism="A. thaliana")
-writeTargetsout(x=args, file="targets_vartools_filtered.txt", overwrite=TRUE)
+# filter <- '(values(vr)$n.read.pos.ref +
+# values(vr)$n.read.pos) >= 20 & (values(vr)$n.read.pos /
+# (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) >=
+# 0.8)'
+filterVars(args, filter, varcaller = "vartools", organism = "A. thaliana")
+writeTargetsout(x = args, file = "targets_vartools_filtered.txt", 
+    overwrite = TRUE)
 ```
 
 Check filtering outcome for one sample
 
+
 ```r
-length(as(readVcf(infile1(args)[1], genome="Ath"), "VRanges")[,1])
-length(as(readVcf(outpaths(args)[1], genome="Ath"), "VRanges")[,1])
+length(as(readVcf(infile1(args)[1], genome = "Ath"), "VRanges")[, 
+    1])
+length(as(readVcf(outpaths(args)[1], genome = "Ath"), "VRanges")[, 
+    1])
 ```
 
 <br><br><center><a href="mydoc_systemPipeVARseq_05.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

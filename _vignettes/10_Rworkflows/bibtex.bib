@@ -70,17 +70,29 @@
   doi     = "10.1093/bioinformatics/btp324"
 }
 @ARTICLE{Li2013-oy,
-  title         = {Aligning sequence reads, clone sequences and assembly
-                   contigs with {BWA-MEM}},
+  title         = "Aligning sequence reads, clone sequences and assembly
+                   contigs with {BWA-MEM}",
   author        = "Li, Heng",
+  abstract      = "Summary: BWA-MEM is a new alignment algorithm for aligning
+                   sequence reads or long query sequences against a large
+                   reference genome such as human. It automatically chooses
+                   between local and end-to-end alignments, supports paired-end
+                   reads and performs chimeric alignment. The algorithm is
+                   robust to sequencing errors and applicable to a wide range
+                   of sequence lengths from 70bp to a few megabases. For
+                   mapping 100bp sequences, BWA-MEM shows better performance
+                   than several state-of-art read aligners to date.
+                   Availability and implementation: BWA-MEM is implemented as a
+                   component of BWA, which is available at
+                   http://github.com/lh3/bwa. Contact:
+                   hengli@broadinstitute.org",
   journal       = "arXiv [q-bio.GN]",
-  month         =  03,
+  month         =  mar,
   year          =  2013,
   url           = "http://arxiv.org/abs/1303.3997",
   archivePrefix = "arXiv",
-  eprint        = "1303.3997",
   primaryClass  = "q-bio.GN",
-  arxivid       = "1303.3997"
+  eprint        = "1303.3997"
 }
 @ARTICLE{Liao2013-bn,
   title       = {The Subread aligner: fast, accurate and scalable read mapping
@@ -101,29 +113,14 @@
   doi         = "10.1093/nar/gkt214",
   pmc         = "PMC3664803"
 }
-@ARTICLE{H_Backman2016-bt,
-  title       = "{systemPipeR: NGS workflow and report generation environment}",
-  author      = "H Backman, Tyler W and Girke, Thomas",
-  affiliation = "Institute for Integrative Genome Biology, University of
-                 California, Riverside, 1207F Genomics Building, 3401 Watkins
-                 Drive, Riverside, 92521, CA, USA. Institute for Integrative
-                 Genome Biology, University of California, Riverside, 1207F
-                 Genomics Building, 3401 Watkins Drive, Riverside, 92521, CA,
-                 USA. thomas.girke@ucr.edu.",
-  journal     = "BMC Bioinformatics",
-  volume      =  17,
-  number      =  1,
-  pages       = "388",
-  month       =  "20~" # sep,
-  year        =  2016,
-  url         = "http://dx.doi.org/10.1186/s12859-016-1241-0",
-  keywords    = "Analysis workflow; ChIP-Seq; Next Generation Sequencing (NGS);
-                 RNA-Seq; Ribo-Seq; VAR-Seq",
-  language    = "en",
-  issn        = "1471-2105",
-  pmid        = "27650223",
-  doi         = "10.1186/s12859-016-1241-0",
-  pmc         = "PMC5029110"
+@MISC{Girke2014-oy,
+  title       = {{systemPipeR}: {NGS} workflow and report generation
+                 environment},
+  author      = "Girke, Thomas",
+  institution = "UC Riverside",
+  month       =  "28~" # jun,
+  year        =  2014,
+  url         = "https://github.com/tgirke/systemPipeR"
 }
 @ARTICLE{Lawrence2013-kt,
   title       = {Software for computing and annotating genomic ranges},
@@ -384,8 +381,55 @@
   pmid        = "25757771",
   doi         = "10.1007/978-1-4939-2444-8\_7"
 }
-
-
+@ARTICLE{H_Backman2016-bt,
+  title       = "{systemPipeR: NGS workflow and report generation environment}",
+  author      = "H Backman, Tyler W and Girke, Thomas",
+  affiliation = "Institute for Integrative Genome Biology, University of
+                 California, Riverside, 1207F Genomics Building, 3401 Watkins
+                 Drive, Riverside, 92521, CA, USA. Institute for Integrative
+                 Genome Biology, University of California, Riverside, 1207F
+                 Genomics Building, 3401 Watkins Drive, Riverside, 92521, CA,
+                 USA. thomas.girke@ucr.edu.",
+  journal     = "BMC Bioinformatics",
+  volume      =  17,
+  number      =  1,
+  pages       = "388",
+  month       =  "20~" # sep,
+  year        =  2016,
+  url         = "http://dx.doi.org/10.1186/s12859-016-1241-0",
+  keywords    = "Analysis workflow; ChIP-Seq; Next Generation Sequencing (NGS);
+                 RNA-Seq; Ribo-Seq; VAR-Seq",
+  language    = "en",
+  issn        = "1471-2105",
+  pmid        = "27650223",
+  doi         = "10.1186/s12859-016-1241-0",
+  pmc         = "PMC5029110"
+}
+@ARTICLE{Kim2015-ve,
+  title    = "{HISAT}: a fast spliced aligner with low memory requirements",
+  author   = "Kim, Daehwan and Langmead, Ben and Salzberg, Steven L",
+  abstract = "HISAT (hierarchical indexing for spliced alignment of
+              transcripts) is a highly efficient system for aligning reads from
+              RNA sequencing experiments. HISAT uses an indexing scheme based
+              on the Burrows-Wheeler transform and the Ferragina-Manzini (FM)
+              index, employing two types of indexes for alignment: a
+              whole-genome FM index to anchor each alignment and numerous local
+              FM indexes for very rapid extensions of these alignments. HISAT's
+              hierarchical index for the human genome contains 48,000 local FM
+              indexes, each representing a genomic region of ∼64,000 bp. Tests
+              on real and simulated data sets showed that HISAT is the fastest
+              system currently available, with equal or better accuracy than
+              any other method. Despite its large number of indexes, HISAT
+              requires only 4.3 gigabytes of memory. HISAT supports genomes of
+              any size, including those larger than 4 billion bases.",
+  journal  = "Nat. Methods",
+  volume   =  12,
+  number   =  4,
+  pages    = "357--360",
+  month    =  apr,
+  year     =  2015,
+  language = "en"
+}
 
 
 

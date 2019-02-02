@@ -1,6 +1,6 @@
 ---
 title: 10. Venn diagram of variants
-last_updated: Wed May 10 21:42:55 2017
+last_updated: Sat Feb  2 11:47:13 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_10.html
 ---
@@ -12,17 +12,19 @@ comparing four sampes for each of the two variant callers.
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_gatk_filtered.txt")
 varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
-vennset_gatk <- overLapper(varlist, type="vennsets")
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
+vennset_gatk <- overLapper(varlist, type = "vennsets")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_sambcf_filtered.txt")
 varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
-vennset_bcf <- overLapper(varlist, type="vennsets")
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_vartools_filtered.txt")
+vennset_bcf <- overLapper(varlist, type = "vennsets")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_vartools_filtered.txt")
 varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
-vennset_vartools <- overLapper(varlist, type="vennsets")
+vennset_vartools <- overLapper(varlist, type = "vennsets")
 pdf("./results/vennplot_var.pdf")
-vennPlot(list(vennset_gatk, vennset_bcf, vennset_vartools), mymain="", mysub="GATK: red; BCFtools: blue; VariantTools: green", colmode=2, ccol=c("red", "blue", "green"))
+vennPlot(list(vennset_gatk, vennset_bcf, vennset_vartools), mymain = "", 
+    mysub = "GATK: red; BCFtools: blue; VariantTools: green", 
+    colmode = 2, ccol = c("red", "blue", "green"))
 dev.off()
 ```
 

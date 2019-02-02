@@ -1,6 +1,6 @@
 ---
 title: 2. Samples and environment settings
-last_updated: Mon Jun  5 21:16:33 2017
+last_updated: Sat Feb  2 11:36:04 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_02.html
 ---
@@ -11,8 +11,7 @@ Typically, the user wants to record here the sources and versions of the
 reference genome sequence along with the corresponding annotations. In
 the provided sample data set all data inputs are stored in a `data`
 subdirectory and all results will be written to a separate `results` directory,
-while the `systemPipeRNAseq.Rmd` script and the `targets` file are expected to be located in the parent
-directory. The R session is expected to run from this parent directory.
+while the `systemPipeRNAseq.Rmd` script and the `targets` file are expected to be located in the parent directory. The R session is expected to run from this parent directory.
 
 To run this sample report, mini sample FASTQ and reference genome files
 can be downloaded from
@@ -37,7 +36,7 @@ additional NGS applications will be provided in the future.
 
 ```r
 library(systemPipeRdata)
-genWorkenvir(workflow="rnaseq")
+genWorkenvir(workflow = "rnaseq")
 setwd("rnaseq")
 ```
 
@@ -58,9 +57,13 @@ should not be run on the computer nodes.
 
 
 ```r
-# push `F2` on your keyboard to open interactive R session
-q("no") # closes R session on head node
-srun --x11 --partition=intel --mem=2gb --cpus-per-task 1 --ntasks 1 --time 2:00:00 --pty bash -l
+q("no")  # closes R session on head node
+```
+
+
+```bash
+srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
+module load R/3.4.2
 R
 ```
 
@@ -68,9 +71,9 @@ Now check whether your R session is running on a computer node of the cluster an
 
 
 ```r
-system("hostname") # should return name of a compute node starting with i or c 
-getwd() # checks current working directory of R session
-dir() # returns content of current working directory
+system("hostname")  # should return name of a compute node starting with i or c 
+getwd()  # checks current working directory of R session
+dir()  # returns content of current working directory
 ```
 
 ## Required packages and resources
@@ -83,12 +86,13 @@ this report (H Backman et al., 2016).
 library(systemPipeR)
 ```
 
-If applicable load custom functions not provided by
+If applicable load custom functions not provided by `systemPipeR` package.
 
 
 ```r
 source("systemPipeRNAseq_Fct.R")
 ```
+
 ## Experiment definition provided by `targets` file
 
 The `targets` file defines all FASTQ files and sample
@@ -96,8 +100,8 @@ comparisons of the analysis workflow.
 
 
 ```r
-targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
-targets <- read.delim(targetspath, comment.char = "#")[,1:4]
+targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
+targets <- read.delim(targetspath, comment.char = "#")[, 1:4]
 targets
 ```
 

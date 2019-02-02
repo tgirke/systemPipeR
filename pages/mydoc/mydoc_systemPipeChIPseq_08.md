@@ -1,6 +1,6 @@
 ---
 title: 8. Count reads overlapping peaks
-last_updated: Sat Jun 10 11:34:52 2017
+last_updated: Sat Feb  2 11:43:49 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_08.html
 ---
@@ -14,11 +14,11 @@ files, one for each peak set.
 
 ```r
 library(GenomicRanges)
-args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.txt")
-args_bam <- systemArgs(sysma=NULL, mytargets="targets_bam.txt")
-bfl <- BamFileList(outpaths(args_bam), yieldSize=50000, index=character())
-countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
-writeTargetsout(x=args, file="targets_countDF.txt", overwrite=TRUE)
+args <- systemArgs(sysma = "param/count_rangesets.param", mytargets = "targets_macs.txt")
+args_bam <- systemArgs(sysma = NULL, mytargets = "targets_bam.txt")
+bfl <- BamFileList(outpaths(args_bam), yieldSize = 50000, index = character())
+countDFnames <- countRangeset(bfl, args, mode = "Union", ignore.strand = TRUE)
+writeTargetsout(x = args, file = "targets_countDF.txt", overwrite = TRUE)
 ```
 
 <br><br><center><a href="mydoc_systemPipeChIPseq_07.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

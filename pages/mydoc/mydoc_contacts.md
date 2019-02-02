@@ -10,7 +10,7 @@ permalink: mydoc_contacts.html
 + Postdoctoral Researcher
 + Institution: UC Riverside
 + Email: danielac@ucr.edu
-+ [Home page](https://www.researchgate.net/profile/Daniela_Cassol)
++ [Home page](https://www.dcassol.com/)
 
 ### Thomas Girke
 

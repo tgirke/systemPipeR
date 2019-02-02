@@ -1,6 +1,6 @@
 ---
 title: 9. Summary statistics of variants
-last_updated: Wed May 10 21:42:55 2017
+last_updated: Sat Feb  2 11:47:13 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_09.html
 ---
@@ -12,27 +12,30 @@ included in the anntation reports.
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_gatk_filtered.txt")
 varSummary(args)
-write.table(varSummary(args), "./results/variantStats_gatk.xls", quote=FALSE, col.names = NA, sep="\t")
+write.table(varSummary(args), "./results/variantStats_gatk.xls", 
+    quote = FALSE, col.names = NA, sep = "\t")
 ```
 
 ## Summary for `BCFtools`
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_sambcf_filtered.txt")
 varSummary(args)
-write.table(varSummary(args), "./results/variantStats_sambcf.xls", quote=FALSE, col.names = NA, sep="\t")
+write.table(varSummary(args), "./results/variantStats_sambcf.xls", 
+    quote = FALSE, col.names = NA, sep = "\t")
 ```
 
 ## Summary for `VariantTools`  
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_vartools_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_vartools_filtered.txt")
 varSummary(args)
-write.table(varSummary(args), "./results/variantStats_vartools.xls", quote=FALSE, col.names = NA, sep="\t")
+write.table(varSummary(args), "./results/variantStats_vartools.xls", 
+    quote = FALSE, col.names = NA, sep = "\t")
 ```
 
 <br><br><center><a href="mydoc_systemPipeVARseq_08.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

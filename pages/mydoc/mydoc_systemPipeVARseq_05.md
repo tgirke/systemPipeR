@@ -1,6 +1,6 @@
 ---
 title: 5. Variant calling
-last_updated: Wed May 10 21:42:55 2017
+last_updated: Sat Feb  2 11:47:13 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_05.html
 ---
@@ -27,16 +27,18 @@ provided by `systemPipeRdata`.
 
 
 ```r
-moduleload("picard/1.130"); moduleload("samtools/1.3")
+moduleload("picard/1.130")
+moduleload("samtools/1.3")
 system("picard CreateSequenceDictionary R=./data/tair10.fasta O=./data/tair10.dict")
 system("samtools faidx data/tair10.fasta")
-args <- systemArgs(sysma="param/gatk.param", mytargets="targets_bam.txt")
-resources <- list(walltime="00:20:00", ntasks=1, ncpus=1, memory="6G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-                  resourceList=resources)
-waitForJobs(reg)
+args <- systemArgs(sysma = "param/gatk.param", mytargets = "targets_bam.txt")
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
+    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
+getStatus(reg = reg)
+waitForJobs(reg = reg)
 # unlink(outfile1(args), recursive = TRUE, force = TRUE)
-writeTargetsout(x=args, file="targets_gatk.txt", overwrite=TRUE)
+writeTargetsout(x = args, file = "targets_gatk.txt", overwrite = TRUE)
 ```
 
 ## Variant calling with `BCFtools`
@@ -47,36 +49,44 @@ in the current working directory the parameter file `sambcf.param` and the bash 
 
 
 ```r
-args <- systemArgs(sysma="param/sambcf.param", mytargets="targets_bam.txt")
-resources <- list(walltime="00:20:00", ntasks=1, ncpus=1, memory="6G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-                  resourceList=resources)
-waitForJobs(reg)
+args <- systemArgs(sysma = "param/sambcf.param", mytargets = "targets_bam.txt")
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
+    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
+getStatus(reg = reg)
+waitForJobs(reg = reg)
 # unlink(outfile1(args), recursive = TRUE, force = TRUE)
-writeTargetsout(x=args, file="targets_sambcf.txt", overwrite=TRUE)
+writeTargetsout(x = args, file = "targets_sambcf.txt", overwrite = TRUE)
 ```
 
 ## Variant calling with `VariantTools`  
 
 
 ```r
-library(gmapR); library(BiocParallel); library(BatchJobs)
-args <- systemArgs(sysma="param/vartools.param", mytargets="targets_gsnap_bam.txt")
+library(gmapR)
+library(BiocParallel)
+library(batchtools)
+args <- systemArgs(sysma = "param/vartools.param", mytargets = "targets_gsnap_bam.txt")
 f <- function(x) {
-    library(VariantTools); library(gmapR); library(systemPipeR)
-    args <- systemArgs(sysma="param/vartools.param", mytargets="targets_gsnap_bam.txt")
-    gmapGenome <- GmapGenome(systemPipeR::reference(args), directory="data", name="gmap_tair10chr", create=FALSE)
-    tally.param <- TallyVariantsParam(gmapGenome, high_base_quality = 23L, indels = TRUE)
-    bfl <- BamFileList(infile1(args)[x], index=character())
+    library(VariantTools)
+    library(gmapR)
+    library(systemPipeR)
+    args <- systemArgs(sysma = "param/vartools.param", mytargets = "targets_gsnap_bam.txt")
+    gmapGenome <- GmapGenome(systemPipeR::reference(args), directory = "data", 
+        name = "gmap_tair10chr", create = FALSE)
+    tally.param <- TallyVariantsParam(gmapGenome, high_base_quality = 23L, 
+        indels = TRUE)
+    bfl <- BamFileList(infile1(args)[x], index = character())
     var <- callVariants(bfl[[1]], tally.param)
     sampleNames(var) <- names(bfl)
     writeVcf(asVCF(var), outfile1(args)[x], index = TRUE)
 }
-funs <- makeClusterFunctionsSLURM("slurm.tmpl")
-param <- BatchJobsParam(length(args), resources=list(walltime="00:20:00", ntasks=1, ncpus=1, memory="6G"), cluster.functions=funs)
-register(param)
-d <- bplapply(seq(along=args), f)
-writeTargetsout(x=args, file="targets_vartools.txt", overwrite=TRUE)
+resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
+    memory = 1024)
+param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", 
+    resources = resources)
+d <- bplapply(seq(along = args), f, BPPARAM = param)
+writeTargetsout(x = args, file = "targets_vartools.txt", overwrite = TRUE)
 ```
 
 ## Inspect VCF file 
@@ -87,7 +97,7 @@ convenient data structure for working with variant data (_e.g._ SNP quality filt
 
 ```r
 library(VariantAnnotation)
-args <- systemArgs(sysma="param/filter_gatk.param", mytargets="targets_gatk.txt")
+args <- systemArgs(sysma = "param/filter_gatk.param", mytargets = "targets_gatk.txt")
 vcf <- readVcf(infile1(args)[1], "A. thaliana")
 vcf
 vr <- as(vcf, "VRanges")

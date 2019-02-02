@@ -1,6 +1,6 @@
 ---
 title: 8. Combine annotation results among samples
-last_updated: Wed May 10 21:42:55 2017
+last_updated: Sat Feb  2 11:47:13 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_08.html
 ---
@@ -18,28 +18,31 @@ the annotation reports. To omit filtering, one can use the setting
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
-combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
-write.table(combineDF, "./results/combineDF_nonsyn_gatk.xls", quote=FALSE, row.names=FALSE, sep="\t")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_gatk_filtered.txt")
+combineDF <- combineVarReports(args, filtercol = c(Consequence = "nonsynonymous"))
+write.table(combineDF, "./results/combineDF_nonsyn_gatk.xls", 
+    quote = FALSE, row.names = FALSE, sep = "\t")
 ```
 
 ## Combine results from `BCFtools`  
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
-combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
-write.table(combineDF, "./results/combineDF_nonsyn_sambcf.xls", quote=FALSE, row.names=FALSE, sep="\t")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_sambcf_filtered.txt")
+combineDF <- combineVarReports(args, filtercol = c(Consequence = "nonsynonymous"))
+write.table(combineDF, "./results/combineDF_nonsyn_sambcf.xls", 
+    quote = FALSE, row.names = FALSE, sep = "\t")
 ```
 
 ## Combine results from `VariantTools`
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_vartools_filtered.txt")
-combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
-write.table(combineDF, "./results/combineDF_nonsyn_vartools.xls", quote=FALSE, row.names=FALSE, sep="\t")
-combineDF[2:4,] 
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_vartools_filtered.txt")
+combineDF <- combineVarReports(args, filtercol = c(Consequence = "nonsynonymous"))
+write.table(combineDF, "./results/combineDF_nonsyn_vartools.xls", 
+    quote = FALSE, row.names = FALSE, sep = "\t")
+combineDF[2:4, ]
 ```
 
 <br><br><center><a href="mydoc_systemPipeVARseq_07.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

@@ -1,9 +1,12 @@
+## pre code {
+
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
-options(width=100, max.print=1000)
+options(width=60, max.print=1000)
 knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
-    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")))
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
 
 ## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE-------------------
 suppressPackageStartupMessages({
@@ -16,6 +19,7 @@ suppressPackageStartupMessages({
     library(GenomicAlignments)
     library(ShortRead)
     library(ape)
+    library(batchtools)
 })
 
 ## ----genRna_workflow, eval=FALSE-----------------------------------------
@@ -23,14 +27,12 @@ suppressPackageStartupMessages({
 ## genWorkenvir(workflow="rnaseq")
 ## setwd("rnaseq")
 
-## ----genRna_workflow_command_line, eval=FALSE, engine="sh"---------------
 ## Rscript -e "systemPipeRdata::genWorkenvir(workflow='rnaseq')"
 
-## ----node_environment, eval=FALSE----------------------------------------
-## # push `F2` on your keyboard to open interactive R session
+## ----closeR, eval=FALSE--------------------------------------------------
 ## q("no") # closes R session on head node
-## srun --x11 --partition=intel --mem=2gb --cpus-per-task 1 --ntasks 1 --time 2:00:00 --pty bash -l
-## R
+
+## srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
 
 ## ----r_environment, eval=FALSE-------------------------------------------
 ## system("hostname") # should return name of a compute node starting with i or c
@@ -68,20 +70,20 @@ targets
 ## ----tophat_alignment2, eval=FALSE---------------------------------------
 ## moduleload(modules(args))
 ## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-## resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-## reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-##                   resourceList=resources)
-## waitForJobs(reg)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+## getStatus(reg=reg)
+## waitForJobs(reg=reg)
 
 ## ----hisat_alignment2, eval=FALSE----------------------------------------
 ## args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
 ## sysargs(args)[1] # Command-line parameters for first FASTQ file
 ## moduleload(modules(args))
 ## system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
-## resources <- list(walltime="20:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-## reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-##                   resourceList=resources)
-## waitForJobs(reg)
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+## getStatus(reg=reg)
+## waitForJobs(reg=reg)
 
 ## ----check_files_exist, eval=FALSE---------------------------------------
 ## file.exists(outpaths(args))

@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -824,42 +824,40 @@ $('#toc').on('click', 'a', function() {
     
 
   <h2 id="quality-filtering-and-adaptor-trimming">Quality filtering and adaptor trimming</h2>
+
 <p>The following custom function trims adaptors hierarchically from the longest to
-the shortest match of the right end of the reads. If
-<code class="highlighter-rouge">internalmatch=TRUE</code> then internal matches will trigger the same
-behavior.  The argument <code class="highlighter-rouge">minpatternlength</code> defines the shortest
-adaptor match to consider in this iterative process. In addition, the function
+the shortest match of the right end of the reads. If <code class="highlighter-rouge">internalmatch=TRUE</code> then internal matches will trigger the same behavior.  The argument <code class="highlighter-rouge">minpatternlength</code> defines the shortest adaptor match to consider in this iterative process. In addition, the function
 removes reads containing Ns or homopolymer regions. More detailed information
 on read preprocessing is provided in <code class="highlighter-rouge">systemPipeR's</code> main vignette.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/trim.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">fctpath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"custom_Fct.R"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="o">=</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/trim.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">fctpath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"custom_Fct.R"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">source</span><span class="p">(</span><span class="n">fctpath</span><span class="p">)</span><span class="w">
-</span><span class="n">iterTrim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, 
-                             Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)"</span><span class="w"> 
-</span><span class="n">preprocessReads</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">Fct</span><span class="o">=</span><span class="n">iterTrim</span><span class="p">,</span><span class="w"> </span><span class="n">batchsize</span><span class="o">=</span><span class="m">100000</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">compress</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_trim.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span><span class="n">iterTrim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)"</span><span class="w">
+</span><span class="n">preprocessReads</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">Fct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iterTrim</span><span class="p">,</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1e+05</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">compress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_trim.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="fastq-quality-report">FASTQ quality report</h2>
+
 <p>The following <code class="highlighter-rouge">seeFastq</code> and <code class="highlighter-rouge">seeFastqPlot</code> functions generate and plot a series of
 useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads above
-quality cutoffs and mean quality distribution. The results are written to a PDF file named 
-<code class="highlighter-rouge">fastqReport.png</code>.</p>
+quality cutoffs and mean quality distribution. The results are written to a PDF file named <code class="highlighter-rouge">fastqReport.png</code>.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_trim.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="o">=</span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="o">=</span><span class="m">100000</span><span class="p">,</span><span class="w"> </span><span class="n">klength</span><span class="o">=</span><span class="m">8</span><span class="p">)</span><span class="w">
-</span><span class="n">png</span><span class="p">(</span><span class="s2">"./results/fastqReport.png"</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="m">4</span><span class="o">*</span><span class="nf">length</span><span class="p">(</span><span class="n">fqlist</span><span class="p">),</span><span class="w"> </span><span class="n">units</span><span class="o">=</span><span class="s2">"in"</span><span class="p">,</span><span class="w"> </span><span class="n">res</span><span class="o">=</span><span class="m">72</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_trim.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1e+05</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">klength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w">
+</span><span class="n">png</span><span class="p">(</span><span class="s2">"./results/fastqReport.png"</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">fqlist</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"in"</span><span class="p">,</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">72</span><span class="p">)</span><span class="w">
 </span><span class="n">seeFastqPlot</span><span class="p">(</span><span class="n">fqlist</span><span class="p">)</span><span class="w">
 </span><span class="n">dev.off</span><span class="p">()</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeRIBOseq_files/fastqReport.png" alt="" /></p>
-<div align="center">Figure 1: FASTQ quality report for 18 samples</div>
+<div align="center"><b>Figure 1:</b> FASTQ quality report. To zoom in, rigth click image and open it in a separate browser tab. </div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeRIBOseq_02.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeRIBOseq_04.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -878,8 +876,8 @@ quality cutoffs and mean quality distribution. The results are written to a PDF 
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sun Oct 15 13:21:42 2017<br/> Site last generated: Oct 22, 2017 <br />
+               &copy;2019 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Feb  2 11:49:31 2019<br/> Site last generated: Feb 2, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

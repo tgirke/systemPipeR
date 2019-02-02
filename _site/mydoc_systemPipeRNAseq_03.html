@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -836,12 +836,11 @@ The new targets file can be used for the next workflow step with an updated
 <code class="highlighter-rouge">SYSargs</code> instance, <em>e.g.</em> running the NGS alignments using the
 trimmed FASTQ files.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/trim.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">preprocessReads</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">Fct</span><span class="o">=</span><span class="s2">"trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)"</span><span class="p">,</span><span class="w">
-                </span><span class="n">batchsize</span><span class="o">=</span><span class="m">100000</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">compress</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_trim.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/trim.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">preprocessReads</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">Fct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1e+05</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">compress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_trim.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="fastq-quality-report">FASTQ quality report</h2>
 
@@ -852,13 +851,13 @@ diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
 written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</code>.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="o">=</span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="o">=</span><span class="m">100000</span><span class="p">,</span><span class="w"> </span><span class="n">klength</span><span class="o">=</span><span class="m">8</span><span class="p">)</span><span class="w">
-</span><span class="n">pdf</span><span class="p">(</span><span class="s2">"./results/fastqReport.pdf"</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="m">4</span><span class="o">*</span><span class="nf">length</span><span class="p">(</span><span class="n">fqlist</span><span class="p">))</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1e+05</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">klength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w">
+</span><span class="n">pdf</span><span class="p">(</span><span class="s2">"./results/fastqReport.pdf"</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">fqlist</span><span class="p">))</span><span class="w">
 </span><span class="n">seeFastqPlot</span><span class="p">(</span><span class="n">fqlist</span><span class="p">)</span><span class="w">
 </span><span class="n">dev.off</span><span class="p">()</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeRNAseq_files/fastqReport.png" alt="" /></p>
 <div align="center">Figure 1: FASTQ quality report for 18 samples</div>
@@ -880,8 +879,8 @@ written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</cod
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Mon Jun  5 21:16:33 2017<br/> Site last generated: Oct 22, 2017 <br />
+               &copy;2019 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Feb  2 11:36:04 2019<br/> Site last generated: Feb 2, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

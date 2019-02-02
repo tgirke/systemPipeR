@@ -1,6 +1,6 @@
 ---
 title: 13. Render report in HTML and PDF format
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Sat Feb  2 11:49:31 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_13.html
 ---
@@ -10,7 +10,6 @@ permalink: mydoc_systemPipeRIBOseq_13.html
 rmarkdown::render("systemPipeRIBOseq.Rmd", "html_document")
 rmarkdown::render("systemPipeRIBOseq.Rmd", "pdf_document")
 ```
-
 
 <br><br><center><a href="mydoc_systemPipeRIBOseq_12.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeRIBOseq_14.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

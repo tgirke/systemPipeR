@@ -1,6 +1,6 @@
 ---
 title: 4. Workflow templates
-last_updated: Sun Oct 22 17:33:57 2017
+last_updated: Sat Feb  2 11:29:18 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_4.html
 ---
@@ -9,14 +9,16 @@ permalink: mydoc_systemPipeR_4.html
 
 Load the RNA-Seq sample workflow into your current working directory.
 
+
 ```r
 library(systemPipeRdata)
-genWorkenvir(workflow="rnaseq")
+genWorkenvir(workflow = "rnaseq")
 setwd("rnaseq")
 ```
 
 ### Run workflow
-Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
+
+Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rmd)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
 Workflow includes following steps:
 
@@ -31,19 +33,20 @@ Workflow includes following steps:
 7. GO term enrichment analysis
 8. Gene-wise clustering
 
-
 ## ChIP-Seq sample
 
 Load the ChIP-Seq sample workflow into your current working directory.
 
+
 ```r
 library(systemPipeRdata)
-genWorkenvir(workflow="chipseq")
+genWorkenvir(workflow = "chipseq")
 setwd("chipseq")
 ```
 
 ### Run workflow
-Next, run the chosen sample workflow _`systemPipeChIPseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`chipseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
+
+Next, run the chosen sample workflow _`systemPipeChIPseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq_single.Rmd)) by executing from the command-line _`make -B`_ within the _`chipseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
 Workflow includes following steps:
 
@@ -58,21 +61,22 @@ Workflow includes following steps:
 7. GO term enrichment analysis
 8. Motif analysis
 
-
 ## VAR-Seq sample 
 
 ### VAR-Seq workflow for single machine
 
 Load the VAR-Seq sample workflow into your current working directory.
 
+
 ```r
 library(systemPipeRdata)
-genWorkenvir(workflow="varseq")
+genWorkenvir(workflow = "varseq")
 setwd("varseq")
 ```
 
 ### Run workflow
-Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
+
+Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rmd)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
 Workflow includes following steps:
 
@@ -86,24 +90,25 @@ Workflow includes following steps:
 6. Combine results from many samples
 7. Summary statistics of samples
 
-
 ### VAR-Seq workflow for computer cluster
-The workflow template provided for this step is called _`systemPipeVARseq.Rnw`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rnw)).
-It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Torque as scheduler. 
 
+The workflow template provided for this step is called _`systemPipeVARseq.Rmd`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd)).
+It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Slurm as scheduler. 
 
 ## Ribo-Seq sample
 
 Load the Ribo-Seq sample workflow into your current working directory.
 
+
 ```r
 library(systemPipeRdata)
-genWorkenvir(workflow="riboseq")
+genWorkenvir(workflow = "riboseq")
 setwd("riboseq")
 ```
 
 ### Run workflow
-Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true), [Rnw](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq_single.Rnw)) by executing from the command-line _`make -B`_ within the _`ribseq`_ directory. Alternatively, one can run the code from the provided _`*.Rnw`_ template file from within R interactively. 
+
+Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq_single.Rmd)) by executing from the command-line _`make -B`_ within the _`ribseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
 Workflow includes following steps:
 
@@ -121,8 +126,6 @@ Workflow includes following steps:
 10. GO term enrichment analysis
 11. Gene-wise clustering
 12. Differential ribosome binding (translational efficiency)
-
-
 
 <br><br><center><a href="mydoc_systemPipeR_3.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeR_5.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

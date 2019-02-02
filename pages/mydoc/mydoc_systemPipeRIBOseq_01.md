@@ -1,12 +1,12 @@
 ---
-title: RIBO-Seq Workflow <br> <br> 1. Introduction
-last_updated: Sun Oct 15 13:21:42 2017
+title: RIBO-Seq Workflow Template  <br> <br> 1. Introduction
+last_updated: Sat Feb  2 11:49:31 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_01.html
 ---
-First/last name (first.last@ucr.edu)
+Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 15 October, 2017 
+Last update: 02 February, 2019 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeRIBOseq.html){:target="_blank"} ],
@@ -22,7 +22,7 @@ better approximation of downstream protein abundance profiles due to their
 close association with translational processes. The most important difference
 among the two is that polyRibo-Seq utilizes polyribosomal RNA for sequencing,
 whereas Ribo-Seq is a footprinting approach restricted to sequencing RNA
-fragments protected by ribosomes (Ingolia et al., 2009; Aspden et al., 2014; @Juntawong2015-ru}. 
+fragments protected by ribosomes (Ingolia et al., 2009; Aspden et al., 2014; Juntawong et al., 2015). 
 
 The workflow presented in this vignette contains most of the data analysis
 steps described by (Juntawong et al., 2014) including functionalities useful for
@@ -83,6 +83,7 @@ the downstream main ORFs and/or translation of the uORFs into functionally
 relevant peptides. 
 
 ## Experimental design
+
 Typically, users want to specify here all information relevant for the analysis
 of their NGS study. This includes detailed descriptions of FASTQ files,
 experimental design, reference genome, gene annotations, etc.  

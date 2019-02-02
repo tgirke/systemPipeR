@@ -1,6 +1,6 @@
 ---
 title: 8. Clustering and heat maps
-last_updated: Mon Jun  5 21:16:33 2017
+last_updated: Sat Feb  2 11:36:04 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_08.html
 ---
@@ -16,7 +16,8 @@ library(pheatmap)
 geneids <- unique(as.character(unlist(DEG_list[[1]])))
 y <- assay(rlog(dds))[geneids, ]
 pdf("heatmap1.pdf")
-pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_distance_cols="correlation")
+pheatmap(y, scale = "row", clustering_distance_rows = "correlation", 
+    clustering_distance_cols = "correlation")
 dev.off()
 ```
 

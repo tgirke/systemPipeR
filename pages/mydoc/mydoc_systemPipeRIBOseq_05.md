@@ -1,6 +1,6 @@
 ---
 title: 5. Read distribution across genomic features
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Sat Feb  2 11:49:31 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_05.html
 ---
@@ -19,12 +19,14 @@ number of custom annotations can be included in this routine.
 
 ```r
 library(GenomicFeatures)
-txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff3", organism="Arabidopsis")
-feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, 
-                    verbose=TRUE)
+txdb <- makeTxDbFromGFF(file = "data/tair10.gff", format = "gff3", 
+    organism = "Arabidopsis")
+feat <- genFeatures(txdb, featuretype = "all", reduce_ranges = TRUE, 
+    upstream = 1000, downstream = 0, verbose = TRUE)
 ```
 
 ## Count and plot reads of any length
+
 The `featuretypeCounts` function counts how many reads in short read
 alignment files (BAM format) overlap with entire annotation categories. This
 utility is useful for analyzing the distribution of the read mappings across
@@ -41,11 +43,13 @@ The following generates and plots feature counts for any read length.
 
 
 ```r
-library(ggplot2); library(grid)
-fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
-                        singleEnd=TRUE, readlength=NULL, type="data.frame")
-p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png", graphicsformat="png", 
-                           scales="fixed", anyreadlength=TRUE, scale_length_val=NULL)
+library(ggplot2)
+library(grid)
+fc <- featuretypeCounts(bfl = BamFileList(outpaths(args), yieldSize = 50000), 
+    grl = feat, singleEnd = TRUE, readlength = NULL, type = "data.frame")
+p <- plotfeaturetypeCounts(x = fc, graphicsfile = "results/featureCounts.png", 
+    graphicsformat = "png", scales = "fixed", anyreadlength = TRUE, 
+    scale_length_val = NULL)
 ```
 
 ![](./pages/mydoc/systemPipeRIBOseq_files/featureCounts.png)
@@ -53,22 +57,20 @@ p <- plotfeaturetypeCounts(x=fc, graphicsfile="results/featureCounts.png", graph
 
 ## Count and plot reads of specific lengths
 
-To determine the approximate read length of ribosome footprints in Ribo-Seq experiments, one 
-can generate and plot the feature counts for specific read lengths separately. Typically, the 
-most abundant read length obtained for translated features corresponds to the approximate footprint 
-length occupied by the ribosomes.
+To determine the approximate read length of ribosome footprints in Ribo-Seq experiments, one can generate and plot the feature counts for specific read lengths separately. Typically, the most abundant read length obtained for translated features corresponds to the approximate footprint length occupied by the ribosomes.
 
 
 ```r
-fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, 
-                         singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
-p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="results/featureCounts2.png", graphicsformat="png", 
-                            scales="fixed", anyreadlength=FALSE, scale_length_val=NULL)
+fc2 <- featuretypeCounts(bfl = BamFileList(outpaths(args), yieldSize = 50000), 
+    grl = feat, singleEnd = TRUE, readlength = c(74:76, 99:102), 
+    type = "data.frame")
+p2 <- plotfeaturetypeCounts(x = fc2, graphicsfile = "results/featureCounts2.png", 
+    graphicsformat = "png", scales = "fixed", anyreadlength = FALSE, 
+    scale_length_val = NULL)
 ```
 
 ![](./pages/mydoc/systemPipeRIBOseq_files/featureCounts2.png)
 <div align="center">Figure 3: Read distribution plot across annotation features for specific read lengths.</div>
-
 
 <br><br><center><a href="mydoc_systemPipeRIBOseq_04.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeRIBOseq_06.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

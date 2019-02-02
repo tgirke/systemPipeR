@@ -1,6 +1,6 @@
 ---
 title: 11. Motif analysis
-last_updated: Sat Jun 10 11:34:52 2017
+last_updated: Sat Feb  2 11:43:49 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_11.html
 ---
@@ -18,17 +18,20 @@ as expected by some motif discovery tools, such as `BCRANK`.
 
 
 ```r
-library(Biostrings); library(seqLogo); library(BCRANK)
-args <- systemArgs(sysma="param/annotate_peaks.param", mytargets="targets_macs.txt")
+library(Biostrings)
+library(seqLogo)
+library(BCRANK)
+args <- systemArgs(sysma = "param/annotate_peaks.param", mytargets = "targets_macs.txt")
 rangefiles <- infile1(args)
-for(i in seq(along=rangefiles)) {
-    df <- read.delim(rangefiles[i], comment="#")
+for (i in seq(along = rangefiles)) {
+    df <- read.delim(rangefiles[i], comment = "#")
     peaks <- as(df, "GRanges")
-    names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
-    peaks <- peaks[order(values(peaks)$X.log10.pvalue, decreasing=TRUE)]
+    names(peaks) <- paste0(as.character(seqnames(peaks)), "_", 
+        start(peaks), "-", end(peaks))
+    peaks <- peaks[order(values(peaks)$X.log10.pvalue., decreasing = TRUE)]
     pseq <- getSeq(FaFile("./data/tair10.fasta"), peaks)
     names(pseq) <- names(peaks)
-    writeXStringSet(pseq, paste0(rangefiles[i], ".fasta")) 
+    writeXStringSet(pseq, paste0(rangefiles[i], ".fasta"))
 }
 ```
 
@@ -42,7 +45,8 @@ sample set and plots the sequence logo of the highest ranking motif.
 
 ```r
 set.seed(0)
-BCRANKout <- bcrank(paste0(rangefiles[1], ".fasta"), restarts=25, use.P1=TRUE, use.P2=TRUE)
+BCRANKout <- bcrank(paste0(rangefiles[1], ".fasta"), restarts = 25, 
+    use.P1 = TRUE, use.P2 = TRUE)
 toptable(BCRANKout)
 topMotif <- toptable(BCRANKout, 1)
 weightMatrix <- pwm(topMotif, normalize = FALSE)
@@ -54,7 +58,6 @@ dev.off()
 
 ![](./pages/mydoc/systemPipeChIPseq_files/seqlogo.png)
 <div align="center">Figure 2: One of the motifs identified by `BCRANK`</div>
-
 
 <br><br><center><a href="mydoc_systemPipeChIPseq_10.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeChIPseq_12.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

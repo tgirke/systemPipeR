@@ -1,6 +1,6 @@
 ---
 title: 4. Alignments
-last_updated: Sat Jun 10 11:34:52 2017
+last_updated: Sat Feb  2 11:43:49 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_04.html
 ---
@@ -18,15 +18,18 @@ The following submits 18 alignment jobs via a scheduler to a computer cluster.
 
 
 ```r
-args <- systemArgs(sysma="param/bowtieSE.param", mytargets="targets_chip_trim.txt")
-sysargs(args)[1] # Command-line parameters for first FASTQ file
-moduleload(modules(args)) # Skip if a module system is not used
-system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta") # Indexes reference genome
-resources <- list(walltime="1:00:00", ntasks=1, ncpus=cores(args), memory="10G")
-reg <- clusterRun(args, conffile=".BatchJobs.R", template="slurm.tmpl", Njobs=18, runid="01",
-                  resourceList=resources)
-waitForJobs(reg)
-writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
+args <- systemArgs(sysma = "param/bowtieSE.param", mytargets = "targets_chip_trim.txt")
+sysargs(args)[1]  # Command-line parameters for first FASTQ file
+moduleload(modules(args))  # Skip if a module system is not used
+system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
+# Indexes reference genome
+resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
+    memory = 1024)
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
+    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
+getStatus(reg = reg)
+waitForJobs(reg = reg)
+writeTargetsout(x = args, file = "targets_bam.txt", overwrite = TRUE)
 ```
 
 Alternatively, one can run the alignments sequentially on a single system. 
@@ -49,8 +52,9 @@ and how many of them aligned to the reference.
 
 
 ```r
-read_statsDF <- alignStats(args=args) 
-write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+read_statsDF <- alignStats(args = args)
+write.table(read_statsDF, "results/alignStats.xls", row.names = FALSE, 
+    quote = FALSE, sep = "\t")
 read.delim("results/alignStats.xls")
 ```
 
@@ -63,9 +67,8 @@ specified under `urlfile`, here `IGVurl.txt`.
 
 
 ```r
-symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
-            urlbase="http://biocluster.ucr.edu/~tgirke/", 
-            urlfile="./results/IGVurl.txt")
+symLink2bam(sysargs = args, htmldir = c("~/.html/", "somedir/"), 
+    urlbase = "http://biocluster.ucr.edu/~tgirke/", urlfile = "./results/IGVurl.txt")
 ```
 
 <br><br><center><a href="mydoc_systemPipeChIPseq_03.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

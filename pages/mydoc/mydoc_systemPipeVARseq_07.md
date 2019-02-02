@@ -1,6 +1,6 @@
 ---
 title: 7. Annotate filtered variants
-last_updated: Wed May 10 21:42:55 2017
+last_updated: Sat Feb  2 11:47:13 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_07.html
 ---
@@ -19,17 +19,18 @@ Variants overlapping with common annotation features can be identified with `loc
 
 ```r
 library("GenomicFeatures")
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_gatk_filtered.txt")
 txdb <- loadDb("./data/tair10.sqlite")
 vcf <- readVcf(infile1(args)[1], "A. thaliana")
 locateVariants(vcf, txdb, CodingVariants())
 ```
+
 Synonymous/non-synonymous variants of coding sequences are computed by the predictCoding function for variants overlapping with coding regions.
 
 
 ```r
 fa <- FaFile(systemPipeR::reference(args))
-predictCoding(vcf, txdb, seqSource=fa)
+predictCoding(vcf, txdb, seqSource = fa)
 ```
 
 ## Annotate filtered variants called by `GATK`
@@ -37,36 +38,39 @@ predictCoding(vcf, txdb, seqSource=fa)
 
 ```r
 library("GenomicFeatures")
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_gatk_filtered.txt")
 txdb <- loadDb("./data/tair10.sqlite")
 fa <- FaFile(systemPipeR::reference(args))
-suppressAll(variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana"))
+suppressAll(variantReport(args = args, txdb = txdb, fa = fa, 
+    organism = "A. thaliana"))
 ```
 
 ## Annotate filtered variants called by `BCFtools`
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_sambcf_filtered.txt")
 txdb <- loadDb("./data/tair10.sqlite")
 fa <- FaFile(systemPipeR::reference(args))
-suppressAll(variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana"))
+suppressAll(variantReport(args = args, txdb = txdb, fa = fa, 
+    organism = "A. thaliana"))
 ```
 
 ## Annotate filtered variants called by `VariantTools`
 
 
 ```r
-args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_vartools_filtered.txt")
+args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_vartools_filtered.txt")
 txdb <- loadDb("./data/tair10.sqlite")
 fa <- FaFile(systemPipeR::reference(args))
-suppressAll(variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana"))
+suppressAll(variantReport(args = args, txdb = txdb, fa = fa, 
+    organism = "A. thaliana"))
 ```
 
 View annotation result for single sample
 
 ```r
-read.delim(outpaths(args)[1])[38:40,]
+read.delim(outpaths(args)[1])[38:40, ]
 ```
 
 <br><br><center><a href="mydoc_systemPipeVARseq_06.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

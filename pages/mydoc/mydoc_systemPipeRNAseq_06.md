@@ -1,6 +1,6 @@
 ---
 title: 6. Analysis of DEGs
-last_updated: Mon Jun  5 21:16:33 2017
+last_updated: Sat Feb  2 11:36:04 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_06.html
 ---
@@ -10,16 +10,17 @@ the glm method of the `edgeR` package (Robinson et al., 2010). The sample
 comparisons used by this analysis are defined in the header lines of the 
 `targets.txt` file starting with `<CMP>`.
 
-
 ## Run `edgeR`
 
 
 ```r
 library(edgeR)
-countDF <- read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE) 
-targets <- read.delim("targets.txt", comment="#")
-cmp <- readComp(file="targets.txt", format="matrix", delim="-")
-edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
+countDF <- read.delim("results/countDFeByg.xls", row.names = 1, 
+    check.names = FALSE)
+targets <- read.delim("targets.txt", comment = "#")
+cmp <- readComp(file = "targets.txt", format = "matrix", delim = "-")
+edgeDF <- run_edgeR(countDF = countDF, targets = targets, cmp = cmp[[1]], 
+    independent = FALSE, mdsplot = "")
 ```
 
 Add gene descriptions
@@ -27,12 +28,15 @@ Add gene descriptions
 
 ```r
 library("biomaRt")
-m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
-desc <- getBM(attributes=c("tair_locus", "description"), mart=m)
-desc <- desc[!duplicated(desc[,1]),]
-descv <- as.character(desc[,2]); names(descv) <- as.character(desc[,1])
-edgeDF <- data.frame(edgeDF, Desc=descv[rownames(edgeDF)], check.names=FALSE)
-write.table(edgeDF, "./results/edgeRglm_allcomp.xls", quote=FALSE, sep="\t", col.names = NA)
+m <- useMart("plants_mart", dataset = "athaliana_eg_gene", host = "plants.ensembl.org")
+desc <- getBM(attributes = c("tair_locus", "description"), mart = m)
+desc <- desc[!duplicated(desc[, 1]), ]
+descv <- as.character(desc[, 2])
+names(descv) <- as.character(desc[, 1])
+edgeDF <- data.frame(edgeDF, Desc = descv[rownames(edgeDF)], 
+    check.names = FALSE)
+write.table(edgeDF, "./results/edgeRglm_allcomp.xls", quote = FALSE, 
+    sep = "\t", col.names = NA)
 ```
 
 ## Plot DEG results
@@ -43,11 +47,13 @@ file. To open it, type `?filterDEGs` in the R console.
 
 
 ```r
-edgeDF <- read.delim("results/edgeRglm_allcomp.xls", row.names=1, check.names=FALSE) 
+edgeDF <- read.delim("results/edgeRglm_allcomp.xls", row.names = 1, 
+    check.names = FALSE)
 pdf("results/DEGcounts.pdf")
-DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=20))
+DEG_list <- filterDEGs(degDF = edgeDF, filter = c(Fold = 2, FDR = 20))
 dev.off()
-write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", row.names=FALSE)
+write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote = FALSE, 
+    sep = "\t", row.names = FALSE)
 ```
 
 ![](./pages/mydoc/systemPipeRNAseq_files/DEGcounts.png)
@@ -62,12 +68,12 @@ comparisons with the same number of sample sets in a single Venn diagram
 (here for 4 up and down DEG sets).
 
 
-
 ```r
-vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
-vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
+vennsetup <- overLapper(DEG_list$Up[6:9], type = "vennsets")
+vennsetdown <- overLapper(DEG_list$Down[6:9], type = "vennsets")
 pdf("results/vennplot.pdf")
-vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("blue", "red"))
+vennPlot(list(vennsetup, vennsetdown), mymain = "", mysub = "", 
+    colmode = 2, ccol = c("blue", "red"))
 dev.off()
 ```
 

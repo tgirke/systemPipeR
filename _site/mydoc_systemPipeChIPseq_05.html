@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -823,39 +823,39 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <p>The following introduces several utilities useful for ChIP-Seq data. They are not part of the actual
-workflow.</p>
+  <p>The following introduces several utilities useful for ChIP-Seq data. They are not part of the actual workflow.</p>
 
 <h2 id="rle-object-stores-coverage-information">Rle object stores coverage information</h2>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">rtracklayer</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">GenomicRanges</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">Rsamtools</span><span class="p">);</span><span class="w"> </span><span class="n">library</span><span class="p">(</span><span class="n">GenomicAlignments</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">rtracklayer</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">GenomicRanges</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">Rsamtools</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">GenomicAlignments</span><span class="p">)</span><span class="w">
 </span><span class="n">aligns</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readGAlignments</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">])</span><span class="w">
 </span><span class="n">cov</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">coverage</span><span class="p">(</span><span class="n">aligns</span><span class="p">)</span><span class="w">
 </span><span class="n">cov</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="resizing-aligned-reads">Resizing aligned reads</h2>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">trim</span><span class="p">(</span><span class="n">resize</span><span class="p">(</span><span class="n">as</span><span class="p">(</span><span class="n">aligns</span><span class="p">,</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">),</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">))</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">trim</span><span class="p">(</span><span class="n">resize</span><span class="p">(</span><span class="n">as</span><span class="p">(</span><span class="n">aligns</span><span class="p">,</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">),</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="naive-peak-calling">Naive peak calling</h2>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">islands</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">slice</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span><span class="w"> </span><span class="n">lower</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">islands</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">slice</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span><span class="w"> </span><span class="n">lower</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">)</span><span class="w">
 </span><span class="n">islands</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="plot-coverage-for-defined-region">Plot coverage for defined region</h2>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggbio</span><span class="p">)</span><span class="w">
-</span><span class="n">myloc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Chr1"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">100000</span><span class="p">)</span><span class="w">
-</span><span class="n">ga</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readGAlignments</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">use.names</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">param</span><span class="o">=</span><span class="n">ScanBamParam</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="n">GRanges</span><span class="p">(</span><span class="n">myloc</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">IRanges</span><span class="p">(</span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">myloc</span><span class="p">[</span><span class="m">2</span><span class="p">]),</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">myloc</span><span class="p">[</span><span class="m">3</span><span class="p">])))))</span><span class="w">
-</span><span class="n">autoplot</span><span class="p">(</span><span class="n">ga</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">),</span><span class="w"> </span><span class="n">facets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">seqnames</span><span class="p">,</span><span class="w"> </span><span class="n">stat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"coverage"</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ggbio</span><span class="p">)</span><span class="w">
+</span><span class="n">myloc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Chr1"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">1e+05</span><span class="p">)</span><span class="w">
+</span><span class="n">ga</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readGAlignments</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">use.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ScanBamParam</span><span class="p">(</span><span class="n">which</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GRanges</span><span class="p">(</span><span class="n">myloc</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w"> 
+    </span><span class="n">IRanges</span><span class="p">(</span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">myloc</span><span class="p">[</span><span class="m">2</span><span class="p">]),</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">myloc</span><span class="p">[</span><span class="m">3</span><span class="p">])))))</span><span class="w">
+</span><span class="n">autoplot</span><span class="p">(</span><span class="n">ga</span><span class="p">,</span><span class="w"> </span><span class="n">aes</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="p">),</span><span class="w"> </span><span class="n">facets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strand</span><span class="w"> </span><span class="o">~</span><span class="w"> 
+    </span><span class="n">seqnames</span><span class="p">,</span><span class="w"> </span><span class="n">stat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"coverage"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeChIPseq_04.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeChIPseq_06.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -874,8 +874,8 @@ workflow.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Jun 10 11:34:52 2017<br/> Site last generated: Oct 22, 2017 <br />
+               &copy;2019 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Feb  2 11:43:49 2019<br/> Site last generated: Feb 2, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

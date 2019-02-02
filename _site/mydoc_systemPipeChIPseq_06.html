@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -833,11 +833,17 @@ also returns an updated <code class="highlighter-rouge">SYSargs</code> object co
 merged BAM files as well as to any unmerged files without replicates.
 This step can be skipped if merging of BAM files is not desired.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_bam.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">args_merge</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mergeBamByFactor</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args_merge</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">args_merge</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mergeBamByFactor</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args_merge</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Skip if a module system is not used</span><span class="w">
+</span><span class="n">module</span><span class="p">(</span><span class="s2">"list"</span><span class="p">)</span><span class="w">
+</span><span class="n">module</span><span class="p">(</span><span class="s2">"unload"</span><span class="p">,</span><span class="w"> </span><span class="s2">"miniconda2"</span><span class="p">)</span><span class="w">
+</span><span class="n">module</span><span class="p">(</span><span class="s2">"load"</span><span class="p">,</span><span class="w"> </span><span class="s2">"python/2.7.14"</span><span class="p">)</span><span class="w">  </span><span class="c1"># Make sure to set up your enviroment variable for MACS2 </span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="peak-calling-without-inputreference-sample">Peak calling without input/reference sample</h2>
 
@@ -848,13 +854,12 @@ the small size of the sample data, MACS2 needs to be run here with the
 <code class="highlighter-rouge">nomodel</code> setting. For real data sets, users want to remove this parameter 
 in the corresponding <code class="highlighter-rouge">*.param</code> file(s).</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/macs2_noinput.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="c1"># Command-line parameters for first FASTQ file
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/macs2_noinput.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">  </span><span class="c1"># Command-line parameters for first FASTQ file</span><span class="w">
 </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
 </span><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_macs.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_macs.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="peak-calling-with-inputreference-sample">Peak calling with input/reference sample</h2>
 
@@ -863,14 +868,15 @@ conveniently specified in the <code class="highlighter-rouge">SampleReference</c
 <code class="highlighter-rouge">targets</code> file. The <code class="highlighter-rouge">writeTargetsRef</code> function uses this information to create a <code class="highlighter-rouge">targets</code> 
 file intermediate for running MACS2 with the corresponding input samples.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">writeTargetsRef</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">outfile</span><span class="o">=</span><span class="s2">"targets_bam_ref.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">silent</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">args_input</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/macs2.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_bam_ref.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args_input</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="c1"># Command-line parameters for first FASTQ file
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">writeTargetsRef</span><span class="p">(</span><span class="n">infile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">outfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam_ref.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">silent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">args_input</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/macs2.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam_ref.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args_input</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">  </span><span class="c1"># Command-line parameters for first FASTQ file</span><span class="w">
 </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args_input</span><span class="p">)</span><span class="w">
 </span><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args_input</span><span class="p">))</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args_input</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_macs_input.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args_input</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_macs_input.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p>The peak calling results from MACS2 are written for each sample to
 separate files in the <code class="highlighter-rouge">results</code> directory. They are named after the corresponding
@@ -878,20 +884,20 @@ files with extensions used by MACS2.</p>
 
 <h2 id="identify-consensus-peaks">Identify consensus peaks</h2>
 
-<p>The following example shows how one can identify consensus preaks among two peak sets sharing either a minimum absolute overlap and/or
-minimum relative overlap using the <code class="highlighter-rouge">subsetByOverlaps</code> or <code class="highlighter-rouge">olRanges</code> functions, respectively. Note, the latter is
-a custom function imported below by sourcing it.</p>
+<p>The following example shows how one can identify consensus preaks among two peak sets sharing either a minimum absolute overlap and/or minimum relative overlap using the <code class="highlighter-rouge">subsetByOverlaps</code> or <code class="highlighter-rouge">olRanges</code> functions, respectively. Note, the latter is a custom function imported below by sourcing it.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/rangeoverlapper.R"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/rangeoverlapper.R"</span><span class="p">)</span><span class="w">
 </span><span class="n">peak_M1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="s2">"M1A"</span><span class="p">]</span><span class="w">
-</span><span class="n">peak_M1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">read.delim</span><span class="p">(</span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="o">=</span><span class="s2">"#"</span><span class="p">)[,</span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">)</span><span class="w">
+</span><span class="n">peak_M1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">read.delim</span><span class="p">(</span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)[,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">)</span><span class="w">
 </span><span class="n">peak_A1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="s2">"A1A"</span><span class="p">]</span><span class="w">
-</span><span class="n">peak_A1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">read.delim</span><span class="p">(</span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="o">=</span><span class="s2">"#"</span><span class="p">)[,</span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="n">myol1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subsetByOverlaps</span><span class="p">(</span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">minoverlap</span><span class="o">=</span><span class="m">1</span><span class="p">))</span><span class="w"> </span><span class="c1"># Returns any overlap
-</span><span class="n">myol2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">olRanges</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">subject</span><span class="o">=</span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="o">=</span><span class="s2">"gr"</span><span class="p">)</span><span class="w"> </span><span class="c1"># Returns any overlap with OL length information
-</span><span class="n">myol2</span><span class="p">[</span><span class="n">values</span><span class="p">(</span><span class="n">myol2</span><span class="p">)[</span><span class="s2">"OLpercQ"</span><span class="p">][,</span><span class="m">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="m">50</span><span class="p">]</span><span class="w"> </span><span class="c1"># Returns only query peaks with a minimum overlap of 50%
-</span></code></pre>
-</div>
+</span><span class="n">peak_A1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">read.delim</span><span class="p">(</span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)[,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="n">myol1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subsetByOverlaps</span><span class="p">(</span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">minoverlap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="c1"># Returns any overlap</span><span class="w">
+</span><span class="n">myol2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">olRanges</span><span class="p">(</span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">subject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gr"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Returns any overlap with OL length information</span><span class="w">
+</span><span class="n">myol2</span><span class="p">[</span><span class="n">values</span><span class="p">(</span><span class="n">myol2</span><span class="p">)[</span><span class="s2">"OLpercQ"</span><span class="p">][,</span><span class="w"> </span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">50</span><span class="p">]</span><span class="w">
+</span><span class="c1"># Returns only query peaks with a minimum overlap of 50%</span><span class="w">
+</span></code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeChIPseq_05.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeChIPseq_07.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -910,8 +916,8 @@ a custom function imported below by sourcing it.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Jun 10 11:34:52 2017<br/> Site last generated: Oct 22, 2017 <br />
+               &copy;2019 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Feb  2 11:43:49 2019<br/> Site last generated: Feb 2, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

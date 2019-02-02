@@ -1,6 +1,6 @@
 ---
 title: 9. Differential binding analysis
-last_updated: Sat Jun 10 11:34:52 2017
+last_updated: Sat Feb  2 11:43:49 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_09.html
 ---
@@ -13,13 +13,14 @@ the fold change and FDR cutoffs provided under the `dbrfilter` argument.
 
 
 ```r
-args_diff <- systemArgs(sysma="param/rundiff.param", mytargets="targets_countDF.txt")
-cmp <- readComp(file=args_bam, format="matrix") 
-dbrlist <- runDiff(args=args_diff, diffFct=run_edgeR, targets=targetsin(args_bam), 
-                    cmp=cmp[[1]], independent=TRUE, dbrfilter=c(Fold=2, FDR=1))
-writeTargetsout(x=args_diff, file="targets_rundiff.txt", overwrite=TRUE)
+args_diff <- systemArgs(sysma = "param/rundiff.param", mytargets = "targets_countDF.txt")
+cmp <- readComp(file = args_bam, format = "matrix")
+dbrlist <- runDiff(args = args_diff, diffFct = run_edgeR, targets = targetsin(args_bam), 
+    cmp = cmp[[1]], independent = TRUE, dbrfilter = c(Fold = 2, 
+        FDR = 1))
+writeTargetsout(x = args_diff, file = "targets_rundiff.txt", 
+    overwrite = TRUE)
 ```
-
 
 <br><br><center><a href="mydoc_systemPipeChIPseq_08.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeChIPseq_10.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

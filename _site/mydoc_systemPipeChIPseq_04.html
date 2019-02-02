@@ -37,7 +37,7 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
-<link rel="alternate" type="application/rss+xml" title="" href="http://localhost:4000feed.xml">
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
 
     <script>
         $(document).ready(function() {
@@ -834,40 +834,40 @@ in the <code class="highlighter-rouge">bowtieSE.param</code> file.</p>
 
 <p>The following submits 18 alignment jobs via a scheduler to a computer cluster.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="o">=</span><span class="s2">"param/bowtieSE.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="o">=</span><span class="s2">"targets_chip_trim.txt"</span><span class="p">)</span><span class="w">
-</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="c1"># Command-line parameters for first FASTQ file
-</span><span class="n">moduleload</span><span class="p">(</span><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w"> </span><span class="c1"># Skip if a module system is not used
-</span><span class="n">system</span><span class="p">(</span><span class="s2">"bowtie2-build ./data/tair10.fasta ./data/tair10.fasta"</span><span class="p">)</span><span class="w"> </span><span class="c1"># Indexes reference genome
-</span><span class="n">resources</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">walltime</span><span class="o">=</span><span class="s2">"1:00:00"</span><span class="p">,</span><span class="w"> </span><span class="n">ntasks</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">ncpus</span><span class="o">=</span><span class="n">cores</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">memory</span><span class="o">=</span><span class="s2">"10G"</span><span class="p">)</span><span class="w">
-</span><span class="n">reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clusterRun</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">conffile</span><span class="o">=</span><span class="s2">".BatchJobs.R"</span><span class="p">,</span><span class="w"> </span><span class="n">template</span><span class="o">=</span><span class="s2">"slurm.tmpl"</span><span class="p">,</span><span class="w"> </span><span class="n">Njobs</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">runid</span><span class="o">=</span><span class="s2">"01"</span><span class="p">,</span><span class="w">
-                  </span><span class="n">resourceList</span><span class="o">=</span><span class="n">resources</span><span class="p">)</span><span class="w">
-</span><span class="n">waitForJobs</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="o">=</span><span class="s2">"targets_bam.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"param/bowtieSE.param"</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_chip_trim.txt"</span><span class="p">)</span><span class="w">
+</span><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">  </span><span class="c1"># Command-line parameters for first FASTQ file</span><span class="w">
+</span><span class="n">moduleload</span><span class="p">(</span><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">  </span><span class="c1"># Skip if a module system is not used</span><span class="w">
+</span><span class="n">system</span><span class="p">(</span><span class="s2">"bowtie2-build ./data/tair10.fasta ./data/tair10.fasta"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Indexes reference genome</span><span class="w">
+</span><span class="n">resources</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">walltime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">120</span><span class="p">,</span><span class="w"> </span><span class="n">ntasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">ncpus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cores</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1024</span><span class="p">)</span><span class="w">
+</span><span class="n">reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clusterRun</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">conffile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">".batchtools.conf.R"</span><span class="p">,</span><span class="w"> </span><span class="n">Njobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">18</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">template</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"batchtools.slurm.tmpl"</span><span class="p">,</span><span class="w"> </span><span class="n">runid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"01"</span><span class="p">,</span><span class="w"> </span><span class="n">resourceList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resources</span><span class="p">)</span><span class="w">
+</span><span class="n">getStatus</span><span class="p">(</span><span class="n">reg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg</span><span class="p">)</span><span class="w">
+</span><span class="n">waitForJobs</span><span class="p">(</span><span class="n">reg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p>Alternatively, one can run the alignments sequentially on a single system.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p>Check whether all BAM files have been created</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
 
 <h2 id="read-and-alignment-stats">Read and alignment stats</h2>
 
 <p>The following provides an overview of the number of reads in each sample
 and how many of them aligned to the reference.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">read_statsDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">alignStats</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span><span class="w"> 
-</span><span class="n">write.table</span><span class="p">(</span><span class="n">read_statsDF</span><span class="p">,</span><span class="w"> </span><span class="s2">"results/alignStats.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">quote</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="o">=</span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">read_statsDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">alignStats</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">write.table</span><span class="p">(</span><span class="n">read_statsDF</span><span class="p">,</span><span class="w"> </span><span class="s2">"results/alignStats.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">quote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
 </span><span class="n">read.delim</span><span class="p">(</span><span class="s2">"results/alignStats.xls"</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <h2 id="create-symbolic-links-for-viewing-bam-files-in-igv">Create symbolic links for viewing BAM files in IGV</h2>
 
@@ -876,11 +876,9 @@ genome browser such as IGV without moving these large files to a local
 system. The corresponding URLs are written to a file with a path
 specified under <code class="highlighter-rouge">urlfile</code>, here <code class="highlighter-rouge">IGVurl.txt</code>.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="o">=</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"somedir/"</span><span class="p">),</span><span class="w"> 
-            </span><span class="n">urlbase</span><span class="o">=</span><span class="s2">"http://biocluster.ucr.edu/~tgirke/"</span><span class="p">,</span><span class="w"> 
-            </span><span class="n">urlfile</span><span class="o">=</span><span class="s2">"./results/IGVurl.txt"</span><span class="p">)</span><span class="w">
-</span></code></pre>
-</div>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"somedir/"</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">urlbase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://biocluster.ucr.edu/~tgirke/"</span><span class="p">,</span><span class="w"> </span><span class="n">urlfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/IGVurl.txt"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeChIPseq_03.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeChIPseq_05.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -899,8 +897,8 @@ specified under <code class="highlighter-rouge">urlfile</code>, here <code class
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2017 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Jun 10 11:34:52 2017<br/> Site last generated: Oct 22, 2017 <br />
+               &copy;2019 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Feb  2 11:43:49 2019<br/> Site last generated: Feb 2, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

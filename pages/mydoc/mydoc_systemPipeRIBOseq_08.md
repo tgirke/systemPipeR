@@ -1,6 +1,6 @@
 ---
 title: 8. Read quantification per annotation range
-last_updated: Sun Oct 15 13:21:42 2017
+last_updated: Sat Feb  2 11:49:31 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_08.html
 ---
@@ -20,34 +20,42 @@ using 8 CPU cores.
 
 
 ```r
-library("GenomicFeatures"); library(BiocParallel)
+library("GenomicFeatures")
+library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
-eByg <- exonsBy(txdb, by=c("gene"))
-bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
-multicoreParam <- MulticoreParam(workers=8); register(multicoreParam); registered()
-counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", 
-                                               ignore.strand=TRUE, 
-                                               inter.feature=FALSE, 
-                                               singleEnd=TRUE)) 
-countDFeByg <- sapply(seq(along=counteByg), function(x) assays(counteByg[[x]])$counts)
-rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(bfl)
-rpkmDFeByg <- apply(countDFeByg, 2, function(x) returnRPKM(counts=x, ranges=eByg))
-write.table(countDFeByg, "results/countDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
-write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
+eByg <- exonsBy(txdb, by = c("gene"))
+bfl <- BamFileList(outpaths(args), yieldSize = 50000, index = character())
+multicoreParam <- MulticoreParam(workers = 8)
+register(multicoreParam)
+registered()
+counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, 
+    x, mode = "Union", ignore.strand = TRUE, inter.feature = FALSE, 
+    singleEnd = TRUE))
+countDFeByg <- sapply(seq(along = counteByg), function(x) assays(counteByg[[x]])$counts)
+rownames(countDFeByg) <- names(rowRanges(counteByg[[1]]))
+colnames(countDFeByg) <- names(bfl)
+rpkmDFeByg <- apply(countDFeByg, 2, function(x) returnRPKM(counts = x, 
+    ranges = eByg))
+write.table(countDFeByg, "results/countDFeByg.xls", col.names = NA, 
+    quote = FALSE, sep = "\t")
+write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names = NA, 
+    quote = FALSE, sep = "\t")
 ```
 
 Sample of data slice of count table
 
 
 ```r
-read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:5]
+read.delim("results/countDFeByg.xls", row.names = 1, check.names = FALSE)[1:4, 
+    1:5]
 ```
 
 Sample of data slice of RPKM table
 
 
 ```r
-read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
+read.delim("results/rpkmDFeByg.xls", row.names = 1, check.names = FALSE)[1:4, 
+    1:4]
 ```
 
 Note, for most statistical differential expression or abundance analysis
@@ -67,15 +75,18 @@ in the `results` directory.
 
 
 ```r
-library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+library(DESeq2, quietly = TRUE)
+library(ape, warn.conflicts = FALSE)
 countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
-colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
-dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
-d <- cor(assay(rlog(dds)), method="spearman")
-hc <- hclust(dist(1-d))
+colData <- data.frame(row.names = targetsin(args)$SampleName, 
+    condition = targetsin(args)$Factor)
+dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, 
+    design = ~condition)
+d <- cor(assay(rlog(dds)), method = "spearman")
+hc <- hclust(dist(1 - d))
 png("results/sample_tree.pdf")
-plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, 
-           no.margin=TRUE)
+plot.phylo(as.phylo(hc), type = "p", edge.col = "blue", edge.width = 2, 
+    show.node.label = TRUE, no.margin = TRUE)
 dev.off()
 ```
 
