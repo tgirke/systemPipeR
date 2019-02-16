@@ -89,7 +89,7 @@ setAs(from="list", to="INTERSECTset",
 ## Define print behavior for INTERSECTset
 setMethod(f="show", signature="INTERSECTset", 
 	definition=function(object) {    
-	cat("An instance of '", class(object), "' with ", length(object@setlist), " label sets and 'complexity = ", paste0(unique(complexitylevels(vennset)), collapse=", "), "'", "\n", sep="")
+	cat("An instance of '", class(object), "' with ", length(object@setlist), " label sets and 'complexity = ", paste0(unique(object@complexitylevels), collapse=", "), "'", "\n", sep="")
 })
 
 ## Extend names() method
@@ -156,7 +156,7 @@ overLapper <- function(setlist, complexity="default", sep="_", cleanup=FALSE, ke
 	
 	## Return intersect list for generated sample combinations 
 	if(type=="intersects") {
-		OLlist <- sapply(seq(along=allcombl), function(x) setunion[rowSums(setmatrix[, rep(allcombl[[x]], 2)]) == 2 * length(allcombl[[x]])])
+		OLlist <- sapply(seq(along=allcombl), function(x) setunion[rowSums(setmatrix[, rep(allcombl[[x]], 2)]) == 2 * length(allcombl[[x]])], simplify=FALSE)
 		names(OLlist) <- sapply(allcombl, paste, collapse=sep)
 		OLlist <- list(setlist=setlist, intersectmatrix=setmatrix, complexitylevels=complevels, intersectlist=OLlist)
 		intersectset <- as(OLlist, "INTERSECTset")
@@ -172,7 +172,7 @@ overLapper <- function(setlist, complexity="default", sep="_", cleanup=FALSE, ke
 			cond2 <- rowSums(setmatrix[, rep(mycol2, 2)]) == 0
 			return(setunion[cond1 & cond2])
 		}
-		vennOLlist <- sapply(seq(along=allcombl), function(x) vennSets(setmatrix=setmatrix, allcombl=allcombl, index=x))
+		vennOLlist <- sapply(seq(along=allcombl), function(x) vennSets(setmatrix=setmatrix, allcombl=allcombl, index=x), simplify=FALSE)
 		names(vennOLlist) <- sapply(allcombl, paste, collapse=sep)
 		OLlist <- list(setlist=setlist, intersectmatrix=setmatrix, complexitylevels=complevels, vennlist=vennOLlist)
 		vennset <- as(OLlist, "VENNset")
