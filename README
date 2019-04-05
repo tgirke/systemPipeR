@@ -1,5 +1,8 @@
 changelog
      version 1.17.7
+        - Added SYSargs2 and SYSargs2Pipe classes and Methods
+        - Added "loadWorkflow", "renderWF", "subsetWF", "output_update", "targets.as.df" functions
+        - Added respective help files for all functions and classes above
         - Added folder inst/extdata/cwl/*
 	- Updated alignStats, clusterRun, runCommandline, and writeTargetsout functions and the corresponding help files (Allowing SYSargs2 object)
 
