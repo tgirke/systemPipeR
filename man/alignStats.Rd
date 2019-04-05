@@ -13,16 +13,22 @@ alignStats(args)
 }
 \arguments{
   \item{args}{
-	Object of class \code{SYSargs}. 
+	Object of class \code{SYSargs} or \code{SYSargs2}. 
 }
 }
 \value{
 	\code{data.frame} with alignment statistics.
 }
+\seealso{
+\code{clusterRun} and \code{runCommandline} and \code{output_update}
+}
 \author{
 Thomas Girke
 }
 \examples{
+#########################################
+## Examples with \code{SYSargs} object ##
+#########################################
 ## Construct SYSargs object from param and targets files 
 param <- system.file("extdata", "tophat.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
@@ -34,11 +40,32 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 ## Execute SYSargs on single machine
 runCommandline(args=args)
 
-## Execute SYSargs on multiple machines  
-qsubargs <- getQsubargs(queue="batch", Nnodes="nodes=1", cores=cores(tophat), memory="mem=10gb", time="walltime=20:00:00")
-qsubRun(args=args, qsubargs=qsubargs, Nqsubs=1, package="systemPipeR")
 ## Alignment stats
 read_statsDF <- alignStats(args) 
+read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
+write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+}
+
+##########################################
+## Examples with \code{SYSargs2} object ##
+##########################################
+## Construct SYSargs2 object from CWl param, CWL input, and targets files 
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl",
+                   input_file="hisat2-se/hisat2-mapping-se.yml",
+                   dir_path=dir_path)
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+WF
+names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
+
+\dontrun{
+## Execute SYSargs2 on single machine
+runCommandline(args=WF)
+WF <- output_update(WF, dir=FALSE, replace = ".bam")
+
+## Alignment stats
+read_statsDF <- alignStats(WF) 
 read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 }

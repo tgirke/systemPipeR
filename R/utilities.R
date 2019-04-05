@@ -106,8 +106,24 @@ symLink2bam <- function(sysargs, command="ln -s", htmldir, ext=c(".bam", ".bai")
 ## Alignment Stats ##
 #####################
 alignStats <- function(args) {
-	fqpaths <- infile1(args)
-	bampaths <- outpaths(args)
+  fqpaths <- infile1(args)
+  ## SYSargs class
+  if(class(args)=="SYSargs") {
+    bampaths <- outpaths(args)
+    # SYSargs2 class
+    } else if (class(args)=="SYSargs2") {
+      output.all <- output(args)
+      bampaths <- as.character()
+      for(i in seq_along(output.all)){
+        for(j in seq_along(output.all[[i]])){
+          if(grepl(".sam$", output.all[[i]][[j]])==TRUE & grepl(".bam$", output.all[[i]][[j]])==FALSE){
+            stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.") } 
+          else if(grepl(".bam$", output.all[[i]][[j]])==TRUE & grepl("sorted.bam$", output.all[[i]][[j]])==FALSE){
+            bampaths <- c(bampaths, output.all[[i]][[j]]) }
+        }
+      }
+      names(bampaths) <- names(output.all)
+    }
 	bamexists <- file.exists(bampaths)
 	fqpaths <- fqpaths[bamexists]
 	bampaths <- bampaths[bamexists]
@@ -338,13 +354,13 @@ module <- function(action_type,module_name=""){
 ## List software available in module system
 modulelist <- function() {
   module("avail")
-  warning("The function modulelist will be deprecated in future releases, please refer to the documentation for proper useage.")
+  # warning("The function modulelist will be deprecated in future releases, please refer to the documentation for proper useage.")
 }
 
 ## Load software from module system
 moduleload <- function(module,envir="PATH") {
   module("load",module)
-  warning("The function moduleload will be deprecated in future releases, please refer to the documentation for proper useage.")
+  # warning("The function moduleload will be deprecated in future releases, please refer to the documentation for proper useage.")
 }
 
 #######################################################################
