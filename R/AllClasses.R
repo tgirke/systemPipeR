@@ -296,36 +296,69 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 # args <- systemArgs(sysma="../inst/extdata/tophat.param", mytargets="../inst/extdata/targets.txt")
 # names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 
-##############################################
-## Additional utilities for SYSargs objects ##
-##############################################
+###########################################################
+## Additional utilities for SYSargs and SYSargs2 objects ##
+###########################################################
 ## Convenience write function for targetsout(args)
-writeTargetsout <- function(x, file="default", silent=FALSE, overwrite=FALSE, ...) {
-	if(class(x)!="SYSargs") stop("x needs to be 'SYSargs' object")
-	targets <- targetsout(x)
-	if(file=="default") {
-		file <- paste("targets_", software(x), ".txt", sep="")
-		file <- gsub(" {1,}", "_", file)
-	} else {
-		file <- file
-	}
+writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, ...) {
+  if(all(class(x)!="SYSargs" & class(x)!="SYSargs2")) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  ## SYSargs class
+  if(class(x)=="SYSargs") {
+    targets <- targetsout(x)
+    software <- software(x)
+    if (file == "default") {
+      file <- paste("targets_", software, ".txt", sep = "")
+      file <- gsub(" {1,}", "_", file)
+    }
+    else {
+      file <- file
+    }
+    headerlines <- targetsheader(x)
+  ## SYSargs2 class
+  } else if (class(x)=="SYSargs2") {
+    if(is.null(step)) stop(paste("Argument 'step' needs to be assigned one of the following values:", paste(names(x$clt), collapse=", "), "OR the corresponding position"))
+    if(all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step))) stop(paste("Argument 'step' can only be assigned one of the following values:", paste(names(x$clt), collapse=", "), "OR the corresponding position")) 
+    if(all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step))) stop(paste("Argument 'step' can only be assigned one of the following position:", paste(seq_along(names(x$clt)), collapse=", "), "OR the corresponding names")) 
+    targetsout2 <- targets.as.df(targets(x))
+    targetsout2[,1] <- suppressWarnings(normalizePath(subsetWF(x, slot="output", step)))
+    colnames(targetsout2)[1] <- "FileName"
+    targets <- targetsout2[ ,!colnames(targetsout2) %in% "FileName2"]
+    ## Workflow and Step Name
+    software <- strsplit(basename(cwlfiles(x)$cwl), split="\\.")[[1]][1]
+    if(is.character(step)) {
+      step <- strsplit(step, split="\\.")[[1]][1] }
+    else {
+      step <- strsplit(names(x$clt)[step], split="\\.")[[1]][1]
+    }
+    if (file == "default") {
+      file <- paste("targets_", software, "_", step, ".txt", sep = "")
+      file <- gsub(" {1,}", "_", file)
+    }
+    else {
+      file <- file
+    }
+    headerlines <- targetsheader(x)[[1]]
+  }
 	if(file.exists(file) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
 	headerlines <- targetsheader(x)	
         targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
         writeLines(c(headerlines, targetslines), file, ...)
 	if(silent!=TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
 }
-## writeTargetsout(x=args, file="default") 
+
+## Usage:
+# writeTargetsout(x=args, file="default") ## SYSargs class
+# writeTargetsout(x=WF, file="default", step=1) ## SYSargs2 class
 
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=TRUE, ...) {
+runCommandline <- function(args, runid="01", make_bam=FALSE, dir=FALSE, dir.name=NULL, ...) {
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is installed in the system
     ## "Environment Modules" is not available
     if(suppressWarnings(system("module -V", ignore.stderr=TRUE))!=1) {
-      warning("Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.")
+      cat("Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.", "\n")
     } else {
       ## "Environment Modules" is available and proceed the module load
       if(suppressWarnings(system("module -V", ignore.stderr=TRUE))==1) { # Returns 1 if module system is present.
@@ -333,55 +366,167 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, ...) {
       }
     }
   }
-	commands <- sysargs(args)
-	completed <- file.exists(outpaths(args))
-	names(completed) <- outpaths(args)
-	logdir <- results(args)
-	for(i in seq(along=commands)) {
-		## Run alignmets only for samples for which no BAM file is available.
-		if(as.logical(completed)[i]) {
-			next()
-		} else {
-			## Create soubmitargsID_command file
-			cat(commands[i], file=paste(logdir, "submitargs", runid, sep=""), sep = "\n", append=TRUE)
-        		## Run executable 
-			command <- gsub(" .*", "", as.character(commands[i]))
-			commandargs <- gsub("^.*? ", "",as.character(commands[i]))
-			
-			## Execute system command; note: BWA needs special treatment in stderr handling since it writes 
-                        ## some stderr messages to sam file if used with system2()
-			if(software(args) %in% c("bwa aln", "bwa mem")) {
-				stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
-			} else if(software(args) %in% c("bash_commands")) {
-				stdout <- system(paste(command, commandargs))
-			} else {
-				stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
-			}
-			## Create submitargsID_stdout file
-			cat(commands[i], file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
-			cat(unlist(stdout), file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
-			## Conditional postprocessing of results
-			if(make_bam==TRUE) {
-                if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
-				    asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
-				    unlink(outfile1(args)[i])
-			    } else if(grepl("vcf$|bcf$|xls$|bed$", outpaths(args)[i])) {
-                    dump <- "do nothing"
-			    } else { # If output is unindexed *.bam file (e.g. Tophat2)
-				    sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
-        			        indexBam(names(completed[i]))
-			    }
-		    }
+  ## SYSargs class
+  if(class(args)=="SYSargs") { 
+    commands <- sysargs(args)
+    completed <- file.exists(outpaths(args))
+    names(completed) <- outpaths(args)
+    logdir <- results(args)
+    for(i in seq(along=commands)) {
+      ## Run alignmets only for samples for which no BAM file is available.
+      if(as.logical(completed)[i]) {
+        next()
+      } else {
+        ## Create soubmitargsID_command file
+        cat(commands[i], file=paste(logdir, "submitargs", runid, sep=""), sep = "\n", append=TRUE)
+        ## Run executable 
+        command <- gsub(" .*", "", as.character(commands[i]))
+        commandargs <- gsub("^.*? ", "",as.character(commands[i]))
+        ## Execute system command; note: BWA needs special treatment in stderr handling since it writes 
+        ## some stderr messages to sam file if used with system2()
+        if(software(args) %in% c("bwa aln", "bwa mem")) {
+          stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
+        } else if(software(args) %in% c("bash_commands")) {
+          stdout <- system(paste(command, commandargs))
+        } else {
+          stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
         }
-	}
-	bamcompleted <- gsub("sam$", "bam$", file.exists(outpaths(args)))
-	names(bamcompleted) <- SampleName(args)
-	cat("Missing alignment results (bam files):", sum(!as.logical(bamcompleted)), "\n"); cat("Existing alignment results (bam files):", sum(as.logical(bamcompleted)), "\n")
-	return(bamcompleted)
+        ## Create submitargsID_stdout file
+        cat(commands[i], file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
+        cat(unlist(stdout), file=paste(logdir, "submitargs", runid, "_log", sep=""), sep = "\n", append=TRUE)
+        ## Conditional postprocessing of results
+        if(make_bam==TRUE) {
+          if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
+            asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
+            unlink(outfile1(args)[i])
+          } else if(grepl("vcf$|bcf$|xls$|bed$", outpaths(args)[i])) {
+            dump <- "do nothing"
+          } else { # If output is unindexed *.bam file (e.g. Tophat2)
+            sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
+            indexBam(names(completed[i]))
+          }
+        }
+      }
+    }
+    bamcompleted <- gsub("sam$", "bam$", file.exists(outpaths(args)))
+    names(bamcompleted) <- SampleName(args)
+    cat("Missing alignment results (bam files):", sum(!as.logical(bamcompleted)), "\n"); cat("Existing alignment results (bam files):", sum(as.logical(bamcompleted)), "\n")
+    return(bamcompleted) 
+    ## SYSargs2 class
+  } else if(class(args)=="SYSargs2") {
+    ## Workflow Name
+    cwl.wf <- strsplit(basename(cwlfiles(args)$cwl), split="\\.")[[1]][1]
+    ## Folder name provide in the yml file or in the dir.name
+    if(is.null(args$yamlinput$results_path$path)) {
+      if(is.null(dir.name)) {
+        stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
+      } else { logdir <- dir.name }
+    } else { logdir <- normalizePath(args$yamlinput$results_path$path) 
+    }
+    ## Check what expected outputs have been generated
+    if(make_bam==FALSE){
+      completed <- output(args)
+      outputList <- as.character()
+      for(i in seq_along(output(args))){
+        for(j in seq_along(output(args)[[i]])){
+          completed[[i]][[j]][[2]] <- file.exists(output(args)[[i]][[j]])
+          outputList <- c(outputList, output(args)[[i]][[j]])
+        }
+      }
+      names(outputList) <- rep(names(output(args)), each=length(names(output(args)[[1]])))
+    } else if(make_bam==TRUE) {
+      if(any(grepl(".bam$", output(args)[[1]]))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'") }
+      args1 <- output_update(args, dir = FALSE, replace=".bam")
+      completed <- output(args1)
+      outputList <- as.character()
+      for(i in seq_along(output(args1))){
+        for(j in seq_along(output(args1)[[i]])){
+          completed[[i]][[j]][[2]] <- file.exists(output(args1)[[i]][[j]])
+          outputList <- c(outputList, output(args1)[[i]][[j]])
+        }
+      }
+      for(i in seq_along(outputList)){
+        outputList <- c(outputList, paste0(gsub("\\.bam$", "", outputList[i]), ".bam.bai"))
+      }
+      names(outputList) <- rep(names(output(args)), 2)
+    }
+    for(i in seq_along(cmdlist(args))){
+      for(j in seq_along(cmdlist(args)[[i]])){
+        ## Run the commandline only for samples for which no outpu file is available.
+        if(as.logical(completed[[i]][[j]][[2]])) {
+          next()
+        } else {
+          # Create soubmitargsID_command file
+          cat(cmdlist(args)[[i]][[j]], file=paste(logdir, "/submitargs", runid, "_", cwl.wf, sep=""), fill=TRUE, labels=paste0(names(targets(args))[[i]], ":"), append=TRUE)
+          ## Run executable 
+          command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
+          commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
+          stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+          ## Create submitargsID_stdout file
+          cat(cmdlist(args)[[i]][[j]], file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), fill=TRUE, labels=paste0(names(targets(args))[[i]], ":"), sep = "\n", append=TRUE)
+          cat(unlist(stdout), file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), sep = "\n", append=TRUE)
+        }
+        cat("################", file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), sep = "\n", append=TRUE)
+        if(make_bam==TRUE) {
+          sam_files <- grepl(".sam$", output(args)[[i]])
+          others_files <- grepl("vcf$|bcf$|xls$|bed$", output(args)[[i]])
+          completed.bam <- grepl(".bam$", output(args)[[i]])
+          if(any(sam_files)){
+            for(k in which(sam_files)){
+              Rsamtools::asBam(file=output(args)[[i]][[j]], destination=gsub("\\.sam$", "", output(args)[[i]][[j]]), overwrite=TRUE, indexDestination=TRUE)
+              unlink(output(args)[[i]][[k]])
+            } } else if(any(others_files)){
+              dump <- "do nothing"
+            } else {# If output is unindexed *.bam file (e.g. Tophat2)
+              for(k in which(completed.bam)){
+                Rsamtools::sortBam(file=output(args)[[i]][[j]], destination=gsub("\\.bam$", "", output(args)[[i]][[j]]))
+                Rsamtools::indexBam(output(args)[[i]][[j]])
+              }
+            }
+        }
+      } 
+    }
+    ## Create recursive the subfolders
+    if(dir==TRUE){
+      for(i in seq_along(names(targets(args)))){
+        full_path <- paste0(logdir, "/", cwl.wf, "/", names(targets(args)[i]))
+        if(dir.exists(full_path)==FALSE){
+          dir.create(full_path, recursive = TRUE) }
+      }
+      if(dir.exists(paste0(logdir, "/", cwl.wf, "/_logs/"))==FALSE){
+        dir.create(paste0(logdir, "/", cwl.wf, "/_logs/"), recursive = TRUE) }
+      
+      files_log <- list.files(path=logdir, pattern = "submitargs")
+      for(i in seq_along(files_log)){
+        file.rename(from=paste0(logdir, "/", files_log[i]), to=paste0(logdir, "/", cwl.wf, "/_logs/", files_log[i]))
+      }
+      outputList_new <- as.character()
+      for(i in seq_along(outputList)){
+        if(file.exists(outputList[i])){
+          name <- strsplit(outputList[i], split="\\/")[[1]]
+          name <- name[length(name)]
+          file.rename(from=outputList[i], to=paste0(logdir, "/", cwl.wf, "/", names(outputList[i]), "/", name))
+          outputList_new <- c(outputList_new, paste0(logdir, "/", cwl.wf, "/", names(outputList[i]), "/", name))
+        } else if(file.exists(outputList[i])==FALSE){
+          dump <- "No such file or directory"
+        }
+      }
+      outputList <- outputList_new
+    }
+    output_completed <- as.character()
+    for(i in seq_along(outputList)){
+      output_completed[i] <- file.exists(outputList[i])
+    }
+    names(output_completed) <- outputList
+    cat("Missing expected outputs files:", sum(!as.logical(output_completed)), "\n"); cat("Existing expected outputs files:", sum(as.logical(output_completed)), "\n")
+    return(output_completed)
+  }
 }
 
-## Usage: 
-# runCommandline(args=args)
+## Usage:
+# runCommandline2(WF) # creates the files in the ./results folder
+# runCommandline2(WF, dir=TRUE) # creates the files in the ./results/workflowName/Samplename folder
+# runCommandline2(WF, make_bam = TRUE, dir=TRUE) ## For hisat2-mapping.cwl template
 
 #########################
 ## Old: qsub Arguments ##
@@ -435,19 +580,26 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 ###########################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
 clusterRun <- function(args, FUN = runCommandline, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
-  
   ## Validity checks of inputs
-  if(class(args)!="SYSargs") stop("Argument 'args' needs to be assigned an object of class 'SYSargs'")
+  if(any(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
   if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
   if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html. Note: in this file *.tmpl needs to point to a valid template file.")
-  if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. 
-                                  Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
-  
+  if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
+  ## SYSargs class
+  if(class(args)=="SYSargs") {
+    f <- function(i, args, ...) FUN(args = args[i], ...)
+    path <- normalizePath(results(args))
+    args.f <- seq(along = args)
+    ## SYSargs2 class
+  } else if (class(args)=="SYSargs2") {
+    f <- function(i, args, ...) FUN(args=args[i], ...)
+    path <- normalizePath(args$yamlinput$results_path$path)
+    args.f <- seq(along=cmdlist(args))
+  }
   ## batchtools routines
-  f <- function(i, args, ...) FUN(args=args[i], ...)
-  logdir1 <- paste0(normalizePath(results(args)), "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
+  logdir1 <- paste0(path, "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
   reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-  ids <- batchMap(fun = f, seq(along = args), more.args = list(args = args, runid = runid), reg=reg)
+  ids <- batchMap(fun = f, args.f, more.args = list(args = args, runid = runid), reg=reg)
   chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
   ids$chunk <- chunk
   done <- submitJobs(ids=ids, reg=reg, resources = resourceList)

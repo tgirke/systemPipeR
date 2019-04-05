@@ -11,10 +11,10 @@ clusterRun(args, FUN = runCommandline, conffile = ".batchtools.conf.R", template
 }
 \arguments{
   \item{args}{
-	Object of class \code{SYSargs}. 
+	Object of class \code{SYSargs} or \code{SYSargs2}.
 }
   \item{FUN}{
-	Accpets functions such as \code{runCommandline(args, ...)} where the \code{args} argument is mandatory and needs to be of class \code{SYSargs}.
+	Accepts functions such as \code{runCommandline(args, ...)} where the \code{args} argument is mandatory and needs to be of class \code{SYSargs} or \code{SYSargs2}.
 }
   \item{conffile}{
 	Path to conf file (default location \code{./.batchtools.conf.R}). This file contains in its simplest form just one command, such as this line for the Slurm scheduler: \code{cluster.functions <- makeClusterFunctionsSlurm(template="batchtools.slurm.tmpl")}. For more detailed information visit this page: https://mllg.github.io/batchtools/index.html
@@ -39,39 +39,67 @@ https://github.com/mllg/batchtools/tree/master/inst/templates. Slurm, PBS/Torque
 For more details on \code{batchtools}, please consult the following page: https://github.com/mllg/batchtools/
 }
 \author{
-Thomas Girke
+Daniela Cassol and Thomas Girke
 }
 \seealso{
 	\code{clusterRun} replaces the older functions \code{getQsubargs} and \code{qsubRun}.
 }
 \examples{
+#########################################
+## Examples with \code{SYSargs} object ##
+#########################################
 ## Construct SYSargs object from param and targets files 
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
+param <- system.file("extdata", "hisat2.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 args <- systemArgs(sysma=param, mytargets=targets)
 args
 names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 
 \dontrun{
-## Execute SYSargs on single machine
-runCommandline(args=args)
-
 ## Execute SYSargs on multiple machines of a compute cluster. The following
-## example uses the conf and template files for the Slurm scheduler. Please
-## read the instructions above how to obtain the corresponding files for other schedulers. 
+## example uses the conf and template files for the Slurm scheduler. Please 
+## read the instructions on how to obtain the corresponding files for other schedulers. 
 file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
-file.copy(system.file("extdata", "hisat2.param", package="systemPipeR"), ".")
+file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
-reg <- clusterRun(args, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)
-waitForJobs(reg=reg)
 file.exists(outpaths(args))
-sapply(1:length(args), function(x) loadResult(reg, x)) # Works once all jobs have completed successfully.
+}
+
+##########################################
+## Examples with \code{SYSargs2} object ##
+##########################################
+## Construct SYSargs2 object from CWl param, CWL input, and targets files 
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl",
+                   input_file="hisat2-se/hisat2-mapping-se.yml",
+                   dir_path=dir_path)
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+WF
+names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
+
+\dontrun{
+## Execute SYSargs2 on multiple machines of a compute cluster. The following
+## example uses the conf and template files for the Slurm scheduler. Please 
+## read the instructions on how to obtain the corresponding files for other schedulers.  
+file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
+file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
+resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
+reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+
+## Monitor progress of submitted jobs
+getStatus(reg=reg)
+
+## Updates the path in the object \code{output(WF)}
+WF <- output_update(WF, dir=FALSE, replace = ".bam")
 
 ## Alignment stats
-read_statsDF <- alignStats(args) 
+read_statsDF <- alignStats(WF) 
+read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 }
 }

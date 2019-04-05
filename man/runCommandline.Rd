@@ -2,36 +2,44 @@
 \alias{runCommandline}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Execute SYSargs
+Execute SYSargs and SYSargs2
 }
 \description{
-Function to execute system parameters specified in \code{SYSargs} object
+Function to execute system parameters specified in \code{SYSargs} and \code{SYSargs2} object.
 }
 \usage{
-runCommandline(args, runid = "01", make_bam=TRUE, ...)
+runCommandline(args, runid = "01", make_bam = FALSE, dir = FALSE, dir.name = NULL, ...)
 }
 \arguments{
   \item{args}{
-	object of class \code{SYSargs}
+	object of class \code{SYSargs} or \code{SYSargs2}.
 }
   \item{runid}{
 	Run identifier used for log file to track system call commands. Default is \code{"01"}.
 }
   \item{make_bam}{
-	Autodetects SAM file outputs and converts them to sorted and indexed BAM files. Default is \code{make_bam=TRUE}. 
+	Auto detects SAM file outputs and converts them to sorted and indexed BAM files. Default is \code{make_bam=FALSE}.
+}
+  \item{dir}{
+  This option allows creating an exclusive results folder for each step in the workflow and a sub-folder for each sample defined in the \code{targets} file. All the outputs and log files for the particular step will be created in the respective folders. Default is \code{dir=FALSE}. Option available only for an object of class \code{SYSargs2}.
+}
+  \item{dir.name}{
+   Name of the workflow directory. Default is \code{dir.name=FALSE}. Note: This argument is required when the \code{dir=TRUE}.
 }
   \item{\dots}{
 	Additional arguments to pass on to \code{runCommandline()}.
 }
 }
 \value{
-	Output files, their paths can be obtained with \code{outpaths()} from \code{SYSargs} container. 
-	In addition, a \code{character vector} is returned containing the same paths.
+	Output files, their paths can be obtained with \code{outpaths()} from \code{SYSargs} container or \code{output()} from \code{SYSargs2}. In addition, a \code{character vector} is returned containing the same paths.
 }
 \author{
-Thomas Girke
+Daniela Cassol and Thomas Girke
 }
 \examples{
+#########################################
+## Examples with \code{SYSargs} object ##
+#########################################
 ## Construct SYSargs object from param and targets files 
 param <- system.file("extdata", "hisat2.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
@@ -43,19 +51,53 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 ## Execute SYSargs on single machine
 runCommandline(args=args)
 
-## Execute SYSargs on multiple machines of a compute cluster 
+## Execute SYSargs on multiple machines of a compute cluster. 
+file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
+file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
-reg <- clusterRun(args, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)
 file.exists(outpaths(args))
-sapply(1:length(args), function(x) loadResult(reg, x)) # Works once all jobs have completed successfully.
 
 ## Alignment stats
 read_statsDF <- alignStats(args) 
+read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
+write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+}
+
+##########################################
+## Examples with \code{SYSargs2} object ##
+##########################################
+## Construct SYSargs2 object from CWl param, CWL input, and targets files 
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl",
+                   input_file="hisat2-se/hisat2-mapping-se.yml",
+                   dir_path=dir_path)
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+WF
+names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
+
+\dontrun{
+## Execute SYSargs2 on single machine
+runCommandline(args=WF)
+WF <- output_update(WF, dir=FALSE, replace = ".bam")
+
+## Execute SYSargs on multiple machines of a compute cluster. 
+file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
+file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
+resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
+reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+
+## Monitor progress of submitted jobs
+getStatus(reg=reg)
+
+## Alignment stats
+read_statsDF <- alignStats(WF) 
+read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 }
 }
 \keyword{ utilities }
-

@@ -8,28 +8,31 @@ Convenience write function for generating targets files with updated
 \code{FileName} columns containing the paths to files generated
 by input/output processes. These processes can be commandline- or R-based software.
 Typically, the paths to the inputs are stored in the targets infile 
-(\code{targetsin(args)}) and the outputs are stored in the targets outfile 
-(\code{targetsout(args)}). Note: by default the function cannot overwrite 
+(\code{targetsin(args)} for \code{SYSargs} objects or \code{targets.as.df(targets(WF))} 
+for \code{SYSargs2} objects) and the outputs are stored in the targets outfile 
+(\code{targetsout(args)} for \code{SYSargs} objects or \code{output(WF)}) for 
+\code{SYSargs2} objects. Note: by default the function cannot overwrite 
 any existing files. If a file exists then the user has to explicitly 
 remove it or set \code{overwrite=TRUE}. 
 }
 \usage{
-writeTargetsout(x, file = "default", silent = FALSE, overwrite=FALSE, ...)
+writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, ...)
 }
 \arguments{
   \item{x}{
-Object of class \code{SYSargs}.
+Object of class \code{SYSargs} or \code{SYSargs2}.
 }
   \item{file}{
-Name and path of output file. If set to "default" then the name of
-the output file will have the pattern 'targets_<software>.txt', where
-<software> will be what \code{software(x)} returns.
+Name and path of the output file. If set to "default" then the name of the output file will have the pattern 'targets_<software>.txt', where <software> will be what \code{software(x)} returns, when \code{x} is an object of class \code{SYSargs}. For an object of class \code{SYSargs2}, the output file will have the pattern 'targets_<software>_<step>.txt', where <software> will be the workflow name (\code{cwlfiles(x)$cwl}) and <step> will be the step chosen in the argument \code{step}.
 }
   \item{silent}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.
 }
   \item{overwrite}{
 If set to \code{TRUE}, existing files of same name will be overwritten.
+}
+  \item{step}{
+Name or numeric position of the step in the workflow to write the output files. The names can be check running \code{names(x$clt)}.
 }
   \item{\dots}{
 To pass on additional arguments.
@@ -40,12 +43,15 @@ Writes tabular targes files containing the header/comment lines from \code{targe
 and the columns from \code{targetsout(x)}. 
 }
 \author{
-Thomas Girke
+Daniela Cassol and Thomas Girke
 }
 \seealso{
 \code{writeTargetsRef}
 }
 \examples{
+#########################################
+## Examples with \code{SYSargs} object ##
+#########################################
 ## Create SYSargs object
 param <- system.file("extdata", "tophat.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
@@ -54,6 +60,24 @@ args <- systemArgs(sysma=param, mytargets=targets)
 \dontrun{
 ## Write targets out file
 writeTargetsout(x=args, file="default")
+}
+
+##########################################
+## Examples with \code{SYSargs2} object ##
+##########################################
+## Construct SYSargs2 object 
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl",
+                   input_file="hisat2-se/hisat2-mapping-se.yml",
+                   dir_path=dir_path)
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+WF
+
+\dontrun{
+## Write targets out file
+names(WF$clt)
+writeTargetsout(x=WF, file="default", step=1)
 }
 }
 \keyword{ utilities }

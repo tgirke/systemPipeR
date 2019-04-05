@@ -1,7 +1,7 @@
 changelog
      version 1.17.7
         - Added folder inst/extdata/cwl/*
-	- Updated alignStats function and help files (Allowing SYSargs2 object)
+	- Updated alignStats, clusterRun, runCommandline, and writeTargetsout functions and the corresponding help files (Allowing SYSargs2 object)
 
      version 1.17.6
         - Small bug fix in overLapper function 
