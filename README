@@ -1,6 +1,6 @@
 changelog
      version 1.17.7
-        - Added folder param/cwl/*
+        - Added folder inst/extdata/cwl/*
 
      version 1.17.6
         - Small bug fix in overLapper function 
