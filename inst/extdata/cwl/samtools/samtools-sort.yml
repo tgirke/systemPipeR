@@ -1,0 +1,19 @@
+########################
+## samtools-view.yml ##
+########################
+
+bam:
+  class: File
+  path: _BAM_PATH_
+  
+SampleName: _SampleName_
+
+thread: 4
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+  module2: samtools/1.9
+
