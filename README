@@ -5,6 +5,9 @@ changelog
         - Added respective help files for all functions and classes above
         - Added folder inst/extdata/cwl/*
 	- Updated alignStats, clusterRun, runCommandline, and writeTargetsout functions and the corresponding help files (Allowing SYSargs2 object)
+	- Transferred "inst/extdata/slides" and "inst/extdata/ignette_archive/" to systemPipeRdata package
+	- Workflows templates - size reduced. Full version in systemPipeRdata package
+	- Unused figures removed 
 
      version 1.17.6
         - Small bug fix in overLapper function 
