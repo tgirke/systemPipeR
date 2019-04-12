@@ -340,9 +340,8 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
     headerlines <- targetsheader(x)[[1]]
   }
 	if(file.exists(file) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
-	headerlines <- targetsheader(x)	
-        targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
-        writeLines(c(headerlines, targetslines), file, ...)
+  targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
+  writeLines(c(headerlines, targetslines), file, ...)
 	if(silent!=TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
 }
 

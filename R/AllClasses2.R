@@ -310,8 +310,8 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
   ## slot input
   if(slot %in% "input"){
     ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(inputvars(WF)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(inputvars(WF)), collapse=", "), "OR the corresponding position OR NULL")) 
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(WF))) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(inputvars(WF))), collapse=", "), "OR the names OR NULL")) 
+    if(all(!is.null(subset) & is.character(subset) & !any(names(inputvars(args)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(inputvars(args)), collapse=", "), "OR the corresponding position OR NULL")) 
+    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(args))) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(inputvars(args))), collapse=", "), "OR the names OR NULL")) 
     subset_input <- input(args)
     subset_sample <- sapply(names(subset_input), function(x) list(NULL))
     if(!is.null(subset)) {
@@ -324,8 +324,8 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
   ## slot output
   if(slot %in% "output"){
     ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(WF$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(WF$clt), collapse=", "), "OR the corresponding position OR NULL")) 
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(WF$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(WF$clt)), collapse=", "), "OR the names OR NULL")) 
+    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL")) 
+    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL")) 
     subset_output <- output(args)
     subset_sample <- sapply(names(subset_output), function(x) list(NULL))
     if(!is.null(subset)) {
@@ -338,8 +338,8 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
   ## slot step
   if(slot %in% "step"){
     ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(WF$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(WF$clt), collapse=", "), "OR the corresponding position OR NULL")) 
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(WF$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(WF$clt)), collapse=", "), "OR the names OR NULL")) 
+    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL")) 
+    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL")) 
     subset_step <- cmdlist(args)
     subset_sample <- sapply(names(subset_step), function(x) list(NULL))
     if(!is.null(subset)) {

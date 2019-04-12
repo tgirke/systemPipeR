@@ -1,4 +1,7 @@
 changelog
+     version 1.17.8
+        - Fixed typo in "subsetWF" and "writeTargetsout" functions
+
      version 1.17.7
         - Added SYSargs2 and SYSargs2Pipe classes and Methods
         - Added "loadWorkflow", "renderWF", "subsetWF", "output_update", "targets.as.df" functions
