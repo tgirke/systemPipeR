@@ -1,4 +1,7 @@
 changelog
+     version 1.17.9
+        - Support Rstudio Server moduleload in runCommandline
+
      version 1.17.8
         - Fixed typo in "subsetWF" and "writeTargetsout" functions
 

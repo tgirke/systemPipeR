@@ -356,11 +356,11 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, dir=FALSE, dir.name
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is installed in the system
     ## "Environment Modules" is not available
-    if(suppressWarnings(system("module -V", ignore.stderr=TRUE))!=1) {
-      cat("Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.", "\n")
+    if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))!=1) {
+      warning("Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.", "\n")
     } else {
       ## "Environment Modules" is available and proceed the module load
-      if(suppressWarnings(system("module -V", ignore.stderr=TRUE))==1) { # Returns 1 if module system is present.
+      if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))==1) { # Returns TRUE if module system is present.
         for(j in modules(args)) moduleload(j) # loads specified software from module system
       }
     }
