@@ -1,4 +1,7 @@
 changelog
+     version 1.17.10
+        - Updated links in vignettes
+
      version 1.17.9
         - Support Rstudio Server moduleload in runCommandline
 
@@ -20,7 +23,7 @@ changelog
 
      version 1.17.5
         - Updated clusterRun function by recent batchtools package
-        - Upadate help files related to clusterRun function examples
+        - Updated help files related to clusterRun function examples
         - Update runCommanline function to handle the stop in the module function (system with no Environment Modules)
         - New templates to SGE, Slurm and Torque clusters
 

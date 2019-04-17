@@ -26,24 +26,8 @@ word-wrap: initial !important;
 ```
 
 <!--
-%% \VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{Overview Vignette}
-%% \VignetteDepends{rjson, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap}
-%% \VignetteKeywords{compute cluster, pipeline, reports}
-%% \VignettePackage{systemPipeR}
--->
-
-<!--
 - Compile from command-line
 Rscript -e "rmarkdown::render('systemPipeR.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeR.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeR.knit.md 2; Rscript -e "rmarkdown::render('systemPipeR.Rmd', c('BiocStyle::pdf_document'))"
--->
-
-<!---
-- Commit to github
-git commit -am "some edits"; git push -u origin master
-
-- To customize font size and other style features, add this line to output section in preamble:  
-    css: style.css
 -->
 
 ```{r style, echo = FALSE, results = 'asis'}
@@ -96,13 +80,13 @@ A central concept for designing workflows within the _`sytemPipeR`_ environment 
 ![](SystemPipeR_Workflow.png)
 <div align="center">**Figure 1:** Workflow design structure of *systemPipeR* </div></br>
 
-The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ or _`*.Rnw`_ files, which can be executed either line-wise in interactive mode or with a single command from R or the command-line using a [_`Makefile`_](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/Makefile). This way comprehensive and reproducible analysis reports can be generated in PDF or HTML format in a fully automated manner by making use of the highly functional reporting utilities available for R. Templates for setting up custom project reports are provided as _`*.Rmd`_ files by the helper package _`systemPipeRdata`_ and in the vignettes subdirectory of _`systemPipeR`_. The corresponding PDFs of these report templates are available here: [_`systemPipeRNAseq`_](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf), [_`systemPipeRIBOseq`_](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf), [_`systemPipeChIPseq`_](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf) and [_`systemPipeVARseq`_](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf). To work with _`*.Rnw`_ or _`*.Rmd`_ files efficiently, basic knowledge of [_`Sweave`_](https://www.stat.uni-muenchen.de/~leisch/Sweave/) or [_`knitr`_](http://yihui.name/knitr/) and [_`Latex`_](http://www.latex-project.org/) or [_`R Markdown v2`_](http://rmarkdown.rstudio.com/) is required. 
+The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ or _`*.Rnw`_ files, which can be executed either line-wise in interactive mode or with a single command from R or the command-line using a [_`Makefile`_](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/Makefile). This way comprehensive and reproducible analysis reports can be generated in PDF or HTML format in a fully automated manner by making use of the highly functional reporting utilities available for R. Templates for setting up custom project reports are provided as _`*.Rmd`_ files by the helper package _`systemPipeRdata`_ and in the vignettes subdirectory of _`systemPipeR`_. The corresponding PDFs of these report templates are available here: [_`systemPipeRNAseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.html), [_`systemPipeRIBOseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html), [_`systemPipeChIPseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html) and [_`systemPipeVARseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html). To work with _`*.Rnw`_ or _`*.Rmd`_ files efficiently, basic knowledge of [_`Sweave`_](https://www.stat.uni-muenchen.de/~leisch/Sweave/) or [_`knitr`_](http://yihui.name/knitr/) and [_`Latex`_](http://www.latex-project.org/) or [_`R Markdown v2`_](http://rmarkdown.rstudio.com/) is required. 
 
 # Getting Started
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) command. The associated data package [_`systemPipeRdata`_](http://www.bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
 
 ```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")

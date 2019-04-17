@@ -56,7 +56,8 @@ suppressPackageStartupMessages({
 
 # Ribo-Seq Workflow
 
-This workflow demonstrates how to use various utilities for building and running automated end-to-end analysis workflows for _`RIBO-Seq`_ data. The full workflow can be found here: [PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf), [HTML](https://htmlpreview.github.io/?https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.html), [.Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd) and [.R](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.R).
+This workflow demonstrates how to use various utilities for building and running automated end-to-end analysis workflows for _`RIBO-Seq`_ data. The full workflow can be found here:
+[HTML](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html), [.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.Rmd), and [.R](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.R).
 
 ## Loading package and workflow template
 
@@ -99,7 +100,7 @@ The following parameter files are included in each workflow template:
 
 ## Run workflow
 
-Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([.Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd)) by executing from the command-line _`make -B`_ within the _`ribseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
+Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.Rmd)) by executing from the command-line _`make -B`_ within the _`ribseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
 Workflow includes following steps:
 
