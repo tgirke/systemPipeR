@@ -1,6 +1,7 @@
 changelog
      version 1.17.11
         - Fixed bug in loadWorkflow function - class==Workflow
+	- Added 'more.args' to clusterRun function (Updated help file)
  
      version 1.17.10
         - Updated links in vignettes

@@ -7,7 +7,7 @@ Submit command-line tools to cluster
 Submits non-R command-line software to queueing/scheduling systems of compute clusters using run specifications defined by functions similar to \code{runCommandline}. \code{clusterRun} can be used with most queueing systems since it is based on utilities from the \code{batchtools} package which supports the use of template files (\code{*.tmpl}) for defining the run parameters of the different schedulers. The path to the \code{*.tmpl} file needs to be specified in a conf file provided under the \code{conffile} argument.
 }
 \usage{
-clusterRun(args, FUN = runCommandline, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList)
+clusterRun(args, FUN = runCommandline, more.args = list(args = args, make_bam = TRUE), conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList)
 }
 \arguments{
   \item{args}{
@@ -15,6 +15,9 @@ clusterRun(args, FUN = runCommandline, conffile = ".batchtools.conf.R", template
 }
   \item{FUN}{
 	Accepts functions such as \code{runCommandline(args, ...)} where the \code{args} argument is mandatory and needs to be of class \code{SYSargs} or \code{SYSargs2}.
+}
+  \item{more.args}{
+  Object of class \code{list}, which provides the arguments that control the \code{FUN} function. 
 }
   \item{conffile}{
 	Path to conf file (default location \code{./.batchtools.conf.R}). This file contains in its simplest form just one command, such as this line for the Slurm scheduler: \code{cluster.functions <- makeClusterFunctionsSlurm(template="batchtools.slurm.tmpl")}. For more detailed information visit this page: https://mllg.github.io/batchtools/index.html
@@ -62,7 +65,7 @@ names(args); modules(args); cores(args); outpaths(args); sysargs(args)
 file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
 file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
-reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args = args, make_bam = TRUE), conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)
@@ -89,7 +92,7 @@ names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
 file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
 file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
-reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+reg <- clusterRun(WF, FUN = runCommandline, more.args = list(args = WF, make_bam = FALSE), conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)

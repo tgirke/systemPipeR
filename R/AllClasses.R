@@ -578,36 +578,35 @@ qsubRun <- function(appfct="runCommandline(args=args, runid='01')", args, qsubar
 ## batchtools-based function to submit runCommandline jobs to queuing system of a cluster ##
 ###########################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
-clusterRun <- function(args, FUN = runCommandline, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
+clusterRun <- function(args, FUN = runCommandline, more.args=list(args=args, make_bam=TRUE), conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
   ## Validity checks of inputs
   if(any(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
   if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
   if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html. Note: in this file *.tmpl needs to point to a valid template file.")
   if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
+  if(!class(more.args)=="list") stop("'more.args' needs to be object of class 'list'.")    
+  if(any(!names(more.args) %in% names(as.list(formals(FUN))))) stop(paste("The list of arguments assigned to 'more.args' can only be the following arguments defined in the function 'FUN':", paste(names(as.list(formals(FUN))), collapse=", "))) 
   ## SYSargs class
   if(class(args)=="SYSargs") {
-    f <- function(i, args, ...) FUN(args = args[i], ...)
     path <- normalizePath(results(args))
     args.f <- seq(along = args)
     ## SYSargs2 class
   } else if (class(args)=="SYSargs2") {
-    f <- function(i, args, ...) FUN(args=args[i], ...)
     path <- normalizePath(args$yamlinput$results_path$path)
     args.f <- seq(along=cmdlist(args))
   }
   ## batchtools routines
+  f <- function(i, args, ...) FUN(args=args[i], ...)
   logdir1 <- paste0(path, "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
   reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-  ids <- batchMap(fun = f, args.f, more.args = list(args = args, runid = runid), reg=reg)
+  ids <- batchMap(fun = f, args.f, more.args = more.args, reg=reg)
   chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
   ids$chunk <- chunk
   done <- submitJobs(ids=ids, reg=reg, resources = resourceList)
   return(reg)
 }
-
 ## Usage: 
 # resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
 # reg <- clusterRun(args, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 # getStatus(reg=reg)  
 # waitForJobs(reg=reg)
-
