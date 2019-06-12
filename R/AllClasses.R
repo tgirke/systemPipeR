@@ -352,7 +352,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=FALSE, dir=FALSE, dir.name=NULL, ...) {
+runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=NULL, ...) {
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is installed in the system
     ## "Environment Modules" is not available
