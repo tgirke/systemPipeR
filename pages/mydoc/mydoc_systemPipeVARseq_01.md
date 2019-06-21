@@ -1,12 +1,12 @@
 ---
 title: VAR-Seq Workflow Template  <br> <br> 1. Introduction
-last_updated: Sat Feb  2 12:30:52 2019
+last_updated: Fri Jun 21 16:33:06 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_01.html
 ---
 Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 02 February, 2019 
+Last update: 21 June, 2019 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeVARseq.html){:target="_blank"} ],

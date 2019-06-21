@@ -1,6 +1,6 @@
 ---
 title: 2. Workflow environment
-last_updated: Sat Feb  2 11:43:49 2019
+last_updated: Fri Jun 21 16:31:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_02.html
 ---
@@ -36,7 +36,7 @@ FASTQ files are usually the only inputs the user needs to provide.
 
 ## Run workflow
 
-Now open the R markdown script `systemPipeChIPseq.Rmd`in your R IDE (_e.g._ vim-r or RStudio) and run the workflow as outlined below. 
+Now open the R markdown script `systemPipeChIPseq.Rmd` in your R IDE (_e.g._ vim-r or RStudio) and run the workflow as outlined below. 
 
 ### Run R session on computer node
 

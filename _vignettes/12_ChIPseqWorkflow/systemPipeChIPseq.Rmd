@@ -3,10 +3,10 @@ title: "ChIP-Seq Workflow Template"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
+  BiocStyle::pdf_document: default
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
-  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -101,7 +101,7 @@ FASTQ files are usually the only inputs the user needs to provide.
 
 ## Run workflow
 
-Now open the R markdown script `systemPipeChIPseq.Rmd`in your R IDE (_e.g._ vim-r or RStudio) and run the workflow as outlined below. 
+Now open the R markdown script `systemPipeChIPseq.Rmd` in your R IDE (_e.g._ vim-r or RStudio) and run the workflow as outlined below. 
 
 ### Run R session on computer node
 

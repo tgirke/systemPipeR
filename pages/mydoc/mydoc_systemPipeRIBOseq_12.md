@@ -1,6 +1,6 @@
 ---
 title: 12. Clustering and heat maps
-last_updated: Sat Feb  2 11:49:31 2019
+last_updated: Fri Jun 21 16:34:15 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_12.html
 ---

@@ -1,6 +1,6 @@
 ---
 title: 8. Read quantification per annotation range
-last_updated: Sat Feb  2 11:49:31 2019
+last_updated: Fri Jun 21 16:34:15 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_08.html
 ---

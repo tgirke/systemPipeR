@@ -1,6 +1,6 @@
 ---
 title: 3. Workflow overview
-last_updated: Sat Feb  2 12:23:03 2019
+last_updated: Fri Jun 21 16:39:14 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_3.html
 ---
@@ -103,8 +103,9 @@ seeFastqPlot(fqlist)
 dev.off()
 ```
 
-![](./pages/mydoc/systemPipeR_files/fastqReport.png)
-<div align="center">**Figure 2:** FASTQ quality report </div>
+
+<center><img src="./pages/mydoc/systemPipeR_files/fastqReport.png"></center>
+<div align="center">**Figure 5:** FASTQ quality report </div>
 
 
 Parallelization of QC report on single machine with multiple cores
@@ -137,7 +138,7 @@ fqlist <- bplapply(seq(along = args), f, BPPARAM = param)
 seeFastqPlot(unlist(fqlist, recursive = FALSE))
 ```
 
-## Alignment with _`Tophat2`_
+## Alignment with _`Tophat2`_ using _`SYSargs`_ 
 
 Build _`Bowtie2`_ index.
 
@@ -174,6 +175,144 @@ getStatus(reg = reg)
 file.exists(outpaths(args))
 sapply(1:length(args), function(x) loadResult(reg, id = x))
 # Works after job completion
+```
+
+## Alignment with `HISAT2` using _`SYSargs2`_
+
+The following steps will demonstrate how to use the short read aligner HISAT2
+(Kim et al., 2015) in both interactive job submissions and batch submissions to
+queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line interface.
+
+The NGS reads of this project will be aligned against the reference genome using 
+`Hisat2` (Kim et al., 2015). The parameter settings of the aligner are 
+defined in the `workflow_hisat2-se.cwl` and `workflow_hisat2-se.yml` files. 
+The following shows how to construct the corresponding *SYSargs2* object, here 
+*align*.
+
+
+```r
+targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
+dir_path <- system.file("extdata/cwl/hisat2-se", package = "systemPipeR")
+align <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", 
+    input_file = "hisat2-mapping-se.yml", dir_path = dir_path)
+align <- renderWF(align, inputvars = c(FileName = "_FASTQ_PATH_", 
+    SampleName = "_SampleName_"))
+align
+```
+
+```
+## Instance of 'SYSargs2':
+##    Slot names/accessors: 
+##       targets: 18 (M1A...V12B), targetsheader: 4 (lines)
+##       modules: 2
+##       wf: 0, clt: 1, yamlinput: 7 (components)
+##       input: 18, output: 18
+##       cmdlist: 18
+##    WF Steps:
+##       1. hisat2-mapping-se.cwl (rendered: TRUE)
+```
+
+Subsetting _`SYSargs2`_ class slots for each workflow step.
+
+
+```r
+subsetWF(align, slot = "input", subset = "FileName")[1:2]
+```
+
+```
+##                           M1A                           M1B 
+## "./data/SRR446027_1.fastq.gz" "./data/SRR446028_1.fastq.gz"
+```
+
+```r
+subsetWF(align, slot = "output", subset = 1)[1:2]
+```
+
+```
+##               M1A               M1B 
+## "results/M1A.sam" "results/M1B.sam"
+```
+
+```r
+subsetWF(align, slot = "step", subset = 1)[1]  ## subset all the HISAT2 commandline 
+```
+
+```
+##                                                                                                                                             M1A 
+## "hisat2 -S results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+```
+
+```r
+subsetWF(align, slot = "output", subset = 1, delete = TRUE)[1]  ##DELETE
+```
+
+```
+## The subset cannot be deleted: no such file
+```
+
+```
+##               M1A 
+## "results/M1A.sam"
+```
+
+### Interactive job submissions in a single machine
+
+To simplify the short read alignment execution for the user, the command-line 
+can be run with the *`runCommandline`* function.
+The execution will be on a single machine without submitting to a queuing system 
+of a computer cluster. This way, the input FASTQ files will be processed sequentially. 
+By default *`runCommandline`* auto detects SAM file outputs and converts them 
+to sorted and indexed BAM files, using internally the `Rsamtools` package 
+(Martin Morgan et al., 2019). Besides, *`runCommandline`* allows the user to create a dedicated
+results folder for each step in the workflow and a sub-folder for each sample 
+defined in the *targets* file. This includes the output and log files for each 
+step.
+
+
+```r
+cmdlist(align)[1:2]
+system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
+runCommandline(align, make_bam = FALSE)  ## generates alignments and writes *.sam files to ./results folder 
+runCommandline(align, dir = TRUE, make_bam = TRUE)  ## same as above but writes files to ./results/workflowName/Samplename folders and converts *.sam files to sorted and indexed BAM files
+```
+
+Check and update the output location if necessary.
+
+
+```r
+align <- output_update(align, dir = TRUE, replace = ".bam")  ## Updates the output(align) to the right location in the subfolders
+output(align)
+```
+
+Check whether all BAM files have been created with the constructing superclass *`SYSargs2Pipe`*.
+
+
+```r
+WF_track <- run_track(WF_ls = c(align))
+names(WF_track)
+WF_steps(WF_track)
+track(WF_track)
+summaryWF(WF_track)
+```
+
+### Parallelization on clusters
+
+The short read alignment steps can be parallelized on a 
+computer cluster that uses a queueing/scheduling system such as Slurm. For this 
+the *`clusterRun`*  function submits the computing requests to the scheduler 
+using the run specifications defined by *`runCommandline`*. 
+
+
+```r
+library(batchtools)
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg <- clusterRun(align, FUN = runCommandline, more.args = list(dir = TRUE), 
+    conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
+    Njobs = 18, runid = "01", resourceList = resources)
+getStatus(reg = reg)
+
+align <- output_update(align, dir = TRUE, replace = ".bam")  ## Updates the output(align) to the right location in the subfolders
+output(align)
 ```
 
 ## Read and alignment count stats
@@ -233,6 +372,18 @@ param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.
     resources = resources)
 read_statsList <- bplapply(seq(along = args), f, BPPARAM = param)
 read_statsDF <- do.call("rbind", read_statsList)
+```
+
+## Create new targets file
+
+To establish the connectivity to the next workflow step, one can write a new
+*targets* file with the *`writeTargetsout`* function. The new *targets* file
+serves as input to the next *`loadWorkflow`* and *`renderWF`* call.
+
+
+```r
+names(clt(align))
+writeTargetsout(x = align, file = "default", step = 1)
 ```
 
 ## Create symbolic links for viewing BAM files in IGV
@@ -442,7 +593,7 @@ plot.phylo(as.phylo(hc), type = "p", edge.col = 4, edge.width = 3,
 
 <img src="./pages/mydoc/systemPipeR_files/sample_tree_rlog-1.png" width="100%" />
 
-<div align="center">**Figure 3:** Correlation dendrogram of samples for _`rlog`_ values. </div>
+<div align="center">**Figure 6:** Correlation dendrogram of samples for _`rlog`_ values. </div>
 
 
 Alternatively, the clustering can be performed with _`RPKM`_ normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar. 
@@ -510,7 +661,7 @@ DEG_list <- filterDEGs(degDF = edgeDF, filter = c(Fold = 2, FDR = 10))
 
 <img src="./pages/mydoc/systemPipeR_files/edger_deg_counts-1.png" width="100%" />
 
-<div align="center">**Figure 4:** Up and down regulated DEGs identified by _`edgeR`_. </div>
+<div align="center">**Figure 7:** Up and down regulated DEGs identified by _`edgeR`_. </div>
 
 
 
@@ -560,7 +711,7 @@ DEG_list2 <- filterDEGs(degDF = degseqDF, filter = c(Fold = 2,
 
 <img src="./pages/mydoc/systemPipeR_files/deseq2_deg_counts-1.png" width="100%" />
 
-<div align="center">**Figure 5:** Up and down regulated DEGs identified by _`DESeq2`_. </div>
+<div align="center">**Figure 8:** Up and down regulated DEGs identified by _`DESeq2`_. </div>
 
 
 ## Venn Diagrams
@@ -577,8 +728,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain = "", mysub = "",
 
 <img src="./pages/mydoc/systemPipeR_files/vennplot-1.png" width="100%" />
 
-<div align="center">**Figure 6:** Venn Diagram for 4 Up and Down DEG Sets. </div>
-
+<div align="center">**Figure 9:** Venn Diagram for 4 Up and Down DEG Sets. </div>
 
 ## GO term enrichment analysis of DEGs
 
@@ -657,7 +807,7 @@ goBarplot(gos, gocat = "CC")
 ```
 
 ![](./pages/mydoc/systemPipeR_files/GOslimbarplotMF.png)
-<div align="center">**Figure 7:** GO Slim Barplot for MF Ontology.</div>
+<div align="center">**Figure 10:** GO Slim Barplot for MF Ontology.</div>
 
 
 ## Clustering and heat maps
@@ -676,8 +826,8 @@ pheatmap(y, scale = "row", clustering_distance_rows = "correlation",
 dev.off()
 ```
 
-![](./pages/mydoc/systemPipeR_files/heatmap1.png)
-<div align="center">**Figure 8:** Heat map with hierarchical clustering dendrograms of DEGs.</div>
+<center><img src="./pages/mydoc/systemPipeR_files/heatmap1.png"></center>
+<div align="center">**Figure 11:** Heat map with hierarchical clustering dendrograms of DEGs.</div>
 
 
 <br><br><center><a href="mydoc_systemPipeR_2.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

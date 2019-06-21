@@ -649,14 +649,14 @@
             
             
             
-            <li><a href="mydoc_systemPipeRIBOseq_09.html">9. Analysis of differentially expressed genes with `edgeR`</a></li>
+            <li><a href="mydoc_systemPipeRIBOseq_09.html">9. Analysis of differentially expressed genes with edgeR</a></li>
             
             
             
             
             
             
-            <li><a href="mydoc_systemPipeRIBOseq_10.html">10. GO term enrichment analysis of DEGs}</a></li>
+            <li><a href="mydoc_systemPipeRIBOseq_10.html">10. GO term enrichment analysis of DEGs</a></li>
             
             
             
@@ -912,8 +912,8 @@ FASTQ file.</p>
 </span><span class="n">dev.off</span><span class="p">()</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="./pages/mydoc/systemPipeR_files/fastqReport.png" alt="" /></p>
-<div align="center">**Figure 2:** FASTQ quality report </div>
+<center><img src="./pages/mydoc/systemPipeR_files/fastqReport.png" /></center>
+<div align="center">**Figure 5:** FASTQ quality report </div>
 
 <p>Parallelization of QC report on single machine with multiple cores</p>
 
@@ -941,7 +941,7 @@ FASTQ file.</p>
 </span><span class="n">seeFastqPlot</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">fqlist</span><span class="p">,</span><span class="w"> </span><span class="n">recursive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">))</span><span class="w">
 </span></code></pre></div></div>
 
-<h2 id="alignment-with-tophat2">Alignment with <em><code class="highlighter-rouge">Tophat2</code></em></h2>
+<h2 id="alignment-with-tophat2-using-sysargs">Alignment with <em><code class="highlighter-rouge">Tophat2</code></em> using <em><code class="highlighter-rouge">SYSargs</code></em></h2>
 
 <p>Build <em><code class="highlighter-rouge">Bowtie2</code></em> index.</p>
 
@@ -970,6 +970,123 @@ FASTQ file.</p>
 </span><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
 </span><span class="n">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">loadResult</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">))</span><span class="w">
 </span><span class="c1"># Works after job completion</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="alignment-with-hisat2-using-sysargs2">Alignment with <code class="highlighter-rouge">HISAT2</code> using <em><code class="highlighter-rouge">SYSargs2</code></em></h2>
+
+<p>The following steps will demonstrate how to use the short read aligner HISAT2
+(Kim et al., 2015) in both interactive job submissions and batch submissions to
+queuing systems of clusters using the <em><code class="highlighter-rouge">systemPipeR's</code></em> new CWL command-line interface.</p>
+
+<p>The NGS reads of this project will be aligned against the reference genome using 
+<code class="highlighter-rouge">Hisat2</code> (Kim et al., 2015). The parameter settings of the aligner are 
+defined in the <code class="highlighter-rouge">workflow_hisat2-se.cwl</code> and <code class="highlighter-rouge">workflow_hisat2-se.yml</code> files. 
+The following shows how to construct the corresponding <em>SYSargs2</em> object, here 
+<em>align</em>.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/hisat2-se"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">align</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">align</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+</span><span class="n">align</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Instance of 'SYSargs2':
+##    Slot names/accessors: 
+##       targets: 18 (M1A...V12B), targetsheader: 4 (lines)
+##       modules: 2
+##       wf: 0, clt: 1, yamlinput: 7 (components)
+##       input: 18, output: 18
+##       cmdlist: 18
+##    WF Steps:
+##       1. hisat2-mapping-se.cwl (rendered: TRUE)
+</code></pre></div></div>
+
+<p>Subsetting <em><code class="highlighter-rouge">SYSargs2</code></em> class slots for each workflow step.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"input"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                           M1A                           M1B 
+## "./data/SRR446027_1.fastq.gz" "./data/SRR446028_1.fastq.gz"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##               M1A               M1B 
+## "results/M1A.sam" "results/M1B.sam"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"step"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">  </span><span class="c1">## subset all the HISAT2 commandline </span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                             M1A 
+## "hisat2 -S results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">delete</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">  </span><span class="c1">##DELETE</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The subset cannot be deleted: no such file
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##               M1A 
+## "results/M1A.sam"
+</code></pre></div></div>
+
+<h3 id="interactive-job-submissions-in-a-single-machine">Interactive job submissions in a single machine</h3>
+
+<p>To simplify the short read alignment execution for the user, the command-line 
+can be run with the <em><code class="highlighter-rouge">runCommandline</code></em> function.
+The execution will be on a single machine without submitting to a queuing system 
+of a computer cluster. This way, the input FASTQ files will be processed sequentially. 
+By default <em><code class="highlighter-rouge">runCommandline</code></em> auto detects SAM file outputs and converts them 
+to sorted and indexed BAM files, using internally the <code class="highlighter-rouge">Rsamtools</code> package 
+(Martin Morgan et al., 2019). Besides, <em><code class="highlighter-rouge">runCommandline</code></em> allows the user to create a dedicated
+results folder for each step in the workflow and a sub-folder for each sample 
+defined in the <em>targets</em> file. This includes the output and log files for each 
+step.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cmdlist</span><span class="p">(</span><span class="n">align</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">system</span><span class="p">(</span><span class="s2">"hisat2-build ./data/tair10.fasta ./data/tair10.fasta"</span><span class="p">)</span><span class="w">
+</span><span class="n">runCommandline</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">  </span><span class="c1">## generates alignments and writes *.sam files to ./results folder </span><span class="w">
+</span><span class="n">runCommandline</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">  </span><span class="c1">## same as above but writes files to ./results/workflowName/Samplename folders and converts *.sam files to sorted and indexed BAM files</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Check and update the output location if necessary.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">align</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">output_update</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">".bam"</span><span class="p">)</span><span class="w">  </span><span class="c1">## Updates the output(align) to the right location in the subfolders</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">align</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Check whether all BAM files have been created with the constructing superclass <em><code class="highlighter-rouge">SYSargs2Pipe</code></em>.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">WF_track</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">run_track</span><span class="p">(</span><span class="n">WF_ls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">align</span><span class="p">))</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">WF_track</span><span class="p">)</span><span class="w">
+</span><span class="n">WF_steps</span><span class="p">(</span><span class="n">WF_track</span><span class="p">)</span><span class="w">
+</span><span class="n">track</span><span class="p">(</span><span class="n">WF_track</span><span class="p">)</span><span class="w">
+</span><span class="n">summaryWF</span><span class="p">(</span><span class="n">WF_track</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="parallelization-on-clusters">Parallelization on clusters</h3>
+
+<p>The short read alignment steps can be parallelized on a 
+computer cluster that uses a queueing/scheduling system such as Slurm. For this 
+the <em><code class="highlighter-rouge">clusterRun</code></em>  function submits the computing requests to the scheduler 
+using the run specifications defined by <em><code class="highlighter-rouge">runCommandline</code></em>.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">batchtools</span><span class="p">)</span><span class="w">
+</span><span class="n">resources</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">walltime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">120</span><span class="p">,</span><span class="w"> </span><span class="n">ntasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">ncpus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1024</span><span class="p">)</span><span class="w">
+</span><span class="n">reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clusterRun</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">FUN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">,</span><span class="w"> </span><span class="n">more.args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">conffile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">".batchtools.conf.R"</span><span class="p">,</span><span class="w"> </span><span class="n">template</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"batchtools.slurm.tmpl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">Njobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">runid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"01"</span><span class="p">,</span><span class="w"> </span><span class="n">resourceList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resources</span><span class="p">)</span><span class="w">
+</span><span class="n">getStatus</span><span class="p">(</span><span class="n">reg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg</span><span class="p">)</span><span class="w">
+
+</span><span class="n">align</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">output_update</span><span class="p">(</span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">".bam"</span><span class="p">)</span><span class="w">  </span><span class="c1">## Updates the output(align) to the right location in the subfolders</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">align</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
 <h2 id="read-and-alignment-count-stats">Read and alignment count stats</h2>
@@ -1020,6 +1137,16 @@ FASTQ file.</p>
     </span><span class="n">resources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resources</span><span class="p">)</span><span class="w">
 </span><span class="n">read_statsList</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bplapply</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="n">along</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">),</span><span class="w"> </span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">BPPARAM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">param</span><span class="p">)</span><span class="w">
 </span><span class="n">read_statsDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">do.call</span><span class="p">(</span><span class="s2">"rbind"</span><span class="p">,</span><span class="w"> </span><span class="n">read_statsList</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="create-new-targets-file">Create new targets file</h2>
+
+<p>To establish the connectivity to the next workflow step, one can write a new
+<em>targets</em> file with the <em><code class="highlighter-rouge">writeTargetsout</code></em> function. The new <em>targets</em> file
+serves as input to the next <em><code class="highlighter-rouge">loadWorkflow</code></em> and <em><code class="highlighter-rouge">renderWF</code></em> call.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">clt</span><span class="p">(</span><span class="n">align</span><span class="p">))</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">align</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"default"</span><span class="p">,</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
 <h2 id="create-symbolic-links-for-viewing-bam-files-in-igv">Create symbolic links for viewing BAM files in IGV</h2>
@@ -1208,7 +1335,7 @@ The code sample below introduces how to run this aligner on multiple nodes of a 
 
 <p><img src="./pages/mydoc/systemPipeR_files/sample_tree_rlog-1.png" width="100%" /></p>
 
-<div align="center">**Figure 3:** Correlation dendrogram of samples for _`rlog`_ values. </div>
+<div align="center">**Figure 6:** Correlation dendrogram of samples for _`rlog`_ values. </div>
 
 <p>Alternatively, the clustering can be performed with <em><code class="highlighter-rouge">RPKM</code></em> normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar.</p>
 
@@ -1266,7 +1393,7 @@ on data sets with more complex experimental designs.</p>
 
 <p><img src="./pages/mydoc/systemPipeR_files/edger_deg_counts-1.png" width="100%" /></p>
 
-<div align="center">**Figure 4:** Up and down regulated DEGs identified by _`edgeR`_. </div>
+<div align="center">**Figure 7:** Up and down regulated DEGs identified by _`edgeR`_. </div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">DEG_list</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
@@ -1306,7 +1433,7 @@ on data sets with more complex experimental designs.</p>
 
 <p><img src="./pages/mydoc/systemPipeR_files/deseq2_deg_counts-1.png" width="100%" /></p>
 
-<div align="center">**Figure 5:** Up and down regulated DEGs identified by _`DESeq2`_. </div>
+<div align="center">**Figure 8:** Up and down regulated DEGs identified by _`DESeq2`_. </div>
 
 <h2 id="venn-diagrams">Venn Diagrams</h2>
 
@@ -1320,7 +1447,7 @@ on data sets with more complex experimental designs.</p>
 
 <p><img src="./pages/mydoc/systemPipeR_files/vennplot-1.png" width="100%" /></p>
 
-<div align="center">**Figure 6:** Venn Diagram for 4 Up and Down DEG Sets. </div>
+<div align="center">**Figure 9:** Venn Diagram for 4 Up and Down DEG Sets. </div>
 
 <h2 id="go-term-enrichment-analysis-of-degs">GO term enrichment analysis of DEGs</h2>
 
@@ -1393,7 +1520,7 @@ on data sets with more complex experimental designs.</p>
 </span></code></pre></div></div>
 
 <p><img src="./pages/mydoc/systemPipeR_files/GOslimbarplotMF.png" alt="" /></p>
-<div align="center">**Figure 7:** GO Slim Barplot for MF Ontology.</div>
+<div align="center">**Figure 10:** GO Slim Barplot for MF Ontology.</div>
 
 <h2 id="clustering-and-heat-maps">Clustering and heat maps</h2>
 
@@ -1409,8 +1536,8 @@ above differential expression analysis. It uses a Pearson correlation-based dist
 </span><span class="n">dev.off</span><span class="p">()</span><span class="w">
 </span></code></pre></div></div>
 
-<p><img src="./pages/mydoc/systemPipeR_files/heatmap1.png" alt="" /></p>
-<div align="center">**Figure 8:** Heat map with hierarchical clustering dendrograms of DEGs.</div>
+<center><img src="./pages/mydoc/systemPipeR_files/heatmap1.png" /></center>
+<div align="center">**Figure 11:** Heat map with hierarchical clustering dendrograms of DEGs.</div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeR_2.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeR_4.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -1430,7 +1557,7 @@ above differential expression analysis. It uses a Pearson correlation-based dist
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Feb  2 12:23:03 2019<br/> Site last generated: Feb 23, 2019 <br />
+<span>Page last updated:</span> Fri Jun 21 16:39:14 2019<br/> Site last generated: Jun 21, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

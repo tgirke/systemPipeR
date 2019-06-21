@@ -8,7 +8,7 @@ permalink: mydoc_training.html
 ## Slide Shows
 
 + [Overview Slide Show - 2016](https://docs.google.com/presentation/d/175aup31LvnbIJUAvEEoSkpGsKgtBJ2RpQYd0Gs23dLo/embed?start=false&loop=false&delayms=60000)
-+ [Overview Slide Show - 2015](https://htmlpreview.github.io/?https://raw.githubusercontent.com/tgirke/systemPipeR/master/inst/extdata/slides/systemPipeRslides.html)
++ [Overview Slide Show - 2015](./systemPipeRslides.html)
 
 
 ## Material for Bioc2016 Tutorial 

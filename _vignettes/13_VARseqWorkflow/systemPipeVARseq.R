@@ -1,5 +1,16 @@
 ## pre code {
 
+## white-space: pre !important;
+
+## overflow-x: scroll !important;
+
+## word-break: keep-all !important;
+
+## word-wrap: initial !important;
+
+## }
+
+
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
 options(width=60, max.print=1000)
@@ -7,6 +18,7 @@ knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
     cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
     tidy.opts=list(width.cutoff=60), tidy=TRUE)
+
 
 ## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE-------------------
 suppressPackageStartupMessages({
@@ -22,33 +34,46 @@ suppressPackageStartupMessages({
     library(batchtools)
 })
 
+
 ## ----genVAR_workflow, eval=FALSE-----------------------------------------
 ## library(systemPipeRdata)
 ## genWorkenvir(workflow="varseq")
 ## setwd("varseq")
 
+
 ## Rscript -e "systemPipeRdata::genWorkenvir(workflow='varseq')"
+
 
 ## ----closeR, eval=FALSE--------------------------------------------------
 ## q("no") # closes R session on head node
 
+
 ## srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
+
+## module load R/3.4.2
+
+## R
+
 
 ## ----r_environment, eval=FALSE-------------------------------------------
 ## system("hostname") # should return name of a compute node starting with i or c
 ## getwd() # checks current working directory of R session
 ## dir() # returns content of current working directory
 
+
 ## ----load_systempiper, eval=TRUE-----------------------------------------
 library(systemPipeR)
 
+
 ## ----load_custom_fct, eval=FALSE-----------------------------------------
 ## source("systemPipeVARseq_Fct.R")
+
 
 ## ----load_targets_file, eval=TRUE----------------------------------------
 targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")
 targets[1:4, 1:4]
+
 
 ## ----preprocess_reads, eval=FALSE----------------------------------------
 ## args <- systemArgs(sysma="param/trimPE.param", mytargets="targetsPE.txt")[1:4]
@@ -62,6 +87,7 @@ targets[1:4, 1:4]
 ##                 batchsize=100000)
 ## writeTargetsout(x=args, file="targets_PEtrim.txt", overwrite=TRUE)
 
+
 ## ----fastq_report, eval=FALSE--------------------------------------------
 ## args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
 ## fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
@@ -69,15 +95,18 @@ targets[1:4, 1:4]
 ## seeFastqPlot(fqlist)
 ## dev.off()
 
+
 ## ----load_sysargs, eval=FALSE--------------------------------------------
 ## args <- systemArgs(sysma="param/bwa.param", mytargets="targets.txt")
 ## sysargs(args)[1] # Command-line parameters for first FASTQ file
+
 
 ## ----bwa_serial, eval=FALSE----------------------------------------------
 ## moduleload(modules(args))
 ## system("bwa index -a bwtsw ./data/tair10.fasta")
 ## bampaths <- runCommandline(args=args)
 ## writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
+
 
 ## ----bwa_parallel, eval=FALSE--------------------------------------------
 ## moduleload(modules(args))
@@ -88,8 +117,10 @@ targets[1:4, 1:4]
 ## waitForJobs(reg=reg)
 ## writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
 
+
 ## ----check_file_presence, eval=FALSE-------------------------------------
 ## file.exists(outpaths(args))
+
 
 ## ----gsnap_parallel, eval=FALSE------------------------------------------
 ## library(gmapR); library(BiocParallel); library(batchtools)
@@ -108,14 +139,17 @@ targets[1:4, 1:4]
 ## d <- bplapply(seq(along=args), f,  BPPARAM = param)
 ## writeTargetsout(x=args, file="targets_gsnap_bam.txt", overwrite=TRUE)
 
+
 ## ----align_stats, eval=FALSE---------------------------------------------
 ## read_statsDF <- alignStats(args=args)
 ## write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+
 
 ## ----symbolic_links, eval=FALSE------------------------------------------
 ## symLink2bam(sysargs=args, htmldir=c("~/.html/", "projects/gen242/"),
 ##             urlbase="http://biocluster.ucr.edu/~tgirke/",
 ##             urlfile="./results/IGVurl.txt")
+
 
 ## ----run_gatk, eval=FALSE------------------------------------------------
 ## moduleload("picard/1.130"); moduleload("samtools/1.3")
@@ -129,6 +163,7 @@ targets[1:4, 1:4]
 ## # unlink(outfile1(args), recursive = TRUE, force = TRUE)
 ## writeTargetsout(x=args, file="targets_gatk.txt", overwrite=TRUE)
 
+
 ## ----run_bcftools, eval=FALSE--------------------------------------------
 ## args <- systemArgs(sysma="param/sambcf.param", mytargets="targets_bam.txt")
 ## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
@@ -137,6 +172,7 @@ targets[1:4, 1:4]
 ## waitForJobs(reg=reg)
 ## # unlink(outfile1(args), recursive = TRUE, force = TRUE)
 ## writeTargetsout(x=args, file="targets_sambcf.txt", overwrite=TRUE)
+
 
 ## ----run_varianttools, eval=FALSE----------------------------------------
 ## library(gmapR); library(BiocParallel); library(batchtools)
@@ -157,6 +193,7 @@ targets[1:4, 1:4]
 ## d <- bplapply(seq(along=args), f,  BPPARAM = param)
 ## writeTargetsout(x=args, file="targets_vartools.txt", overwrite=TRUE)
 
+
 ## ----inspect_vcf, eval=FALSE---------------------------------------------
 ## library(VariantAnnotation)
 ## args <- systemArgs(sysma="param/filter_gatk.param", mytargets="targets_gatk.txt")
@@ -164,6 +201,7 @@ targets[1:4, 1:4]
 ## vcf
 ## vr <- as(vcf, "VRanges")
 ## vr
+
 
 ## ----filter_gatk, eval=FALSE---------------------------------------------
 ## library(VariantAnnotation)
@@ -174,12 +212,14 @@ targets[1:4, 1:4]
 ## suppressAll(filterVars(args, filter, varcaller="gatk", organism="A. thaliana"))
 ## writeTargetsout(x=args, file="targets_gatk_filtered.txt", overwrite=TRUE)
 
+
 ## ----filter_bcftools, eval=FALSE-----------------------------------------
 ## args <- systemArgs(sysma="param/filter_sambcf.param", mytargets="targets_sambcf.txt")[1:4]
 ## filter <- "rowSums(vr) >= 2 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
 ## # filter <- "rowSums(vr) >= 20 & (rowSums(vr[,3:4])/rowSums(vr[,1:4]) >= 0.8)"
 ## suppressAll(filterVars(args, filter, varcaller="bcftools", organism="A. thaliana"))
 ## writeTargetsout(x=args, file="targets_sambcf_filtered.txt", overwrite=TRUE)
+
 
 ## ----filter_varianttools, eval=FALSE-------------------------------------
 ## library(VariantAnnotation)
@@ -190,9 +230,11 @@ targets[1:4, 1:4]
 ## filterVars(args, filter, varcaller="vartools", organism="A. thaliana")
 ## writeTargetsout(x=args, file="targets_vartools_filtered.txt", overwrite=TRUE)
 
+
 ## ----check_filter, eval=FALSE--------------------------------------------
 ## length(as(readVcf(infile1(args)[1], genome="Ath"), "VRanges")[,1])
 ## length(as(readVcf(outpaths(args)[1], genome="Ath"), "VRanges")[,1])
+
 
 ## ----annotate_basics, eval=FALSE-----------------------------------------
 ## library("GenomicFeatures")
@@ -201,9 +243,11 @@ targets[1:4, 1:4]
 ## vcf <- readVcf(infile1(args)[1], "A. thaliana")
 ## locateVariants(vcf, txdb, CodingVariants())
 
+
 ## ----annotate_basics_non-synon, eval=FALSE-------------------------------
 ## fa <- FaFile(systemPipeR::reference(args))
 ## predictCoding(vcf, txdb, seqSource=fa)
+
 
 ## ----annotate_gatk, eval=FALSE-------------------------------------------
 ## library("GenomicFeatures")
@@ -212,11 +256,13 @@ targets[1:4, 1:4]
 ## fa <- FaFile(systemPipeR::reference(args))
 ## suppressAll(variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana"))
 
+
 ## ----annotate_bcftools, eval=FALSE---------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
 ## txdb <- loadDb("./data/tair10.sqlite")
 ## fa <- FaFile(systemPipeR::reference(args))
 ## suppressAll(variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana"))
+
 
 ## ----annotate_varianttools, eval=FALSE-----------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_vartools_filtered.txt")
@@ -224,18 +270,22 @@ targets[1:4, 1:4]
 ## fa <- FaFile(systemPipeR::reference(args))
 ## suppressAll(variantReport(args=args, txdb=txdb, fa=fa, organism="A. thaliana"))
 
+
 ## ----view_annotation, eval=FALSE-----------------------------------------
 ## read.delim(outpaths(args)[1])[38:40,]
+
 
 ## ----combine_gatk, eval=FALSE--------------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
 ## combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
 ## write.table(combineDF, "./results/combineDF_nonsyn_gatk.xls", quote=FALSE, row.names=FALSE, sep="\t")
 
+
 ## ----combine_bcftools, eval=FALSE----------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
 ## combineDF <- combineVarReports(args, filtercol=c(Consequence="nonsynonymous"))
 ## write.table(combineDF, "./results/combineDF_nonsyn_sambcf.xls", quote=FALSE, row.names=FALSE, sep="\t")
+
 
 ## ----combine_varianttools, eval=FALSE------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_vartools_filtered.txt")
@@ -243,20 +293,24 @@ targets[1:4, 1:4]
 ## write.table(combineDF, "./results/combineDF_nonsyn_vartools.xls", quote=FALSE, row.names=FALSE, sep="\t")
 ## combineDF[2:4,]
 
+
 ## ----summary_gatk, eval=FALSE--------------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
 ## varSummary(args)
 ## write.table(varSummary(args), "./results/variantStats_gatk.xls", quote=FALSE, col.names = NA, sep="\t")
+
 
 ## ----summary_bcftools, eval=FALSE----------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_sambcf_filtered.txt")
 ## varSummary(args)
 ## write.table(varSummary(args), "./results/variantStats_sambcf.xls", quote=FALSE, col.names = NA, sep="\t")
 
+
 ## ----summary_varianttools, eval=FALSE------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_vartools_filtered.txt")
 ## varSummary(args)
 ## write.table(varSummary(args), "./results/variantStats_vartools.xls", quote=FALSE, col.names = NA, sep="\t")
+
 
 ## ----venn_diagram, eval=FALSE--------------------------------------------
 ## args <- systemArgs(sysma="param/annotate_vars.param", mytargets="targets_gatk_filtered.txt")
@@ -272,6 +326,7 @@ targets[1:4, 1:4]
 ## vennPlot(list(vennset_gatk, vennset_bcf, vennset_vartools), mymain="", mysub="GATK: red; BCFtools: blue; VariantTools: green", colmode=2, ccol=c("red", "blue", "green"))
 ## dev.off()
 
+
 ## ----plot_variant, eval=FALSE--------------------------------------------
 ## library(ggbio)
 ## mychr <- "ChrC"; mystart <- 11000; myend <- 13000
@@ -286,6 +341,7 @@ targets[1:4, 1:4]
 ## png("./results/plot_variant.png")
 ## tracks(Reads=p1, Coverage=p2, Variant=p3, Transcripts=p4, heights = c(0.3, 0.2, 0.1, 0.35)) + ylab("")
 ## dev.off()
+
 
 ## ----sessionInfo---------------------------------------------------------
 sessionInfo()
