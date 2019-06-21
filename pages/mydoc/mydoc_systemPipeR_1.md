@@ -1,6 +1,6 @@
 ---
 title: systemPipeR - NGS workflow and report generation environment  <br> <br> 1. Introduction
-last_updated: Fri Jun 21 16:39:14 2019
+last_updated: Fri Jun 21 16:43:53 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_1.html
 ---
@@ -32,7 +32,7 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 
 **Figure 1:** Relevant features in _`systemPipeR`_.
 Workflow design concepts are illustrated under (A & B). Examples of
-*systemPipeR’s* visualization functionalities are given under (C). 
+*systemPipeR’s* visualization functionalities are given under (C).
 
 A central concept for designing workflows within the _`sytemPipeR`_ environment 
 is the use of workflow management containers. In previous versions, _`sytemPipeR`_ 

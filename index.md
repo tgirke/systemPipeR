@@ -21,7 +21,7 @@ a time-efficient and reproducible manner.
             
 ### Results 
 
-<img align="right" title="spr_overview" src="pages/mydoc/miscellaneous_images/spr_overview_35.png"><img/>
+<img align="right" title="spr_overview" src="pages/mydoc/miscellaneous_images/genWorkenv.png" style="width:400px;"><img/>
 
 To address this need, we have developed the R/Bioconductor package
 _systemPipeR_. It is an extensible environment for both building and
