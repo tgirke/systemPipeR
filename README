@@ -1,4 +1,7 @@
 changelog
+     version 1.18.02
+        - Added SYSargs2 to the main vignette
+        
      version 1.18.01
         - Fixed bug in loadWorkflow function - class==Workflow
         
