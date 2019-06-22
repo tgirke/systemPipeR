@@ -649,14 +649,14 @@
             
             
             
-            <li><a href="mydoc_systemPipeRIBOseq_09.html">9. Analysis of differentially expressed genes with `edgeR`</a></li>
+            <li><a href="mydoc_systemPipeRIBOseq_09.html">9. Analysis of differentially expressed genes with edgeR</a></li>
             
             
             
             
             
             
-            <li><a href="mydoc_systemPipeRIBOseq_10.html">10. GO term enrichment analysis of DEGs}</a></li>
+            <li><a href="mydoc_systemPipeRIBOseq_10.html">10. GO term enrichment analysis of DEGs</a></li>
             
             
             
@@ -824,7 +824,20 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="rna-seq-sample">RNA-Seq sample</h2>
+  <p>The intended way of running <em><code class="highlighter-rouge">sytemPipeR</code></em> workflows is via <em><code class="highlighter-rouge">*.Rmd</code></em> files, which 
+can be executed either line-wise in interactive mode or with a single command from 
+R or the command-line. This way comprehensive and reproducible analysis reports 
+can be generated in PDF or HTML format in a fully automated manner by making use 
+of the highly functional reporting utilities available for R. 
+The following shows how to execute a workflow (<em>e.g.</em>, systemPipeRNAseq.Rmd)
+from the command-line.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Rscript <span class="nt">-e</span> <span class="s2">"rmarkdown::render('systemPipeRNAseq.Rmd')"</span>
+</code></pre></div></div>
+
+<p>Templates for setting up custom project reports are provided as <em><code class="highlighter-rouge">*.Rmd</code></em> files by the helper package <em><code class="highlighter-rouge">systemPipeRdata</code></em> and in the vignettes subdirectory of <em><code class="highlighter-rouge">systemPipeR</code></em>. The corresponding HTML of these report templates are available here: <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.html"><em><code class="highlighter-rouge">systemPipeRNAseq</code></em></a>, <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html"><em><code class="highlighter-rouge">systemPipeRIBOseq</code></em></a>, <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html"><em><code class="highlighter-rouge">systemPipeChIPseq</code></em></a> and <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html"><em><code class="highlighter-rouge">systemPipeVARseq</code></em></a>. To work with <em><code class="highlighter-rouge">*.Rnw</code></em> or <em><code class="highlighter-rouge">*.Rmd</code></em> files efficiently, basic knowledge of <a href="https://www.stat.uni-muenchen.de/~leisch/Sweave/"><em><code class="highlighter-rouge">Sweave</code></em></a> or <a href="http://yihui.name/knitr/"><em><code class="highlighter-rouge">knitr</code></em></a> and <a href="http://www.latex-project.org/"><em><code class="highlighter-rouge">Latex</code></em></a> or <a href="http://rmarkdown.rstudio.com/"><em><code class="highlighter-rouge">R Markdown v2</code></em></a> is required.</p>
+
+<h2 id="rna-seq-sample">RNA-Seq sample</h2>
 
 <p>Load the RNA-Seq sample workflow into your current working directory.</p>
 
@@ -835,7 +848,7 @@ $('#toc').on('click', 'a', function() {
 
 <h3 id="run-workflow">Run workflow</h3>
 
-<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRNAseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq_single.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">rnaseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
+<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRNAseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">rnaseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
 <p>Workflow includes following steps:</p>
 
@@ -866,7 +879,7 @@ $('#toc').on('click', 'a', function() {
 
 <h3 id="run-workflow-1">Run workflow</h3>
 
-<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeChIPseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq_single.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">chipseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
+<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeChIPseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">chipseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
 <p>Workflow includes following steps:</p>
 
@@ -934,7 +947,7 @@ It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an 
 
 <h3 id="run-workflow-3">Run workflow</h3>
 
-<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRIBOseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq_single.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">ribseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
+<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRIBOseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">ribseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
 <p>Workflow includes following steps:</p>
 
@@ -976,7 +989,7 @@ It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an 
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Feb  2 12:23:03 2019<br/> Site last generated: Feb 23, 2019 <br />
+<span>Page last updated:</span> Fri Jun 21 16:43:53 2019<br/> Site last generated: Jun 21, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

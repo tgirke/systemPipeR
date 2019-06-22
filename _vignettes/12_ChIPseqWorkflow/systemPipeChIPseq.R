@@ -1,5 +1,16 @@
 ## pre code {
 
+## white-space: pre !important;
+
+## overflow-x: scroll !important;
+
+## word-break: keep-all !important;
+
+## word-wrap: initial !important;
+
+## }
+
+
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
 options(width=60, max.print=1000)
@@ -7,6 +18,7 @@ knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
     cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
     tidy.opts=list(width.cutoff=60), tidy=TRUE)
+
 
 ## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE-------------------
 suppressPackageStartupMessages({
@@ -22,33 +34,46 @@ suppressPackageStartupMessages({
     library(batchtools)
 })
 
+
 ## ----genChip_workflow, eval=FALSE----------------------------------------
 ## library(systemPipeRdata)
 ## genWorkenvir(workflow="chipseq")
 ## setwd("chipseq")
 
+
 ## Rscript -e "systemPipeRdata::genWorkenvir(workflow='chipseq')"
+
 
 ## ----closeR, eval=FALSE--------------------------------------------------
 ## q("no") # closes R session on head node
 
+
 ## srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
+
+## module load R/3.4.2
+
+## R
+
 
 ## ----r_environment, eval=FALSE-------------------------------------------
 ## system("hostname") # should return name of a compute node starting with i or c
 ## getwd() # checks current working directory of R session
 ## dir() # returns content of current working directory
 
+
 ## ----load_systempiper, eval=TRUE-----------------------------------------
 library(systemPipeR)
 
+
 ## ----load_custom_fct, eval=FALSE-----------------------------------------
 ## source("systemPipeChIPseq_Fct.R")
+
 
 ## ----load_targets_file, eval=TRUE----------------------------------------
 targetspath <- system.file("extdata", "targets_chip.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")
 targets[1:4,-c(5,6)]
+
 
 ## ----proprocess_reads, eval=FALSE, messages=FALSE, warning=FALSE, cache=TRUE----
 ## args <- systemArgs(sysma="param/trim.param", mytargets="targets_chip.txt")
@@ -60,6 +85,7 @@ targets[1:4,-c(5,6)]
 ## preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)",
 ##                 batchsize=100000)
 ## writeTargetsout(x=args, file="targets_chip_trim.txt", overwrite=TRUE)
+
 
 ## ----fastq_report, eval=FALSE--------------------------------------------
 ## args <- systemArgs(sysma="param/tophat.param", mytargets="targets_chip.txt")
@@ -78,6 +104,7 @@ targets[1:4,-c(5,6)]
 ## seeFastqPlot(unlist(fqlist, recursive=FALSE))
 ## dev.off()
 
+
 ## ----bowtie2_align, eval=FALSE-------------------------------------------
 ## args <- systemArgs(sysma="param/bowtieSE.param",
 ##                    mytargets="targets_chip_trim.txt")
@@ -91,11 +118,14 @@ targets[1:4,-c(5,6)]
 ## waitForJobs(reg=reg)
 ## writeTargetsout(x=args, file="targets_bam.txt", overwrite=TRUE)
 
+
 ## ----bowtie2_align_seq, eval=FALSE---------------------------------------
 ## runCommandline(args)
 
+
 ## ----check_files_exist, eval=FALSE---------------------------------------
 ## file.exists(outpaths(args))
+
 
 ## ----align_stats, eval=FALSE---------------------------------------------
 ## read_statsDF <- alignStats(args=args)
@@ -103,10 +133,12 @@ targets[1:4,-c(5,6)]
 ##             quote=FALSE, sep="\t")
 ## read.delim("results/alignStats.xls")
 
+
 ## ----symbol_links, eval=FALSE--------------------------------------------
 ## symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 ##             urlbase="http://biocluster.ucr.edu/~tgirke/",
 ##             urlfile="./results/IGVurl.txt")
+
 
 ## ----rle_object, eval=FALSE----------------------------------------------
 ## library(rtracklayer); library(GenomicRanges)
@@ -115,12 +147,15 @@ targets[1:4,-c(5,6)]
 ## cov <- coverage(aligns)
 ## cov
 
+
 ## ----resize_align, eval=FALSE--------------------------------------------
 ## trim(resize(as(aligns, "GRanges"), width = 200))
+
 
 ## ----rle_slice, eval=FALSE-----------------------------------------------
 ## islands <- slice(cov, lower = 15)
 ## islands[[1]]
+
 
 ## ----plot_coverage, eval=FALSE-------------------------------------------
 ## library(ggbio)
@@ -131,16 +166,19 @@ targets[1:4,-c(5,6)]
 ## autoplot(ga, aes(color = strand, fill = strand), facets = strand ~ seqnames,
 ##          stat = "coverage")
 
+
 ## ----merge_bams, eval=FALSE----------------------------------------------
 ## args <- systemArgs(sysma=NULL, mytargets="targets_bam.txt")
 ## args_merge <- mergeBamByFactor(args, overwrite=TRUE)
 ## writeTargetsout(x=args_merge, file="targets_mergeBamByFactor.txt", overwrite=TRUE)
+
 
 ## ----call_peaks_macs_envVar_settings, eval=FALSE-------------------------
 ## # Skip if a module system is not used
 ## module("list")
 ## module("unload", "miniconda2")
 ## module("load", "python/2.7.14") # Make sure to set up your enviroment variable for MACS2
+
 
 ## ----call_peaks_macs_noref, eval=FALSE-----------------------------------
 ## args <- systemArgs(sysma="param/macs2_noinput.param",
@@ -149,6 +187,7 @@ targets[1:4,-c(5,6)]
 ## runCommandline(args)
 ## file.exists(outpaths(args))
 ## writeTargetsout(x=args, file="targets_macs.txt", overwrite=TRUE)
+
 
 ## ----call_peaks_macs_withref, eval=FALSE---------------------------------
 ## writeTargetsRef(infile="targets_mergeBamByFactor.txt",
@@ -159,6 +198,7 @@ targets[1:4,-c(5,6)]
 ## runCommandline(args_input)
 ## file.exists(outpaths(args_input))
 ## writeTargetsout(x=args_input, file="targets_macs_input.txt", overwrite=TRUE)
+
 
 ## ----consensus_peaks, eval=FALSE-----------------------------------------
 ## source("http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/rangeoverlapper.R")
@@ -172,6 +212,7 @@ targets[1:4,-c(5,6)]
 ##             # Returns any overlap with OL length information
 ## myol2[values(myol2)["OLpercQ"][,1]>=50]
 ##             # Returns only query peaks with a minimum overlap of 50%
+
 
 ## ----chip_peak_anno, eval=FALSE------------------------------------------
 ## library(ChIPpeakAnno); library(GenomicFeatures)
@@ -190,6 +231,7 @@ targets[1:4,-c(5,6)]
 ## }
 ## writeTargetsout(x=args, file="targets_peakanno.txt", overwrite=TRUE)
 
+
 ## ----chip_peak_anno_full_annotation, include=FALSE, eval=FALSE-----------
 ## ## Perform previous step with full genome annotation from Biomart
 ## # txdb <- makeTxDbFromBiomart(biomart = "plants_mart", dataset = "athaliana_eg_gene", host="plants.ensembl.org")
@@ -200,6 +242,7 @@ targets[1:4,-c(5,6)]
 ## # tx <- tx[!duplicated(unstrsplit(values(tx)$gene_id, sep=","))] # Keeps only first transcript model for each gene]
 ## # annotatedPeak <- annotatePeakInBatch(peaksGR, AnnotationData = tx)
 
+
 ## ----chip_peak_seeker, eval=FALSE----------------------------------------
 ## library(ChIPseeker)
 ## for(i in seq(along=args)) {
@@ -209,6 +252,7 @@ targets[1:4,-c(5,6)]
 ## }
 ## writeTargetsout(x=args, file="targets_peakanno.txt", overwrite=TRUE)
 
+
 ## ----chip_peak_seeker_plots, eval=FALSE----------------------------------
 ## peak <- readPeakFile(infile1(args)[1])
 ## covplot(peak, weightCol="X.log10.pvalue.")
@@ -216,6 +260,7 @@ targets[1:4,-c(5,6)]
 ##             color="red")
 ## plotAvgProf2(outpaths(args)[1], TxDb=txdb, upstream=1000, downstream=1000,
 ##              xlab="Genomic Region (5'->3')", ylab = "Read Count Frequency")
+
 
 ## ----count_peak_ranges, eval=FALSE---------------------------------------
 ## library(GenomicRanges)
@@ -226,6 +271,7 @@ targets[1:4,-c(5,6)]
 ## countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
 ## writeTargetsout(x=args, file="targets_countDF.txt", overwrite=TRUE)
 
+
 ## ----diff_bind_analysis, eval=FALSE--------------------------------------
 ## args_diff <- systemArgs(sysma="param/rundiff.param",
 ##                         mytargets="targets_countDF.txt")
@@ -234,6 +280,7 @@ targets[1:4,-c(5,6)]
 ##                    targets=targetsin(args_bam), cmp=cmp[[1]],
 ##                    independent=TRUE, dbrfilter=c(Fold=2, FDR=1))
 ## writeTargetsout(x=args_diff, file="targets_rundiff.txt", overwrite=TRUE)
+
 
 ## ----go_enrich, eval=FALSE-----------------------------------------------
 ## args <- systemArgs(sysma="param/macs2.param", mytargets="targets_bam_ref.txt")
@@ -247,6 +294,7 @@ targets[1:4,-c(5,6)]
 ## BatchResult <- GOCluster_Report(catdb=catdb, setlist=gene_ids, method="all",
 ##                                 id_type="gene", CLSZ=2, cutoff=0.9,
 ##                                 gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
+
 
 ## ----parse_peak_sequences, eval=FALSE------------------------------------
 ## library(Biostrings); library(seqLogo); library(BCRANK)
@@ -264,6 +312,7 @@ targets[1:4,-c(5,6)]
 ##     writeXStringSet(pseq, paste0(rangefiles[i], ".fasta"))
 ## }
 
+
 ## ----bcrank_enrich, eval=FALSE-------------------------------------------
 ## set.seed(0)
 ## BCRANKout <- bcrank(paste0(rangefiles[1], ".fasta"), restarts=25,
@@ -275,6 +324,7 @@ targets[1:4,-c(5,6)]
 ## pdf("results/seqlogo.pdf")
 ## seqLogo(weightMatrixNormalized)
 ## dev.off()
+
 
 ## ----sessionInfo---------------------------------------------------------
 sessionInfo()

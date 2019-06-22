@@ -649,14 +649,14 @@
             
             
             
-            <li><a href="mydoc_systemPipeRIBOseq_09.html">9. Analysis of differentially expressed genes with `edgeR`</a></li>
+            <li><a href="mydoc_systemPipeRIBOseq_09.html">9. Analysis of differentially expressed genes with edgeR</a></li>
             
             
             
             
             
             
-            <li><a href="mydoc_systemPipeRIBOseq_10.html">10. GO term enrichment analysis of DEGs}</a></li>
+            <li><a href="mydoc_systemPipeRIBOseq_10.html">10. GO term enrichment analysis of DEGs</a></li>
             
             
             
@@ -826,7 +826,7 @@ $('#toc').on('click', 'a', function() {
 
   <h2 id="installation">Installation</h2>
 
-<p>The R software for running <a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code class="highlighter-rouge">systemPipeR</code></em></a> can be downloaded from <a href="http://cran.at.r-project.org/"><em>CRAN</em></a>. The <em><code class="highlighter-rouge">systemPipeR</code></em> environment can be installed from the R console using the <a href="https://cran.r-project.org/web/packages/BiocManager/index.html"><em><code class="highlighter-rouge">BiocManager::install</code></em></a> command. The associated data package <a href="https://github.com/tgirke/systemPipeRdata"><em><code class="highlighter-rouge">systemPipeRdata</code></em></a> can be installed the same way. The latter is a helper package for generating <em><code class="highlighter-rouge">systemPipeR</code></em> workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows.</p>
+<p>The R software for running <a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code class="highlighter-rouge">systemPipeR</code></em></a> can be downloaded from <a href="http://cran.at.r-project.org/"><em>CRAN</em></a>. The <em><code class="highlighter-rouge">systemPipeR</code></em> environment can be installed from the R console using the <a href="https://cran.r-project.org/web/packages/BiocManager/index.html"><em><code class="highlighter-rouge">BiocManager::install</code></em></a> command. The associated data package <a href="http://www.bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html"><em><code class="highlighter-rouge">systemPipeRdata</code></em></a> can be installed the same way. The latter is a helper package for generating <em><code class="highlighter-rouge">systemPipeR</code></em> workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">requireNamespace</span><span class="p">(</span><span class="s2">"BiocManager"</span><span class="p">,</span><span class="w"> </span><span class="n">quietly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w"> </span><span class="n">install.packages</span><span class="p">(</span><span class="s2">"BiocManager"</span><span class="p">)</span><span class="w">
 </span><span class="n">BiocManager</span><span class="o">::</span><span class="n">install</span><span class="p">(</span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -851,35 +851,40 @@ $('#toc').on('click', 'a', function() {
 </span><span class="n">setwd</span><span class="p">(</span><span class="s2">"rnaseq"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>The working environment of the sample data loaded in the previous step contains the following preconfigured directory structure. Directory names are indicated in  <span style="color:grey"><em><strong>grey</strong></em></span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly.</p>
+<h2 id="directory-structure">Directory Structure</h2>
+
+<p>The working environment of the sample data loaded in the previous step contains
+the following preconfigured directory structure (Figure 4). Directory names are indicated
+in  <span style="color:grey"><strong><em>green</em></strong></span>. Users can change this
+structure as needed, but need to adjust the code in their workflows
+accordingly.</p>
 
 <ul>
-  <li><span style="color:grey"><em><strong>workflow/</strong></em></span> (<em>e.g.</em> <em>rnaseq/</em>)
+  <li><span style="color:green"><em><strong>workflow/</strong></em></span> (<em>e.g.</em> <em>rnaseq/</em>)
     <ul>
-      <li>This is the directory of the R session running the workflow.</li>
-      <li>Run script ( <em>*.Rmd</em> or <em>*.Rnw</em>) and sample annotation (<em>targets.txt</em>) files are located here.</li>
-      <li>Note, this directory can have any name (<em>e.g.</em> <span style="color:grey"><em><strong>rnaseq</strong></em></span>, <span style="color:grey"><em><strong>varseq</strong></em></span>). Changing its name does not require any modifications in the run script(s).</li>
-      <li>Important subdirectories:
+      <li>This is the root directory of the R session running the workflow.</li>
+      <li>Run script ( <em>*.Rmd</em>) and sample annotation (<em>targets.txt</em>) files are located here.</li>
+      <li>Note, this directory can have any name (<em>e.g.</em> <span style="color:green"><em><strong>rnaseq</strong></em></span>, <span style="color:green"><em><strong>varseq</strong></em></span>). Changing its name does not require any modifications in the run script(s).</li>
+      <li><strong>Important subdirectories</strong>:
         <ul>
-          <li><span style="color:grey"><em><strong>param/</strong></em></span>
+          <li><span style="color:green"><em><strong>param/</strong></em></span>
             <ul>
-              <li>Stores parameter files such as: <em>*.param</em>, <em>*.tmpl</em> and <em>*_run.sh</em>.</li>
+              <li>Stores non-CWL parameter files such as: <em>*.param</em>, <em>*.tmpl</em> and <em>*.run.sh</em>. These files are only required for backwards compatibility to run old workflows using the previous custom command-line interface.</li>
+              <li><span style="color:green"><em><strong>param/cwl/</strong></em></span>: This subdirectory stores all the CWL parameter files. To organize workflows, each can have its own subdirectory, where all <code class="highlighter-rouge">CWL param</code> and <code class="highlighter-rouge">input.yml</code> files need to be in the same subdirectory.</li>
             </ul>
           </li>
-          <li><span style="color:grey"><em><strong>data/</strong></em> </span>
+          <li><span style="color:green"><em><strong>data/</strong></em> </span>
             <ul>
-              <li>FASTQ samples</li>
-              <li>Reference FASTA file</li>
-              <li>Annotations</li>
+              <li>FASTQ files</li>
+              <li>FASTA file of reference (<em>e.g.</em> reference genome)</li>
+              <li>Annotation files</li>
               <li>etc.</li>
             </ul>
           </li>
-          <li><span style="color:grey"><em><strong>results/</strong></em></span>
+          <li><span style="color:green"><em><strong>results/</strong></em></span>
             <ul>
-              <li>Alignment, variant and peak files (BAM, VCF, BED)</li>
-              <li>Tabular result files</li>
-              <li>Images and plots</li>
-              <li>etc.</li>
+              <li>Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files</li>
+              <li>Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.</li>
             </ul>
           </li>
         </ul>
@@ -888,15 +893,24 @@ $('#toc').on('click', 'a', function() {
   </li>
 </ul>
 
+<center><img src="./pages/mydoc/systemPipeR_files/directory.png" /></center>
+
+<p><strong>Figure 4:</strong> <em>systemPipeR’s</em> preconfigured directory structure.</p>
+
 <p>The following parameter files are included in each workflow template:</p>
 
 <ol>
   <li><em><code class="highlighter-rouge">targets.txt</code></em>: initial one provided by user; downstream <em><code class="highlighter-rouge">targets_*.txt</code></em> files are generated automatically</li>
-  <li><em><code class="highlighter-rouge">*.param</code></em>: defines parameter for input/output file operations, <em>e.g.</em> <em><code class="highlighter-rouge">trim.param</code></em>, <em><code class="highlighter-rouge">bwa.param</code></em>, <em><code class="highlighter-rouge">vartools.parm</code></em>, …</li>
-  <li><em><code class="highlighter-rouge">*_run.sh</code></em>: optional bash script, <em>e.g.</em>: <em><code class="highlighter-rouge">gatk_run.sh</code></em></li>
-  <li>Compute cluster environment (skip on single machine):
+  <li><em><code class="highlighter-rouge">*.param/cwl</code></em>: defines parameter for input/output file operations, <em>e.g.</em>:
     <ul>
-      <li><em><code class="highlighter-rouge">.batchtools.conf.R</code></em>: defines type of scheduler for <em><code class="highlighter-rouge">batchtools</code></em>. Note, it is necessary to point the right template accordingly to the cluster in use.</li>
+      <li><em><code class="highlighter-rouge">hisat2-se/hisat2-mapping-se.cwl</code></em></li>
+      <li><em><code class="highlighter-rouge">hisat2-se/hisat2-mapping-se.yml</code></em></li>
+    </ul>
+  </li>
+  <li><em><code class="highlighter-rouge">*_run.sh</code></em>: optional bash scripts</li>
+  <li>Configuration files for computer cluster environments (skip on single machines):
+    <ul>
+      <li><em><code class="highlighter-rouge">.batchtools.conf.R</code></em>: defines the type of scheduler for <em><code class="highlighter-rouge">batchtools</code></em> pointing to template file of cluster, and located in user’s home directory</li>
       <li><em><code class="highlighter-rouge">*.tmpl</code></em>: specifies parameters of scheduler used by a system, <em>e.g.</em> Torque, SGE, Slurm, etc.</li>
     </ul>
   </li>
@@ -913,25 +927,25 @@ $('#toc').on('click', 'a', function() {
 </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                    FileName SampleName Factor SampleLong
-## 1  ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A
-## 2  ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B
-## 3  ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A
-## 4  ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B
-## 5  ./data/SRR446031_1.fastq        V1A     V1   Vir.1h.A
-## 6  ./data/SRR446032_1.fastq        V1B     V1   Vir.1h.B
-## 7  ./data/SRR446033_1.fastq        M6A     M6  Mock.6h.A
-## 8  ./data/SRR446034_1.fastq        M6B     M6  Mock.6h.B
-## 9  ./data/SRR446035_1.fastq        A6A     A6   Avr.6h.A
-## 10 ./data/SRR446036_1.fastq        A6B     A6   Avr.6h.B
-## 11 ./data/SRR446037_1.fastq        V6A     V6   Vir.6h.A
-## 12 ./data/SRR446038_1.fastq        V6B     V6   Vir.6h.B
-## 13 ./data/SRR446039_1.fastq       M12A    M12 Mock.12h.A
-## 14 ./data/SRR446040_1.fastq       M12B    M12 Mock.12h.B
-## 15 ./data/SRR446041_1.fastq       A12A    A12  Avr.12h.A
-## 16 ./data/SRR446042_1.fastq       A12B    A12  Avr.12h.B
-## 17 ./data/SRR446043_1.fastq       V12A    V12  Vir.12h.A
-## 18 ./data/SRR446044_1.fastq       V12B    V12  Vir.12h.B
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                       FileName SampleName Factor SampleLong
+## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
+## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A
+## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B
+## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A
+## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B
+## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A
+## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B
+## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A
+## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B
+## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A
+## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B
+## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A
+## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B
+## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A
+## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B
 ##    Experiment        Date
 ## 1           1 23-Mar-2012
 ## 2           1 23-Mar-2012
@@ -961,9 +975,9 @@ $('#toc').on('click', 'a', function() {
 </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                  FileName1                FileName2
-## 1 ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq
-## 2 ./data/SRR446028_1.fastq ./data/SRR446028_2.fastq
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                     FileName1                   FileName2
+## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz
+## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz
 ##   SampleName Factor SampleLong Experiment
 ## 1        M1A     M1  Mock.1h.A          1
 ## 2        M1B     M1  Mock.1h.B          1
@@ -1085,8 +1099,8 @@ ones.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                                                                                                                                                                                                M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                                                                                                                                                                                                                                 M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
@@ -1104,8 +1118,8 @@ ones.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                             M1A 
-## "/home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                            M1A 
+## "/home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
 </code></pre></div></div>
 
 <p>The content of the <em><code class="highlighter-rouge">param</code></em> file can also be returned as JSON object as follows (requires <em><code class="highlighter-rouge">rjson</code></em> package).</p>
@@ -1115,6 +1129,161 @@ ones.</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] "{\"modules\":{\"n1\":\"\",\"v2\":\"bowtie2/2.2.5\",\"n1\":\"\",\"v2\":\"tophat/2.0.14\"},\"software\":{\"n1\":\"\",\"v1\":\"tophat\"},\"cores\":{\"n1\":\"-p\",\"v1\":\"4\"},\"other\":{\"n1\":\"\",\"v1\":\"-g 1 --segment-length 25 -i 30 -I 3000\"},\"outfile1\":{\"n1\":\"-o\",\"v2\":\"&lt;FileName1&gt;\",\"n3\":\"path\",\"v4\":\"./results/\",\"n5\":\"remove\",\"v1\":\"\",\"n2\":\"append\",\"v3\":\".tophat\",\"n4\":\"outextension\",\"v5\":\".tophat/accepted_hits.bam\"},\"reference\":{\"n1\":\"\",\"v1\":\"./data/tair10.fasta\"},\"infile1\":{\"n1\":\"\",\"v2\":\"&lt;FileName1&gt;\",\"n1\":\"path\",\"v2\":\"\"},\"infile2\":{\"n1\":\"\",\"v2\":\"&lt;FileName2&gt;\",\"n1\":\"path\",\"v2\":\"\"}}"
 </code></pre></div></div>
+
+<h2 id="structure-of-the-new-param-file-and-construct-sysargs2-container">Structure of the new <em><code class="highlighter-rouge">param</code></em> file and construct <em><code class="highlighter-rouge">SYSargs2</code></em> container</h2>
+
+<p><em><code class="highlighter-rouge">SYSargs2</code></em> stores all the information and instructions needed for processing
+a set of input files with a single or many command-line steps within a workflow
+(<em>i.e.</em> several components of a software or several independent software tools).
+The <em><code class="highlighter-rouge">SYSargs2</code></em> object is created and fully populated with the <em>loadWorkflow</em> 
+and <em>renderWF</em> functions, respectively.</p>
+
+<p>In CWL, files with the extension <em><code class="highlighter-rouge">.cwl</code></em> define the parameters of a chosen 
+command-line step or workflow, while files with the extension <em><code class="highlighter-rouge">.yml</code></em> define 
+the input variables of command-line steps. Note, input variables provided
+by a <em>targets</em> file can be passed on to a <em><code class="highlighter-rouge">SYSargs2</code></em> instance via the <em>inputvars</em> 
+argument of the <em>renderWF</em> function.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">hisat2.cwl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cwl/hisat2-se/hisat2-mapping-se.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">yaml</span><span class="o">::</span><span class="n">read_yaml</span><span class="p">(</span><span class="n">hisat2.cwl</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">hisat2.yml</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cwl/hisat2-se/hisat2-mapping-se.yml"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">yaml</span><span class="o">::</span><span class="n">read_yaml</span><span class="p">(</span><span class="n">hisat2.yml</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The following imports a <em><code class="highlighter-rouge">.cwl</code></em> file (here <em><code class="highlighter-rouge">hisat2-mapping-se.cwl</code></em>) for running
+the short read aligner HISAT2 (Kim et al., 2015). The <em>loadWorkflow</em> and <em>renderWF</em> 
+functions render the proper command-line strings for each sample and software tool.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
+</span><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/hisat2-se"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">WF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+
+</span><span class="n">WF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">WF</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH_"</span><span class="p">,</span><span class="w"> </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Several accessor methods are available that are named after the slot names of the <em><code class="highlighter-rouge">SYSargs2</code></em> object.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##  [1] "targets"       "targetsheader" "modules"      
+##  [4] "wf"            "clt"           "yamlinput"    
+##  [7] "cmdlist"       "input"         "output"       
+## [10] "cwlfiles"      "inputvars"
+</code></pre></div></div>
+
+<p>Of particular interest is the <em><code class="highlighter-rouge">cmdlist()</code></em> method. It constructs the system
+commands for running command-line software as specified by a given <em><code class="highlighter-rouge">.cwl</code></em>
+file combined with the paths to the input samples (<em>e.g.</em> FASTQ files) provided
+by a <em><code class="highlighter-rouge">targets</code></em> file. The example below shows the <em><code class="highlighter-rouge">cmdlist()</code></em> output for
+running HISAT2 on the first SE read sample. Evaluating the output of
+<em><code class="highlighter-rouge">cmdlist()</code></em> can be very helpful for designing and debugging <em><code class="highlighter-rouge">.cwl</code></em> files
+of new command-line software or changing the parameter settings of existing
+ones.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cmdlist</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
+## $M1A$`hisat2-mapping-se.cwl`
+## [1] "hisat2 -S results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">modules</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##        module1        module2 
+## "hisat2/2.0.1" "samtools/1.9"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
+## $M1A$FileName
+## [1] "./data/SRR446027_1.fastq.gz"
+## 
+## $M1A$SampleName
+## [1] "M1A"
+## 
+## $M1A$Factor
+## [1] "M1"
+## 
+## $M1A$SampleLong
+## [1] "Mock.1h.A"
+## 
+## $M1A$Experiment
+## [1] 1
+## 
+## $M1A$Date
+## [1] "23-Mar-2012"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets.as.df</span><span class="p">(</span><span class="n">targets</span><span class="p">(</span><span class="n">WF</span><span class="p">))[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                      FileName SampleName Factor SampleLong
+## 1 ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2 ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3 ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4 ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">output</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
+## $M1A$`hisat2-mapping-se.cwl`
+## [1] "results/M1A.sam"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cwlfiles</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $cwl
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.cwl"
+## 
+## $yml
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.yml"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">inputvars</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $FileName
+## [1] "_FASTQ_PATH_"
+## 
+## $SampleName
+## [1] "_SampleName_"
+</code></pre></div></div>
+
+<p>The output components of <em><code class="highlighter-rouge">SYSargs2</code></em> define the expected output files for 
+each step in the workflow; some of which are the input for the next workflow step, 
+here next <em><code class="highlighter-rouge">SYSargs2</code></em> instance (see Figure 3).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">output</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
+## $M1A$`hisat2-mapping-se.cwl`
+## [1] "results/M1A.sam"
+</code></pre></div></div>
+
+<p>In an ‘R-centric’ rather than a ‘CWL-centric’ workflow design the connectivity
+among workflow steps is established by writing all relevant output with the
+<em>writeTargetsout</em> function to a new targets file that serves as input to the
+next <em>loadWorkflow</em> and <em>renderWF</em> call. By chaining several <em><code class="highlighter-rouge">SYSargs2</code></em> steps
+together one can construct complex workflows involving many sample-level
+input/output file operations with any combination of command-line or R-based
+software. Alternatively, a CWL-centric workflow design can be used that defines
+all/most workflow steps with CWL workflow and parameter files. Due to time and
+space restrictions the CWL-centric approach is not covered by this tutorial.</p>
 
 <p><br /><br /><center><a href="mydoc_systemPipeR_1.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeR_3.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -1134,7 +1303,7 @@ ones.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Feb  2 12:23:03 2019<br/> Site last generated: Feb 23, 2019 <br />
+<span>Page last updated:</span> Fri Jun 21 16:43:53 2019<br/> Site last generated: Jun 21, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

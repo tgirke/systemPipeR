@@ -1,6 +1,6 @@
 ---
 title: 6. Filter variants
-last_updated: Sat Feb  2 12:30:52 2019
+last_updated: Fri Jun 21 16:33:06 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_06.html
 ---

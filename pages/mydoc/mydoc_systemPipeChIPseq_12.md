@@ -1,6 +1,6 @@
 ---
 title: 12. Version Information
-last_updated: Sat Feb  2 11:43:49 2019
+last_updated: Fri Jun 21 16:31:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_12.html
 ---

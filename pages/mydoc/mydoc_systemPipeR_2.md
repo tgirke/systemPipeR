@@ -1,13 +1,13 @@
 ---
 title: 2. Getting Started
-last_updated: Sat Feb  2 12:23:03 2019
+last_updated: Fri Jun 21 16:43:53 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) command. The associated data package [_`systemPipeRdata`_](https://github.com/tgirke/systemPipeRdata) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) command. The associated data package [_`systemPipeRdata`_](http://www.bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
 
 
 ```r
@@ -38,34 +38,45 @@ genWorkenvir(workflow = "rnaseq")
 setwd("rnaseq")
 ```
 
-The working environment of the sample data loaded in the previous step contains the following preconfigured directory structure. Directory names are indicated in  <span style="color:grey">_**grey**_</span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly. 
+## Directory Structure
 
-* <span style="color:grey">_**workflow/**_</span> (_e.g._ _rnaseq/_) 
-    + This is the directory of the R session running the workflow.
-    + Run script ( _\*.Rmd_ or _\*.Rnw_) and sample annotation (_targets.txt_) files are located here.
-    + Note, this directory can have any name (_e.g._ <span style="color:grey">_**rnaseq**_</span>, <span style="color:grey">_**varseq**_</span>). Changing its name does not require any modifications in the run script(s).
-    + Important subdirectories: 
-        + <span style="color:grey">_**param/**_</span> 
-            + Stores parameter files such as: _\*.param_, _\*.tmpl_ and _\*\_run.sh_.
-        + <span style="color:grey">_**data/**_ </span>
-            + FASTQ samples 
-            + Reference FASTA file
-            + Annotations
-            + etc.
-        + <span style="color:grey">_**results/**_</span>
-            + Alignment, variant and peak files (BAM, VCF, BED) 
-            + Tabular result files
-            + Images and plots
-            + etc.
+The working environment of the sample data loaded in the previous step contains
+the following preconfigured directory structure (Figure 4). Directory names are indicated
+in  <span style="color:grey">***green***</span>. Users can change this
+structure as needed, but need to adjust the code in their workflows
+accordingly. 
 
-The following parameter files are included in each workflow template: 
+* <span style="color:green">_**workflow/**_</span> (*e.g.* *rnaseq/*) 
+    + This is the root directory of the R session running the workflow.
+    + Run script ( *\*.Rmd*) and sample annotation (*targets.txt*) files are located here.
+    + Note, this directory can have any name (*e.g.* <span style="color:green">_**rnaseq**_</span>, <span style="color:green">_**varseq**_</span>). Changing its name does not require any modifications in the run script(s).
+  + **Important subdirectories**: 
+    + <span style="color:green">_**param/**_</span> 
+        + Stores non-CWL parameter files such as: *\*.param*, *\*.tmpl* and *\*.run.sh*. These files are only required for backwards compatibility to run old workflows using the previous custom command-line interface.
+        + <span style="color:green">_**param/cwl/**_</span>: This subdirectory stores all the CWL parameter files. To organize workflows, each can have its own subdirectory, where all `CWL param` and `input.yml` files need to be in the same subdirectory. 
+    + <span style="color:green">_**data/**_ </span>
+        + FASTQ files
+        + FASTA file of reference (*e.g.* reference genome)
+        + Annotation files
+        + etc.
+    + <span style="color:green">_**results/**_</span>
+        + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
+        + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
-1. _`targets.txt`_: initial one provided by user; downstream _`targets_*.txt`_ files are generated automatically
-2. _`*.param`_: defines parameter for input/output file operations, _e.g._ _`trim.param`_, _`bwa.param`_, _`vartools.parm`_, ...
-3. _`*_run.sh`_: optional bash script, _e.g._: _`gatk_run.sh`_
-4. Compute cluster environment (skip on single machine):
-    + _`.batchtools.conf.R`_: defines type of scheduler for _`batchtools`_. Note, it is necessary to point the right template accordingly to the cluster in use.
-    + _`*.tmpl`_: specifies parameters of scheduler used by a system, _e.g._ Torque, SGE, Slurm, etc.
+<center><img src="./pages/mydoc/systemPipeR_files/directory.png"></center>
+
+**Figure 4:** *systemPipeR's* preconfigured directory structure.
+
+The following parameter files are included in each workflow template:
+
+1. *`targets.txt`*: initial one provided by user; downstream *`targets_*.txt`* files are generated automatically
+2. *`*.param/cwl`*: defines parameter for input/output file operations, *e.g.*:
+    + *`hisat2-se/hisat2-mapping-se.cwl`* 
+    + *`hisat2-se/hisat2-mapping-se.yml`*
+3. *`*_run.sh`*: optional bash scripts 
+4. Configuration files for computer cluster environments (skip on single machines):
+    + *`.batchtools.conf.R`*: defines the type of scheduler for *`batchtools`* pointing to template file of cluster, and located in user's home directory
+    + *`*.tmpl`*: specifies parameters of scheduler used by a system, *e.g.* Torque, SGE, Slurm, etc.
 
 ## Structure of _`targets`_ file
 
@@ -81,25 +92,25 @@ read.delim(targetspath, comment.char = "#")
 ```
 
 ```
-##                    FileName SampleName Factor SampleLong
-## 1  ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A
-## 2  ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B
-## 3  ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A
-## 4  ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B
-## 5  ./data/SRR446031_1.fastq        V1A     V1   Vir.1h.A
-## 6  ./data/SRR446032_1.fastq        V1B     V1   Vir.1h.B
-## 7  ./data/SRR446033_1.fastq        M6A     M6  Mock.6h.A
-## 8  ./data/SRR446034_1.fastq        M6B     M6  Mock.6h.B
-## 9  ./data/SRR446035_1.fastq        A6A     A6   Avr.6h.A
-## 10 ./data/SRR446036_1.fastq        A6B     A6   Avr.6h.B
-## 11 ./data/SRR446037_1.fastq        V6A     V6   Vir.6h.A
-## 12 ./data/SRR446038_1.fastq        V6B     V6   Vir.6h.B
-## 13 ./data/SRR446039_1.fastq       M12A    M12 Mock.12h.A
-## 14 ./data/SRR446040_1.fastq       M12B    M12 Mock.12h.B
-## 15 ./data/SRR446041_1.fastq       A12A    A12  Avr.12h.A
-## 16 ./data/SRR446042_1.fastq       A12B    A12  Avr.12h.B
-## 17 ./data/SRR446043_1.fastq       V12A    V12  Vir.12h.A
-## 18 ./data/SRR446044_1.fastq       V12B    V12  Vir.12h.B
+##                       FileName SampleName Factor SampleLong
+## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
+## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A
+## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B
+## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A
+## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B
+## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A
+## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B
+## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A
+## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B
+## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A
+## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B
+## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A
+## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B
+## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A
+## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B
 ##    Experiment        Date
 ## 1           1 23-Mar-2012
 ## 2           1 23-Mar-2012
@@ -132,9 +143,9 @@ read.delim(targetspath, comment.char = "#")[1:2, 1:6]
 ```
 
 ```
-##                  FileName1                FileName2
-## 1 ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq
-## 2 ./data/SRR446028_1.fastq ./data/SRR446028_2.fastq
+##                     FileName1                   FileName2
+## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz
+## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz
 ##   SampleName Factor SampleLong Experiment
 ## 1        M1A     M1  Mock.1h.A          1
 ## 2        M1B     M1  Mock.1h.B          1
@@ -274,8 +285,8 @@ sysargs(args)[1]
 ```
 
 ```
-##                                                                                                                                                                                                                                                                                                                M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq"
+##                                                                                                                                                                                                                                                                                                                                                 M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz"
 ```
 
 ```r
@@ -299,8 +310,8 @@ outpaths(args)[1]
 ```
 
 ```
-##                                                                                                                             M1A 
-## "/home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.tophat/accepted_hits.bam"
+##                                                                                                                                            M1A 
+## "/home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
 ```
 
 The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).
@@ -313,6 +324,188 @@ systemArgs(sysma = parampath, mytargets = targetspath, type = "json")
 ```
 ## [1] "{\"modules\":{\"n1\":\"\",\"v2\":\"bowtie2/2.2.5\",\"n1\":\"\",\"v2\":\"tophat/2.0.14\"},\"software\":{\"n1\":\"\",\"v1\":\"tophat\"},\"cores\":{\"n1\":\"-p\",\"v1\":\"4\"},\"other\":{\"n1\":\"\",\"v1\":\"-g 1 --segment-length 25 -i 30 -I 3000\"},\"outfile1\":{\"n1\":\"-o\",\"v2\":\"<FileName1>\",\"n3\":\"path\",\"v4\":\"./results/\",\"n5\":\"remove\",\"v1\":\"\",\"n2\":\"append\",\"v3\":\".tophat\",\"n4\":\"outextension\",\"v5\":\".tophat/accepted_hits.bam\"},\"reference\":{\"n1\":\"\",\"v1\":\"./data/tair10.fasta\"},\"infile1\":{\"n1\":\"\",\"v2\":\"<FileName1>\",\"n1\":\"path\",\"v2\":\"\"},\"infile2\":{\"n1\":\"\",\"v2\":\"<FileName2>\",\"n1\":\"path\",\"v2\":\"\"}}"
 ```
+
+## Structure of the new _`param`_ file and construct _`SYSargs2`_ container
+
+_`SYSargs2`_ stores all the information and instructions needed for processing
+a set of input files with a single or many command-line steps within a workflow
+(*i.e.* several components of a software or several independent software tools).
+The _`SYSargs2`_ object is created and fully populated with the *loadWorkflow* 
+and *renderWF* functions, respectively. 
+
+In CWL, files with the extension *`.cwl`* define the parameters of a chosen 
+command-line step or workflow, while files with the extension *`.yml`* define 
+the input variables of command-line steps. Note, input variables provided
+by a *targets* file can be passed on to a _`SYSargs2`_ instance via the *inputvars* 
+argument of the *renderWF* function. 
+
+
+```r
+hisat2.cwl <- system.file("extdata", "cwl/hisat2-se/hisat2-mapping-se.cwl", 
+    package = "systemPipeR")
+yaml::read_yaml(hisat2.cwl)
+```
+
+
+```r
+hisat2.yml <- system.file("extdata", "cwl/hisat2-se/hisat2-mapping-se.yml", 
+    package = "systemPipeR")
+yaml::read_yaml(hisat2.yml)
+```
+  
+The following imports a *`.cwl`* file (here *`hisat2-mapping-se.cwl`*) for running
+the short read aligner HISAT2 (Kim et al., 2015). The *loadWorkflow* and *renderWF* 
+functions render the proper command-line strings for each sample and software tool.
+
+
+```r
+library(systemPipeR)
+targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
+dir_path <- system.file("extdata/cwl/hisat2-se", package = "systemPipeR")
+WF <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", 
+    input_file = "hisat2-mapping-se.yml", dir_path = dir_path)
+
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH_", SampleName = "_SampleName_"))
+```
+
+Several accessor methods are available that are named after the slot names of the _`SYSargs2`_ object. 
+
+
+```r
+names(WF)
+```
+
+```
+##  [1] "targets"       "targetsheader" "modules"      
+##  [4] "wf"            "clt"           "yamlinput"    
+##  [7] "cmdlist"       "input"         "output"       
+## [10] "cwlfiles"      "inputvars"
+```
+
+Of particular interest is the *`cmdlist()`* method. It constructs the system
+commands for running command-line software as specified by a given *`.cwl`*
+file combined with the paths to the input samples (*e.g.* FASTQ files) provided
+by a *`targets`* file. The example below shows the *`cmdlist()`* output for
+running HISAT2 on the first SE read sample. Evaluating the output of
+*`cmdlist()`* can be very helpful for designing and debugging *`.cwl`* files
+of new command-line software or changing the parameter settings of existing
+ones.  
+
+
+```r
+cmdlist(WF)[1]
+```
+
+```
+## $M1A
+## $M1A$`hisat2-mapping-se.cwl`
+## [1] "hisat2 -S results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+```
+
+```r
+modules(WF)
+```
+
+```
+##        module1        module2 
+## "hisat2/2.0.1" "samtools/1.9"
+```
+
+```r
+targets(WF)[1]
+```
+
+```
+## $M1A
+## $M1A$FileName
+## [1] "./data/SRR446027_1.fastq.gz"
+## 
+## $M1A$SampleName
+## [1] "M1A"
+## 
+## $M1A$Factor
+## [1] "M1"
+## 
+## $M1A$SampleLong
+## [1] "Mock.1h.A"
+## 
+## $M1A$Experiment
+## [1] 1
+## 
+## $M1A$Date
+## [1] "23-Mar-2012"
+```
+
+```r
+targets.as.df(targets(WF))[1:4, 1:4]
+```
+
+```
+##                      FileName SampleName Factor SampleLong
+## 1 ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2 ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3 ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4 ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
+```
+
+```r
+output(WF)[1]
+```
+
+```
+## $M1A
+## $M1A$`hisat2-mapping-se.cwl`
+## [1] "results/M1A.sam"
+```
+
+```r
+cwlfiles(WF)
+```
+
+```
+## $cwl
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.cwl"
+## 
+## $yml
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.yml"
+```
+
+```r
+inputvars(WF)
+```
+
+```
+## $FileName
+## [1] "_FASTQ_PATH_"
+## 
+## $SampleName
+## [1] "_SampleName_"
+```
+
+The output components of _`SYSargs2`_ define the expected output files for 
+each step in the workflow; some of which are the input for the next workflow step, 
+here next _`SYSargs2`_ instance (see Figure 3).
+
+
+```r
+output(WF)[1]
+```
+
+```
+## $M1A
+## $M1A$`hisat2-mapping-se.cwl`
+## [1] "results/M1A.sam"
+```
+
+In an 'R-centric' rather than a 'CWL-centric' workflow design the connectivity
+among workflow steps is established by writing all relevant output with the
+*writeTargetsout* function to a new targets file that serves as input to the
+next *loadWorkflow* and *renderWF* call. By chaining several _`SYSargs2`_ steps
+together one can construct complex workflows involving many sample-level
+input/output file operations with any combination of command-line or R-based
+software. Alternatively, a CWL-centric workflow design can be used that defines
+all/most workflow steps with CWL workflow and parameter files. Due to time and
+space restrictions the CWL-centric approach is not covered by this tutorial. 
 
 <br><br><center><a href="mydoc_systemPipeR_1.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeR_3.html"><img src="images/right_arrow.png" alt="Next page."></a></center>
