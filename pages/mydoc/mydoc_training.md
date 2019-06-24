@@ -4,6 +4,10 @@ sidebar: mydoc_sidebar
 permalink: mydoc_training.html
 ---
 
+## BioC2019
+
++ [Overview Slide Show - 2019](./Bioc2019.html)
++ [Workshop Vignette](./)
 
 ## Slide Shows
 
