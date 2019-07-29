@@ -231,19 +231,11 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     stop("Class slot in 'wf_file' needs to be 'Workflow' or 'CommandLineTool'.")
   }
   if(!is.null(targets)) {
-    if(basename(targets)==targets) {
-      mytargets <- read.delim(file.path(dir_path, targets), comment.char = "#")
+      mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
       mytargets <- targets.as.list(mytargets)
-      targetsheader <- readLines(file.path(dir_path, targets))
+      targetsheader <- readLines(normalizePath(file.path(targets)))
       targetsheader <- targetsheader[grepl("^#", targetsheader)]
       WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
-    } else {
-      mytargets <- read.delim(file.path(targets), comment.char = "#")
-      mytargets <- targets.as.list(mytargets)
-      targetsheader <- readLines(file.path(targets))
-      targetsheader <- targetsheader[grepl("^#", targetsheader)]
-      WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
-    }
   } else {
     WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
   }
