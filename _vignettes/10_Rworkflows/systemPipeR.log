@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.6.7)  21 JUN 2019 16:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.6.7)  29 JUL 2019 09:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -918,7 +918,7 @@ LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 2.
 LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 7.98004pt on input line 20.
+(Font)              scaled to size 7.98004pt on input line 19.
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
@@ -957,72 +957,72 @@ LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <12> not available
 (Font)              Font shape `T1/fvm/m/sl' tried instead on input line 402.
 LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
 (Font)              scaled to size 9.57605pt on input line 402.
-[7] [8] [9] [10] [11] [12]
+[7] [8] [9]
+Underfull \vbox (badness 3657) detected at line 637
+ []
+
+[10] [11] [12]
 LaTeX Font Info:    Font shape `TS1/fvm/m/n' will be
 (Font)              scaled to size 7.98004pt on input line 815.
-[13] [14]
+[13]
 LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 11.49124pt on input line 944.
-[15] [16] [17] [18]
-Overfull \vbox (0.66812pt too high) detected at line 1245
+(Font)              scaled to size 11.49124pt on input line 900.
+[14] [15] [16] [17] [18] [19] [20] [21]
+Overfull \vbox (0.23303pt too high) detected at line 1402
  []
 
-[19]
-Overfull \vbox (0.23303pt too high) detected at line 1288
- []
-
-[20] [21]
-<systemPipeR_files/figure-latex/sample_tree_rlog-1.pdf, id=396, 512.91624pt x 3
+[22] [23]
+<systemPipeR_files/figure-latex/sample_tree_rlog-1.pdf, id=404, 512.91624pt x 3
 44.28625pt>
 File: systemPipeR_files/figure-latex/sample_tree_rlog-1.pdf Graphic file (type 
 pdf)
 <use systemPipeR_files/figure-latex/sample_tree_rlog-1.pdf>
 Package pdftex.def Info: systemPipeR_files/figure-latex/sample_tree_rlog-1.pdf 
- used on input line 1366.
+ used on input line 1480.
 (pdftex.def)             Requested size: 341.43721pt x 229.18387pt.
-[22 <./systemPipeR_files/figure-latex/sample_tree_rlog-1.pdf>]
-<systemPipeR_files/figure-latex/edger_deg_counts-1.pdf, id=410, 562.1pt x 349.3
+[24 <./systemPipeR_files/figure-latex/sample_tree_rlog-1.pdf>]
+<systemPipeR_files/figure-latex/edger_deg_counts-1.pdf, id=418, 562.1pt x 349.3
 05pt>
 File: systemPipeR_files/figure-latex/edger_deg_counts-1.pdf Graphic file (type 
 pdf)
 <use systemPipeR_files/figure-latex/edger_deg_counts-1.pdf>
 Package pdftex.def Info: systemPipeR_files/figure-latex/edger_deg_counts-1.pdf 
- used on input line 1429.
+ used on input line 1543.
 (pdftex.def)             Requested size: 341.431pt x 212.17497pt.
-[23]
-<systemPipeR_files/figure-latex/deseq2_deg_counts-1.pdf, id=416, 562.1pt x 349.
+[25]
+<systemPipeR_files/figure-latex/deseq2_deg_counts-1.pdf, id=425, 562.1pt x 349.
 305pt>
 File: systemPipeR_files/figure-latex/deseq2_deg_counts-1.pdf Graphic file (type
  pdf)
 <use systemPipeR_files/figure-latex/deseq2_deg_counts-1.pdf>
 Package pdftex.def Info: systemPipeR_files/figure-latex/deseq2_deg_counts-1.pdf
-  used on input line 1474.
+  used on input line 1588.
 (pdftex.def)             Requested size: 341.431pt x 212.17497pt.
-[24 <./systemPipeR_files/figure-latex/edger_deg_counts-1.pdf>]
-<systemPipeR_files/figure-latex/vennplot-1.pdf, id=429, 450.68375pt x 179.67125
+[26 <./systemPipeR_files/figure-latex/edger_deg_counts-1.pdf>]
+<systemPipeR_files/figure-latex/vennplot-1.pdf, id=439, 450.68375pt x 179.67125
 pt>
 File: systemPipeR_files/figure-latex/vennplot-1.pdf Graphic file (type pdf)
 <use systemPipeR_files/figure-latex/vennplot-1.pdf>
 Package pdftex.def Info: systemPipeR_files/figure-latex/vennplot-1.pdf  used on
- input line 1493.
+ input line 1607.
 (pdftex.def)             Requested size: 341.45041pt x 136.12387pt.
-[25 <./systemPipeR_files/figure-latex/deseq2_deg_counts-1.pdf> <./systemPipeR_f
-iles/figure-latex/vennplot-1.pdf>] [26]
-<GOslimbarplotMF.png, id=460, 722.7pt x 578.16pt>
+[27 <./systemPipeR_files/figure-latex/deseq2_deg_counts-1.pdf> <./systemPipeR_f
+iles/figure-latex/vennplot-1.pdf>] [28]
+<GOslimbarplotMF.png, id=468, 722.7pt x 578.16pt>
 File: GOslimbarplotMF.png Graphic file (type png)
 <use GOslimbarplotMF.png>
-Package pdftex.def Info: GOslimbarplotMF.png  used on input line 1580.
+Package pdftex.def Info: GOslimbarplotMF.png  used on input line 1694.
 (pdftex.def)             Requested size: 384.10986pt x 307.28789pt.
-[27] [28 <./GOslimbarplotMF.png>] [29] [30] [31]
-Underfull \vbox (badness 10000) detected at line 1925
+[29] [30 <./GOslimbarplotMF.png>] [31] [32] [33]
+Underfull \vbox (badness 10000) detected at line 2039
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1925
+Underfull \vbox (badness 10000) detected at line 2039
  []
 
-[32]
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 1938
+[34]
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 2052
 .
 (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -1030,54 +1030,54 @@ File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 1938
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 2052
 .
 (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 193
-8.
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 205
+2.
 (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 193
-8.
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 205
+2.
 (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 1938.
+(Font)              <10> on input line 2052.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 1938.
+(Font)              <7> on input line 2052.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 1938.
-LaTeX Font Info:    Try loading font information for U+msa on input line 1938.
+(Font)              <5> on input line 2052.
+LaTeX Font Info:    Try loading font information for U+msa on input line 2052.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 1938.
+LaTeX Font Info:    Try loading font information for U+msb on input line 2052.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
-) [33]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1976.
-[34]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1976.
+) [35]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2090.
+[36]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 2090.
 (./systemPipeR.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1976.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1976.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2090.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2090.
 
 Package rerunfilecheck Info: File `systemPipeR.out' has not changed.
-(rerunfilecheck)             Checksum: 63FBE596128F95B1E47A7B9F70E0E42B;2841.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1976.
+(rerunfilecheck)             Checksum: F426B9C640D3C495383415D7D80406C8;2854.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2090.
  ) 
 Here is how much of TeX's memory you used:
- 14089 strings out of 494561
- 218187 string characters out of 6177455
- 360204 words of memory out of 5000000
+ 14091 strings out of 494561
+ 218225 string characters out of 6177455
+ 360230 words of memory out of 5000000
  17109 multiletter control sequences out of 15000+600000
  86671 words of font info for 135 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1091,10 +1091,10 @@ usr/share/texmf/fonts/type1/public/lm/lmssbx10.pfb></usr/share/texmf/fonts/type
 1/public/lm/lmsso10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic
 /uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb>
 </usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
-Output written on systemPipeR.pdf (34 pages, 319112 bytes).
+Output written on systemPipeR.pdf (36 pages, 323300 bytes).
 PDF statistics:
- 686 PDF objects out of 1000 (max. 8388607)
- 584 compressed objects within 6 object streams
- 204 named destinations out of 1000 (max. 500000)
+ 695 PDF objects out of 1000 (max. 8388607)
+ 591 compressed objects within 6 object streams
+ 206 named destinations out of 1000 (max. 500000)
  8514 words of extra memory for PDF output out of 10000 (max. 10000000)
 

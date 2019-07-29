@@ -1,6 +1,6 @@
 ---
 title: 2. Getting Started
-last_updated: Fri Jun 21 16:43:53 2019
+last_updated: Mon Jul 29 09:36:40 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
@@ -191,140 +191,6 @@ readComp(file = targetspath, format = "vector", delim = "-")
 ## [36] "A12-V12"
 ```
 
-## Structure of _`param`_ file and _`SYSargs`_ container
-
-The _`param`_ file defines the parameters of a chosen command-line software. The following shows the format of a sample _`param`_ file provided by this package. 
-
-
-```r
-parampath <- system.file("extdata", "tophat.param", package = "systemPipeR")
-read.delim(parampath, comment.char = "#")
-```
-
-```
-##      PairSet         Name
-## 1    modules         <NA>
-## 2    modules         <NA>
-## 3   software         <NA>
-## 4      cores           -p
-## 5      other         <NA>
-## 6   outfile1           -o
-## 7   outfile1         path
-## 8   outfile1       remove
-## 9   outfile1       append
-## 10  outfile1 outextension
-## 11 reference         <NA>
-## 12   infile1         <NA>
-## 13   infile1         path
-## 14   infile2         <NA>
-## 15   infile2         path
-##                                     Value
-## 1                           bowtie2/2.2.5
-## 2                           tophat/2.0.14
-## 3                                  tophat
-## 4                                       4
-## 5  -g 1 --segment-length 25 -i 30 -I 3000
-## 6                             <FileName1>
-## 7                              ./results/
-## 8                                    <NA>
-## 9                                 .tophat
-## 10              .tophat/accepted_hits.bam
-## 11                    ./data/tair10.fasta
-## 12                            <FileName1>
-## 13                                   <NA>
-## 14                            <FileName2>
-## 15                                   <NA>
-```
-
-The _`systemArgs`_ function imports the definitions of both the _`param`_ file
-and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_
-object (S4 class). To run the pipeline without command-line software, one can
-assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can
-start _`systemPipeR`_ workflows with pre-generated BAM files by providing a
-targets file where the _`FileName`_ column provides the paths to the BAM files.
-Note, in the following example the usage of _`suppressWarnings()`_ is only relevant for 
-building this vignette. In typical workflows it should be removed.
-
-
-```r
-args <- suppressWarnings(systemArgs(sysma = parampath, mytargets = targetspath))
-args
-```
-
-```
-## An instance of 'SYSargs' for running 'tophat' on 18 samples
-```
-
-Several accessor methods are available that are named after the slot names of the _`SYSargs`_ object. 
-
-
-```r
-names(args)
-```
-
-```
-##  [1] "targetsin"     "targetsout"    "targetsheader"
-##  [4] "modules"       "software"      "cores"        
-##  [7] "other"         "reference"     "results"      
-## [10] "infile1"       "infile2"       "outfile1"     
-## [13] "sysargs"       "outpaths"
-```
-
-Of particular interest is the _`sysargs()`_ method. It constructs the system
-commands for running command-lined software as specified by a given _`param`_
-file combined with the paths to the input samples (_e.g._ FASTQ files) provided
-by a _`targets`_ file. The example below shows the _`sysargs()`_ output for
-running TopHat2 on the first PE read sample. Evaluating the output of
-_`sysargs()`_ can be very helpful for designing and debugging _`param`_ files
-of new command-line software or changing the parameter settings of existing
-ones.  
-
-
-```r
-sysargs(args)[1]
-```
-
-```
-##                                                                                                                                                                                                                                                                                                                                                 M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz"
-```
-
-```r
-modules(args)
-```
-
-```
-## [1] "bowtie2/2.2.5" "tophat/2.0.14"
-```
-
-```r
-cores(args)
-```
-
-```
-## [1] 4
-```
-
-```r
-outpaths(args)[1]
-```
-
-```
-##                                                                                                                                            M1A 
-## "/home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
-```
-
-The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).
-
-
-```r
-systemArgs(sysma = parampath, mytargets = targetspath, type = "json")
-```
-
-```
-## [1] "{\"modules\":{\"n1\":\"\",\"v2\":\"bowtie2/2.2.5\",\"n1\":\"\",\"v2\":\"tophat/2.0.14\"},\"software\":{\"n1\":\"\",\"v1\":\"tophat\"},\"cores\":{\"n1\":\"-p\",\"v1\":\"4\"},\"other\":{\"n1\":\"\",\"v1\":\"-g 1 --segment-length 25 -i 30 -I 3000\"},\"outfile1\":{\"n1\":\"-o\",\"v2\":\"<FileName1>\",\"n3\":\"path\",\"v4\":\"./results/\",\"n5\":\"remove\",\"v1\":\"\",\"n2\":\"append\",\"v3\":\".tophat\",\"n4\":\"outextension\",\"v5\":\".tophat/accepted_hits.bam\"},\"reference\":{\"n1\":\"\",\"v1\":\"./data/tair10.fasta\"},\"infile1\":{\"n1\":\"\",\"v2\":\"<FileName1>\",\"n1\":\"path\",\"v2\":\"\"},\"infile2\":{\"n1\":\"\",\"v2\":\"<FileName2>\",\"n1\":\"path\",\"v2\":\"\"}}"
-```
-
 ## Structure of the new _`param`_ file and construct _`SYSargs2`_ container
 
 _`SYSargs2`_ stores all the information and instructions needed for processing
@@ -506,6 +372,140 @@ input/output file operations with any combination of command-line or R-based
 software. Alternatively, a CWL-centric workflow design can be used that defines
 all/most workflow steps with CWL workflow and parameter files. Due to time and
 space restrictions the CWL-centric approach is not covered by this tutorial. 
+
+## Structure of _`param`_ file and _`SYSargs`_ container
+
+The _`param`_ file defines the parameters of a chosen command-line software. The following shows the format of a sample _`param`_ file provided by this package. 
+
+
+```r
+parampath <- system.file("extdata", "tophat.param", package = "systemPipeR")
+read.delim(parampath, comment.char = "#")
+```
+
+```
+##      PairSet         Name
+## 1    modules         <NA>
+## 2    modules         <NA>
+## 3   software         <NA>
+## 4      cores           -p
+## 5      other         <NA>
+## 6   outfile1           -o
+## 7   outfile1         path
+## 8   outfile1       remove
+## 9   outfile1       append
+## 10  outfile1 outextension
+## 11 reference         <NA>
+## 12   infile1         <NA>
+## 13   infile1         path
+## 14   infile2         <NA>
+## 15   infile2         path
+##                                     Value
+## 1                           bowtie2/2.2.5
+## 2                           tophat/2.0.14
+## 3                                  tophat
+## 4                                       4
+## 5  -g 1 --segment-length 25 -i 30 -I 3000
+## 6                             <FileName1>
+## 7                              ./results/
+## 8                                    <NA>
+## 9                                 .tophat
+## 10              .tophat/accepted_hits.bam
+## 11                    ./data/tair10.fasta
+## 12                            <FileName1>
+## 13                                   <NA>
+## 14                            <FileName2>
+## 15                                   <NA>
+```
+
+The _`systemArgs`_ function imports the definitions of both the _`param`_ file
+and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_
+object (S4 class). To run the pipeline without command-line software, one can
+assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can
+start _`systemPipeR`_ workflows with pre-generated BAM files by providing a
+targets file where the _`FileName`_ column provides the paths to the BAM files.
+Note, in the following example the usage of _`suppressWarnings()`_ is only relevant for 
+building this vignette. In typical workflows it should be removed.
+
+
+```r
+args <- suppressWarnings(systemArgs(sysma = parampath, mytargets = targetspath))
+args
+```
+
+```
+## An instance of 'SYSargs' for running 'tophat' on 18 samples
+```
+
+Several accessor methods are available that are named after the slot names of the _`SYSargs`_ object. 
+
+
+```r
+names(args)
+```
+
+```
+##  [1] "targetsin"     "targetsout"    "targetsheader"
+##  [4] "modules"       "software"      "cores"        
+##  [7] "other"         "reference"     "results"      
+## [10] "infile1"       "infile2"       "outfile1"     
+## [13] "sysargs"       "outpaths"
+```
+
+Of particular interest is the _`sysargs()`_ method. It constructs the system
+commands for running command-lined software as specified by a given _`param`_
+file combined with the paths to the input samples (_e.g._ FASTQ files) provided
+by a _`targets`_ file. The example below shows the _`sysargs()`_ output for
+running TopHat2 on the first PE read sample. Evaluating the output of
+_`sysargs()`_ can be very helpful for designing and debugging _`param`_ files
+of new command-line software or changing the parameter settings of existing
+ones.  
+
+
+```r
+sysargs(args)[1]
+```
+
+```
+##                                                                                                                                                                                                                                                                                                                                                 M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz"
+```
+
+```r
+modules(args)
+```
+
+```
+## [1] "bowtie2/2.2.5" "tophat/2.0.14"
+```
+
+```r
+cores(args)
+```
+
+```
+## [1] 4
+```
+
+```r
+outpaths(args)[1]
+```
+
+```
+##                                                                                                                                            M1A 
+## "/home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
+```
+
+The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).
+
+
+```r
+systemArgs(sysma = parampath, mytargets = targetspath, type = "json")
+```
+
+```
+## [1] "{\"modules\":{\"n1\":\"\",\"v2\":\"bowtie2/2.2.5\",\"n1\":\"\",\"v2\":\"tophat/2.0.14\"},\"software\":{\"n1\":\"\",\"v1\":\"tophat\"},\"cores\":{\"n1\":\"-p\",\"v1\":\"4\"},\"other\":{\"n1\":\"\",\"v1\":\"-g 1 --segment-length 25 -i 30 -I 3000\"},\"outfile1\":{\"n1\":\"-o\",\"v2\":\"<FileName1>\",\"n3\":\"path\",\"v4\":\"./results/\",\"n5\":\"remove\",\"v1\":\"\",\"n2\":\"append\",\"v3\":\".tophat\",\"n4\":\"outextension\",\"v5\":\".tophat/accepted_hits.bam\"},\"reference\":{\"n1\":\"\",\"v1\":\"./data/tair10.fasta\"},\"infile1\":{\"n1\":\"\",\"v2\":\"<FileName1>\",\"n1\":\"path\",\"v2\":\"\"},\"infile2\":{\"n1\":\"\",\"v2\":\"<FileName2>\",\"n1\":\"path\",\"v2\":\"\"}}"
+```
 
 <br><br><center><a href="mydoc_systemPipeR_1.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeR_3.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

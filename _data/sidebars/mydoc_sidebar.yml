@@ -28,7 +28,6 @@ entries:
       output: web, pdf
       type: homepage
  
-
   - title: NGS Workflow Overview
     output: web, pdf
     folderitems:

@@ -1,6 +1,6 @@
 ---
 title: 3. Workflow overview
-last_updated: Fri Jun 21 16:43:53 2019
+last_updated: Mon Jul 29 09:36:40 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_3.html
 ---
@@ -103,10 +103,8 @@ seeFastqPlot(fqlist)
 dev.off()
 ```
 
-
 <center><img src="./pages/mydoc/systemPipeR_files/fastqReport.png"></center>
 <div align="center">**Figure 5:** FASTQ quality report </div>
-
 
 Parallelization of QC report on single machine with multiple cores
 
@@ -136,45 +134,6 @@ param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.
     resources = resources)
 fqlist <- bplapply(seq(along = args), f, BPPARAM = param)
 seeFastqPlot(unlist(fqlist, recursive = FALSE))
-```
-
-## Alignment with _`Tophat2`_ using _`SYSargs`_ 
-
-Build _`Bowtie2`_ index.
-
-
-```r
-args <- systemArgs(sysma = "param/tophat.param", mytargets = "targets.txt")
-moduleload(modules(args))  # Skip if module system is not available
-system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-```
-
-Execute _`SYSargs`_ on a single machine without submitting to a queuing system of a compute cluster. This way the input FASTQ files will be processed sequentially. If available, multiple CPU cores can be used for processing each file. The number of CPU cores (here 4) to use for each process is defined in the _`*.param`_ file. With _`cores(args)`_ one can return this value from the _`SYSargs`_ object. Note, if a module system is not installed or used, then the corresponding _`*.param`_ file needs to be edited accordingly by either providing an empty field in the line(s) starting with _`module`_ or by deleting these lines.
-
-
-```r
-bampaths <- runCommandline(args = args)
-```
-
-Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from _`cores(args)`_ is passed on to the submission command, here _`nodes`_ in the _`resources`_ list object. The number of independent parallel cluster processes is defined under the _`Njobs`_ argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores. Note, _`clusterRun`_ can be used with most queueing systems as it is based on utilities from the _`batchtools`_ package which supports the use of template files (_`*.tmpl`_) for defining the run parameters of different schedulers. To run the following code, one needs to have both a conf file (see _`.batchtools.conf.R`_ samples [here](https://mllg.github.io/batchtools/)) and a template file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) for the queueing available on a system. The following example uses the sample conf and template files for the Slurm scheduler provided by this package.  
-
-
-```r
-resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
-    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
-waitForJobs(reg = reg)
-```
-
-Useful commands for monitoring progress of submitted jobs
-
-
-```r
-getStatus(reg = reg)
-file.exists(outpaths(args))
-sapply(1:length(args), function(x) loadResult(reg, id = x))
-# Works after job completion
 ```
 
 ## Alignment with `HISAT2` using _`SYSargs2`_
@@ -374,6 +333,45 @@ read_statsList <- bplapply(seq(along = args), f, BPPARAM = param)
 read_statsDF <- do.call("rbind", read_statsList)
 ```
 
+## Alignment with _`Tophat2`_ using _`SYSargs`_ 
+
+Build _`Bowtie2`_ index.
+
+
+```r
+args <- systemArgs(sysma = "param/tophat.param", mytargets = "targets.txt")
+moduleload(modules(args))  # Skip if module system is not available
+system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
+```
+
+Execute _`SYSargs`_ on a single machine without submitting to a queuing system of a compute cluster. This way the input FASTQ files will be processed sequentially. If available, multiple CPU cores can be used for processing each file. The number of CPU cores (here 4) to use for each process is defined in the _`*.param`_ file. With _`cores(args)`_ one can return this value from the _`SYSargs`_ object. Note, if a module system is not installed or used, then the corresponding _`*.param`_ file needs to be edited accordingly by either providing an empty field in the line(s) starting with _`module`_ or by deleting these lines.
+
+
+```r
+bampaths <- runCommandline(args = args)
+```
+
+Alternatively, the computation can be greatly accelerated by processing many files in parallel using several compute nodes of a cluster, where a scheduling/queuing system is used for load balancing. To avoid over-subscription of CPU cores on the compute nodes, the value from _`cores(args)`_ is passed on to the submission command, here _`nodes`_ in the _`resources`_ list object. The number of independent parallel cluster processes is defined under the _`Njobs`_ argument. The following example will run 18 processes in parallel using for each 4 CPU cores. If the resources available on a cluster allow to run all 18 processes at the same time then the shown sample submission will utilize in total 72 CPU cores. Note, _`clusterRun`_ can be used with most queueing systems as it is based on utilities from the _`batchtools`_ package which supports the use of template files (_`*.tmpl`_) for defining the run parameters of different schedulers. To run the following code, one needs to have both a conf file (see _`.batchtools.conf.R`_ samples [here](https://mllg.github.io/batchtools/)) and a template file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) for the queueing available on a system. The following example uses the sample conf and template files for the Slurm scheduler provided by this package.  
+
+
+```r
+resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
+    memory = 1024)
+reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
+    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
+waitForJobs(reg = reg)
+```
+
+Useful commands for monitoring progress of submitted jobs
+
+
+```r
+getStatus(reg = reg)
+file.exists(outpaths(args))
+sapply(1:length(args), function(x) loadResult(reg, id = x))
+# Works after job completion
+```
+
 ## Create new targets file
 
 To establish the connectivity to the next workflow step, one can write a new
@@ -402,11 +400,29 @@ symLink2bam(sysargs = args, htmldir = c("~/.html/", "somedir/"),
 
 The following example runs _`Bowtie2`_ as a single process without submitting it to a cluster.
 
+Build the index:
 
 ```r
-args <- systemArgs(sysma = "param/bowtieSE.param", mytargets = "targets.txt")
-moduleload(modules(args))  # Skip if module system is not available
-bampaths <- runCommandline(args = args)
+targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+bowtie.index <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-index.cwl", 
+    input_file = "bowtie2-mapping-pe.yml", dir_path = "param/cwl/bowtie-pe/")
+bowtie.index <- renderWF(bowtie.index, inputvars = c(FileName1 = "_FASTQ_PATH1_"))
+bowtie.index
+cmdlist(bowtie.index)
+
+runCommandline(bowtie.index[1])
+```
+
+Running the software:
+
+```r
+bowtiePE <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-mapping-pe.cwl", 
+    input_file = "bowtie2-mapping-pe.yml", dir_path = "param/cwl/bowtie-pe/")
+bowtiePE <- renderWF(bowtiePE, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
+    FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+bowtiePE
+cmdlist(bowtiePE)
+runCommandline(bowtiePE)
 ```
 
 Alternatively, submit the job to compute nodes.
@@ -415,9 +431,24 @@ Alternatively, submit the job to compute nodes.
 ```r
 resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
     memory = 1024)
-reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
-    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
-waitForJobs(reg = reg)
+reg <- clusterRun(bowtiePE, FUN = runCommandline, more.args = list(args = bowtiePE, 
+    dir = FALSE), conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
+    Njobs = 18, runid = "01", resourceList = resources)
+getStatus(reg = reg)
+```
+
+Bowtie2 alignment for single-ended reads as a single process:
+
+```r
+targetsSE <- system.file("extdata", "targets.txt", package = "systemPipeR")
+dir_path <- "param/cwl/bowtie-se/"
+bowtieSE <- loadWorkflow(targets = targetsSE, wf_file = "bowtie2-mapping-se.cwl", 
+    input_file = "bowtie2-mapping-se.yml", dir_path = "param/cwl/bowtie-se/")
+bowtieSE <- renderWF(bowtieSE, inputvars = c(FileName = "_FASTQ_PATH_", 
+    SampleName = "_SampleName_"))
+bowtieSE
+cmdlist(bowtieSE)
+runCommandline(bowtieSE)
 ```
 
 ### Alignment with _`BWA-MEM`_ (_e.g._ for VAR-Seq)
@@ -426,10 +457,82 @@ The following example runs BWA-MEM as a single process without submitting it to 
 
 
 ```r
-args <- systemArgs(sysma = "param/bwa.param", mytargets = "targets.txt")
-moduleload(modules(args))  # Skip if module system is not available
+targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+bwa.pe <- loadWorkflow(targets = targetsPE, wf_file = "bwa-pe.cwl", 
+    input_file = "bwa-pe.yml", dir_path = "param/cwl/bwa-pe")
+bwa.pe <- renderWF(bwa.pe, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
+    FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+bwa.pe
+cmdlist(bwa.pe)
+
 system("bwa index -a bwtsw ./data/tair10.fasta")  # Indexes reference genome
-bampaths <- runCommandline(args = args[1:2])
+
+## Single Machine
+source("runCommandline2.R")
+runCommandline2(args = bwa.pe[1], make_bam = FALSE)
+
+## Cluster
+library(batchtools)
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+source("runCommandline2.R")
+reg <- clusterRun(bwa.pe, FUN = runCommandline2, more.args = list(dir = FALSE), 
+    conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
+    Njobs = 18, runid = "01", resourceList = resources)
+getStatus(reg = reg)
+```
+
+BWA Workflow PE:
+
+```r
+targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+dir_path <- "param/cwl/workflow-bwa-pe/"
+bwa.pe <- loadWorkflow(targets = targetsPE, wf_file = "workflow_bwa-pe.cwl", 
+    input_file = "workflow_bwa-pe.yml", dir_path = dir_path)
+bwa.pe <- renderWF(bwa.pe, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
+    FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+bwa.pe
+cmdlist(bwa.pe)
+
+## Single Machine
+source("runCommandline2.R")
+runCommandline2(args = bwa.pe[1], make_bam = FALSE)
+
+## Cluster
+library(batchtools)
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+source("runCommandline2.R")
+reg <- clusterRun(bwa.pe, FUN = runCommandline2, more.args = list(args = bwa.pe, 
+    make_bam = FALSE, dir = FALSE), conffile = ".batchtools.conf.R", 
+    template = "batchtools.slurm.tmpl", Njobs = 18, runid = "01", 
+    resourceList = resources)
+getStatus(reg = reg)
+```
+
+BWA Workflow SE
+
+```r
+targetsSE <- system.file("extdata", "targets.txt", package = "systemPipeR")
+dir_path <- "param/cwl/workflow-bwa-se/"
+bwa.se <- loadWorkflow(targets = targetsSE, wf_file = "workflow_bwa-se.cwl", 
+    input_file = "workflow_bwa-se.yml", dir_path = dir_path)
+bwa.se <- renderWF(bwa.se, inputvars = c(FileName = "_FASTQ_PATH_", 
+    SampleName = "_SampleName_"))
+bwa.se
+cmdlist(bwa.se)
+
+## Single Machine
+source("runCommandline2.R")
+runCommandline2(args = bwa.se[1], make_bam = FALSE)
+
+## Cluster
+library(batchtools)
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+source("runCommandline2.R")
+reg <- clusterRun(bwa.se, FUN = runCommandline2, more.args = list(args = bwa.se, 
+    make_bam = FALSE, dir = FALSE), conffile = ".batchtools.conf.R", 
+    template = "batchtools.slurm.tmpl", Njobs = 18, runid = "01", 
+    resourceList = resources)
+getStatus(reg = reg)
 ```
 
 ### Alignment with _`Rsubread`_ (_e.g._ for RNA-Seq)

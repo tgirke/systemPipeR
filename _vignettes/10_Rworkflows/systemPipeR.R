@@ -72,31 +72,6 @@ readLines(targetspath)[1:4]
 readComp(file=targetspath, format="vector", delim="-")
 
 
-## ----param_structure, eval=TRUE------------------------------------------
-parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
-read.delim(parampath, comment.char = "#")
-
-
-## ----param_import, eval=TRUE---------------------------------------------
-args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
-args
-
-
-## ----sysarg_access, eval=TRUE--------------------------------------------
-names(args)
-
-
-## ----sysarg_access2, eval=TRUE-------------------------------------------
-sysargs(args)[1]
-modules(args)
-cores(args)
-outpaths(args)[1]
-
-
-## ----sysarg_json, eval=TRUE----------------------------------------------
-systemArgs(sysma=parampath, mytargets=targetspath, type="json")
-
-
 ## ----CWL_structure, eval=FALSE-------------------------------------------
 ## hisat2.cwl <- system.file("extdata", "cwl/hisat2-se/hisat2-mapping-se.cwl", package="systemPipeR")
 ## yaml::read_yaml(hisat2.cwl)
@@ -134,6 +109,31 @@ inputvars(WF)
 
 ## ----output_WF, eval=TRUE------------------------------------------------
 output(WF)[1]
+
+
+## ----param_structure, eval=TRUE------------------------------------------
+parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
+read.delim(parampath, comment.char = "#")
+
+
+## ----param_import, eval=TRUE---------------------------------------------
+args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
+args
+
+
+## ----sysarg_access, eval=TRUE--------------------------------------------
+names(args)
+
+
+## ----sysarg_access2, eval=TRUE-------------------------------------------
+sysargs(args)[1]
+modules(args)
+cores(args)
+outpaths(args)[1]
+
+
+## ----sysarg_json, eval=TRUE----------------------------------------------
+systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 
 
 ## ----load_package, eval=FALSE--------------------------------------------
@@ -193,35 +193,10 @@ output(WF)[1]
 ## seeFastqPlot(unlist(fqlist, recursive=FALSE))
 
 
-## ----bowtie_index, eval=FALSE--------------------------------------------
-## args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-## moduleload(modules(args)) # Skip if module system is not available
-## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-
-
-## ----run_bowtie_single, eval=FALSE---------------------------------------
-## bampaths <- runCommandline(args=args)
-
-
-## ----run_bowtie_parallel, eval=FALSE-------------------------------------
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
-## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
-## waitForJobs(reg=reg)
-
-
-## ----process_monitoring, eval=FALSE--------------------------------------
-## getStatus(reg=reg)
-## file.exists(outpaths(args))
-## sapply(1:length(args), function(x) loadResult(reg, id=x))
-## # Works after job completion
-
-
 ## ----hisat_alignment2, eval=TRUE-----------------------------------------
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2-se", package="systemPipeR")
-align <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl",
-                   input_file="hisat2-mapping-se.yml",
-                   dir_path=dir_path)
+align <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
 align <- renderWF(align, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
 align
 
@@ -294,6 +269,29 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## read_statsDF <- do.call("rbind", read_statsList)
 
 
+## ----bowtie_index, eval=FALSE--------------------------------------------
+## args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
+## moduleload(modules(args)) # Skip if module system is not available
+## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
+
+
+## ----run_bowtie_single, eval=FALSE---------------------------------------
+## bampaths <- runCommandline(args=args)
+
+
+## ----run_bowtie_parallel, eval=FALSE-------------------------------------
+## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+## waitForJobs(reg=reg)
+
+
+## ----process_monitoring, eval=FALSE--------------------------------------
+## getStatus(reg=reg)
+## file.exists(outpaths(args))
+## sapply(1:length(args), function(x) loadResult(reg, id=x))
+## # Works after job completion
+
+
 ## ----writeTargetsout, eval=FALSE-----------------------------------------
 ## names(clt(align))
 ## writeTargetsout(x=align, file="default", step=1)
@@ -305,23 +303,118 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ##         urlfile="IGVurl.txt")
 
 
-## ----bowtie2, eval=FALSE-------------------------------------------------
-## args <- systemArgs(sysma="param/bowtieSE.param", mytargets="targets.txt")
-## moduleload(modules(args)) # Skip if module system is not available
-## bampaths <- runCommandline(args=args)
+## ----bowtie2_index2, eval=FALSE------------------------------------------
+## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+## bowtie.index <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-index.cwl",
+##     input_file = "bowtie2-mapping-pe.yml", dir_path = "param/cwl/bowtie-pe/")
+## bowtie.index <- renderWF(bowtie.index, inputvars = c(FileName1 = "_FASTQ_PATH1_"))
+## bowtie.index
+## cmdlist(bowtie.index)
+## 
+## runCommandline(bowtie.index[1])
+
+
+## ----bowtie2_index, eval=FALSE-------------------------------------------
+## bowtiePE <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-mapping-pe.cwl",
+##     input_file = "bowtie2-mapping-pe.yml", dir_path = "param/cwl/bowtie-pe/")
+## bowtiePE <- renderWF(bowtiePE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
+##     SampleName = "_SampleName_"))
+## bowtiePE
+## cmdlist(bowtiePE)
+## runCommandline(bowtiePE)
 
 
 ## ----bowtie2_cluster, eval=FALSE-----------------------------------------
 ## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
-## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
-## waitForJobs(reg=reg)
+## reg <- clusterRun(bowtiePE, FUN = runCommandline, more.args = list(args=bowtiePE, dir = FALSE),
+##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##     Njobs = 18, runid = "01", resourceList = resources)
+## getStatus(reg = reg)
 
 
-## ----bwamem_cluster, eval=FALSE------------------------------------------
-## args <- systemArgs(sysma="param/bwa.param", mytargets="targets.txt")
-## moduleload(modules(args)) # Skip if module system is not available
-## system("bwa index -a bwtsw ./data/tair10.fasta") # Indexes reference genome
-## bampaths <- runCommandline(args=args[1:2])
+## ----bowtie2-se, eval=FALSE----------------------------------------------
+## targetsSE <- system.file("extdata", "targets.txt", package = "systemPipeR")
+## dir_path <- "param/cwl/bowtie-se/"
+## bowtieSE <- loadWorkflow(targets = targetsSE, wf_file = "bowtie2-mapping-se.cwl",
+##     input_file = "bowtie2-mapping-se.yml", dir_path = "param/cwl/bowtie-se/")
+## bowtieSE <- renderWF(bowtieSE, inputvars = c(FileName = "_FASTQ_PATH_",
+##     SampleName = "_SampleName_"))
+## bowtieSE
+## cmdlist(bowtieSE)
+## runCommandline(bowtieSE)
+
+
+## ----bwa-pe_alignment22, eval=FALSE--------------------------------------
+## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+## bwa.pe <- loadWorkflow(targets = targetsPE, wf_file = "bwa-pe.cwl",
+##     input_file = "bwa-pe.yml", dir_path = "param/cwl/bwa-pe")
+## bwa.pe <- renderWF(bwa.pe, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
+##     SampleName = "_SampleName_"))
+## bwa.pe
+## cmdlist(bwa.pe)
+## 
+## system("bwa index -a bwtsw ./data/tair10.fasta")  # Indexes reference genome
+## 
+## ## Single Machine
+## source("runCommandline2.R")
+## runCommandline2(args= bwa.pe[1], make_bam=FALSE)
+## 
+## ## Cluster
+## library(batchtools)
+## resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+## source("runCommandline2.R")
+## reg <- clusterRun(bwa.pe, FUN = runCommandline2, more.args = list(dir = FALSE),
+##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##     Njobs = 18, runid = "01", resourceList = resources)
+## getStatus(reg = reg)
+
+
+## ----bwa-pe_alignment21, eval=FALSE--------------------------------------
+## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+## dir_path <- "param/cwl/workflow-bwa-pe/"
+## bwa.pe <- loadWorkflow(targets = targetsPE, wf_file = "workflow_bwa-pe.cwl",
+##     input_file = "workflow_bwa-pe.yml", dir_path = dir_path)
+## bwa.pe <- renderWF(bwa.pe, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
+##     SampleName = "_SampleName_"))
+## bwa.pe
+## cmdlist(bwa.pe)
+## 
+## ## Single Machine
+## source("runCommandline2.R")
+## runCommandline2(args= bwa.pe[1], make_bam=FALSE)
+## 
+## ## Cluster
+## library(batchtools)
+## resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+## source("runCommandline2.R")
+## reg <- clusterRun(bwa.pe, FUN = runCommandline2, more.args = list(args= bwa.pe, make_bam=FALSE, dir = FALSE),
+##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##     Njobs = 18, runid = "01", resourceList = resources)
+## getStatus(reg = reg)
+
+
+## ----bwa-pe_alignment2, eval=FALSE---------------------------------------
+## targetsSE <- system.file("extdata", "targets.txt", package = "systemPipeR")
+## dir_path <- "param/cwl/workflow-bwa-se/"
+## bwa.se <- loadWorkflow(targets = targetsSE, wf_file = "workflow_bwa-se.cwl",
+##     input_file = "workflow_bwa-se.yml", dir_path = dir_path)
+## bwa.se <- renderWF(bwa.se, inputvars = c(FileName = "_FASTQ_PATH_",
+##     SampleName = "_SampleName_"))
+## bwa.se
+## cmdlist(bwa.se)
+## 
+## ## Single Machine
+## source("runCommandline2.R")
+## runCommandline2(args= bwa.se[1], make_bam=FALSE)
+## 
+## ## Cluster
+## library(batchtools)
+## resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+## source("runCommandline2.R")
+## reg <- clusterRun(bwa.se, FUN = runCommandline2, more.args = list(args= bwa.se, make_bam=FALSE, dir = FALSE),
+##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##     Njobs = 18, runid = "01", resourceList = resources)
+## getStatus(reg = reg)
 
 
 ## ----rsubread, eval=FALSE------------------------------------------------
