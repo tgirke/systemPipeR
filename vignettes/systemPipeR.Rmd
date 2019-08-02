@@ -709,7 +709,7 @@ runCommandline(bowtie.index[1])
 ```
 
 Running the software:
-```{r bowtie2_index, eval=FALSE}
+```{r bowtie2_index22, eval=FALSE}
 bowtiePE <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-mapping-pe.cwl", 
     input_file = "bowtie2-mapping-pe.yml", dir_path = "param/cwl/bowtie-pe/")
 bowtiePE <- renderWF(bowtiePE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
@@ -746,7 +746,7 @@ runCommandline(bowtieSE)
 
 The following example runs BWA-MEM as a single process without submitting it to a cluster.
 
-```{r bwa-pe_alignment2, eval=FALSE}    
+```{r bwa-pe_alignment24, eval=FALSE}    
 targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 bwa.pe <- loadWorkflow(targets = targetsPE, wf_file = "bwa-pe.cwl", 
     input_file = "bwa-pe.yml", dir_path = "param/cwl/bwa-pe")
@@ -797,7 +797,7 @@ getStatus(reg = reg)
 ```
 
 BWA Workflow SE
-```{r bwa-pe_alignment2, eval=FALSE}    
+```{r bwa-pe_alignment21, eval=FALSE}    
 targetsSE <- system.file("extdata", "targets.txt", package = "systemPipeR")
 dir_path <- "param/cwl/workflow-bwa-se/"
 bwa.se <- loadWorkflow(targets = targetsSE, wf_file = "workflow_bwa-se.cwl", 
