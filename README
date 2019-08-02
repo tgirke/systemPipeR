@@ -1,4 +1,8 @@
 changelog
+     version 1.19.04
+        - SYSargs2 accepting many outputs file under one cmdlist(WF) 
+        - Bugfix in 'pathInstance' function: removed NULL from the path
+ 
      version 1.19.03
         - Bugfix in 'loadWorkflow' function: it accepts "targets.txt" and "./targets.txt"
  

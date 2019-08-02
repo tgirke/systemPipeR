@@ -236,9 +236,9 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
       targetsheader <- readLines(normalizePath(file.path(targets)))
       targetsheader <- targetsheader[grepl("^#", targetsheader)]
       WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
-  } else {
-    WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
-  }
+      } else {
+        WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
+      }
   return(as(WF, "SYSargs2"))
 }
 
@@ -269,7 +269,12 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
     WF$yamlinput <- input
     WF <- as(WF, "SYSargs2")
     WF <- injectCommandlinelist(WF)
-    outfilelist <- sapply(names(cmdlist(WF)), function(x) cmdlist(WF)[[x]]$outputs[[1]][[1]], simplify=FALSE)
+    # outfilelist <- sapply(names(cmdlist(WF)), function(x) cmdlist(WF)[[x]]$outputs[[1]][[1]], simplify=FALSE)
+    outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
+    for(i in seq_along(outfilelist)) {
+      for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output)) 
+        outfilelist[[i]][[j]] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]][[1]]
+    }
     cmdlist <- renderCommandline(WF, redirect=">")
     inputvars <- as.list(inputvars)
     return(list(cmd=cmdlist, input=inputvarslist, output=outfilelist, inputvars=inputvars))
@@ -445,10 +450,11 @@ pathInstance <- function(pathvar, input, altinput) {
     if(any(pwdindex & nullindex)) {
         mypathvec[pwdindex & nullindex] <- "."
     }
+    mypathvec <- sapply(seq_along(mypathvec), function(x) if(is.null(mypathvec[[x]])) {mypathvec[[x]] <- ""} else {mypathvec[[x]] <- mypathvec[[x]]})
     ## Generate output
     mypath <- sapply(seq_along(mypathvec), function(x) paste0(mypathvec[x], extension[x]))
-	returnpath <- file.path(paste(mypath, collapse="/"))
-	return(returnpath)
+    returnpath <- file.path(paste(mypath, collapse="/"))
+    return(returnpath)
 }
 
 #################################################################
