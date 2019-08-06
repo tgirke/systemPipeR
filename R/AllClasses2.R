@@ -325,13 +325,16 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
     if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL")) 
     if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL")) 
     subset_output <- output(args)
-    subset_sample <- sapply(names(subset_output), function(x) list(NULL))
+    # subset_sample <- sapply(names(subset_output), function(x) list(NULL))
+    subset_sample <- as.character()
     if(!is.null(subset)) {
       for(i in seq_along(names(subset_output)))
-        subset_sample[[i]] <- subset_output[[i]][[subset]]
+        # subset_sample[[i]] <- subset_output[[i]][[subset]]
+        subset_sample <- c(subset_sample, subset_output[[i]][[subset]])
     } else {
       subset_sample <- subset_output
     }
+    names(subset_sample) <- rep(names(subset_output), each=length(subset_output[[1]][[1]]))
   }
   ## slot step
   if(slot %in% "step"){
@@ -347,7 +350,7 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
       subset_sample <- subset_step
     }
   }
-  ## IF subset=NULL returns a list OR character
+  ## IF subset=NULL returns a list 
   if(!is.null(subset)){
     names <- names(subset_sample)
     subset_sample <- as.character(subset_sample)
@@ -373,7 +376,7 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
 # subsetWF(WF, slot="input", subset='FileName')
 # subsetWF(WF, slot="step", subset=1)
 # subsetWF(WF, slot="output", subset=1)
-# subsetWF(WF, slot="output", subset=1, delete=TRUE) ## in order to delete the subset files list 
+# subsetWF(WF, slot="output", subset=1, delete=TRUE) ## in order to delete the subset files list
 
 #########################################################
 ## Update the output location after run runCommandline ##
