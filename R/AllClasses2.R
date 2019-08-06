@@ -214,6 +214,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   if(tolower(wf$class) == "workflow") { 
     steps <- names(wf$steps)
     cltpaths <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
+    ##TODO: allows different location of the commandlinetool files
     cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(dir_path, x)), simplify = F) 
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
     myinput <- sapply(names(cltlist), function(x) list(NULL))
