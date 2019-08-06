@@ -207,7 +207,6 @@ setReplaceMethod(f="[[", signature="SYSargs2", definition=function(x, i, j, valu
 loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   wf <- yaml::read_yaml(file.path(dir_path, wf_file))
   input <- yaml::read_yaml(file.path(dir_path, input_file))
-  
   modules <- input$ModulesToLoad
   if(is.null(modules)) modules <- list()   
   cwlfiles <- list(cwl=normalizePath(file.path(dir_path, wf_file)), yml=normalizePath(file.path(dir_path, input_file)))
@@ -251,6 +250,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
 ## Render WF for all samples in targets slot ##
 ###############################################
 renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
+  if(any(length(cmdlist(WF)[[1]])!=0)) stop("Argument 'WF' needs to be assigned an object of class 'SYSargs2' and an object created by the 'loadWorkflow' function")  
   ids <- names(targets(WF))
   if(length(ids)==0) ids <- "defaultid"
   bucket <- sapply(ids, function(x) "", simplify=FALSE)
@@ -377,48 +377,61 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
 #########################################################
 ## Update the output location after run runCommandline ##
 #########################################################
-output_update <- function(args, dir=TRUE, dir.name=NULL, replace=NULL){
+output_update <- function(args, dir=TRUE, dir.name=NULL, replace=FALSE, extension=NULL){
   ## Folder name provide in the yml file
   if(is.null(args$yamlinput$results_path$path)) {
     if(is.null(dir.name)) {
       stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
-    } else { logdir <- dir.name }
-  } else { logdir <- normalizePath(args$yamlinput$results_path$path) }
+    }}
+  if(is.null(dir.name)) {
+    logdir <- normalizePath(args$yamlinput$results_path$path) 
+  } else {
+    if(dir.exists(dir.name)==FALSE) {dir.create(dir.name)}
+    logdir <- normalizePath(dir.name)
+  }
+  if(replace!=FALSE){
+    if(is.null(extension)) {
+      stop("argument 'extension' missing. The argument can only be assigned 'NULL' when no replacement is required. The argument should be assigned as a character vector with the current extension and the new one.")  
+    }}
   ## Workflow Name
   cwl.wf <- strsplit(basename(cwlfiles(args)$cwl), split="\\.")[[1]]
   cwl.wf <- cwl.wf[[-2]]
-  
-  if(dir==TRUE & is.null(replace)){
+  if(dir==TRUE){
     args <- as(args, "list")
     for(i in seq_along(args$output)){
       for(j in seq_along(args$output[[i]])){
-        name <- strsplit(args$output[[i]][[j]], split="\\/")[[1]]
-        name <- name[length(name)]
-        args$output[[i]][[j]] <- paste0(logdir, "/", cwl.wf, "/", names(args$output[i]), "/", name)
-      }
-    }
-  } else if(dir==FALSE & !is.null(replace)){
-    args <- as(args, "list")
-    for(i in seq_along(args$output)){
-      for(j in seq_along(args$output[[i]])){
-        args$output[[i]][[j]] <- paste0(logdir, "/", names(args$output[i]), replace)
-      }
-    }
-  } else if(dir==TRUE & !is.null(replace)){
-    args <- as(args, "list")
-    for(i in seq_along(args$output)){
-      for(j in seq_along(args$output[[i]])){
-        args$output[[i]][[j]] <- paste0(logdir, "/", cwl.wf, "/", names(args$output[i]), "/", names(args$output[i]), replace)
+        for(k in seq_along(args$output[[i]][[j]])){
+          name <- strsplit(args$output[[i]][[j]][k], split="\\/")[[1]]
+          name <- name[length(name)]
+          args$output[[i]][[j]][k] <- paste0(logdir, "/", cwl.wf, "/", names(args$output[i]), "/", name)
+        }
       }
     }
   }
+  if(replace==TRUE){
+    args <- as(args, "list")
+    for(i in seq_along(args$output)){
+      for(j in seq_along(args$output[[i]])){
+        for(k in seq_along(args$output[[i]][[j]])){
+          name <- strsplit(args$output[[i]][[j]][k], split="\\/")[[1]]
+          name <- name[length(name)]
+          dir <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
+          if(grepl(extension[1], name)){
+            args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", names(args$output[i]), extension[2])))
+          } else {
+            args$output[[i]][[j]][k] <- args$output[[i]][[j]][k]
+          }
+        }
+      }
+    }
+  } 
   return(as(args, "SYSargs2"))
 }
 
 ## Usage:
 # WF <- output_update(WF)
-# WF <- output_update(WF, dir=FALSE, replace=".bam")
-# WF <- output_update(WF, dir=TRUE, replace=".bam")
+# WF <- output_update(WF, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
+# WF <- output_update(WF, dir=TRUE, replace=TRUE, extension=c(".sam", ".bam"))
 
 ##################################
 ## Unexported helper functions ##

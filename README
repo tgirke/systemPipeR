@@ -1,5 +1,6 @@
 changelog
      version 1.19.04
+	- Updated 'output_update' function
         - SYSargs2 accepting many outputs file under one cmdlist(WF) 
         - Bugfix in 'pathInstance' function: removed NULL from the path
  
