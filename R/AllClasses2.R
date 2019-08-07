@@ -505,12 +505,14 @@ assembleCommandlineList <- function(clt=WF$clt[[1]]) {
     ## Base command and arguments
     basecommand <- clt$baseCommand
     arguments <- clt$arguments
-    for(i in seq_along(arguments)) arguments[[i]][["position"]] <- ""
-    ## Handling of special cases (here mkdir)
-    if(basecommand[1]=="mkdir") {
-        clt$inputs <- ""
-        clt$outputs[[1]]$type <- NULL
-    }
+    if(!is.null(arguments)){
+      for(i in seq_along(arguments)) arguments[[i]][["position"]] <- ""
+      }
+    # ## Handling of special cases (here mkdir)
+    # if(basecommand[1]=="mkdir") {
+    #     clt$inputs <- ""
+    #     clt$outputs[[1]]$type <- NULL
+    # }
     ## Inputs
     inputargs <- renderInputs(x=clt$inputs, returntags=list(inputBinding=c("prefix"), type="any"))
     ## Outputs
@@ -629,7 +631,8 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
                 cmd <- injectListbyName(l=cmd, cmdnamessub[[i]], value=stdoutstr, type="value") 
             }
         } else {
-            if(dropoutput==TRUE & x$baseCommand[1]!="mkdir") x <- x[names(x) != "outputs"] 
+          #if(dropoutput==TRUE & x$baseCommand[1]!="mkdir") x <- x[names(x) != "outputs"] 
+          if(dropoutput==TRUE) x <- x[names(x) != "outputs"] 
             cmd <- x
         }
         ## Collapse list to single string

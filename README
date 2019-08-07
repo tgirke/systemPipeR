@@ -1,5 +1,6 @@
 changelog
      version 1.19.03
+	- Removed special cases (`mkdir`)
 	- Updated 'subsetWF' function
 	- Updated 'runCommandline' function: accepting many outputs file under one cmdlist(WF); handle with BWA specials stderr; creates an index in cases of .bam files (ex. Tophat2); automatically create SYSargs2 object with output_update in cases of make_bam=TRUE and/or dir=TRUE 
 	- Updated 'output_update' function and help file
