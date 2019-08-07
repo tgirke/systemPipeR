@@ -433,8 +433,12 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
     if(is.null(args$yamlinput$results_path$path)) {
       if(is.null(dir.name)) {
         stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
-      } else { logdir <- dir.name }
-    } else { logdir <- normalizePath(args$yamlinput$results_path$path) 
+      }
+    }
+    if(is.null(dir.name)) {
+      logdir <- normalizePath(args$yamlinput$results_path$path) 
+    } else {
+      logdir <- paste(getwd(), "/results/", sep="")
     }
     args.return <- args
     ## Check what expected outputs have been generated
@@ -448,7 +452,11 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           outputList <- c(outputList, output(args)[[i]][[j]])
         }
       }
-      names(outputList) <- rep(names(output(args)), each=length(output(args)[[1]][[1]]))
+      if(length(output(args)[[1]][[1]])==1){
+        names(outputList) <- rep(names(output(args)), each=length(output(args)[[1]]))  
+      } else if(length(output(args)[[1]][[1]])>1){
+        names(outputList) <- rep(names(output(args)), each=length(output(args)[[1]][[1]])) 
+      }
     } else if(make_bam==TRUE) {
       if(any(grepl("samtools", names(clt(args))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'")} 
       args1 <- output_update(args, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
@@ -466,7 +474,12 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           }
         }
       }
-      names(outputList) <- rep(names(output(args)), each=length(output(args)[[1]][[1]])+1)
+      if(length(output(args)[[1]][[1]])==1){
+        names(outputList) <- rep(names(output(args)), each=length(output(args)[[1]])+1)  
+      } else if(length(output(args)[[1]][[1]])>1){
+        names(outputList) <- rep(names(output(args)), each=length(output(args)[[1]][[1]])+1) 
+      }
+      # names(outputList) <- rep(names(output(args)), each=length(output(args)[[1]])+1)
       args.return <- output_update(args.return, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
     }
     for(i in seq_along(cmdlist(args))){
@@ -512,6 +525,9 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
     }
     ## Create recursive the subfolders
     if(dir==TRUE){
+      if(!is.null(dir.name)){
+        cwl.wf <- dir.name
+      }
       for(i in seq_along(names(cmdlist(args)))){
         full_path <- paste0(logdir, "/", cwl.wf, "/", names(cmdlist(args)[i]))
         if(dir.exists(full_path)==FALSE){
