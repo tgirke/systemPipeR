@@ -1,5 +1,6 @@
 changelog
      version 1.19.03
+    - Updated writeTargetsout function (Allowing SYSargs2 object)
 	- Updated 'preprocessReads' function and help file
 	- Removed special cases (`mkdir`)
 	- Updated 'subsetWF' function

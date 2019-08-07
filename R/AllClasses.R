@@ -314,35 +314,49 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
       file <- file
     }
     headerlines <- targetsheader(x)
-  ## SYSargs2 class
+    ## SYSargs2 class
   } else if (class(x)=="SYSargs2") {
     if(is.null(step)) stop(paste("Argument 'step' needs to be assigned one of the following values:", paste(names(x$clt), collapse=", "), "OR the corresponding position"))
     if(all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step))) stop(paste("Argument 'step' can only be assigned one of the following values:", paste(names(x$clt), collapse=", "), "OR the corresponding position")) 
     if(all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step))) stop(paste("Argument 'step' can only be assigned one of the following position:", paste(seq_along(names(x$clt)), collapse=", "), "OR the corresponding names")) 
-    targetsout2 <- targets.as.df(targets(x))
-    targetsout2[,1] <- suppressWarnings(normalizePath(subsetWF(x, slot="output", step)))
-    colnames(targetsout2)[1] <- "FileName"
-    targets <- targetsout2[ ,!colnames(targetsout2) %in% "FileName2"]
+    targets <- targets.as.df(targets(x))
+    if(any(colnames(targets) %in% "FileName")){
+      for(i in which(colnames(targets) %in% "FileName")){
+        pout <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[1]], sep=""), simplify = F) 
+        targets[,i] <- as.character(pout)
+      }
+    } 
+    if(any(colnames(targets) %in% "FileName1")){
+      for(i in which(colnames(targets) %in% "FileName1")){
+        p1out <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[1]], sep=""), simplify = F) 
+        targets[,i] <- as.character(p1out)
+      }
+    } 
+    if(any(colnames(targets) %in% "FileName2")){
+      for(i in which(colnames(targets) %in% "FileName2")){
+        p2out <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[2]], sep=""), simplify = F) 
+        targets[,i] <- as.character(p2out)
+      }
+    }
     ## Workflow and Step Name
     software <- strsplit(basename(cwlfiles(x)$cwl), split="\\.")[[1]][1]
     if(is.character(step)) {
-      step <- strsplit(step, split="\\.")[[1]][1] }
-    else {
+      step <- strsplit(step, split="\\.")[[1]][1]
+    } else {
       step <- strsplit(names(x$clt)[step], split="\\.")[[1]][1]
     }
     if (file == "default") {
-      file <- paste("targets_", software, "_", step, ".txt", sep = "")
+      file <- paste("targets_", step, ".txt", sep = "")
       file <- gsub(" {1,}", "_", file)
-    }
-    else {
+    } else {
       file <- file
     }
     headerlines <- targetsheader(x)[[1]]
   }
-	if(file.exists(file) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
+  if(file.exists(file) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
   targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
   writeLines(c(headerlines, targetslines), file, ...)
-	if(silent!=TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
+  if(silent!=TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
 }
 
 ## Usage:
