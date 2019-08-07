@@ -429,13 +429,21 @@ genWorkenvir(workflow="rnaseq", mydirname=NULL)
 setwd("rnaseq")
 ```
 
-Construct _`SYSargs`_ object from _`param`_ and _`targets`_ files.
+Construct _`SYSargs2`_ object from _`cwl`_ and _`yml`_ param and _`targets`_ files.
 
 ```{r construct_SYSargs2_trim-se, eval=FALSE}
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- "param/cwl/trim-se"
 trim <- loadWorkflow(targets=targets, wf_file="trim-se.cwl", input_file="trim-se.yml", dir_path=dir_path)
 trim <- renderWF(trim, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+trim
+```
+
+```{r construct_SYSargs2_trim-pe, eval=FALSE}
+targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+dir_path <- "param/cwl/trim-pe"
+trim <- loadWorkflow(targets=targetsPE, wf_file="trim-pe.cwl", input_file="trim-pe.yml", dir_path=dir_path)
+trim <- renderWF(trim, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 trim
 ```
 
@@ -460,7 +468,7 @@ trimmed FASTQ files.
 preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', 
                 subject=fq)",
                 batchsize=100000, overwrite=TRUE, compress=TRUE)
-writeTargetsout(x=args, file="targets_trim.txt")
+writeTargetsout(x=trim, file="targets_trim.txt")
 ```
 
 The following example shows how one can design a custom read preprocessing function 

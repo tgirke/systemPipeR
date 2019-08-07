@@ -13,7 +13,7 @@ preprocessReads(args, Fct, batchsize = 1e+05, overwrite = TRUE, ...)
 }
 \arguments{
   \item{args}{
-Object of class \code{SYSargs}
+Object of class \code{SYSargs} or \code{SYSargs2}.
 }
   \item{Fct}{
 \code{character} string of custom read preprocessing function call where both the 
