@@ -484,15 +484,18 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
     }
     for(i in seq_along(cmdlist(args))){
       for(j in seq_along(cmdlist(args)[[i]])){
-        ## Run the commandline only for samples for which no outpu file is available.
+        ## Run the commandline only for samples for which no output file is available.
         if(all(as.logical(completed[[i]][[j]]))) {
           next()
         } else {
           # Create soubmitargsID_command file
           cat(cmdlist(args)[[i]][[j]], file=paste(logdir, "/submitargs", runid, "_", cwl.wf, sep=""), fill=TRUE, labels=paste0(names(cmdlist(args))[[i]], ":"), append=TRUE)
-          ## Run executable 
+          ## Create an object for executable
           command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
           commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
+          ## Check if the command is in the PATH
+          tryCatch(system(command, ignore.stderr = TRUE), warning=function(w) cat(paste0(command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use.")))
+          ## Run executable 
           if(command %in% "bwa") {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
           } else {
