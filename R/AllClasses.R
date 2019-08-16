@@ -494,8 +494,8 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
           commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
           ## Check if the command is in the PATH
-          tryCatch(system(command, ignore.stderr = TRUE), warning=function(w) stop(paste0(command, ": command not found. ", "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
-          ## Run executable 
+          tryCatch(system(command, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+          ## Run executable
           if(command %in% "bwa") {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
           } else {
