@@ -1,5 +1,5 @@
 #############################
-## Hisat2-Single_Read.yml ##
+## Hisat2-Index.yml ##
 #############################
 
 hisat2_idx_basedir:
@@ -8,12 +8,6 @@ hisat2_idx_basedir:
 
 hisat2_idx_basename: tair10.fasta
 
-fq1:
-  class: File
-  path: _FASTQ_PATH_
-  
-SampleName: _SampleName_
-
 results_path:
   class: Directory
   path: ./results
@@ -21,6 +15,5 @@ results_path:
 thread: 4
 
 ModulesToLoad: 
-  module1: hisat2/2.0.1
-  module2: samtools/1.9
+  module1: hisat2/2.1.0
 

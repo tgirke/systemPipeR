@@ -1,0 +1,33 @@
+###########################
+##       bwa.pe.yml       ##
+###########################
+
+reference_file: 
+   class: File
+   path: ./data/tair10.fasta
+
+bwa_idx_basedir:
+   class: Directory
+   path: ./data
+
+bwa_idx_basename: tair10.fasta
+
+fq1: 
+   class: File
+   path: _FASTQ_PATH1_
+
+fq2:
+   class: File
+   path: _FASTQ_PATH2_
+
+thread: 4 
+
+SampleName: _SampleName_ 
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad:
+   module1: bwa/0.7.17
+

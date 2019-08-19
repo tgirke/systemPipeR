@@ -1,0 +1,32 @@
+############################
+## tophat2-Paired_end.yml ##
+############################
+
+reference_file: 
+  class: File
+  path: ./data/tair10.fasta
+
+tophat2_idx_basedir:
+  class: Directory
+  path: ./data
+
+tophat2_idx_basename: tair10.fasta
+
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+fq2:
+  class: File
+  path: _FASTQ_PATH2_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+thread: 4
+
+ModulesToLoad: 
+  module1: bowtie2/2.3.4.1
+  module2: tophat/2.1.1
