@@ -445,33 +445,71 @@ output_update <- function(args, dir=TRUE, dir.name=NULL, replace=FALSE, extensio
 ## Resolve CWL variable-based path instance ##
 ##############################################
 pathInstance <- function(pathvar, input, altinput) {
-    pathvar <- unlist(strsplit(pathvar[[1]], "/"))
-    extension <- gsub("^.*\\)", "", pathvar)
-    pathvar <- gsub("(^.*\\)).*", "\\1", pathvar)
-    pathvar <- gsub("\\$|\\(|\\)", "", pathvar)
-    pathvarlist <- strsplit(pathvar, "\\.")
-    filenametype <- unlist(lapply(seq_along(pathvarlist), function(x) pathvarlist[[x]][pathvarlist[[x]] %in% c("basename", "nameroot")]))
-    filenametype <- sapply(seq_along(pathvarlist), function(x) filenametype[x]) # In case of empty filenamelist NA are returned instead
-    filenametype <- ifelse(is.na(filenametype), "NA", filenametype)
-    myvalue_list <- sapply(seq_along(pathvarlist), function(x) input[[pathvarlist[[x]][[2]]]], simplify=FALSE)
-    ## Use altinput if no values were assigned by input
-    if(all(sapply(myvalue_list, length)==0)) {
-        myvalue_list <- sapply(seq_along(pathvarlist), function(x) altinput[[pathvarlist[[x]][[2]]]]$default, simplify=FALSE)
+  pathvar <- unlist(strsplit(pathvar[[1]], "/"))
+  extension <- gsub("^.*\\)", "", pathvar)
+  pathvar <- gsub("(^.*\\)).*", "\\1", pathvar)
+  pathvar <- gsub("\\$|\\(|\\)", "", pathvar)
+  pathvarlist <- strsplit(pathvar, "\\.")
+  filenametype <- unlist(lapply(seq_along(pathvarlist), function(x) pathvarlist[[x]][pathvarlist[[x]] %in% c("basename", "nameroot")]))
+  filenametype <- sapply(seq_along(pathvarlist), function(x) filenametype[x]) # In case of empty filenamelist NA are returned instead
+  filenametype <- ifelse(is.na(filenametype), "NA", filenametype)
+  myvalue_list <- sapply((pathvarlist), function(x) list(NULL), simplify=FALSE)
+  for(i in seq_along(pathvarlist)){
+    myvalue <- NULL
+    for(j in seq_along(pathvarlist[[i]])){
+      myvalue_input <- input[[pathvarlist[[i]][[j]]]]
+      if("class" %in% names(myvalue_input)) myvalue_input$class <- NULL
+      if (!is.null(myvalue_input)) {
+        myvalue <- c(myvalue, list(myvalue_input))
+      }
     }
-    enforce_list <- sapply(myvalue_list, length) == 1
-    if(any(enforce_list)) for(i in which(enforce_list)) myvalue_list[[i]] <- list(class="File", path=myvalue_list[[i]]) 
-    mypathvec <- sapply(seq_along(filenametype), function(x) pathUtils(myvalue_list[[x]]$path, type=filenametype[x]))    
-    ## Assign '.' to 'runtime.outdir'
-    pwdindex <- pathvar %in% c("runtime.outdir")
-    nullindex <- sapply(mypathvec, length) == 0
-    if(any(pwdindex & nullindex)) {
-        mypathvec[pwdindex & nullindex] <- "."
+    myvalue_list[i] <- myvalue
+  }
+  ## Use altinput if no values were assigned by input
+  if(all(sapply(myvalue_list, length)==0)) {
+    myvalue_list <- sapply(seq_along(pathvarlist), function(x) altinput[[pathvarlist[[x]][[2]]]]$default, simplify=FALSE)
+  }
+  enforce_list <- length(myvalue_list) == 1
+  if(any(enforce_list)) for(i in which(enforce_list)) myvalue_list[[i]] <- list(class=NULL, path=myvalue_list[[i]]) 
+  mypathvec <- list()
+  for(i in seq_along(myvalue_list)){
+    for(j in seq_along(myvalue_list[[i]])){
+      vec_input <- myvalue_list[[i]][[j]]
+      if (any(names(myvalue_list[[i]][[j]]) %in% c("path"))){
+        vec_input <- myvalue_list[[i]][[j]]$path
+      }
+      if (!is.null(vec_input )) {
+        vec <- sapply(seq_along(filenametype), function(x) pathUtils(vec_input [x], type=filenametype[x]))
+        mypathvec <- c(mypathvec, list(vec))}
     }
-    mypathvec <- sapply(seq_along(mypathvec), function(x) if(is.null(mypathvec[[x]])) {mypathvec[[x]] <- ""} else {mypathvec[[x]] <- mypathvec[[x]]})
-    ## Generate output
+    mypathvec <- lapply(mypathvec, function(x) x[!is.na(x)])
+  }
+  ## Assign '.' to 'runtime.outdir'
+  pwdindex <- any(pathvar %in% c("runtime.outdir"))
+  nullindex <- any(sapply(mypathvec, length) == 0)
+  if(any(pwdindex & nullindex)) {
+    mypathvec[pwdindex & nullindex] <- "."
+  }
+  mypathvec <- sapply(seq_along(mypathvec), function(x) if(is.null(mypathvec[[x]])) {mypathvec[[x]] <- "" } else {mypathvec[[x]] <- mypathvec[[x]]})
+  ## Generate output
+  if(length(mypathvec)==1){
+    extension <- extension[!is.na(extension)]
+    if(all("" %in% extension & length(extension)==1)){
+      mypath <- paste(mypathvec)
+    } else {
+      extension <- extension[extension != ""]
+      mypath <- paste(mypathvec, extension, sep="/") }
+  } else if(any(is.na(extension))){
+    mypath <- sapply(seq_along(mypathvec), function(x) paste0(mypathvec[x]))
+  } else {
     mypath <- sapply(seq_along(mypathvec), function(x) paste0(mypathvec[x], extension[x]))
-    returnpath <- file.path(paste(mypath, collapse="/"))
-    return(returnpath)
+    if(length(mypathvec) < length(extension)){
+      extension <- extension[extension != ""]
+      mypath <- c(mypath, extension)
+    }
+  } 
+  returnpath <- file.path(paste(mypath, collapse="/"))
+  return(returnpath)
 }
 
 #################################################################
