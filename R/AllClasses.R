@@ -512,8 +512,8 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           completed.bam <- grepl(".bam$", output(args)[[i]][[j]])
           if(any(sam_files)){
             for(k in which(sam_files)){
-              Rsamtools::asBam(file=output(args)[[i]][[j]], destination=gsub("\\.sam$", "", output(args)[[i]][[j]]), overwrite=TRUE, indexDestination=TRUE)
-              unlink(output(args)[[i]][[k]])
+              Rsamtools::asBam(file=output(args)[[i]][[j]][k], destination=gsub("\\.sam$", "", output(args)[[i]][[j]][k]), overwrite=TRUE, indexDestination=TRUE)
+              unlink(output(args)[[i]][[j]][k])
             } } else if(any(others_files)){
               dump <- "do nothing"
             }
