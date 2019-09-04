@@ -69,23 +69,23 @@ setAs(from="SYSargs2", to="list",
 
 ## Define print behavior for SYSargs2
 setMethod(f="show", signature="SYSargs2", 
-    definition=function(object) {    
-    cat(paste0("Instance of '", class(object), "':"), 
-        paste0("   Slot names/accessors: "), 
-        paste0("      targets: ", length(object@targets), 
-               " (", head(names(object@targets), 1), "...", 
-                    tail(names(object@targets), 1), ")",
-                ", targetsheader: " , length(unlist(object@targetsheader)), " (lines)"), 
-        paste0("      modules: " , length(object@modules)), 
-        paste0("      wf: " , length(object@wf), 
-                ", clt: ", length(object@clt),
-                ", yamlinput: ", length(object@yamlinput), " (components)"),
-        paste0("      input: ", length(object@input),
-                ", output: ", length(object@output)),
-        paste0("      cmdlist: ", length(object@cmdlist)),
-        "   WF Steps:",
-        paste0("      ", seq_along(object@clt), ". ", names(object@clt), 
-               " (rendered: ", length(object@cmdlist[[1]])!=0, ")"), 
+          definition=function(object) {    
+            cat(paste0("Instance of '", class(object), "':"), 
+                paste0("   Slot names/accessors: "), 
+                paste0("      targets: ", length(object@targets), 
+                       " (", head(names(object@targets), 1), "...", 
+                       tail(names(object@targets), 1), ")",
+                       ", targetsheader: " , length(unlist(object@targetsheader)), " (lines)"), 
+                paste0("      modules: " , length(object@modules)), 
+                paste0("      wf: " , length(object@wf), 
+                       ", clt: ", length(object@clt),
+                       ", yamlinput: ", length(object@yamlinput), " (components)"),
+                paste0("      input: ", length(object@input),
+                       ", output: ", length(object@output)),
+                paste0("      cmdlist: ", length(object@cmdlist)),
+                "   WF Steps:",
+                paste0("      ", seq_along(object@clt), ". ", object@cwlfiles$steps, 
+                       " (rendered: ", length(object@cmdlist[[1]])!=0, ")"), 
                 "\n", sep="\n")
 })
 
@@ -205,6 +205,8 @@ setReplaceMethod(f="[[", signature="SYSargs2", definition=function(x, i, j, valu
 ## Load Workflow ##
 ###################
 loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
+  if(!file.exists(file.path(dir_path, wf_file))==TRUE) stop("Provide valid '.cwl' file. Check the file PATH.")
+  if(!file.exists(file.path(dir_path, input_file))==TRUE) stop("Provide valid 'files.'.yml' file. Check the file PATH.")
   wf <- yaml::read_yaml(file.path(dir_path, wf_file))
   input <- yaml::read_yaml(file.path(dir_path, input_file))
   modules <- input$ModulesToLoad
@@ -213,9 +215,10 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   inputvars <- list()
   if(tolower(wf$class) == "workflow") { 
     steps <- names(wf$steps)
-    cltpaths <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
-    ##TODO: allows different location of the commandlinetool files
-    cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(dir_path, x)), simplify = F) 
+    cwlfiles$steps <- steps
+    cltpaths <- sapply(seq_along(steps), function(x) normalizePath(wf$steps[[steps[x]]]$run))
+    cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = F) 
+    names(cltlist) <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
@@ -226,19 +229,20 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
+    cwlfiles$steps <- strsplit(basename(wf_file), ".cwl")[[1]]
     WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist, input=myinput, output=myoutput, cwlfiles=cwlfiles, inputvars=inputvars)
   } else {
-    stop("Class slot in 'wf_file' needs to be 'Workflow' or 'CommandLineTool'.")
+    stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
   }
   if(!is.null(targets)) {
-      mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
-      mytargets <- targets.as.list(mytargets)
-      targetsheader <- readLines(normalizePath(file.path(targets)))
-      targetsheader <- targetsheader[grepl("^#", targetsheader)]
-      WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
-      } else {
-        WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
-      }
+    mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
+    mytargets <- targets.as.list(mytargets)
+    targetsheader <- readLines(normalizePath(file.path(targets)))
+    targetsheader <- targetsheader[grepl("^#", targetsheader)]
+    WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
+  } else {
+    WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
+  }
   return(as(WF, "SYSargs2"))
 }
 
@@ -258,6 +262,7 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
   bucketlist <- list(cmd=bucket, input=bucket, output=bucket)
   .renderWFsingle <- function(WF, id) { 
     inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
+    if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
     input <- yamlinput(WF)
     for(i in seq_along(inputvars)) {
       subvalue <- targets(WF)[[id]][[names(inputvars)[i]]]
@@ -499,15 +504,15 @@ pathInstance <- function(pathvar, input, altinput) {
     } else {
       extension <- extension[extension != ""]
       mypath <- paste(mypathvec, extension, sep="/") }
-  } else if(any(is.na(extension))){
-    mypath <- sapply(seq_along(mypathvec), function(x) paste0(mypathvec[x]))
-  } else {
-    mypath <- sapply(seq_along(mypathvec), function(x) paste0(mypathvec[x], extension[x]))
-    if(length(mypathvec) < length(extension)){
-      extension <- extension[extension != ""]
-      mypath <- c(mypath, extension)
-    }
-  } 
+    } else if(any(is.na(extension))){
+      mypath <- sapply(seq_along(mypathvec), function(x) paste0(mypathvec[x]))
+    } else {
+      mypath <- sapply(seq_along(mypathvec), function(x) paste0(mypathvec[x], extension[x]))
+      if(length(mypathvec) < length(extension)){
+        extension <- extension[extension != ""]
+        mypath <- c(mypath, extension)
+      }
+    } 
   returnpath <- file.path(paste(mypath, collapse="/"))
   return(returnpath)
 }
@@ -545,7 +550,7 @@ assembleCommandlineList <- function(clt=WF$clt[[1]]) {
     arguments <- clt$arguments
     if(!is.null(arguments)){
       for(i in seq_along(arguments)) arguments[[i]][["position"]] <- ""
-      }
+    }
     # ## Handling of special cases (here mkdir)
     # if(basecommand[1]=="mkdir") {
     #     clt$inputs <- ""
@@ -616,7 +621,8 @@ injectCommandlinelist <- function(WF) {
     .connectInout <- function(WF) {
         steps <- WF$wf$steps
         stepnames <- sapply(names(steps), function(x) steps[[x]]$run)
-        connectedlist <- sapply(names(steps), function(x) which(grepl("/", unlist(steps[x]))))
+        connectedlist <- sapply(seq_along(steps), function(x) which(grepl("/", steps[[x]]$`in`)))
+        names(connectedlist) <- names(steps)
         connectedlist <- connectedlist[sapply(connectedlist, length) > 0]
         if(length(connectedlist) > 0) {
             for(j in seq_along(connectedlist)) {
@@ -637,6 +643,8 @@ injectCommandlinelist <- function(WF) {
                 }
             }
         }
+        names(WF$cmdlist) <- WF$cwlfiles$steps
+        names(WF$clt) <- WF$cwlfiles$steps
         return(WF)
     }
     WF <- .connectInout(WF)
