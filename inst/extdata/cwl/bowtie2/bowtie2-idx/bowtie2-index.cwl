@@ -1,11 +1,11 @@
 ################################################################
-##                        Bowtie2-Index                        ##
+##                        Bowtie2-Index                       ##
 ################################################################
 
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml): Fast and sensitive read alignment"
-label: Last updated 07/2019
+label: Last updated 09/2019
 hints:
   SoftwareRequirement:
     packages:
@@ -20,54 +20,46 @@ baseCommand: [ bowtie2-build ]
 
 requirements:
   InitialWorkDirRequirement:
-    listing: [ $(inputs.bowtie2_idx_basedir) ]
+    listing: [ $(inputs.idx_basedir) ]
     
 arguments:
-  - valueFrom: $(inputs.bowtie2_idx_basedir.path)/$(inputs.bowtie2_idx_basename)
-    position: 1
-
-  - valueFrom: $(inputs.bowtie2_idx_basedir.path)/$(inputs.bowtie2_idx_basename)
-    position: 2
+  - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
+  - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
     
 ################################################################
 ##               Inputs and Outputs Settings                  ##
 ################################################################
 
 inputs:
-  bowtie2_idx_basename:
+  idx_basename:
+    label: "Path to the directory containing the index for the reference genome"
     type: string
-  bowtie2_idx_basedir:
-     type: Directory
+  idx_basedir:
+    label: "Basename of the bowtie2 index files"
+    type: Directory
 
 outputs:
-##  index_files:
-##    type:
-##      type: array
-##      items: Directory
-##    outputBinding:
-##      glob: "*"
-
   index_files1:
     type: File
     outputBinding:
-      glob: $(inputs.bowtie2_idx_basedir)/tair10.fasta.1.bt2
+      glob: $(inputs.idx_basedir.path)/tair10.fasta.1.bt2
   index_files2:
     type: File
     outputBinding:
-      glob: $(inputs.bowtie2_idx_basedir)/tair10.fasta.2.bt2
+      glob: $(inputs.idx_basedir.path)/tair10.fasta.2.bt2
   index_files3:
     type: File
     outputBinding:
-      glob: $(inputs.bowtie2_idx_basedir)/tair10.fasta.3.bt2
+      glob: $(inputs.idx_basedir.path)/tair10.fasta.3.bt2
   index_files4:
     type: File
     outputBinding:
-      glob: $(inputs.bowtie2_idx_basedir)/tair10.fasta.4.bt2
+      glob: $(inputs.idx_basedir.path)/tair10.fasta.4.bt2
   index_files5:
     type: File
     outputBinding:
-      glob: $(inputs.bowtie2_idx_basedir)/tair10.fasta.rev.1.bt2
+      glob: $(inputs.idx_basedir.path)/tair10.fasta.rev.1.bt2
   index_files6:
     type: File
     outputBinding:
-      glob: $(inputs.bowtie2_idx_basedir)/tair10.fasta.rev.2.bt2
+      glob: $(inputs.idx_basedir.path)/tair10.fasta.rev.2.bt2

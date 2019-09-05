@@ -1,22 +1,16 @@
 #############################
-## Bowtie2-Index.yml ##
+##    Bowtie2-Index.yml    ##
 #############################
 
-bowtie2_idx_basedir:
+idx_basedir:
   class: Directory
   path: ./data
 
-bowtie2_idx_basename: tair10.fasta
-
-fq1:
-  class: File
-  path: _FASTQ_PATH_
-  
-SampleName: _SampleName_
+idx_basename: tair10.fasta
 
 results_path:
   class: Directory
-  path: ./results
+  path: ./data
 
 thread: 4
 

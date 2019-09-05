@@ -5,7 +5,7 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml): Fast and sensitive read alignment"
-label: Last updated 07/2019
+label: Last updated 09/2019
 hints:
   SoftwareRequirement:
     packages:
@@ -24,44 +24,40 @@ requirements:
 
 arguments:
   - prefix: -S
-    valueFrom: $(inputs.results_path.basename)/$(inputs.SampleName).sam
-    position: 1
+    valueFrom: $(inputs.results_path.path)/$(inputs.SampleName).sam
   - prefix: -x
-    valueFrom: $(inputs.bowtie2_idx_basedir.path)/$(inputs.bowtie2_idx_basename)
-    position: 2
+    valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
   - prefix: -k
     valueFrom: '50'
-    position: 3
   - prefix: 
     valueFrom: --non-deterministic
-    position: 4
 
 ################################################################
 ##               Inputs and Outputs Settings                  ##
 ################################################################
 
 inputs:
-  bowtie2_idx_basedir:
-    label: "Path to the directory the index for the reference genome"
+  idx_basedir:
+    label: "Path to the directory containing the index for the reference genome"
     type: Directory
-  bowtie2_idx_basename:
+  idx_basename:
     label: "Basename of the bowtie2 index files"
     type: string
   fq1:
     type: File
+    label: "Comma-separated list of files containing mate 1s to be aligned"
     inputBinding:
       prefix: "-1"
-      position: 5
   fq2:
     type: File
+    label: "Comma-separated list of files containing mate 2s to be aligned"
     inputBinding:
       prefix: "-2"
-      position: 6
   thread:
+    label: "Launch NTHREADS parallel search threads"
     type: int
     inputBinding:
       prefix: -p
-      position: 7
   SampleName:
     label: "Filename to write output to"
     type: string
@@ -73,4 +69,4 @@ outputs:
   bowtie2_sam:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName).sam
+      glob: $(inputs.results_path.path)/$(inputs.SampleName).sam

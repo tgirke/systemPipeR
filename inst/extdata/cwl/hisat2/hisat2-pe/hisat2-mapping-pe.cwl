@@ -24,7 +24,7 @@ requirements:
 
 arguments:
   - prefix: -S
-    valueFrom: $(inputs.results_path.basename)/$(inputs.SampleName).sam
+    valueFrom: $(inputs.results_path.path)/$(inputs.SampleName).sam
   - prefix: -x
     valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
   - prefix: -k
@@ -71,4 +71,4 @@ outputs:
   hisat2_sam:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName).sam
+      glob: $(inputs.results_path.path)/$(inputs.SampleName).sam

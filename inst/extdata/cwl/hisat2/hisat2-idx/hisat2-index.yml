@@ -10,7 +10,7 @@ idx_basename: tair10.fasta
 
 results_path:
   class: Directory
-  path: ./results
+  path: ./data
 
 thread: 4
 

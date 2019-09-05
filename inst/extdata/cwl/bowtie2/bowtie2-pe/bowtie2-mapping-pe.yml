@@ -2,15 +2,16 @@
 ## Bowtie2-Paired_end.yml ##
 #############################
 
-bowtie2_idx_basedir:
+idx_basedir:
   class: Directory
   path: ./data
 
-bowtie2_idx_basename: tair10.fasta
+idx_basename: tair10.fasta
 
 fq1:
   class: File
   path: _FASTQ_PATH1_
+  
 fq2:
   class: File
   path: _FASTQ_PATH2_

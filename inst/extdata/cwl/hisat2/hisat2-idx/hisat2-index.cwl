@@ -24,7 +24,6 @@ requirements:
 
 arguments:
   - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
-
   - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
     
 ################################################################
