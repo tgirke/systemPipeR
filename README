@@ -2,6 +2,7 @@ changelog
      version 1.19.03
         - Added "cwl/*" files:
             * hista2/*
+            * tophat2/*
         
      version 1.19.02
         - Added SYSargs2 to the main vignette
