@@ -1,0 +1,19 @@
+#############################
+##    Hisat2-Index.yml     ##
+#############################
+
+idx_basedir:
+  class: Directory
+  path: ./data
+
+idx_basename: tair10.fasta
+
+results_path:
+  class: Directory
+  path: ./results
+
+thread: 4
+
+ModulesToLoad: 
+  module1: hisat2/2.1.0
+
