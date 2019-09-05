@@ -1,10 +1,25 @@
 changelog
      version 1.19.03
+<<<<<<< HEAD
+        - Updated 'pathInstance' function
+        - Updated 'runCommandline' function: fix "dir=TRUE"
+        - Updated writeTargetsout function (Allowing SYSargs2 object)
+	    - Updated 'preprocessReads' function and help file
+	    - Removed special cases (`mkdir`)
+	    - Updated 'subsetWF' function
+    	- Updated 'runCommandline' function: accepting many outputs file under one cmdlist(WF); handle with BWA specials stderr; creates an index in cases of .bam files (ex. Tophat2); automatically create SYSargs2 object with output_update in cases of make_bam=TRUE and/or dir=TRUE 
+	    - Updated 'output_update' function and help file
+        - SYSargs2 accepting many outputs file under one cmdlist(WF) 
+        - Bugfix in 'pathInstance' function: removed NULL from the path
+        - Bugfix in 'loadWorkflow' function: it accepts "targets.txt" and "./targets.txt"
+ 
+=======
         - Added "cwl/*" files:
             * hista2/*
             * tophat2/*
             * bowtie2/*
         
+>>>>>>> f32dd01c4e7c3befa30f4935f3647281f92312c8
      version 1.19.02
         - Added SYSargs2 to the main vignette
  
