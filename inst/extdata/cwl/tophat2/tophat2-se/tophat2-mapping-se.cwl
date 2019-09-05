@@ -36,7 +36,7 @@ arguments:
   - prefix: -p
     valueFrom: $(inputs.thread)
   - prefix: -o
-    valueFrom: $(inputs.results_path.basename)/$(inputs.SampleName)
+    valueFrom: $(inputs.results_path.path)/$(inputs.SampleName)
   - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
     
 ################################################################
@@ -69,21 +69,21 @@ outputs:
   accepted_hits_bam:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName)/accepted_hits.bam
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)/accepted_hits.bam
   junctions_bed:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName)/junctions.bed
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)/junctions.bed
   insertions_bed:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName)/insertions.bed
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)/insertions.bed
   deletions_bed:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName)/deletions.bed
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)/deletions.bed
   align_summary:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName)/align_summary.txt
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)/align_summary.txt
 

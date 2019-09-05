@@ -1,22 +1,22 @@
 ################################################################
-##                   Hisat2-Single_Read                       ##
+##                     Bowtie2-Mapping                        ##
 ################################################################
 
 cwlVersion: v1.0
 class: CommandLineTool
-doc: "[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml): graph-based alignment of next generation sequencing reads to a population of genomes"
-label: Last updated 08/2019
+doc: "[bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml): Fast and sensitive read alignment"
+label: Last updated 09/2019
 hints:
   SoftwareRequirement:
     packages:
-    - package: hisat2
-      version: [ 2.1.0 ]
-
+    - package: bowtie2
+      version: [ 2.3.4.1 ]
+      
 ################################################################
 ##           baseCommand and arguments definitions            ##
 ################################################################
 
-baseCommand: [hisat2]
+baseCommand: [ bowtie2 ]
 
 requirements:
   InitialWorkDirRequirement:
@@ -28,11 +28,9 @@ arguments:
   - prefix: -x
     valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
   - prefix: -k
-    valueFrom: '1'
-  - prefix: --min-intronlen
-    valueFrom: '30'
-  - prefix: --max-intronlen
-    valueFrom: '3000'
+    valueFrom: '50'
+  - prefix: 
+    valueFrom: --non-deterministic
 
 ################################################################
 ##               Inputs and Outputs Settings                  ##
@@ -43,19 +41,23 @@ inputs:
     label: "Path to the directory containing the index for the reference genome"
     type: Directory
   idx_basename:
-    label: "Basename of the hisat2 index files"
+    label: "Basename of the bowtie2 index files"
     type: string
   fq1:
-    label: "Comma-separated list of files containing unpaired reads to be aligned"
     type: File
+    label: "Comma-separated list of files containing mate 1s to be aligned"
     inputBinding:
-      prefix: -U
-      itemSeparator: ","
+      prefix: "-1"
+  fq2:
+    type: File
+    label: "Comma-separated list of files containing mate 2s to be aligned"
+    inputBinding:
+      prefix: "-2"
   thread:
     label: "Launch NTHREADS parallel search threads"
     type: int
     inputBinding:
-      prefix: --threads
+      prefix: -p
   SampleName:
     label: "Filename to write output to"
     type: string
@@ -64,7 +66,7 @@ inputs:
     type: Directory
 
 outputs:
-  hisat2_sam:
+  bowtie2_sam:
     type: File
     outputBinding:
       glob: $(inputs.results_path.path)/$(inputs.SampleName).sam
