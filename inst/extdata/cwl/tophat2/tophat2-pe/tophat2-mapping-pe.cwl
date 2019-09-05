@@ -5,65 +5,66 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[TOPHAT2](https://ccb.jhu.edu/software/tophat/index.shtml): a fast splice junction mapper for RNA-Seq reads"
-label: Last updated 07/2019
+label: Last updated 09/2019
 hints:
   SoftwareRequirement:
     packages:
-    - package: tophat
+    - package: tophat2
       version: [ 2.1.1 ]
-
+    - package: bowtie2
+      version: [ 2.3.4.1 ]
+      
 ################################################################
 ##           baseCommand and arguments definitions            ##
 ################################################################
 
 baseCommand: [tophat2]
 
+requirements:
+  InitialWorkDirRequirement:
+    listing: [ $(inputs.results_path) ]
+
 arguments:
   - prefix: -g
     valueFrom: '1'
-    position: 2
   - prefix: --segment-length
     valueFrom: '25'
-    position: 3
   - prefix: -i
     valueFrom: '30'
-    position: 4
   - prefix: -I
     valueFrom: '3000'
-    position: 5
   - prefix: -p
     valueFrom: $(inputs.thread)
-    position: 1
   - prefix: -o
     valueFrom: $(inputs.results_path.basename)/$(inputs.SampleName)
-    position: 6
-  - position: 7 
-    valueFrom: $(inputs.reference_file)
+  - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
     
 ################################################################
 ##               Inputs and Outputs Settings                  ##
 ################################################################
 
 inputs:
-  reference_file:
-    type: File
-  tophat2_idx_basedir:
+  idx_basedir:
+    label: "Path to the directory containing the index for the reference genome"
     type: Directory
-  tophat2_idx_basename:
+  idx_basename:
+    label: "Basename of the tophat2 index files"
     type: string
   fq1:
+    label: "Comma-separated list of files containing mate 1s to be aligned"
     type: File
     inputBinding:
       prefix:
-      position: 8
   fq2:
+    label: "Comma-separated list of files containing mate 2s to be aligned"
     type: File
     inputBinding:
       prefix:
-      position: 8
   SampleName:
+    label: "Filename to write output to"
     type: string
   thread:
+    label: "Launch NTHREADS parallel search threads"
     type: int
   results_path:
     label: "Path to the results directory"

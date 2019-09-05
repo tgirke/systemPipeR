@@ -2,20 +2,16 @@
 ## tophat2-single_end.yml ##
 ############################
 
-reference_file: 
-  class: File
-  path: ./data/tair10.fasta
-
-tophat2_idx_basedir:
+idx_basedir:
   class: Directory
   path: ./data
 
-tophat2_idx_basename: tair10.fasta
+idx_basename: tair10.fasta
 
 fq1:
   class: File
-  path: _FASTQ_PATH_
-  
+  path: _FASTQ_PATH1_
+
 SampleName: _SampleName_
 
 results_path:
