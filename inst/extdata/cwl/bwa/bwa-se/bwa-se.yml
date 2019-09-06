@@ -1,0 +1,23 @@
+##################################
+##    Bwa-mem-Single_read.yml   ##
+##################################
+
+
+reference_file:
+   class: File 
+   path: ./data/tair10.fasta
+
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+thread: 4
+
+ModulesToLoad: 
+  module1: bwa/0.7.17
