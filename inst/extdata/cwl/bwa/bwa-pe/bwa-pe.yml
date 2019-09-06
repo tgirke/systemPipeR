@@ -2,15 +2,11 @@
 ##       bwa.pe.yml       ##
 ###########################
 
-reference_file: 
-   class: File
-   path: ./data/tair10.fasta
-
-bwa_idx_basedir:
+idx_basedir:
    class: Directory
    path: ./data
 
-bwa_idx_basename: tair10.fasta
+idx_basename: tair10.fasta
 
 fq1: 
    class: File

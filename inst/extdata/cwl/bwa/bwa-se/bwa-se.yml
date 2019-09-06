@@ -9,7 +9,7 @@ reference_file:
 
 fq1:
   class: File
-  path: _FASTQ_PATH_
+  path: _FASTQ_PATH1_
   
 SampleName: _SampleName_
 
@@ -17,7 +17,7 @@ results_path:
   class: Directory
   path: ./results
 
-nthreads: 4
+thread: 4
 
 ModulesToLoad: 
   module1: bwa/0.7.17

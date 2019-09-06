@@ -1,11 +1,11 @@
 ################################################################
-##                     Bwa-mem-Paired_end.yml                 ##
+##                     Bwa-mem-Paired_end.cwl                 ##
 ################################################################
 
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[BWA-MEM](http://bio-bwa.sourceforge.net/bwa.shtml): Burrows-Wheeler Alignment Tool"
-label: Last updated 07/1019
+label: Last updated 09/2019
 hints:
   SoftwareRequirement:
     packages:
@@ -26,31 +26,37 @@ arguments:
   - prefix: -M
   - prefix: -R
     valueFrom: '''@RG\tID:group1\tSM:sample1\tPL:illumina\tLB:lib1\tPU:unit1'''
+  - prefix: 
+    valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
 
 ################################################################
 ##               Inputs and Outputs Settings                  ##
 ################################################################
 
 inputs:
-  reference_file:
+  idx_basedir:
+    label: "Path to the directory containing the index for the reference genome"
+    type: Directory
+  idx_basename:
+    label: "Basename of the bowtie2 index files"
+    type: string
+  fq1: 
+    label: "Comma-separated list of files containing mate 1s to be aligned"
     type: File
-    secondaryFiles: [ .amb, .ann, .bwt, .pac, .sa ]
+    inputBinding:
+      position: 1
+  fq2:
+    label: "Comma-separated list of files containing mate 2s to be aligned"
+    type: File
     inputBinding:
       position: 2
-  fq1:
-    type: File
-    inputBinding:
-      position: 3
-  fq2:
-    type: File
-    inputBinding:
-      position: 4
   thread:
+    label: "Launch NTHREADS parallel search threads"
     type: int
     inputBinding:
       prefix: -t
-      position: 1
   SampleName:
+    label: "Filename to write output to"
     type: string
   results_path:
     label: "Path to the results directory"
@@ -68,4 +74,4 @@ outputs:
 
 ## If the template its used in bash script with the "cwl-runner", run: 
 ## Remove two single quotation: '@RG\tID:group1\tSM:sample1\tPL:illumina\tLB:lib1\tPU:unit1'
-## "cwl-runner --outdir <path> bwaPE.cwl bwaPE.yml"
+## "cwltool --outdir <path> bwaPE.cwl bwaPE.yml"

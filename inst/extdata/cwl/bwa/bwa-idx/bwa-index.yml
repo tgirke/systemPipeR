@@ -1,32 +1,16 @@
 ###########################
-##       bwa.idx.yml       ##
+##     bwa.idx.yml       ##
 ###########################
 
-reference_file: 
-   class: File
-   path: ./data/tair10.fasta
-
-bwa_idx_basedir:
+idx_basedir:
    class: Directory
    path: ./data
 
-bwa_idx_basename: tair10.fasta
-
-fq1: 
-   class: File
-   path: _FASTQ_PATH1_
-
-fq2:
-   class: File
-   path: _FASTQ_PATH2_
-
-thread: 4 
-
-SampleName: _SampleName_ 
+idx_basename: tair10.fasta
 
 results_path:
   class: Directory
-  path: ./results
+  path: ./data
 
 ModulesToLoad:
    module1: bwa/0.7.17
