@@ -1,0 +1,22 @@
+###############################
+##     gsnap_Index.yml       ##
+###############################
+
+idx_basedir:
+  class: Directory
+  path: ./data
+
+idx_basename: tair10.fasta
+
+results_path:
+  class: Directory
+  path: ./data
+
+thread: 4
+
+ModulesToLoad: 
+
+rscript_gsnap_idx:
+  class: File
+  path: ./param/cwl/gsnap/gsnap_idx.doc.R
+
