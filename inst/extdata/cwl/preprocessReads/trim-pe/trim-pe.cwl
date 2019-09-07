@@ -5,7 +5,7 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "Parameter file for 'preprocessReads' function: R-based function that read from input files and write to output files. This is a dummy file to support within the systemPipeR workflow."
-label: Last updated 08/2019
+label: Last updated 09/2019
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
@@ -33,9 +33,9 @@ outputs:
   trim-pe_1:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName)_1.fastq_trim.gz
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)_1.fastq_trim.gz
   trim-pe_2:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName)_2.fastq_trim.gz
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)_2.fastq_trim.gz
 

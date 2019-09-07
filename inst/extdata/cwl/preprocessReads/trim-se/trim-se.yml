@@ -1,9 +1,9 @@
 #############################
-## trim-Single_Read.yml ##
+##   trim-Single_Read.yml  ##
 #############################
 fq1:
   class: File
-  path: _FASTQ_PATH_
+  path: _FASTQ_PATH1_
   
 SampleName: _SampleName_
 
