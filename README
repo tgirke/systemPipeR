@@ -8,6 +8,7 @@ changelog
             * rsubread/* 
             * gsnap/* 
             * preprocessReads/* 
+        - Added "docopt.R/*" folder
             
      version 1.19.02
         - Added SYSargs2 to the main vignette
