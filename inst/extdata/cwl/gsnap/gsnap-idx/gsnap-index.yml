@@ -18,5 +18,5 @@ ModulesToLoad:
 
 rscript_gsnap_idx:
   class: File
-  path: ./param/cwl/gsnap/gsnap_idx.doc.R
+  path: ./param/docopt.R/gsnap/gsnap_idx.doc.R
 
