@@ -19,7 +19,6 @@ requirements:
 
 arguments:
   - prefix: --vanilla
-  - prefix: 
     valueFrom: $(inputs.rscript_rsubread_mapping)
   - prefix: --output_file
     valueFrom: $(inputs.results_path.path)/$(inputs.SampleName).sam

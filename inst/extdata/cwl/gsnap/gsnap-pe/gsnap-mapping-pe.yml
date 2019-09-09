@@ -21,7 +21,7 @@ ModulesToLoad:
 
 rscript_gsnap_mapping:
   class: File
-  path: ./param/cwl/gsnap/gsnap.doc.R
+  path: ./param/docopt.R/gsnap/gsnap.doc.R
 
 molecule: "DNA"
 

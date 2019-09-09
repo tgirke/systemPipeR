@@ -16,5 +16,5 @@ ModulesToLoad:
 
 rscript_rsubread_idx:
   class: File
-  path: ./param/cwl/rsubread/rsubread_idx.doc.R
+  path: ./param/docopt.R/rsubread/rsubread_idx.doc.R
 
