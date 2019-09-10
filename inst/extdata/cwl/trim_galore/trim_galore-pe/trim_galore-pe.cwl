@@ -26,11 +26,12 @@ arguments:
     valueFrom: --phred33
   - prefix: 
     valueFrom: --gzip
+  - prefix: 
+    valueFrom: --paired
   - prefix: -o
     valueFrom: $(inputs.results_path.path)
   - prefix: --basename
     valueFrom: $(inputs.SampleName)
-
 
 ################################################################
 ##               Inputs and Outputs Settings                  ##
@@ -57,6 +58,11 @@ inputs:
     label: "Comma-separated list of files containing unpaired reads to be aligned"
     inputBinding:
       position: 1
+  fq2:
+    type: File
+    label: "Comma-separated list of files containing unpaired reads to be aligned"
+    inputBinding:
+      position: 1
   SampleName:
     label: "Filename to write output to"
     type: string
@@ -64,12 +70,15 @@ inputs:
     label: "Path to the results directory"
     type: Directory
 
-
 outputs:
-  trim_galore:
+  trim_galore_1:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.SampleName)_trimmed.fq.gz
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)_R1_val_1.fq.gz
+  trim_galore_2:
+    type: File
+    outputBinding:
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)_R2_val_2.fq.gz
   trim_galore_report:
     type: File
     outputBinding:
