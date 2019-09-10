@@ -2,10 +2,11 @@
 ##    Bwa-mem-Single_read.yml   ##
 ##################################
 
+idx_basedir:
+   class: Directory
+   path: ./data
 
-reference_file:
-   class: File 
-   path: ./data/tair10.fasta
+idx_basename: tair10.fasta
 
 fq1:
   class: File

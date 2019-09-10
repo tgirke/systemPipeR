@@ -8,6 +8,7 @@ changelog
             * rsubread/* 
             * gsnap/* 
             * preprocessReads/* 
+            * trim_galore/* 
         - Added "docopt.R/*" folder
             
      version 1.19.02
