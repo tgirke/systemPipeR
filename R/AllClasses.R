@@ -371,7 +371,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
     ## Check if "Environment Modules" is installed in the system
     ## "Environment Modules" is not available
     if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))!=1) {
-      message("Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.", "\n")
+      message("Message: 'Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.'", "\n")
     } else {
       ## "Environment Modules" is available and proceed the module load
       if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))==1) { # Returns TRUE if module system is present.

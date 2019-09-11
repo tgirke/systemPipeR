@@ -4,7 +4,6 @@
 preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
   if(all(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
   if(class(Fct)!="character") stop("Argument 'Fct' needs to be of class character")
-  
   if(class(args)=="SYSargs"){
     colnames_args <- colnames(targetsout(args)) #SYSargs
     outpaths <- outpaths(args) #SYSargs 
