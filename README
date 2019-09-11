@@ -1,20 +1,26 @@
 changelog
      version 1.19.03
         - Added "cwl/*" files:
-            * hista2/*
-            * tophat2/*
-            * bowtie2/*
-            * bwa/*        
-            * rsubread/* 
-            * gsnap/* 
-            * preprocessReads/* 
-            * trim_galore/* 
-            * trimmomatic/* 
-            * samtools/* 
-            * WF_Hisat2_samtools/* 
+            - hista2/*
+            - tophat2/*
+            - bowtie2/*
+            - bwa/*        
+            - rsubread/* 
+            - gsnap/* 
+            - preprocessReads/* 
+            - trim_galore/* 
+            - trimmomatic/* 
+            - samtools/* 
+            - WF_Hisat2_samtools/* 
         - Added "docopt.R/*" folder
-        - Updated *output_update.Rd and *preprocessReads.Rd
-
+        - SYSargs2:
+            - Updated *output_update.Rd and *preprocessReads.Rd
+            - Removed special cases (`mkdir`)
+	        - Updated 'subsetWF' function
+	        - Updated 'output_update' function and help file
+            - SYSargs2 accepting many outputs file under one 'cmdlist(WF)'
+            - Bugfix in 'pathInstance' fct: removed NULL from the path
+            - Bugfix in 'loadWorkflow' fct: it accepts "targets.txt" and "./targets.txt"
             
      version 1.19.02
         - Added SYSargs2 to the main vignette
