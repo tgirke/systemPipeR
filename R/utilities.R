@@ -2,82 +2,96 @@
 ## Read preprocessing ##
 ########################
 preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
-	if(class(args)!="SYSargs") stop("Argument 'args' needs to be of class SYSargs")
-	if(class(Fct)!="character") stop("Argument 'Fct' needs to be of class character")
-	## Run function in loop over all fastq files
-	## Single end fastq files
-	if(!all(c("FileName1", "FileName2") %in% colnames(targetsout(args)))) {
-    	for(i in seq(along=args)) {
-			outfile <- outpaths(args)[i]
-			## Delete existing fastq files with same names, since writeFastq will append to them
-			if(overwrite==TRUE) {
-				if(any(file.exists(outfile))) unlink(outfile)
-			} else {
-				if(any(file.exists(outfile))) stop(paste("File", outfile , "exists. Please delete file first or set overwrite=TRUE."))
-			}
-			## Run preprocessor function with FastqStreamer
-			counter <- 0
-			f <- FastqStreamer(infile1(args)[i], batchsize)
-			while(length(fq <- yield(f))) {
-				fqtrim <- eval(parse(text=Fct))
-				writeFastq(fqtrim, outfile, mode="a", ...)
-				counter <- counter + length(fqtrim)
-				cat(counter, "processed reads written to file:", outfile, "\n")
-			}
-			close(f)
-		}
-	}
-	## Paired end fastq files
-	if(all(c("FileName1", "FileName2") %in% colnames(targetsout(args)))) {
-    	for(i in seq(along=args)) {
-			p1 <- as.character(targetsin(args)$FileName1[i])
-			p2 <- as.character(targetsin(args)$FileName2[i])
-			p1out <- as.character(targetsout(args)$FileName1[i])
-			p2out <- as.character(targetsout(args)$FileName2[i])
-			## Delete existing fastq files with same names, since writeFastq will append to them
-			if(overwrite==TRUE) {
-				if(any(file.exists(p1out))) unlink(p1out)
-				if(any(file.exists(p2out))) unlink(p2out)
-			} else {
-				if(any(file.exists(p1out))) stop(paste("File", p1out , "exists. Please delete file first or set overwrite=TRUE."))
-				if(any(file.exists(p2out))) stop(paste("File", p2out , "exists. Please delete file first or set overwrite=TRUE."))
-			}
-			## Run preprocessor function with FastqStreamer
-			counter1 <- 0
-			counter2 <- 0
-			f1 <- FastqStreamer(p1, batchsize)
-			f2 <- FastqStreamer(p2, batchsize)
-			while(length(fq1 <- yield(f1))) {
-				fq2 <- yield(f2)
-				if(length(fq1)!=length(fq2)) stop("Paired end files cannot have different read numbers.")
-				## Process p1
-				fq <- fq1 # for simplicity in eval
-				fq1trim <- eval(parse(text=Fct))
-				## Index for p1
-				index1 <- as.character(id(fq1)) %in% as.character(id(fq1trim))
-				names(index1) <- seq(along=index1)
-				index1 <- names(index1[index1])
-				## Process p2
-				fq <- fq2 # for simplicity in eval
-				fq2trim <- eval(parse(text=Fct))
-				## Index for p1
-				index2 <- as.character(id(fq2)) %in% as.character(id(fq2trim))
-				names(index2) <- seq(along=index2)
-				index2 <- names(index2[index2])
-				## Export to processed paired files
-				indexpair1 <- index1 %in% index2
-				writeFastq(fq1trim[indexpair1], p1out, mode="a", ...)
-				indexpair2 <- index2 %in% index1
-				writeFastq(fq2trim[indexpair2], p2out, mode="a", ...)
-				counter1 <- counter1 + sum(indexpair1)
-				cat(counter1, "processed reads written to file:", p1out, "\n")
-				counter2 <- counter2 + sum(indexpair2)
-				cat(counter2, "processed reads written to file:", p2out, "\n")
-			}
-			close(f1)
-			close(f2)
-		}
-	}
+  if(all(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  if(class(Fct)!="character") stop("Argument 'Fct' needs to be of class character")
+  if(class(args)=="SYSargs"){
+    colnames_args <- colnames(targetsout(args)) #SYSargs
+    outpaths <- outpaths(args) #SYSargs 
+    targets_in <- targetsin(args)
+  } else if (class(args)=="SYSargs2") {
+    colnames_args <- colnames(targets.as.df(args$targets)) #SYSargs2
+    outpaths <- subsetWF(args = args, slot = "output", subset = 1)
+    targets_in <- targets.as.df(args$targets)
+  }
+  ## Run function in loop over all fastq files
+  ## Single end fastq files
+  if(!all(c("FileName1", "FileName2") %in% colnames_args)) {
+    for(i in seq(along=args)) {
+      outfile <- outpaths[i]
+      ## Delete existing fastq files with same names, since writeFastq will append to them
+      if(overwrite==TRUE) {
+        if(any(file.exists(outfile))) unlink(outfile)
+      } else {
+        if(any(file.exists(outfile))) stop(paste("File", outfile , "exists. Please delete file first or set overwrite=TRUE."))
+      }
+      ## Run preprocessor function with FastqStreamer
+      counter <- 0
+      f <- FastqStreamer(infile1(args)[i], batchsize)
+      while(length(fq <- yield(f))) {
+        fqtrim <- eval(parse(text=Fct))
+        writeFastq(fqtrim, outfile, mode="a", ...)
+        counter <- counter + length(fqtrim)
+        cat(counter, "processed reads written to file:", outfile, "\n")
+      }
+      close(f)
+    }
+  }
+  ## Paired end fastq files
+  if(all(c("FileName1", "FileName2") %in% colnames_args)) {
+    for(i in seq(along=args)) {
+      p1 <- as.character(targets_in$FileName1[i])
+      p2 <- as.character(targets_in$FileName2[i])
+      if(class(args)=="SYSargs"){
+        p1out <- as.character(targetsout(args)$FileName1[i])
+        p2out <- as.character(targetsout(args)$FileName2[i])
+      } else if (class(args)=="SYSargs2") {
+        p1out <- args$output[[i]][[1]][[1]]
+        p2out <- args$output[[i]][[1]][[2]]
+      }
+      ## Delete existing fastq files with same names, since writeFastq will append to them
+      if(overwrite==TRUE) {
+        if(any(file.exists(p1out))) unlink(p1out)
+        if(any(file.exists(p2out))) unlink(p2out)
+      } else {
+        if(any(file.exists(p1out))) stop(paste("File", p1out , "exists. Please delete file first or set overwrite=TRUE."))
+        if(any(file.exists(p2out))) stop(paste("File", p2out , "exists. Please delete file first or set overwrite=TRUE."))
+      }
+      ## Run preprocessor function with FastqStreamer
+      counter1 <- 0
+      counter2 <- 0
+      f1 <- FastqStreamer(p1, batchsize)
+      f2 <- FastqStreamer(p2, batchsize)
+      while(length(fq1 <- yield(f1))) {
+        fq2 <- yield(f2)
+        if(length(fq1)!=length(fq2)) stop("Paired end files cannot have different read numbers.")
+        ## Process p1
+        fq <- fq1 # for simplicity in eval
+        fq1trim <- eval(parse(text=Fct))
+        ## Index for p1
+        index1 <- as.character(id(fq1)) %in% as.character(id(fq1trim))
+        names(index1) <- seq(along=index1)
+        index1 <- names(index1[index1])
+        ## Process p2
+        fq <- fq2 # for simplicity in eval
+        fq2trim <- eval(parse(text=Fct))
+        ## Index for p1
+        index2 <- as.character(id(fq2)) %in% as.character(id(fq2trim))
+        names(index2) <- seq(along=index2)
+        index2 <- names(index2[index2])
+        ## Export to processed paired files
+        indexpair1 <- index1 %in% index2
+        writeFastq(fq1trim[indexpair1], p1out, mode="a", ...)
+        indexpair2 <- index2 %in% index1
+        writeFastq(fq2trim[indexpair2], p2out, mode="a", ...)
+        counter1 <- counter1 + sum(indexpair1)
+        cat(counter1, "processed reads written to file:", p1out, "\n")
+        counter2 <- counter2 + sum(indexpair2)
+        cat(counter2, "processed reads written to file:", p2out, "\n")
+      }
+      close(f1)
+      close(f2)
+    }
+  }
 }
 ## Usage:
 # preprocessReads(args=args, Fct="trimLRPatterns(Rpattern="GCCCGGGTAA", subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)

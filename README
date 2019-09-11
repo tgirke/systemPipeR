@@ -27,6 +27,8 @@ changelog
             - creates an index in cases of .bam files (ex. Tophat2); 
             - automatically create SYSargs2 object with output_update in cases of make_bam=TRUE and/or dir=TRUE; 
             - fix "dir=TRUE"
+        - Updated 'writeTargetsout' function (Allowing SYSargs2 object)
+        - Updated 'preprocessReads' function and help file
             
      version 1.19.02
         - Added SYSargs2 to the main vignette
