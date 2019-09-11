@@ -16,11 +16,17 @@ changelog
         - SYSargs2:
             - Updated *output_update.Rd and *preprocessReads.Rd
             - Removed special cases (`mkdir`)
-	        - Updated 'subsetWF' function
-	        - Updated 'output_update' function and help file
+            - Updated 'subsetWF' function
+            - Updated 'output_update' function and help file
             - SYSargs2 accepting many outputs file under one 'cmdlist(WF)'
             - Bugfix in 'pathInstance' fct: removed NULL from the path
             - Bugfix in 'loadWorkflow' fct: it accepts "targets.txt" and "./targets.txt"
+        - Updated 'runCommandline' function: 
+            - accepting many outputs file under one cmdlist(WF); 
+            - handle with BWA specials stderr; 
+            - creates an index in cases of .bam files (ex. Tophat2); 
+            - automatically create SYSargs2 object with output_update in cases of make_bam=TRUE and/or dir=TRUE; 
+            - fix "dir=TRUE"
             
      version 1.19.02
         - Added SYSargs2 to the main vignette
