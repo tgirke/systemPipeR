@@ -1,6 +1,6 @@
-######################################
-## Workflow_Hisat2-Paired-end-Reads ##
-######################################
+################################################################
+##                Workflow_Hisat2-Single_Read                 ##
+################################################################
 
 class: Workflow
 cwlVersion: v1.0
@@ -11,14 +11,16 @@ cwlVersion: v1.0
 
 inputs:
   fq1: File
-  fq2: File
-  hisat2_idx_basedir: Directory
-  hisat2_idx_basename: string
+  idx_basedir: Directory
+  idx_basename: string
   SampleName: string
   thread: int
   results_path: Directory
 
 outputs:
+  hisat2:
+    outputSource: hisat2/hisat2_sam
+    type: File
   samtools-view:
     outputSource: samtools-view/samtools_bam
     type: File
@@ -26,7 +28,7 @@ outputs:
     outputSource: samtools-sort/samtools_sort_bam
     type: File
   samtools-index:
-    outputSource: samtools-index/samtools-index
+    outputSource: samtools-index/samtools_index
     type: File
 
 ################################################################
@@ -37,37 +39,43 @@ steps:
   hisat2:
     in:
       fq1: fq1
-      fq2: fq2
-      hisat2_idx_basedir: hisat2_idx_basedir
-      hisat2_idx_basename: hisat2_idx_basename
+      idx_basedir: idx_basedir
+      idx_basename: idx_basename
       SampleName: SampleName
       thread: thread
       results_path: results_path
     out: [hisat2_sam]
-    run: hisat2-mapping-pe.cwl
-
+    run: /home/dcassol/danielac@ucr.edu/github/CWL/cwl_testing/rnaseq/param/cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl
+  
   samtools-view:
     in:
+      samtools_sam: hisat2/hisat2_sam
       SampleName: SampleName
-      sam: hisat2/hisat2_sam
       results_path: results_path
     out: [samtools_bam]
-    run: samtools-view.cwl
+    run: /home/dcassol/danielac@ucr.edu/github/CWL/cwl_testing/rnaseq/param/cwl/samtools/samtools-view.cwl
 
   samtools-sort:
     in:
+      samtools_bam: samtools-view/samtools_bam
       SampleName: SampleName
-      bam: samtools-view/samtools_bam
       thread: thread
       results_path: results_path
     out: [samtools_sort_bam]
-    run: samtools-sort.cwl
-
+    run: /home/dcassol/danielac@ucr.edu/github/CWL/cwl_testing/rnaseq/param/cwl/samtools/samtools-sort.cwl
+   
   samtools-index:
     in:
       samtools_sort_bam: samtools-sort/samtools_sort_bam
       SampleName: SampleName
       results_path: results_path
-    out: [samtools-index]
-    run: samtools-index.cwl
+    out: [samtools_index]
+    run: /home/dcassol/danielac@ucr.edu/github/CWL/cwl_testing/rnaseq/param/cwl/samtools/samtools-index.cwl
+    
+###########
+## Notes ##
+###########
 
+## If the template it is used in BASH script with the "cwl-runner" or "cwltool", do: 
+## Replace the relative PATH for each step for the full PATH, and run:
+## "cwltool --outdir <path> workflow_hisat2-se.cwl workflow_hisat2-se.yml"

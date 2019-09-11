@@ -10,6 +10,8 @@ changelog
             * preprocessReads/* 
             * trim_galore/* 
             * trimmomatic/* 
+            * samtools/* 
+            * WF_Hisat2_samtools/* 
         - Added "docopt.R/*" folder
             
      version 1.19.02

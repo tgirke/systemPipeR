@@ -2,7 +2,7 @@
 ## samtools-view.yml ##
 ########################
 
-sam:
+samtools_sam:
   class: File
   path: _SAM_PATH_
   
