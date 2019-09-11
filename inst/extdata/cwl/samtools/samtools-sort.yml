@@ -1,8 +1,8 @@
 ########################
-## samtools-view.yml ##
+##  samtools-Sort.yml ##
 ########################
 
-bam:
+samtools_bam:
   class: File
   path: _BAM_PATH_
   

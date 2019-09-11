@@ -4,7 +4,7 @@
 
 samtools_sort_bam:
   class: File
-  path: _SAMTOOLS_SORT_PATH_
+  path: _BAM_SORT_PATH_
   
 SampleName: _SampleName_
 

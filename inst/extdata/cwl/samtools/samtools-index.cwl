@@ -5,12 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[Samtools](http://www.htslib.org/doc/samtools.html): Samtools is a suite of programs for interacting with high-throughput sequencing data"
-label: Last updated 02/2019
-#hints:
- # SoftwareRequirement:
-  #  packages:
-   # - package: samtools
-    #  version: [ 1.9 ]
+label: Last updated 09/2019
+hints:
+  SoftwareRequirement:
+    packages:
+    - package: samtools
+      #version: [ 1.9 ]
 
 ################################################################
 ##            baseCommand and arguments definitions           ##
@@ -18,20 +18,29 @@ label: Last updated 02/2019
 
 baseCommand: ["samtools", "index", "-b"]
 
+#requirements:
+#  - class: InitialWorkDirRequirement
+#    listing:
+#      - $(inputs.samtools_sort_bam)
+#      - $(inputs.results_path)
+      
+      
 requirements:
-  - class: InitialWorkDirRequirement
-    listing:
-      - $(inputs.samtools_sort_bam)
-      - $(inputs.results_path)
+  InitialWorkDirRequirement:
+    listing: [ $(inputs.results_path) ]
+
+arguments:
+  - valueFrom: $(inputs.results_path.basename)/$(inputs.SampleName).sorted.bam
+  - valueFrom: $(inputs.results_path.basename)/$(inputs.SampleName).sorted.bam.bai
 
 ################################################################
 ##             Inputs and Outputs Settings                    ##
 ################################################################
 
 inputs:
-  samtools_sort_bam:
+  samtools_sort_bam:  
     type: File
-    inputBinding:
+    inputBinding: 
       position: 1
   SampleName:
     label: "Sample name"
@@ -41,8 +50,8 @@ inputs:
     type: Directory
 
 outputs:
-  samtools-index:
+  samtools_index:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName).sorted.bam.bai
+      glob: $(inputs.results_path.path)/$(inputs.SampleName).sorted.bam.bai
 

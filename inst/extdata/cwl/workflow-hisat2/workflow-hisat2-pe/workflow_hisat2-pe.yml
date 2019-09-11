@@ -2,11 +2,11 @@
 ## Hisat2-Paired_end.yml ##
 ###########################
 
-hisat2_idx_basedir:
+idx_basedir:
   class: Directory
   path: ./data
 
-hisat2_idx_basename: tair10.fasta
+idx_basename: tair10.fasta
 
 fq1:
   class: File
@@ -24,6 +24,6 @@ results_path:
 thread: 4
 
 ModulesToLoad: 
-  module1: hisat2/2.0.1
+  module1: hisat2/2.1.0
   module2: samtools/1.9
 
