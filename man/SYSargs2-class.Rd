@@ -85,11 +85,10 @@ showClass("SYSargs2")
 
 ## Construct SYSargs2 object from CWl param, CWL input, and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl",
-                   input_file="hisat2-se/hisat2-mapping-se.yml",
-                   dir_path=dir_path)
-WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", 
+                  input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
 names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
 
@@ -98,7 +97,7 @@ cmdlist(WF)[1:2]
 
 \dontrun{
 ## Execute SYSargs2 on single machine
-runCommandline(args=WF)
+WF <- runCommandline(args=WF)
 
 ## Execute SYSargs2 on multiple machines of a compute cluster. The following
 ## example uses the conf and template files for the Slurm scheduler. Please 
@@ -110,6 +109,9 @@ reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", tem
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)
+
+## Updates the path in the object \code{output(WF)}
+WF <- output_update(WF, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
 
 ## Alignment stats
 read_statsDF <- alignStats(WF) 
