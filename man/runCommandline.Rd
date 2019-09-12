@@ -72,27 +72,28 @@ write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE
 ##########################################
 ## Construct SYSargs2 object from CWl param, CWL input, and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl",
-                   input_file="hisat2-se/hisat2-mapping-se.yml",
-                   dir_path=dir_path)
-WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", 
+                  input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
 names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
 
 \dontrun{
 ## Execute SYSargs2 on single machine
-runCommandline(args=WF)
-WF <- output_update(WF, dir=FALSE, replace = ".bam")
+WF <- runCommandline(args=WF)
 
 ## Execute SYSargs on multiple machines of a compute cluster. 
 file.copy(system.file("extdata", ".batchtools.conf.R", package="systemPipeR"), ".")
 file.copy(system.file("extdata", "batchtools.slurm.tmpl", package="systemPipeR"), ".")
 resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
-reg <- clusterRun(args, FUN = runCommandline, conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+reg <- clusterRun(WF, FUN = runCommandline, more.args = list(args = WF, make_bam = TRUE), conffile=".batchtools.conf.R", template="batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
 
 ## Monitor progress of submitted jobs
 getStatus(reg=reg)
+
+## Updates the path in the object \code{output(WF)}
+WF <- output_update(WF, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
 
 ## Alignment stats
 read_statsDF <- alignStats(WF) 
