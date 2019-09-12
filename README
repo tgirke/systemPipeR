@@ -29,6 +29,7 @@ changelog
             - fix "dir=TRUE"
         - Updated 'writeTargetsout' function (Allowing SYSargs2 object)
         - Updated 'preprocessReads' function and help file
+        - Updated all the help files related with SYSargs2
             
      version 1.19.02
         - Added SYSargs2 to the main vignette
