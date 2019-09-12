@@ -740,7 +740,7 @@ output(align)
 
 Alternatively, it possible to build an workflow with `HISAT2` and `SAMtools`.
 
-```{r hisat_alignment, eval=TRUE}
+```{r hisat_alignment, eval=FALSE}
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/workflow-hisat2/workflow-hisat2-se", package="systemPipeR")
 WF <- loadWorkflow(targets=targets, wf_file="workflow_hisat2-se.cwl", input_file="workflow_hisat2-se.yml", dir_path=dir_path)
