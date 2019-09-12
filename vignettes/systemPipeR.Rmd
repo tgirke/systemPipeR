@@ -353,7 +353,6 @@ WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName
 ```
 
 Several accessor methods are available that are named after the slot names of the _`SYSargs2`_ object. 
-
 ```{r names_WF, eval=TRUE}
 names(WF)
 ```
@@ -415,6 +414,7 @@ Note, in the following example the usage of _`suppressWarnings()`_ is only relev
 building this vignette. In typical workflows it should be removed.
 
 ```{r param_import, eval=TRUE}
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args
 ```
@@ -462,8 +462,7 @@ directory of the same name and path exists already. On Linux and OS X systems
 one can also create new workflow instances from the command-line of a terminal as shown
 [here](http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template).
 To apply workflows to custom data, the user needs to modify the _`targets`_ file and if
-necessary update the corresponding _`.cwl`_ and _`.yml`_ files. A collection of pre-generated _`.cwl`_ and _`.yml`_
-files is provided in the _`param/cwl`_ subdirectory of each workflow template. They
+necessary update the corresponding _`.cwl`_ and _`.yml`_ files. A collection of pre-generated _`.cwl`_ and _`.yml`_ files is provided in the _`param/cwl`_ subdirectory of each workflow template. They
 are also viewable in the GitHub repository of _`systemPipeRdata`_ ([see
 here](https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param)).
 
@@ -556,7 +555,7 @@ writeTargetsout(x=trimG, file="targets_trimG.txt", step=1)
 
 ### Preprocessing with Trimmomatic
 
-TODO: paired
+TODO: Add description!
 
 ```{r trimmomatic, eval=FALSE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
@@ -688,8 +687,8 @@ step. When this options are used, the output location will be update by default
 and can be assigned to the same object.
 
 ```{r runCommandline_align, eval=FALSE}
-runCommandline(align[1], make_bam = FALSE) ## generates alignments and writes *.sam files to ./results folder 
-align <- runCommandline(align, dir=TRUE, make_bam = TRUE) ## same as above but writes files to ./results/workflowName/Samplename folders and converts *.sam files to sorted and indexed BAM files. Assigning the new location of the output files to the object align.
+runCommandline(align, make_bam = FALSE) ## generates alignments and writes *.sam files to ./results folder 
+align <- runCommandline(align, make_bam = TRUE) ## same as above but writes files and converts *.sam files to sorted and indexed BAM files. Assigning the new extention of the output files to the object align.
 ```
 
 If available, multiple CPU cores can be used for processing each file. The number
@@ -734,6 +733,17 @@ Check and update the output location if necessary.
 ```{r output, eval=FALSE}
 align <- output_update(align, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) ## Updates the output(align) to the right location in the subfolders
 output(align)
+```
+
+#### Create new targets file
+
+To establish the connectivity to the next workflow step, one can write a new
+*targets* file with the *`writeTargetsout`* function. The new *targets* file
+serves as input to the next *`loadWorkflow`* and *`renderWF`* call.
+
+```{r writeTargetsout, eval=FALSE}
+names(clt(align))
+writeTargetsout(x=align, file="default", step=1)
 ```
 
 #### Alignment with `HISAT2` and `SAMtools`
@@ -797,11 +807,18 @@ reg <- clusterRun(tophat2PE, FUN = runCommandline, more.args = list(args=tophat2
 waitForJobs(reg=reg)
 ```
 
+Create new targets file
+
+```{r writeTargetsout_tophat2PE, eval=FALSE}
+names(clt(tophat2PE))
+writeTargetsout(x=tophat2PE, file="default", step=1)
+```
+
 ### Alignment with _`Bowtie2`_ (_e.g._ for miRNA profiling)
 
 The following example runs _`Bowtie2`_ as a single process without submitting it to a cluster.
 
-Build the index:
+Building the index:
 ```{r bowtie2_index, eval=FALSE}
 dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package="systemPipeR")
 idx <- loadWorkflow(targets=NULL, wf_file="bowtie2-index.cwl", input_file="bowtie2-index.yml", dir_path=dir_path)
@@ -813,8 +830,9 @@ cmdlist(idx)
 runCommandline(idx, make_bam = FALSE)
 ```
 
-Running the software:
-```{r bowtie2_run, eval=FALSE}
+Building all the command-line:
+
+```{r bowtie2_SYSargs2, eval=FALSE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-pe", package="systemPipeR")
 bowtiePE <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-mapping-pe.cwl", 
@@ -824,11 +842,9 @@ bowtiePE <- renderWF(bowtiePE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileNa
 bowtiePE
 cmdlist(bowtiePE)[1:2]
 output(bowtiePE)[1:2]
-## Run in single machine
-runCommandline(bowtiePE)
 ```
 
-Alternatively, submit the job to compute nodes.
+Running all the jobs to compute nodes.
 
 ```{r bowtie2_cluster, eval=FALSE}
 resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
@@ -836,6 +852,19 @@ reg <- clusterRun(bowtiePE, FUN = runCommandline, more.args = list(args=bowtiePE
     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
     Njobs = 18, runid = "01", resourceList = resources)
 getStatus(reg = reg)
+```
+
+Alternatively, it possible to run all the jobs in a single machine.
+
+```{r bowtie2_sm, eval=FALSE}
+bowtiePE <- runCommandline(bowtiePE)
+```
+
+Create new targets file.
+
+```{r writeTargetsout_bowtiePE, eval=FALSE}
+names(clt(bowtiePE))
+writeTargetsout(x=bowtiePE, file="default", step=1)
 ```
 
 ### Alignment with _`BWA-MEM`_ (_e.g._ for VAR-Seq)
@@ -868,7 +897,7 @@ bwaPE
 cmdlist(bwaPE)[1:2]
 output(bwaPE)[1:2]
 ## Single Machine
-runCommandline(args= bwaPE, make_bam=FALSE) 
+bwaPE <- runCommandline(args= bwaPE, make_bam=FALSE) 
 
 ## Cluster
 library(batchtools)
@@ -879,34 +908,11 @@ reg <- clusterRun(bwaPE, FUN = runCommandline, more.args = list(args=bwaPE, dir 
 getStatus(reg = reg)
 ```
 
-### Alignment with _`STAR`_ 
+Create new targets file.
 
-TODO: Description
-
-```{r star_alignment, eval=FALSE}
-## Build the index:
-dir_path <- system.file("extdata/cwl/star/star-idx", package="systemPipeR")
-idx <- loadWorkflow(targets = NULL, wf_file = "star-index.cwl", 
-    input_file = "star-index.yml", dir_path = dir_path)
-idx <- renderWF(idx)
-idx
-cmdlist(idx)
-output(idx)
-runCommandline(idx, make_bam = FALSE) 
-
-## Running the alignment:
-targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-dir_path <- system.file("extdata/cwl/star/star-pe", package="systemPipeR")
-starPE <- loadWorkflow(targets = targetsPE, wf_file = "star-mapping-pe.cwl", 
-    input_file = "star-mapping-pe.yml", dir_path = dir_path)
-starPE <- renderWF(starPE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
-    SampleName = "_SampleName_"))
-starPE
-cmdlist(starPE)[1]
-output(starPE)[1]
-
-## Single Machine
-runCommandline(starPE[1:2], make_bam = TRUE)
+```{r writeTargetsout_bwaPE, eval=FALSE}
+names(clt(bwaPE))
+writeTargetsout(x=bwaPE, file="default", step=1)
 ```
 
 ### Alignment with _`Rsubread`_ (_e.g._ for RNA-Seq)
@@ -933,7 +939,14 @@ rsubread
 cmdlist(rsubread)[1]
 
 ## Single Machine
-runCommandline(args=rsubread[1]) 
+rsubread <- runCommandline(args=rsubread[1]) 
+```
+
+Create new targets file.
+
+```{r writeTargetsout_rsubread, eval=FALSE}
+names(clt(rsubread))
+writeTargetsout(x=rsubread, file="default", step=1)
 ```
 
 ### Alignment with _`gsnap`_ (_e.g._ for VAR-Seq and RNA-Seq)
@@ -970,15 +983,21 @@ reg <- clusterRun(gsnap, FUN = runCommandline, more.args = list(args=gsnap, make
 getStatus(reg = reg)
 ```
 
-## *`SYSargs2Pipe`*.
-Check whether all BAM files have been created with the constructing superclass *`SYSargs2Pipe`*.
+Create new targets file.
 
-```{r WF_track, eval=FALSE}
-WF_track <- run_track(WF_ls = c(align, WF, tophat2PE, bowtiePE, bwa.pe, starPE, rsubread, gsnap))
-names(WF_track)
-WF_steps(WF_track)
-track(WF_track)
-summaryWF(WF_track)
+```{r writeTargetsout_gsnap, eval=FALSE}
+names(clt(gsnap))
+writeTargetsout(x=gsnap, file="default", step=1)
+```
+
+## Create symbolic links for viewing BAM files in IGV
+
+The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with http access needs to be available in the user account (_e.g._ _`home/publichtml`_) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, _`htmldir`_ defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the `_urlfile`_ argument. 
+
+```{r igv, eval=FALSE}
+symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
+            urlbase="http://myserver.edu/~username/", 
+        urlfile="IGVurl.txt")
 ```
 
 ## Read counting for mRNA profiling experiments
@@ -997,7 +1016,8 @@ The following performs read counting with _`summarizeOverlaps`_ in parallel mode
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by="gene")
-bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+outpaths <- subsetWF(align, slot="output", subset=1)
+bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
 multicoreParam <- MulticoreParam(workers=4); register(multicoreParam); registered()
 counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE))
 
@@ -1021,7 +1041,8 @@ f <- function(x) {
     txdb <- loadDb("./data/tair10.sqlite")
     eByg <- exonsBy(txdb, by="gene")
     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-    bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+    outpaths <- subsetWF(align, slot="output", subset=1)
+    bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
 }
 resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
@@ -1029,7 +1050,7 @@ param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.
 counteByg <- bplapply(seq(along=args), f, BPPARAM = param)
 countDFeByg <- sapply(seq(along=counteByg),
                       function(x) assays(counteByg[[x]])$counts)
-rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
+rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths)
 ```
 
 Useful commands for monitoring progress of submitted jobs
@@ -1038,27 +1059,6 @@ Useful commands for monitoring progress of submitted jobs
 getStatus(reg=reg)
 file.exists(output(tophat2PE))
 sapply(1:length(tophat2PE), function(x) loadResult(reg, id=x)) # Works after job completion
-```
-
-## Create new targets file
-
-To establish the connectivity to the next workflow step, one can write a new
-*targets* file with the *`writeTargetsout`* function. The new *targets* file
-serves as input to the next *`loadWorkflow`* and *`renderWF`* call.
-
-```{r writeTargetsout, eval=FALSE}
-names(clt(align))
-writeTargetsout(x=align, file="default", step=1)
-```
-
-## Create symbolic links for viewing BAM files in IGV
-
-The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with http access needs to be available in the user account (_e.g._ _`home/publichtml`_) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, _`htmldir`_ defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the `_urlfile`_ argument. 
-
-```{r igv, eval=FALSE}
-symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
-            urlbase="http://myserver.edu/~username/", 
-        urlfile="IGVurl.txt")
 ```
 
 #### Read and alignment count stats
