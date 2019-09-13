@@ -61,16 +61,16 @@ Backman, T.W.H and Girke, T. (2016). _`systemPipeR`_: NGS Workflow and Report Ge
 
 # Introduction
 
-[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) provides utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next generation sequence (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq [@H_Backman2016-bt]. Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, _`systemPipeR`_ can be used with most command-line aligners such as `BWA` [@Li2013-oy; @Li2009-oc], `HISAT2` [@Kim2015-ve], `TopHat2` [@Kim2013-vg] and `Bowtie2` [@Langmead2012-bs], as well as the R-based NGS aligners [_`Rsubread`_](http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html) [@Liao2013-bn] and [_`gsnap (gmapR)`_](http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html) [@Wu2010-iq]. Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental designs is facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area [@Lawrence2013-kt]. 
+[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) provides utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next-generation sequencing (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq [@H_Backman2016-bt]. Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, _`systemPipeR`_ can be used with most command-line aligners such as `BWA` [@Li2013-oy; @Li2009-oc], `HISAT2` [@Kim2015-ve], `TopHat2` [@Kim2013-vg] and `Bowtie2` [@Langmead2012-bs], as well as the R-based NGS aligners [_`Rsubread`_](http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html) [@Liao2013-bn] and [_`gsnap (gmapR)`_](http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html) [@Wu2010-iq]. Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental designs are facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area [@Lawrence2013-kt]. 
 
 The main motivation and advantages of using _`systemPipeR`_ for complex data analysis tasks are:
 
-1. Facilitates design of complex NGS workflows involving multiple R/Bioconductor packages
+1. Facilitates the design of complex NGS workflows involving multiple R/Bioconductor packages
 2. Common workflow interface for different NGS applications
 3. Makes NGS analysis with Bioconductor utilities more accessible to new users
 4. Simplifies usage of command-line software from within R
-5. Reduces complexity of using compute clusters for R and command-line software
-6. Accelerates runtime of workflows via parallelzation on computer systems with mutiple CPU cores and/or multiple compute nodes
+5. Reduces the complexity of using compute clusters for R and command-line software
+6. Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes
 6. Improves reproducibility by automating analyses and generation of analysis reports 
 
 <center><img src="utilities.png"></center>
@@ -100,9 +100,9 @@ run CWL in its native way via an R-based wrapper utility for *cwl-runner* or
 *cwl-tools* (CWL-based approach). Second, one can run workflows using CWL's
 command-line and workflow instructions from within R (R-based approach). In the
 latter case the same CWL workflow definition files (*e.g.* `*.cwl` and `*.yml`)
-are used but rendered and exectuted entirely with R functions defined by
+are used but rendered and executed entirely with R functions defined by
 _`sytemPipeR`_, and thus use CWL mainly as a command-line and workflow
-definition format rather than a software to run workflows. In this regard
+definition format rather than software to run workflows. In this regard
 _`sytemPipeR`_ also provides several convenience functions that are useful for
 designing and debugging workflows, such as a command-line rendering function to
 retrieve the exact command-line strings for each data set and processing step
@@ -119,7 +119,7 @@ the use of as many steps necessary for the analysis, as well as the connection
 between command-line- or R-based software. The connectivity among all
 workflow steps is achieved by the _`SYSargs2`_ workflow control class (see Figure 3).
 This S4 class is a list-like container where each instance stores all the
-input/output paths and parameter components requried for a particular data
+input/output paths and parameter components required for a particular data
 analysis step. _`SYSargs2`_ instances are generated by two constructor
 functions, *loadWorkflow* and *renderWF*, using as data input *targets* or
 *yaml* files as well as two *cwl* parameter files (for details see below). When
@@ -127,7 +127,7 @@ running preconfigured workflows, the only input the user needs to provide is
 the initial *targets* file containing the paths to the input files (*e.g.*
 FASTQ) along with unique sample labels. Subsequent targets instances are
 created automatically. The parameters required for running command-line
-software are provided by the parameter (*.cwl*) files described below. 
+software is provided by the parameter (*.cwl*) files described below. 
 
 We also introduce the *`SYSargs2Pipe`* class that organizes one or many
 SYSargs2 containers in a single compound object capturing all information
@@ -142,7 +142,7 @@ _`SYSargs2`_ objects. Each _`SYSargs2`_ instance is constructed from one *target
 and two *param* files. The only input provided by the user is the initial *targets* 
 file. Subsequent *targets* instances are created automatically, from the previous 
 output files. Any number of predefined or custom workflow steps are supported. One
-or many _`SYSargs2`_ objects are organized in a *`SYSargs2Pipe`* container.
+or many _`SYSargs2`_ objects are organized in an *`SYSargs2Pipe`* container.
 
 ## Workflow design structure using _`SYSargs`_: Previous version
 
@@ -153,7 +153,7 @@ _`SYSargs`_ instance stores all sample-level inputs as well as the paths to the
 corresponding outputs generated by command-line- or R-based software generating 
 sample-level output files, such as read preprocessors (trimmed/filtered FASTQ 
 files), aligners (SAM/BAM files), variant callers (VCF/BCF files) or peak callers 
-(BED/WIG files). Each sample level input/outfile operation uses its own _`SYSargs`_ 
+(BED/WIG files). Each sample level input/output operation uses its own _`SYSargs`_ 
 instance. The outpaths of _`SYSargs`_ usually define the sample inputs for the 
 next _`SYSargs`_ instance. This connectivity is established by writing the 
 outpaths with the _`writeTargetsout`_ function to a new _`targets`_ file that 
@@ -161,7 +161,7 @@ serves as input to the next _`systemArgs`_ call. Typically, the user has to
 provide only the initial _`targets`_ file. All downstream _`targets`_ files are 
 generated automatically. By chaining several _`SYSargs`_ steps together one can 
 construct complex workflows involving many sample-level input/output file 
-operations with any combinaton of command-line or R-based software. 
+operations with any combination of command-line or R-based software. 
 
 <center><img src="SystemPipeR_Workflow.png"></center>
 
@@ -196,15 +196,15 @@ ontains 18 paired-end (PE) read sets from _Arabidposis thaliana_ [@Howard2013-fq
 To minimize processing time during testing, each FASTQ file has been subsetted to 
 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides 
 of each chromosome of the _A. thalina_ genome. The corresponding reference genome 
-sequence (FASTA) and its GFF annotion files (provided in the same download) have 
+sequence (FASTA) and its GFF annotation files (provided in the same download) have 
 been truncated accordingly. This way the entire test sample data set requires 
 less than 200MB disk storage space. A PE read set has been chosen for this test 
 data set for flexibility, because it can be used for testing both types of analysis 
-routines requiring either SE (single end) reads or PE reads. 
+routines requiring either SE (single-end) reads or PE reads. 
 
 The following generates a fully populated _`systemPipeR`_ workflow environment 
 (here for RNA-Seq) in the current working directory of an R session. At this time 
-the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. 
+the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq, and Ribo-Seq. 
 Templates for additional NGS applications will be provided in the future.
 
 ```{r genRna_workflow, eval=FALSE}
@@ -216,7 +216,7 @@ setwd("rnaseq")
 ## Directory Structure
 
 The working environment of the sample data loaded in the previous step contains
-the following preconfigured directory structure (Figure 4). Directory names are indicated
+the following pre-configured directory structure (Figure 4). Directory names are indicated
 in  <span style="color:grey">***green***</span>. Users can change this
 structure as needed, but need to adjust the code in their workflows
 accordingly. 
@@ -259,8 +259,7 @@ The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample
 comparisons of an analysis workflow. The following shows the format of a sample 
 _`targets`_ file included in the package. It also can be viewed and downloaded 
 from _`systemPipeR`_'s GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). 
-In a target file with a single type of input files, here FASTQ files of single 
-end (SE) reads, the first three columns are mandatory including their column
+In a target file with a single type of input files, here FASTQ files of single-end (SE) reads, the first three columns are mandatory including their column
 names, while it is four mandatory columns for FASTQ files of PE reads. All 
 subsequent columns are optional and any number of additional columns can be added as needed.
 
@@ -270,7 +269,7 @@ input file used by CWL. Since for organizing experimental variables targets
 files are extremely useful and user-friendly. Thus, we encourage users to keep using 
 them. 
 
-### Structure of _`targets`_ file for single end (SE) samples
+### Structure of _`targets`_ file for single-end (SE) samples
 
 ```{r targetsSE, eval=TRUE}
 library(systemPipeR)
@@ -282,7 +281,7 @@ To work with custom data, users need to generate a _`targets`_ file containing
 the paths to their own FASTQ files and then provide under _`targetspath`_ the
 path to the corresponding _`targets`_ file. 
 
-### Structure of _`targets`_ file for paired end (PE) samples
+### Structure of _`targets`_ file for paired-end (PE) samples
 
 For paired-end (PE) samples, the structure of the targets file is similar, where
 users need to provide two FASTQ path columns: *`FileName1`* and *`FileName2`* 
@@ -317,7 +316,7 @@ readComp(file=targetspath, format="vector", delim="-")
 
 _`SYSargs2`_ stores all the information and instructions needed for processing
 a set of input files with a single or many command-line steps within a workflow
-(*i.e.* several components of a software or several independent software tools).
+(*i.e.* several components of the software or several independent software tools).
 The _`SYSargs2`_ object is created and fully populated with the *loadWorkflow* 
 and *renderWF* functions, respectively. 
 
@@ -392,7 +391,7 @@ together one can construct complex workflows involving many sample-level
 input/output file operations with any combination of command-line or R-based
 software. Alternatively, a CWL-centric workflow design can be used that defines
 all/most workflow steps with CWL workflow and parameter files. Due to time and
-space restrictions the CWL-centric approach is not covered by this tutorial. 
+space restrictions, the CWL-centric approach is not covered by this tutorial. 
 
 ## Structure of _`param`_ file and _`SYSargs`_ container (Previous version)
 
@@ -452,7 +451,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## Define environment settings and samples
 
 A typical workflow starts with generating the expected working environment
-containing the proper directory structure, input files and parameter settings.
+containing the proper directory structure, input files, and parameter settings.
 To simplify this task, one can load one of the existing NGS workflows templates
 provided by _`systemPipeRdata`_ into the current working directory. The
 following does this for the _`rnaseq`_ template. The name of the resulting
@@ -462,7 +461,7 @@ directory of the same name and path exists already. On Linux and OS X systems
 one can also create new workflow instances from the command-line of a terminal as shown
 [here](http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template).
 To apply workflows to custom data, the user needs to modify the _`targets`_ file and if
-necessary update the corresponding _`.cwl`_ and _`.yml`_ files. A collection of pre-generated _`.cwl`_ and _`.yml`_ files is provided in the _`param/cwl`_ subdirectory of each workflow template. They
+necessary update the corresponding _`.cwl`_ and _`.yml`_ files. A collection of pre-generated _`.cwl`_ and _`.yml`_ files are provided in the _`param/cwl`_ subdirectory of each workflow template. They
 are also viewable in the GitHub repository of _`systemPipeRdata`_ ([see
 here](https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param)).
 
@@ -580,7 +579,7 @@ quality cutoffs and mean quality distribution.
 The function _`seeFastq`_ computes the quality statistics and stores the results in a
 relatively small list object that can be saved to disk with _`save()`_ and
 reloaded with _`load()`_ for later plotting. The argument _`klength`_ specifies the
-k-mer length and _`batchsize`_ the number of reads to random sample from each
+k-mer length and _`batchsize`_ the number of reads to a random sample from each
 FASTQ file.
 
 ```{r fastq_quality, eval=FALSE}
@@ -593,7 +592,7 @@ dev.off()
 <center><img src="fastqReport.png"></center>
 <div align="center">**Figure 5:** FASTQ quality report </div></br>
 
-Parallelization of FASTQ quality report on single machine with multiple cores.
+Parallelization of FASTQ quality report on a single machine with multiple cores.
 
 ```{r fastq_quality_parallel_single, eval=FALSE}
 f <- function(x) seeFastq(fastq=infile1(trim)[x], batchsize=100000, klength=8)
@@ -683,7 +682,7 @@ to sorted and indexed BAM files, using internally the `Rsamtools` package
 [@Rsamtools]. Besides, *`runCommandline`* allows the user to create a dedicated
 results folder for each workflow and a sub-folder for each sample 
 defined in the *targets* file. This includes all the output and log files for each 
-step. When this options are used, the output location will be update by default 
+step. When these options are used, the output location will be updated by default 
 and can be assigned to the same object.
 
 ```{r runCommandline_align, eval=FALSE}
@@ -708,7 +707,7 @@ _`yamlinput(align)['thread']`_ is passed on to the submission command, here _`nc
 in the _`resources`_ list object. The number of independent parallel cluster 
 processes is defined under the _`Njobs`_ argument. The following example will run 
 18 processes in parallel using for each 4 CPU cores. If the resources available
-on a cluster allow to run all 18 processes at the same time then the shown sample 
+on a cluster allow running all 18 processes at the same time then the shown sample 
 submission will utilize in total 72 CPU cores. Note, *`clusterRun`* can be used
 with most queueing systems as it is based on utilities from the _`batchtools`_ 
 package which supports the use of template files (_`*.tmpl`_) for defining the 
@@ -844,7 +843,7 @@ cmdlist(bowtiePE)[1:2]
 output(bowtiePE)[1:2]
 ```
 
-Running all the jobs to compute nodes.
+Running all the jobs to computing nodes.
 
 ```{r bowtie2_cluster, eval=FALSE}
 resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
@@ -992,7 +991,7 @@ writeTargetsout(x=gsnap, file="default", step=1)
 
 ## Create symbolic links for viewing BAM files in IGV
 
-The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with http access needs to be available in the user account (_e.g._ _`home/publichtml`_) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, _`htmldir`_ defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the `_urlfile`_ argument. 
+The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with Http access needs to be available in the user account (_e.g._ _`home/publichtml`_) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, _`htmldir`_ defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the `_urlfile`_ argument. 
 
 ```{r igv, eval=FALSE}
 symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"), 
@@ -1053,7 +1052,7 @@ countDFeByg <- sapply(seq(along=counteByg),
 rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths)
 ```
 
-Useful commands for monitoring progress of submitted jobs
+Useful commands for monitoring the progress of submitted jobs
 
 ```{r process_monitoring, eval=FALSE}
 getStatus(reg=reg)
@@ -1063,7 +1062,7 @@ sapply(1:length(tophat2PE), function(x) loadResult(reg, id=x)) # Works after job
 
 #### Read and alignment count stats
 
-Generate table of read and alignment counts for all samples. 
+Generate a table of read and alignment counts for all samples. 
 
 ```{r align_stats1, eval=FALSE}
 read_statsDF <- alignStats(align) 
@@ -1172,7 +1171,7 @@ countDFeByg <- read.delim(countDFeBygpath, row.names=1)
 edgeDF <- run_edgeR(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 ```
 
-Filter and plot DEG results for up and down regulated genes. Because of the small size of the toy data set used by this vignette, the _FDR_ value has been set to a relatively high threshold (here 10%). More commonly used _FDR_ cutoffs are 1% or 5%. The definition of '_up_' and '_down_' is given in the corresponding help file. To open it, type _`?filterDEGs`_ in the R console. 
+Filter and plot DEG results for up and down-regulated genes. Because of the small size of the toy data set used by this vignette, the _FDR_ value has been set to a relatively high threshold (here 10%). More commonly used _FDR_ cutoffs are 1% or 5%. The definition of '_up_' and '_down_' is given in the corresponding help file. To open it, type _`?filterDEGs`_ in the R console. 
 
 ```{r edger_deg_counts, eval=TRUE}
 DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
@@ -1199,7 +1198,7 @@ on data sets with more complex experimental designs.
 degseqDF <- run_DESeq2(countDF=countDFeByg, targets=targets, cmp=cmp[[1]], independent=FALSE)
 ```
 
-Filter and plot DEG results for up and down regulated genes. 
+Filter and plot DEG results for up and down-regulated genes. 
 
 ```{r deseq2_deg_counts, eval=TRUE}
 DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
@@ -1209,7 +1208,7 @@ DEG_list2 <- filterDEGs(degDF=degseqDF, filter=c(Fold=2, FDR=10))
 
 ## Venn Diagrams
 
-The function _`overLapper`_ can compute Venn intersects for large numbers of sample sets (up to 20 or more) and _`vennPlot`_ can plot 2-5 way Venn diagrams. A useful feature is the possiblity to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
+The function _`overLapper`_ can compute Venn intersects for large numbers of sample sets (up to 20 or more) and _`vennPlot`_ can plot 2-5 way Venn diagrams. A useful feature is the possibility to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
 
 ```{r vennplot, eval=TRUE}
 vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
@@ -1223,7 +1222,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 
 ### Obtain gene-to-GO mappings
 
-The following shows how to obtain gene-to-GO mappings from _`biomaRt`_ (here for _A. thaliana_) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor's  _`*.db`_ genome annotation packages or GO annotation files provided by various genome databases. For each annotation this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the _`load`_ function as shown in the next subsection. 
+The following shows how to obtain gene-to-GO mappings from _`biomaRt`_ (here for _A. thaliana_) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor's  _`*.db`_ genome annotation packages or GO annotation files provided by various genome databases. For each annotation, this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the _`load`_ function as shown in the next subsection. 
 
 ```{r get_go_biomart, eval=FALSE}
 library("biomaRt")
@@ -1281,7 +1280,7 @@ goBarplot(gos, gocat="CC")
 ## Clustering and heat maps
 
 The following example performs hierarchical clustering on the _`rlog`_ transformed expression matrix subsetted by the DEGs identified in the 
-above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster joining.
+above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster join.
 
 ```{r hierarchical_clustering, eval=FALSE}
 library(pheatmap)
@@ -1325,7 +1324,7 @@ setwd("rnaseq")
 
 Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.Rmd)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes following steps:
 
 1. Read preprocessing
     + Quality filtering (trimming)
@@ -1352,7 +1351,7 @@ setwd("chipseq")
 
 Next, run the chosen sample workflow _`systemPipeChIPseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.Rmd)) by executing from the command-line _`make -B`_ within the _`chipseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes the following steps:
 
 1. Read preprocessing
     + Quality filtering (trimming)
@@ -1367,7 +1366,7 @@ Workflow includes following steps:
 
 ## VAR-Seq sample 
 
-### VAR-Seq workflow for single machine
+### VAR-Seq workflow for the single machine
 
 Load the VAR-Seq sample workflow into your current working directory.
 
@@ -1381,7 +1380,7 @@ setwd("varseq")
 
 Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rmd)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes following steps:
 
 1. Read preprocessing
     + Quality filtering (trimming)
@@ -1396,7 +1395,7 @@ Workflow includes following steps:
 ### VAR-Seq workflow for computer cluster
 
 The workflow template provided for this step is called _`systemPipeVARseq.Rmd`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd)).
-It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Slurm as scheduler. 
+It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an HPC system using Slurm as the scheduler. 
 
 ## Ribo-Seq sample
 
@@ -1412,7 +1411,7 @@ setwd("riboseq")
 
 Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq.Rmd)) by executing from the command-line _`make -B`_ within the _`ribseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes following steps:
 
 1. Read preprocessing
     + Adaptor trimming and quality filtering
@@ -1420,8 +1419,8 @@ Workflow includes following steps:
 2. Alignments: _`Tophat2`_ (or any other RNA-Seq aligner)
 3. Alignment stats
 4. Compute read distribution across genomic features
-5. Adding custom features to workflow (e.g. uORFs)
-6. Genomic read coverage along transcripts
+5. Adding custom features to the workflow (e.g. uORFs)
+6. Genomic read coverage along with transcripts
 7. Read counting 
 8. Sample-wise correlation analysis
 9. Analysis of differentially expressed genes (DEGs)
