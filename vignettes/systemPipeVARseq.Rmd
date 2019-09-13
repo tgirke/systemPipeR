@@ -3,10 +3,10 @@ title: "VAR-Seq Workflow Template"
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  BiocStyle::html_document:
-    toc_float: true
-    code_folding: show
   BiocStyle::pdf_document: default
+  # BiocStyle::html_document:
+  #   toc_float: true
+  #   code_folding: show
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -15,20 +15,6 @@ vignette: |
 fontsize: 14pt
 bibliography: bibtex.bib
 ---
-
-```{css, echo=FALSE}
-pre code {
-white-space: pre !important;
-overflow-x: scroll !important;
-word-break: keep-all !important;
-word-wrap: initial !important;
-}
-```
-
-<!--
-- Compile from command-line
-Rscript -e "rmarkdown::render('systemPipeVARseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeVARseq.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeVARseq.knit.md 14; Rscript -e "rmarkdown::render('systemPipeVARseq.Rmd', c('BiocStyle::pdf_document'))"
--->
 
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
@@ -39,24 +25,11 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
-```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
-suppressPackageStartupMessages({
-    library(systemPipeR)
-    library(BiocParallel)
-    library(Biostrings)
-    library(Rsamtools)
-    library(GenomicRanges)
-    library(ggplot2)
-    library(GenomicAlignments)
-    library(ShortRead)
-    library(ape)
-    library(batchtools)
-})
-```
-
 # VAR-Seq Workflow 
 
-This workflow demonstrates how to use various utilities for building and running automated end-to-end analysis workflows for _`VAR-Seq`_ data. The full workflow can be found here: [HTML](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html), [.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.Rmd), and [.R](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.R).
+This workflow demonstrates how to use various utilities for building and running automated end-to-end analysis workflows for _`VAR-Seq`_ data. 
+
+_**The full workflow can be found here: [HTML](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html), [.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.Rmd), and [.R](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.R).**_
 
 ## Loading package and workflow template
 
@@ -68,34 +41,39 @@ genWorkenvir(workflow="varseq")
 setwd("varseq")
 ```
 
-The working environment of the sample data loaded in the previous step contains the following preconfigured directory structure. Directory names are indicated in  <span style="color:grey">_**grey**_</span>. Users can change this structure as needed, but need to adjust the code in their workflows accordingly. 
+The working environment of the sample data loaded in the previous step contains
+the following pre-configured directory structure. Directory names are indicated
+in  <span style="color:grey">***bold***</span>. Users can change this
+structure as needed, but need to adjust the code in their workflows
+accordingly. 
 
-* <span style="color:grey">_**varseq/**_</span> 
-    + This is the directory of the R session running the workflow.
-    + Run script ( _\*.Rmd_) and sample annotation (_targets.txt_) files are located here.
-    + Note, this directory can have any name (_e.g._ <span style="color:grey">_**varseq**_</span>). Changing its name does not require any modifications in the run script(s).
-    + Important subdirectories: 
-        + <span style="color:grey">_**param/**_</span> 
-            + Stores parameter files such as: _\*.param_, _\*.tmpl_ and _\*\_run.sh_.
-        + <span style="color:grey">_**data/**_ </span>
-            + FASTQ samples 
-            + Reference FASTA file
-            + Annotations
-            + etc.
-        + <span style="color:grey">_**results/**_</span>
-            + Alignment, variant and peak files (BAM, VCF, BED) 
-            + Tabular result files
-            + Images and plots
-            + etc.
+* <span style="color:green">_**workflow/**_</span> (*e.g.* *varseq/*) 
+    + This is the root directory of the R session running the workflow.
+    + Run script ( *\*.Rmd*) and sample annotation (*targets.txt*) files are located here.
+    + Note, this directory can have any name (*e.g.* <span style="color:green">_**varseq**_</span>, <span style="color:green">_**varseq**_</span>). Changing its name does not require any modifications in the run script(s).
+  + **Important subdirectories**: 
+    + <span style="color:green">_**param/**_</span> 
+        + Stores non-CWL parameter files such as: *\*.param*, *\*.tmpl* and *\*.run.sh*. These files are only required for backwards compatibility to run old workflows using the previous custom command-line interface.
+        + <span style="color:green">_**param/cwl/**_</span>: This subdirectory stores all the CWL parameter files. To organize workflows, each can have its own subdirectory, where all `CWL param` and `input.yml` files need to be in the same subdirectory. 
+    + <span style="color:green">_**data/**_ </span>
+        + FASTQ files
+        + FASTA file of reference (*e.g.* reference genome)
+        + Annotation files
+        + etc.
+    + <span style="color:green">_**results/**_</span>
+        + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
+        + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
-The following parameter files are included in each workflow template: 
+The following parameter files are included in each workflow template:
 
-1. _`targets.txt`_: initial one provided by user; downstream _`targets_*.txt`_ files are generated automatically
-2. _`*.param`_: defines parameter for input/output file operations, _e.g._ _`trim.param`_, _`bwa.param`_, _`hisat2.param`_, ...
-3. _`*_run.sh`_: optional bash script, _e.g._: _`gatk_run.sh`_
-4. Compute cluster environment (skip on single machine):
-    + _`.batchtools.conf.R`_: defines type of scheduler for _`batchtools`_. Note, it is necessary to point the right template accordingly to the cluster in use.
-    + _`*.tmpl`_: specifies parameters of scheduler used by a system, _e.g._ Torque, SGE, Slurm, etc.
+1. *`targets.txt`*: initial one provided by user; downstream *`targets_*.txt`* files are generated automatically
+2. *`*.param/cwl`*: defines parameter for input/output file operations, *e.g.*:
+    + *`hisat2-se/hisat2-mapping-se.cwl`* 
+    + *`hisat2-se/hisat2-mapping-se.yml`*
+3. *`*_run.sh`*: optional bash scripts 
+4. Configuration files for computer cluster environments (skip on single machines):
+    + *`.batchtools.conf.R`*: defines the type of scheduler for *`batchtools`* pointing to template file of cluster, and located in user's home directory
+    + *`*.tmpl`*: specifies parameters of scheduler used by a system, *e.g.* Torque, SGE, Slurm, etc.
 
 ## Run workflow
 
@@ -121,5 +99,4 @@ sessionInfo()
 
 # Funding
 
-This project was supported by funds from the National Institutes of
-Health (NIH) and the National Science Foundation (NSF).
+This project is funded by NSF award ABI-1661152.
