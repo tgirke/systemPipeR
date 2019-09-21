@@ -1,4 +1,7 @@
 changelog
+     version 1.19.04
+        - Moved functions from R/AllClasses.R to R/utilities.R
+
      version 1.19.03
         - Added "cwl/*" files:
             - hista2/*
