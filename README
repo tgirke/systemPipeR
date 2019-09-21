@@ -1,6 +1,7 @@
 changelog
      version 1.19.04
         - Moved functions from R/AllClasses.R to R/utilities.R
+	- Added new function: "olRanges" - R/chipseq.R
 
      version 1.19.03
         - Added "cwl/*" files:
