@@ -14,17 +14,14 @@ loadWorkflow(targets = NULL, wf_file, input_file, dir_path = ".")
   path to \code{targets} file. Assign \code{NULL} to run the pipeline without 'targets' file. This can be useful for running specific workflows which do not require input files.
 }
   \item{wf_file}{
-  path to \code{CWL param} file.
+  name and path to \code{CWL param} file.
 }
   \item{input_file}{
-  path to \code{input} file.
+  name and path to \code{input} file.
 }
   \item{dir_path}{
   full path to the directory with the \code{CWL param} and \code{input} files.
 }
-}
-\details{
-Please note that the \code{CWL param} and \code{input} files need to be in the same directory.
 }
 \value{
 \code{SYSargs2} object
