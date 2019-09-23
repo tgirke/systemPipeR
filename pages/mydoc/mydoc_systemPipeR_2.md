@@ -1,6 +1,6 @@
 ---
 title: 2. Getting Started
-last_updated: Mon Jul 29 09:36:40 2019
+last_updated: Sun Sep 22 22:08:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
@@ -27,9 +27,23 @@ vignette("systemPipeR")  # Opens vignette
 
 ## Load sample data and workflow templates
 
-The mini sample FASTQ files used by this overview vignette as well as the associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ package as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) contains 18 paired-end (PE) read sets from _Arabidposis thaliana_ (Howard et al., 2013). To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the _A. thalina_ genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set requires less than 200MB disk storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads. 
+The mini sample FASTQ files used by this overview vignette as well as the 
+associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ p
+ackage as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) 
+ontains 18 paired-end (PE) read sets from _Arabidposis thaliana_ (Howard et al., 2013). 
+To minimize processing time during testing, each FASTQ file has been subsetted to 
+90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides 
+of each chromosome of the _A. thalina_ genome. The corresponding reference genome 
+sequence (FASTA) and its GFF annotation files (provided in the same download) have 
+been truncated accordingly. This way the entire test sample data set requires 
+less than 200MB disk storage space. A PE read set has been chosen for this test 
+data set for flexibility, because it can be used for testing both types of analysis 
+routines requiring either SE (single-end) reads or PE reads. 
 
-The following generates a fully populated _`systemPipeR`_ workflow environment (here for RNA-Seq) in the current working directory of an R session. At this time the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for additional NGS applications will be provided in the future.
+The following generates a fully populated _`systemPipeR`_ workflow environment 
+(here for RNA-Seq) in the current working directory of an R session. At this time 
+the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq, and Ribo-Seq. 
+Templates for additional NGS applications will be provided in the future.
 
 
 ```r
@@ -41,7 +55,7 @@ setwd("rnaseq")
 ## Directory Structure
 
 The working environment of the sample data loaded in the previous step contains
-the following preconfigured directory structure (Figure 4). Directory names are indicated
+the following pre-configured directory structure (Figure 4). Directory names are indicated
 in  <span style="color:grey">***green***</span>. Users can change this
 structure as needed, but need to adjust the code in their workflows
 accordingly. 
@@ -80,9 +94,21 @@ The following parameter files are included in each workflow template:
 
 ## Structure of _`targets`_ file
 
-The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample comparisons of an analysis workflow. The following shows the format of a sample _`targets`_ file included in the package. It also can be viewed and downloaded from _`systemPipeR`_'s GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). In a target file with a single type of input files, here FASTQ files of single end (SE) reads, the first three columns are mandatory including their column names, while it is four mandatory columns for FASTQ files of PE reads. All subsequent columns are optional and any number of additional columns can be added as needed.
+The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
+comparisons of an analysis workflow. The following shows the format of a sample 
+_`targets`_ file included in the package. It also can be viewed and downloaded 
+from _`systemPipeR`_'s GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). 
+In a target file with a single type of input files, here FASTQ files of single-end (SE) reads, the first three columns are mandatory including their column
+names, while it is four mandatory columns for FASTQ files of PE reads. All 
+subsequent columns are optional and any number of additional columns can be added as needed.
 
-### Structure of _`targets`_ file for single end (SE) samples
+Users should note here, the usage of targets files is optional when using
+*systemPipeR's* new CWL interface. They can be replaced by a standard YAML
+input file used by CWL. Since for organizing experimental variables targets
+files are extremely useful and user-friendly. Thus, we encourage users to keep using 
+them. 
+
+### Structure of _`targets`_ file for single-end (SE) samples
 
 
 ```r
@@ -92,49 +118,55 @@ read.delim(targetspath, comment.char = "#")
 ```
 
 ```
-##                       FileName SampleName Factor SampleLong
-## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
-## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
-## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
-## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
-## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A
-## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B
-## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A
-## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B
-## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A
-## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B
-## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A
-## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B
-## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A
-## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B
-## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A
-## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B
-## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A
-## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B
-##    Experiment        Date
-## 1           1 23-Mar-2012
-## 2           1 23-Mar-2012
-## 3           1 23-Mar-2012
-## 4           1 23-Mar-2012
-## 5           1 23-Mar-2012
-## 6           1 23-Mar-2012
-## 7           1 23-Mar-2012
-## 8           1 23-Mar-2012
-## 9           1 23-Mar-2012
-## 10          1 23-Mar-2012
-## 11          1 23-Mar-2012
-## 12          1 23-Mar-2012
-## 13          1 23-Mar-2012
-## 14          1 23-Mar-2012
-## 15          1 23-Mar-2012
-## 16          1 23-Mar-2012
-## 17          1 23-Mar-2012
-## 18          1 23-Mar-2012
+##                       FileName SampleName Factor SampleLong Experiment
+## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A          1
+## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B          1
+## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A          1
+## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B          1
+## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A          1
+## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B          1
+## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A          1
+## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B          1
+## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A          1
+## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B          1
+## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A          1
+## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B          1
+## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A          1
+## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B          1
+## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A          1
+## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B          1
+## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A          1
+## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B          1
+##           Date
+## 1  23-Mar-2012
+## 2  23-Mar-2012
+## 3  23-Mar-2012
+## 4  23-Mar-2012
+## 5  23-Mar-2012
+## 6  23-Mar-2012
+## 7  23-Mar-2012
+## 8  23-Mar-2012
+## 9  23-Mar-2012
+## 10 23-Mar-2012
+## 11 23-Mar-2012
+## 12 23-Mar-2012
+## 13 23-Mar-2012
+## 14 23-Mar-2012
+## 15 23-Mar-2012
+## 16 23-Mar-2012
+## 17 23-Mar-2012
+## 18 23-Mar-2012
 ```
 
-To work with custom data, users need to generate a _`targets`_ file containing the paths to their own FASTQ files and then provide under _`targetspath`_ the path to the corresponding _`targets`_ file. 
+To work with custom data, users need to generate a _`targets`_ file containing 
+the paths to their own FASTQ files and then provide under _`targetspath`_ the
+path to the corresponding _`targets`_ file. 
 
-### Structure of _`targets`_ file for paired end (PE) samples
+### Structure of _`targets`_ file for paired-end (PE) samples
+
+For paired-end (PE) samples, the structure of the targets file is similar, where
+users need to provide two FASTQ path columns: *`FileName1`* and *`FileName2`* 
+with the paths to the PE FASTQ files. 
 
 
 ```r
@@ -143,17 +175,18 @@ read.delim(targetspath, comment.char = "#")[1:2, 1:6]
 ```
 
 ```
-##                     FileName1                   FileName2
-## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz
-## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz
-##   SampleName Factor SampleLong Experiment
-## 1        M1A     M1  Mock.1h.A          1
-## 2        M1B     M1  Mock.1h.B          1
+##                     FileName1                   FileName2 SampleName Factor
+## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz        M1A     M1
+## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz        M1B     M1
+##   SampleLong Experiment
+## 1  Mock.1h.A          1
+## 2  Mock.1h.B          1
 ```
 
 ### Sample comparisons
 
-Sample comparisons are defined in the header lines of the _`targets`_ file starting with '``# <CMP>``'. 
+Sample comparisons are defined in the header lines of the _`targets`_ file 
+starting with '``# <CMP>``'. 
 
 
 ```r
@@ -167,8 +200,12 @@ readLines(targetspath)[1:4]
 ## [4] "# <CMP> CMPset2: ALL"
 ```
 
-The function _`readComp`_ imports the comparison information and stores it in a _`list`_. Alternatively, _`readComp`_ can obtain the comparison information from the corresponding _`SYSargs`_ object (see below). 
-Note, these header lines are optional. They are mainly useful for controlling comparative analyses according to certain biological expectations, such as identifying differentially expressed genes in RNA-Seq experiments based on simple pair-wise comparisons.
+The function _`readComp`_ imports the comparison information and stores it in a 
+_`list`_. Alternatively, _`readComp`_ can obtain the comparison information from 
+the corresponding _`SYSargs`_ object (see below). Note, these header lines are 
+optional. They are mainly useful for controlling comparative analyses according 
+to certain biological expectations, such as identifying differentially expressed
+genes in RNA-Seq experiments based on simple pair-wise comparisons.
  
 
 ```r
@@ -177,25 +214,23 @@ readComp(file = targetspath, format = "vector", delim = "-")
 
 ```
 ## $CMPset1
-## [1] "M1-A1"   "M1-V1"   "A1-V1"   "M6-A6"   "M6-V6"  
-## [6] "A6-V6"   "M12-A12" "M12-V12" "A12-V12"
+## [1] "M1-A1"   "M1-V1"   "A1-V1"   "M6-A6"   "M6-V6"   "A6-V6"   "M12-A12"
+## [8] "M12-V12" "A12-V12"
 ## 
 ## $CMPset2
-##  [1] "M1-A1"   "M1-V1"   "M1-M6"   "M1-A6"   "M1-V6"  
-##  [6] "M1-M12"  "M1-A12"  "M1-V12"  "A1-V1"   "A1-M6"  
-## [11] "A1-A6"   "A1-V6"   "A1-M12"  "A1-A12"  "A1-V12" 
-## [16] "V1-M6"   "V1-A6"   "V1-V6"   "V1-M12"  "V1-A12" 
-## [21] "V1-V12"  "M6-A6"   "M6-V6"   "M6-M12"  "M6-A12" 
-## [26] "M6-V12"  "A6-V6"   "A6-M12"  "A6-A12"  "A6-V12" 
-## [31] "V6-M12"  "V6-A12"  "V6-V12"  "M12-A12" "M12-V12"
+##  [1] "M1-A1"   "M1-V1"   "M1-M6"   "M1-A6"   "M1-V6"   "M1-M12"  "M1-A12" 
+##  [8] "M1-V12"  "A1-V1"   "A1-M6"   "A1-A6"   "A1-V6"   "A1-M12"  "A1-A12" 
+## [15] "A1-V12"  "V1-M6"   "V1-A6"   "V1-V6"   "V1-M12"  "V1-A12"  "V1-V12" 
+## [22] "M6-A6"   "M6-V6"   "M6-M12"  "M6-A12"  "M6-V12"  "A6-V6"   "A6-M12" 
+## [29] "A6-A12"  "A6-V12"  "V6-M12"  "V6-A12"  "V6-V12"  "M12-A12" "M12-V12"
 ## [36] "A12-V12"
 ```
 
-## Structure of the new _`param`_ file and construct _`SYSargs2`_ container
+## Structure of the new _`param`_ files and construct _`SYSargs2`_ container
 
 _`SYSargs2`_ stores all the information and instructions needed for processing
 a set of input files with a single or many command-line steps within a workflow
-(*i.e.* several components of a software or several independent software tools).
+(*i.e.* several components of the software or several independent software tools).
 The _`SYSargs2`_ object is created and fully populated with the *loadWorkflow* 
 and *renderWF* functions, respectively. 
 
@@ -206,19 +241,9 @@ by a *targets* file can be passed on to a _`SYSargs2`_ instance via the *inputva
 argument of the *renderWF* function. 
 
 
-```r
-hisat2.cwl <- system.file("extdata", "cwl/hisat2-se/hisat2-mapping-se.cwl", 
-    package = "systemPipeR")
-yaml::read_yaml(hisat2.cwl)
-```
 
 
-```r
-hisat2.yml <- system.file("extdata", "cwl/hisat2-se/hisat2-mapping-se.yml", 
-    package = "systemPipeR")
-yaml::read_yaml(hisat2.yml)
-```
-  
+
 The following imports a *`.cwl`* file (here *`hisat2-mapping-se.cwl`*) for running
 the short read aligner HISAT2 (Kim et al., 2015). The *loadWorkflow* and *renderWF* 
 functions render the proper command-line strings for each sample and software tool.
@@ -227,25 +252,23 @@ functions render the proper command-line strings for each sample and software to
 ```r
 library(systemPipeR)
 targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2-se", package = "systemPipeR")
-WF <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", 
-    input_file = "hisat2-mapping-se.yml", dir_path = dir_path)
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package = "systemPipeR")
+WF <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", input_file = "hisat2-mapping-se.yml", 
+    dir_path = dir_path)
 
-WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH_", SampleName = "_SampleName_"))
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
 ```
 
 Several accessor methods are available that are named after the slot names of the _`SYSargs2`_ object. 
-
 
 ```r
 names(WF)
 ```
 
 ```
-##  [1] "targets"       "targetsheader" "modules"      
-##  [4] "wf"            "clt"           "yamlinput"    
-##  [7] "cmdlist"       "input"         "output"       
-## [10] "cwlfiles"      "inputvars"
+##  [1] "targets"       "targetsheader" "modules"       "wf"           
+##  [5] "clt"           "yamlinput"     "cmdlist"       "input"        
+##  [9] "output"        "cwlfiles"      "inputvars"
 ```
 
 Of particular interest is the *`cmdlist()`* method. It constructs the system
@@ -264,8 +287,23 @@ cmdlist(WF)[1]
 
 ```
 ## $M1A
-## $M1A$`hisat2-mapping-se.cwl`
-## [1] "hisat2 -S results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+## $M1A$`hisat2-mapping-se`
+## [1] "hisat2 -S ./results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+```
+
+The output components of _`SYSargs2`_ define the expected output files for 
+each step in the workflow; some of which are the input for the next workflow step, 
+here next _`SYSargs2`_ instance (see Figure 2).
+
+
+```r
+output(WF)[1]
+```
+
+```
+## $M1A
+## $M1A$`hisat2-mapping-se`
+## [1] "./results/M1A.sam"
 ```
 
 ```r
@@ -273,8 +311,8 @@ modules(WF)
 ```
 
 ```
-##        module1        module2 
-## "hisat2/2.0.1" "samtools/1.9"
+##        module1 
+## "hisat2/2.1.0"
 ```
 
 ```r
@@ -320,8 +358,8 @@ output(WF)[1]
 
 ```
 ## $M1A
-## $M1A$`hisat2-mapping-se.cwl`
-## [1] "results/M1A.sam"
+## $M1A$`hisat2-mapping-se`
+## [1] "./results/M1A.sam"
 ```
 
 ```r
@@ -330,10 +368,13 @@ cwlfiles(WF)
 
 ```
 ## $cwl
-## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.cwl"
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl"
 ## 
 ## $yml
-## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.yml"
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.yml"
+## 
+## $steps
+## [1] "hisat2-mapping-se"
 ```
 
 ```r
@@ -342,25 +383,10 @@ inputvars(WF)
 
 ```
 ## $FileName
-## [1] "_FASTQ_PATH_"
+## [1] "_FASTQ_PATH1_"
 ## 
 ## $SampleName
 ## [1] "_SampleName_"
-```
-
-The output components of _`SYSargs2`_ define the expected output files for 
-each step in the workflow; some of which are the input for the next workflow step, 
-here next _`SYSargs2`_ instance (see Figure 3).
-
-
-```r
-output(WF)[1]
-```
-
-```
-## $M1A
-## $M1A$`hisat2-mapping-se.cwl`
-## [1] "results/M1A.sam"
 ```
 
 In an 'R-centric' rather than a 'CWL-centric' workflow design the connectivity
@@ -371,11 +397,12 @@ together one can construct complex workflows involving many sample-level
 input/output file operations with any combination of command-line or R-based
 software. Alternatively, a CWL-centric workflow design can be used that defines
 all/most workflow steps with CWL workflow and parameter files. Due to time and
-space restrictions the CWL-centric approach is not covered by this tutorial. 
+space restrictions, the CWL-centric approach is not covered by this tutorial. 
 
-## Structure of _`param`_ file and _`SYSargs`_ container
+## Structure of _`param`_ file and _`SYSargs`_ container (Previous version)
 
-The _`param`_ file defines the parameters of a chosen command-line software. The following shows the format of a sample _`param`_ file provided by this package. 
+The _`param`_ file defines the parameters of a chosen command-line software. 
+The following shows the format of a sample _`param`_ file provided by this package. 
 
 
 ```r
@@ -384,38 +411,22 @@ read.delim(parampath, comment.char = "#")
 ```
 
 ```
-##      PairSet         Name
-## 1    modules         <NA>
-## 2    modules         <NA>
-## 3   software         <NA>
-## 4      cores           -p
-## 5      other         <NA>
-## 6   outfile1           -o
-## 7   outfile1         path
-## 8   outfile1       remove
-## 9   outfile1       append
-## 10  outfile1 outextension
-## 11 reference         <NA>
-## 12   infile1         <NA>
-## 13   infile1         path
-## 14   infile2         <NA>
-## 15   infile2         path
-##                                     Value
-## 1                           bowtie2/2.2.5
-## 2                           tophat/2.0.14
-## 3                                  tophat
-## 4                                       4
-## 5  -g 1 --segment-length 25 -i 30 -I 3000
-## 6                             <FileName1>
-## 7                              ./results/
-## 8                                    <NA>
-## 9                                 .tophat
-## 10              .tophat/accepted_hits.bam
-## 11                    ./data/tair10.fasta
-## 12                            <FileName1>
-## 13                                   <NA>
-## 14                            <FileName2>
-## 15                                   <NA>
+##      PairSet         Name                                  Value
+## 1    modules         <NA>                          bowtie2/2.2.5
+## 2    modules         <NA>                          tophat/2.0.14
+## 3   software         <NA>                                 tophat
+## 4      cores           -p                                      4
+## 5      other         <NA> -g 1 --segment-length 25 -i 30 -I 3000
+## 6   outfile1           -o                            <FileName1>
+## 7   outfile1         path                             ./results/
+## 8   outfile1       remove                                   <NA>
+## 9   outfile1       append                                .tophat
+## 10  outfile1 outextension              .tophat/accepted_hits.bam
+## 11 reference         <NA>                    ./data/tair10.fasta
+## 12   infile1         <NA>                            <FileName1>
+## 13   infile1         path                                   <NA>
+## 14   infile2         <NA>                            <FileName2>
+## 15   infile2         path                                   <NA>
 ```
 
 The _`systemArgs`_ function imports the definitions of both the _`param`_ file
@@ -429,6 +440,7 @@ building this vignette. In typical workflows it should be removed.
 
 
 ```r
+targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
 args <- suppressWarnings(systemArgs(sysma = parampath, mytargets = targetspath))
 args
 ```
@@ -445,10 +457,9 @@ names(args)
 ```
 
 ```
-##  [1] "targetsin"     "targetsout"    "targetsheader"
-##  [4] "modules"       "software"      "cores"        
-##  [7] "other"         "reference"     "results"      
-## [10] "infile1"       "infile2"       "outfile1"     
+##  [1] "targetsin"     "targetsout"    "targetsheader" "modules"      
+##  [5] "software"      "cores"         "other"         "reference"    
+##  [9] "results"       "infile1"       "infile2"       "outfile1"     
 ## [13] "sysargs"       "outpaths"
 ```
 
@@ -467,8 +478,8 @@ sysargs(args)[1]
 ```
 
 ```
-##                                                                                                                                                                                                                                                                                                                                                 M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz"
+##                                                                                                                                                                                                                                                                                                                      M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
 ```
 
 ```r

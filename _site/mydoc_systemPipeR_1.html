@@ -826,7 +826,7 @@ $('#toc').on('click', 'a', function() {
 
   <p>Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)</p>
 
-<p>Last update: 29 July, 2019</p>
+<p>Last update: 22 September, 2019</p>
 
 <p>Alternative formats of this tutorial:
 [ <a href="http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeR.html" target="_blank">HTML</a> ],
@@ -835,18 +835,18 @@ $('#toc').on('click', 'a', function() {
 [ <a href="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/_vignettes/10_Rworkflows/systemPipeR.R" target="_blank">.R</a> ],
 [ <a href="https://docs.google.com/presentation/d/175aup31LvnbIJUAvEEoSkpGsKgtBJ2RpQYd0Gs23dLo/embed?start=false&amp;loop=false&amp;delayms=60000" target="_blank">Slides</a> ]</p>
 
-<p><a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code class="highlighter-rouge">systemPipeR</code></em></a> provides utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next generation sequence (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq (H Backman et al., 2016)]. Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, <em><code class="highlighter-rouge">systemPipeR</code></em> can be used with most command-line aligners such as <code class="highlighter-rouge">BWA</code> (Li , 2013; Li et al., 2009), <code class="highlighter-rouge">HISAT2</code> (Kim et al., 2015), <code class="highlighter-rouge">TopHat2</code> (Kim et al., 2013) and <code class="highlighter-rouge">Bowtie2</code> (Langmead et al., 2012), as well as the R-based NGS aligners <a href="http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html"><em><code class="highlighter-rouge">Rsubread</code></em></a> (Liao et al., 2013) and <a href="http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html"><em><code class="highlighter-rouge">gsnap (gmapR)</code></em></a> (Wu et al., 2010). Efficient handling of complex sample sets (<em>e.g.</em> FASTQ/BAM files) and experimental designs is facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area (Lawrence et al., 2013).</p>
+<p><a href="http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html"><em><code class="highlighter-rouge">systemPipeR</code></em></a> provides utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next-generation sequencing (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq (H Backman et al., 2016). Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, <em><code class="highlighter-rouge">systemPipeR</code></em> can be used with most command-line aligners such as <code class="highlighter-rouge">BWA</code> (Li , 2013; Li et al., 2009), <code class="highlighter-rouge">HISAT2</code> (Kim et al., 2015), <code class="highlighter-rouge">TopHat2</code> (Kim et al., 2013) and <code class="highlighter-rouge">Bowtie2</code> (Langmead et al., 2012), as well as the R-based NGS aligners <a href="http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html"><em><code class="highlighter-rouge">Rsubread</code></em></a> (Liao et al., 2013) and <a href="http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html"><em><code class="highlighter-rouge">gsnap (gmapR)</code></em></a> (Wu et al., 2010). Efficient handling of complex sample sets (<em>e.g.</em> FASTQ/BAM files) and experimental designs are facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area (Lawrence et al., 2013).</p>
 
 <p>The main motivation and advantages of using <em><code class="highlighter-rouge">systemPipeR</code></em> for complex data analysis tasks are:</p>
 
 <ol>
-  <li>Facilitates design of complex NGS workflows involving multiple R/Bioconductor packages</li>
+  <li>Facilitates the design of complex NGS workflows involving multiple R/Bioconductor packages</li>
   <li>Common workflow interface for different NGS applications</li>
   <li>Makes NGS analysis with Bioconductor utilities more accessible to new users</li>
   <li>Simplifies usage of command-line software from within R</li>
-  <li>Reduces complexity of using compute clusters for R and command-line software</li>
-  <li>Accelerates runtime of workflows via parallelzation on computer systems with mutiple CPU cores and/or multiple compute nodes</li>
-  <li>Automates generation of analysis reports to improve reproducibility</li>
+  <li>Reduces the complexity of using compute clusters for R and command-line software</li>
+  <li>Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes</li>
+  <li>Improves reproducibility by automating analyses and generation of analysis reports</li>
 </ol>
 
 <center><img src="./pages/mydoc/systemPipeR_files/utilities.png" /></center>
@@ -857,12 +857,12 @@ Workflow design concepts are illustrated under (A &amp; B). Examples of
 
 <p>A central concept for designing workflows within the <em><code class="highlighter-rouge">sytemPipeR</code></em> environment 
 is the use of workflow management containers. In previous versions, <em><code class="highlighter-rouge">sytemPipeR</code></em> 
-used a custom command-line interface called <em><code class="highlighter-rouge">SYSargs</code></em> (see Figure 2) and for 
+used a custom command-line interface called <em><code class="highlighter-rouge">SYSargs</code></em> (see Figure 3) and for 
 this purpose will continue to be supported for some time. With the latest <a href="http://www.bioconductor.org/packages/release/bioc/html/systemPipeR.html">Bioconductor Release 3.9</a>, 
 we are adopting for this functionality the widely used community standard 
 <a href="https://www.commonwl.org/">Common Workflow Language</a> (CWL) for describing 
 analysis workflows in a generic and reproducible manner, introducing <em><code class="highlighter-rouge">SYSargs2</code></em>
-workflow control class (see Figure 3). Using this community standard in <em><code class="highlighter-rouge">sytemPipeR</code></em>
+workflow control class (see Figure 2). Using this community standard in <em><code class="highlighter-rouge">sytemPipeR</code></em>
 has many advantages. For instance, the integration of CWL allows running <em><code class="highlighter-rouge">sytemPipeR</code></em>
 workflows from a single specification instance either entirely from within R, from various command-line
 wrappers (e.g., <em>cwl-runner</em>) or from other languages (<em>, e.g.,</em> Bash or Python).
@@ -876,15 +876,15 @@ run CWL in its native way via an R-based wrapper utility for <em>cwl-runner</em>
 <em>cwl-tools</em> (CWL-based approach). Second, one can run workflows using CWL’s
 command-line and workflow instructions from within R (R-based approach). In the
 latter case the same CWL workflow definition files (<em>e.g.</em> <code class="highlighter-rouge">*.cwl</code> and <code class="highlighter-rouge">*.yml</code>)
-are used but rendered and exectuted entirely with R functions defined by
+are used but rendered and executed entirely with R functions defined by
 <em><code class="highlighter-rouge">sytemPipeR</code></em>, and thus use CWL mainly as a command-line and workflow
-definition format rather than a software to run workflows. In this regard
+definition format rather than software to run workflows. In this regard
 <em><code class="highlighter-rouge">sytemPipeR</code></em> also provides several convenience functions that are useful for
 designing and debugging workflows, such as a command-line rendering function to
 retrieve the exact command-line strings for each data set and processing step
 prior to running a command-line.</p>
 
-<p>This tutorial introduces the design of a new CWL S4 class in <em><code class="highlighter-rouge">systemPipeR</code></em>, 
+<p>This overview introduces the design of a new CWL S4 class in <em><code class="highlighter-rouge">systemPipeR</code></em>, 
 as well as the custom command-line interface, combined with the overview of all
 the common analysis steps of NGS experiments.</p>
 
@@ -895,15 +895,15 @@ the use of as many steps necessary for the analysis, as well as the connection
 between command-line- or R-based software. The connectivity among all
 workflow steps is achieved by the <em><code class="highlighter-rouge">SYSargs2</code></em> workflow control class (see Figure 3).
 This S4 class is a list-like container where each instance stores all the
-input/output paths and parameter components requried for a particular data
-analysis step. <em><code class="highlighter-rouge">SYSargs2</code></em> * instances are generated by two constructor
+input/output paths and parameter components required for a particular data
+analysis step. <em><code class="highlighter-rouge">SYSargs2</code></em> instances are generated by two constructor
 functions, <em>loadWorkflow</em> and <em>renderWF</em>, using as data input <em>targets</em> or
 <em>yaml</em> files as well as two <em>cwl</em> parameter files (for details see below). When
 running preconfigured workflows, the only input the user needs to provide is
 the initial <em>targets</em> file containing the paths to the input files (<em>e.g.</em>
 FASTQ) along with unique sample labels. Subsequent targets instances are
 created automatically. The parameters required for running command-line
-software are provided by the parameter (<em>.cwl</em>) files described below.</p>
+software is provided by the parameter (<em>.cwl</em>) files described below.</p>
 
 <p>We also introduce the <em><code class="highlighter-rouge">SYSargs2Pipe</code></em> class that organizes one or many
 SYSargs2 containers in a single compound object capturing all information
@@ -918,11 +918,26 @@ flexible, and robust design.</p>
 and two <em>param</em> files. The only input provided by the user is the initial <em>targets</em> 
 file. Subsequent <em>targets</em> instances are created automatically, from the previous 
 output files. Any number of predefined or custom workflow steps are supported. One
-or many <em><code class="highlighter-rouge">SYSargs2</code></em> objects are organized in a <em><code class="highlighter-rouge">SYSargs2Pipe</code></em> container.</p>
+or many <em><code class="highlighter-rouge">SYSargs2</code></em> objects are organized in an <em><code class="highlighter-rouge">SYSargs2Pipe</code></em> container.</p>
 
-<h2 id="workflow-design-structure-using-sysargs-old-version">Workflow design structure using <em><code class="highlighter-rouge">SYSargs</code></em>: Old version</h2>
+<h2 id="workflow-design-structure-using-sysargs-previous-version">Workflow design structure using <em><code class="highlighter-rouge">SYSargs</code></em>: Previous version</h2>
 
-<p>Instances of this S4 object class are constructed by the <em><code class="highlighter-rouge">systemArgs</code></em> function from two simple tabular files: a <em><code class="highlighter-rouge">targets</code></em> file and a <em><code class="highlighter-rouge">param</code></em> file. The latter is optional for workflow steps lacking command-line software. Typically, a <em><code class="highlighter-rouge">SYSargs</code></em> instance stores all sample-level inputs as well as the paths to the corresponding outputs generated by command-line- or R-based software generating sample-level output files, such as read preprocessors (trimmed/filtered FASTQ files), aligners (SAM/BAM files), variant callers (VCF/BCF files) or peak callers (BED/WIG files). Each sample level input/outfile operation uses its own <em><code class="highlighter-rouge">SYSargs</code></em> instance. The outpaths of <em><code class="highlighter-rouge">SYSargs</code></em> usually define the sample inputs for the next <em><code class="highlighter-rouge">SYSargs</code></em> instance. This connectivity is established by writing the outpaths with the <em><code class="highlighter-rouge">writeTargetsout</code></em> function to a new <em><code class="highlighter-rouge">targets</code></em> file that serves as input to the next <em><code class="highlighter-rouge">systemArgs</code></em> call. Typically, the user has to provide only the initial <em><code class="highlighter-rouge">targets</code></em> file. All downstream <em><code class="highlighter-rouge">targets</code></em> files are generated automatically. By chaining several <em><code class="highlighter-rouge">SYSargs</code></em> steps together one can construct complex workflows involving many sample-level input/output file operations with any combinaton of command-line or R-based software.</p>
+<p>Instances of this S4 object class are constructed by the <em><code class="highlighter-rouge">systemArgs</code></em> function 
+from two simple tabular files: a <em><code class="highlighter-rouge">targets</code></em> file and a <em><code class="highlighter-rouge">param</code></em> file. The latter
+is optional for workflow steps lacking command-line software. Typically, a 
+<em><code class="highlighter-rouge">SYSargs</code></em> instance stores all sample-level inputs as well as the paths to the 
+corresponding outputs generated by command-line- or R-based software generating 
+sample-level output files, such as read preprocessors (trimmed/filtered FASTQ 
+files), aligners (SAM/BAM files), variant callers (VCF/BCF files) or peak callers 
+(BED/WIG files). Each sample level input/output operation uses its own <em><code class="highlighter-rouge">SYSargs</code></em> 
+instance. The outpaths of <em><code class="highlighter-rouge">SYSargs</code></em> usually define the sample inputs for the 
+next <em><code class="highlighter-rouge">SYSargs</code></em> instance. This connectivity is established by writing the 
+outpaths with the <em><code class="highlighter-rouge">writeTargetsout</code></em> function to a new <em><code class="highlighter-rouge">targets</code></em> file that 
+serves as input to the next <em><code class="highlighter-rouge">systemArgs</code></em> call. Typically, the user has to 
+provide only the initial <em><code class="highlighter-rouge">targets</code></em> file. All downstream <em><code class="highlighter-rouge">targets</code></em> files are 
+generated automatically. By chaining several <em><code class="highlighter-rouge">SYSargs</code></em> steps together one can 
+construct complex workflows involving many sample-level input/output file 
+operations with any combination of command-line or R-based software.</p>
 
 <center><img src="./pages/mydoc/systemPipeR_files/SystemPipeR_Workflow.png" /></center>
 
@@ -946,7 +961,7 @@ or many <em><code class="highlighter-rouge">SYSargs2</code></em> objects are org
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Mon Jul 29 09:36:40 2019<br/> Site last generated: Jul 29, 2019 <br />
+<span>Page last updated:</span> Sun Sep 22 22:08:58 2019<br/> Site last generated: Sep 22, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

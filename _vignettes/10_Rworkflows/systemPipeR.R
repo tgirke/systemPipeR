@@ -13,11 +13,11 @@
 
 ## ----style, echo = FALSE, results = 'asis'-------------------------------
 BiocStyle::markdown()
-options(width=60, max.print=1000)
+options(width=80, max.print=1000)
 knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
     cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
-    tidy.opts=list(width.cutoff=60), tidy=TRUE)
+    tidy.opts=list(width.cutoff=80), tidy=TRUE)
 
 
 ## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE-------------------
@@ -72,25 +72,25 @@ readLines(targetspath)[1:4]
 readComp(file=targetspath, format="vector", delim="-")
 
 
-## ----CWL_structure, eval=FALSE-------------------------------------------
-## hisat2.cwl <- system.file("extdata", "cwl/hisat2-se/hisat2-mapping-se.cwl", package="systemPipeR")
+## ----CWL_structure, echo = FALSE, eval=FALSE-----------------------------
+## hisat2.cwl <- system.file("extdata", "cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl", package="systemPipeR")
 ## yaml::read_yaml(hisat2.cwl)
 
 
-## ----yaml_structure, eval=FALSE------------------------------------------
-## hisat2.yml <- system.file("extdata", "cwl/hisat2-se/hisat2-mapping-se.yml", package="systemPipeR")
+## ----yaml_structure, echo = FALSE, eval=FALSE----------------------------
+## hisat2.yml <- system.file("extdata", "cwl/hisat2/hisat2-se/hisat2-mapping-se.yml", package="systemPipeR")
 ## yaml::read_yaml(hisat2.yml)
 
 
 ## ----SYSargs2_structure, eval=TRUE---------------------------------------
 library(systemPipeR)
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2-se", package="systemPipeR")
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
 WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl",
                    input_file="hisat2-mapping-se.yml",
                    dir_path=dir_path)
 
-WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 
 
 ## ----names_WF, eval=TRUE-------------------------------------------------
@@ -99,6 +99,10 @@ names(WF)
 
 ## ----cmdlist, eval=TRUE--------------------------------------------------
 cmdlist(WF)[1]
+
+
+## ----output_WF, eval=TRUE------------------------------------------------
+output(WF)[1]
 modules(WF)
 targets(WF)[1]
 targets.as.df(targets(WF))[1:4,1:4]
@@ -107,16 +111,13 @@ cwlfiles(WF)
 inputvars(WF)
 
 
-## ----output_WF, eval=TRUE------------------------------------------------
-output(WF)[1]
-
-
 ## ----param_structure, eval=TRUE------------------------------------------
 parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
 read.delim(parampath, comment.char = "#")
 
 
 ## ----param_import, eval=TRUE---------------------------------------------
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
 args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
 args
 
@@ -143,153 +144,142 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## setwd("rnaseq")
 
 
-## ----construct_sysargs, eval=FALSE---------------------------------------
-## args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
+## ----construct_SYSargs2_trim-se, echo = FALSE, eval=FALSE----------------
+## targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+## dir_path <- system.file("extdata/cwl/preprocessReads/trim-se", package="systemPipeR")
+## trim <- loadWorkflow(targets=targets, wf_file="trim-se.cwl", input_file="trim-se.yml", dir_path=dir_path)
+## trim <- renderWF(trim, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+## trim
+
+
+## ----construct_SYSargs2_trim-pe, eval=FALSE------------------------------
+## targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+## dir_path <- system.file("extdata/cwl/preprocessReads/trim-pe", package="systemPipeR")
+## trim <- loadWorkflow(targets=targetsPE, wf_file="trim-pe.cwl", input_file="trim-pe.yml", dir_path=dir_path)
+## trim <- renderWF(trim, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+## trim
+## output(trim)[1:2]
 
 
 ## ----preprocessing, eval=FALSE-------------------------------------------
-## preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA',
+## preprocessReads(args=trim, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA',
 ##                 subject=fq)",
 ##                 batchsize=100000, overwrite=TRUE, compress=TRUE)
-## writeTargetsout(x=args, file="targets_trim.txt")
+## writeTargetsout(x=trim, file="targets_trimPE.txt", step=1)
 
 
 ## ----custom_preprocessing, eval=FALSE------------------------------------
-## args <- systemArgs(sysma="param/trimPE.param", mytargets="targetsPE.txt")
 ## filterFct <- function(fq, cutoff=20, Nexceptions=0) {
 ##     qcount <- rowSums(as(quality(fq), "matrix") <= cutoff, na.rm=TRUE)
 ##     # Retains reads where Phred scores are >= cutoff with N exceptions
 ##     fq[qcount <= Nexceptions]
 ## }
-## preprocessReads(args=args, Fct="filterFct(fq, cutoff=20, Nexceptions=0)",
+## preprocessReads(args=trim, Fct="filterFct(fq, cutoff=20, Nexceptions=0)",
 ##                 batchsize=100000)
-## writeTargetsout(x=args, file="targets_PEtrim.txt")
+## writeTargetsout(x=trim, file="targets_trimPE.txt", step=1)
+
+
+## ----trimGalore, eval=FALSE----------------------------------------------
+## targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+## dir_path <- system.file("extdata/cwl/trim_galore/trim_galore-se", package="systemPipeR")
+## trimG <- loadWorkflow(targets=targets, wf_file="trim_galore-se.cwl", input_file="trim_galore-se.yml", dir_path=dir_path)
+## trimG <- renderWF(trimG, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+## trimG
+## cmdlist(trimG)[1:2]
+## output(trimG)[1:2]
+## ## Run Single Machine Option
+## runCommandline(trimG[1], make_bam = FALSE)
+## writeTargetsout(x=trimG, file="targets_trimG.txt", step=1)
+
+
+## ----trimmomatic, eval=FALSE---------------------------------------------
+## targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+## dir_path <- system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package="systemPipeR")
+## trimM <- loadWorkflow(targets=targetsPE, wf_file="trimmomatic-pe.cwl", input_file="trimmomatic-pe.yml", dir_path=dir_path)
+## trimM <- renderWF(trimM, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+## trimM
+## cmdlist(trimM)[1:2]
+## output(trimM)[1:2]
+## ## Run Single Machine Option
+## runCommandline(trimM[1], make_bam = FALSE)
+## writeTargetsout(x=trimM, file="targets_trimM.txt", step=1)
 
 
 ## ----fastq_quality, eval=FALSE-------------------------------------------
-## fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
+## fqlist <- seeFastq(fastq=infile1(trim), batchsize=10000, klength=8)
 ## pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 ## seeFastqPlot(fqlist)
 ## dev.off()
 
 
 ## ----fastq_quality_parallel_single, eval=FALSE---------------------------
-## args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-## f <- function(x) seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
-## fqlist <- bplapply(seq(along=args), f, BPPARAM = MulticoreParam(workers=8))
+## f <- function(x) seeFastq(fastq=infile1(trim)[x], batchsize=100000, klength=8)
+## fqlist <- bplapply(seq(along=trim), f, BPPARAM = MulticoreParam(workers=4))
 ## seeFastqPlot(unlist(fqlist, recursive=FALSE))
 
 
 ## ----fastq_quality_parallel_cluster, eval=FALSE--------------------------
 ## library(BiocParallel); library(batchtools)
 ## f <- function(x) {
-##     library(systemPipeR)
-##     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-##     seeFastq(fastq=infile1(args)[x], batchsize=100000, klength=8)
+##   library(systemPipeR)
+##   targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+##   dir_path <- system.file("extdata/cwl/preprocessReads/trim-pe", package="systemPipeR")
+##   trim <- loadWorkflow(targets=targetsPE, wf_file="trim-pe.cwl", input_file="trim-pe.yml", dir_path=dir_path)
+##   trim <- renderWF(trim, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+##   seeFastq(fastq=infile1(trim)[x], batchsize=100000, klength=8)
 ## }
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
 ## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
-## fqlist <- bplapply(seq(along=args), f, BPPARAM = param)
+## fqlist <- bplapply(seq(along=trim), f, BPPARAM = param)
 ## seeFastqPlot(unlist(fqlist, recursive=FALSE))
 
 
-## ----hisat_alignment2, eval=TRUE-----------------------------------------
+## ----hisat_SYSargs2_object, eval=TRUE------------------------------------
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2-se", package="systemPipeR")
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
 align <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
-align <- renderWF(align, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+align <- renderWF(align, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 align
+cmdlist(align)[1:2]
+output(align)[1:2]
 
 
 ## ----subset, eval=TRUE---------------------------------------------------
-subsetWF(align, slot="input", subset='FileName')[1:2]
-subsetWF(align, slot="output", subset=1)[1:2]
-subsetWF(align, slot="step", subset=1)[1] ## subset all the HISAT2 commandline 
-subsetWF(align, slot="output", subset=1, delete=TRUE)[1] ##DELETE
+subsetWF(align, slot="input", subset='FileName')[1:2] ## Subsetting the input files for this particular workflow 
+subsetWF(align, slot="output", subset=1)[1:2]  ## Subsetting the output files for one particular step in the workflow 
+subsetWF(align, slot="step", subset=1)[1] ## Subsetting the command-lines for one particular step in the workflow 
+subsetWF(align, slot="output", subset=1, delete=TRUE)[1] ## DELETING specific output files
 
 
-## ----runCommandline_WF, eval=FALSE---------------------------------------
-## cmdlist(align)[1:2]
-## system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
+## ----hisat_index, eval=FALSE---------------------------------------------
+## dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package="systemPipeR")
+## idx <- loadWorkflow(targets=NULL, wf_file="hisat2-index.cwl", input_file="hisat2-index.yml", dir_path=dir_path)
+## idx <- renderWF(idx)
+## idx
+## cmdlist(idx)
+## 
+## ## Run
+## runCommandline(idx, make_bam = FALSE)
+
+
+## ----runCommandline_align, eval=FALSE------------------------------------
 ## runCommandline(align, make_bam = FALSE) ## generates alignments and writes *.sam files to ./results folder
-## runCommandline(align, dir=TRUE, make_bam = TRUE) ## same as above but writes files to ./results/workflowName/Samplename folders and converts *.sam files to sorted and indexed BAM files
+## align <- runCommandline(align, make_bam = TRUE) ## same as above but writes files and converts *.sam files to sorted and indexed BAM files. Assigning the new extention of the output files to the object align.
 
 
-## ----output, eval=FALSE--------------------------------------------------
-## align <- output_update(align, dir=TRUE, replace = ".bam") ## Updates the output(align) to the right location in the subfolders
-## output(align)
-
-
-## ----WF_track, eval=FALSE------------------------------------------------
-## WF_track <- run_track(WF_ls = c(align))
-## names(WF_track)
-## WF_steps(WF_track)
-## track(WF_track)
-## summaryWF(WF_track)
-
-
-## ----clusterRun, eval=FALSE----------------------------------------------
+## ----clusterRun_align, eval=FALSE----------------------------------------
 ## library(batchtools)
 ## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
-## reg <- clusterRun(align, FUN = runCommandline, more.args = list(dir=TRUE),
+## reg <- clusterRun(align, FUN = runCommandline, more.args = list(args=align, make_bam=TRUE, dir=FALSE),
 ##                   conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
 ##                   Njobs=18, runid="01", resourceList=resources)
 ## getStatus(reg=reg)
-## 
-## align <- output_update(align, dir=TRUE, replace = ".bam") ## Updates the output(align) to the right location in the subfolders
-## output(align)
-
-
-## ----align_stats1, eval=FALSE--------------------------------------------
-## read_statsDF <- alignStats(args)
-## write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
-
-
-## ----align_stats2, eval=TRUE---------------------------------------------
-read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
-
-
-## ----align_stats_parallel, eval=FALSE------------------------------------
-## f <- function(x) alignStats(args[x])
-## read_statsList <- bplapply(seq(along=args), f,
-##                            BPPARAM = MulticoreParam(workers=8))
-## read_statsDF <- do.call("rbind", read_statsList)
-
-
-## ----align_stats_parallel_cluster, eval=FALSE----------------------------
-## library(BiocParallel); library(batchtools)
-## f <- function(x) {
-##     library(systemPipeR)
-##     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-##     alignStats(args[x])
-## }
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
-## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
-## read_statsList <- bplapply(seq(along=args), f, BPPARAM = param)
-## read_statsDF <- do.call("rbind", read_statsList)
-
-
-## ----bowtie_index, eval=FALSE--------------------------------------------
-## args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-## moduleload(modules(args)) # Skip if module system is not available
-## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-
-
-## ----run_bowtie_single, eval=FALSE---------------------------------------
-## bampaths <- runCommandline(args=args)
-
-
-## ----run_bowtie_parallel, eval=FALSE-------------------------------------
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
-## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
 ## waitForJobs(reg=reg)
 
 
-## ----process_monitoring, eval=FALSE--------------------------------------
-## getStatus(reg=reg)
-## file.exists(outpaths(args))
-## sapply(1:length(args), function(x) loadResult(reg, id=x))
-## # Works after job completion
+## ----output, eval=FALSE--------------------------------------------------
+## align <- output_update(align, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) ## Updates the output(align) to the right location in the subfolders
+## output(align)
 
 
 ## ----writeTargetsout, eval=FALSE-----------------------------------------
@@ -297,150 +287,199 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## writeTargetsout(x=align, file="default", step=1)
 
 
-## ----igv, eval=FALSE-----------------------------------------------------
-## symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
-##             urlbase="http://myserver.edu/~username/",
-##         urlfile="IGVurl.txt")
+## ----hisat_alignment, eval=FALSE-----------------------------------------
+## targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+## dir_path <- system.file("extdata/cwl/workflow-hisat2/workflow-hisat2-se", package="systemPipeR")
+## WF <- loadWorkflow(targets=targets, wf_file="workflow_hisat2-se.cwl", input_file="workflow_hisat2-se.yml", dir_path=dir_path)
+## WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+## WF
+## cmdlist(WF)[1:2]
+## output(WF)[1:2]
 
 
-## ----bowtie2_index2, eval=FALSE------------------------------------------
-## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-## bowtie.index <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-index.cwl",
-##     input_file = "bowtie2-mapping-pe.yml", dir_path = "param/cwl/bowtie-pe/")
-## bowtie.index <- renderWF(bowtie.index, inputvars = c(FileName1 = "_FASTQ_PATH1_"))
-## bowtie.index
-## cmdlist(bowtie.index)
+## ----bowtie_index, eval=FALSE--------------------------------------------
+## dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package="systemPipeR")
+## idx <- loadWorkflow(targets=NULL, wf_file="bowtie2-index.cwl", input_file="bowtie2-index.yml", dir_path=dir_path)
+## idx <- renderWF(idx)
+## idx
+## cmdlist(idx)
 ## 
-## runCommandline(bowtie.index[1])
+## ## Run in single machine
+## runCommandline(idx, make_bam = FALSE)
+
+
+## ----tophat2-pe, eval=FALSE----------------------------------------------
+## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+## dir_path <- system.file("extdata/cwl/tophat2/tophat2-pe", package="systemPipeR")
+## tophat2PE <- loadWorkflow(targets = targetsPE, wf_file = "tophat2-mapping-pe.cwl",
+##     input_file = "tophat2-mapping-pe.yml", dir_path = dir_path)
+## tophat2PE <- renderWF(tophat2PE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
+##     SampleName = "_SampleName_"))
+## tophat2PE
+## cmdlist(tophat2PE)[1:2]
+## output(tophat2PE)[1:2]
+## 
+## ## Run in single machine
+## tophat2PE <- runCommandline(tophat2PE[1], make_bam = TRUE)
+
+
+## ----tophat2-pe_parallel, eval=FALSE-------------------------------------
+## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
+## reg <- clusterRun(tophat2PE, FUN = runCommandline, more.args = list(args=tophat2PE, make_bam=TRUE, dir=FALSE),
+##                   conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##                   Njobs=18, runid="01", resourceList=resources)
+## waitForJobs(reg=reg)
+
+
+## ----writeTargetsout_tophat2PE, eval=FALSE-------------------------------
+## names(clt(tophat2PE))
+## writeTargetsout(x=tophat2PE, file="default", step=1)
 
 
 ## ----bowtie2_index, eval=FALSE-------------------------------------------
+## dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package="systemPipeR")
+## idx <- loadWorkflow(targets=NULL, wf_file="bowtie2-index.cwl", input_file="bowtie2-index.yml", dir_path=dir_path)
+## idx <- renderWF(idx)
+## idx
+## cmdlist(idx)
+## 
+## ## Run in single machine
+## runCommandline(idx, make_bam = FALSE)
+
+
+## ----bowtie2_SYSargs2, eval=FALSE----------------------------------------
+## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+## dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-pe", package="systemPipeR")
 ## bowtiePE <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-mapping-pe.cwl",
-##     input_file = "bowtie2-mapping-pe.yml", dir_path = "param/cwl/bowtie-pe/")
+##     input_file = "bowtie2-mapping-pe.yml", dir_path = dir_path)
 ## bowtiePE <- renderWF(bowtiePE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
 ##     SampleName = "_SampleName_"))
 ## bowtiePE
-## cmdlist(bowtiePE)
-## runCommandline(bowtiePE)
+## cmdlist(bowtiePE)[1:2]
+## output(bowtiePE)[1:2]
 
 
 ## ----bowtie2_cluster, eval=FALSE-----------------------------------------
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
 ## reg <- clusterRun(bowtiePE, FUN = runCommandline, more.args = list(args=bowtiePE, dir = FALSE),
 ##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
 ##     Njobs = 18, runid = "01", resourceList = resources)
 ## getStatus(reg = reg)
 
 
-## ----bowtie2-se, eval=FALSE----------------------------------------------
-## targetsSE <- system.file("extdata", "targets.txt", package = "systemPipeR")
-## dir_path <- "param/cwl/bowtie-se/"
-## bowtieSE <- loadWorkflow(targets = targetsSE, wf_file = "bowtie2-mapping-se.cwl",
-##     input_file = "bowtie2-mapping-se.yml", dir_path = "param/cwl/bowtie-se/")
-## bowtieSE <- renderWF(bowtieSE, inputvars = c(FileName = "_FASTQ_PATH_",
-##     SampleName = "_SampleName_"))
-## bowtieSE
-## cmdlist(bowtieSE)
-## runCommandline(bowtieSE)
+## ----bowtie2_sm, eval=FALSE----------------------------------------------
+## bowtiePE <- runCommandline(bowtiePE)
 
 
-## ----bwa-pe_alignment22, eval=FALSE--------------------------------------
+## ----writeTargetsout_bowtiePE, eval=FALSE--------------------------------
+## names(clt(bowtiePE))
+## writeTargetsout(x=bowtiePE, file="default", step=1)
+
+
+## ----bwa_index, eval=FALSE-----------------------------------------------
+## dir_path <- system.file("extdata/cwl/bwa/bwa-idx", package="systemPipeR")
+## idx <- loadWorkflow(targets=NULL, wf_file="bwa-index.cwl", input_file="bwa-index.yml", dir_path=dir_path)
+## idx <- renderWF(idx)
+## idx
+## cmdlist(idx) # Indexes reference genome
+## 
+## ## Run
+## runCommandline(idx, make_bam = FALSE)
+
+
+## ----bwa-pe_alignment, eval=FALSE----------------------------------------
 ## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-## bwa.pe <- loadWorkflow(targets = targetsPE, wf_file = "bwa-pe.cwl",
-##     input_file = "bwa-pe.yml", dir_path = "param/cwl/bwa-pe")
-## bwa.pe <- renderWF(bwa.pe, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
+## dir_path <- system.file("extdata/cwl/bwa/bwa-pe", package="systemPipeR")
+## bwaPE <- loadWorkflow(targets = targetsPE, wf_file = "bwa-pe.cwl",
+##     input_file = "bwa-pe.yml", dir_path = dir_path)
+## bwaPE <- renderWF(bwaPE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
 ##     SampleName = "_SampleName_"))
-## bwa.pe
-## cmdlist(bwa.pe)
-## 
-## system("bwa index -a bwtsw ./data/tair10.fasta")  # Indexes reference genome
-## 
+## bwaPE
+## cmdlist(bwaPE)[1:2]
+## output(bwaPE)[1:2]
 ## ## Single Machine
-## source("runCommandline2.R")
-## runCommandline2(args= bwa.pe[1], make_bam=FALSE)
+## bwaPE <- runCommandline(args= bwaPE, make_bam=FALSE)
 ## 
 ## ## Cluster
 ## library(batchtools)
 ## resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
-## source("runCommandline2.R")
-## reg <- clusterRun(bwa.pe, FUN = runCommandline2, more.args = list(dir = FALSE),
+## reg <- clusterRun(bwaPE, FUN = runCommandline, more.args = list(args=bwaPE, dir = FALSE),
 ##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
 ##     Njobs = 18, runid = "01", resourceList = resources)
 ## getStatus(reg = reg)
 
 
-## ----bwa-pe_alignment21, eval=FALSE--------------------------------------
-## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-## dir_path <- "param/cwl/workflow-bwa-pe/"
-## bwa.pe <- loadWorkflow(targets = targetsPE, wf_file = "workflow_bwa-pe.cwl",
-##     input_file = "workflow_bwa-pe.yml", dir_path = dir_path)
-## bwa.pe <- renderWF(bwa.pe, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_",
-##     SampleName = "_SampleName_"))
-## bwa.pe
-## cmdlist(bwa.pe)
-## 
-## ## Single Machine
-## source("runCommandline2.R")
-## runCommandline2(args= bwa.pe[1], make_bam=FALSE)
-## 
-## ## Cluster
-## library(batchtools)
-## resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
-## source("runCommandline2.R")
-## reg <- clusterRun(bwa.pe, FUN = runCommandline2, more.args = list(args= bwa.pe, make_bam=FALSE, dir = FALSE),
-##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
-##     Njobs = 18, runid = "01", resourceList = resources)
-## getStatus(reg = reg)
-
-
-## ----bwa-pe_alignment2, eval=FALSE---------------------------------------
-## targetsSE <- system.file("extdata", "targets.txt", package = "systemPipeR")
-## dir_path <- "param/cwl/workflow-bwa-se/"
-## bwa.se <- loadWorkflow(targets = targetsSE, wf_file = "workflow_bwa-se.cwl",
-##     input_file = "workflow_bwa-se.yml", dir_path = dir_path)
-## bwa.se <- renderWF(bwa.se, inputvars = c(FileName = "_FASTQ_PATH_",
-##     SampleName = "_SampleName_"))
-## bwa.se
-## cmdlist(bwa.se)
-## 
-## ## Single Machine
-## source("runCommandline2.R")
-## runCommandline2(args= bwa.se[1], make_bam=FALSE)
-## 
-## ## Cluster
-## library(batchtools)
-## resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
-## source("runCommandline2.R")
-## reg <- clusterRun(bwa.se, FUN = runCommandline2, more.args = list(args= bwa.se, make_bam=FALSE, dir = FALSE),
-##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
-##     Njobs = 18, runid = "01", resourceList = resources)
-## getStatus(reg = reg)
+## ----writeTargetsout_bwaPE, eval=FALSE-----------------------------------
+## names(clt(bwaPE))
+## writeTargetsout(x=bwaPE, file="default", step=1)
 
 
 ## ----rsubread, eval=FALSE------------------------------------------------
-## library(Rsubread)
-## args <- systemArgs(sysma="param/rsubread.param", mytargets="targets.txt")
-## # Build indexed reference genome
-## buildindex(basename=reference(args), reference=reference(args))
-## align(index=reference(args), readfile1=infile1(args), input_format="FASTQ",
-##       output_file=outfile1(args), output_format="SAM", nthreads=8, indels=1, TH1=2)
-## for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], destination=gsub(".sam", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
+## ## Build the index:
+## dir_path <- system.file("extdata/cwl/rsubread/rsubread-idx", package="systemPipeR")
+## idx <- loadWorkflow(targets = NULL, wf_file = "rsubread-index.cwl",
+##                      input_file = "rsubread-index.yml", dir_path = dir_path)
+## idx <- renderWF(idx)
+## idx
+## cmdlist(idx)
+## runCommandline(args= idx, make_bam = FALSE)
+## 
+## ## Running the alignment:
+## targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
+## dir_path <- system.file("extdata/cwl/rsubread/rsubread-se", package="systemPipeR")
+## rsubread <- loadWorkflow(targets = targets, wf_file = "rsubread-mapping-se.cwl",
+##                      input_file = "rsubread-mapping-se.yml", dir_path = dir_path)
+## rsubread <- renderWF(rsubread, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+## rsubread
+## cmdlist(rsubread)[1]
+## 
+## ## Single Machine
+## rsubread <- runCommandline(args=rsubread[1])
+
+
+## ----writeTargetsout_rsubread, eval=FALSE--------------------------------
+## names(clt(rsubread))
+## writeTargetsout(x=rsubread, file="default", step=1)
 
 
 ## ----gsnap, eval=FALSE---------------------------------------------------
-## library(gmapR); library(BiocParallel); library(batchtools)
-## args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
-## gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=TRUE)
-## f <- function(x) {
-##     library(gmapR); library(systemPipeR)
-##     args <- systemArgs(sysma="param/gsnap.param", mytargets="targetsPE.txt")
-##     gmapGenome <- GmapGenome(reference(args), directory="data", name="gmap_tair10chr/", create=FALSE)
-##     p <- GsnapParam(genome=gmapGenome, unique_only=TRUE, molecule="DNA", max_mismatches=3)
-##     o <- gsnap(input_a=infile1(args)[x], input_b=infile2(args)[x], params=p, output=outfile1(args)[x])
-## }
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
-## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
-## d <- bplapply(seq(along=args), f, BPPARAM = param)
+## ## Build the index:
+## dir_path <- system.file("extdata/cwl/gsnap/gsnap-idx", package="systemPipeR")
+## idx <- loadWorkflow(targets = NULL, wf_file = "gsnap-index.cwl",
+##                      input_file = "gsnap-index.yml", dir_path = dir_path)
+## idx <- renderWF(idx)
+## idx
+## cmdlist(idx)
+## runCommandline(args= idx, make_bam = FALSE)
+## 
+## ## Running the alignment:
+## targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+## dir_path <- system.file("extdata/cwl/gsnap/gsnap-pe", package="systemPipeR")
+## gsnap <- loadWorkflow(targets = targetsPE, wf_file = "gsnap-mapping-pe.cwl",
+##                      input_file = "gsnap-mapping-pe.yml", dir_path = dir_path)
+## gsnap <- renderWF(gsnap, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+## gsnap
+## cmdlist(gsnap)[1]
+## output(gsnap)[1]
+## 
+## ## Cluster
+## library(batchtools)
+## resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+## reg <- clusterRun(gsnap, FUN = runCommandline, more.args = list(args=gsnap, make_bam=FALSE),
+##     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##     Njobs = 18, runid = "01", resourceList = resources)
+## getStatus(reg = reg)
+
+
+## ----writeTargetsout_gsnap, eval=FALSE-----------------------------------
+## names(clt(gsnap))
+## writeTargetsout(x=gsnap, file="default", step=1)
+
+
+## ----igv, eval=FALSE-----------------------------------------------------
+## symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
+##             urlbase="http://myserver.edu/~username/",
+##         urlfile="IGVurl.txt")
 
 
 ## ----create_txdb, eval=FALSE---------------------------------------------
@@ -453,7 +492,8 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## library(BiocParallel)
 ## txdb <- loadDb("./data/tair10.sqlite")
 ## eByg <- exonsBy(txdb, by="gene")
-## bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+## outpaths <- subsetWF(align, slot="output", subset=1)
+## bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
 ## multicoreParam <- MulticoreParam(workers=4); register(multicoreParam); registered()
 ## counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE))
 ## 
@@ -473,15 +513,55 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ##     txdb <- loadDb("./data/tair10.sqlite")
 ##     eByg <- exonsBy(txdb, by="gene")
 ##     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-##     bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+##     outpaths <- subsetWF(align, slot="output", subset=1)
+##     bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
 ##     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
 ## }
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
+## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
 ## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
 ## counteByg <- bplapply(seq(along=args), f, BPPARAM = param)
 ## countDFeByg <- sapply(seq(along=counteByg),
 ##                       function(x) assays(counteByg[[x]])$counts)
-## rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths(args))
+## rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(outpaths)
+
+
+## ----process_monitoring, eval=FALSE--------------------------------------
+## getStatus(reg=reg)
+## file.exists(output(tophat2PE))
+## sapply(1:length(tophat2PE), function(x) loadResult(reg, id=x)) # Works after job completion
+
+
+## ----align_stats1, eval=FALSE--------------------------------------------
+## read_statsDF <- alignStats(align)
+## write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+
+
+## ----align_stats2, eval=TRUE---------------------------------------------
+read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
+
+
+## ----align_stats_parallel, eval=FALSE------------------------------------
+## f <- function(x) alignStats(align[x])
+## read_statsList <- bplapply(seq(along=align), f,
+##                            BPPARAM = MulticoreParam(workers=8))
+## read_statsDF <- do.call("rbind", read_statsList)
+
+
+## ----align_stats_parallel_cluster, eval=FALSE----------------------------
+## library(BiocParallel); library(batchtools)
+## f <- function(x) {
+##     library(systemPipeR)
+##     targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+##     dir_path <- "param/cwl/hisat2/hisat2-se" ## TODO: replace path to system.file
+##     align <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+##     align <- renderWF(align, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+##     align <- output_update(align, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
+##     alignStats(align[x])
+## }
+## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
+## param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
+## read_statsList <- bplapply(seq(along=align), f, BPPARAM = param)
+## read_statsDF <- do.call("rbind", read_statsList)
 
 
 ## ----read_counting_mirna, eval=FALSE-------------------------------------
