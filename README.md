@@ -1,3 +1,6 @@
+[![Build Status](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html#archives)](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html#archives)
+
+
 ### systemPipeR: NGS workflow and report generation environment 
 
 [_systemPipeR_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html)
