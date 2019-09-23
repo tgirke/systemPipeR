@@ -850,7 +850,7 @@ from the command-line.</p>
 
 <p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRNAseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">rnaseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
-<p>Workflow includes following steps:</p>
+<p>The workflow includes following steps:</p>
 
 <ol>
   <li>Read preprocessing
@@ -881,7 +881,7 @@ from the command-line.</p>
 
 <p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeChIPseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">chipseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
-<p>Workflow includes following steps:</p>
+<p>The workflow includes the following steps:</p>
 
 <ol>
   <li>Read preprocessing
@@ -901,7 +901,7 @@ from the command-line.</p>
 
 <h2 id="var-seq-sample">VAR-Seq sample</h2>
 
-<h3 id="var-seq-workflow-for-single-machine">VAR-Seq workflow for single machine</h3>
+<h3 id="var-seq-workflow-for-the-single-machine">VAR-Seq workflow for the single machine</h3>
 
 <p>Load the VAR-Seq sample workflow into your current working directory.</p>
 
@@ -914,7 +914,7 @@ from the command-line.</p>
 
 <p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeVARseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">varseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
-<p>Workflow includes following steps:</p>
+<p>The workflow includes following steps:</p>
 
 <ol>
   <li>Read preprocessing
@@ -934,7 +934,7 @@ from the command-line.</p>
 <h3 id="var-seq-workflow-for-computer-cluster">VAR-Seq workflow for computer cluster</h3>
 
 <p>The workflow template provided for this step is called <em><code class="highlighter-rouge">systemPipeVARseq.Rmd</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd">Rmd</a>).
-It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Slurm as scheduler.</p>
+It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an HPC system using Slurm as the scheduler.</p>
 
 <h2 id="ribo-seq-sample">Ribo-Seq sample</h2>
 
@@ -949,7 +949,7 @@ It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an 
 
 <p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRIBOseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">ribseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
-<p>Workflow includes following steps:</p>
+<p>The workflow includes following steps:</p>
 
 <ol>
   <li>Read preprocessing
@@ -961,8 +961,8 @@ It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an 
   <li>Alignments: <em><code class="highlighter-rouge">Tophat2</code></em> (or any other RNA-Seq aligner)</li>
   <li>Alignment stats</li>
   <li>Compute read distribution across genomic features</li>
-  <li>Adding custom features to workflow (e.g. uORFs)</li>
-  <li>Genomic read coverage along transcripts</li>
+  <li>Adding custom features to the workflow (e.g. uORFs)</li>
+  <li>Genomic read coverage along with transcripts</li>
   <li>Read counting</li>
   <li>Sample-wise correlation analysis</li>
   <li>Analysis of differentially expressed genes (DEGs)</li>
@@ -989,7 +989,7 @@ It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an 
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Fri Jun 21 16:43:53 2019<br/> Site last generated: Jun 21, 2019 <br />
+<span>Page last updated:</span> Sun Sep 22 22:08:58 2019<br/> Site last generated: Sep 22, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

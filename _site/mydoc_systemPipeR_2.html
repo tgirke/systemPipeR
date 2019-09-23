@@ -842,9 +842,23 @@ $('#toc').on('click', 'a', function() {
 
 <h2 id="load-sample-data-and-workflow-templates">Load sample data and workflow templates</h2>
 
-<p>The mini sample FASTQ files used by this overview vignette as well as the associated workflow reporting vignettes can be loaded via the <em><code class="highlighter-rouge">systemPipeRdata</code></em> package as shown below. The chosen data set <a href="http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938"><code class="highlighter-rouge">SRP010938</code></a> contains 18 paired-end (PE) read sets from <em>Arabidposis thaliana</em> (Howard et al., 2013). To minimize processing time during testing, each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the <em>A. thalina</em> genome. The corresponding reference genome sequence (FASTA) and its GFF annotion files (provided in the same download) have been truncated accordingly. This way the entire test sample data set requires less than 200MB disk storage space. A PE read set has been chosen for this test data set for flexibility, because it can be used for testing both types of analysis routines requiring either SE (single end) reads or PE reads.</p>
+<p>The mini sample FASTQ files used by this overview vignette as well as the 
+associated workflow reporting vignettes can be loaded via the <em><code class="highlighter-rouge">systemPipeRdata</code></em> p
+ackage as shown below. The chosen data set <a href="http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938"><code class="highlighter-rouge">SRP010938</code></a> 
+ontains 18 paired-end (PE) read sets from <em>Arabidposis thaliana</em> (Howard et al., 2013). 
+To minimize processing time during testing, each FASTQ file has been subsetted to 
+90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides 
+of each chromosome of the <em>A. thalina</em> genome. The corresponding reference genome 
+sequence (FASTA) and its GFF annotation files (provided in the same download) have 
+been truncated accordingly. This way the entire test sample data set requires 
+less than 200MB disk storage space. A PE read set has been chosen for this test 
+data set for flexibility, because it can be used for testing both types of analysis 
+routines requiring either SE (single-end) reads or PE reads.</p>
 
-<p>The following generates a fully populated <em><code class="highlighter-rouge">systemPipeR</code></em> workflow environment (here for RNA-Seq) in the current working directory of an R session. At this time the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for additional NGS applications will be provided in the future.</p>
+<p>The following generates a fully populated <em><code class="highlighter-rouge">systemPipeR</code></em> workflow environment 
+(here for RNA-Seq) in the current working directory of an R session. At this time 
+the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq, and Ribo-Seq. 
+Templates for additional NGS applications will be provided in the future.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeRdata</span><span class="p">)</span><span class="w">
 </span><span class="n">genWorkenvir</span><span class="p">(</span><span class="n">workflow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rnaseq"</span><span class="p">)</span><span class="w">
@@ -854,7 +868,7 @@ $('#toc').on('click', 'a', function() {
 <h2 id="directory-structure">Directory Structure</h2>
 
 <p>The working environment of the sample data loaded in the previous step contains
-the following preconfigured directory structure (Figure 4). Directory names are indicated
+the following pre-configured directory structure (Figure 4). Directory names are indicated
 in  <span style="color:grey"><strong><em>green</em></strong></span>. Users can change this
 structure as needed, but need to adjust the code in their workflows
 accordingly.</p>
@@ -918,74 +932,93 @@ accordingly.</p>
 
 <h2 id="structure-of-targets-file">Structure of <em><code class="highlighter-rouge">targets</code></em> file</h2>
 
-<p>The <em><code class="highlighter-rouge">targets</code></em> file defines all input files (<em>e.g.</em> FASTQ, BAM, BCF) and sample comparisons of an analysis workflow. The following shows the format of a sample <em><code class="highlighter-rouge">targets</code></em> file included in the package. It also can be viewed and downloaded from <em><code class="highlighter-rouge">systemPipeR</code></em>’s GitHub repository <a href="https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt">here</a>. In a target file with a single type of input files, here FASTQ files of single end (SE) reads, the first three columns are mandatory including their column names, while it is four mandatory columns for FASTQ files of PE reads. All subsequent columns are optional and any number of additional columns can be added as needed.</p>
+<p>The <em><code class="highlighter-rouge">targets</code></em> file defines all input files (<em>e.g.</em> FASTQ, BAM, BCF) and sample 
+comparisons of an analysis workflow. The following shows the format of a sample 
+<em><code class="highlighter-rouge">targets</code></em> file included in the package. It also can be viewed and downloaded 
+from <em><code class="highlighter-rouge">systemPipeR</code></em>’s GitHub repository <a href="https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt">here</a>. 
+In a target file with a single type of input files, here FASTQ files of single-end (SE) reads, the first three columns are mandatory including their column
+names, while it is four mandatory columns for FASTQ files of PE reads. All 
+subsequent columns are optional and any number of additional columns can be added as needed.</p>
 
-<h3 id="structure-of-targets-file-for-single-end-se-samples">Structure of <em><code class="highlighter-rouge">targets</code></em> file for single end (SE) samples</h3>
+<p>Users should note here, the usage of targets files is optional when using
+<em>systemPipeR’s</em> new CWL interface. They can be replaced by a standard YAML
+input file used by CWL. Since for organizing experimental variables targets
+files are extremely useful and user-friendly. Thus, we encourage users to keep using 
+them.</p>
+
+<h3 id="structure-of-targets-file-for-single-end-se-samples">Structure of <em><code class="highlighter-rouge">targets</code></em> file for single-end (SE) samples</h3>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
 </span><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                       FileName SampleName Factor SampleLong
-## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
-## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
-## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
-## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
-## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A
-## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B
-## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A
-## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B
-## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A
-## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B
-## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A
-## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B
-## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A
-## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B
-## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A
-## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B
-## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A
-## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B
-##    Experiment        Date
-## 1           1 23-Mar-2012
-## 2           1 23-Mar-2012
-## 3           1 23-Mar-2012
-## 4           1 23-Mar-2012
-## 5           1 23-Mar-2012
-## 6           1 23-Mar-2012
-## 7           1 23-Mar-2012
-## 8           1 23-Mar-2012
-## 9           1 23-Mar-2012
-## 10          1 23-Mar-2012
-## 11          1 23-Mar-2012
-## 12          1 23-Mar-2012
-## 13          1 23-Mar-2012
-## 14          1 23-Mar-2012
-## 15          1 23-Mar-2012
-## 16          1 23-Mar-2012
-## 17          1 23-Mar-2012
-## 18          1 23-Mar-2012
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                       FileName SampleName Factor SampleLong Experiment
+## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A          1
+## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B          1
+## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A          1
+## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B          1
+## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A          1
+## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B          1
+## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A          1
+## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B          1
+## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A          1
+## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B          1
+## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A          1
+## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B          1
+## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A          1
+## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B          1
+## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A          1
+## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B          1
+## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A          1
+## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B          1
+##           Date
+## 1  23-Mar-2012
+## 2  23-Mar-2012
+## 3  23-Mar-2012
+## 4  23-Mar-2012
+## 5  23-Mar-2012
+## 6  23-Mar-2012
+## 7  23-Mar-2012
+## 8  23-Mar-2012
+## 9  23-Mar-2012
+## 10 23-Mar-2012
+## 11 23-Mar-2012
+## 12 23-Mar-2012
+## 13 23-Mar-2012
+## 14 23-Mar-2012
+## 15 23-Mar-2012
+## 16 23-Mar-2012
+## 17 23-Mar-2012
+## 18 23-Mar-2012
 </code></pre></div></div>
 
-<p>To work with custom data, users need to generate a <em><code class="highlighter-rouge">targets</code></em> file containing the paths to their own FASTQ files and then provide under <em><code class="highlighter-rouge">targetspath</code></em> the path to the corresponding <em><code class="highlighter-rouge">targets</code></em> file.</p>
+<p>To work with custom data, users need to generate a <em><code class="highlighter-rouge">targets</code></em> file containing 
+the paths to their own FASTQ files and then provide under <em><code class="highlighter-rouge">targetspath</code></em> the
+path to the corresponding <em><code class="highlighter-rouge">targets</code></em> file.</p>
 
-<h3 id="structure-of-targets-file-for-paired-end-pe-samples">Structure of <em><code class="highlighter-rouge">targets</code></em> file for paired end (PE) samples</h3>
+<h3 id="structure-of-targets-file-for-paired-end-pe-samples">Structure of <em><code class="highlighter-rouge">targets</code></em> file for paired-end (PE) samples</h3>
+
+<p>For paired-end (PE) samples, the structure of the targets file is similar, where
+users need to provide two FASTQ path columns: <em><code class="highlighter-rouge">FileName1</code></em> and <em><code class="highlighter-rouge">FileName2</code></em> 
+with the paths to the PE FASTQ files.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targetsPE.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                     FileName1                   FileName2
-## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz
-## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz
-##   SampleName Factor SampleLong Experiment
-## 1        M1A     M1  Mock.1h.A          1
-## 2        M1B     M1  Mock.1h.B          1
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                     FileName1                   FileName2 SampleName Factor
+## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz        M1A     M1
+## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz        M1B     M1
+##   SampleLong Experiment
+## 1  Mock.1h.A          1
+## 2  Mock.1h.B          1
 </code></pre></div></div>
 
 <h3 id="sample-comparisons">Sample comparisons</h3>
 
-<p>Sample comparisons are defined in the header lines of the <em><code class="highlighter-rouge">targets</code></em> file starting with ‘<code class="highlighter-rouge"># &lt;CMP&gt;</code>’.</p>
+<p>Sample comparisons are defined in the header lines of the <em><code class="highlighter-rouge">targets</code></em> file 
+starting with ‘<code class="highlighter-rouge"># &lt;CMP&gt;</code>’.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">readLines</span><span class="p">(</span><span class="n">targetspath</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
@@ -996,145 +1029,34 @@ accordingly.</p>
 ## [4] "# &lt;CMP&gt; CMPset2: ALL"
 </code></pre></div></div>
 
-<p>The function <em><code class="highlighter-rouge">readComp</code></em> imports the comparison information and stores it in a <em><code class="highlighter-rouge">list</code></em>. Alternatively, <em><code class="highlighter-rouge">readComp</code></em> can obtain the comparison information from the corresponding <em><code class="highlighter-rouge">SYSargs</code></em> object (see below). 
-Note, these header lines are optional. They are mainly useful for controlling comparative analyses according to certain biological expectations, such as identifying differentially expressed genes in RNA-Seq experiments based on simple pair-wise comparisons.</p>
+<p>The function <em><code class="highlighter-rouge">readComp</code></em> imports the comparison information and stores it in a 
+<em><code class="highlighter-rouge">list</code></em>. Alternatively, <em><code class="highlighter-rouge">readComp</code></em> can obtain the comparison information from 
+the corresponding <em><code class="highlighter-rouge">SYSargs</code></em> object (see below). Note, these header lines are 
+optional. They are mainly useful for controlling comparative analyses according 
+to certain biological expectations, such as identifying differentially expressed
+genes in RNA-Seq experiments based on simple pair-wise comparisons.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">readComp</span><span class="p">(</span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"vector"</span><span class="p">,</span><span class="w"> </span><span class="n">delim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"-"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $CMPset1
-## [1] "M1-A1"   "M1-V1"   "A1-V1"   "M6-A6"   "M6-V6"  
-## [6] "A6-V6"   "M12-A12" "M12-V12" "A12-V12"
+## [1] "M1-A1"   "M1-V1"   "A1-V1"   "M6-A6"   "M6-V6"   "A6-V6"   "M12-A12"
+## [8] "M12-V12" "A12-V12"
 ## 
 ## $CMPset2
-##  [1] "M1-A1"   "M1-V1"   "M1-M6"   "M1-A6"   "M1-V6"  
-##  [6] "M1-M12"  "M1-A12"  "M1-V12"  "A1-V1"   "A1-M6"  
-## [11] "A1-A6"   "A1-V6"   "A1-M12"  "A1-A12"  "A1-V12" 
-## [16] "V1-M6"   "V1-A6"   "V1-V6"   "V1-M12"  "V1-A12" 
-## [21] "V1-V12"  "M6-A6"   "M6-V6"   "M6-M12"  "M6-A12" 
-## [26] "M6-V12"  "A6-V6"   "A6-M12"  "A6-A12"  "A6-V12" 
-## [31] "V6-M12"  "V6-A12"  "V6-V12"  "M12-A12" "M12-V12"
+##  [1] "M1-A1"   "M1-V1"   "M1-M6"   "M1-A6"   "M1-V6"   "M1-M12"  "M1-A12" 
+##  [8] "M1-V12"  "A1-V1"   "A1-M6"   "A1-A6"   "A1-V6"   "A1-M12"  "A1-A12" 
+## [15] "A1-V12"  "V1-M6"   "V1-A6"   "V1-V6"   "V1-M12"  "V1-A12"  "V1-V12" 
+## [22] "M6-A6"   "M6-V6"   "M6-M12"  "M6-A12"  "M6-V12"  "A6-V6"   "A6-M12" 
+## [29] "A6-A12"  "A6-V12"  "V6-M12"  "V6-A12"  "V6-V12"  "M12-A12" "M12-V12"
 ## [36] "A12-V12"
 </code></pre></div></div>
 
-<h2 id="structure-of-param-file-and-sysargs-container">Structure of <em><code class="highlighter-rouge">param</code></em> file and <em><code class="highlighter-rouge">SYSargs</code></em> container</h2>
-
-<p>The <em><code class="highlighter-rouge">param</code></em> file defines the parameters of a chosen command-line software. The following shows the format of a sample <em><code class="highlighter-rouge">param</code></em> file provided by this package.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parampath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">read.delim</span><span class="p">(</span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##      PairSet         Name
-## 1    modules         &lt;NA&gt;
-## 2    modules         &lt;NA&gt;
-## 3   software         &lt;NA&gt;
-## 4      cores           -p
-## 5      other         &lt;NA&gt;
-## 6   outfile1           -o
-## 7   outfile1         path
-## 8   outfile1       remove
-## 9   outfile1       append
-## 10  outfile1 outextension
-## 11 reference         &lt;NA&gt;
-## 12   infile1         &lt;NA&gt;
-## 13   infile1         path
-## 14   infile2         &lt;NA&gt;
-## 15   infile2         path
-##                                     Value
-## 1                           bowtie2/2.2.5
-## 2                           tophat/2.0.14
-## 3                                  tophat
-## 4                                       4
-## 5  -g 1 --segment-length 25 -i 30 -I 3000
-## 6                             &lt;FileName1&gt;
-## 7                              ./results/
-## 8                                    &lt;NA&gt;
-## 9                                 .tophat
-## 10              .tophat/accepted_hits.bam
-## 11                    ./data/tair10.fasta
-## 12                            &lt;FileName1&gt;
-## 13                                   &lt;NA&gt;
-## 14                            &lt;FileName2&gt;
-## 15                                   &lt;NA&gt;
-</code></pre></div></div>
-
-<p>The <em><code class="highlighter-rouge">systemArgs</code></em> function imports the definitions of both the <em><code class="highlighter-rouge">param</code></em> file
-and the <em><code class="highlighter-rouge">targets</code></em> file, and stores all relevant information in a <em><code class="highlighter-rouge">SYSargs</code></em>
-object (S4 class). To run the pipeline without command-line software, one can
-assign <em><code class="highlighter-rouge">NULL</code></em> to <em><code class="highlighter-rouge">sysma</code></em> instead of a <em><code class="highlighter-rouge">param</code></em> file. In addition, one can
-start <em><code class="highlighter-rouge">systemPipeR</code></em> workflows with pre-generated BAM files by providing a
-targets file where the <em><code class="highlighter-rouge">FileName</code></em> column provides the paths to the BAM files.
-Note, in the following example the usage of <em><code class="highlighter-rouge">suppressWarnings()</code></em> is only relevant for 
-building this vignette. In typical workflows it should be removed.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">suppressWarnings</span><span class="p">(</span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">))</span><span class="w">
-</span><span class="n">args</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## An instance of 'SYSargs' for running 'tophat' on 18 samples
-</code></pre></div></div>
-
-<p>Several accessor methods are available that are named after the slot names of the <em><code class="highlighter-rouge">SYSargs</code></em> object.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##  [1] "targetsin"     "targetsout"    "targetsheader"
-##  [4] "modules"       "software"      "cores"        
-##  [7] "other"         "reference"     "results"      
-## [10] "infile1"       "infile2"       "outfile1"     
-## [13] "sysargs"       "outpaths"
-</code></pre></div></div>
-
-<p>Of particular interest is the <em><code class="highlighter-rouge">sysargs()</code></em> method. It constructs the system
-commands for running command-lined software as specified by a given <em><code class="highlighter-rouge">param</code></em>
-file combined with the paths to the input samples (<em>e.g.</em> FASTQ files) provided
-by a <em><code class="highlighter-rouge">targets</code></em> file. The example below shows the <em><code class="highlighter-rouge">sysargs()</code></em> output for
-running TopHat2 on the first PE read sample. Evaluating the output of
-<em><code class="highlighter-rouge">sysargs()</code></em> can be very helpful for designing and debugging <em><code class="highlighter-rouge">param</code></em> files
-of new command-line software or changing the parameter settings of existing
-ones.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                                                                                                                                                                                                                                 M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz"
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] "bowtie2/2.2.5" "tophat/2.0.14"
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cores</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] 4
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                            M1A 
-## "/home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
-</code></pre></div></div>
-
-<p>The content of the <em><code class="highlighter-rouge">param</code></em> file can also be returned as JSON object as follows (requires <em><code class="highlighter-rouge">rjson</code></em> package).</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"json"</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] "{\"modules\":{\"n1\":\"\",\"v2\":\"bowtie2/2.2.5\",\"n1\":\"\",\"v2\":\"tophat/2.0.14\"},\"software\":{\"n1\":\"\",\"v1\":\"tophat\"},\"cores\":{\"n1\":\"-p\",\"v1\":\"4\"},\"other\":{\"n1\":\"\",\"v1\":\"-g 1 --segment-length 25 -i 30 -I 3000\"},\"outfile1\":{\"n1\":\"-o\",\"v2\":\"&lt;FileName1&gt;\",\"n3\":\"path\",\"v4\":\"./results/\",\"n5\":\"remove\",\"v1\":\"\",\"n2\":\"append\",\"v3\":\".tophat\",\"n4\":\"outextension\",\"v5\":\".tophat/accepted_hits.bam\"},\"reference\":{\"n1\":\"\",\"v1\":\"./data/tair10.fasta\"},\"infile1\":{\"n1\":\"\",\"v2\":\"&lt;FileName1&gt;\",\"n1\":\"path\",\"v2\":\"\"},\"infile2\":{\"n1\":\"\",\"v2\":\"&lt;FileName2&gt;\",\"n1\":\"path\",\"v2\":\"\"}}"
-</code></pre></div></div>
-
-<h2 id="structure-of-the-new-param-file-and-construct-sysargs2-container">Structure of the new <em><code class="highlighter-rouge">param</code></em> file and construct <em><code class="highlighter-rouge">SYSargs2</code></em> container</h2>
+<h2 id="structure-of-the-new-param-files-and-construct-sysargs2-container">Structure of the new <em><code class="highlighter-rouge">param</code></em> files and construct <em><code class="highlighter-rouge">SYSargs2</code></em> container</h2>
 
 <p><em><code class="highlighter-rouge">SYSargs2</code></em> stores all the information and instructions needed for processing
 a set of input files with a single or many command-line steps within a workflow
-(<em>i.e.</em> several components of a software or several independent software tools).
+(<em>i.e.</em> several components of the software or several independent software tools).
 The <em><code class="highlighter-rouge">SYSargs2</code></em> object is created and fully populated with the <em>loadWorkflow</em> 
 and <em>renderWF</em> functions, respectively.</p>
 
@@ -1144,27 +1066,17 @@ the input variables of command-line steps. Note, input variables provided
 by a <em>targets</em> file can be passed on to a <em><code class="highlighter-rouge">SYSargs2</code></em> instance via the <em>inputvars</em> 
 argument of the <em>renderWF</em> function.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">hisat2.cwl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cwl/hisat2-se/hisat2-mapping-se.cwl"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">yaml</span><span class="o">::</span><span class="n">read_yaml</span><span class="p">(</span><span class="n">hisat2.cwl</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">hisat2.yml</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cwl/hisat2-se/hisat2-mapping-se.yml"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">yaml</span><span class="o">::</span><span class="n">read_yaml</span><span class="p">(</span><span class="n">hisat2.yml</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
 <p>The following imports a <em><code class="highlighter-rouge">.cwl</code></em> file (here <em><code class="highlighter-rouge">hisat2-mapping-se.cwl</code></em>) for running
 the short read aligner HISAT2 (Kim et al., 2015). The <em>loadWorkflow</em> and <em>renderWF</em> 
 functions render the proper command-line strings for each sample and software tool.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/hisat2-se"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">WF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.cwl"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/hisat2/hisat2-se"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">WF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.cwl"</span><span class="p">,</span><span class="w"> </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-mapping-se.yml"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
 
-</span><span class="n">WF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">WF</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH_"</span><span class="p">,</span><span class="w"> </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+</span><span class="n">WF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">WF</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH1_"</span><span class="p">,</span><span class="w"> </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
 </span></code></pre></div></div>
 
 <p>Several accessor methods are available that are named after the slot names of the <em><code class="highlighter-rouge">SYSargs2</code></em> object.</p>
@@ -1172,10 +1084,9 @@ functions render the proper command-line strings for each sample and software to
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##  [1] "targets"       "targetsheader" "modules"      
-##  [4] "wf"            "clt"           "yamlinput"    
-##  [7] "cmdlist"       "input"         "output"       
-## [10] "cwlfiles"      "inputvars"
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##  [1] "targets"       "targetsheader" "modules"       "wf"           
+##  [5] "clt"           "yamlinput"     "cmdlist"       "input"        
+##  [9] "output"        "cwlfiles"      "inputvars"
 </code></pre></div></div>
 
 <p>Of particular interest is the <em><code class="highlighter-rouge">cmdlist()</code></em> method. It constructs the system
@@ -1191,15 +1102,27 @@ ones.</p>
 </span></code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
-## $M1A$`hisat2-mapping-se.cwl`
-## [1] "hisat2 -S results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+## $M1A$`hisat2-mapping-se`
+## [1] "hisat2 -S ./results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
+</code></pre></div></div>
+
+<p>The output components of <em><code class="highlighter-rouge">SYSargs2</code></em> define the expected output files for 
+each step in the workflow; some of which are the input for the next workflow step, 
+here next <em><code class="highlighter-rouge">SYSargs2</code></em> instance (see Figure 2).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">output</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
+## $M1A$`hisat2-mapping-se`
+## [1] "./results/M1A.sam"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">modules</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##        module1        module2 
-## "hisat2/2.0.1" "samtools/1.9"
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##        module1 
+## "hisat2/2.1.0"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
@@ -1239,40 +1162,31 @@ ones.</p>
 </span></code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
-## $M1A$`hisat2-mapping-se.cwl`
-## [1] "results/M1A.sam"
+## $M1A$`hisat2-mapping-se`
+## [1] "./results/M1A.sam"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cwlfiles</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $cwl
-## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.cwl"
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl"
 ## 
 ## $yml
-## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2-se/hisat2-mapping-se.yml"
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.yml"
+## 
+## $steps
+## [1] "hisat2-mapping-se"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">inputvars</span><span class="p">(</span><span class="n">WF</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $FileName
-## [1] "_FASTQ_PATH_"
+## [1] "_FASTQ_PATH1_"
 ## 
 ## $SampleName
 ## [1] "_SampleName_"
-</code></pre></div></div>
-
-<p>The output components of <em><code class="highlighter-rouge">SYSargs2</code></em> define the expected output files for 
-each step in the workflow; some of which are the input for the next workflow step, 
-here next <em><code class="highlighter-rouge">SYSargs2</code></em> instance (see Figure 3).</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">output</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
-## $M1A$`hisat2-mapping-se.cwl`
-## [1] "results/M1A.sam"
 </code></pre></div></div>
 
 <p>In an ‘R-centric’ rather than a ‘CWL-centric’ workflow design the connectivity
@@ -1283,7 +1197,105 @@ together one can construct complex workflows involving many sample-level
 input/output file operations with any combination of command-line or R-based
 software. Alternatively, a CWL-centric workflow design can be used that defines
 all/most workflow steps with CWL workflow and parameter files. Due to time and
-space restrictions the CWL-centric approach is not covered by this tutorial.</p>
+space restrictions, the CWL-centric approach is not covered by this tutorial.</p>
+
+<h2 id="structure-of-param-file-and-sysargs-container-previous-version">Structure of <em><code class="highlighter-rouge">param</code></em> file and <em><code class="highlighter-rouge">SYSargs</code></em> container (Previous version)</h2>
+
+<p>The <em><code class="highlighter-rouge">param</code></em> file defines the parameters of a chosen command-line software. 
+The following shows the format of a sample <em><code class="highlighter-rouge">param</code></em> file provided by this package.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parampath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">read.delim</span><span class="p">(</span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##      PairSet         Name                                  Value
+## 1    modules         &lt;NA&gt;                          bowtie2/2.2.5
+## 2    modules         &lt;NA&gt;                          tophat/2.0.14
+## 3   software         &lt;NA&gt;                                 tophat
+## 4      cores           -p                                      4
+## 5      other         &lt;NA&gt; -g 1 --segment-length 25 -i 30 -I 3000
+## 6   outfile1           -o                            &lt;FileName1&gt;
+## 7   outfile1         path                             ./results/
+## 8   outfile1       remove                                   &lt;NA&gt;
+## 9   outfile1       append                                .tophat
+## 10  outfile1 outextension              .tophat/accepted_hits.bam
+## 11 reference         &lt;NA&gt;                    ./data/tair10.fasta
+## 12   infile1         &lt;NA&gt;                            &lt;FileName1&gt;
+## 13   infile1         path                                   &lt;NA&gt;
+## 14   infile2         &lt;NA&gt;                            &lt;FileName2&gt;
+## 15   infile2         path                                   &lt;NA&gt;
+</code></pre></div></div>
+
+<p>The <em><code class="highlighter-rouge">systemArgs</code></em> function imports the definitions of both the <em><code class="highlighter-rouge">param</code></em> file
+and the <em><code class="highlighter-rouge">targets</code></em> file, and stores all relevant information in a <em><code class="highlighter-rouge">SYSargs</code></em>
+object (S4 class). To run the pipeline without command-line software, one can
+assign <em><code class="highlighter-rouge">NULL</code></em> to <em><code class="highlighter-rouge">sysma</code></em> instead of a <em><code class="highlighter-rouge">param</code></em> file. In addition, one can
+start <em><code class="highlighter-rouge">systemPipeR</code></em> workflows with pre-generated BAM files by providing a
+targets file where the <em><code class="highlighter-rouge">FileName</code></em> column provides the paths to the BAM files.
+Note, in the following example the usage of <em><code class="highlighter-rouge">suppressWarnings()</code></em> is only relevant for 
+building this vignette. In typical workflows it should be removed.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">suppressWarnings</span><span class="p">(</span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">))</span><span class="w">
+</span><span class="n">args</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## An instance of 'SYSargs' for running 'tophat' on 18 samples
+</code></pre></div></div>
+
+<p>Several accessor methods are available that are named after the slot names of the <em><code class="highlighter-rouge">SYSargs</code></em> object.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##  [1] "targetsin"     "targetsout"    "targetsheader" "modules"      
+##  [5] "software"      "cores"         "other"         "reference"    
+##  [9] "results"       "infile1"       "infile2"       "outfile1"     
+## [13] "sysargs"       "outpaths"
+</code></pre></div></div>
+
+<p>Of particular interest is the <em><code class="highlighter-rouge">sysargs()</code></em> method. It constructs the system
+commands for running command-lined software as specified by a given <em><code class="highlighter-rouge">param</code></em>
+file combined with the paths to the input samples (<em>e.g.</em> FASTQ files) provided
+by a <em><code class="highlighter-rouge">targets</code></em> file. The example below shows the <em><code class="highlighter-rouge">sysargs()</code></em> output for
+running TopHat2 on the first PE read sample. Evaluating the output of
+<em><code class="highlighter-rouge">sysargs()</code></em> can be very helpful for designing and debugging <em><code class="highlighter-rouge">param</code></em> files
+of new command-line software or changing the parameter settings of existing
+ones.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sysargs</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                                                                                                                                                                                                      M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] "bowtie2/2.2.5" "tophat/2.0.14"
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cores</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] 4
+</code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">outpaths</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                            M1A 
+## "/home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
+</code></pre></div></div>
+
+<p>The content of the <em><code class="highlighter-rouge">param</code></em> file can also be returned as JSON object as follows (requires <em><code class="highlighter-rouge">rjson</code></em> package).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"json"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] "{\"modules\":{\"n1\":\"\",\"v2\":\"bowtie2/2.2.5\",\"n1\":\"\",\"v2\":\"tophat/2.0.14\"},\"software\":{\"n1\":\"\",\"v1\":\"tophat\"},\"cores\":{\"n1\":\"-p\",\"v1\":\"4\"},\"other\":{\"n1\":\"\",\"v1\":\"-g 1 --segment-length 25 -i 30 -I 3000\"},\"outfile1\":{\"n1\":\"-o\",\"v2\":\"&lt;FileName1&gt;\",\"n3\":\"path\",\"v4\":\"./results/\",\"n5\":\"remove\",\"v1\":\"\",\"n2\":\"append\",\"v3\":\".tophat\",\"n4\":\"outextension\",\"v5\":\".tophat/accepted_hits.bam\"},\"reference\":{\"n1\":\"\",\"v1\":\"./data/tair10.fasta\"},\"infile1\":{\"n1\":\"\",\"v2\":\"&lt;FileName1&gt;\",\"n1\":\"path\",\"v2\":\"\"},\"infile2\":{\"n1\":\"\",\"v2\":\"&lt;FileName2&gt;\",\"n1\":\"path\",\"v2\":\"\"}}"
+</code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeR_1.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeR_3.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -1303,7 +1315,7 @@ space restrictions the CWL-centric approach is not covered by this tutorial.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Fri Jun 21 16:43:53 2019<br/> Site last generated: Jun 21, 2019 <br />
+<span>Page last updated:</span> Sun Sep 22 22:08:58 2019<br/> Site last generated: Sep 22, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

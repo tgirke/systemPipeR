@@ -1,6 +1,6 @@
 ---
 title: 4. Workflow templates
-last_updated: Fri Jun 21 16:43:53 2019
+last_updated: Sun Sep 22 22:08:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_4.html
 ---
@@ -35,7 +35,7 @@ setwd("rnaseq")
 
 Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.Rmd)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes following steps:
 
 1. Read preprocessing
     + Quality filtering (trimming)
@@ -63,7 +63,7 @@ setwd("chipseq")
 
 Next, run the chosen sample workflow _`systemPipeChIPseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.Rmd)) by executing from the command-line _`make -B`_ within the _`chipseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes the following steps:
 
 1. Read preprocessing
     + Quality filtering (trimming)
@@ -78,7 +78,7 @@ Workflow includes following steps:
 
 ## VAR-Seq sample 
 
-### VAR-Seq workflow for single machine
+### VAR-Seq workflow for the single machine
 
 Load the VAR-Seq sample workflow into your current working directory.
 
@@ -93,7 +93,7 @@ setwd("varseq")
 
 Next, run the chosen sample workflow _`systemPipeVARseq_single`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rmd)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes following steps:
 
 1. Read preprocessing
     + Quality filtering (trimming)
@@ -108,7 +108,7 @@ Workflow includes following steps:
 ### VAR-Seq workflow for computer cluster
 
 The workflow template provided for this step is called _`systemPipeVARseq.Rmd`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd)).
-It runs the above VAR-Seq workflow in parallel on multiple computer nodes of an HPC system using Slurm as scheduler. 
+It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an HPC system using Slurm as the scheduler. 
 
 ## Ribo-Seq sample
 
@@ -125,7 +125,7 @@ setwd("riboseq")
 
 Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([PDF](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true), [Rmd](https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq.Rmd)) by executing from the command-line _`make -B`_ within the _`ribseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
 
-Workflow includes following steps:
+The workflow includes following steps:
 
 1. Read preprocessing
     + Adaptor trimming and quality filtering
@@ -133,8 +133,8 @@ Workflow includes following steps:
 2. Alignments: _`Tophat2`_ (or any other RNA-Seq aligner)
 3. Alignment stats
 4. Compute read distribution across genomic features
-5. Adding custom features to workflow (e.g. uORFs)
-6. Genomic read coverage along transcripts
+5. Adding custom features to the workflow (e.g. uORFs)
+6. Genomic read coverage along with transcripts
 7. Read counting 
 8. Sample-wise correlation analysis
 9. Analysis of differentially expressed genes (DEGs)
