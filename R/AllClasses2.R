@@ -246,10 +246,15 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   return(as(WF, "SYSargs2"))
 }
 
+## Wrapper for loadWorkflow: Short and consistent name for the function
+loadWF <- function(targets = NULL, wf_file, input_file, dir_path = ".") {
+  loadWorkflow(targets = targets, wf_file=wf_file, input_file=input_file, dir_path = dir_path)
+}
+
 ## Usage:
 # targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 # dir_path <- system.file("extdata/cwl", package="systemPipeR")
-# WF <- loadWorkflow(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl", input_file="hisat2-se/hisat2-mapping-se.yml", dir_path=dir_path)
+# WF <- loadWF(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl", input_file="hisat2-se/hisat2-mapping-se.yml", dir_path=dir_path)
 
 ###################################################
 ##   Create CommandLineTools from Command-line   ##

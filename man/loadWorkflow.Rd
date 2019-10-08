@@ -1,5 +1,6 @@
 \name{loadWorkflow}
 \alias{loadWorkflow}
+\alias{loadWF}
 \title{
 Constructs SYSargs2 object from CWL param and targets files
 }
