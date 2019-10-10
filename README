@@ -1,8 +1,9 @@
 changelog
      version 1.19.04
         - Moved functions from R/AllClasses.R to R/utilities.R
-	- Added new function: "olRanges" - R/chipseq.R
-	- Added new function: "createWF" + Unexported helper functions: "SYScreate", "write.clt", "write.yml"
+	    - Added new function: "olRanges" - R/chipseq.R
+	    - Added new function: "createWF" + Unexported helper functions: "SYScreate", "write.clt", "write.yml"
+	    - Added wrapper for loadWorkflow function: Short and consistent name for the function "loadWF"
 
      version 1.19.03
         - Added "cwl/*" files:

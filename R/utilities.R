@@ -203,6 +203,10 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           ## Run executable
           if(command %in% "bwa") {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
+          } else if(command %in% c("bash", "Trinity")) {
+            stdout <- system(paste(command, commandargs))
+          }  else if(grep('\\$', command)==1) {
+            stdout <- system(paste(command, commandargs))
           } else {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
           }
@@ -645,7 +649,7 @@ module <- function(action_type,module_name=""){
   if ( Sys.getenv('MODULEPATH') == "" && length(modulecmd_path) > 0) {
     myEnvModules$init()
   } else if (Sys.getenv('MODULEPATH') == "" && length(modulecmd_path) == 0) {
-    stop("Cound not find the installation of Environment Modules: \"modulecmd\"")
+    stop("Could not find the installation of Environment Modules: \"modulecmd\". Please make sure to configure your PATH environment variable according to the software in use.")
   }
   switch(action_type,
     "load"   = myEnvModules$load_unload(action_type,module_name),
