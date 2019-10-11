@@ -2,7 +2,8 @@ changelog
      version 1.19.05
         - Updated 'runCommandline':
 		- accepts bash command and "$TRINITY"
-		- force arg
+		- force argument
+		- del_sam argument
 		- Bugfix "make_bam" and dir=T: "update_output"
 
      version 1.19.04
