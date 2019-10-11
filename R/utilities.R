@@ -71,7 +71,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=NULL, ...) {
+runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is installed in the system
     ## "Environment Modules" is not available
@@ -190,7 +190,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
     for(i in seq_along(cmdlist(args))){
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
-        if(all(as.logical(completed[[i]][[j]]))) {
+        if(all(force==FALSE &all(as.logical(completed[[i]][[j]])))) {
           next()
         } else {
           # Create soubmitargsID_command file
@@ -203,9 +203,9 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           ## Run executable
           if(command %in% "bwa") {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
-          } else if(command %in% c("bash", "Trinity")) {
+          } else if(command %in% c("bash")) {
             stdout <- system(paste(command, commandargs))
-          }  else if(grep('\\$', command)==1) {
+          } else if(isTRUE(grep('\\$', command)==1)) {
             stdout <- system(paste(command, commandargs))
           } else {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)

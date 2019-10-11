@@ -521,7 +521,13 @@ output_update <- function(args, dir=TRUE, dir.name=NULL, replace=FALSE, extensio
           name <- name[length(name)]
           dir <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
           if(grepl(extension[1], name)){
-            args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", names(args$output[i]), extension[2])))
+            sam <- strsplit(name, split="\\.")[[1]]
+            sam <- sam[length(sam)]
+            if(sam=="sam"){
+              args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", names(args$output[i]), extension[2])))
+            } else {
+              args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", name)))
+            }
           } else {
             args$output[[i]][[j]][k] <- args$output[[i]][[j]][k]
           }

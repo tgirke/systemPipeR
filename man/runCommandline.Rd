@@ -8,7 +8,7 @@ Execute SYSargs and SYSargs2
 Function to execute system parameters specified in \code{SYSargs} and \code{SYSargs2} object.
 }
 \usage{
-runCommandline(args, runid = "01", make_bam = TRUE, dir = FALSE, dir.name = NULL, ...)
+runCommandline(args, runid = "01", make_bam = TRUE, dir = FALSE, dir.name = NULL, force=FALSE, ...)
 }
 \arguments{
   \item{args}{
@@ -25,6 +25,9 @@ runCommandline(args, runid = "01", make_bam = TRUE, dir = FALSE, dir.name = NULL
 }
   \item{dir.name}{
    Name of the workflow directory. Default is \code{dir.name=FALSE}. Note: This argument is required when the \code{dir=TRUE}.
+}
+  \item{force}{
+   Internally, the function checks if the expected \code{output} files exist, and it skips the command lines when the respective files exist. If the argument \code{force} is set to \code{TRUE}, the command line will be executed and the files overwrite. Default is \code{force=FALSE}. 
 }
   \item{\dots}{
 	Additional arguments to pass on to \code{runCommandline()}.
