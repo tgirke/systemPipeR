@@ -1,4 +1,10 @@
 changelog
+     version 1.19.05
+        - Updated 'runCommandline':
+		- accepts bash command and "$TRINITY"
+		- force arg
+		- Bugfix "make_bam" and dir=T: "update_output"
+
      version 1.19.04
         - Moved functions from R/AllClasses.R to R/utilities.R
 	    - Added new function: "olRanges" - R/chipseq.R
