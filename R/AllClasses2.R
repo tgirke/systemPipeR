@@ -235,10 +235,22 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
   }
   if(!is.null(targets)) {
-    mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
-    mytargets <- targets.as.list(mytargets)
-    targetsheader <- readLines(normalizePath(file.path(targets)))
-    targetsheader <- targetsheader[grepl("^#", targetsheader)]
+    if(class(targets)=="SYSargs2"){
+      mytargets <- targets(targets)
+      targetsheader <- targetsheader(targets)[[1]]
+    } else {
+      if(!file.exists(file.path(targets))==TRUE) stop("Provide valid 'targets' file. Check the file PATH.")
+      ext <- strsplit(basename(targets), split="\\.")[[1]]
+      ext <- ext[[-1]]
+      if("txt" %in% ext){
+        mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
+        mytargets <- targets.as.list(mytargets)
+      } else if( any(c("yml", "yaml") %in% ext)){
+        mytargets <- yaml::read_yaml(targets)
+      }
+      targetsheader <- readLines(normalizePath(file.path(targets)))
+      targetsheader <- targetsheader[grepl("^#", targetsheader)] 
+    }
     WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
   } else {
     WF <- c(list(targets=data.frame(), targetsheader=list()), WF)

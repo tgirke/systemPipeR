@@ -1,10 +1,11 @@
 changelog
      version 1.19.05
         - Updated 'runCommandline':
-		- accepts bash command and "$TRINITY"
-		- force argument
-		- del_sam argument
-		- Bugfix "make_bam" and dir=T: "update_output"
+		    - accepts bash command and "$TRINITY"
+		    - force argument
+		    - del_sam argument
+		    - Bugfix "make_bam" and dir=T: "update_output"
+        - 'loadWF' function accepts 'targets.txt' OR 'targets.yml' OR 'SYSargs2' object OR NULL   
 
      version 1.19.04
         - Moved functions from R/AllClasses.R to R/utilities.R
