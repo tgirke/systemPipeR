@@ -8,7 +8,7 @@ Execute SYSargs and SYSargs2
 Function to execute system parameters specified in \code{SYSargs} and \code{SYSargs2} object.
 }
 \usage{
-runCommandline(args, runid = "01", make_bam = TRUE, dir = FALSE, dir.name = NULL, ...)
+runCommandline(args, runid = "01", make_bam = TRUE, del_sam=TRUE, dir = FALSE, dir.name = NULL, force=FALSE, ...)
 }
 \arguments{
   \item{args}{
@@ -20,11 +20,17 @@ runCommandline(args, runid = "01", make_bam = TRUE, dir = FALSE, dir.name = NULL
   \item{make_bam}{
 	Auto detects SAM file outputs and converts them to sorted and indexed BAM files. Default is \code{make_bam=TRUE}.
 }
+  \item{del_sam}{
+	This option allows deleting the SAM files created when the \code{make_BAM} converts the SAM files to sorted and indexed BAM files. Default is \code{del_sam=TRUE}.
+}
   \item{dir}{
   This option allows creating an exclusive results folder for each step in the workflow and a sub-folder for each sample defined in the \code{targets} file. All the outputs and log files for the particular step will be created in the respective folders. Default is \code{dir=FALSE}. Option available only for an object of class \code{SYSargs2}.
 }
   \item{dir.name}{
    Name of the workflow directory. Default is \code{dir.name=FALSE}. Note: This argument is required when the \code{dir=TRUE}.
+}
+  \item{force}{
+   Internally, the function checks if the expected \code{output} files exist, and it skips the command lines when the respective files exist. If the argument \code{force} is set to \code{TRUE}, the command line will be executed and the files overwrite. Default is \code{force=FALSE}. 
 }
   \item{\dots}{
 	Additional arguments to pass on to \code{runCommandline()}.
