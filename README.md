@@ -54,7 +54,7 @@ With the latest [Bioconductor Release 3.9](http://www.bioconductor.org/packages/
 we are adopting for this functionality the widely used community standard 
 [Common Workflow Language](https://www.commonwl.org/) (CWL) for describing 
 analysis workflows in a generic and reproducible manner, introducing _`SYSargs2`_
-workflow control class. Using this community standard in _`sytemPipeR`_
+workflow control class. Using this community standard in _`systemPipeR`_
 has many advantages. For instance, the integration of CWL allows running _`sytemPipeR`_
 workflows from a single specification instance either entirely from within R, from various command-line
 wrappers (e.g., *cwl-runner*) or from other languages (*, e.g.,* Bash or Python).
