@@ -71,7 +71,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=NULL, ...) {
+runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is installed in the system
     ## "Environment Modules" is not available
@@ -116,7 +116,11 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
         if(make_bam==TRUE) {
           if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
             asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
-            unlink(outfile1(args)[i])
+            if(del_sam==TRUE){
+              unlink(outfile1(args)[i])
+            } else if(del_sam==FALSE){
+              dump <- "do nothing"
+            }
           } else if(grepl("vcf$|bcf$|xls$|bed$", outpaths(args)[i])) {
             dump <- "do nothing"
           } else { # If output is unindexed *.bam file (e.g. Tophat2)
@@ -190,7 +194,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
     for(i in seq_along(cmdlist(args))){
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
-        if(all(as.logical(completed[[i]][[j]]))) {
+        if(all(force==FALSE &all(as.logical(completed[[i]][[j]])))) {
           next()
         } else {
           # Create soubmitargsID_command file
@@ -203,6 +207,10 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           ## Run executable
           if(command %in% "bwa") {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
+          } else if(command %in% c("bash")) {
+            stdout <- system(paste(command, commandargs))
+          } else if(isTRUE(grep('\\$', command)==1)) {
+            stdout <- system(paste(command, commandargs))
           } else {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
           }
@@ -218,7 +226,11 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, dir=FALSE, dir.name=
           if(any(sam_files)){
             for(k in which(sam_files)){
               Rsamtools::asBam(file=output(args)[[i]][[j]][k], destination=gsub("\\.sam$", "", output(args)[[i]][[j]][k]), overwrite=TRUE, indexDestination=TRUE)
-              unlink(output(args)[[i]][[j]][k])
+              if(del_sam==TRUE){
+                unlink(output(args)[[i]][[j]][k])
+              } else if(del_sam==FALSE){
+                dump <- "do nothing"
+              }
             } } else if(any(others_files)){
               dump <- "do nothing"
             }
