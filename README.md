@@ -70,9 +70,6 @@ The corresponding PDFs of these report templates are linked here:
 and
 [systemPipeVARseq](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html).
 
-
 #### Slides
 
 + [Overview Slide Show](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeRslides.html).
-
-
