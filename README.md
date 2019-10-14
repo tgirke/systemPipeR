@@ -69,7 +69,15 @@ The corresponding PDFs of these report templates are linked here:
 [systemPipeChIPseq](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html)
 and
 [systemPipeVARseq](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html).
+<<<<<<< HEAD
 
+=======
+
+
+#### Slides
+
++ [Overview Slide Show](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeRslides.html).
+>>>>>>> a557f517eb551d974dbc0081f19b4ac43f645abd
 
 #### Slides
 
