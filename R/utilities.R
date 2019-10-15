@@ -5,52 +5,59 @@
 ######################################################
 ## Convenience write function for targetsout(args) ##
 ######################################################
-writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, ...) {
-  if(all(class(x)!="SYSargs" & class(x)!="SYSargs2")) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL, new_col_output_index=NULL, ...) {
+  if(all(class(x) != "SYSargs" & class(x) != "SYSargs2")) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
   ## SYSargs class
-  if(class(x)=="SYSargs") {
+  if(class(x) == "SYSargs") {
     targets <- targetsout(x)
     software <- software(x)
-    if (file == "default") {
+    if(file == "default") {
       file <- paste("targets_", software, ".txt", sep = "")
       file <- gsub(" {1,}", "_", file)
-    }
-    else {
+    } else {
       file <- file
     }
     headerlines <- targetsheader(x)
     ## SYSargs2 class
-  } else if (class(x)=="SYSargs2") {
-    if(is.null(step)) stop(paste("Argument 'step' needs to be assigned one of the following values:", paste(names(x$clt), collapse=", "), "OR the corresponding position"))
-    if(all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step))) stop(paste("Argument 'step' can only be assigned one of the following values:", paste(names(x$clt), collapse=", "), "OR the corresponding position")) 
-    if(all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step))) stop(paste("Argument 'step' can only be assigned one of the following position:", paste(seq_along(names(x$clt)), collapse=", "), "OR the corresponding names")) 
+  } else if(class(x) == "SYSargs2") {
+    if(is.null(step)) 
+      stop(paste("Argument 'step' needs to be assigned one of the following values:", 
+                 paste(names(x$clt), collapse = ", "), "OR the corresponding position"))
+    if(all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step))) 
+      stop(paste("Argument 'step' can only be assigned one of the following values:", 
+                 paste(names(x$clt), collapse = ", "), "OR the corresponding position"))
+    if(all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step))) 
+      stop(paste("Argument 'step' can only be assigned one of the following position:", 
+                 paste(seq_along(names(x$clt)), collapse = ", "), "OR the corresponding names"))
     targets <- targets.as.df(targets(x))
-    if(any(colnames(targets) %in% "FileName")){
-      for(i in which(colnames(targets) %in% "FileName")){
-        pout <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[1]], sep=""), simplify = F) 
-        targets[,i] <- as.character(pout)
+    ## Adding the collums
+    if((!is.null(new_col) & is.null(new_col_output_index)) | 
+       (is.null(new_col) & !is.null(new_col_output_index))){
+      cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
+      for(i in seq_len(length(output(x)[[1]][[1]]))){
+        pout <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[i]], sep = ""), simplify = F)
+        targets[[paste0(cwlfiles(x)$steps, "_", i)]] = as.character(pout)
       }
-    } 
-    if(any(colnames(targets) %in% "FileName1")){
-      for(i in which(colnames(targets) %in% "FileName1")){
-        p1out <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[1]], sep=""), simplify = F) 
-        targets[,i] <- as.character(p1out)
+    } else if(!is.null(new_col) & !is.null(new_col_output_index)){
+      if(any(length(output(x)[[1]][[1]]) < new_col_output_index) | any(new_col_output_index < 1)) {
+        stop(paste0("'new_col_output_index' argument needs to be equal or bigger than 1 and smaller than ", length(output(x)[[1]][[1]]), ", the maximum number of outputs files." ))
       }
-    } 
-    if(any(colnames(targets) %in% "FileName2")){
-      for(i in which(colnames(targets) %in% "FileName2")){
-        p2out <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[2]], sep=""), simplify = F) 
-        targets[,i] <- as.character(p2out)
+      if(length(new_col) != length(new_col_output_index)){
+        stop("'new_col' should have the same length as 'new_col_output_index'")
+      }
+      for(i in seq_along(new_col)){
+        pout <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[new_col_output_index[i]]], sep = ""), simplify = F)
+        targets[[as.character(new_col[i])]] = as.character(pout)
       }
     }
     ## Workflow and Step Name
-    software <- strsplit(basename(cwlfiles(x)$cwl), split="\\.")[[1]][1]
+    software <- strsplit(basename(cwlfiles(x)$cwl), split = "\\.")[[1]][1]
     if(is.character(step)) {
-      step <- strsplit(step, split="\\.")[[1]][1]
+      step <- strsplit(step, split = "\\.")[[1]][1]
     } else {
-      step <- strsplit(names(x$clt)[step], split="\\.")[[1]][1]
+      step <- strsplit(names(x$clt)[step], split = "\\.")[[1]][1]
     }
-    if (file == "default") {
+    if(file == "default") {
       file <- paste("targets_", step, ".txt", sep = "")
       file <- gsub(" {1,}", "_", file)
     } else {
@@ -58,15 +65,15 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
     }
     headerlines <- targetsheader(x)[[1]]
   }
-  if(file.exists(file) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
-  targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
+  if(file.exists(file) & overwrite == FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
+  targetslines <- c(paste(colnames(targets), collapse = "\t"), apply(targets, 1, paste, collapse = "\t"))
   writeLines(c(headerlines, targetslines), file, ...)
-  if(silent!=TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
+  if(silent != TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
 }
 
 ## Usage:
 # writeTargetsout(x=args, file="default") ## SYSargs class
-# writeTargetsout(x=WF, file="default", step=1) ## SYSargs2 class
+# writeTargetsout(x=WF, file="default", step=1, new_col = "FileName1", new_col_output_index = 1) ## SYSargs2 class
 
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##

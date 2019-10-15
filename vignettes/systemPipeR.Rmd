@@ -79,31 +79,31 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 Workflow design concepts are illustrated under (A & B). Examples of
 *systemPipeR’s* visualization functionalities are given under (C). </br>
 
-A central concept for designing workflows within the _`sytemPipeR`_ environment 
-is the use of workflow management containers. In previous versions, _`sytemPipeR`_ 
+A central concept for designing workflows within the _`systemPipeR`_ environment 
+is the use of workflow management containers. In previous versions, _`systemPipeR`_ 
 used a custom command-line interface called _`SYSargs`_ (see Figure 3) and for 
 this purpose will continue to be supported for some time. With the latest [Bioconductor Release 3.9](http://www.bioconductor.org/packages/release/bioc/html/systemPipeR.html), 
 we are adopting for this functionality the widely used community standard 
 [Common Workflow Language](https://www.commonwl.org/) (CWL) for describing 
 analysis workflows in a generic and reproducible manner, introducing _`SYSargs2`_
-workflow control class (see Figure 2). Using this community standard in _`sytemPipeR`_
-has many advantages. For instance, the integration of CWL allows running _`sytemPipeR`_
+workflow control class (see Figure 2). Using this community standard in _`systemPipeR`_
+has many advantages. For instance, the integration of CWL allows running _`systemPipeR`_
 workflows from a single specification instance either entirely from within R, from various command-line
 wrappers (e.g., *cwl-runner*) or from other languages (*, e.g.,* Bash or Python).
-_`sytemPipeR`_ includes support for both command-line and R/Bioconductor software 
+_`systemPipeR`_ includes support for both command-line and R/Bioconductor software 
 as well as resources for containerization, parallel evaluations on computer clusters 
 along with the automated generation of interactive analysis reports.
 
-An important feature of _`sytemPipeR's`_ CWL interface is that it provides two
+An important feature of _`systemPipeR's`_ CWL interface is that it provides two
 options to run command-line tools and workflows based on CWL. First, one can
 run CWL in its native way via an R-based wrapper utility for *cwl-runner* or
 *cwl-tools* (CWL-based approach). Second, one can run workflows using CWL's
 command-line and workflow instructions from within R (R-based approach). In the
 latter case the same CWL workflow definition files (*e.g.* `*.cwl` and `*.yml`)
 are used but rendered and executed entirely with R functions defined by
-_`sytemPipeR`_, and thus use CWL mainly as a command-line and workflow
+_`systemPipeR`_, and thus use CWL mainly as a command-line and workflow
 definition format rather than software to run workflows. In this regard
-_`sytemPipeR`_ also provides several convenience functions that are useful for
+_`systemPipeR`_ also provides several convenience functions that are useful for
 designing and debugging workflows, such as a command-line rendering function to
 retrieve the exact command-line strings for each data set and processing step
 prior to running a command-line.
@@ -114,7 +114,7 @@ the common analysis steps of NGS experiments.
 
 ## Workflow design structure using _`SYSargs2`_ 
 
-The flexibility of _`sytemPipeR's`_ new interface workflow control class is the driving factor behind 
+The flexibility of _`systemPipeR's`_ new interface workflow control class is the driving factor behind 
 the use of as many steps necessary for the analysis, as well as the connection 
 between command-line- or R-based software. The connectivity among all
 workflow steps is achieved by the _`SYSargs2`_ workflow control class (see Figure 3).
@@ -486,7 +486,7 @@ the _`ShortRead`_ package to stream through large FASTQ files in a
 memory-efficient manner. The following example performs adaptor trimming with
 the _`trimLRPatterns`_ function from the _`Biostrings`_ package.
 After the trimming step a new targets file is generated (here
-_`targets_trim.txt`_) containing the paths to the trimmed FASTQ files.
+_`targets_trimPE.txt`_) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
 _`SYSargs2`_ instance, _e.g._ running the NGS alignments with the
 trimmed FASTQ files.
@@ -514,7 +514,8 @@ output(trim)[1:2]
 preprocessReads(args=trim, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', 
                 subject=fq)",
                 batchsize=100000, overwrite=TRUE, compress=TRUE)
-writeTargetsout(x=trim, file="targets_trimPE.txt", step=1)
+writeTargetsout(x=trim, file="targets_trimPE.txt", step = 1, 
+                new_col = "FileName1", new_col_output_index = 1, overwrite = TRUE)
 ```
 
 The following example shows how one can design a custom read preprocessing function 
@@ -1296,7 +1297,7 @@ dev.off()
 
 # Workflow templates
 
-The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ files, which 
+The intended way of running _`systemPipeR`_ workflows is via _`*.Rmd`_ files, which 
 can be executed either line-wise in interactive mode or with a single command from 
 R or the command-line. This way comprehensive and reproducible analysis reports 
 can be generated in PDF or HTML format in a fully automated manner by making use 

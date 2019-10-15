@@ -16,7 +16,7 @@ any existing files. If a file exists then the user has to explicitly
 remove it or set \code{overwrite=TRUE}. 
 }
 \usage{
-writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, ...)
+writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL, new_col_output_index=NULL, ...)
 }
 \arguments{
   \item{x}{
@@ -33,6 +33,12 @@ If set to \code{TRUE}, existing files of same name will be overwritten.
 }
   \item{step}{
 Name or numeric position of the step in the workflow to write the output files. The names can be check running \code{names(x$clt)}.
+}
+  \item{new_col}{
+A vector of character strings of the new column name to add to target file.
+}
+  \item{new_col_output_index}{
+A vector of numeric index positions of the file in \code{SYSargs2} class \code{output}. It requires \code{new_col} definition.
 }
   \item{\dots}{
 To pass on additional arguments.
@@ -76,7 +82,7 @@ WF
 \dontrun{
 ## Write targets out file
 names(WF$clt)
-writeTargetsout(x=WF, file="default", step=1)
+writeTargetsout(x=WF, file="default", step=1, new_col=c("sam_file"), new_col_output_index=c(1))
 }
 }
 \keyword{ utilities }
