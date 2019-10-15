@@ -635,25 +635,25 @@ queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line int
 
 The parameter settings of the aligner are defined in the `hisat2-mapping-se.cwl` 
 and `hisat2-mapping-se.yml` files. The following shows how to construct the 
-corresponding *SYSargs2* object, here *align*.
+corresponding *SYSargs2* object, here *args*.
 
 ```{r hisat_SYSargs2_object, eval=TRUE}
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-align <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
-align <- renderWF(align, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
-align
-cmdlist(align)[1:2]
-output(align)[1:2]
+args <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]
 ```
 
 Subsetting _`SYSargs2`_ class slots for each workflow step.
 
 ```{r subset, eval=TRUE}
-subsetWF(align, slot="input", subset='FileName')[1:2] ## Subsetting the input files for this particular workflow 
-subsetWF(align, slot="output", subset=1)[1:2]  ## Subsetting the output files for one particular step in the workflow 
-subsetWF(align, slot="step", subset=1)[1] ## Subsetting the command-lines for one particular step in the workflow 
-subsetWF(align, slot="output", subset=1, delete=TRUE)[1] ## DELETING specific output files
+subsetWF(args, slot="input", subset='FileName')[1:2] ## Subsetting the input files for this particular workflow 
+subsetWF(args, slot="output", subset=1)[1:2]  ## Subsetting the output files for one particular step in the workflow 
+subsetWF(args, slot="step", subset=1)[1] ## Subsetting the command-lines for one particular step in the workflow 
+subsetWF(args, slot="output", subset=1, delete=TRUE)[1] ## DELETING specific output files
 ```
 
 Build `Hisat2` index.
@@ -684,13 +684,13 @@ step. When these options are used, the output location will be updated by defaul
 and can be assigned to the same object.
 
 ```{r runCommandline_align, eval=FALSE}
-runCommandline(align, make_bam = FALSE) ## generates alignments and writes *.sam files to ./results folder 
-align <- runCommandline(align, make_bam = TRUE) ## same as above but writes files and converts *.sam files to sorted and indexed BAM files. Assigning the new extention of the output files to the object align.
+runCommandline(args, make_bam = FALSE) ## generates alignments and writes *.sam files to ./results folder 
+args <- runCommandline(args, make_bam = TRUE) ## same as above but writes files and converts *.sam files to sorted and indexed BAM files. Assigning the new extention of the output files to the object args.
 ```
 
 If available, multiple CPU cores can be used for processing each file. The number
 of CPU cores (here 4) to use for each process is defined in the _`*.yml`_ file. 
-With _`yamlinput(align)['thread']`_ one can return this value from the _`SYSargs2`_ object. 
+With _`yamlinput(args)['thread']`_ one can return this value from the _`SYSargs2`_ object. 
 
 #### Parallelization on clusters
 
@@ -701,7 +701,7 @@ the computing requests to the scheduler using the run specifications
 defined by *`runCommandline`*. 
 
 To avoid over-subscription of CPU cores on the compute nodes, the value from 
-_`yamlinput(align)['thread']`_ is passed on to the submission command, here _`ncpus`_ 
+_`yamlinput(args)['thread']`_ is passed on to the submission command, here _`ncpus`_ 
 in the _`resources`_ list object. The number of independent parallel cluster 
 processes is defined under the _`Njobs`_ argument. The following example will run 
 18 processes in parallel using for each 4 CPU cores. If the resources available
@@ -715,10 +715,10 @@ and a template file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batch
 for the queueing available on a system. The following example uses the sample 
 conf and template files for the Slurm scheduler provided by this package.  
 
-```{r clusterRun_align, eval=FALSE}
+```{r clusterRun_args, eval=FALSE}
 library(batchtools)
 resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
-reg <- clusterRun(align, FUN = runCommandline, more.args = list(args=align, make_bam=TRUE, dir=FALSE), 
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args=args, make_bam=TRUE, dir=FALSE), 
                   conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
                   Njobs=18, runid="01", resourceList=resources)
 getStatus(reg=reg)
@@ -728,8 +728,8 @@ waitForJobs(reg=reg)
 Check and update the output location if necessary.
 
 ```{r output, eval=FALSE}
-align <- output_update(align, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) ## Updates the output(align) to the right location in the subfolders
-output(align)
+args <- output_update(args, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) ## Updates the output(args) to the right location in the subfolders
+output(args)
 ```
 
 #### Create new targets file
@@ -739,8 +739,8 @@ To establish the connectivity to the next workflow step, one can write a new
 serves as input to the next *`loadWorkflow`* and *`renderWF`* call.
 
 ```{r writeTargetsout, eval=FALSE}
-names(clt(align))
-writeTargetsout(x=align, file="default", step=1)
+names(clt(args))
+writeTargetsout(x=args, file="default", step=1)
 ```
 
 #### Alignment with `HISAT2` and `SAMtools`
@@ -1013,7 +1013,7 @@ The following performs read counting with _`summarizeOverlaps`_ in parallel mode
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by="gene")
-outpaths <- subsetWF(align, slot="output", subset=1)
+outpaths <- subsetWF(args, slot="output", subset=1)
 bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
 multicoreParam <- MulticoreParam(workers=4); register(multicoreParam); registered()
 counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE))
@@ -1038,7 +1038,7 @@ f <- function(x) {
     txdb <- loadDb("./data/tair10.sqlite")
     eByg <- exonsBy(txdb, by="gene")
     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-    outpaths <- subsetWF(align, slot="output", subset=1)
+    outpaths <- subsetWF(args, slot="output", subset=1)
     bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
 }
@@ -1063,7 +1063,7 @@ sapply(1:length(tophat2PE), function(x) loadResult(reg, id=x)) # Works after job
 Generate a table of read and alignment counts for all samples. 
 
 ```{r align_stats1, eval=FALSE}
-read_statsDF <- alignStats(align) 
+read_statsDF <- alignStats(args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 ```
 
@@ -1080,7 +1080,7 @@ Parallelization of read/alignment stats on single machine with multiple cores.
 
 ```{r align_stats_parallel, eval=FALSE}
 f <- function(x) alignStats(align[x])
-read_statsList <- bplapply(seq(along=align), f, 
+read_statsList <- bplapply(seq(along=args), f, 
                            BPPARAM = MulticoreParam(workers=8))
 read_statsDF <- do.call("rbind", read_statsList)
 ```
@@ -1093,14 +1093,14 @@ f <- function(x) {
     library(systemPipeR)
     targets <- system.file("extdata", "targets.txt", package="systemPipeR")
     dir_path <- "param/cwl/hisat2/hisat2-se" ## TODO: replace path to system.file 
-    align <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
-    align <- renderWF(align, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
-    align <- output_update(align, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) 
-    alignStats(align[x])
+    args <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+    args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+    args <- output_update(args, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) 
+    alignStats(args[x])
 }
 resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
 param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", resources = resources)
-read_statsList <- bplapply(seq(along=align), f, BPPARAM = param)
+read_statsList <- bplapply(seq(along=args), f, BPPARAM = param)
 read_statsDF <- do.call("rbind", read_statsList)
 ```
 
