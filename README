@@ -5,7 +5,8 @@ changelog
 		    - force argument
 		    - del_sam argument
 		    - Bugfix "make_bam" and dir=T: "update_output"
-        - 'loadWF' function accepts 'targets.txt' OR 'targets.yml' OR 'SYSargs2' object OR NULL   
+        - 'loadWF' function accepts 'targets.txt' OR 'targets.yml' OR 'SYSargs2' object OR NULL  
+        - Updated 'writeTargetsout' function (adding new columns)
 
      version 1.19.04
         - Moved functions from R/AllClasses.R to R/utilities.R
