@@ -260,7 +260,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
 
 ## Wrapper for loadWorkflow: Short and consistent name for the function
 loadWF <- function(targets=NULL, wf_file, input_file, dir_path="."){
-  loadWorkflow(targets=targets, wf_file, input_file, dir_path=dir_path))
+  loadWorkflow(targets=targets, wf_file, input_file, dir_path=dir_path)
 }
 
 ## Usage:
