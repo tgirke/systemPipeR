@@ -190,9 +190,9 @@ vignette("systemPipeR") # Opens vignette
 ## Load sample data and workflow templates
 
 The mini sample FASTQ files used by this overview vignette as well as the 
-associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ p
-ackage as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) 
-ontains 18 paired-end (PE) read sets from _Arabidposis thaliana_ [@Howard2013-fq]. 
+associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ 
+package as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) 
+obtains 18 paired-end (PE) read sets from _Arabidposis thaliana_ [@Howard2013-fq]. 
 To minimize processing time during testing, each FASTQ file has been subsetted to 
 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides 
 of each chromosome of the _A. thalina_ genome. The corresponding reference genome 
@@ -553,8 +553,6 @@ writeTargetsout(x=trimG, file="targets_trimG.txt", step=1)
 ```
 
 ### Preprocessing with Trimmomatic
-
-TODO: Add description!
 
 ```{r trimmomatic, eval=FALSE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
