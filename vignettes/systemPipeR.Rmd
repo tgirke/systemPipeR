@@ -512,8 +512,7 @@ output(trim)[1:2]
 
 ```{r preprocessing, eval=FALSE}
 preprocessReads(args=trim, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', 
-                subject=fq)",
-                batchsize=100000, overwrite=TRUE, compress=TRUE)
+                subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
 writeTargetsout(x=trim, file="targets_trimPE.txt", step = 1, 
                 new_col = "FileName1", new_col_output_index = 1, overwrite = TRUE)
 ```
@@ -1132,7 +1131,7 @@ The following computes the sample-wise Spearman correlation coefficients from th
 library(DESeq2, warn.conflicts=FALSE, quietly=TRUE); library(ape, warn.conflicts=FALSE)
 countDFpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDF <- as.matrix(read.table(countDFpath))
-colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+colData <- data.frame(row.names=targets.as.df(targets(args))$SampleName, condition=targets.as.df(targets(args))$Factor)
 dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
 d <- cor(assay(rlog(dds)), method="spearman")
 hc <- hclust(dist(1-d))
