@@ -667,8 +667,8 @@ module <- function(action_type,module_name=""){
     stop("Could not find the installation of Environment Modules: \"modulecmd\". Please make sure to configure your PATH environment variable according to the software in use.")
   }
   switch(action_type,
-    "load"   = myEnvModules$load_unload(action_type,module_name),
-    "unload" = myEnvModules$load_unload(action_type,module_name),
+    "load"   = myEnvModules$load_unload(action_type, module_name),
+    "unload" = myEnvModules$load_unload(action_type, module_name),
     "list"   = myEnvModules$avail_list(action_type),
     "avail"  = myEnvModules$avail_list(action_type),
     "clear"  = myEnvModules$clear(action_type),
