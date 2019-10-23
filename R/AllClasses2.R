@@ -410,7 +410,7 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
 ###############################################################
 ## Subsetting the input and output slots by name or position ##
 ###############################################################
-subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
+subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
   ## Check the class and slot
   if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")  
   if(all(!c("input", "output", "step") %in% slot)) stop("Argument slot can only be assigned one of: 'input' or 'output' or 'step'.")
@@ -434,17 +434,20 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
     ## Check the subset
     if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL")) 
     if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL")) 
+    if(!is.null(subset)){
+      if(!any(seq_along(output(args)[[1]][[subset]]) %in% index)) stop(paste("For the 'index' argument, can only be assigned one of the following position:", paste(seq_along(output(args)[[1]][[subset]]), collapse=", ")))
+    }
+    
     subset_output <- output(args)
-    # subset_sample <- sapply(names(subset_output), function(x) list(NULL))
     subset_sample <- as.character()
-    if(!is.null(subset)) {
+    if(all(!is.null(subset) & !is.null(index))) {
       for(i in seq_along(names(subset_output)))
         # subset_sample[[i]] <- subset_output[[i]][[subset]]
-        subset_sample <- c(subset_sample, subset_output[[i]][[subset]])
+        subset_sample <- c(subset_sample, subset_output[[i]][[subset]][index])
     } else {
       subset_sample <- subset_output
     }
-    names(subset_sample) <- rep(names(subset_output), each=length(subset_output[[1]][[1]]))
+    names(subset_sample) <- rep(names(subset_output), each=length(subset_sample[1]))
   }
   ## slot step
   if(slot %in% "step"){
@@ -485,8 +488,8 @@ subsetWF <- function(args, slot, subset=NULL, delete=FALSE){
 ## Usage:
 # subsetWF(WF, slot="input", subset='FileName')
 # subsetWF(WF, slot="step", subset=1)
-# subsetWF(WF, slot="output", subset=1)
-# subsetWF(WF, slot="output", subset=1, delete=TRUE) ## in order to delete the subset files list
+# subsetWF(WF, slot="output", subset=1, index=1)
+# subsetWF(WF, slot="output", subset=1, index=1, delete=TRUE) ## in order to delete the subset files list
 
 #########################################################
 ## Update the output location after run runCommandline ##
