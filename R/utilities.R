@@ -347,7 +347,7 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
     targets_in <- targetsin(args)
   } else if (class(args)=="SYSargs2") {
     colnames_args <- colnames(targets.as.df(args$targets)) #SYSargs2
-    outpaths <- subsetWF(args = args, slot = "output", subset = 1)
+    outpaths <- subsetWF(args = args, slot = "output", subset = 1, index=1)
     targets_in <- targets.as.df(args$targets)
   }
   ## Run function in loop over all fastq files
