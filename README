@@ -1,4 +1,11 @@
 changelog
+     version 1.19.06
+        - Updated functions related with Chip-seq workflow
+            - countRangeset
+            - mergeBamByFactor
+            - readComp
+            - runDiff
+
      version 1.19.05
         - **Central vignette for all the Workflows**
         - Updated 'runCommandline':

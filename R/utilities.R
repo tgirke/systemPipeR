@@ -525,12 +525,24 @@ returnRPKM <- function(counts, ranges) {
 readComp <- function(file, format="vector", delim="-") {
 	if(!format %in% c("vector", "matrix")) stop("Argument format can only be assigned: vector or matrix!")
 	## Parse <CMP> line
-	if(class(file)=="SYSargs") {
-		if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
-		comp <- targetsheader(file)
-	} else {
-		comp <- readLines(file)
-	}
+#   if(any(class(file)=="SYSargs" & class(file)=="SYSargs2")){
+# #	if(class(file)=="SYSargs") {
+# 		if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
+# 		comp <- targetsheader(file)
+# 	} else {
+# 		comp <- readLines(file)
+# 	}
+#   ## SYSargs class
+  if(class(file) == "SYSargs") {
+    if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
+    comp <- targetsheader(file)
+    ## SYSargs2 class  
+  } else if (class(file) == "SYSargs2"){
+    if(length(targetsheader(file)[[1]])==0) stop("Input has no targets header lines.")
+    comp <- targetsheader(file)[[1]]
+  } else {
+    comp <- readLines(file)
+  }
 	comp <- comp[grepl("<CMP>", comp)]
 	comp <- gsub("#.*<CMP>| {1,}", "", comp)
 	comp <- gsub("\t", "", comp); comp <- gsub("^\"|\"$", "", comp) # Often required if Excel is used for editing targets file
@@ -542,6 +554,8 @@ readComp <- function(file, format="vector", delim="-") {
 	checkvalues <- checkvalues[checkvalues!="ALL"]
 	if(class(file)=="SYSargs") {
 		all <- unique(as.character(targetsin(file)$Factor))
+	} else if(class(file)=="SYSargs2")  {
+	  all <- unique(as.character(targets.as.df(targets(args_bam))$Factor))
 	} else {
 		all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
 	}

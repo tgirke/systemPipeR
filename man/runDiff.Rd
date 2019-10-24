@@ -15,8 +15,8 @@ runDiff(args, diffFct, targets, cmp, dbrfilter, ...)
 }
 \arguments{
   \item{args}{
-Object of class \code{SYSargs} where \code{infile1(args)} specifies the
-paths to the tabular read count data files and \code{outpaths(args)} to
+Object of class \code{SYSargs} or \code{SYSargs2} where \code{infile1(args)} specifies the
+paths to the tabular read count data files and \code{outputs} files to
 the result files. 
 }
   \item{diffFct}{

@@ -6,7 +6,7 @@ Merge BAM files based on factor
 \description{
 Merges BAM files based on sample groupings provided by a factor using internally
 the \code{mergeBam} function from the \code{Rsamtools} package. The function also returns
-an updated \code{SYSargs} object containing the paths to the merged BAM files as well as 
+an updated \code{SYSargs} or \code{SYSargs2} object containing the paths to the merged BAM files as well as 
 to the unmerged BAM files if there are any. All rows of merged parent samples are removed. 
 
 The functionality provided by \code{mergeBamByFactor} is useful for experiments where 
@@ -14,20 +14,20 @@ pooling of replicates is advantageous to maximize the depth of read coverage, su
 peak calling in ChIP-Seq or miRNA gene prediction experiments.
 }
 \usage{
-mergeBamByFactor(args, mergefactor = targetsin(args)$Factor, overwrite = FALSE, silent = FALSE, ...)
+mergeBamByFactor(args, mergefactor = "Factor", overwrite = FALSE, silent = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{args}{
-    An instance of \code{SYSargs} constructed from a \code{targets} file where the first 
-column (\code{targetsin(args)}) contains the paths to the BAM files along with the column title 
-\code{FileName}.
+    An instance of \code{SYSargs} or \code{SYSargs2} constructed from a \code{targets} file where the first 
+column (\code{targetsin(args)} or \code{targets.as.df(targets(args))}) contains the paths 
+to the BAM files along with the column title \code{FileName}.
 }
   \item{mergefactor}{
     \code{factor} containing the grouping information required for merging the BAM files 
-referenced in the first column of \code{targetsin(args)}. The default uses 
-\code{targetsin(args)$Factor} as factor. The latter merges BAM files
-for which replicates are specified in the \code{Factor} column.  
+referenced in the first column of \code{targetsin(args)} or \code{targets.as.df(targets(args))}.
+The default uses \code{Factor} column from the \code{targets} files as factor. 
+The latter merges BAM files for which replicates are specified in the \code{Factor} column.  
 }
   \item{overwrite}{
     If \code{overwrite=FALSE} existing BAM files of the same name will not be overwritten. 
@@ -42,7 +42,7 @@ for which replicates are specified in the \code{Factor} column.
 \value{
 The merged BAM files will be written to output files with the following naming
 convention: <first_BAM_file_name>_<grouping_label_of_factor>.<bam>. In
-addition, the function returns an updated \code{SYSargs} object where all
+addition, the function returns an updated \code{SYSargs} or \code{SYSargs2} object where all
 output file paths contain the paths to the merged BAM files. The rows of the
 merged parent samples are removed and the rows of the unmerged samples remain unchanged.
 }
