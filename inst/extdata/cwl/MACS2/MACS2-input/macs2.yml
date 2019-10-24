@@ -1,0 +1,20 @@
+#############################
+##        MACS2.yml        ##
+#############################
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+  
+fq2:
+  class: File
+  path: _FASTQ_PATH2_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+  module1: python/2.7.14
+

@@ -5,6 +5,11 @@ changelog
             - mergeBamByFactor
             - readComp
             - runDiff
+        - Added "cwl/*" files:
+            - MACS2/*
+            - annotate_peaks/*
+            - count_rangesets/*
+            - mergeBamByFactor/*
 
      version 1.19.05
         - **Central vignette for all the Workflows**
