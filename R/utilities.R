@@ -31,12 +31,12 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
                  paste(seq_along(names(x$clt)), collapse = ", "), "OR the corresponding names"))
     targets <- targets.as.df(targets(x))
     ## Adding the collums
-    if ((!is.null(new_col) & is.null(new_col_output_index)) | 
+    if((!is.null(new_col) & is.null(new_col_output_index)) | 
         (is.null(new_col) & !is.null(new_col_output_index)) |
         (is.null(new_col) & is.null(new_col_output_index))){
       cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
-      for (i in seq_len(length(output(x)[[step]][[1]]))){
-        pout = sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[i]]), simplify = F)
+      for(i in seq_len(length(output(x)[[step]][[1]]))){
+        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[i]]), simplify = F)
         targets[[paste0(cwlfiles(x)$steps, "_", i)]] = as.character(pout)
       }
     } else if(!is.null(new_col) & !is.null(new_col_output_index)){
