@@ -15,7 +15,7 @@ alignStats(args, output_index = 1)
   \item{args}{
 	Object of class \code{SYSargs} or \code{SYSargs2}. 
 }
-  \item{index}{
+  \item{output_index}{
   A numeric index positions of the file in \code{SYSargs2} object, slot \code{output}. Default is \code{output_index=1}.
 }
 }
