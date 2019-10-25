@@ -1,10 +1,18 @@
 changelog
+     version 1.19.07
+	- Updated functions related with VAR-seq workflow
+        - variantReport
+	    - combineVarReports
+	    - varSummary
+	    - filterVars
+    - BugFix 'writeTargetsout' function (adding new columns - step)
+	    
      version 1.19.06
-	- Updated vignette
+	    - Updated vignette
         - Updated functions
-	    - alignStats
-	    - symLink2bam
-	    - subsetWF
+	        - alignStats
+	        - symLink2bam
+	        - subsetWF
         - Updated functions related with Chip-seq workflow
             - countRangeset
             - mergeBamByFactor
