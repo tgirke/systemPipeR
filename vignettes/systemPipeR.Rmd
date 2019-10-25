@@ -651,9 +651,9 @@ Subsetting _`SYSargs2`_ class slots for each workflow step.
 
 ```{r subset, eval=TRUE}
 subsetWF(args, slot="input", subset='FileName')[1:2] ## Subsetting the input files for this particular workflow 
-subsetWF(args, slot="output", subset=1)[1:2]  ## Subsetting the output files for one particular step in the workflow 
+subsetWF(args, slot="output", subset=1, index=1)[1:2]  ## Subsetting the output files for one particular step in the workflow 
 subsetWF(args, slot="step", subset=1)[1] ## Subsetting the command-lines for one particular step in the workflow 
-subsetWF(args, slot="output", subset=1, delete=TRUE)[1] ## DELETING specific output files
+subsetWF(args, slot="output", subset=1, index=1, delete=TRUE)[1] ## DELETING specific output files
 ```
 
 Build `Hisat2` index.
@@ -1013,7 +1013,7 @@ The following performs read counting with _`summarizeOverlaps`_ in parallel mode
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by="gene")
-outpaths <- subsetWF(args, slot="output", subset=1)
+outpaths <- subsetWF(args, slot="output", subset=1, index=1)
 bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
 multicoreParam <- MulticoreParam(workers=4); register(multicoreParam); registered()
 counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE))
@@ -1038,7 +1038,7 @@ f <- function(x) {
     txdb <- loadDb("./data/tair10.sqlite")
     eByg <- exonsBy(txdb, by="gene")
     args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-    outpaths <- subsetWF(args, slot="output", subset=1)
+    outpaths <- subsetWF(args, slot="output", subset=1, index=1)
     bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
     summarizeOverlaps(eByg, bfl[x], mode="Union", ignore.strand=TRUE, inter.feature=TRUE, singleEnd=TRUE)
 }
