@@ -1,0 +1,15 @@
+#############################
+##      merge-bam.yml      ##
+#############################
+bam:
+  class: File
+  path: _BAM_PATH_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+

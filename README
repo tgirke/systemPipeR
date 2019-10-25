@@ -1,4 +1,12 @@
 changelog
+     version 1.19.06
+        - Added "cwl/*" files:
+            - MACS2/*
+            - annotate_peaks/*
+            - count_rangesets/*
+            - mergeBamByFactor/*
+            - rundiff/*
+
      version 1.19.05
         - **Central vignette for all the Workflows**
         - Updated 'runCommandline':
