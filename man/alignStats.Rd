@@ -9,11 +9,14 @@ total number of reads in the FASTQ files, the number of total alignments, as
 well as the number of primary alignments in the corresponding BAM files. 
 }
 \usage{
-alignStats(args)
+alignStats(args, output_index = 1)
 }
 \arguments{
   \item{args}{
 	Object of class \code{SYSargs} or \code{SYSargs2}. 
+}
+  \item{index}{
+  A numeric index positions of the file in \code{SYSargs2} object, slot \code{output}. Default is \code{output_index=1}.
 }
 }
 \value{

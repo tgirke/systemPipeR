@@ -437,68 +437,79 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
 ## Function to create sym links to bam files for viewing in IGV ##
 ##################################################################
 symLink2bam <- function(sysargs, command="ln -s", htmldir, ext=c(".bam", ".bai"), urlbase, urlfile) {
-	## Create URL file 
-	bampaths <- outpaths(sysargs)
-	symname <- SampleName(sysargs)
-	urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep="")
-	writeLines(urls, urlfile)
-	## Creat correspoding sym links
-	dir.create(paste(htmldir, collapse=""))
-	symname <- rep(symname, each=2)
-	symname <- paste(symname, c(ext[1], paste(ext, collapse="")), sep="")
-	bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep=""))))	
-	symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse=""), symname, sep="") 
-	for(i in symcommands) system(i)
+  ## Create URL file
+  if(all(class(sysargs) != "SYSargs" & class(sysargs) != "SYSargs2")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  ## SYSargs class
+  if((class(sysargs)) == "SYSargs") {
+    bampaths <- outpaths(sysargs)
+    symname <- SampleName(sysargs)
+    ## SYSargs2 class ##
+  } else if (class(sysargs)=="SYSargs2") {
+    bampaths <- subsetWF(args = sysargs, slot = "output", subset = 1, index=1)
+    symname <- sysargs$targets[[1]][[2]]
+    for(i in seq(along=sysargs)) {
+      symname[i] <- sysargs$targets[[i]][[2]]
+    }
+  }
+  urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep="")
+  writeLines(urls, urlfile)
+  ## Creat correspoding sym links
+  dir.create(paste(htmldir, collapse=""))
+  symname <- rep(symname, each=2)
+  symname <- paste(symname, c(ext[1], paste(ext, collapse="")), sep="")
+  bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep=""))))	
+  symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse=""), symname, sep="") 
+  for(i in symcommands) system(i)
 }
 ## Usage: 
-# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://biocluster.ucr.edu/~tgirke/", urlfile="IGVurl.txt") 
+# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt") 
 
 #####################
 ## Alignment Stats ##
 #####################
-alignStats <- function(args) {
+alignStats <- function(args, output_index = 1) {
   fqpaths <- infile1(args)
   ## SYSargs class
   if(class(args)=="SYSargs") {
     bampaths <- outpaths(args)
     # SYSargs2 class
-    } else if (class(args)=="SYSargs2") {
-      output.all <- output(args)
-      bampaths <- as.character()
-      for(i in seq_along(output.all)){
-        for(j in seq_along(output.all[[i]])){
-          if(grepl(".sam$", output.all[[i]][[j]])==TRUE & grepl(".bam$", output.all[[i]][[j]])==FALSE){
-            stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.") } 
-          else if(grepl(".bam$", output.all[[i]][[j]])==TRUE & grepl("sorted.bam$", output.all[[i]][[j]])==FALSE){
-            bampaths <- c(bampaths, output.all[[i]][[j]]) }
-        }
+  } else if (class(args)=="SYSargs2") {
+    output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
+    bampaths <- as.character()
+    for(i in seq_along(output.all)){
+      for(j in seq_along(output.all[[i]])){
+        if(grepl(".sam$", output.all[[i]][[j]])==TRUE & grepl(".bam$", output.all[[i]][[j]])==FALSE){
+          stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.") } 
+        else if(grepl(".bam$", output.all[[i]][[j]])==TRUE & grepl("sorted.bam$", output.all[[i]][[j]])==FALSE){
+          bampaths <- c(bampaths, output.all[[i]][[j]]) }
       }
-      names(bampaths) <- names(output.all)
     }
-	bamexists <- file.exists(bampaths)
-	fqpaths <- fqpaths[bamexists]
-	bampaths <- bampaths[bamexists]
-	## Obtain total read number from FASTQ files
-	Nreads <- countLines(fqpaths)/4
-	names(Nreads) <- names(fqpaths)		
-	## If reads are PE multiply by 2 as a rough approximation
-	if(nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2	
-	## Obtain total number of alignments from BAM files
-	bfl <- BamFileList(bampaths, yieldSize=50000, index=character())
-	param <- ScanBamParam(flag=scanBamFlag(isUnmappedQuery=FALSE))
-	Nalign <- countBam(bfl, param=param)
-	## Obtain number of primary alignments from BAM files
-	param <- ScanBamParam(flag=scanBamFlag(isSecondaryAlignment=FALSE, isUnmappedQuery=FALSE))
-	Nalignprim <- countBam(bfl, param=param)
-	statsDF <- data.frame(FileName=names(Nreads), 
-                              Nreads=Nreads, 
-                              Nalign=Nalign$records, 
-                              Perc_Aligned=Nalign$records/Nreads*100, 
-                              Nalign_Primary=Nalignprim$records, 
-                              Perc_Aligned_Primary=Nalignprim$records/Nreads*100
-	)
-	if(nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF)=="Nreads")] <- "Nreads2x"
-	return(statsDF)
+    names(bampaths) <- names(output.all)
+  }
+  bamexists <- file.exists(bampaths)
+  fqpaths <- fqpaths[bamexists]
+  bampaths <- bampaths[bamexists]
+  ## Obtain total read number from FASTQ files
+  Nreads <- countLines(fqpaths)/4
+  names(Nreads) <- names(fqpaths)		
+  ## If reads are PE multiply by 2 as a rough approximation
+  if(nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2	
+  ## Obtain total number of alignments from BAM files
+  bfl <- BamFileList(bampaths, yieldSize=50000, index=character())
+  param <- ScanBamParam(flag=scanBamFlag(isUnmappedQuery=FALSE))
+  Nalign <- countBam(bfl, param=param)
+  ## Obtain number of primary alignments from BAM files
+  param <- ScanBamParam(flag=scanBamFlag(isSecondaryAlignment=FALSE, isUnmappedQuery=FALSE))
+  Nalignprim <- countBam(bfl, param=param)
+  statsDF <- data.frame(FileName=names(Nreads), 
+                        Nreads=Nreads, 
+                        Nalign=Nalign$records, 
+                        Perc_Aligned=Nalign$records/Nreads*100, 
+                        Nalign_Primary=Nalignprim$records, 
+                        Perc_Aligned_Primary=Nalignprim$records/Nreads*100
+  )
+  if(nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF)=="Nreads")] <- "Nreads2x"
+  return(statsDF)
 }
 ## Usage:
 # read_statsDF <- alignStats(args=args)
