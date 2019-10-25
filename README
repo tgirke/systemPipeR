@@ -10,7 +10,7 @@ changelog
             - annotate_peaks/*
             - count_rangesets/*
             - mergeBamByFactor/*
-
+            - rundiff/*
 
      version 1.19.05
         - **Central vignette for all the Workflows**
