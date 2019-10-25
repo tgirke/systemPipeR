@@ -1,5 +1,6 @@
 changelog
      version 1.19.06
+        - Updated vignette
         - Updated functions
 	    - alignStats
 	    - symLink2bam

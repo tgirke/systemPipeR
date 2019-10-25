@@ -34,5 +34,5 @@ export(
     "preprocessReads", "filterVars", "variantReport", "combineVarReports", 
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
-    "scaleRanges", "loadWorkflow", "renderWF", "subsetWF", "output_update", "targets.as.df", "run_track", "olRanges", "createWF"
+    "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", "targets.as.df", "run_track", "olRanges", "createWF"
 )  
