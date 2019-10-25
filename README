@@ -1,5 +1,6 @@
 changelog
      version 1.19.07
+     - BugFix: 'runCommandline' and 'writeTargetsout'
 	- Updated functions related with VAR-seq workflow
         - variantReport
 	    - combineVarReports
