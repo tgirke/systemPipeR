@@ -1,5 +1,10 @@
 changelog
      version 1.19.06
+        - Updated functions related with Chip-seq workflow
+            - countRangeset
+            - mergeBamByFactor
+            - readComp
+            - runDiff
         - Added "cwl/*" files:
             - MACS2/*
             - annotate_peaks/*

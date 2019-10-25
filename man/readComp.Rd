@@ -13,7 +13,7 @@ readComp(file, format = "vector", delim = "-")
 }
 \arguments{
   \item{file}{
-	Path to targets file. Alternatively, a \code{SYSargs} object can be assigned.
+	Path to targets file. Alternatively, a \code{SYSargs} or \code{SYSargs2} object can be assigned.
 }
   \item{format}{
 	Object type to return: \code{vector} or  \code{matrix}.

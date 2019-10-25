@@ -4,9 +4,8 @@
 Read counting for several range sets
 }
 \description{
-Convenience function to perform read counting iteratively for serveral range sets, e.g. peak range sets or feature types. Internally, the read counting
-is performed with the \code{summarizeOverlaps} function from the \code{GenomicAlignments}
-package. The resulting count tables are directly saved to files.
+Convenience function to perform read counting iteratively for serveral range sets, e.g. peak range sets or feature types. Internally, the read counting is performed with the \code{summarizeOverlaps}
+function from the \code{GenomicAlignments} package. The resulting count tables are directly saved to files.
 }
 \usage{
 countRangeset(bfl, args, format="tabular", ...)
@@ -16,7 +15,7 @@ countRangeset(bfl, args, format="tabular", ...)
 \code{BamFileList} object containing paths to one or more BAM files.
 }
   \item{args}{
-Object of class \code{SYSargs} where \code{infile1(args)} specifies the
+Object of class \code{SYSargs} or \code{SYSargs2} where \code{infile1(args)} specifies the
 paths to the tabular range data files (e.g. peak ranges) used for counting. 
 }
   \item{format}{
@@ -48,6 +47,10 @@ args_bam <- systemArgs(sysma=param, mytargets=targets)
 bfl <- BamFileList(outpaths(args_bam), yieldSize=50000, index=character())
 
 \dontrun{
+##########################################
+## Examples with \code{SYSargs} object ##
+##########################################
+## Construct SYSargs object 
 ## SYSargs with paths to range data and count files
 args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.txt")
 
@@ -55,6 +58,18 @@ args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.
 countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
 writeTargetsout(x=args, file="targets_countDF.txt", overwrite=TRUE)
 
+##########################################
+## Examples with \code{SYSargs2} object ##
+##########################################
+## Construct SYSargs2 object 
+## SYSargs2 with paths to range data and count files
+dir_path <- system.file("extdata/cwl/count_rangesets", package="systemPipeR")
+args <- loadWF(targets = "targets_macs.txt", wf_file = "count_rangesets.cwl", 
+    input_file = "count_rangesets.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+
+## Iterative read counting
+countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
 }
 }
 \keyword{ utilities }
