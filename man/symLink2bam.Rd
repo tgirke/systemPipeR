@@ -11,7 +11,7 @@ symLink2bam(sysargs, command="ln -s", htmldir, ext = c(".bam", ".bai"), urlbase,
 }
 \arguments{
   \item{sysargs}{
-	Object of class \code{SYSargs}
+	Object of class \code{SYSargs} or \code{SYSargs2}
 }
   \item{command}{
 	Shell command, defaults to "ln -s"
@@ -42,9 +42,14 @@ targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 args <- systemArgs(sysma=param, mytargets=targets)
 
 \dontrun{
+## Construct SYSargs2 object from cwl and targets files
+targets <- system.file("extdata", "targets.txt", package="systemPipeR") 
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR") 
+args <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)  
+args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+
 ## Create sym links and URL file for IGV
 symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://myserver.edu/~username/", urlfile="IGVurl.txt")
 }
 }
 \keyword{ utilities }
-

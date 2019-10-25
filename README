@@ -1,5 +1,9 @@
 changelog
      version 1.19.06
+        - Updated functions
+	    - alignStats
+	    - symLink2bam
+	    - subsetWF
         - Updated functions related with Chip-seq workflow
             - countRangeset
             - mergeBamByFactor

@@ -35,7 +35,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
        (is.null(new_col) & !is.null(new_col_output_index))){
       cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
       for(i in seq_len(length(output(x)[[1]][[1]]))){
-        pout <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[i]], sep = ""), simplify = F)
+        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[1]][[i]]), simplify = F)
         targets[[paste0(cwlfiles(x)$steps, "_", i)]] = as.character(pout)
       }
     } else if(!is.null(new_col) & !is.null(new_col_output_index)){
@@ -46,7 +46,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
         stop("'new_col' should have the same length as 'new_col_output_index'")
       }
       for(i in seq_along(new_col)){
-        pout <- sapply(names(output(x)), function(y) paste(getwd(), "/", output(x)[[y]][[1]][[new_col_output_index[i]]], sep = ""), simplify = F)
+        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[1]][[new_col_output_index[i]]]), simplify = F)
         targets[[as.character(new_col[i])]] = as.character(pout)
       }
     }
@@ -347,7 +347,7 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
     targets_in <- targetsin(args)
   } else if (class(args)=="SYSargs2") {
     colnames_args <- colnames(targets.as.df(args$targets)) #SYSargs2
-    outpaths <- subsetWF(args = args, slot = "output", subset = 1)
+    outpaths <- subsetWF(args = args, slot = "output", subset = 1, index=1)
     targets_in <- targets.as.df(args$targets)
   }
   ## Run function in loop over all fastq files
@@ -437,68 +437,79 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
 ## Function to create sym links to bam files for viewing in IGV ##
 ##################################################################
 symLink2bam <- function(sysargs, command="ln -s", htmldir, ext=c(".bam", ".bai"), urlbase, urlfile) {
-	## Create URL file 
-	bampaths <- outpaths(sysargs)
-	symname <- SampleName(sysargs)
-	urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep="")
-	writeLines(urls, urlfile)
-	## Creat correspoding sym links
-	dir.create(paste(htmldir, collapse=""))
-	symname <- rep(symname, each=2)
-	symname <- paste(symname, c(ext[1], paste(ext, collapse="")), sep="")
-	bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep=""))))	
-	symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse=""), symname, sep="") 
-	for(i in symcommands) system(i)
+  ## Create URL file
+  if(all(class(sysargs) != "SYSargs" & class(sysargs) != "SYSargs2")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  ## SYSargs class
+  if((class(sysargs)) == "SYSargs") {
+    bampaths <- outpaths(sysargs)
+    symname <- SampleName(sysargs)
+    ## SYSargs2 class ##
+  } else if (class(sysargs)=="SYSargs2") {
+    bampaths <- subsetWF(args = sysargs, slot = "output", subset = 1, index=1)
+    symname <- sysargs$targets[[1]][[2]]
+    for(i in seq(along=sysargs)) {
+      symname[i] <- sysargs$targets[[i]][[2]]
+    }
+  }
+  urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep="")
+  writeLines(urls, urlfile)
+  ## Creat correspoding sym links
+  dir.create(paste(htmldir, collapse=""))
+  symname <- rep(symname, each=2)
+  symname <- paste(symname, c(ext[1], paste(ext, collapse="")), sep="")
+  bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep=""))))	
+  symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse=""), symname, sep="") 
+  for(i in symcommands) system(i)
 }
 ## Usage: 
-# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://biocluster.ucr.edu/~tgirke/", urlfile="IGVurl.txt") 
+# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt") 
 
 #####################
 ## Alignment Stats ##
 #####################
-alignStats <- function(args) {
+alignStats <- function(args, output_index = 1) {
   fqpaths <- infile1(args)
   ## SYSargs class
   if(class(args)=="SYSargs") {
     bampaths <- outpaths(args)
     # SYSargs2 class
-    } else if (class(args)=="SYSargs2") {
-      output.all <- output(args)
-      bampaths <- as.character()
-      for(i in seq_along(output.all)){
-        for(j in seq_along(output.all[[i]])){
-          if(grepl(".sam$", output.all[[i]][[j]])==TRUE & grepl(".bam$", output.all[[i]][[j]])==FALSE){
-            stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.") } 
-          else if(grepl(".bam$", output.all[[i]][[j]])==TRUE & grepl("sorted.bam$", output.all[[i]][[j]])==FALSE){
-            bampaths <- c(bampaths, output.all[[i]][[j]]) }
-        }
+  } else if (class(args)=="SYSargs2") {
+    output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
+    bampaths <- as.character()
+    for(i in seq_along(output.all)){
+      for(j in seq_along(output.all[[i]])){
+        if(grepl(".sam$", output.all[[i]][[j]])==TRUE & grepl(".bam$", output.all[[i]][[j]])==FALSE){
+          stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.") } 
+        else if(grepl(".bam$", output.all[[i]][[j]])==TRUE & grepl("sorted.bam$", output.all[[i]][[j]])==FALSE){
+          bampaths <- c(bampaths, output.all[[i]][[j]]) }
       }
-      names(bampaths) <- names(output.all)
     }
-	bamexists <- file.exists(bampaths)
-	fqpaths <- fqpaths[bamexists]
-	bampaths <- bampaths[bamexists]
-	## Obtain total read number from FASTQ files
-	Nreads <- countLines(fqpaths)/4
-	names(Nreads) <- names(fqpaths)		
-	## If reads are PE multiply by 2 as a rough approximation
-	if(nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2	
-	## Obtain total number of alignments from BAM files
-	bfl <- BamFileList(bampaths, yieldSize=50000, index=character())
-	param <- ScanBamParam(flag=scanBamFlag(isUnmappedQuery=FALSE))
-	Nalign <- countBam(bfl, param=param)
-	## Obtain number of primary alignments from BAM files
-	param <- ScanBamParam(flag=scanBamFlag(isSecondaryAlignment=FALSE, isUnmappedQuery=FALSE))
-	Nalignprim <- countBam(bfl, param=param)
-	statsDF <- data.frame(FileName=names(Nreads), 
-                              Nreads=Nreads, 
-                              Nalign=Nalign$records, 
-                              Perc_Aligned=Nalign$records/Nreads*100, 
-                              Nalign_Primary=Nalignprim$records, 
-                              Perc_Aligned_Primary=Nalignprim$records/Nreads*100
-	)
-	if(nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF)=="Nreads")] <- "Nreads2x"
-	return(statsDF)
+    names(bampaths) <- names(output.all)
+  }
+  bamexists <- file.exists(bampaths)
+  fqpaths <- fqpaths[bamexists]
+  bampaths <- bampaths[bamexists]
+  ## Obtain total read number from FASTQ files
+  Nreads <- countLines(fqpaths)/4
+  names(Nreads) <- names(fqpaths)		
+  ## If reads are PE multiply by 2 as a rough approximation
+  if(nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2	
+  ## Obtain total number of alignments from BAM files
+  bfl <- BamFileList(bampaths, yieldSize=50000, index=character())
+  param <- ScanBamParam(flag=scanBamFlag(isUnmappedQuery=FALSE))
+  Nalign <- countBam(bfl, param=param)
+  ## Obtain number of primary alignments from BAM files
+  param <- ScanBamParam(flag=scanBamFlag(isSecondaryAlignment=FALSE, isUnmappedQuery=FALSE))
+  Nalignprim <- countBam(bfl, param=param)
+  statsDF <- data.frame(FileName=names(Nreads), 
+                        Nreads=Nreads, 
+                        Nalign=Nalign$records, 
+                        Perc_Aligned=Nalign$records/Nreads*100, 
+                        Nalign_Primary=Nalignprim$records, 
+                        Perc_Aligned_Primary=Nalignprim$records/Nreads*100
+  )
+  if(nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF)=="Nreads")] <- "Nreads2x"
+  return(statsDF)
 }
 ## Usage:
 # read_statsDF <- alignStats(args=args)
@@ -525,12 +536,24 @@ returnRPKM <- function(counts, ranges) {
 readComp <- function(file, format="vector", delim="-") {
 	if(!format %in% c("vector", "matrix")) stop("Argument format can only be assigned: vector or matrix!")
 	## Parse <CMP> line
-	if(class(file)=="SYSargs") {
-		if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
-		comp <- targetsheader(file)
-	} else {
-		comp <- readLines(file)
-	}
+#   if(any(class(file)=="SYSargs" & class(file)=="SYSargs2")){
+# #	if(class(file)=="SYSargs") {
+# 		if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
+# 		comp <- targetsheader(file)
+# 	} else {
+# 		comp <- readLines(file)
+# 	}
+#   ## SYSargs class
+  if(class(file) == "SYSargs") {
+    if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
+    comp <- targetsheader(file)
+    ## SYSargs2 class  
+  } else if (class(file) == "SYSargs2"){
+    if(length(targetsheader(file)[[1]])==0) stop("Input has no targets header lines.")
+    comp <- targetsheader(file)[[1]]
+  } else {
+    comp <- readLines(file)
+  }
 	comp <- comp[grepl("<CMP>", comp)]
 	comp <- gsub("#.*<CMP>| {1,}", "", comp)
 	comp <- gsub("\t", "", comp); comp <- gsub("^\"|\"$", "", comp) # Often required if Excel is used for editing targets file
@@ -542,6 +565,8 @@ readComp <- function(file, format="vector", delim="-") {
 	checkvalues <- checkvalues[checkvalues!="ALL"]
 	if(class(file)=="SYSargs") {
 		all <- unique(as.character(targetsin(file)$Factor))
+	} else if(class(file)=="SYSargs2")  {
+	  all <- unique(as.character(targets.as.df(targets(args_bam))$Factor))
 	} else {
 		all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
 	}
@@ -667,8 +692,8 @@ module <- function(action_type,module_name=""){
     stop("Could not find the installation of Environment Modules: \"modulecmd\". Please make sure to configure your PATH environment variable according to the software in use.")
   }
   switch(action_type,
-    "load"   = myEnvModules$load_unload(action_type,module_name),
-    "unload" = myEnvModules$load_unload(action_type,module_name),
+    "load"   = myEnvModules$load_unload(action_type, module_name),
+    "unload" = myEnvModules$load_unload(action_type, module_name),
     "list"   = myEnvModules$avail_list(action_type),
     "avail"  = myEnvModules$avail_list(action_type),
     "clear"  = myEnvModules$clear(action_type),
@@ -696,7 +721,7 @@ modulelist <- function() {
 
 ## Load software from module system
 moduleload <- function(module,envir="PATH") {
-  module("load",module)
+  module("load", module)
   # warning("The function moduleload will be deprecated in future releases, please refer to the documentation for proper useage.")
 }
 
