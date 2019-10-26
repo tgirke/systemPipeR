@@ -3,6 +3,7 @@ changelog
         - Added "cwl/*" files:
             - GATK/*
             - bcftools/*
+            - varseq/*
      - BugFix: 'runCommandline' and 'writeTargetsout'
 	- Updated functions related with VAR-seq workflow
         - variantReport
