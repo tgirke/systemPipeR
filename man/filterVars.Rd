@@ -11,7 +11,7 @@ filterVars(args, filter, varcaller, organism)
 }
 \arguments{
   \item{args}{
-	Object of class \code{SYSargs}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)}.
+	Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
 }
   \item{filter}{
 	Character vector of length one specifying the filter syntax that will be applied to the internally created \code{VRanges} object.
@@ -24,7 +24,7 @@ filterVars(args, filter, varcaller, organism)
 }
 }
 \value{
-	Output files in VCF format. Their paths can be obtained with \code{outpaths(args)}. 
+	Output files in VCF format. Their paths can be obtained with \code{outpaths(args)} or \code{output(args)}. 
 }
 \author{
 Thomas Girke

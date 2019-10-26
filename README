@@ -1,4 +1,17 @@
 changelog
+     version 1.19.07
+        - Added "cwl/*" files:
+            - GATK/*
+            - bcftools/*
+            - varseq/*
+        - BugFix: 'runCommandline' and 'writeTargetsout'
+        - Updated functions related with VAR-seq workflow
+            - variantReport 
+            - combineVarReports
+            - varSummary
+            - filterVars
+        - BugFix 'writeTargetsout' function (adding new columns - step)
+	    
      version 1.19.06
         - Updated vignette
         - Updated functions

@@ -31,22 +31,23 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
                  paste(seq_along(names(x$clt)), collapse = ", "), "OR the corresponding names"))
     targets <- targets.as.df(targets(x))
     ## Adding the collums
-    if((!is.null(new_col) & is.null(new_col_output_index)) | 
-       (is.null(new_col) & !is.null(new_col_output_index))){
+    if ((!is.null(new_col) & is.null(new_col_output_index)) | 
+        (is.null(new_col) & !is.null(new_col_output_index)) |
+        (is.null(new_col) & is.null(new_col_output_index))){
       cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
-      for(i in seq_len(length(output(x)[[1]][[1]]))){
-        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[1]][[i]]), simplify = F)
+      for (i in seq_len(length(output(x)[[1]][[step]]))){
+        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[i]]), simplify = F)
         targets[[paste0(cwlfiles(x)$steps, "_", i)]] = as.character(pout)
       }
     } else if(!is.null(new_col) & !is.null(new_col_output_index)){
-      if(any(length(output(x)[[1]][[1]]) < new_col_output_index) | any(new_col_output_index < 1)) {
+      if(any(length(output(x)[[1]][[step]]) < new_col_output_index) | any(new_col_output_index < 1)) {
         stop(paste0("'new_col_output_index' argument needs to be equal or bigger than 1 and smaller than ", length(output(x)[[1]][[1]]), ", the maximum number of outputs files." ))
       }
       if(length(new_col) != length(new_col_output_index)){
         stop("'new_col' should have the same length as 'new_col_output_index'")
       }
       for(i in seq_along(new_col)){
-        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[1]][[new_col_output_index[i]]]), simplify = F)
+        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[new_col_output_index[i]]]), simplify = F)
         targets[[as.character(new_col[i])]] = as.character(pout)
       }
     }
@@ -201,7 +202,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
     for(i in seq_along(cmdlist(args))){
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
-        if(all(force==FALSE &all(as.logical(completed[[i]][[j]])))) {
+        if(all(force==FALSE & all(as.logical(completed[[i]][[j]])))) {
           next()
         } else {
           # Create soubmitargsID_command file
@@ -210,7 +211,9 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
           command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
           commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
           ## Check if the command is in the PATH
-          tryCatch(system(command, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+          if(!command == c("bash")){ 
+            tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+          }
           ## Run executable
           if(command %in% "bwa") {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
