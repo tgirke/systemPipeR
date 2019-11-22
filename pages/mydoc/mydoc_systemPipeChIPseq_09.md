@@ -1,6 +1,6 @@
 ---
 title: 9. Differential binding analysis
-last_updated: Fri Jun 21 16:31:58 2019
+last_updated: Thu Nov 21 15:49:32 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_09.html
 ---
@@ -13,12 +13,18 @@ the fold change and FDR cutoffs provided under the `dbrfilter` argument.
 
 
 ```r
-args_diff <- systemArgs(sysma = "param/rundiff.param", mytargets = "targets_countDF.txt")
+dir_path <- system.file("extdata/cwl/rundiff", package = "systemPipeR")
+args_diff <- loadWF(targets = "targets_countDF.txt", wf_file = "rundiff.cwl", 
+    input_file = "rundiff.yml", dir_path = dir_path)
+args_diff <- renderWF(args_diff, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+
 cmp <- readComp(file = args_bam, format = "matrix")
-dbrlist <- runDiff(args = args_diff, diffFct = run_edgeR, targets = targetsin(args_bam), 
+dbrlist <- runDiff(args = args_diff, diffFct = run_edgeR, targets = targets.as.df(targets(args_bam)), 
     cmp = cmp[[1]], independent = TRUE, dbrfilter = c(Fold = 2, 
         FDR = 1))
 writeTargetsout(x = args_diff, file = "targets_rundiff.txt", 
+    step = 1, new_col = "FileName", new_col_output_index = 1, 
     overwrite = TRUE)
 ```
 

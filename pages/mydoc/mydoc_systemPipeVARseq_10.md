@@ -1,6 +1,6 @@
 ---
 title: 10. Venn diagram of variants
-last_updated: Fri Jun 21 16:33:06 2019
+last_updated: Thu Nov 21 15:58:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_10.html
 ---
@@ -12,19 +12,28 @@ comparing four sampes for each of the two variant callers.
 
 
 ```r
-args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_gatk_filtered.txt")
-varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
+dir_path <- system.file("extdata/cwl/varseq", package = "systemPipeR")
+## gatk
+args <- loadWorkflow(targets = "results/targets_report_gatk.txt", 
+    wf_file = "combine.cwl", input_file = "varseq.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FILE1_", SampleName = "_SampleName_"))
+varlist <- sapply(names(subsetWF(args[1:2], slot = "output", 
+    subset = 1, index = 1)), function(x) as.character(read.delim(subsetWF(args[1:2], 
+    slot = "output", subset = 1, index = 1)[x])$VARID))
 vennset_gatk <- overLapper(varlist, type = "vennsets")
-args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_sambcf_filtered.txt")
-varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
+
+## bcf
+args <- loadWorkflow(targets = "./results/targets_report_bcf.txt", 
+    wf_file = "combine.cwl", input_file = "varseq.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FILE1_", SampleName = "_SampleName_"))
+varlist <- sapply(names(subsetWF(args[1:2], slot = "output", 
+    subset = 1, index = 1)), function(x) as.character(read.delim(subsetWF(args[1:2], 
+    slot = "output", subset = 1, index = 1)[x])$VARID))
 vennset_bcf <- overLapper(varlist, type = "vennsets")
-args <- systemArgs(sysma = "param/annotate_vars.param", mytargets = "targets_vartools_filtered.txt")
-varlist <- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
-vennset_vartools <- overLapper(varlist, type = "vennsets")
+
 pdf("./results/vennplot_var.pdf")
-vennPlot(list(vennset_gatk, vennset_bcf, vennset_vartools), mymain = "", 
-    mysub = "GATK: red; BCFtools: blue; VariantTools: green", 
-    colmode = 2, ccol = c("red", "blue", "green"))
+vennPlot(list(vennset_gatk, vennset_bcf), mymain = "", mysub = "GATK: red; BCFtools: blue", 
+    colmode = 2, ccol = c("red", "blue"))
 dev.off()
 ```
 

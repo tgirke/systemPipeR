@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)" />
@@ -1287,7 +1288,7 @@ window.initializeCodeFolding = function(show) {
 
     // create a collapsable div to wrap the code in
     var div = $('<div class="collapse r-code-collapse"></div>');
-    if (show)
+    if (show || $(this)[0].classList.contains('fold-show'))
       div.addClass('in');
     var id = 'rcode-643E0F36' + currentIndex++;
     div.attr('id', id);
@@ -1473,7 +1474,8 @@ background-color: inherit;
 tt, code, pre {
 font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 }
-h1, h2, h3, h4, h5, h6 { font-family: Helvetica, Arial, sans-serif;
+h1, h2, h3, h4, h5, h6 {
+font-family: Helvetica, Arial, sans-serif;
 margin: 1.2em 150px 0.6em 0em;
 
 padding-left: 65px;
@@ -1520,12 +1522,14 @@ font-weight: bold;
 font-weight: bold;
 }
 
-code { background-color: #f0f0f0;
+code {
+background-color: #f0f0f0;
 color: #404040;
 font-size: 90%;
 }
 
-.figure { margin: 0em 0px 0.5em;
+.figure {
+margin: 0em 0px 0.5em;
 }
 img {
 max-width: 100%;
@@ -1535,6 +1539,11 @@ padding: 0px 150px 0px 130px;
 p > img {
 padding-left: 65px;
 padding-right: 0px;
+}
+td > img {
+padding: 0px;
+max-width: 100%;
+display: inline;
 }
 img.smallfigure {
 padding-left: 195px;
@@ -1633,7 +1642,8 @@ code > span.st { color: #40A040; }
 code > span.co { color: #808080; font-style: italic; } 
 code > span.ot { color: #2020F0; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #E07020; }  code > span.er { color: #FF0000; } 
+code > span.fu { color: #E07020; } 
+code > span.er { color: #FF0000; } 
 code > span.identifier { color: #404040; }
 code > span.number { color: #D02070; }
 code > span.string { color: #40A040; }
@@ -1659,7 +1669,6 @@ padding-left: 65px;
 
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -1733,56 +1742,12 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -1796,8 +1761,14 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
 
+}
 
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
 
 div.main-container {
   max-width: 1200px;
@@ -1873,9 +1844,9 @@ div.tocify {
 
 <h1 class="title toc-ignore">VAR-Seq Workflow Template</h1>
 <p class="author-name">Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)</p>
-<h4 class="date">Last update: 21 June, 2019</h4>
+<h4 class="date">Last update: 21 November, 2019</h4>
 <h4 class="package">Package</h4>
-<p>systemPipeR 1.19.1</p>
+<p>systemPipeR 1.21.0</p>
 
 </div>
 
@@ -1946,25 +1917,106 @@ FASTQ files are usually the only inputs the user needs to provide.</p>
 <h2><span class="header-section-number">2.2</span> Run workflow</h2>
 <p>Now open the R markdown script <code>systemPipeVARseq.Rmd</code>in your R IDE (<em>e.g.</em> vim-r or RStudio) and
 run the workflow as outlined below.</p>
+<p>Here pair-end workflow example is provided. Please refer to the main vignette
+<code>systemPipeR.Rmd</code> for running the workflow with single-end data.</p>
 <div id="run-r-session-on-computer-node" class="section level3">
 <h3><span class="header-section-number">2.2.1</span> Run R session on computer node</h3>
-<p>After opening the <code>Rmd</code> file of this workflow in Vim and attaching a connected
-R session via the <code>F2</code> (or other) key, use the following command sequence to run your R
+<p>In a computer cluster enviornment. Typically, after opening the <code>Rmd</code> file of
+this workflow in Vim and attaching a connected R session via the <code>F2</code> ( vim-r
+plugin installed) key, following command sequence can be used to run your R
 session on a computer node.</p>
 <pre class="r"><code>q(&quot;no&quot;)  # closes R session on head node</code></pre>
 <pre class="bash"><code>srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-module load R/3.4.2
+module load R/3.6.0
 R</code></pre>
-<p>Now check whether your R session is running on a computer node of the cluster and assess your environment.</p>
-<pre class="r"><code>system(&quot;hostname&quot;)  # should return name of a compute node starting with i or c 
+<p>Now check your R session running environment.</p>
+<pre class="r"><code>system(&quot;hostname&quot;)  # should return the computer name or cluster name
 getwd()  # checks current working directory of R session
 dir()  # returns content of current working directory</code></pre>
 <p>The <code>systemPipeR</code> package needs to be loaded to perform the analysis steps shown in
 this report <span class="citation">(H Backman and Girke 2016)</span>.</p>
 <pre class="r"><code>library(systemPipeR)</code></pre>
+<pre><code>## Loading required package: Rsamtools</code></pre>
+<pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: 'BiocGenerics'</code></pre>
+<pre><code>## The following objects are masked from 'package:parallel':
+## 
+##     clusterApply, clusterApplyLB, clusterCall,
+##     clusterEvalQ, clusterExport, clusterMap,
+##     parApply, parCapply, parLapply, parLapplyLB,
+##     parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, basename,
+##     cbind, colnames, dirname, do.call, duplicated,
+##     eval, evalq, Filter, Find, get, grep, grepl,
+##     intersect, is.unsorted, lapply, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin,
+##     pmin.int, Position, rank, rbind, Reduce,
+##     rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which, which.max,
+##     which.min</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## 
+## Attaching package: 'S4Vectors'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     expand.grid</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
+<pre><code>## Loading required package: Biostrings</code></pre>
+<pre><code>## Loading required package: XVector</code></pre>
+<pre><code>## 
+## Attaching package: 'Biostrings'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     strsplit</code></pre>
+<pre><code>## Loading required package: ShortRead</code></pre>
+<pre><code>## Loading required package: BiocParallel</code></pre>
+<pre><code>## Loading required package: GenomicAlignments</code></pre>
+<pre><code>## Loading required package: SummarizedExperiment</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view
+##     with 'browseVignettes()'. To cite Bioconductor,
+##     see 'citation(&quot;Biobase&quot;)', and for packages
+##     'citation(&quot;pkgname&quot;)'.</code></pre>
+<pre><code>## Loading required package: DelayedArray</code></pre>
+<pre><code>## Loading required package: matrixStats</code></pre>
+<pre><code>## 
+## Attaching package: 'matrixStats'</code></pre>
+<pre><code>## The following objects are masked from 'package:Biobase':
+## 
+##     anyMissing, rowMedians</code></pre>
+<pre><code>## 
+## Attaching package: 'DelayedArray'</code></pre>
+<pre><code>## The following objects are masked from 'package:matrixStats':
+## 
+##     colMaxs, colMins, colRanges, rowMaxs, rowMins,
+##     rowRanges</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     aperm, apply, rowsum</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: 'systemPipeR'</code></pre>
+<pre><code>## The following object is masked from 'package:BiocStyle':
+## 
+##     output</code></pre>
 <p>If applicable users can load custom functions not provided by <code>systemPipeR</code>. Skip
 this step if this is not the case.</p>
 <pre class="r"><code>source(&quot;systemPipeVARseq_Fct.R&quot;)</code></pre>
+<p>If you are running on a single machine, use following code as an exmaple to check
+if some tools used in this workflow are in your environment <strong>PATH</strong>. No warning
+message should be shown if all tools are installed.</p>
 </div>
 </div>
 </div>
@@ -1976,11 +2028,11 @@ this step if this is not the case.</p>
 <pre class="r"><code>targetspath &lt;- system.file(&quot;extdata&quot;, &quot;targetsPE.txt&quot;, package = &quot;systemPipeR&quot;)
 targets &lt;- read.delim(targetspath, comment.char = &quot;#&quot;)
 targets[1:4, 1:4]</code></pre>
-<pre><code>##                  FileName1                FileName2
-## 1 ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq
-## 2 ./data/SRR446028_1.fastq ./data/SRR446028_2.fastq
-## 3 ./data/SRR446029_1.fastq ./data/SRR446029_2.fastq
-## 4 ./data/SRR446030_1.fastq ./data/SRR446030_2.fastq
+<pre><code>##                     FileName1                   FileName2
+## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz
+## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz
+## 3 ./data/SRR446029_1.fastq.gz ./data/SRR446029_2.fastq.gz
+## 4 ./data/SRR446030_1.fastq.gz ./data/SRR446030_2.fastq.gz
 ##   SampleName Factor
 ## 1        M1A     M1
 ## 2        M1B     M1
@@ -1989,19 +2041,23 @@ targets[1:4, 1:4]</code></pre>
 </div>
 <div id="read-quality-filtering-and-trimming" class="section level2">
 <h2><span class="header-section-number">3.2</span> Read quality filtering and trimming</h2>
-<p>The following removes reads with low quality base calls (here Phred
-scores below 20) from all FASTQ files.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/trimPE.param&quot;, mytargets = &quot;targetsPE.txt&quot;)[1:4]
-# Note: subsetting!
-filterFct &lt;- function(fq, cutoff = 20, Nexceptions = 0) {
-    qcount &lt;- rowSums(as(quality(fq), &quot;matrix&quot;) &lt;= cutoff, na.rm = TRUE)
-    fq[qcount &lt;= Nexceptions]
-    # Retains reads where Phred scores are &gt;= cutoff with N
-    # exceptions
-}
-preprocessReads(args = args, Fct = &quot;filterFct(fq, cutoff=20, Nexceptions=0)&quot;, 
-    batchsize = 1e+05)
-writeTargetsout(x = args, file = &quot;targets_PEtrim.txt&quot;, overwrite = TRUE)</code></pre>
+<p>The following removes reads with low quality base calls (here a certain pattern)
+from all FASTQ files.</p>
+<pre class="r"><code>targetsPE &lt;- system.file(&quot;extdata&quot;, &quot;targetsPE.txt&quot;, package = &quot;systemPipeR&quot;)
+dir_path &lt;- system.file(&quot;extdata/cwl/preprocessReads/trim-pe&quot;, 
+    package = &quot;systemPipeR&quot;)
+trim &lt;- loadWorkflow(targets = targetsPE, wf_file = &quot;trim-pe.cwl&quot;, 
+    input_file = &quot;trim-pe.yml&quot;, dir_path = dir_path)
+trim &lt;- renderWF(trim, inputvars = c(FileName1 = &quot;_FASTQ_PATH1_&quot;, 
+    FileName2 = &quot;_FASTQ_PATH2_&quot;, SampleName = &quot;_SampleName_&quot;))
+trim
+output(trim)[1:2]
+
+preprocessReads(args = trim, Fct = &quot;trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)&quot;, 
+    batchsize = 1e+05, overwrite = TRUE, compress = TRUE)
+writeTargetsout(x = trim, file = &quot;targets_trimPE.txt&quot;, step = 1, 
+    new_col = c(&quot;FileName1&quot;, &quot;FileName2&quot;), new_col_output_index = c(1, 
+        2), overwrite = TRUE)</code></pre>
 </div>
 <div id="fastq-quality-report" class="section level2">
 <h2><span class="header-section-number">3.3</span> FASTQ quality report</h2>
@@ -2010,9 +2066,9 @@ useful quality statistics for a set of FASTQ files including per cycle quality b
 plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
-written to a PDF file named <code>fastqReport.pdf</code>.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/tophat.param&quot;, mytargets = &quot;targets.txt&quot;)
-fqlist &lt;- seeFastq(fastq = infile1(args), batchsize = 1e+05, 
+written to a PDF file named <code>fastqReport.pdf</code>. Use the output from previous step
+(fastq trimming) as the demonstration here to generate fastq report.</p>
+<pre class="r"><code>fqlist &lt;- seeFastq(fastq = infile1(trim), batchsize = 1e+05, 
     klength = 8)
 pdf(&quot;./results/fastqReport.pdf&quot;, height = 18, width = 4 * length(fqlist))
 seeFastqPlot(fqlist)
@@ -2031,59 +2087,71 @@ Figure 1: FASTQ quality report for 18 samples
 <p>The NGS reads of this project are aligned against the reference genome
 sequence using the highly variant tolerant short read aligner <code>BWA-MEM</code>
 <span class="citation">(Li 2013; Li and Durbin 2009)</span>. The parameter settings of the aligner are
-defined in the <code>bwa.param</code> file.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/bwa.param&quot;, mytargets = &quot;targets.txt&quot;)
-sysargs(args)[1]  # Command-line parameters for first FASTQ file</code></pre>
-<p>Runs the alignments sequentially (<em>e.g.</em> on a single machine)</p>
-<pre class="r"><code>moduleload(modules(args))
-system(&quot;bwa index -a bwtsw ./data/tair10.fasta&quot;)
-bampaths &lt;- runCommandline(args = args)
-writeTargetsout(x = args, file = &quot;targets_bam.txt&quot;, overwrite = TRUE)</code></pre>
-<p>Alternatively, the alignment jobs can be submitted to a compute cluster,
-here using 72 CPU cores (18 <code>qsub</code> processes each with 4 CPU cores).</p>
-<pre class="r"><code>moduleload(modules(args))
-system(&quot;bwa index -a bwtsw ./data/tair10.fasta&quot;)
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg &lt;- clusterRun(args, conffile = &quot;.batchtools.conf.R&quot;, Njobs = 18, 
-    template = &quot;batchtools.slurm.tmpl&quot;, runid = &quot;01&quot;, resourceList = resources)
-getStatus(reg = reg)
-waitForJobs(reg = reg)
-writeTargetsout(x = args, file = &quot;targets_bam.txt&quot;, overwrite = TRUE)</code></pre>
-<p>Check whether all BAM files have been created</p>
-<pre class="r"><code>file.exists(outpaths(args))</code></pre>
+defined in the <code>gatk/bwa-pe.cwl</code></p>
+<p>DNA sequencing nowadays are usually solid for base quality and therefore,
+trimming is usually not needed in most cases. Also, variant calling tools like
+<code>GATK</code> will automatically not consider low quality bases. Therefore, this test
+code uses untrimmed fastqs. However, it is best to test with <code>FASTQ quality report</code>
+function provided above to verify on your real data first.</p>
+<div id="build-index-and-dictionary-files-for-bwa-and-gatk" class="section level3">
+<h3><span class="header-section-number">4.1.1</span> Build index and dictionary files for BWA and GATK</h3>
+<p>The following object <code>dir_path</code> is the folder where all <code>BWA</code> and <code>GATK</code> param files are located.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/gatk&quot;, package = &quot;systemPipeR&quot;)</code></pre>
+<p>Build the index and dictionary files for BWA and GATK to run.</p>
+<pre class="r"><code>## Index for BWA
+args &lt;- loadWorkflow(targets = NULL, wf_file = &quot;bwa-index.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args)
+cmdlist(args)  # shows the command
+output(args)  # shows the expected output files
+# Run single Machine
+runCommandline(args, make_bam = FALSE)
+
+## Index needed for gatk tools
+args &lt;- loadWorkflow(wf_file = &quot;fasta_dict.cwl&quot;, input_file = &quot;gatk.yaml&quot;, 
+    dir_path = dir_path)
+args &lt;- renderWF(args)
+args &lt;- runCommandline(args, make_bam = FALSE)
+
+## Index
+args &lt;- loadWorkflow(wf_file = &quot;fasta_faidx.cwl&quot;, input_file = &quot;gatk.yaml&quot;, 
+    dir_path = dir_path)
+args &lt;- renderWF(args)
+args &lt;- runCommandline(args, make_bam = FALSE)</code></pre>
 </div>
-<div id="read-mapping-with-gsnap" class="section level2">
-<h2><span class="header-section-number">4.2</span> Read mapping with <code>gsnap</code></h2>
-<p>An alternative variant tolerant aligner is <code>gsnap</code> from the <code>gmapR</code> package
-<span class="citation">(Wu and Nacu 2010)</span>. The following code shows how to run this aligner on
-multiple nodes of a computer cluster that uses Torque as scheduler.</p>
-<pre class="r"><code>library(gmapR)
-library(BiocParallel)
-library(batchtools)
-args &lt;- systemArgs(sysma = &quot;param/gsnap.param&quot;, mytargets = &quot;targetsPE.txt&quot;)
-gmapGenome &lt;- GmapGenome(systemPipeR::reference(args), directory = &quot;data&quot;, 
-    name = &quot;gmap_tair10chr&quot;, create = TRUE)
-f &lt;- function(x) {
-    library(gmapR)
-    library(systemPipeR)
-    args &lt;- systemArgs(sysma = &quot;param/gsnap.param&quot;, mytargets = &quot;targetsPE.txt&quot;)
-    gmapGenome &lt;- GmapGenome(reference(args), directory = &quot;data&quot;, 
-        name = &quot;gmap_tair10chr&quot;, create = FALSE)
-    p &lt;- GsnapParam(genome = gmapGenome, unique_only = TRUE, 
-        molecule = &quot;DNA&quot;, max_mismatches = 3)
-    o &lt;- gsnap(input_a = infile1(args)[x], input_b = infile2(args)[x], 
-        params = p, output = outfile1(args)[x])
-}
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-param &lt;- BatchtoolsParam(workers = 4, cluster = &quot;slurm&quot;, template = &quot;batchtools.slurm.tmpl&quot;, 
-    resources = resources)
-d &lt;- bplapply(seq(along = args), f, BPPARAM = param)
-writeTargetsout(x = args, file = &quot;targets_gsnap_bam.txt&quot;, overwrite = TRUE)</code></pre>
+<div id="run-the-read-mapping" class="section level3">
+<h3><span class="header-section-number">4.1.2</span> Run the read mapping</h3>
+<pre class="r"><code>targetsPE &lt;- system.file(&quot;extdata&quot;, &quot;targetsPE.txt&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWorkflow(targets = targetsPE, wf_file = &quot;bwa-pe.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FASTQ_PATH1_&quot;, 
+    FileName2 = &quot;_FASTQ_PATH2_&quot;, SampleName = &quot;_SampleName_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]</code></pre>
+<p>Runs the alignments sequentially (<em>e.g.</em> on a single machine) by <code>runCommandline</code> function.</p>
+<pre class="r"><code>args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args[1:2], file = &quot;./results/targetsPE.txt&quot;, 
+    step = 1, new_col = &quot;BWA_SAM&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
+<p>Alternatively, the alignment jobs can be submitted to a compute cluster. Here is the
+example to run cluster jobs by <code>clusterRun</code> on a <code>slurm</code> based system. 4 cpus for
+each task for 18 samples, totally 72 cpus.</p>
+<pre class="r"><code>library(batchtools)
+resources &lt;- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg &lt;- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
+    dir = FALSE, make_bam = FALSE), conffile = &quot;.batchtools.conf.R&quot;, 
+    template = &quot;batchtools.slurm.tmpl&quot;, Njobs = 18, runid = &quot;01&quot;, 
+    resourceList = resources)
+getStatus(reg = reg)
+writeTargetsout(x = args, file = &quot;./results/targetsPE.txt&quot;, step = 1, 
+    new_col = &quot;BWA_SAM&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
+<p>Check whether all BAM files have been created.</p>
+<pre class="r"><code>outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+file.exists(outpaths)</code></pre>
+</div>
 </div>
 <div id="read-and-alignment-stats" class="section level2">
-<h2><span class="header-section-number">4.3</span> Read and alignment stats</h2>
+<h2><span class="header-section-number">4.2</span> Read and alignment stats</h2>
 <p>The following generates a summary table of the number of reads in each
 sample and how many of them aligned to the reference.</p>
 <pre class="r"><code>read_statsDF &lt;- alignStats(args = args)
@@ -2091,94 +2159,223 @@ write.table(read_statsDF, &quot;results/alignStats.xls&quot;, row.names = FALSE,
     quote = FALSE, sep = &quot;\t&quot;)</code></pre>
 </div>
 <div id="create-symbolic-links-for-viewing-bam-files-in-igv" class="section level2">
-<h2><span class="header-section-number">4.4</span> Create symbolic links for viewing BAM files in IGV</h2>
+<h2><span class="header-section-number">4.3</span> Create symbolic links for viewing BAM files in IGV</h2>
 <p>The <code>symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
 genome browser such as IGV. The corresponding URLs are written to a file
 with a path specified under <code>urlfile</code>, here <code>IGVurl.txt</code>.</p>
-<pre class="r"><code>symLink2bam(sysargs = args, htmldir = c(&quot;~/.html/&quot;, &quot;projects/gen242/&quot;), 
-    urlbase = &quot;http://biocluster.ucr.edu/~tgirke/&quot;, urlfile = &quot;./results/IGVurl.txt&quot;)</code></pre>
+<pre class="r"><code>symLink2bam(sysargs = args, htmldir = c(&quot;~/.html/&quot;, &quot;somedir/&quot;), 
+    urlbase = &quot;http://cluster.hpcc.ucr.edu/~tgirke/&quot;, urlfile = &quot;IGVurl.txt&quot;)</code></pre>
 </div>
 </div>
 <div id="variant-calling" class="section level1">
 <h1><span class="header-section-number">5</span> Variant calling</h1>
-<p>The following performs variant calling with <code>GATK</code>, <code>BCFtools</code> and <code>VariantTools</code>
-in parallel mode on a compute cluster <span class="citation">(McKenna et al. 2010; Li 2011)</span>. If a cluster is not
-available, the <code>runCommandline</code> function can be used to run the variant calling with <code>GATK</code>
-and <code>BCFtools</code> for each sample sequentially on a single machine, or <code>callVariants</code> in case
-of <code>VariantTools</code>. Typically, the user would choose here only one variant caller rather
-than running several ones.</p>
+<p>The following performs variant calling with <code>GATK</code> and <code>BCFtools</code> on a single
+machine by <code>runCommandline</code> function can be used to run the variant
+calling with <code>GATK</code> and <code>BCFtools</code> for each sample sequentially. If a cluster
+is available, running in parallel mode on a compute cluster can be performed by
+<code>clusterRun</code> <span class="citation">(McKenna et al. 2010; Li 2011)</span>. Typically, the user would choose here
+only one variant caller rather than running several ones.</p>
+<p>Not all users have a cluster system, so here to demonstrate an example variant calling
+workflow, only single-machine commands are shown. For cluster jobs, please refer
+to previous steps like code for <code>BWA</code> as a template to run on the cluster.</p>
 <div id="variant-calling-with-gatk" class="section level2">
 <h2><span class="header-section-number">5.1</span> Variant calling with <code>GATK</code></h2>
-<p>The following creates in the inital step a new <code>targets</code> file
-(<code>targets_bam.txt</code>). The first column of this file gives the paths to
-the BAM files created in the alignment step. The new targets file and the
-parameter file <code>gatk.param</code> are used to create a new <code>SYSargs</code>
-instance for running GATK. Since GATK involves many processing steps, it is
-executed by a bash script <code>gatk_run.sh</code> where the user can specify the
-detailed run parameters. All three files are expected to be located in the
-current working directory. Samples files for <code>gatk.param</code> and
-<code>gatk_run.sh</code> are available in the <code>param</code> subdirectory
-provided by <code>systemPipeRdata</code>.</p>
-<pre class="r"><code>moduleload(&quot;picard/1.130&quot;)
-moduleload(&quot;samtools/1.3&quot;)
-system(&quot;picard CreateSequenceDictionary R=./data/tair10.fasta O=./data/tair10.dict&quot;)
-system(&quot;samtools faidx data/tair10.fasta&quot;)
-args &lt;- systemArgs(sysma = &quot;param/gatk.param&quot;, mytargets = &quot;targets_bam.txt&quot;)
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
-reg &lt;- clusterRun(args, conffile = &quot;.batchtools.conf.R&quot;, Njobs = 18, 
-    template = &quot;batchtools.slurm.tmpl&quot;, runid = &quot;01&quot;, resourceList = resources)
-getStatus(reg = reg)
-waitForJobs(reg = reg)
-# unlink(outfile1(args), recursive = TRUE, force = TRUE)
-writeTargetsout(x = args, file = &quot;targets_gatk.txt&quot;, overwrite = TRUE)</code></pre>
+<p>The following steps are based on <code>GATK 4.1.1.0</code> <a href="https://software.broadinstitute.org/gatk/best-practices/">Best Practice</a>.
+A <code>targets</code> file is needed to load samples to a <code>SYSargs2</code> intance. There are 10
+individual steps where the user can choose where to jump in and where to skip.
+All scripts are located at <code>param/cwl/gatk</code>. <code>BQSR</code> (Base Quality Score Recalibration)
+and <code>VQSR</code> (Variant Quality Score Recalibration) are very specific
+to a limited species like human, so this workflow does not support these steps.</p>
+<div id="step1-fastq-to-ubam" class="section level3">
+<h3><span class="header-section-number">5.1.1</span> Step1: <code>fastq</code> to <code>ubam</code></h3>
+<p>Convert <code>fastq</code> files to <code>bam</code> files to prepare for the following step. It is very
+important to specific your sequencing platform, default is <code>illumina</code>. User need
+to change <code>gatk_fastq2ubam.cwl</code> if the platform is different. Platform information
+is needed for the variant caller in later steps to correct calling parameters.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/gatk&quot;, package = &quot;systemPipeR&quot;)
+targets.gatk &lt;- &quot;./results/targetsPE.txt&quot;  ## targets generated from BWA
+args &lt;- loadWorkflow(targets = targets.gatk, wf_file = &quot;gatk_fastq2ubam.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FASTQ_PATH1_&quot;, 
+    FileName2 = &quot;_FASTQ_PATH2_&quot;, SampleName = &quot;_SampleName_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]
+args &lt;- runCommandline(args = args[1:2], make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_gatk.txt&quot;, 
+    step = 1, new_col = &quot;GATK_UBAM&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
+</div>
+<div id="step2-merge-bam-and-ubam" class="section level3">
+<h3><span class="header-section-number">5.1.2</span> Step2: Merge <code>bam</code> and <code>ubam</code></h3>
+<p>This step merges a <code>bam</code> and <code>ubam</code> and creates a third <code>bam</code> file that contains
+alignment information and remaining information that was removed by the aligner like <code>BWA</code>.
+The removed information is essential for variant statistics calculation. Previous steps are
+recommended, but variant calling can still be performed without these steps.</p>
+<pre class="r"><code>targets.gatk &lt;- &quot;./results/targets_gatk.txt&quot;
+args &lt;- loadWorkflow(targets = targets.gatk, wf_file = &quot;gatk_mergebams.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(BWA_SAM = &quot;_bwasam_&quot;, GATK_UBAM = &quot;_ubam_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]
+args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_gatk.txt&quot;, 
+    step = 1, new_col = &quot;GATK_MERGE&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
+</div>
+<div id="step3-sort-bam-files-by-genomic-coordinates" class="section level3">
+<h3><span class="header-section-number">5.1.3</span> Step3: Sort <code>bam</code> files by genomic coordinates</h3>
+<p>Sort <code>bam</code> files by genomic coordinates.</p>
+<pre class="r"><code>targets.gatk &lt;- &quot;./results/targets_gatk.txt&quot;
+args &lt;- loadWorkflow(targets = targets.gatk, wf_file = &quot;gatk_sort.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(SampleName = &quot;_SampleName_&quot;, 
+    GATK_MERGE = &quot;_mergebam_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]
+args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_gatk.txt&quot;, 
+    step = 1, new_col = &quot;GATK_SORT&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
+</div>
+<div id="step4-mark-duplicates" class="section level3">
+<h3><span class="header-section-number">5.1.4</span> Step4: Mark duplicates</h3>
+<p>Mark PCR artifacts in sequencing. A <code>duplicate_metrics</code> file will also be produced
+by this step, but will not be used for the next step. This file is just for the user
+to check duplicates status summary.</p>
+<pre class="r"><code>targets.gatk &lt;- &quot;./results/targets_gatk.txt&quot;
+args &lt;- loadWorkflow(targets = targets.gatk, wf_file = &quot;gatk_markduplicates.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(SampleName = &quot;_SampleName_&quot;, 
+    GATK_SORT = &quot;_sort_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]
+args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_gatk.txt&quot;, 
+    step = 1, new_col = c(&quot;GATK_MARK&quot;, &quot;GATK_MARK_METRICS&quot;), 
+    new_col_output_index = c(1, 2), overwrite = TRUE)</code></pre>
+</div>
+<div id="step5-fixing-tags" class="section level3">
+<h3><span class="header-section-number">5.1.5</span> Step5: Fixing tags</h3>
+<p>Takes the <code>bam</code> from the last step and calculates the NM, MD, and UQ tags.
+These tags are important for variant calling and filtering.
+This step is recommended but can be skipped.</p>
+<pre class="r"><code>targets.gatk &lt;- &quot;./results/targets_gatk.txt&quot;
+args &lt;- loadWorkflow(targets = targets.gatk, wf_file = &quot;gatk_fixtag.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(SampleName = &quot;_SampleName_&quot;, 
+    GATK_MARK = &quot;_mark_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]
+args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_gatk.txt&quot;, 
+    step = 1, new_col = &quot;GATK_FIXED&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
+<p>Up till this step, sample preprocess is done. All analysis ready <code>BAM</code> files and
+their index <code>.bai</code> files are created. Individual and cohort calling by
+<code>HaplotypeCaller</code> is performed from the next step.</p>
+</div>
+<div id="step6-haplotypecaller-gvcf" class="section level3">
+<h3><span class="header-section-number">5.1.6</span> Step6: HaplotypeCaller <code>gvcf</code></h3>
+<p>The <code>HaplotypeCaller</code> is running a <strong>gvcf</strong> mode in this step. G stands for ‘genomic’.
+The file not only contains variant sites information but also non-variant sites information;
+thus, at the following step, the cohort caller can use this information to validate the true variants.</p>
+<pre class="r"><code>targets.gatk &lt;- &quot;./results/targets_gatk.txt&quot;
+args &lt;- loadWorkflow(targets = targets.gatk, wf_file = &quot;gatk_haplotypecaller.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(SampleName = &quot;_SampleName_&quot;, 
+    GATK_FIXED = &quot;_fixed_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]
+args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_gatk.txt&quot;, 
+    step = 1, new_col = &quot;GVCF&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
+</div>
+<div id="step7-import-all-gvcfs" class="section level3">
+<h3><span class="header-section-number">5.1.7</span> Step7: Import all <code>gvcfs</code></h3>
+<p>It is recommended to import all <strong>gvcfs</strong> to a
+<a href="https://github.com/Intel-HLS/GenomicsDB/wiki">TileDB</a> database for fast cohort
+variant calling at the following step. Note: if you are working with non-diploid data,
+use <code>CombineGVCFs</code> function from <code>GATK</code> and change the <code>gvcf_db_folder</code> parameter
+in <code>param/cwl/gatk/gatk.yaml</code> to be your combined <strong>gvcf</strong> file.</p>
+<pre class="r"><code># drop all *.g.vcf.gz files into results folder, make sure
+# the tbi index is also there.
+args &lt;- loadWorkflow(targets = NULL, wf_file = &quot;gatk_genomicsDBImport.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args)
+cmdlist(args)
+output(args)
+args &lt;- runCommandline(args = args, make_bam = FALSE)</code></pre>
+</div>
+<div id="step8-cohort-calling-of-gvcf" class="section level3">
+<h3><span class="header-section-number">5.1.8</span> Step8: Cohort calling of <code>gvcf</code></h3>
+<p>Assess variants by information from all gvcfs. A collective vcf called
+<code>samples.vcf.gz</code> is created by default naming.</p>
+<pre class="r"><code>args &lt;- loadWorkflow(targets = NULL, wf_file = &quot;gatk_genotypeGVCFs.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args)
+cmdlist(args)
+output(args)
+args &lt;- runCommandline(args = args, make_bam = FALSE)</code></pre>
+</div>
+<div id="step9-cohort-hard-filter-variants" class="section level3">
+<h3><span class="header-section-number">5.1.9</span> Step9: Cohort hard filter variants</h3>
+<p>VQSR is not included in this workflow. Variants are hard filtered together.
+See this <a href="https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set">Post</a> for parameters for hard filtering. Change these settings in <code>param/cwl/gak/gatk_variantFiltration.sh</code> if needed.</p>
+<pre class="r"><code>args &lt;- loadWorkflow(wf_file = &quot;gatk_variantFiltration.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args)
+cmdlist(args)
+output(args)
+args &lt;- runCommandline(args = args, make_bam = FALSE)</code></pre>
+</div>
+<div id="step10-extract-variant" class="section level3">
+<h3><span class="header-section-number">5.1.10</span> Step10: Extract variant</h3>
+<p>After cohort calling, filtering, all variants for all samples are stored in one big file.
+Extract variants for each sample and save them separately (only variants that have
+passed the filters are stored).</p>
+<pre class="r"><code>targets.gatk &lt;- &quot;./results/targets_gatk.txt&quot;
+args &lt;- loadWorkflow(targets = targets.gatk, wf_file = &quot;gatk_select_variant.cwl&quot;, 
+    input_file = &quot;gatk.yaml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(SampleName = &quot;_SampleName_&quot;))
+cmdlist(args)[1:2]
+output(args)[1:2]
+args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_gatk.txt&quot;, 
+    step = 1, new_col = &quot;FileName1&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
+</div>
 </div>
 <div id="variant-calling-with-bcftools" class="section level2">
 <h2><span class="header-section-number">5.2</span> Variant calling with <code>BCFtools</code></h2>
-<p>The following runs the variant calling with <code>BCFtools</code>. This step requires
-in the current working directory the parameter file <code>sambcf.param</code> and the bash script
-<code>sambcf_run.sh</code>.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/sambcf.param&quot;, mytargets = &quot;targets_bam.txt&quot;)
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
-reg &lt;- clusterRun(args, conffile = &quot;.batchtools.conf.R&quot;, Njobs = 18, 
-    template = &quot;batchtools.slurm.tmpl&quot;, runid = &quot;01&quot;, resourceList = resources)
-getStatus(reg = reg)
-waitForJobs(reg = reg)
-# unlink(outfile1(args), recursive = TRUE, force = TRUE)
-writeTargetsout(x = args, file = &quot;targets_sambcf.txt&quot;, overwrite = TRUE)</code></pre>
-</div>
-<div id="variant-calling-with-varianttools" class="section level2">
-<h2><span class="header-section-number">5.3</span> Variant calling with <code>VariantTools</code></h2>
-<pre class="r"><code>library(gmapR)
-library(BiocParallel)
-library(batchtools)
-args &lt;- systemArgs(sysma = &quot;param/vartools.param&quot;, mytargets = &quot;targets_gsnap_bam.txt&quot;)
-f &lt;- function(x) {
-    library(VariantTools)
-    library(gmapR)
-    library(systemPipeR)
-    args &lt;- systemArgs(sysma = &quot;param/vartools.param&quot;, mytargets = &quot;targets_gsnap_bam.txt&quot;)
-    gmapGenome &lt;- GmapGenome(systemPipeR::reference(args), directory = &quot;data&quot;, 
-        name = &quot;gmap_tair10chr&quot;, create = FALSE)
-    tally.param &lt;- TallyVariantsParam(gmapGenome, high_base_quality = 23L, 
-        indels = TRUE)
-    bfl &lt;- BamFileList(infile1(args)[x], index = character())
-    var &lt;- callVariants(bfl[[1]], tally.param)
-    sampleNames(var) &lt;- names(bfl)
-    writeVcf(asVCF(var), outfile1(args)[x], index = TRUE)
-}
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-param &lt;- BatchtoolsParam(workers = 4, cluster = &quot;slurm&quot;, template = &quot;batchtools.slurm.tmpl&quot;, 
-    resources = resources)
-d &lt;- bplapply(seq(along = args), f, BPPARAM = param)
-writeTargetsout(x = args, file = &quot;targets_vartools.txt&quot;, overwrite = TRUE)</code></pre>
+<p>The following runs the variant calling with <code>BCFtools</code>. This tool takes <code>BWA</code>
+aligned <code>BAM</code> files, sort, mark duplicates by <code>samtools</code> and finally call variants
+by <code>BCFtools</code>.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/workflow-bcftools&quot;, package = &quot;systemPipeR&quot;)
+targetsPE &lt;- &quot;./results/targetsPE.txt&quot;
+args &lt;- loadWorkflow(targets = targetsPE, wf_file = &quot;workflow_bcftools.cwl&quot;, 
+    input_file = &quot;bcftools.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(SampleName = &quot;_SampleName_&quot;, 
+    BWA_SAM = &quot;_SAM_&quot;))
+cmdlist(args[1])
+output(args[1])
+args &lt;- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args, file = &quot;./results/targets_bcf.txt&quot;, 
+    step = 5, new_col = &quot;FileName1&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
+<p>Variant calling ends here. Downstream analysis starts from the next section.</p>
 </div>
 <div id="inspect-vcf-file" class="section level2">
-<h2><span class="header-section-number">5.4</span> Inspect VCF file</h2>
-<p>VCF files can be imported into R with the <code>readVcf</code> function. Both <code>VCF</code> and <code>VRanges</code> objects provide
-convenient data structure for working with variant data (<em>e.g.</em> SNP quality filtering).</p>
+<h2><span class="header-section-number">5.3</span> Inspect VCF file</h2>
+<p>Scripts of downstream analysis are stored in <code>param/cwl/varseq_downstream</code></p>
+<pre class="r_vcf"><code>dir_path &lt;- system.file(&quot;extdata/cwl/varseq&quot;, package=&quot;systemPipeR&quot;)   </code></pre>
+<p>VCF files can be imported into R with the <code>readVcf</code> function.
+Both <code>VCF</code> and <code>VRanges</code> objects provide convenient data structure for
+working with variant data (<em>e.g.</em> SNP quality filtering).</p>
 <pre class="r"><code>library(VariantAnnotation)
-args &lt;- systemArgs(sysma = &quot;param/filter_gatk.param&quot;, mytargets = &quot;targets_gatk.txt&quot;)
+args &lt;- loadWorkflow(targets = &quot;./results/targets_gatk.txt&quot;, 
+    wf_file = &quot;filter.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;))
 vcf &lt;- readVcf(infile1(args)[1], &quot;A. thaliana&quot;)
 vcf
 vr &lt;- as(vcf, &quot;VRanges&quot;)
@@ -2194,9 +2391,10 @@ the results to a new subsetted VCF file. The filter parameters are passed on to
 the corresponding argument as a character string. The function applies this
 filter to the internally generated <code>VRanges</code> object using the standard
 subsetting syntax for two dimensional objects such as: <code>vr[filter, ]</code>.
-The parameter files (<code>filter_gatk.param</code>, <code>filter_sambcf.param</code> and
-<code>filter_vartools.param</code>), used in the filtering steps, define the paths to
-the input and output VCF files which are stored in new <code>SYSargs</code> instances.</p>
+The parameter files are stored under <code>param/cwl/varseq_downstream</code> as dummy cwl
+files. Please do not run them in <code>cwltool</code>.
+These files are used in the filtering steps, which helps to define the paths to
+the input and output VCF files that are stored in <code>SYSargs2</code> instances.</p>
 <div id="filter-variants-called-by-gatk" class="section level2">
 <h2><span class="header-section-number">6.1</span> Filter variants called by <code>GATK</code></h2>
 <p>The below example filters for variants that are supported by <code>&gt;=x</code>
@@ -2206,14 +2404,20 @@ files generated by GATK. Since the toy data used for this workflow is
 very small, the chosen settings are unreasonabley relaxed. A more
 reasonable filter setting is given in the line below (here commented
 out).</p>
-<pre class="r"><code>library(VariantAnnotation)
+<p>There is already some cohort filtering in GATK step 10. Some additional hard
+filtering is provided here. Apply if you need or skip this step.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/varseq&quot;, package = &quot;systemPipeR&quot;)
+library(VariantAnnotation)
 library(BBmisc)  # Defines suppressAll()
-args &lt;- systemArgs(sysma = &quot;param/filter_gatk.param&quot;, mytargets = &quot;targets_gatk.txt&quot;)[1:4]
-filter &lt;- &quot;totalDepth(vr) &gt;= 2 &amp; (altDepth(vr) / totalDepth(vr) &gt;= 0.8) &amp; rowSums(softFilterMatrix(vr))&gt;=1&quot;
+args &lt;- loadWorkflow(targets = &quot;./results/targets_gatk.txt&quot;, 
+    wf_file = &quot;filter.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
+filter &lt;- &quot;totalDepth(vr) &gt;= 2 &amp; (altDepth(vr) / totalDepth(vr) &gt;= 0.8)&quot;
 # filter &lt;- 'totalDepth(vr) &gt;= 20 &amp; (altDepth(vr) /
-# totalDepth(vr) &gt;= 0.8) &amp; rowSums(softFilterMatrix(vr))==6'
+# totalDepth(vr) &gt;= 0.8)'
 suppressAll(filterVars(args, filter, varcaller = &quot;gatk&quot;, organism = &quot;A. thaliana&quot;))
-writeTargetsout(x = args, file = &quot;targets_gatk_filtered.txt&quot;, 
+writeTargetsout(x = args, file = &quot;./results/targets_filter_gatk.txt&quot;, 
+    step = 1, new_col = &quot;FileName1&quot;, new_col_output_index = 1, 
     overwrite = TRUE)</code></pre>
 </div>
 <div id="filter-variants-called-by-bcftools" class="section level2">
@@ -2221,36 +2425,22 @@ writeTargetsout(x = args, file = &quot;targets_gatk_filtered.txt&quot;,
 <p>The following shows how to filter the VCF files generated by <code>BCFtools</code> using
 similar parameter settings as in the previous filtering of the GATK
 results.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/filter_sambcf.param&quot;, mytargets = &quot;targets_sambcf.txt&quot;)[1:4]
+<pre class="r"><code>args &lt;- loadWorkflow(targets = &quot;./results/targets_bcf.txt&quot;, wf_file = &quot;filter.cwl&quot;, 
+    input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 filter &lt;- &quot;rowSums(vr) &gt;= 2 &amp; (rowSums(vr[,3:4])/rowSums(vr[,1:4]) &gt;= 0.8)&quot;
 # filter &lt;- 'rowSums(vr) &gt;= 20 &amp;
 # (rowSums(vr[,3:4])/rowSums(vr[,1:4]) &gt;= 0.8)'
 suppressAll(filterVars(args, filter, varcaller = &quot;bcftools&quot;, 
     organism = &quot;A. thaliana&quot;))
-writeTargetsout(x = args, file = &quot;targets_sambcf_filtered.txt&quot;, 
-    overwrite = TRUE)</code></pre>
-</div>
-<div id="filter-variants-called-by-varianttools" class="section level2">
-<h2><span class="header-section-number">6.3</span> Filter variants called by <code>VariantTools</code></h2>
-<p>The following shows how to filter the VCF files generated by <code>VariantTools</code> using
-similar parameter settings as in the previous filtering of the GATK
-results.</p>
-<pre class="r"><code>library(VariantAnnotation)
-library(BBmisc)  # Defines suppressAll()
-args &lt;- systemArgs(sysma = &quot;param/filter_vartools.param&quot;, mytargets = &quot;targets_vartools.txt&quot;)[1:4]
-filter &lt;- &quot;(values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;= 2 &amp; (values(vr)$n.read.pos / (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;= 0.8)&quot;
-# filter &lt;- '(values(vr)$n.read.pos.ref +
-# values(vr)$n.read.pos) &gt;= 20 &amp; (values(vr)$n.read.pos /
-# (values(vr)$n.read.pos.ref + values(vr)$n.read.pos) &gt;=
-# 0.8)'
-filterVars(args, filter, varcaller = &quot;vartools&quot;, organism = &quot;A. thaliana&quot;)
-writeTargetsout(x = args, file = &quot;targets_vartools_filtered.txt&quot;, 
+writeTargetsout(x = args, file = &quot;./results/targets_filter_bcf.txt&quot;, 
+    step = 1, new_col = &quot;FileName1&quot;, new_col_output_index = 1, 
     overwrite = TRUE)</code></pre>
 <p>Check filtering outcome for one sample</p>
 <pre class="r"><code>length(as(readVcf(infile1(args)[1], genome = &quot;Ath&quot;), &quot;VRanges&quot;)[, 
     1])
-length(as(readVcf(outpaths(args)[1], genome = &quot;Ath&quot;), &quot;VRanges&quot;)[, 
-    1])</code></pre>
+length(as(readVcf(subsetWF(args, slot = &quot;output&quot;, subset = 1, 
+    index = 1)[1], genome = &quot;Ath&quot;), &quot;VRanges&quot;)[, 1])</code></pre>
 </div>
 </div>
 <div id="annotate-filtered-variants" class="section level1">
@@ -2259,105 +2449,108 @@ length(as(readVcf(outpaths(args)[1], genome = &quot;Ath&quot;), &quot;VRanges&qu
 utilities provided by the <code>VariantAnnotation</code> package. The report for
 each sample is written to a tabular file containing genomic context annotations
 (<em>e.g.</em> coding or non-coding SNPs, amino acid changes, IDs of affected
-genes, etc.) along with confidence statistics for each variant. The parameter
-file <code>annotate_vars.param</code> defines the paths to the input and output
-files which are stored in a new <code>SYSargs</code> instance.</p>
+genes, etc.) along with confidence statistics for each variant. The CWL
+file <code>param/cwl/varseq_downstream/annotate.cwl</code> defines the paths to the input
+and output files which are stored in a <code>SYSargs2</code> instance.</p>
 <div id="basics-of-annotating-variants" class="section level2">
 <h2><span class="header-section-number">7.1</span> Basics of annotating variants</h2>
 <p>Variants overlapping with common annotation features can be identified with <code>locateVariants</code>.</p>
-<pre class="r"><code>library(&quot;GenomicFeatures&quot;)
-args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_gatk_filtered.txt&quot;)
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/varseq&quot;, package = &quot;systemPipeR&quot;)
+library(&quot;GenomicFeatures&quot;)
+args &lt;- loadWorkflow(targets = &quot;./results/targets_filter_gatk.txt&quot;, 
+    wf_file = &quot;annotate.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 txdb &lt;- loadDb(&quot;./data/tair10.sqlite&quot;)
 vcf &lt;- readVcf(infile1(args)[1], &quot;A. thaliana&quot;)
 locateVariants(vcf, txdb, CodingVariants())</code></pre>
 <p>Synonymous/non-synonymous variants of coding sequences are computed by the predictCoding function for variants overlapping with coding regions.</p>
-<pre class="r"><code>fa &lt;- FaFile(systemPipeR::reference(args))
+<pre class="r"><code>fa &lt;- FaFile(normalizePath(file.path(args$yamlinput$data_path$path, 
+    args$yamlinput$ref_name)))
 predictCoding(vcf, txdb, seqSource = fa)</code></pre>
 </div>
-<div id="annotate-filtered-variants-called-by-gatk" class="section level2">
-<h2><span class="header-section-number">7.2</span> Annotate filtered variants called by <code>GATK</code></h2>
+<div id="annotate-filtered-variants-gatk" class="section level2">
+<h2><span class="header-section-number">7.2</span> Annotate filtered variants <code>GATK</code></h2>
 <pre class="r"><code>library(&quot;GenomicFeatures&quot;)
-args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_gatk_filtered.txt&quot;)
+args &lt;- loadWorkflow(targets = &quot;./results/targets_filter_gatk.txt&quot;, 
+    wf_file = &quot;annotate.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 txdb &lt;- loadDb(&quot;./data/tair10.sqlite&quot;)
-fa &lt;- FaFile(systemPipeR::reference(args))
+fa &lt;- FaFile(normalizePath(file.path(args$yamlinput$data_path$path, 
+    args$yamlinput$ref_name)))
 suppressAll(variantReport(args = args, txdb = txdb, fa = fa, 
-    organism = &quot;A. thaliana&quot;))</code></pre>
+    organism = &quot;A. thaliana&quot;))
+writeTargetsout(x = args, file = &quot;./results/targets_report_gatk.txt&quot;, 
+    step = 1, new_col = &quot;FileName1&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
 </div>
-<div id="annotate-filtered-variants-called-by-bcftools" class="section level2">
-<h2><span class="header-section-number">7.3</span> Annotate filtered variants called by <code>BCFtools</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_sambcf_filtered.txt&quot;)
+<div id="annotate-filtered-variants-bcftools" class="section level2">
+<h2><span class="header-section-number">7.3</span> Annotate filtered variants <code>bcftools</code></h2>
+<pre class="r"><code>library(&quot;GenomicFeatures&quot;)
+args &lt;- loadWorkflow(targets = &quot;./results/targets_filter_bcf.txt&quot;, 
+    wf_file = &quot;annotate.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 txdb &lt;- loadDb(&quot;./data/tair10.sqlite&quot;)
-fa &lt;- FaFile(systemPipeR::reference(args))
+fa &lt;- FaFile(normalizePath(file.path(args$yamlinput$data_path$path, 
+    args$yamlinput$ref_name)))
 suppressAll(variantReport(args = args, txdb = txdb, fa = fa, 
-    organism = &quot;A. thaliana&quot;))</code></pre>
-</div>
-<div id="annotate-filtered-variants-called-by-varianttools" class="section level2">
-<h2><span class="header-section-number">7.4</span> Annotate filtered variants called by <code>VariantTools</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_vartools_filtered.txt&quot;)
-txdb &lt;- loadDb(&quot;./data/tair10.sqlite&quot;)
-fa &lt;- FaFile(systemPipeR::reference(args))
-suppressAll(variantReport(args = args, txdb = txdb, fa = fa, 
-    organism = &quot;A. thaliana&quot;))</code></pre>
+    organism = &quot;A. thaliana&quot;))
+writeTargetsout(x = args, file = &quot;./results/targets_report_bcf.txt&quot;, 
+    step = 1, new_col = &quot;FileName1&quot;, new_col_output_index = 1, 
+    overwrite = TRUE)</code></pre>
 <p>View annotation result for single sample</p>
-<pre class="r"><code>read.delim(outpaths(args)[1])[38:40, ]</code></pre>
+<pre class="r"><code>read.delim(output(args)[[1]][[1]])[38:40, ]</code></pre>
 </div>
 </div>
 <div id="combine-annotation-results-among-samples" class="section level1">
 <h1><span class="header-section-number">8</span> Combine annotation results among samples</h1>
 <p>To simplify comparisons among samples, the <code>combineVarReports</code>
 function combines all variant annotation reports referenced in a
-<code>SYSargs</code> instance (here <code>args</code>). At the same time the function
+<code>SYSargs2</code> instance (here <code>args</code>). At the same time the function
 allows to consider only certain feature types of interest. For instance, the
 below setting <code>filtercol=c(Consequence=&quot;nonsynonymous&quot;)</code> will include
 only nonsysynonymous variances listed in the <code>Consequence</code> column of
 the annotation reports. To omit filtering, one can use the setting
 <code>filtercol=&quot;All&quot;</code>.</p>
-<div id="combine-results-from-gatk" class="section level2">
-<h2><span class="header-section-number">8.1</span> Combine results from <code>GATK</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_gatk_filtered.txt&quot;)
+<div id="combine-results-gatk" class="section level2">
+<h2><span class="header-section-number">8.1</span> Combine results <code>GATK</code></h2>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/varseq&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWorkflow(targets = &quot;results/targets_report_gatk.txt&quot;, 
+    wf_file = &quot;combine.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 combineDF &lt;- combineVarReports(args, filtercol = c(Consequence = &quot;nonsynonymous&quot;))
 write.table(combineDF, &quot;./results/combineDF_nonsyn_gatk.xls&quot;, 
     quote = FALSE, row.names = FALSE, sep = &quot;\t&quot;)</code></pre>
 </div>
-<div id="combine-results-from-bcftools" class="section level2">
-<h2><span class="header-section-number">8.2</span> Combine results from <code>BCFtools</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_sambcf_filtered.txt&quot;)
+<div id="combine-results-bcftools" class="section level2">
+<h2><span class="header-section-number">8.2</span> Combine results <code>bcftools</code></h2>
+<pre class="r"><code>args &lt;- loadWorkflow(targets = &quot;results/targets_report_bcf.txt&quot;, 
+    wf_file = &quot;combine.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 combineDF &lt;- combineVarReports(args, filtercol = c(Consequence = &quot;nonsynonymous&quot;))
-write.table(combineDF, &quot;./results/combineDF_nonsyn_sambcf.xls&quot;, 
+write.table(combineDF, &quot;./results/combineDF_nonsyn_bcf.xls&quot;, 
     quote = FALSE, row.names = FALSE, sep = &quot;\t&quot;)</code></pre>
-</div>
-<div id="combine-results-from-varianttools" class="section level2">
-<h2><span class="header-section-number">8.3</span> Combine results from <code>VariantTools</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_vartools_filtered.txt&quot;)
-combineDF &lt;- combineVarReports(args, filtercol = c(Consequence = &quot;nonsynonymous&quot;))
-write.table(combineDF, &quot;./results/combineDF_nonsyn_vartools.xls&quot;, 
-    quote = FALSE, row.names = FALSE, sep = &quot;\t&quot;)
-combineDF[2:4, ]</code></pre>
 </div>
 </div>
 <div id="summary-statistics-of-variants" class="section level1">
 <h1><span class="header-section-number">9</span> Summary statistics of variants</h1>
 <p>The <code>varSummary</code> function counts the number of variants for each feature type
 included in the anntation reports.</p>
-<div id="summary-for-gatk" class="section level2">
-<h2><span class="header-section-number">9.1</span> Summary for <code>GATK</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_gatk_filtered.txt&quot;)
+<div id="summary-of-variants-gatk" class="section level2">
+<h2><span class="header-section-number">9.1</span> Summary of variants <code>GATK</code></h2>
+<pre class="r"><code>args &lt;- loadWorkflow(targets = &quot;./results/targets_report_gatk.txt&quot;, 
+    wf_file = &quot;combine.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 varSummary(args)
 write.table(varSummary(args), &quot;./results/variantStats_gatk.xls&quot;, 
     quote = FALSE, col.names = NA, sep = &quot;\t&quot;)</code></pre>
 </div>
-<div id="summary-for-bcftools" class="section level2">
-<h2><span class="header-section-number">9.2</span> Summary for <code>BCFtools</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_sambcf_filtered.txt&quot;)
+<div id="summary-of-variants-bcf" class="section level2">
+<h2><span class="header-section-number">9.2</span> Summary of variants <code>bcf</code></h2>
+<pre class="r"><code>args &lt;- loadWorkflow(targets = &quot;./results/targets_report_bcf.txt&quot;, 
+    wf_file = &quot;combine.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
 varSummary(args)
-write.table(varSummary(args), &quot;./results/variantStats_sambcf.xls&quot;, 
-    quote = FALSE, col.names = NA, sep = &quot;\t&quot;)</code></pre>
-</div>
-<div id="summary-for-varianttools" class="section level2">
-<h2><span class="header-section-number">9.3</span> Summary for <code>VariantTools</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_vartools_filtered.txt&quot;)
-varSummary(args)
-write.table(varSummary(args), &quot;./results/variantStats_vartools.xls&quot;, 
+write.table(varSummary(args), &quot;./results/variantStats_bcf.xls&quot;, 
     quote = FALSE, col.names = NA, sep = &quot;\t&quot;)</code></pre>
 </div>
 </div>
@@ -2367,19 +2560,28 @@ write.table(varSummary(args), &quot;./results/variantStats_vartools.xls&quot;,
 identify common and unique variants reported for different samples
 and/or variant callers. The below generates a 4-way venn diagram
 comparing four sampes for each of the two variant callers.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_gatk_filtered.txt&quot;)
-varlist &lt;- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/varseq&quot;, package = &quot;systemPipeR&quot;)
+## gatk
+args &lt;- loadWorkflow(targets = &quot;results/targets_report_gatk.txt&quot;, 
+    wf_file = &quot;combine.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
+varlist &lt;- sapply(names(subsetWF(args[1:2], slot = &quot;output&quot;, 
+    subset = 1, index = 1)), function(x) as.character(read.delim(subsetWF(args[1:2], 
+    slot = &quot;output&quot;, subset = 1, index = 1)[x])$VARID))
 vennset_gatk &lt;- overLapper(varlist, type = &quot;vennsets&quot;)
-args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_sambcf_filtered.txt&quot;)
-varlist &lt;- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
+
+## bcf
+args &lt;- loadWorkflow(targets = &quot;./results/targets_report_bcf.txt&quot;, 
+    wf_file = &quot;combine.cwl&quot;, input_file = &quot;varseq.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FILE1_&quot;, SampleName = &quot;_SampleName_&quot;))
+varlist &lt;- sapply(names(subsetWF(args[1:2], slot = &quot;output&quot;, 
+    subset = 1, index = 1)), function(x) as.character(read.delim(subsetWF(args[1:2], 
+    slot = &quot;output&quot;, subset = 1, index = 1)[x])$VARID))
 vennset_bcf &lt;- overLapper(varlist, type = &quot;vennsets&quot;)
-args &lt;- systemArgs(sysma = &quot;param/annotate_vars.param&quot;, mytargets = &quot;targets_vartools_filtered.txt&quot;)
-varlist &lt;- sapply(names(outpaths(args))[1:4], function(x) as.character(read.delim(outpaths(args)[x])$VARID))
-vennset_vartools &lt;- overLapper(varlist, type = &quot;vennsets&quot;)
+
 pdf(&quot;./results/vennplot_var.pdf&quot;)
-vennPlot(list(vennset_gatk, vennset_bcf, vennset_vartools), mymain = &quot;&quot;, 
-    mysub = &quot;GATK: red; BCFtools: blue; VariantTools: green&quot;, 
-    colmode = 2, ccol = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;))
+vennPlot(list(vennset_gatk, vennset_bcf), mymain = &quot;&quot;, mysub = &quot;GATK: red; BCFtools: blue&quot;, 
+    colmode = 2, ccol = c(&quot;red&quot;, &quot;blue&quot;))
 dev.off()</code></pre>
 <img src="data:image/png;base64,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" />
 <div align="center">
@@ -2390,20 +2592,27 @@ Figure 2: Venn Diagram for 4 samples from GATK and BCFtools
 <div id="plot-variants-programmatically" class="section level1">
 <h1><span class="header-section-number">11</span> Plot variants programmatically</h1>
 <p>The following plots a selected variant with <code>ggbio</code>.</p>
+<p>In this example, the input <code>BAM</code> file is from the <code>GATK</code> step 5, analysis ready bam.
+You can use other aligned <code>BAMs</code> as well, but make sure they are indexed. The <code>VCF</code>
+file is taken from <code>Inspect VCF file</code> section or you can load your own vcf.</p>
 <pre class="r"><code>library(ggbio)
 mychr &lt;- &quot;ChrC&quot;
 mystart &lt;- 11000
 myend &lt;- 13000
-args &lt;- systemArgs(sysma = &quot;param/bwa.param&quot;, mytargets = &quot;targets.txt&quot;)
-ga &lt;- readGAlignments(outpaths(args)[1], use.names = TRUE, param = ScanBamParam(which = GRanges(mychr, 
-    IRanges(mystart, myend))))
+args &lt;- loadWorkflow(targets = &quot;results/targets_gatk.txt&quot;, wf_file = &quot;combine.cwl&quot;, 
+    input_file = &quot;varseq.yml&quot;, dir_path = &quot;param/cwl/varseq_downstream/&quot;)
+args &lt;- renderWF(args, inputvars = c(GATK_FIXED = &quot;_FILE1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+ga &lt;- readGAlignments(subsetWF(args, slot = &quot;input&quot;, subset = 1)[1], 
+    use.names = TRUE, param = ScanBamParam(which = GRanges(mychr, 
+        IRanges(mystart, myend))))
 p1 &lt;- autoplot(ga, geom = &quot;rect&quot;)
 p2 &lt;- autoplot(ga, geom = &quot;line&quot;, stat = &quot;coverage&quot;)
 p3 &lt;- autoplot(vcf[seqnames(vcf) == mychr], type = &quot;fixed&quot;) + 
     xlim(mystart, myend) + theme(legend.position = &quot;none&quot;, axis.text.y = element_blank(), 
     axis.ticks.y = element_blank())
-p4 &lt;- autoplot(txdb, which = GRanges(mychr, IRanges(mystart, 
-    myend)), names.expr = &quot;gene_id&quot;)
+p4 &lt;- autoplot(loadDb(&quot;./data/tair10.sqlite&quot;), which = GRanges(mychr, 
+    IRanges(mystart, myend)), names.expr = &quot;gene_id&quot;)
 png(&quot;./results/plot_variant.png&quot;)
 tracks(Reads = p1, Coverage = p2, Variant = p3, Transcripts = p4, 
     heights = c(0.3, 0.2, 0.1, 0.35)) + ylab(&quot;&quot;)
@@ -2417,13 +2626,13 @@ Figure 3: Plot variants with programmatically.
 <div id="version-information" class="section level1">
 <h1><span class="header-section-number">12</span> Version Information</h1>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 3.5.2 (2018-12-20)
+<pre><code>## R version 3.6.1 (2019-07-05)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 18.04.1 LTS
+## Running under: Pop!_OS 19.04
 ## 
 ## Matrix products: default
-## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
-## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.8.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.8.0
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -2438,63 +2647,65 @@ Figure 3: Plot variants with programmatically.
 ## [6] utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] batchtools_0.9.11           data.table_1.12.0          
-##  [3] ape_5.2                     ggplot2_3.1.0              
-##  [5] systemPipeR_1.17.5          ShortRead_1.40.0           
-##  [7] GenomicAlignments_1.18.0    SummarizedExperiment_1.12.0
-##  [9] DelayedArray_0.8.0          matrixStats_0.54.0         
-## [11] Biobase_2.42.0              BiocParallel_1.16.2        
-## [13] Rsamtools_1.34.0            Biostrings_2.50.1          
-## [15] XVector_0.22.0              GenomicRanges_1.34.0       
-## [17] GenomeInfoDb_1.18.1         IRanges_2.16.0             
-## [19] S4Vectors_0.20.1            BiocGenerics_0.28.0        
-## [21] BiocStyle_2.10.0           
+##  [1] systemPipeR_1.21.0          ShortRead_1.44.0           
+##  [3] GenomicAlignments_1.22.1    SummarizedExperiment_1.16.0
+##  [5] DelayedArray_0.12.0         matrixStats_0.55.0         
+##  [7] Biobase_2.46.0              BiocParallel_1.20.0        
+##  [9] Rsamtools_2.2.1             Biostrings_2.54.0          
+## [11] XVector_0.26.0              GenomicRanges_1.38.0       
+## [13] GenomeInfoDb_1.22.0         IRanges_2.20.1             
+## [15] S4Vectors_0.24.0            BiocGenerics_0.32.0        
+## [17] BiocStyle_2.14.0           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] nlme_3.1-137           Category_2.48.0       
-##  [3] bitops_1.0-6           bit64_0.9-7           
-##  [5] RColorBrewer_1.1-2     progress_1.2.0        
-##  [7] httr_1.4.0             rprojroot_1.3-2       
-##  [9] Rgraphviz_2.26.0       tools_3.5.2           
-## [11] backports_1.1.3        R6_2.3.0              
-## [13] DBI_1.0.0              lazyeval_0.2.1        
-## [15] colorspace_1.4-0       withr_2.1.2           
-## [17] tidyselect_0.2.5       prettyunits_1.0.2     
-## [19] bit_1.1-14             compiler_3.5.2        
-## [21] graph_1.60.0           formatR_1.5           
-## [23] rtracklayer_1.42.1     bookdown_0.7          
-## [25] checkmate_1.9.1        scales_1.0.0          
-## [27] genefilter_1.64.0      RBGL_1.58.1           
-## [29] rappdirs_0.3.1         stringr_1.3.1         
-## [31] digest_0.6.18          rmarkdown_1.10        
-## [33] AnnotationForge_1.24.0 pkgconfig_2.0.2       
-## [35] htmltools_0.3.6        limma_3.38.2          
-## [37] rlang_0.3.1            RSQLite_2.1.1         
-## [39] bindr_0.1.1            GOstats_2.48.0        
-## [41] hwriter_1.3.2          dplyr_0.7.8           
-## [43] RCurl_1.95-4.11        magrittr_1.5          
-## [45] GO.db_3.7.0            GenomeInfoDbData_1.2.0
-## [47] Matrix_1.2-15          Rcpp_1.0.0            
-## [49] munsell_0.5.0          stringi_1.2.4         
-## [51] yaml_2.2.0             edgeR_3.24.0          
-## [53] zlibbioc_1.28.0        plyr_1.8.4            
-## [55] grid_3.5.2             blob_1.1.1            
-## [57] crayon_1.3.4           lattice_0.20-38       
-## [59] splines_3.5.2          GenomicFeatures_1.34.1
-## [61] annotate_1.60.0        hms_0.4.2             
-## [63] locfit_1.5-9.1         knitr_1.21            
-## [65] pillar_1.3.1           rjson_0.2.20          
-## [67] base64url_1.4          codetools_0.2-16      
-## [69] biomaRt_2.38.0         XML_3.98-1.16         
-## [71] glue_1.3.0             evaluate_0.12         
-## [73] latticeExtra_0.6-28    BiocManager_1.30.4    
-## [75] gtable_0.2.0           purrr_0.2.5           
-## [77] assertthat_0.2.0       xfun_0.4              
-## [79] xtable_1.8-3           survival_2.43-3       
-## [81] pheatmap_1.0.12        tibble_2.0.1          
-## [83] AnnotationDbi_1.44.0   memoise_1.1.0         
-## [85] bindrcpp_0.2.2         brew_1.0-6            
-## [87] GSEABase_1.44.0</code></pre>
+##  [1] Category_2.52.1          bitops_1.0-6            
+##  [3] bit64_0.9-7              RColorBrewer_1.1-2      
+##  [5] progress_1.2.2           httr_1.4.1              
+##  [7] Rgraphviz_2.30.0         tools_3.6.1             
+##  [9] backports_1.1.5          R6_2.4.1                
+## [11] DBI_1.0.0                lazyeval_0.2.2          
+## [13] colorspace_1.4-1         withr_2.1.2             
+## [15] tidyselect_0.2.5         prettyunits_1.0.2       
+## [17] bit_1.1-14               curl_4.2                
+## [19] compiler_3.6.1           graph_1.64.0            
+## [21] formatR_1.7              rtracklayer_1.46.0      
+## [23] bookdown_0.15            checkmate_1.9.4         
+## [25] scales_1.1.0             genefilter_1.68.0       
+## [27] RBGL_1.62.1              askpass_1.1             
+## [29] rappdirs_0.3.1           stringr_1.4.0           
+## [31] digest_0.6.22            rmarkdown_1.17          
+## [33] AnnotationForge_1.28.0   pkgconfig_2.0.3         
+## [35] htmltools_0.4.0          BSgenome_1.54.0         
+## [37] dbplyr_1.4.2             limma_3.42.0            
+## [39] rlang_0.4.1              RSQLite_2.1.2           
+## [41] GOstats_2.52.0           hwriter_1.3.2           
+## [43] dplyr_0.8.3              VariantAnnotation_1.32.0
+## [45] RCurl_1.95-4.12          magrittr_1.5            
+## [47] GO.db_3.10.0             GenomeInfoDbData_1.2.2  
+## [49] Matrix_1.2-17            Rcpp_1.0.3              
+## [51] munsell_0.5.0            lifecycle_0.1.0         
+## [53] stringi_1.4.3            yaml_2.2.0              
+## [55] edgeR_3.28.0             zlibbioc_1.32.0         
+## [57] BiocFileCache_1.10.2     grid_3.6.1              
+## [59] blob_1.2.0               crayon_1.3.4            
+## [61] lattice_0.20-38          splines_3.6.1           
+## [63] GenomicFeatures_1.38.0   annotate_1.64.0         
+## [65] hms_0.5.2                batchtools_0.9.11       
+## [67] locfit_1.5-9.1           zeallot_0.1.0           
+## [69] knitr_1.26               pillar_1.4.2            
+## [71] rjson_0.2.20             base64url_1.4           
+## [73] codetools_0.2-16         biomaRt_2.42.0          
+## [75] XML_3.98-1.20            glue_1.3.1              
+## [77] evaluate_0.14            latticeExtra_0.6-28     
+## [79] data.table_1.12.6        BiocManager_1.30.10     
+## [81] vctrs_0.2.0              gtable_0.3.0            
+## [83] openssl_1.4.1            purrr_0.3.3             
+## [85] assertthat_0.2.1         ggplot2_3.2.1           
+## [87] xfun_0.11                xtable_1.8-4            
+## [89] survival_2.44-1.1        pheatmap_1.0.12         
+## [91] tibble_2.1.3             AnnotationDbi_1.48.0    
+## [93] memoise_1.1.0            brew_1.0-6              
+## [95] GSEABase_1.48.0</code></pre>
 </div>
 <div id="funding" class="section level1">
 <h1><span class="header-section-number">13</span> Funding</h1>
@@ -2519,9 +2730,6 @@ Health (NIH) and the National Science Foundation (NSF).</p>
 <div id="ref-McKenna2010-ql">
 <p>McKenna, Aaron, Matthew Hanna, Eric Banks, Andrey Sivachenko, Kristian Cibulskis, Andrew Kernytsky, Kiran Garimella, et al. 2010. “The Genome Analysis Toolkit: A MapReduce Framework for Analyzing Next-Generation DNA Sequencing Data.” <em>Genome Res.</em> 20 (9): 1297–1303. <a href="https://doi.org/10.1101/gr.107524.110" class="uri">https://doi.org/10.1101/gr.107524.110</a>.</p>
 </div>
-<div id="ref-Wu2010-iq">
-<p>Wu, T D, and S Nacu. 2010. “Fast and SNP-tolerant Detection of Complex Variants and Splicing in Short Reads.” <em>Bioinformatics</em> 26 (7): 873–81. <a href="https://doi.org/10.1093/bioinformatics/btq057" class="uri">https://doi.org/10.1093/bioinformatics/btq057</a>.</p>
-</div>
 </div>
 </div>
 
@@ -2543,6 +2751,54 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <script type="text/x-mathjax-config">

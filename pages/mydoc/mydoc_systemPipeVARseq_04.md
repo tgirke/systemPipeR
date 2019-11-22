@@ -1,6 +1,6 @@
 ---
 title: 4. Alignments
-last_updated: Fri Jun 21 16:33:06 2019
+last_updated: Thu Nov 21 15:58:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_04.html
 ---
@@ -10,78 +10,95 @@ permalink: mydoc_systemPipeVARseq_04.html
 The NGS reads of this project are aligned against the reference genome
 sequence using the highly variant tolerant short read aligner `BWA-MEM`
 (Li , 2013; Li et al., 2009). The parameter settings of the aligner are
-defined in the `bwa.param` file.
+defined in the `gatk/bwa-pe.cwl`
+
+DNA sequencing nowadays are usually solid for base quality and therefore, 
+trimming is usually not needed in most cases. Also, variant calling tools like 
+`GATK` will automatically not consider low quality bases. Therefore, this test 
+code uses untrimmed fastqs. However, it is best to test with `FASTQ quality report` 
+function provided above to verify on your real data first.
+
+### Build index and dictionary files for BWA and GATK
+
+The following object `dir_path` is the folder where all `BWA` and `GATK` param files are located.
 
 
 ```r
-args <- systemArgs(sysma = "param/bwa.param", mytargets = "targets.txt")
-sysargs(args)[1]  # Command-line parameters for first FASTQ file
+dir_path <- system.file("extdata/cwl/gatk", package = "systemPipeR")
 ```
 
-Runs the alignments sequentially (_e.g._ on a single machine)
+Build the index and dictionary files for BWA and GATK to run. 
 
 
 ```r
-moduleload(modules(args))
-system("bwa index -a bwtsw ./data/tair10.fasta")
-bampaths <- runCommandline(args = args)
-writeTargetsout(x = args, file = "targets_bam.txt", overwrite = TRUE)
+## Index for BWA
+args <- loadWorkflow(targets = NULL, wf_file = "bwa-index.cwl", 
+    input_file = "gatk.yaml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args)  # shows the command
+output(args)  # shows the expected output files
+# Run single Machine
+runCommandline(args, make_bam = FALSE)
+
+## Index needed for gatk tools
+args <- loadWorkflow(wf_file = "fasta_dict.cwl", input_file = "gatk.yaml", 
+    dir_path = dir_path)
+args <- renderWF(args)
+args <- runCommandline(args, make_bam = FALSE)
+
+## Index
+args <- loadWorkflow(wf_file = "fasta_faidx.cwl", input_file = "gatk.yaml", 
+    dir_path = dir_path)
+args <- renderWF(args)
+args <- runCommandline(args, make_bam = FALSE)
 ```
 
-Alternatively, the alignment jobs can be submitted to a compute cluster,
-here using 72 CPU cores (18 `qsub` processes each with 4 CPU cores).
+### Run the read mapping
 
 
 ```r
-moduleload(modules(args))
-system("bwa index -a bwtsw ./data/tair10.fasta")
-resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
-    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
-getStatus(reg = reg)
-waitForJobs(reg = reg)
-writeTargetsout(x = args, file = "targets_bam.txt", overwrite = TRUE)
+targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+args <- loadWorkflow(targets = targetsPE, wf_file = "bwa-pe.cwl", 
+    input_file = "gatk.yaml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
+    FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args)[1:2]
+output(args)[1:2]
 ```
 
-Check whether all BAM files have been created
+Runs the alignments sequentially (_e.g._ on a single machine) by `runCommandline` function.
 
 
 ```r
-file.exists(outpaths(args))
+args <- runCommandline(args = args, make_bam = FALSE)
+writeTargetsout(x = args[1:2], file = "./results/targetsPE.txt", 
+    step = 1, new_col = "BWA_SAM", new_col_output_index = 1, 
+    overwrite = TRUE)
 ```
 
-## Read mapping with `gsnap` 
-
-An alternative variant tolerant aligner is `gsnap` from the `gmapR` package
-(Wu et al., 2010). The following code shows how to run this aligner on
-multiple nodes of a computer cluster that uses Torque as scheduler.
+Alternatively, the alignment jobs can be submitted to a compute cluster. Here is the 
+example to run cluster jobs by `clusterRun` on a `slurm` based system. 4 cpus for 
+each task for 18 samples, totally 72 cpus.
 
 
 ```r
-library(gmapR)
-library(BiocParallel)
 library(batchtools)
-args <- systemArgs(sysma = "param/gsnap.param", mytargets = "targetsPE.txt")
-gmapGenome <- GmapGenome(systemPipeR::reference(args), directory = "data", 
-    name = "gmap_tair10chr", create = TRUE)
-f <- function(x) {
-    library(gmapR)
-    library(systemPipeR)
-    args <- systemArgs(sysma = "param/gsnap.param", mytargets = "targetsPE.txt")
-    gmapGenome <- GmapGenome(reference(args), directory = "data", 
-        name = "gmap_tair10chr", create = FALSE)
-    p <- GsnapParam(genome = gmapGenome, unique_only = TRUE, 
-        molecule = "DNA", max_mismatches = 3)
-    o <- gsnap(input_a = infile1(args)[x], input_b = infile2(args)[x], 
-        params = p, output = outfile1(args)[x])
-}
-resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", 
-    resources = resources)
-d <- bplapply(seq(along = args), f, BPPARAM = param)
-writeTargetsout(x = args, file = "targets_gsnap_bam.txt", overwrite = TRUE)
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
+    dir = FALSE, make_bam = FALSE), conffile = ".batchtools.conf.R", 
+    template = "batchtools.slurm.tmpl", Njobs = 18, runid = "01", 
+    resourceList = resources)
+getStatus(reg = reg)
+writeTargetsout(x = args, file = "./results/targetsPE.txt", step = 1, 
+    new_col = "BWA_SAM", new_col_output_index = 1, overwrite = TRUE)
+```
+
+Check whether all BAM files have been created.
+
+
+```r
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+file.exists(outpaths)
 ```
 
 ## Read and alignment stats
@@ -104,8 +121,8 @@ with a path specified under `urlfile`, here `IGVurl.txt`.
 
 
 ```r
-symLink2bam(sysargs = args, htmldir = c("~/.html/", "projects/gen242/"), 
-    urlbase = "http://biocluster.ucr.edu/~tgirke/", urlfile = "./results/IGVurl.txt")
+symLink2bam(sysargs = args, htmldir = c("~/.html/", "somedir/"), 
+    urlbase = "http://cluster.hpcc.ucr.edu/~tgirke/", urlfile = "IGVurl.txt")
 ```
 
 <br><br><center><a href="mydoc_systemPipeVARseq_03.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

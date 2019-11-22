@@ -1,6 +1,6 @@
 ---
 title: 13. Funding
-last_updated: Fri Jun 21 16:33:06 2019
+last_updated: Thu Nov 21 15:58:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_13.html
 ---

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.6.7)  21 JUN 2019 16:32
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.6.7)  21 NOV 2019 15:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -396,7 +396,12 @@ Package grffile Info: Option `multidot' is set to `true'.
 Package grffile Info: Option `extendedchars' is set to `false'.
 Package grffile Info: Option `space' is set to `true'.
 Package grffile Info: \Gin@ii of package `graphicx' fixed on input line 494.
-) (/usr/share/texlive/texmf-dist/tex/latex/titling/titling.sty
+) (/usr/share/texlive/texmf-dist/tex/latex/parskip/parskip.sty
+Package: parskip 2019-01-16 v2.0c non-zero parskip adjustments
+(/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2018/08/19 v2.5f e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count111
+)) (/usr/share/texlive/texmf-dist/tex/latex/titling/titling.sty
 Package: titling 2009/09/04 v2.1d maketitle typesetting
 \thanksmarkwidth=\skip51
 \thanksmargin=\skip52
@@ -450,7 +455,6 @@ Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
 Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
 Package: xcolor-patch 2016/05/16 xcolor patch
 Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
-Package atveryend Info: \enddocument detected (standard20110627).
 Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
 Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
 Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
@@ -458,14 +462,14 @@ Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
 Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
 )
 \@linkdim=\dimen129
-\Hy@linkcounter=\count111
-\Hy@pagecounter=\count112
+\Hy@linkcounter=\count112
+\Hy@pagecounter=\count113
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2018/11/30 v6.88e Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 )
-\Hy@SavedSpaceFactor=\count113
+\Hy@SavedSpaceFactor=\count114
 (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/hyperref.cfg
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
 )
@@ -487,14 +491,14 @@ Package hyperref Info: Plain pages OFF on input line 4534.
 Package hyperref Info: Backreferencing OFF on input line 4539.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4772.
-\c@Hy@tempcnt=\count114
+\c@Hy@tempcnt=\count115
 (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5125.
 \XeTeXLinkMargin=\dimen130
-\Fld@menulength=\count115
+\Fld@menulength=\count116
 \Field@Width=\dimen131
 \Fld@charsize=\dimen132
 Package hyperref Info: Hyper figures OFF on input line 6380.
@@ -506,14 +510,14 @@ Package hyperref Info: Link coloring with OCG OFF on input line 6405.
 Package hyperref Info: PDF/A mode OFF on input line 6410.
 LaTeX Info: Redefining \ref on input line 6450.
 LaTeX Info: Redefining \pageref on input line 6454.
-\Hy@abspage=\count116
-\c@Item=\count117
+\Hy@abspage=\count117
+\c@Item=\count118
 )
 Package hyperref Info: Driver: hpdftex.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
 File: hpdftex.def 2018/11/30 v6.88e Hyperref driver for pdfTeX
-\Fld@listcount=\count118
-\c@bookmark@seq@number=\count119
+\Fld@listcount=\count119
+\c@bookmark@seq@number=\count120
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
 Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
@@ -522,9 +526,9 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 \Hy@SectionHShift=\skip54
 ) (/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2018/04/16 v5.8 Page Geometry
-\Gm@cnth=\count120
-\Gm@cntv=\count121
-\c@Gm@tempcnt=\count122
+\Gm@cnth=\count121
+\Gm@cntv=\count122
+\c@Gm@tempcnt=\count123
 \Gm@bindingoffset=\dimen133
 \Gm@wd@mp=\dimen134
 \Gm@odd@mp=\dimen135
@@ -555,10 +559,7 @@ Package: fontenc 2018/08/11 v2.0j Standard LaTeX package
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.def
 File: t1enc.def 2018/08/11 v2.0j Standard LaTeX file
 LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
-)) (/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
-Package: etoolbox 2018/08/19 v2.5f e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count123
-) (/usr/share/texlive/texmf-dist/tex/latex/titlesec/titlesec.sty
+)) (/usr/share/texlive/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2016/03/21 v2.10.2 Sectioning titles
 \ttl@box=\box33
 \beforetitleunit=\skip64
@@ -605,8 +606,6 @@ Package: enumitem 2019/02/04 v3.8 Customized lists
 \enit@inbox=\box34
 \enit@count@id=\count124
 \enitdp@description=\count125
-) (/usr/share/texlive/texmf-dist/tex/latex/parskip/parskip.sty
-Package: parskip 2019-01-16 v2.0c non-zero parskip adjustments
 ) (/usr/share/texlive/texmf-dist/tex/latex/nowidow/nowidow.sty
 Package: nowidow 2011/09/20 1.0 Easily prevent widows and orphans
 Package: nowidow 
@@ -765,33 +764,33 @@ LaTeX Warning: Unused global option(s):
 (./systemPipeChIPseq.aux)
 \openout1 = `systemPipeChIPseq.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 140.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 140.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 136.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 136.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 140.
-LaTeX Font Info:    ... okay on input line 140.
-LaTeX Font Info:    Try loading font information for T1+lmss on input line 140.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Try loading font information for T1+lmss on input line 136.
 
 (/usr/share/texmf/tex/latex/lm/t1lmss.fd
 File: t1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Info: Redefining \microtypecontext on input line 140.
+LaTeX Info: Redefining \microtypecontext on input line 136.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
@@ -834,7 +833,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box39
-Package hyperref Info: Link coloring ON on input line 140.
+Package hyperref Info: Link coloring ON on input line 136.
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
@@ -842,9 +841,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count151
 )
-LaTeX Info: Redefining \ref on input line 140.
-LaTeX Info: Redefining \pageref on input line 140.
-LaTeX Info: Redefining \nameref on input line 140.
+LaTeX Info: Redefining \ref on input line 136.
+LaTeX Info: Redefining \pageref on input line 136.
+LaTeX Info: Redefining \nameref on input line 136.
 (./systemPipeChIPseq.out) (./systemPipeChIPseq.out)
 \@outlinefile=\write4
 \openout4 = `systemPipeChIPseq.out'.
@@ -885,20 +884,20 @@ LaTeX Info: Redefining \nameref on input line 140.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 ABD: EverySelectfont initializing macros
-LaTeX Info: Redefining \selectfont on input line 140.
+LaTeX Info: Redefining \selectfont on input line 136.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Try loading font information for T1+phv on input line 141.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 137.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <20.74> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 141.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 137.
 LaTeX Font Info:    Font shape `T1/lmss/bx/it' in size <14.4> not available
-(Font)              Font shape `T1/lmss/bx/sl' tried instead on input line 141.
+(Font)              Font shape `T1/lmss/bx/sl' tried instead on input line 137.
 
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 143.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 139.
 (./systemPipeChIPseq.toc
 LaTeX Font Info:    Try loading font information for T1+fvm on input line 9.
 (/usr/share/texlive/texmf-dist/tex/latex/bera/t1fvm.fd
@@ -914,108 +913,108 @@ LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
 
 [2]
 LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <10> not available
-(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 159.
-LaTeX Font Info:    Try loading font information for TS1+fvm on input line 191.
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 155.
+LaTeX Font Info:    Try loading font information for TS1+fvm on input line 187.
 
 (/usr/share/texlive/texmf-dist/tex/latex/bera/ts1fvm.fd
 File: ts1fvm.fd 2004/09/07 scalable font definitions for TS1/fvm.
 )
 LaTeX Font Info:    Font shape `TS1/fvm/m/n' will be
-(Font)              scaled to size 7.98004pt on input line 191.
+(Font)              scaled to size 7.98004pt on input line 187.
 [3]
 LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <10> not available
-(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 218.
+(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 214.
 LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
-(Font)              scaled to size 7.98004pt on input line 218.
-LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 11.49124pt on input line 262.
-[4]
-<fastqReport.png, id=257, 5203.44pt x 1300.86pt>
-File: fastqReport.png Graphic file (type png)
-<use fastqReport.png>
-Package pdftex.def Info: fastqReport.png  used on input line 340.
-(pdftex.def)             Requested size: 384.04813pt x 96.01202pt.
-[5 <./fastqReport.png>] [6] [7] [8]
+(Font)              scaled to size 7.98004pt on input line 214.
 LaTeX Font Info:    Font shape `TS1/fvm/m/it' in size <10> not available
-(Font)              Font shape `TS1/fvm/m/sl' tried instead on input line 586.
+(Font)              Font shape `TS1/fvm/m/sl' tried instead on input line 247.
 LaTeX Font Info:    Font shape `TS1/fvm/m/sl' will be
-(Font)              scaled to size 7.98004pt on input line 586.
+(Font)              scaled to size 7.98004pt on input line 247.
 
-Overfull \vbox (0.67703pt too high) detected at line 624
+Underfull \vbox (badness 2096) detected at line 318
  []
 
-[9] [10] [11]
-<seqlogo.png, id=314, 505.89pt x 505.89pt>
-File: seqlogo.png Graphic file (type png)
-<use seqlogo.png>
-Package pdftex.def Info: seqlogo.png  used on input line 759.
+[4]
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 11.49124pt on input line 333.
+[5] [6]
+<results/fastqReport.png, id=265, 5203.44pt x 1300.86pt>
+File: results/fastqReport.png Graphic file (type png)
+<use results/fastqReport.png>
+Package pdftex.def Info: results/fastqReport.png  used on input line 436.
+(pdftex.def)             Requested size: 384.04813pt x 96.01202pt.
+[7 <./results/fastqReport.png>] [8] [9] [10] [11] [12] [13] [14]
+<results/seqlogo.png, id=325, 505.89pt x 505.89pt>
+File: results/seqlogo.png Graphic file (type png)
+<use results/seqlogo.png>
+Package pdftex.def Info: results/seqlogo.png  used on input line 952.
 (pdftex.def)             Requested size: 384.11757pt x 384.11757pt.
-[12 <./seqlogo.png>]
-Underfull \vbox (badness 10000) detected at line 848
+[15] [16 <./results/seqlogo.png>]
+Underfull \vbox (badness 10000) detected at line 1043
  []
 
 
-Underfull \vbox (badness 10000) detected at line 848
+Underfull \vbox (badness 10000) detected at line 1043
  []
 
-[13]
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 862.
-
+[17]
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 1057
+.
 (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 862.
-
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 1057
+.
 (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 862
-.
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 105
+7.
 (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 862
-.
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 105
+7.
 (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 862.
+(Font)              <10> on input line 1057.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 862.
+(Font)              <7> on input line 1057.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 862.
-LaTeX Font Info:    Try loading font information for U+msa on input line 862.
+(Font)              <5> on input line 1057.
+LaTeX Font Info:    Try loading font information for U+msa on input line 1057.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 862.
+LaTeX Font Info:    Try loading font information for U+msb on input line 1057.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 882.
-[14] [15]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 882.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1078.
+[18]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1078.
 (./systemPipeChIPseq.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 882.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 882.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1078.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1078.
+
 Package rerunfilecheck Info: File `systemPipeChIPseq.out' has not changed.
 (rerunfilecheck)             Checksum: E330AB340E9BEC5B6A753D8B5E4B9C08;2665.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 882.
  ) 
 Here is how much of TeX's memory you used:
- 13845 strings out of 494561
- 213514 string characters out of 6177455
- 353176 words of memory out of 5000000
- 17030 multiletter control sequences out of 15000+600000
- 69827 words of font info for 99 fonts, out of 8000000 for 9000
+ 13842 strings out of 494561
+ 213524 string characters out of 6177455
+ 351950 words of memory out of 5000000
+ 17028 multiletter control sequences out of 15000+600000
+ 69625 words of font info for 97 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  43i,14n,45p,1206b,421s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/share/texmf/
@@ -1026,10 +1025,10 @@ type1/public/lm/lmssbo10.pfb></usr/share/texmf/fonts/type1/public/lm/lmssbx10.p
 fb></usr/share/texmf/fonts/type1/public/lm/lmsso10.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts
 /type1/urw/helvetic/uhvr8a.pfb>
-Output written on systemPipeChIPseq.pdf (15 pages, 537369 bytes).
+Output written on systemPipeChIPseq.pdf (18 pages, 546045 bytes).
 PDF statistics:
- 407 PDF objects out of 1000 (max. 8388607)
- 338 compressed objects within 4 object streams
- 97 named destinations out of 1000 (max. 500000)
+ 419 PDF objects out of 1000 (max. 8388607)
+ 347 compressed objects within 4 object streams
+ 100 named destinations out of 1000 (max. 500000)
  8491 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,6 +1,6 @@
 ---
 title: 2. Workflow environment
-last_updated: Fri Jun 21 16:33:06 2019
+last_updated: Thu Nov 21 15:58:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_02.html
 ---
@@ -40,10 +40,14 @@ FASTQ files are usually the only inputs the user needs to provide.
 Now open the R markdown script `systemPipeVARseq.Rmd`in your R IDE (_e.g._ vim-r or RStudio) and 
 run the workflow as outlined below. 
 
+Here pair-end workflow example is provided. Please refer to the main vignette 
+`systemPipeR.Rmd` for running the workflow with single-end data. 
+
 ### Run R session on computer node
 
-After opening the `Rmd` file of this workflow in Vim and attaching a connected
-R session via the `F2` (or other) key, use the following command sequence to run your R
+In a computer cluster enviornment. Typically, after opening the `Rmd` file of 
+this workflow in Vim and attaching a connected R session via the `F2` ( vim-r 
+plugin installed) key, following command sequence can be used to run your R
 session on a computer node.
 
 
@@ -54,15 +58,15 @@ q("no")  # closes R session on head node
 
 ```bash
 srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-module load R/3.4.2
+module load R/3.6.0
 R
 ```
 
-Now check whether your R session is running on a computer node of the cluster and assess your environment.
+Now check your R session running environment.
 
 
 ```r
-system("hostname")  # should return name of a compute node starting with i or c 
+system("hostname")  # should return the computer name or cluster name
 getwd()  # checks current working directory of R session
 dir()  # returns content of current working directory
 ```
@@ -75,6 +79,183 @@ this report (H Backman et al., 2016).
 library(systemPipeR)
 ```
 
+```
+## Loading required package: Rsamtools
+```
+
+```
+## Loading required package: GenomeInfoDb
+```
+
+```
+## Loading required package: BiocGenerics
+```
+
+```
+## Loading required package: parallel
+```
+
+```
+## 
+## Attaching package: 'BiocGenerics'
+```
+
+```
+## The following objects are masked from 'package:parallel':
+## 
+##     clusterApply, clusterApplyLB, clusterCall,
+##     clusterEvalQ, clusterExport, clusterMap,
+##     parApply, parCapply, parLapply, parLapplyLB,
+##     parRapply, parSapply, parSapplyLB
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     IQR, mad, sd, var, xtabs
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, basename,
+##     cbind, colnames, dirname, do.call, duplicated,
+##     eval, evalq, Filter, Find, get, grep, grepl,
+##     intersect, is.unsorted, lapply, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin,
+##     pmin.int, Position, rank, rbind, Reduce,
+##     rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which, which.max,
+##     which.min
+```
+
+```
+## Loading required package: S4Vectors
+```
+
+```
+## Loading required package: stats4
+```
+
+```
+## 
+## Attaching package: 'S4Vectors'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     expand.grid
+```
+
+```
+## Loading required package: IRanges
+```
+
+```
+## Loading required package: GenomicRanges
+```
+
+```
+## Loading required package: Biostrings
+```
+
+```
+## Loading required package: XVector
+```
+
+```
+## 
+## Attaching package: 'Biostrings'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     strsplit
+```
+
+```
+## Loading required package: ShortRead
+```
+
+```
+## Loading required package: BiocParallel
+```
+
+```
+## Loading required package: GenomicAlignments
+```
+
+```
+## Loading required package: SummarizedExperiment
+```
+
+```
+## Loading required package: Biobase
+```
+
+```
+## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view
+##     with 'browseVignettes()'. To cite Bioconductor,
+##     see 'citation("Biobase")', and for packages
+##     'citation("pkgname")'.
+```
+
+```
+## Loading required package: DelayedArray
+```
+
+```
+## Loading required package: matrixStats
+```
+
+```
+## 
+## Attaching package: 'matrixStats'
+```
+
+```
+## The following objects are masked from 'package:Biobase':
+## 
+##     anyMissing, rowMedians
+```
+
+```
+## 
+## Attaching package: 'DelayedArray'
+```
+
+```
+## The following objects are masked from 'package:matrixStats':
+## 
+##     colMaxs, colMins, colRanges, rowMaxs, rowMins,
+##     rowRanges
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     aperm, apply, rowsum
+```
+
+```
+## 
+```
+
+```
+## 
+## Attaching package: 'systemPipeR'
+```
+
+```
+## The following object is masked from 'package:BiocStyle':
+## 
+##     output
+```
+
 If applicable users can load custom functions not provided by `systemPipeR`. Skip
 this step if this is not the case.
 
@@ -82,6 +263,10 @@ this step if this is not the case.
 ```r
 source("systemPipeVARseq_Fct.R")
 ```
+
+If you are running on a single machine, use following code as an exmaple to check 
+if some tools used in this workflow are in your environment **PATH**. No warning 
+message should be shown if all tools are installed.
 
 <br><br><center><a href="mydoc_systemPipeVARseq_01.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeVARseq_03.html"><img src="images/right_arrow.png" alt="Next page."></a></center>

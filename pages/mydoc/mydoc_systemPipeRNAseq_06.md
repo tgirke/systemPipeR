@@ -1,6 +1,6 @@
 ---
 title: 6. Analysis of DEGs
-last_updated: Fri Jun 21 16:30:25 2019
+last_updated: Thu Nov 21 15:47:56 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_06.html
 ---
@@ -63,7 +63,7 @@ write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote = FALSE,
 
 The `overLapper` function can compute Venn intersects for large numbers of sample
 sets (up to 20 or more) and plots 2-5 way Venn diagrams. A useful
-feature is the possiblity to combine the counts from several Venn
+feature is the possibility to combine the counts from several Venn
 comparisons with the same number of sample sets in a single Venn diagram
 (here for 4 up and down DEG sets).
 

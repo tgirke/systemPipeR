@@ -1,6 +1,6 @@
 ---
 title: 4. Alignments
-last_updated: Fri Jun 21 16:30:25 2019
+last_updated: Thu Nov 21 15:47:56 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_04.html
 ---
@@ -8,13 +8,41 @@ permalink: mydoc_systemPipeRNAseq_04.html
 ## Read mapping with `Bowtie2/Tophat2` 
 
 The NGS reads of this project will be aligned against the reference
-genome sequence using `Bowtie2/TopHat2` (Kim et al., 2013; Langmead et al., 2012). The parameter 
-settings of the aligner are defined in the `tophat.param` file.
+genome sequence using `Bowtie2/TopHat2` (Kim et al., 2013; Langmead et al., 2012) in both 
+interactive job submissions and batch submissions to queuing systems of clusters 
+using the _`systemPipeR's`_ new CWL command-line interface.
+
+Build _`Bowtie2`_ index.
 
 
 ```r
-args <- systemArgs(sysma = "param/tophat.param", mytargets = "targets.txt")
-sysargs(args)[1]  # Command-line parameters for first FASTQ file
+dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package = "systemPipeR")
+idx <- loadWorkflow(targets = NULL, wf_file = "bowtie2-index.cwl", 
+    input_file = "bowtie2-index.yml", dir_path = dir_path)
+idx <- renderWF(idx)
+idx
+cmdlist(idx)
+
+## Run in single machine
+runCommandline(idx, make_bam = FALSE)
+```
+
+The parameter settings of the aligner are defined in the `tophat2-mapping-pe.cwl` 
+and `tophat2-mapping-pe.yml` files. The following shows how to construct the 
+corresponding *SYSargs2* object, here *args*.
+
+
+```r
+dir_path <- system.file("extdata/cwl/tophat2/tophat2-se", package = "systemPipeR")
+args <- loadWorkflow(targets = targetspath, wf_file = "tophat2-mapping-se.cwl", 
+    input_file = "tophat2-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]
+## Run in single machine
+args <- runCommandline(args, make_bam = TRUE)
 ```
 
 Submission of alignment jobs to compute cluster, here using 72 CPU cores
@@ -22,37 +50,77 @@ Submission of alignment jobs to compute cluster, here using 72 CPU cores
 
 
 ```r
+## Run on the cluster
 moduleload(modules(args))
-system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
-    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
-getStatus(reg = reg)
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
+    make_bam = TRUE, dir = FALSE), conffile = ".batchtools.conf.R", 
+    template = "batchtools.slurm.tmpl", Njobs = 18, runid = "01", 
+    resourceList = resources)
 waitForJobs(reg = reg)
 ```
 
 ## Read mapping with `HISAT2`
 
+The following steps will demonstrate how to use the short read aligner `Hisat2`
+(Kim et al., 2015) in both interactive job submissions and batch submissions to
+queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line interface.
+
+Build `Hisat2` index.
+
 
 ```r
-args <- systemArgs(sysma = "param/hisat2.param", mytargets = "targets.txt")
-sysargs(args)[1]  # Command-line parameters for first FASTQ file
-moduleload(modules(args))
-system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs = 18, 
-    template = "batchtools.slurm.tmpl", runid = "01", resourceList = resources)
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package = "systemPipeR")
+idx <- loadWorkflow(targets = NULL, wf_file = "hisat2-index.cwl", 
+    input_file = "hisat2-index.yml", dir_path = dir_path)
+idx <- renderWF(idx)
+idx
+cmdlist(idx)
+
+## Run
+runCommandline(idx, make_bam = FALSE)
+```
+
+The parameter settings of the aligner are defined in the `hisat2-mapping-se.cwl` 
+and `hisat2-mapping-se.yml` files. The following shows how to construct the 
+corresponding *SYSargs2* object, here *args*.
+
+
+```r
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package = "systemPipeR")
+args <- loadWorkflow(targets = targetspath, wf_file = "hisat2-mapping-se.cwl", 
+    input_file = "hisat2-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]
+
+## Runc single Machine
+args <- runCommandline(args)
+```
+
+
+```r
+library(batchtools)
+resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
+    make_bam = TRUE, dir = FALSE), conffile = ".batchtools.conf.R", 
+    template = "batchtools.slurm.tmpl", Njobs = 18, runid = "01", 
+    resourceList = resources)
 getStatus(reg = reg)
 waitForJobs(reg = reg)
+args <- output_update(args, dir = FALSE, replace = TRUE, extension = c(".sam", 
+    ".bam"))  ## Updates the output(args) to the right location in the subfolders
+output(args)
 ```
 
 Check whether all BAM files have been created.
 
 
 ```r
-file.exists(outpaths(args))
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+file.exists(outpaths)
 ```
 
 ## Read and alignment stats

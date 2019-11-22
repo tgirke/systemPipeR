@@ -77,7 +77,7 @@ contains 18 paired-end (PE) read sets from *Arabidposis thaliana*
 file has been subsetted to 90,000-100,000 randomly sampled PE reads that
 map to the first 100,000 nucleotides of each chromosome of the *A.
 thalina* genome. The corresponding reference genome sequence (FASTA) and
-its GFF annotion files (provided in the same download) have been
+its GFF annotation files (provided in the same download) have been
 truncated accordingly. This way the entire test sample data set is less
 than 200MB in storage space. A PE read set has been chosen for this test
 data set for flexibility, because it can be used for testing both types
@@ -141,6 +141,11 @@ If applicable load custom functions not provided by `systemPipeR` package.
 source("systemPipeRNAseq_Fct.R")
 ```
 
+To apply workflows to custom data, the user needs to modify the _`targets`_ file and if
+necessary update the corresponding _`.cwl`_ and _`.yml`_ files. A collection of pre-generated _`.cwl`_ and _`.yml`_ files are provided in the _`param/cwl`_ subdirectory of each workflow template. They
+are also viewable in the GitHub repository of _`systemPipeRdata`_ ([see
+here](https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param)).
+
 ## Experiment definition provided by `targets` file
 
 The `targets` file defines all FASTQ files and sample
@@ -158,20 +163,31 @@ targets
 
 The function `preprocessReads` allows to apply predefined or custom
 read preprocessing functions to all FASTQ files referenced in a
-`SYSargs` container, such as quality filtering or adaptor trimming
-routines.  The following example performs adaptor trimming with
+`SYSargs2` container, such as quality filtering or adapter trimming
+routines. The paths to the resulting output FASTQ files are stored in the
+`output` slot of the `SYSargs2` object. The following example performs adapter trimming with
 the `trimLRPatterns` function from the `Biostrings` package.
 After the trimming step a new targets file is generated (here
 `targets_trim.txt`) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
-`SYSargs` instance, _e.g._ running the NGS alignments using the
+`SYSargs2` instance, _e.g._ running the NGS alignments using the
 trimmed FASTQ files.
 
-```{r fastq_filter, eval=FALSE}
-args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
-preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)",
-                batchsize=100000, overwrite=TRUE, compress=TRUE)
-writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
+Construct _`SYSargs2`_ object from _`cwl`_ and _`yml`_ param and _`targets`_ files.
+
+```{r construct_SYSargs2_trim-se, eval=FALSE}
+dir_path <- system.file("extdata/cwl/preprocessReads/trim-se", package="systemPipeR")
+trim <- loadWorkflow(targets=targetspath, wf_file="trim-se.cwl", input_file="trim-se.yml", dir_path=dir_path)
+trim <- renderWF(trim, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+trim
+output(trim)[1:2]
+```
+
+```{r preprocessing, eval=FALSE}
+preprocessReads(args=trim, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', 
+                subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+writeTargetsout(x=trim, file="targets_trimPE.txt", step = 1, 
+                new_col = "FileName1", new_col_output_index = 1, overwrite = TRUE)
 ```
 
 ## FASTQ quality report
@@ -184,14 +200,13 @@ above quality cutoffs and mean quality distribution. The results are
 written to a PDF file named `fastqReport.pdf`.
 
 ```{r fastq_report, eval=FALSE}
-args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
+fqlist <- seeFastq(fastq=infile1(trim), batchsize=10000, klength=8)
 pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 seeFastqPlot(fqlist)
 dev.off()
 ``` 
 
-![](fastqReport.png)
+![](results/fastqReport.png)
 <div align="center">Figure 1: FASTQ quality report for 18 samples</div></br>
 
 # Alignments
@@ -199,43 +214,105 @@ dev.off()
 ## Read mapping with `Bowtie2/Tophat2` 
 
 The NGS reads of this project will be aligned against the reference
-genome sequence using `Bowtie2/TopHat2` [@Kim2013-vg; @Langmead2012-bs]. The parameter 
-settings of the aligner are defined in the `tophat.param` file.
+genome sequence using `Bowtie2/TopHat2` [@Kim2013-vg; @Langmead2012-bs] in both 
+interactive job submissions and batch submissions to queuing systems of clusters 
+using the _`systemPipeR's`_ new CWL command-line interface.
 
-```{r tophat_alignment1, eval=FALSE}
-args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-sysargs(args)[1] # Command-line parameters for first FASTQ file
+Build _`Bowtie2`_ index.
+
+```{r bowtie_index, eval=FALSE}
+dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package="systemPipeR")
+idx <- loadWorkflow(targets=NULL, wf_file="bowtie2-index.cwl", input_file="bowtie2-index.yml", dir_path=dir_path)
+idx <- renderWF(idx)
+idx
+cmdlist(idx)
+
+## Run in single machine
+runCommandline(idx, make_bam = FALSE)
+```
+
+The parameter settings of the aligner are defined in the `tophat2-mapping-pe.cwl` 
+and `tophat2-mapping-pe.yml` files. The following shows how to construct the 
+corresponding *SYSargs2* object, here *args*.
+
+```{r tophat2-se, eval=FALSE}
+dir_path <- system.file("extdata/cwl/tophat2/tophat2-se", package="systemPipeR")
+args <- loadWorkflow(targets = targetspath, wf_file = "tophat2-mapping-se.cwl", 
+    input_file = "tophat2-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]
+## Run in single machine
+args <- runCommandline(args, make_bam = TRUE)
 ```
 
 Submission of alignment jobs to compute cluster, here using 72 CPU cores
 (18 `qsub` processes each with 4 CPU cores).
 
-```{r tophat_alignment2, eval=FALSE}
+```{r tophat_se_run, eval=FALSE}
+## Run on the cluster
 moduleload(modules(args))
-system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
-reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
-getStatus(reg=reg) 
-waitForJobs(reg=reg)  
+resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args=args, make_bam=TRUE, dir=FALSE), 
+                  conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
+                  Njobs=18, runid="01", resourceList=resources)
+waitForJobs(reg=reg)
 ```
 
 ## Read mapping with `HISAT2`
 
-```{r hisat_alignment2, eval=FALSE}
-args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
-sysargs(args)[1] # Command-line parameters for first FASTQ file
-moduleload(modules(args))
-system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
-resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024) 
-reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
-getStatus(reg=reg) 
-waitForJobs(reg=reg)  
+The following steps will demonstrate how to use the short read aligner `Hisat2`
+[@Kim2015-ve] in both interactive job submissions and batch submissions to
+queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line interface.
+
+Build `Hisat2` index.
+
+```{r hisat_index, eval=FALSE}
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package="systemPipeR")
+idx <- loadWorkflow(targets=NULL, wf_file="hisat2-index.cwl", input_file="hisat2-index.yml", dir_path=dir_path)
+idx <- renderWF(idx)
+idx
+cmdlist(idx)
+
+## Run 
+runCommandline(idx, make_bam = FALSE)
+```
+
+The parameter settings of the aligner are defined in the `hisat2-mapping-se.cwl` 
+and `hisat2-mapping-se.yml` files. The following shows how to construct the 
+corresponding *SYSargs2* object, here *args*.
+
+```{r hisat_SYSargs2_object, eval=FALSE}
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
+args <- loadWorkflow(targets=targetspath, wf_file="hisat2-mapping-se.cwl", 
+                     input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]
+
+## Runc single Machine
+args <- runCommandline(args)
+```
+
+```{r hisat2_clusterRun, eval=FALSE}
+library(batchtools)
+resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args=args, make_bam=TRUE, dir=FALSE), 
+                  conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
+                  Njobs=18, runid="01", resourceList=resources)
+getStatus(reg=reg)
+waitForJobs(reg=reg)
+args <- output_update(args, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) ## Updates the output(args) to the right location in the subfolders
+output(args)
 ```
 
 Check whether all BAM files have been created.
 
 ```{r check_files_exist, eval=FALSE}
-file.exists(outpaths(args))
+outpaths <- subsetWF(args , slot="output", subset=1, index=1)
+file.exists(outpaths)
 ```
 
 ## Read and alignment stats
@@ -275,7 +352,7 @@ each sample using the `summarizeOverlaps` function [@Lawrence2013-kt]. The read 
 preformed for exonic gene regions in a non-strand-specific manner while
 ignoring overlaps among different genes. Subsequently, the expression
 count values are normalized by *reads per kp per million mapped reads*
-(RPKM). The raw read count table (`countDFeByg.xls`) and the correspoding 
+(RPKM). The raw read count table (`countDFeByg.xls`) and the corresponding 
 RPKM table (`rpkmDFeByg.xls`) are written to separate files in the directory of this project. Parallelization is achieved with the `BiocParallel` package, here using 8 CPU cores.
 
 ```{r read_counting1, eval=FALSE}
@@ -283,9 +360,10 @@ library("GenomicFeatures"); library(BiocParallel)
 txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="Arabidopsis thaliana")
 saveDb(txdb, file="./data/tair10.sqlite")
 txdb <- loadDb("./data/tair10.sqlite")
-(align <- readGAlignments(outpaths(args)[1])) # Demonstrates how to read bam file into R
+outpaths <- subsetWF(args, slot="output", subset=1, index=1)
+(align <- readGAlignments(outpaths[1])) # Demonstrates how to read bam file into R
 eByg <- exonsBy(txdb, by=c("gene"))
-bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
 multicoreParam <- MulticoreParam(workers=2); register(multicoreParam); registered()
 counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", 
                                                ignore.strand=TRUE, 
@@ -327,7 +405,7 @@ the `hclust` function and the result is plotted as a dendrogram
 ```{r sample_tree, eval=FALSE}
 library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
 countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
-colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+colData <- data.frame(row.names=targets.as.df(targets(args))$SampleName, condition=targets.as.df(targets(args))$Factor)
 dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
 d <- cor(assay(rlog(dds)), method="spearman")
 hc <- hclust(dist(1-d))
@@ -336,7 +414,7 @@ plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.labe
 dev.off()
 ```
 
-![](sample_tree.png)
+![](results/sample_tree.png)
 <div align="center">Figure 2: Correlation dendrogram of samples</div></br>
 
 # Analysis of DEGs
@@ -382,14 +460,14 @@ dev.off()
 write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", row.names=FALSE)
 ```
 
-![](DEGcounts.png)
+![](results/DEGcounts.png)
 <div align="center">Figure 3: Up and down regulated DEGs with FDR of 1%</div></br>
 
 ## Venn diagrams of DEG sets
 
 The `overLapper` function can compute Venn intersects for large numbers of sample
 sets (up to 20 or more) and plots 2-5 way Venn diagrams. A useful
-feature is the possiblity to combine the counts from several Venn
+feature is the possibility to combine the counts from several Venn
 comparisons with the same number of sample sets in a single Venn diagram
 (here for 4 up and down DEG sets).
 
@@ -401,7 +479,7 @@ vennPlot(list(vennsetup, vennsetdown), mymain="", mysub="", colmode=2, ccol=c("b
 dev.off()
 ```
 
-![](vennplot.png)
+![](results/vennplot.png)
 <div align="center">Figure 4: Venn Diagram for 4 Up and Down DEG Sets</div></br>
 
 # GO term enrichment analysis
@@ -474,12 +552,14 @@ shown in the first line of the following example.
 ```{r go_plot, eval=FALSE}
 gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 gos <- BatchResultslim
-pdf("GOslimbarplotMF.pdf", height=8, width=10); goBarplot(gos, gocat="MF"); dev.off()
+pdf("GOslimbarplotMF.pdf", height=8, width=10)
+goBarplot(gos, gocat="MF")
+dev.off()
 goBarplot(gos, gocat="BP")
 goBarplot(gos, gocat="CC")
 ```
 
-![](GOslimbarplotMF.png)
+![](results/GOslimbarplotMF.png)
 <div align="center">Figure 5: GO Slim Barplot for MF Ontology</div></br>
 
 # Clustering and heat maps
@@ -498,7 +578,7 @@ pheatmap(y, scale="row", clustering_distance_rows="correlation", clustering_dist
 dev.off()
 ```
 
-![](heatmap1.png)
+![](results/heatmap1.png)
 <div align="center">Figure 6: Heat Map with Hierarchical Clustering Dendrograms of DEGs</div></br>
 
 # Version Information

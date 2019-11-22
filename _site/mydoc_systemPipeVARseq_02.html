@@ -855,23 +855,27 @@ FASTQ files are usually the only inputs the user needs to provide.</p>
 <p>Now open the R markdown script <code class="highlighter-rouge">systemPipeVARseq.Rmd</code>in your R IDE (<em>e.g.</em> vim-r or RStudio) and 
 run the workflow as outlined below.</p>
 
+<p>Here pair-end workflow example is provided. Please refer to the main vignette 
+<code class="highlighter-rouge">systemPipeR.Rmd</code> for running the workflow with single-end data.</p>
+
 <h3 id="run-r-session-on-computer-node">Run R session on computer node</h3>
 
-<p>After opening the <code class="highlighter-rouge">Rmd</code> file of this workflow in Vim and attaching a connected
-R session via the <code class="highlighter-rouge">F2</code> (or other) key, use the following command sequence to run your R
+<p>In a computer cluster enviornment. Typically, after opening the <code class="highlighter-rouge">Rmd</code> file of 
+this workflow in Vim and attaching a connected R session via the <code class="highlighter-rouge">F2</code> ( vim-r 
+plugin installed) key, following command sequence can be used to run your R
 session on a computer node.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">q</span><span class="p">(</span><span class="s2">"no"</span><span class="p">)</span><span class="w">  </span><span class="c1"># closes R session on head node</span><span class="w">
 </span></code></pre></div></div>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>srun <span class="nt">--x11</span> <span class="nt">--partition</span><span class="o">=</span>short <span class="nt">--mem</span><span class="o">=</span>2gb <span class="nt">--cpus-per-task</span> 4 <span class="nt">--ntasks</span> 1 <span class="nt">--time</span> 2:00:00 <span class="nt">--pty</span> bash <span class="nt">-l</span>
-module load R/3.4.2
+module load R/3.6.0
 R
 </code></pre></div></div>
 
-<p>Now check whether your R session is running on a computer node of the cluster and assess your environment.</p>
+<p>Now check your R session running environment.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">system</span><span class="p">(</span><span class="s2">"hostname"</span><span class="p">)</span><span class="w">  </span><span class="c1"># should return name of a compute node starting with i or c </span><span class="w">
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">system</span><span class="p">(</span><span class="s2">"hostname"</span><span class="p">)</span><span class="w">  </span><span class="c1"># should return the computer name or cluster name</span><span class="w">
 </span><span class="n">getwd</span><span class="p">()</span><span class="w">  </span><span class="c1"># checks current working directory of R session</span><span class="w">
 </span><span class="n">dir</span><span class="p">()</span><span class="w">  </span><span class="c1"># returns content of current working directory</span><span class="w">
 </span></code></pre></div></div>
@@ -882,11 +886,158 @@ this report (H Backman et al., 2016).</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: Rsamtools
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: GenomeInfoDb
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: BiocGenerics
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: parallel
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'BiocGenerics'
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following objects are masked from 'package:parallel':
+## 
+##     clusterApply, clusterApplyLB, clusterCall,
+##     clusterEvalQ, clusterExport, clusterMap,
+##     parApply, parCapply, parLapply, parLapplyLB,
+##     parRapply, parSapply, parSapplyLB
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following objects are masked from 'package:stats':
+## 
+##     IQR, mad, sd, var, xtabs
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, basename,
+##     cbind, colnames, dirname, do.call, duplicated,
+##     eval, evalq, Filter, Find, get, grep, grepl,
+##     intersect, is.unsorted, lapply, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin,
+##     pmin.int, Position, rank, rbind, Reduce,
+##     rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which, which.max,
+##     which.min
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: S4Vectors
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: stats4
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'S4Vectors'
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following object is masked from 'package:base':
+## 
+##     expand.grid
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: IRanges
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: GenomicRanges
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: Biostrings
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: XVector
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'Biostrings'
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following object is masked from 'package:base':
+## 
+##     strsplit
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: ShortRead
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: BiocParallel
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: GenomicAlignments
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: SummarizedExperiment
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: Biobase
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view
+##     with 'browseVignettes()'. To cite Bioconductor,
+##     see 'citation("Biobase")', and for packages
+##     'citation("pkgname")'.
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: DelayedArray
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Loading required package: matrixStats
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'matrixStats'
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following objects are masked from 'package:Biobase':
+## 
+##     anyMissing, rowMedians
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'DelayedArray'
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following objects are masked from 'package:matrixStats':
+## 
+##     colMaxs, colMins, colRanges, rowMaxs, rowMins,
+##     rowRanges
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following objects are masked from 'package:base':
+## 
+##     aperm, apply, rowsum
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
+## Attaching package: 'systemPipeR'
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following object is masked from 'package:BiocStyle':
+## 
+##     output
+</code></pre></div></div>
+
 <p>If applicable users can load custom functions not provided by <code class="highlighter-rouge">systemPipeR</code>. Skip
 this step if this is not the case.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"systemPipeVARseq_Fct.R"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
+
+<p>If you are running on a single machine, use following code as an exmaple to check 
+if some tools used in this workflow are in your environment <strong>PATH</strong>. No warning 
+message should be shown if all tools are installed.</p>
 
 <p><br /><br /><center><a href="mydoc_systemPipeVARseq_01.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
 <a href="mydoc_systemPipeVARseq_03.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
@@ -906,7 +1057,7 @@ this step if this is not the case.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Fri Jun 21 16:33:06 2019<br/> Site last generated: Oct 14, 2019 <br />
+<span>Page last updated:</span> Thu Nov 21 15:58:58 2019<br/> Site last generated: Nov 21, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

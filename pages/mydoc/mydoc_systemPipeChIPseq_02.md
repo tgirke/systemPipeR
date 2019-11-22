@@ -1,6 +1,6 @@
 ---
 title: 2. Workflow environment
-last_updated: Fri Jun 21 16:31:58 2019
+last_updated: Thu Nov 21 15:49:32 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_02.html
 ---
@@ -52,7 +52,7 @@ q("no")  # closes R session on head node
 
 ```bash
 srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-module load R/3.4.2
+module load R/3.6.0
 R
 ```
 
@@ -71,6 +71,183 @@ this report (H Backman et al., 2016).
 
 ```r
 library(systemPipeR)
+```
+
+```
+## Loading required package: Rsamtools
+```
+
+```
+## Loading required package: GenomeInfoDb
+```
+
+```
+## Loading required package: BiocGenerics
+```
+
+```
+## Loading required package: parallel
+```
+
+```
+## 
+## Attaching package: 'BiocGenerics'
+```
+
+```
+## The following objects are masked from 'package:parallel':
+## 
+##     clusterApply, clusterApplyLB, clusterCall,
+##     clusterEvalQ, clusterExport, clusterMap,
+##     parApply, parCapply, parLapply, parLapplyLB,
+##     parRapply, parSapply, parSapplyLB
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     IQR, mad, sd, var, xtabs
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, basename,
+##     cbind, colnames, dirname, do.call, duplicated,
+##     eval, evalq, Filter, Find, get, grep, grepl,
+##     intersect, is.unsorted, lapply, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin,
+##     pmin.int, Position, rank, rbind, Reduce,
+##     rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which, which.max,
+##     which.min
+```
+
+```
+## Loading required package: S4Vectors
+```
+
+```
+## Loading required package: stats4
+```
+
+```
+## 
+## Attaching package: 'S4Vectors'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     expand.grid
+```
+
+```
+## Loading required package: IRanges
+```
+
+```
+## Loading required package: GenomicRanges
+```
+
+```
+## Loading required package: Biostrings
+```
+
+```
+## Loading required package: XVector
+```
+
+```
+## 
+## Attaching package: 'Biostrings'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     strsplit
+```
+
+```
+## Loading required package: ShortRead
+```
+
+```
+## Loading required package: BiocParallel
+```
+
+```
+## Loading required package: GenomicAlignments
+```
+
+```
+## Loading required package: SummarizedExperiment
+```
+
+```
+## Loading required package: Biobase
+```
+
+```
+## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view
+##     with 'browseVignettes()'. To cite Bioconductor,
+##     see 'citation("Biobase")', and for packages
+##     'citation("pkgname")'.
+```
+
+```
+## Loading required package: DelayedArray
+```
+
+```
+## Loading required package: matrixStats
+```
+
+```
+## 
+## Attaching package: 'matrixStats'
+```
+
+```
+## The following objects are masked from 'package:Biobase':
+## 
+##     anyMissing, rowMedians
+```
+
+```
+## 
+## Attaching package: 'DelayedArray'
+```
+
+```
+## The following objects are masked from 'package:matrixStats':
+## 
+##     colMaxs, colMins, colRanges, rowMaxs, rowMins,
+##     rowRanges
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     aperm, apply, rowsum
+```
+
+```
+## 
+```
+
+```
+## 
+## Attaching package: 'systemPipeR'
+```
+
+```
+## The following object is masked from 'package:BiocStyle':
+## 
+##     output
 ```
 
 If applicable users can load custom functions not provided by `systemPipeR`. Skip

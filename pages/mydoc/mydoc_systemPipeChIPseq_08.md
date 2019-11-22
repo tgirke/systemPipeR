@@ -1,6 +1,6 @@
 ---
 title: 8. Count reads overlapping peaks
-last_updated: Fri Jun 21 16:31:58 2019
+last_updated: Thu Nov 21 15:49:32 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_08.html
 ---
@@ -14,11 +14,27 @@ files, one for each peak set.
 
 ```r
 library(GenomicRanges)
-args <- systemArgs(sysma = "param/count_rangesets.param", mytargets = "targets_macs.txt")
-args_bam <- systemArgs(sysma = NULL, mytargets = "targets_bam.txt")
-bfl <- BamFileList(outpaths(args_bam), yieldSize = 50000, index = character())
+dir_path <- system.file("extdata/cwl/count_rangesets", package = "systemPipeR")
+args <- loadWF(targets = "targets_macs.txt", wf_file = "count_rangesets.cwl", 
+    input_file = "count_rangesets.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+
+## Bam Files
+targets <- system.file("extdata", "targets_chip.txt", package = "systemPipeR")
+dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-se", package = "systemPipeR")
+args_bam <- loadWF(targets = targets, wf_file = "bowtie2-mapping-se.cwl", 
+    input_file = "bowtie2-mapping-se.yml", dir_path = dir_path)
+args_bam <- renderWF(args_bam, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+args_bam <- output_update(args_bam, dir = FALSE, replace = TRUE, 
+    extension = c(".sam", ".bam"))
+outpaths <- subsetWF(args_bam, slot = "output", subset = 1, index = 1)
+
+bfl <- BamFileList(outpaths, yieldSize = 50000, index = character())
 countDFnames <- countRangeset(bfl, args, mode = "Union", ignore.strand = TRUE)
-writeTargetsout(x = args, file = "targets_countDF.txt", overwrite = TRUE)
+writeTargetsout(x = args, file = "targets_countDF.txt", step = 1, 
+    new_col = "FileName", new_col_output_index = 1, overwrite = TRUE)
 ```
 
 <br><br><center><a href="mydoc_systemPipeChIPseq_07.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

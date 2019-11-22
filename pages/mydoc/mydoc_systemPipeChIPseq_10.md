@@ -1,6 +1,6 @@
 ---
 title: 10. GO term enrichment analysis
-last_updated: Fri Jun 21 16:31:58 2019
+last_updated: Thu Nov 21 15:49:32 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_10.html
 ---
@@ -9,12 +9,20 @@ The following performs GO term enrichment analysis for each annotated peak set.
 
 
 ```r
-args <- systemArgs(sysma = "param/macs2.param", mytargets = "targets_bam_ref.txt")
-args_anno <- systemArgs(sysma = "param/annotate_peaks.param", 
-    mytargets = "targets_macs.txt")
-annofiles <- outpaths(args_anno)
+dir_path <- system.file("extdata/cwl/annotate_peaks", package = "systemPipeR")
+args <- loadWF(targets = "targets_bam_ref.txt", wf_file = "annotate-peaks.cwl", 
+    input_file = "annotate-peaks.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
+    FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+
+args_anno <- loadWF(targets = "targets_macs.txt", wf_file = "annotate-peaks.cwl", 
+    input_file = "annotate-peaks.yml", dir_path = dir_path)
+args_anno <- renderWF(args_anno, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+annofiles <- subsetWF(args_anno, slot = "output", subset = 1, 
+    index = 1)
 gene_ids <- sapply(names(annofiles), function(x) unique(as.character(read.delim(annofiles[x])[, 
-    "gene_id"])), simplify = FALSE)
+    "geneId"])), simplify = FALSE)
 load("data/GO/catdb.RData")
 BatchResult <- GOCluster_Report(catdb = catdb, setlist = gene_ids, 
     method = "all", id_type = "gene", CLSZ = 2, cutoff = 0.9, 

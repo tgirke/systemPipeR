@@ -1,6 +1,6 @@
 ---
 title: 11. Motif analysis
-last_updated: Fri Jun 21 16:31:58 2019
+last_updated: Thu Nov 21 15:49:32 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_11.html
 ---
@@ -21,7 +21,12 @@ as expected by some motif discovery tools, such as `BCRANK`.
 library(Biostrings)
 library(seqLogo)
 library(BCRANK)
-args <- systemArgs(sysma = "param/annotate_peaks.param", mytargets = "targets_macs.txt")
+dir_path <- system.file("extdata/cwl/annotate_peaks", package = "systemPipeR")
+args <- loadWF(targets = "targets_macs.txt", wf_file = "annotate-peaks.cwl", 
+    input_file = "annotate-peaks.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+
 rangefiles <- infile1(args)
 for (i in seq(along = rangefiles)) {
     df <- read.delim(rangefiles[i], comment = "#")

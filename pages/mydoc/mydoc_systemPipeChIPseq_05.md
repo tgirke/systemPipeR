@@ -1,6 +1,6 @@
 ---
 title: 5. Utilities for coverage data
-last_updated: Fri Jun 21 16:31:58 2019
+last_updated: Thu Nov 21 15:49:32 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_05.html
 ---
@@ -15,7 +15,8 @@ library(rtracklayer)
 library(GenomicRanges)
 library(Rsamtools)
 library(GenomicAlignments)
-aligns <- readGAlignments(outpaths(args)[1])
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+aligns <- readGAlignments(outpaths[1])
 cov <- coverage(aligns)
 cov
 ```
@@ -41,7 +42,7 @@ islands[[1]]
 ```r
 library(ggbio)
 myloc <- c("Chr1", 1, 1e+05)
-ga <- readGAlignments(outpaths(args)[1], use.names = TRUE, param = ScanBamParam(which = GRanges(myloc[1], 
+ga <- readGAlignments(outpaths[1], use.names = TRUE, param = ScanBamParam(which = GRanges(myloc[1], 
     IRanges(as.numeric(myloc[2]), as.numeric(myloc[3])))))
 autoplot(ga, aes(color = strand, fill = strand), facets = strand ~ 
     seqnames, stat = "coverage")

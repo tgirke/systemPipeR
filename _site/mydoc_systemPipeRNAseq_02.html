@@ -841,7 +841,7 @@ contains 18 paired-end (PE) read sets from <em>Arabidposis thaliana</em>
 file has been subsetted to 90,000-100,000 randomly sampled PE reads that
 map to the first 100,000 nucleotides of each chromosome of the <em>A.
 thalina</em> genome. The corresponding reference genome sequence (FASTA) and
-its GFF annotion files (provided in the same download) have been
+its GFF annotation files (provided in the same download) have been
 truncated accordingly. This way the entire test sample data set is less
 than 200MB in storage space. A PE read set has been chosen for this test
 data set for flexibility, because it can be used for testing both types
@@ -898,6 +898,11 @@ this report (H Backman et al., 2016).</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"systemPipeRNAseq_Fct.R"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
+<p>To apply workflows to custom data, the user needs to modify the <em><code class="highlighter-rouge">targets</code></em> file and if
+necessary update the corresponding <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files. A collection of pre-generated <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files are provided in the <em><code class="highlighter-rouge">param/cwl</code></em> subdirectory of each workflow template. They
+are also viewable in the GitHub repository of <em><code class="highlighter-rouge">systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see
+here</a>).</p>
+
 <h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="highlighter-rouge">targets</code> file</h2>
 
 <p>The <code class="highlighter-rouge">targets</code> file defines all FASTQ files and sample
@@ -908,25 +913,25 @@ comparisons of the analysis workflow.</p>
 </span><span class="n">targets</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                    FileName SampleName Factor SampleLong
-## 1  ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A
-## 2  ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B
-## 3  ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A
-## 4  ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B
-## 5  ./data/SRR446031_1.fastq        V1A     V1   Vir.1h.A
-## 6  ./data/SRR446032_1.fastq        V1B     V1   Vir.1h.B
-## 7  ./data/SRR446033_1.fastq        M6A     M6  Mock.6h.A
-## 8  ./data/SRR446034_1.fastq        M6B     M6  Mock.6h.B
-## 9  ./data/SRR446035_1.fastq        A6A     A6   Avr.6h.A
-## 10 ./data/SRR446036_1.fastq        A6B     A6   Avr.6h.B
-## 11 ./data/SRR446037_1.fastq        V6A     V6   Vir.6h.A
-## 12 ./data/SRR446038_1.fastq        V6B     V6   Vir.6h.B
-## 13 ./data/SRR446039_1.fastq       M12A    M12 Mock.12h.A
-## 14 ./data/SRR446040_1.fastq       M12B    M12 Mock.12h.B
-## 15 ./data/SRR446041_1.fastq       A12A    A12  Avr.12h.A
-## 16 ./data/SRR446042_1.fastq       A12B    A12  Avr.12h.B
-## 17 ./data/SRR446043_1.fastq       V12A    V12  Vir.12h.A
-## 18 ./data/SRR446044_1.fastq       V12B    V12  Vir.12h.B
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                       FileName SampleName Factor SampleLong
+## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
+## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A
+## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B
+## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A
+## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B
+## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A
+## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B
+## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A
+## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B
+## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A
+## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B
+## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A
+## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B
+## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A
+## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B
 </code></pre></div></div>
 
 <p><br /><br /><center><a href="mydoc_systemPipeRNAseq_01.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
@@ -947,7 +952,7 @@ comparisons of the analysis workflow.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Fri Jun 21 16:30:25 2019<br/> Site last generated: Oct 14, 2019 <br />
+<span>Page last updated:</span> Thu Nov 21 15:47:56 2019<br/> Site last generated: Nov 21, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

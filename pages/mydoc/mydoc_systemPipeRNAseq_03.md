@@ -1,6 +1,6 @@
 ---
 title: 3. Read preprocessing
-last_updated: Fri Jun 21 16:30:25 2019
+last_updated: Thu Nov 21 15:47:56 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_03.html
 ---
@@ -9,21 +9,37 @@ permalink: mydoc_systemPipeRNAseq_03.html
 
 The function `preprocessReads` allows to apply predefined or custom
 read preprocessing functions to all FASTQ files referenced in a
-`SYSargs` container, such as quality filtering or adaptor trimming
-routines.  The following example performs adaptor trimming with
+`SYSargs2` container, such as quality filtering or adapter trimming
+routines. The paths to the resulting output FASTQ files are stored in the
+`output` slot of the `SYSargs2` object. The following example performs adapter trimming with
 the `trimLRPatterns` function from the `Biostrings` package.
 After the trimming step a new targets file is generated (here
 `targets_trim.txt`) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
-`SYSargs` instance, _e.g._ running the NGS alignments using the
+`SYSargs2` instance, _e.g._ running the NGS alignments using the
 trimmed FASTQ files.
+
+Construct _`SYSargs2`_ object from _`cwl`_ and _`yml`_ param and _`targets`_ files.
 
 
 ```r
-args <- systemArgs(sysma = "param/trim.param", mytargets = "targets.txt")
-preprocessReads(args = args, Fct = "trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", 
+dir_path <- system.file("extdata/cwl/preprocessReads/trim-se", 
+    package = "systemPipeR")
+trim <- loadWorkflow(targets = targetspath, wf_file = "trim-se.cwl", 
+    input_file = "trim-se.yml", dir_path = dir_path)
+trim <- renderWF(trim, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+trim
+output(trim)[1:2]
+```
+
+
+```r
+preprocessReads(args = trim, Fct = "trimLRPatterns(Rpattern='GCCCGGGTAA', 
+                subject=fq)", 
     batchsize = 1e+05, overwrite = TRUE, compress = TRUE)
-writeTargetsout(x = args, file = "targets_trim.txt", overwrite = TRUE)
+writeTargetsout(x = trim, file = "targets_trimPE.txt", step = 1, 
+    new_col = "FileName1", new_col_output_index = 1, overwrite = TRUE)
 ```
 
 ## FASTQ quality report
@@ -37,8 +53,7 @@ written to a PDF file named `fastqReport.pdf`.
 
 
 ```r
-args <- systemArgs(sysma = "param/tophat.param", mytargets = "targets.txt")
-fqlist <- seeFastq(fastq = infile1(args), batchsize = 1e+05, 
+fqlist <- seeFastq(fastq = infile1(trim), batchsize = 10000, 
     klength = 8)
 pdf("./results/fastqReport.pdf", height = 18, width = 4 * length(fqlist))
 seeFastqPlot(fqlist)

@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)" />
@@ -1287,7 +1288,7 @@ window.initializeCodeFolding = function(show) {
 
     // create a collapsable div to wrap the code in
     var div = $('<div class="collapse r-code-collapse"></div>');
-    if (show)
+    if (show || $(this)[0].classList.contains('fold-show'))
       div.addClass('in');
     var id = 'rcode-643E0F36' + currentIndex++;
     div.attr('id', id);
@@ -1473,7 +1474,8 @@ background-color: inherit;
 tt, code, pre {
 font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 }
-h1, h2, h3, h4, h5, h6 { font-family: Helvetica, Arial, sans-serif;
+h1, h2, h3, h4, h5, h6 {
+font-family: Helvetica, Arial, sans-serif;
 margin: 1.2em 150px 0.6em 0em;
 
 padding-left: 65px;
@@ -1520,12 +1522,14 @@ font-weight: bold;
 font-weight: bold;
 }
 
-code { background-color: #f0f0f0;
+code {
+background-color: #f0f0f0;
 color: #404040;
 font-size: 90%;
 }
 
-.figure { margin: 0em 0px 0.5em;
+.figure {
+margin: 0em 0px 0.5em;
 }
 img {
 max-width: 100%;
@@ -1535,6 +1539,11 @@ padding: 0px 150px 0px 130px;
 p > img {
 padding-left: 65px;
 padding-right: 0px;
+}
+td > img {
+padding: 0px;
+max-width: 100%;
+display: inline;
 }
 img.smallfigure {
 padding-left: 195px;
@@ -1633,7 +1642,8 @@ code > span.st { color: #40A040; }
 code > span.co { color: #808080; font-style: italic; } 
 code > span.ot { color: #2020F0; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #E07020; }  code > span.er { color: #FF0000; } 
+code > span.fu { color: #E07020; } 
+code > span.er { color: #FF0000; } 
 code > span.identifier { color: #404040; }
 code > span.number { color: #D02070; }
 code > span.string { color: #40A040; }
@@ -1659,7 +1669,6 @@ padding-left: 65px;
 
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -1733,56 +1742,12 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -1796,8 +1761,14 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
 
+}
 
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
 
 div.main-container {
   max-width: 1200px;
@@ -1873,9 +1844,9 @@ div.tocify {
 
 <h1 class="title toc-ignore">ChIP-Seq Workflow Template</h1>
 <p class="author-name">Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)</p>
-<h4 class="date">Last update: 21 June, 2019</h4>
+<h4 class="date">Last update: 21 November, 2019</h4>
 <h4 class="package">Package</h4>
-<p>systemPipeR 1.19.1</p>
+<p>systemPipeR 1.21.0</p>
 
 </div>
 
@@ -1951,7 +1922,7 @@ R session via the <code>F2</code> (or other) key, use the following command sequ
 session on a computer node.</p>
 <pre class="r"><code>q(&quot;no&quot;)  # closes R session on head node</code></pre>
 <pre class="bash"><code>srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-module load R/3.4.2
+module load R/3.6.0
 R</code></pre>
 <p>Now check whether your R session is running on a computer node of the cluster and assess your environment.</p>
 <pre class="r"><code>system(&quot;hostname&quot;)  # should return name of a compute node starting with i or c 
@@ -1960,6 +1931,81 @@ dir()  # returns content of current working directory</code></pre>
 <p>The <code>systemPipeR</code> package needs to be loaded to perform the analysis steps shown in
 this report <span class="citation">(H Backman and Girke 2016)</span>.</p>
 <pre class="r"><code>library(systemPipeR)</code></pre>
+<pre><code>## Loading required package: Rsamtools</code></pre>
+<pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: 'BiocGenerics'</code></pre>
+<pre><code>## The following objects are masked from 'package:parallel':
+## 
+##     clusterApply, clusterApplyLB, clusterCall,
+##     clusterEvalQ, clusterExport, clusterMap,
+##     parApply, parCapply, parLapply, parLapplyLB,
+##     parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, basename,
+##     cbind, colnames, dirname, do.call, duplicated,
+##     eval, evalq, Filter, Find, get, grep, grepl,
+##     intersect, is.unsorted, lapply, Map, mapply,
+##     match, mget, order, paste, pmax, pmax.int, pmin,
+##     pmin.int, Position, rank, rbind, Reduce,
+##     rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which, which.max,
+##     which.min</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## 
+## Attaching package: 'S4Vectors'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     expand.grid</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
+<pre><code>## Loading required package: Biostrings</code></pre>
+<pre><code>## Loading required package: XVector</code></pre>
+<pre><code>## 
+## Attaching package: 'Biostrings'</code></pre>
+<pre><code>## The following object is masked from 'package:base':
+## 
+##     strsplit</code></pre>
+<pre><code>## Loading required package: ShortRead</code></pre>
+<pre><code>## Loading required package: BiocParallel</code></pre>
+<pre><code>## Loading required package: GenomicAlignments</code></pre>
+<pre><code>## Loading required package: SummarizedExperiment</code></pre>
+<pre><code>## Loading required package: Biobase</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view
+##     with 'browseVignettes()'. To cite Bioconductor,
+##     see 'citation(&quot;Biobase&quot;)', and for packages
+##     'citation(&quot;pkgname&quot;)'.</code></pre>
+<pre><code>## Loading required package: DelayedArray</code></pre>
+<pre><code>## Loading required package: matrixStats</code></pre>
+<pre><code>## 
+## Attaching package: 'matrixStats'</code></pre>
+<pre><code>## The following objects are masked from 'package:Biobase':
+## 
+##     anyMissing, rowMedians</code></pre>
+<pre><code>## 
+## Attaching package: 'DelayedArray'</code></pre>
+<pre><code>## The following objects are masked from 'package:matrixStats':
+## 
+##     colMaxs, colMins, colRanges, rowMaxs, rowMins,
+##     rowRanges</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     aperm, apply, rowsum</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: 'systemPipeR'</code></pre>
+<pre><code>## The following object is masked from 'package:BiocStyle':
+## 
+##     output</code></pre>
 <p>If applicable users can load custom functions not provided by <code>systemPipeR</code>. Skip
 this step if this is not the case.</p>
 <pre class="r"><code>source(&quot;systemPipeChIPseq_Fct.R&quot;)</code></pre>
@@ -1974,11 +2020,11 @@ this step if this is not the case.</p>
 <pre class="r"><code>targetspath &lt;- system.file(&quot;extdata&quot;, &quot;targets_chip.txt&quot;, package = &quot;systemPipeR&quot;)
 targets &lt;- read.delim(targetspath, comment.char = &quot;#&quot;)
 targets[1:4, -c(5, 6)]</code></pre>
-<pre><code>##                   FileName SampleName Factor SampleLong
-## 1 ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A
-## 2 ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B
-## 3 ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A
-## 4 ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B
+<pre><code>##                      FileName SampleName Factor SampleLong
+## 1 ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2 ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3 ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4 ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
 ##   SampleReference
 ## 1                
 ## 2                
@@ -1990,40 +2036,58 @@ targets[1:4, -c(5, 6)]</code></pre>
 <p>The following example shows how one can design a custom read
 preprocessing function using utilities provided by the <code>ShortRead</code> package, and then
 apply it with <code>preprocessReads</code> in batch mode to all FASTQ samples referenced in the
-corresponding <code>SYSargs</code> instance (<code>args</code> object below). More detailed information on
+corresponding <code>SYSargs2</code> instance (<code>trim</code> object below). More detailed information on
 read preprocessing is provided in <code>systemPipeR's</code> main vignette.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/trim.param&quot;, mytargets = &quot;targets_chip.txt&quot;)
+<p>First, we construct <em><code>SYSargs2</code></em> object from <em><code>cwl</code></em> and <em><code>yml</code></em> param and <em><code>targets</code></em> files.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/preprocessReads/trim-se&quot;, 
+    package = &quot;systemPipeR&quot;)
+trim &lt;- loadWF(targets = targetspath, wf_file = &quot;trim-se.cwl&quot;, 
+    input_file = &quot;trim-se.yml&quot;, dir_path = dir_path)
+trim &lt;- renderWF(trim, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+trim
+output(trim)[1:2]</code></pre>
+<p>Next, we execute the code for trimming all the raw data.</p>
+<pre class="r"><code># args &lt;- systemArgs(sysma='param/trim.param',
+# mytargets='targets_chip.txt')
 filterFct &lt;- function(fq, cutoff = 20, Nexceptions = 0) {
     qcount &lt;- rowSums(as(quality(fq), &quot;matrix&quot;) &lt;= cutoff, na.rm = TRUE)
     fq[qcount &lt;= Nexceptions]
     # Retains reads where Phred scores are &gt;= cutoff with N
     # exceptions
 }
-preprocessReads(args = args, Fct = &quot;filterFct(fq, cutoff=20, Nexceptions=0)&quot;, 
+preprocessReads(args = trim, Fct = &quot;filterFct(fq, cutoff=20, Nexceptions=0)&quot;, 
     batchsize = 1e+05)
-writeTargetsout(x = args, file = &quot;targets_chip_trim.txt&quot;, overwrite = TRUE)</code></pre>
+writeTargetsout(x = trim, file = &quot;targets_chip_trim.txt&quot;, step = 1, 
+    new_col = &quot;FileName&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
 </div>
 <div id="fastq-quality-report" class="section level2">
 <h2><span class="header-section-number">3.3</span> FASTQ quality report</h2>
-<p>The following <code>seeFastq</code> and <code>seeFastqPlot</code> functions generate and plot a series of useful quality statistics for a set of FASTQ files including per cycle quality box
+<p>The following <code>seeFastq</code> and <code>seeFastqPlot</code> functions generate and plot a series
+of useful quality statistics for a set of FASTQ files including per cycle quality box
 plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
-written to a PDF file named <code>fastqReport.pdf</code>.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/tophat.param&quot;, mytargets = &quot;targets_chip.txt&quot;)
-library(BiocParallel)
+written to a PDF file named <code>fastqReport.pdf</code>.
+Parallelization of FASTQ quality report via scheduler (<em>e.g.</em> Slurm) across several compute nodes.</p>
+<pre class="r"><code>library(BiocParallel)
 library(batchtools)
 f &lt;- function(x) {
     library(systemPipeR)
-    args &lt;- systemArgs(sysma = &quot;param/tophat.param&quot;, mytargets = &quot;targets_chip.txt&quot;)
-    seeFastq(fastq = infile1(args)[x], batchsize = 1e+05, klength = 8)
+    targets &lt;- system.file(&quot;extdata&quot;, &quot;targets_chip.txt&quot;, package = &quot;systemPipeR&quot;)
+    dir_path &lt;- system.file(&quot;extdata/cwl/preprocessReads/trim-se&quot;, 
+        package = &quot;systemPipeR&quot;)
+    trim &lt;- loadWorkflow(targets = targets, wf_file = &quot;trim-se.cwl&quot;, 
+        input_file = &quot;trim-se.yml&quot;, dir_path = dir_path)
+    trim &lt;- renderWF(trim, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+        SampleName = &quot;_SampleName_&quot;))
+    seeFastq(fastq = infile1(trim)[x], batchsize = 1e+05, klength = 8)
 }
-moduleload(modules(args))  # Skip if a module system is not used
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
+
+resources &lt;- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
 param &lt;- BatchtoolsParam(workers = 4, cluster = &quot;slurm&quot;, template = &quot;batchtools.slurm.tmpl&quot;, 
     resources = resources)
-fqlist &lt;- bplapply(seq(along = args), f, BPPARAM = param)
+fqlist &lt;- bplapply(seq(along = trim), f, BPPARAM = param)
 
 pdf(&quot;./results/fastqReport.pdf&quot;, height = 18, width = 4 * length(fqlist))
 seeFastqPlot(unlist(fqlist, recursive = FALSE))
@@ -2041,27 +2105,47 @@ Figure 1: FASTQ quality report for 18 samples
 <h2><span class="header-section-number">4.1</span> Read mapping with <code>Bowtie2</code></h2>
 <p>The NGS reads of this project will be aligned with <code>Bowtie2</code> against the
 reference genome sequence <span class="citation">(Langmead and Salzberg 2012)</span>. The parameter settings of the
-aligner are defined in the <code>bowtieSE.param</code> file. In ChIP-Seq experiments it is
-usually more appropriate to eliminate reads mapping to multiple locations. To
-achieve this, users want to remove the argument setting <code>-k 50 non-deterministic</code>
-in the <code>bowtieSE.param</code> file.</p>
+aligner are defined in the <code>bowtie2-index.cwl</code> and <code>bowtie2-index.yml</code> files.
+In ChIP-Seq experiments it is usually more appropriate to eliminate reads mapping
+to multiple locations. To achieve this, users want to remove the argument setting
+<code>-k 50 non-deterministic</code> in the configuration files.</p>
+<p>Building the index:</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/bowtie2/bowtie2-idx&quot;, package = &quot;systemPipeR&quot;)
+idx &lt;- loadWorkflow(targets = NULL, wf_file = &quot;bowtie2-index.cwl&quot;, 
+    input_file = &quot;bowtie2-index.yml&quot;, dir_path = dir_path)
+idx &lt;- renderWF(idx)
+idx
+cmdlist(idx)
+
+## Run in single machine
+runCommandline(idx, make_bam = FALSE)</code></pre>
 <p>The following submits 18 alignment jobs via a scheduler to a computer cluster.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/bowtieSE.param&quot;, mytargets = &quot;targets_chip_trim.txt&quot;)
-sysargs(args)[1]  # Command-line parameters for first FASTQ file
-moduleload(modules(args))  # Skip if a module system is not used
-system(&quot;bowtie2-build ./data/tair10.fasta ./data/tair10.fasta&quot;)
-# Indexes reference genome
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg &lt;- clusterRun(args, conffile = &quot;.batchtools.conf.R&quot;, Njobs = 18, 
-    template = &quot;batchtools.slurm.tmpl&quot;, runid = &quot;01&quot;, resourceList = resources)
+<pre class="r"><code>targets &lt;- system.file(&quot;extdata&quot;, &quot;targets_chip.txt&quot;, package = &quot;systemPipeR&quot;)
+dir_path &lt;- system.file(&quot;extdata/cwl/bowtie2/bowtie2-se&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWF(targets = targets, wf_file = &quot;bowtie2-mapping-se.cwl&quot;, 
+    input_file = &quot;bowtie2-mapping-se.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]</code></pre>
+<pre class="r"><code>moduleload(modules(args))  # Skip if a module system is not used
+resources &lt;- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg &lt;- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
+    dir = FALSE), conffile = &quot;.batchtools.conf.R&quot;, template = &quot;batchtools.slurm.tmpl&quot;, 
+    Njobs = 18, runid = &quot;01&quot;, resourceList = resources)
 getStatus(reg = reg)
 waitForJobs(reg = reg)
-writeTargetsout(x = args, file = &quot;targets_bam.txt&quot;, overwrite = TRUE)</code></pre>
+args &lt;- output_update(args, dir = FALSE, replace = TRUE, extension = c(&quot;.sam&quot;, 
+    &quot;.bam&quot;))  ## Updates the output(args) to the right location in the subfolders
+output(args)</code></pre>
 <p>Alternatively, one can run the alignments sequentially on a single system.</p>
-<pre class="r"><code>runCommandline(args)</code></pre>
-<p>Check whether all BAM files have been created</p>
-<pre class="r"><code>file.exists(outpaths(args))</code></pre>
+<pre class="r"><code>args &lt;- runCommandline(args, force = F)</code></pre>
+<p>Check whether all BAM files have been created and write out the new targets file.</p>
+<pre class="r"><code>writeTargetsout(x = args, file = &quot;targets_bam.txt&quot;, step = 1, 
+    new_col = &quot;FileName&quot;, new_col_output_index = 1, overwrite = TRUE)
+outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+file.exists(outpaths)</code></pre>
 </div>
 <div id="read-and-alignment-stats" class="section level2">
 <h2><span class="header-section-number">4.2</span> Read and alignment stats</h2>
@@ -2077,9 +2161,9 @@ read.delim(&quot;results/alignStats.xls&quot;)</code></pre>
 <p>The <code>symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
 genome browser such as IGV without moving these large files to a local
 system. The corresponding URLs are written to a file with a path
-specified under <code>urlfile</code>, here <code>IGVurl.txt</code>.</p>
+specified under <code>urlfile</code>, here <code>IGVurl.txt</code>. Please replace the directory and the user name.</p>
 <pre class="r"><code>symLink2bam(sysargs = args, htmldir = c(&quot;~/.html/&quot;, &quot;somedir/&quot;), 
-    urlbase = &quot;http://biocluster.ucr.edu/~tgirke/&quot;, urlfile = &quot;./results/IGVurl.txt&quot;)</code></pre>
+    urlbase = &quot;http://cluster.hpcc.ucr.edu/~tgirke/&quot;, urlfile = &quot;./results/IGVurl.txt&quot;)</code></pre>
 </div>
 </div>
 <div id="utilities-for-coverage-data" class="section level1">
@@ -2091,7 +2175,8 @@ specified under <code>urlfile</code>, here <code>IGVurl.txt</code>.</p>
 library(GenomicRanges)
 library(Rsamtools)
 library(GenomicAlignments)
-aligns &lt;- readGAlignments(outpaths(args)[1])
+outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+aligns &lt;- readGAlignments(outpaths[1])
 cov &lt;- coverage(aligns)
 cov</code></pre>
 </div>
@@ -2108,7 +2193,7 @@ islands[[1]]</code></pre>
 <h2><span class="header-section-number">5.4</span> Plot coverage for defined region</h2>
 <pre class="r"><code>library(ggbio)
 myloc &lt;- c(&quot;Chr1&quot;, 1, 1e+05)
-ga &lt;- readGAlignments(outpaths(args)[1], use.names = TRUE, param = ScanBamParam(which = GRanges(myloc[1], 
+ga &lt;- readGAlignments(outpaths[1], use.names = TRUE, param = ScanBamParam(which = GRanges(myloc[1], 
     IRanges(as.numeric(myloc[2]), as.numeric(myloc[3])))))
 autoplot(ga, aes(color = strand, fill = strand), facets = strand ~ 
     seqnames, stat = &quot;coverage&quot;)</code></pre>
@@ -2122,12 +2207,18 @@ autoplot(ga, aes(color = strand, fill = strand), facets = strand ~
 the sensitivity of the peak calling by increasing the depth of read
 coverage. The <code>mergeBamByFactor</code> function merges BAM files based on grouping information
 specified by a <code>factor</code>, here the <code>Factor</code> column of the imported targets file. It
-also returns an updated <code>SYSargs</code> object containing the paths to the
+also returns an updated <code>SYSargs2</code> object containing the paths to the
 merged BAM files as well as to any unmerged files without replicates.
 This step can be skipped if merging of BAM files is not desired.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = NULL, mytargets = &quot;targets_bam.txt&quot;)
-args_merge &lt;- mergeBamByFactor(args, overwrite = TRUE)
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/mergeBamByFactor&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWF(targets = &quot;targets_bam.txt&quot;, wf_file = &quot;merge-bam.cwl&quot;, 
+    input_file = &quot;merge-bam.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_BAM_PATH_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+
+args_merge &lt;- mergeBamByFactor(args = args, overwrite = TRUE)
 writeTargetsout(x = args_merge, file = &quot;targets_mergeBamByFactor.txt&quot;, 
+    step = 1, new_col = &quot;FileName&quot;, new_col_output_index = 1, 
     overwrite = TRUE)</code></pre>
 <pre class="r"><code># Skip if a module system is not used
 module(&quot;list&quot;)
@@ -2142,11 +2233,17 @@ input on all samples specified in the corresponding <code>args</code> object. No
 the small size of the sample data, MACS2 needs to be run here with the
 <code>nomodel</code> setting. For real data sets, users want to remove this parameter
 in the corresponding <code>*.param</code> file(s).</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/macs2_noinput.param&quot;, mytargets = &quot;targets_mergeBamByFactor.txt&quot;)
-sysargs(args)[1]  # Command-line parameters for first FASTQ file
-runCommandline(args)
-file.exists(outpaths(args))
-writeTargetsout(x = args, file = &quot;targets_macs.txt&quot;, overwrite = TRUE)</code></pre>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/MACS2/MACS2-noinput/&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWF(targets = &quot;targets_mergeBamByFactor.txt&quot;, wf_file = &quot;macs2.cwl&quot;, 
+    input_file = &quot;macs2.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+
+runCommandline(args, make_bam = FALSE, force = T)
+outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+file.exists(outpaths)
+writeTargetsout(x = args, file = &quot;targets_macs.txt&quot;, step = 1, 
+    new_col = &quot;FileName&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
 </div>
 <div id="peak-calling-with-inputreference-sample" class="section level2">
 <h2><span class="header-section-number">6.3</span> Peak calling with input/reference sample</h2>
@@ -2156,11 +2253,19 @@ conveniently specified in the <code>SampleReference</code> column of the initial
 file intermediate for running MACS2 with the corresponding input samples.</p>
 <pre class="r"><code>writeTargetsRef(infile = &quot;targets_mergeBamByFactor.txt&quot;, outfile = &quot;targets_bam_ref.txt&quot;, 
     silent = FALSE, overwrite = TRUE)
-args_input &lt;- systemArgs(sysma = &quot;param/macs2.param&quot;, mytargets = &quot;targets_bam_ref.txt&quot;)
-sysargs(args_input)[1]  # Command-line parameters for first FASTQ file
-runCommandline(args_input)
-file.exists(outpaths(args_input))
+dir_path &lt;- system.file(&quot;extdata/cwl/MACS2/MACS2-input/&quot;, package = &quot;systemPipeR&quot;)
+args_input &lt;- loadWF(targets = &quot;targets_bam_ref.txt&quot;, wf_file = &quot;macs2-input.cwl&quot;, 
+    input_file = &quot;macs2.yml&quot;, dir_path = dir_path)
+args_input &lt;- renderWF(args_input, inputvars = c(FileName1 = &quot;_FASTQ_PATH1_&quot;, 
+    FileName2 = &quot;_FASTQ_PATH2_&quot;, SampleName = &quot;_SampleName_&quot;))
+cmdlist(args_input)[1]
+## Run
+args_input &lt;- runCommandline(args_input, make_bam = FALSE, force = T)
+outpaths_input &lt;- subsetWF(args_input, slot = &quot;output&quot;, subset = 1, 
+    index = 1)
+file.exists(outpaths_input)
 writeTargetsout(x = args_input, file = &quot;targets_macs_input.txt&quot;, 
+    step = 1, new_col = &quot;FileName&quot;, new_col_output_index = 1, 
     overwrite = TRUE)</code></pre>
 <p>The peak calling results from MACS2 are written for each sample to
 separate files in the <code>results</code> directory. They are named after the corresponding
@@ -2169,10 +2274,11 @@ files with extensions used by MACS2.</p>
 <div id="identify-consensus-peaks" class="section level2">
 <h2><span class="header-section-number">6.4</span> Identify consensus peaks</h2>
 <p>The following example shows how one can identify consensus preaks among two peak sets sharing either a minimum absolute overlap and/or minimum relative overlap using the <code>subsetByOverlaps</code> or <code>olRanges</code> functions, respectively. Note, the latter is a custom function imported below by sourcing it.</p>
-<pre class="r"><code>source(&quot;http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/rangeoverlapper.R&quot;)
-peak_M1A &lt;- outpaths(args)[&quot;M1A&quot;]
+<pre class="r"><code># source('http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/rangeoverlapper.R')
+outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)  ## escolher um dos outputs index
+peak_M1A &lt;- outpaths[&quot;M1A&quot;]
 peak_M1A &lt;- as(read.delim(peak_M1A, comment = &quot;#&quot;)[, 1:3], &quot;GRanges&quot;)
-peak_A1A &lt;- outpaths(args)[&quot;A1A&quot;]
+peak_A1A &lt;- outpaths[&quot;A1A&quot;]
 peak_A1A &lt;- as(read.delim(peak_A1A, comment = &quot;#&quot;)[, 1:3], &quot;GRanges&quot;)
 (myol1 &lt;- subsetByOverlaps(peak_M1A, peak_A1A, minoverlap = 1))
 # Returns any overlap
@@ -2189,8 +2295,12 @@ myol2[values(myol2)[&quot;OLpercQ&quot;][, 1] &gt;= 50]
 <p>The following annotates the identified peaks with genomic context information using the <code>ChIPpeakAnno</code> and <code>ChIPseeker</code> packages, respectively <span class="citation">(Zhu et al. 2010; Yu, Wang, and He 2015)</span>.</p>
 <pre class="r"><code>library(ChIPpeakAnno)
 library(GenomicFeatures)
-args &lt;- systemArgs(sysma = &quot;param/annotate_peaks.param&quot;, mytargets = &quot;targets_macs.txt&quot;)
-# txdb &lt;- loadDb('./data/tair10.sqlite')
+dir_path &lt;- system.file(&quot;extdata/cwl/annotate_peaks&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWF(targets = &quot;targets_macs.txt&quot;, wf_file = &quot;annotate-peaks.cwl&quot;, 
+    input_file = &quot;annotate-peaks.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+
 txdb &lt;- makeTxDbFromGFF(file = &quot;data/tair10.gff&quot;, format = &quot;gff&quot;, 
     dataSource = &quot;TAIR&quot;, organism = &quot;Arabidopsis thaliana&quot;)
 ge &lt;- genes(txdb, columns = c(&quot;tx_name&quot;, &quot;gene_id&quot;, &quot;tx_type&quot;))
@@ -2200,10 +2310,12 @@ for (i in seq(along = args)) {
     annotatedPeak &lt;- annotatePeakInBatch(peaksGR, AnnotationData = genes(txdb))
     df &lt;- data.frame(as.data.frame(annotatedPeak), as.data.frame(values(ge[values(annotatedPeak)$feature, 
         ])))
-    write.table(df, outpaths(args[i]), quote = FALSE, row.names = FALSE, 
+    outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+    write.table(df, outpaths[i], quote = FALSE, row.names = FALSE, 
         sep = &quot;\t&quot;)
 }
-writeTargetsout(x = args, file = &quot;targets_peakanno.txt&quot;, overwrite = TRUE)</code></pre>
+writeTargetsout(x = args, file = &quot;targets_peakanno.txt&quot;, step = 1, 
+    new_col = &quot;FileName&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
 <p>The peak annotation results are written for each peak set to separate
 files in the <code>results</code> directory. They are named after the corresponding peak
 files with extensions specified in the <code>annotate_peaks.param</code> file,
@@ -2216,18 +2328,21 @@ here <code>*.peaks.annotated.xls</code>.</p>
 for (i in seq(along = args)) {
     peakAnno &lt;- annotatePeak(infile1(args)[i], TxDb = txdb, verbose = FALSE)
     df &lt;- as.data.frame(peakAnno)
-    write.table(df, outpaths(args[i]), quote = FALSE, row.names = FALSE, 
+    outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+    write.table(df, outpaths[i], quote = FALSE, row.names = FALSE, 
         sep = &quot;\t&quot;)
 }
-writeTargetsout(x = args, file = &quot;targets_peakanno.txt&quot;, overwrite = TRUE)</code></pre>
+writeTargetsout(x = args, file = &quot;targets_peakanno.txt&quot;, step = 1, 
+    new_col = &quot;FileName&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
 <p>Summary plots provided by the <code>ChIPseeker</code> package. Here applied only to one sample
 for demonstration purposes.</p>
 <pre class="r"><code>peak &lt;- readPeakFile(infile1(args)[1])
 covplot(peak, weightCol = &quot;X.log10.pvalue.&quot;)
-peakHeatmap(outpaths(args)[1], TxDb = txdb, upstream = 1000, 
-    downstream = 1000, color = &quot;red&quot;)
-plotAvgProf2(outpaths(args)[1], TxDb = txdb, upstream = 1000, 
-    downstream = 1000, xlab = &quot;Genomic Region (5'-&gt;3')&quot;, ylab = &quot;Read Count Frequency&quot;)</code></pre>
+outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+peakHeatmap(outpaths[1], TxDb = txdb, upstream = 1000, downstream = 1000, 
+    color = &quot;red&quot;)
+plotAvgProf2(outpaths[1], TxDb = txdb, upstream = 1000, downstream = 1000, 
+    xlab = &quot;Genomic Region (5'-&gt;3')&quot;, ylab = &quot;Read Count Frequency&quot;)</code></pre>
 </div>
 </div>
 <div id="count-reads-overlapping-peaks" class="section level1">
@@ -2238,11 +2353,27 @@ the read counting is performed with the <code>summarizeOverlaps</code> function 
 <code>GenomicAlignments</code> package. The resulting count tables are directly saved to
 files, one for each peak set.</p>
 <pre class="r"><code>library(GenomicRanges)
-args &lt;- systemArgs(sysma = &quot;param/count_rangesets.param&quot;, mytargets = &quot;targets_macs.txt&quot;)
-args_bam &lt;- systemArgs(sysma = NULL, mytargets = &quot;targets_bam.txt&quot;)
-bfl &lt;- BamFileList(outpaths(args_bam), yieldSize = 50000, index = character())
+dir_path &lt;- system.file(&quot;extdata/cwl/count_rangesets&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWF(targets = &quot;targets_macs.txt&quot;, wf_file = &quot;count_rangesets.cwl&quot;, 
+    input_file = &quot;count_rangesets.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+
+## Bam Files
+targets &lt;- system.file(&quot;extdata&quot;, &quot;targets_chip.txt&quot;, package = &quot;systemPipeR&quot;)
+dir_path &lt;- system.file(&quot;extdata/cwl/bowtie2/bowtie2-se&quot;, package = &quot;systemPipeR&quot;)
+args_bam &lt;- loadWF(targets = targets, wf_file = &quot;bowtie2-mapping-se.cwl&quot;, 
+    input_file = &quot;bowtie2-mapping-se.yml&quot;, dir_path = dir_path)
+args_bam &lt;- renderWF(args_bam, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+args_bam &lt;- output_update(args_bam, dir = FALSE, replace = TRUE, 
+    extension = c(&quot;.sam&quot;, &quot;.bam&quot;))
+outpaths &lt;- subsetWF(args_bam, slot = &quot;output&quot;, subset = 1, index = 1)
+
+bfl &lt;- BamFileList(outpaths, yieldSize = 50000, index = character())
 countDFnames &lt;- countRangeset(bfl, args, mode = &quot;Union&quot;, ignore.strand = TRUE)
-writeTargetsout(x = args, file = &quot;targets_countDF.txt&quot;, overwrite = TRUE)</code></pre>
+writeTargetsout(x = args, file = &quot;targets_countDF.txt&quot;, step = 1, 
+    new_col = &quot;FileName&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
 </div>
 <div id="differential-binding-analysis" class="section level1">
 <h1><span class="header-section-number">9</span> Differential binding analysis</h1>
@@ -2251,23 +2382,37 @@ several count tables using <code>edgeR</code> or <code>DESeq2</code> <span class
 Internally, it calls the functions <code>run_edgeR</code> and <code>run_DESeq2</code>. It also returns
 the filtering results and plots from the downstream <code>filterDEGs</code> function using
 the fold change and FDR cutoffs provided under the <code>dbrfilter</code> argument.</p>
-<pre class="r"><code>args_diff &lt;- systemArgs(sysma = &quot;param/rundiff.param&quot;, mytargets = &quot;targets_countDF.txt&quot;)
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/rundiff&quot;, package = &quot;systemPipeR&quot;)
+args_diff &lt;- loadWF(targets = &quot;targets_countDF.txt&quot;, wf_file = &quot;rundiff.cwl&quot;, 
+    input_file = &quot;rundiff.yml&quot;, dir_path = dir_path)
+args_diff &lt;- renderWF(args_diff, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+
 cmp &lt;- readComp(file = args_bam, format = &quot;matrix&quot;)
-dbrlist &lt;- runDiff(args = args_diff, diffFct = run_edgeR, targets = targetsin(args_bam), 
+dbrlist &lt;- runDiff(args = args_diff, diffFct = run_edgeR, targets = targets.as.df(targets(args_bam)), 
     cmp = cmp[[1]], independent = TRUE, dbrfilter = c(Fold = 2, 
         FDR = 1))
 writeTargetsout(x = args_diff, file = &quot;targets_rundiff.txt&quot;, 
+    step = 1, new_col = &quot;FileName&quot;, new_col_output_index = 1, 
     overwrite = TRUE)</code></pre>
 </div>
 <div id="go-term-enrichment-analysis" class="section level1">
 <h1><span class="header-section-number">10</span> GO term enrichment analysis</h1>
 <p>The following performs GO term enrichment analysis for each annotated peak set.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/macs2.param&quot;, mytargets = &quot;targets_bam_ref.txt&quot;)
-args_anno &lt;- systemArgs(sysma = &quot;param/annotate_peaks.param&quot;, 
-    mytargets = &quot;targets_macs.txt&quot;)
-annofiles &lt;- outpaths(args_anno)
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/annotate_peaks&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWF(targets = &quot;targets_bam_ref.txt&quot;, wf_file = &quot;annotate-peaks.cwl&quot;, 
+    input_file = &quot;annotate-peaks.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName1 = &quot;_FASTQ_PATH1_&quot;, 
+    FileName2 = &quot;_FASTQ_PATH2_&quot;, SampleName = &quot;_SampleName_&quot;))
+
+args_anno &lt;- loadWF(targets = &quot;targets_macs.txt&quot;, wf_file = &quot;annotate-peaks.cwl&quot;, 
+    input_file = &quot;annotate-peaks.yml&quot;, dir_path = dir_path)
+args_anno &lt;- renderWF(args_anno, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+annofiles &lt;- subsetWF(args_anno, slot = &quot;output&quot;, subset = 1, 
+    index = 1)
 gene_ids &lt;- sapply(names(annofiles), function(x) unique(as.character(read.delim(annofiles[x])[, 
-    &quot;gene_id&quot;])), simplify = FALSE)
+    &quot;geneId&quot;])), simplify = FALSE)
 load(&quot;data/GO/catdb.RData&quot;)
 BatchResult &lt;- GOCluster_Report(catdb = catdb, setlist = gene_ids, 
     method = &quot;all&quot;, id_type = &quot;gene&quot;, CLSZ = 2, cutoff = 0.9, 
@@ -2288,7 +2433,12 @@ as expected by some motif discovery tools, such as <code>BCRANK</code>.</p>
 <pre class="r"><code>library(Biostrings)
 library(seqLogo)
 library(BCRANK)
-args &lt;- systemArgs(sysma = &quot;param/annotate_peaks.param&quot;, mytargets = &quot;targets_macs.txt&quot;)
+dir_path &lt;- system.file(&quot;extdata/cwl/annotate_peaks&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWF(targets = &quot;targets_macs.txt&quot;, wf_file = &quot;annotate-peaks.cwl&quot;, 
+    input_file = &quot;annotate-peaks.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+
 rangefiles &lt;- infile1(args)
 for (i in seq(along = rangefiles)) {
     df &lt;- read.delim(rangefiles[i], comment = &quot;#&quot;)
@@ -2327,13 +2477,13 @@ Figure 2: One of the motifs identified by <code>BCRANK</code>
 <div id="version-information" class="section level1">
 <h1><span class="header-section-number">12</span> Version Information</h1>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 3.5.2 (2018-12-20)
+<pre><code>## R version 3.6.1 (2019-07-05)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 18.04.1 LTS
+## Running under: Pop!_OS 19.04
 ## 
 ## Matrix products: default
-## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
-## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.8.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.8.0
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -2348,63 +2498,65 @@ Figure 2: One of the motifs identified by <code>BCRANK</code>
 ## [6] utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] batchtools_0.9.11           data.table_1.12.0          
-##  [3] ape_5.2                     ggplot2_3.1.0              
-##  [5] systemPipeR_1.17.5          ShortRead_1.40.0           
-##  [7] GenomicAlignments_1.18.0    SummarizedExperiment_1.12.0
-##  [9] DelayedArray_0.8.0          matrixStats_0.54.0         
-## [11] Biobase_2.42.0              BiocParallel_1.16.2        
-## [13] Rsamtools_1.34.0            Biostrings_2.50.1          
-## [15] XVector_0.22.0              GenomicRanges_1.34.0       
-## [17] GenomeInfoDb_1.18.1         IRanges_2.16.0             
-## [19] S4Vectors_0.20.1            BiocGenerics_0.28.0        
-## [21] BiocStyle_2.10.0           
+##  [1] systemPipeR_1.21.0          ShortRead_1.44.0           
+##  [3] GenomicAlignments_1.22.1    SummarizedExperiment_1.16.0
+##  [5] DelayedArray_0.12.0         matrixStats_0.55.0         
+##  [7] Biobase_2.46.0              BiocParallel_1.20.0        
+##  [9] Rsamtools_2.2.1             Biostrings_2.54.0          
+## [11] XVector_0.26.0              GenomicRanges_1.38.0       
+## [13] GenomeInfoDb_1.22.0         IRanges_2.20.1             
+## [15] S4Vectors_0.24.0            BiocGenerics_0.32.0        
+## [17] BiocStyle_2.14.0           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] nlme_3.1-137           Category_2.48.0       
-##  [3] bitops_1.0-6           bit64_0.9-7           
-##  [5] RColorBrewer_1.1-2     progress_1.2.0        
-##  [7] httr_1.4.0             rprojroot_1.3-2       
-##  [9] Rgraphviz_2.26.0       tools_3.5.2           
-## [11] backports_1.1.3        R6_2.3.0              
-## [13] DBI_1.0.0              lazyeval_0.2.1        
-## [15] colorspace_1.4-0       withr_2.1.2           
-## [17] tidyselect_0.2.5       prettyunits_1.0.2     
-## [19] bit_1.1-14             compiler_3.5.2        
-## [21] graph_1.60.0           formatR_1.5           
-## [23] rtracklayer_1.42.1     bookdown_0.7          
-## [25] checkmate_1.9.1        scales_1.0.0          
-## [27] genefilter_1.64.0      RBGL_1.58.1           
-## [29] rappdirs_0.3.1         stringr_1.3.1         
-## [31] digest_0.6.18          rmarkdown_1.10        
-## [33] AnnotationForge_1.24.0 pkgconfig_2.0.2       
-## [35] htmltools_0.3.6        limma_3.38.2          
-## [37] rlang_0.3.1            RSQLite_2.1.1         
-## [39] bindr_0.1.1            GOstats_2.48.0        
-## [41] hwriter_1.3.2          dplyr_0.7.8           
-## [43] RCurl_1.95-4.11        magrittr_1.5          
-## [45] GO.db_3.7.0            GenomeInfoDbData_1.2.0
-## [47] Matrix_1.2-15          Rcpp_1.0.0            
-## [49] munsell_0.5.0          stringi_1.2.4         
-## [51] yaml_2.2.0             edgeR_3.24.0          
-## [53] zlibbioc_1.28.0        plyr_1.8.4            
-## [55] grid_3.5.2             blob_1.1.1            
-## [57] crayon_1.3.4           lattice_0.20-38       
-## [59] splines_3.5.2          GenomicFeatures_1.34.1
-## [61] annotate_1.60.0        hms_0.4.2             
-## [63] locfit_1.5-9.1         knitr_1.21            
-## [65] pillar_1.3.1           rjson_0.2.20          
-## [67] base64url_1.4          codetools_0.2-16      
-## [69] biomaRt_2.38.0         XML_3.98-1.16         
-## [71] glue_1.3.0             evaluate_0.12         
-## [73] latticeExtra_0.6-28    BiocManager_1.30.4    
-## [75] gtable_0.2.0           purrr_0.2.5           
-## [77] assertthat_0.2.0       xfun_0.4              
-## [79] xtable_1.8-3           survival_2.43-3       
-## [81] pheatmap_1.0.12        tibble_2.0.1          
-## [83] AnnotationDbi_1.44.0   memoise_1.1.0         
-## [85] bindrcpp_0.2.2         brew_1.0-6            
-## [87] GSEABase_1.44.0</code></pre>
+##  [1] Category_2.52.1          bitops_1.0-6            
+##  [3] bit64_0.9-7              RColorBrewer_1.1-2      
+##  [5] progress_1.2.2           httr_1.4.1              
+##  [7] Rgraphviz_2.30.0         tools_3.6.1             
+##  [9] backports_1.1.5          R6_2.4.1                
+## [11] DBI_1.0.0                lazyeval_0.2.2          
+## [13] colorspace_1.4-1         withr_2.1.2             
+## [15] tidyselect_0.2.5         prettyunits_1.0.2       
+## [17] bit_1.1-14               curl_4.2                
+## [19] compiler_3.6.1           graph_1.64.0            
+## [21] formatR_1.7              rtracklayer_1.46.0      
+## [23] bookdown_0.15            checkmate_1.9.4         
+## [25] scales_1.1.0             genefilter_1.68.0       
+## [27] RBGL_1.62.1              askpass_1.1             
+## [29] rappdirs_0.3.1           stringr_1.4.0           
+## [31] digest_0.6.22            rmarkdown_1.17          
+## [33] AnnotationForge_1.28.0   pkgconfig_2.0.3         
+## [35] htmltools_0.4.0          BSgenome_1.54.0         
+## [37] dbplyr_1.4.2             limma_3.42.0            
+## [39] rlang_0.4.1              RSQLite_2.1.2           
+## [41] GOstats_2.52.0           hwriter_1.3.2           
+## [43] dplyr_0.8.3              VariantAnnotation_1.32.0
+## [45] RCurl_1.95-4.12          magrittr_1.5            
+## [47] GO.db_3.10.0             GenomeInfoDbData_1.2.2  
+## [49] Matrix_1.2-17            Rcpp_1.0.3              
+## [51] munsell_0.5.0            lifecycle_0.1.0         
+## [53] stringi_1.4.3            yaml_2.2.0              
+## [55] edgeR_3.28.0             zlibbioc_1.32.0         
+## [57] BiocFileCache_1.10.2     grid_3.6.1              
+## [59] blob_1.2.0               crayon_1.3.4            
+## [61] lattice_0.20-38          splines_3.6.1           
+## [63] GenomicFeatures_1.38.0   annotate_1.64.0         
+## [65] hms_0.5.2                batchtools_0.9.11       
+## [67] locfit_1.5-9.1           zeallot_0.1.0           
+## [69] knitr_1.26               pillar_1.4.2            
+## [71] rjson_0.2.20             base64url_1.4           
+## [73] codetools_0.2-16         biomaRt_2.42.0          
+## [75] XML_3.98-1.20            glue_1.3.1              
+## [77] evaluate_0.14            latticeExtra_0.6-28     
+## [79] data.table_1.12.6        BiocManager_1.30.10     
+## [81] vctrs_0.2.0              gtable_0.3.0            
+## [83] openssl_1.4.1            purrr_0.3.3             
+## [85] assertthat_0.2.1         ggplot2_3.2.1           
+## [87] xfun_0.11                xtable_1.8-4            
+## [89] survival_2.44-1.1        pheatmap_1.0.12         
+## [91] tibble_2.1.3             AnnotationDbi_1.48.0    
+## [93] memoise_1.1.0            brew_1.0-6              
+## [95] GSEABase_1.48.0</code></pre>
 </div>
 <div id="funding" class="section level1">
 <h1><span class="header-section-number">13</span> Funding</h1>
@@ -2456,6 +2608,54 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <script type="text/x-mathjax-config">

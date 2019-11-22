@@ -1,6 +1,6 @@
 ---
 title: 7. Annotate peaks with genomic context
-last_updated: Fri Jun 21 16:31:58 2019
+last_updated: Thu Nov 21 15:49:32 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_07.html
 ---
@@ -13,8 +13,12 @@ The following annotates the identified peaks with genomic context information us
 ```r
 library(ChIPpeakAnno)
 library(GenomicFeatures)
-args <- systemArgs(sysma = "param/annotate_peaks.param", mytargets = "targets_macs.txt")
-# txdb <- loadDb('./data/tair10.sqlite')
+dir_path <- system.file("extdata/cwl/annotate_peaks", package = "systemPipeR")
+args <- loadWF(targets = "targets_macs.txt", wf_file = "annotate-peaks.cwl", 
+    input_file = "annotate-peaks.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+
 txdb <- makeTxDbFromGFF(file = "data/tair10.gff", format = "gff", 
     dataSource = "TAIR", organism = "Arabidopsis thaliana")
 ge <- genes(txdb, columns = c("tx_name", "gene_id", "tx_type"))
@@ -24,10 +28,12 @@ for (i in seq(along = args)) {
     annotatedPeak <- annotatePeakInBatch(peaksGR, AnnotationData = genes(txdb))
     df <- data.frame(as.data.frame(annotatedPeak), as.data.frame(values(ge[values(annotatedPeak)$feature, 
         ])))
-    write.table(df, outpaths(args[i]), quote = FALSE, row.names = FALSE, 
+    outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+    write.table(df, outpaths[i], quote = FALSE, row.names = FALSE, 
         sep = "\t")
 }
-writeTargetsout(x = args, file = "targets_peakanno.txt", overwrite = TRUE)
+writeTargetsout(x = args, file = "targets_peakanno.txt", step = 1, 
+    new_col = "FileName", new_col_output_index = 1, overwrite = TRUE)
 ```
 
 
@@ -47,10 +53,12 @@ library(ChIPseeker)
 for (i in seq(along = args)) {
     peakAnno <- annotatePeak(infile1(args)[i], TxDb = txdb, verbose = FALSE)
     df <- as.data.frame(peakAnno)
-    write.table(df, outpaths(args[i]), quote = FALSE, row.names = FALSE, 
+    outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+    write.table(df, outpaths[i], quote = FALSE, row.names = FALSE, 
         sep = "\t")
 }
-writeTargetsout(x = args, file = "targets_peakanno.txt", overwrite = TRUE)
+writeTargetsout(x = args, file = "targets_peakanno.txt", step = 1, 
+    new_col = "FileName", new_col_output_index = 1, overwrite = TRUE)
 ```
 
 Summary plots provided by the `ChIPseeker` package. Here applied only to one sample
@@ -60,10 +68,11 @@ for demonstration purposes.
 ```r
 peak <- readPeakFile(infile1(args)[1])
 covplot(peak, weightCol = "X.log10.pvalue.")
-peakHeatmap(outpaths(args)[1], TxDb = txdb, upstream = 1000, 
-    downstream = 1000, color = "red")
-plotAvgProf2(outpaths(args)[1], TxDb = txdb, upstream = 1000, 
-    downstream = 1000, xlab = "Genomic Region (5'->3')", ylab = "Read Count Frequency")
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+peakHeatmap(outpaths[1], TxDb = txdb, upstream = 1000, downstream = 1000, 
+    color = "red")
+plotAvgProf2(outpaths[1], TxDb = txdb, upstream = 1000, downstream = 1000, 
+    xlab = "Genomic Region (5'->3')", ylab = "Read Count Frequency")
 ```
 
 <br><br><center><a href="mydoc_systemPipeChIPseq_06.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page

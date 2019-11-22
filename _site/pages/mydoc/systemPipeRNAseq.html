@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)" />
@@ -1287,7 +1288,7 @@ window.initializeCodeFolding = function(show) {
 
     // create a collapsable div to wrap the code in
     var div = $('<div class="collapse r-code-collapse"></div>');
-    if (show)
+    if (show || $(this)[0].classList.contains('fold-show'))
       div.addClass('in');
     var id = 'rcode-643E0F36' + currentIndex++;
     div.attr('id', id);
@@ -1473,7 +1474,8 @@ background-color: inherit;
 tt, code, pre {
 font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 }
-h1, h2, h3, h4, h5, h6 { font-family: Helvetica, Arial, sans-serif;
+h1, h2, h3, h4, h5, h6 {
+font-family: Helvetica, Arial, sans-serif;
 margin: 1.2em 150px 0.6em 0em;
 
 padding-left: 65px;
@@ -1520,12 +1522,14 @@ font-weight: bold;
 font-weight: bold;
 }
 
-code { background-color: #f0f0f0;
+code {
+background-color: #f0f0f0;
 color: #404040;
 font-size: 90%;
 }
 
-.figure { margin: 0em 0px 0.5em;
+.figure {
+margin: 0em 0px 0.5em;
 }
 img {
 max-width: 100%;
@@ -1535,6 +1539,11 @@ padding: 0px 150px 0px 130px;
 p > img {
 padding-left: 65px;
 padding-right: 0px;
+}
+td > img {
+padding: 0px;
+max-width: 100%;
+display: inline;
 }
 img.smallfigure {
 padding-left: 195px;
@@ -1633,7 +1642,8 @@ code > span.st { color: #40A040; }
 code > span.co { color: #808080; font-style: italic; } 
 code > span.ot { color: #2020F0; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #E07020; }  code > span.er { color: #FF0000; } 
+code > span.fu { color: #E07020; } 
+code > span.er { color: #FF0000; } 
 code > span.identifier { color: #404040; }
 code > span.number { color: #D02070; }
 code > span.string { color: #40A040; }
@@ -1659,7 +1669,6 @@ padding-left: 65px;
 
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -1733,56 +1742,12 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
 
@@ -1796,8 +1761,14 @@ $(document).ready(function ()  {
 }
 }
 
+@media print {
 
+}
 
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
 
 div.main-container {
   max-width: 1200px;
@@ -1873,9 +1844,9 @@ div.tocify {
 
 <h1 class="title toc-ignore">RNA-Seq Workflow Template</h1>
 <p class="author-name">Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)</p>
-<h4 class="date">Last update: 21 June, 2019</h4>
+<h4 class="date">Last update: 21 November, 2019</h4>
 <h4 class="package">Package</h4>
-<p>systemPipeR 1.19.1</p>
+<p>systemPipeR 1.21.0</p>
 
 </div>
 
@@ -1927,7 +1898,7 @@ contains 18 paired-end (PE) read sets from <em>Arabidposis thaliana</em>
 file has been subsetted to 90,000-100,000 randomly sampled PE reads that
 map to the first 100,000 nucleotides of each chromosome of the <em>A.
 thalina</em> genome. The corresponding reference genome sequence (FASTA) and
-its GFF annotion files (provided in the same download) have been
+its GFF annotation files (provided in the same download) have been
 truncated accordingly. This way the entire test sample data set is less
 than 200MB in storage space. A PE read set has been chosen for this test
 data set for flexibility, because it can be used for testing both types
@@ -1964,6 +1935,10 @@ this report <span class="citation">(H Backman and Girke 2016)</span>.</p>
 <pre class="r"><code>library(systemPipeR)</code></pre>
 <p>If applicable load custom functions not provided by <code>systemPipeR</code> package.</p>
 <pre class="r"><code>source(&quot;systemPipeRNAseq_Fct.R&quot;)</code></pre>
+<p>To apply workflows to custom data, the user needs to modify the <em><code>targets</code></em> file and if
+necessary update the corresponding <em><code>.cwl</code></em> and <em><code>.yml</code></em> files. A collection of pre-generated <em><code>.cwl</code></em> and <em><code>.yml</code></em> files are provided in the <em><code>param/cwl</code></em> subdirectory of each workflow template. They
+are also viewable in the GitHub repository of <em><code>systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see
+here</a>).</p>
 </div>
 <div id="experiment-definition-provided-by-targets-file" class="section level2">
 <h2><span class="header-section-number">2.3</span> Experiment definition provided by <code>targets</code> file</h2>
@@ -1972,25 +1947,25 @@ comparisons of the analysis workflow.</p>
 <pre class="r"><code>targetspath &lt;- system.file(&quot;extdata&quot;, &quot;targets.txt&quot;, package = &quot;systemPipeR&quot;)
 targets &lt;- read.delim(targetspath, comment.char = &quot;#&quot;)[, 1:4]
 targets</code></pre>
-<pre><code>##                    FileName SampleName Factor SampleLong
-## 1  ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A
-## 2  ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B
-## 3  ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A
-## 4  ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B
-## 5  ./data/SRR446031_1.fastq        V1A     V1   Vir.1h.A
-## 6  ./data/SRR446032_1.fastq        V1B     V1   Vir.1h.B
-## 7  ./data/SRR446033_1.fastq        M6A     M6  Mock.6h.A
-## 8  ./data/SRR446034_1.fastq        M6B     M6  Mock.6h.B
-## 9  ./data/SRR446035_1.fastq        A6A     A6   Avr.6h.A
-## 10 ./data/SRR446036_1.fastq        A6B     A6   Avr.6h.B
-## 11 ./data/SRR446037_1.fastq        V6A     V6   Vir.6h.A
-## 12 ./data/SRR446038_1.fastq        V6B     V6   Vir.6h.B
-## 13 ./data/SRR446039_1.fastq       M12A    M12 Mock.12h.A
-## 14 ./data/SRR446040_1.fastq       M12B    M12 Mock.12h.B
-## 15 ./data/SRR446041_1.fastq       A12A    A12  Avr.12h.A
-## 16 ./data/SRR446042_1.fastq       A12B    A12  Avr.12h.B
-## 17 ./data/SRR446043_1.fastq       V12A    V12  Vir.12h.A
-## 18 ./data/SRR446044_1.fastq       V12B    V12  Vir.12h.B</code></pre>
+<pre><code>##                       FileName SampleName Factor SampleLong
+## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
+## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A
+## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B
+## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A
+## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B
+## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A
+## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B
+## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A
+## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B
+## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A
+## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B
+## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A
+## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B
+## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A
+## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B</code></pre>
 </div>
 </div>
 <div id="read-preprocessing" class="section level1">
@@ -1999,18 +1974,29 @@ targets</code></pre>
 <h2><span class="header-section-number">3.1</span> Read quality filtering and trimming</h2>
 <p>The function <code>preprocessReads</code> allows to apply predefined or custom
 read preprocessing functions to all FASTQ files referenced in a
-<code>SYSargs</code> container, such as quality filtering or adaptor trimming
-routines. The following example performs adaptor trimming with
+<code>SYSargs2</code> container, such as quality filtering or adapter trimming
+routines. The paths to the resulting output FASTQ files are stored in the
+<code>output</code> slot of the <code>SYSargs2</code> object. The following example performs adapter trimming with
 the <code>trimLRPatterns</code> function from the <code>Biostrings</code> package.
 After the trimming step a new targets file is generated (here
 <code>targets_trim.txt</code>) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
-<code>SYSargs</code> instance, <em>e.g.</em> running the NGS alignments using the
+<code>SYSargs2</code> instance, <em>e.g.</em> running the NGS alignments using the
 trimmed FASTQ files.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/trim.param&quot;, mytargets = &quot;targets.txt&quot;)
-preprocessReads(args = args, Fct = &quot;trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)&quot;, 
+<p>Construct <em><code>SYSargs2</code></em> object from <em><code>cwl</code></em> and <em><code>yml</code></em> param and <em><code>targets</code></em> files.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/preprocessReads/trim-se&quot;, 
+    package = &quot;systemPipeR&quot;)
+trim &lt;- loadWorkflow(targets = targetspath, wf_file = &quot;trim-se.cwl&quot;, 
+    input_file = &quot;trim-se.yml&quot;, dir_path = dir_path)
+trim &lt;- renderWF(trim, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+trim
+output(trim)[1:2]</code></pre>
+<pre class="r"><code>preprocessReads(args = trim, Fct = &quot;trimLRPatterns(Rpattern='GCCCGGGTAA', 
+                subject=fq)&quot;, 
     batchsize = 1e+05, overwrite = TRUE, compress = TRUE)
-writeTargetsout(x = args, file = &quot;targets_trim.txt&quot;, overwrite = TRUE)</code></pre>
+writeTargetsout(x = trim, file = &quot;targets_trimPE.txt&quot;, step = 1, 
+    new_col = &quot;FileName1&quot;, new_col_output_index = 1, overwrite = TRUE)</code></pre>
 </div>
 <div id="fastq-quality-report" class="section level2">
 <h2><span class="header-section-number">3.2</span> FASTQ quality report</h2>
@@ -2020,8 +2006,7 @@ plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
 written to a PDF file named <code>fastqReport.pdf</code>.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/tophat.param&quot;, mytargets = &quot;targets.txt&quot;)
-fqlist &lt;- seeFastq(fastq = infile1(args), batchsize = 1e+05, 
+<pre class="r"><code>fqlist &lt;- seeFastq(fastq = infile1(trim), batchsize = 10000, 
     klength = 8)
 pdf(&quot;./results/fastqReport.pdf&quot;, height = 18, width = 4 * length(fqlist))
 seeFastqPlot(fqlist)
@@ -2038,35 +2023,86 @@ Figure 1: FASTQ quality report for 18 samples
 <div id="read-mapping-with-bowtie2tophat2" class="section level2">
 <h2><span class="header-section-number">4.1</span> Read mapping with <code>Bowtie2/Tophat2</code></h2>
 <p>The NGS reads of this project will be aligned against the reference
-genome sequence using <code>Bowtie2/TopHat2</code> <span class="citation">(Kim et al. 2013; Langmead and Salzberg 2012)</span>. The parameter
-settings of the aligner are defined in the <code>tophat.param</code> file.</p>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/tophat.param&quot;, mytargets = &quot;targets.txt&quot;)
-sysargs(args)[1]  # Command-line parameters for first FASTQ file</code></pre>
+genome sequence using <code>Bowtie2/TopHat2</code> <span class="citation">(Kim et al. 2013; Langmead and Salzberg 2012)</span> in both
+interactive job submissions and batch submissions to queuing systems of clusters
+using the <em><code>systemPipeR's</code></em> new CWL command-line interface.</p>
+<p>Build <em><code>Bowtie2</code></em> index.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/bowtie2/bowtie2-idx&quot;, package = &quot;systemPipeR&quot;)
+idx &lt;- loadWorkflow(targets = NULL, wf_file = &quot;bowtie2-index.cwl&quot;, 
+    input_file = &quot;bowtie2-index.yml&quot;, dir_path = dir_path)
+idx &lt;- renderWF(idx)
+idx
+cmdlist(idx)
+
+## Run in single machine
+runCommandline(idx, make_bam = FALSE)</code></pre>
+<p>The parameter settings of the aligner are defined in the <code>tophat2-mapping-pe.cwl</code>
+and <code>tophat2-mapping-pe.yml</code> files. The following shows how to construct the
+corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/tophat2/tophat2-se&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWorkflow(targets = targetspath, wf_file = &quot;tophat2-mapping-se.cwl&quot;, 
+    input_file = &quot;tophat2-mapping-se.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]
+## Run in single machine
+args &lt;- runCommandline(args, make_bam = TRUE)</code></pre>
 <p>Submission of alignment jobs to compute cluster, here using 72 CPU cores
 (18 <code>qsub</code> processes each with 4 CPU cores).</p>
-<pre class="r"><code>moduleload(modules(args))
-system(&quot;bowtie2-build ./data/tair10.fasta ./data/tair10.fasta&quot;)
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg &lt;- clusterRun(args, conffile = &quot;.batchtools.conf.R&quot;, Njobs = 18, 
-    template = &quot;batchtools.slurm.tmpl&quot;, runid = &quot;01&quot;, resourceList = resources)
-getStatus(reg = reg)
+<pre class="r"><code>## Run on the cluster
+moduleload(modules(args))
+resources &lt;- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg &lt;- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
+    make_bam = TRUE, dir = FALSE), conffile = &quot;.batchtools.conf.R&quot;, 
+    template = &quot;batchtools.slurm.tmpl&quot;, Njobs = 18, runid = &quot;01&quot;, 
+    resourceList = resources)
 waitForJobs(reg = reg)</code></pre>
 </div>
 <div id="read-mapping-with-hisat2" class="section level2">
 <h2><span class="header-section-number">4.2</span> Read mapping with <code>HISAT2</code></h2>
-<pre class="r"><code>args &lt;- systemArgs(sysma = &quot;param/hisat2.param&quot;, mytargets = &quot;targets.txt&quot;)
-sysargs(args)[1]  # Command-line parameters for first FASTQ file
-moduleload(modules(args))
-system(&quot;hisat2-build ./data/tair10.fasta ./data/tair10.fasta&quot;)
-resources &lt;- list(walltime = 120, ntasks = 1, ncpus = cores(args), 
-    memory = 1024)
-reg &lt;- clusterRun(args, conffile = &quot;.batchtools.conf.R&quot;, Njobs = 18, 
-    template = &quot;batchtools.slurm.tmpl&quot;, runid = &quot;01&quot;, resourceList = resources)
+<p>The following steps will demonstrate how to use the short read aligner <code>Hisat2</code>
+<span class="citation">(Kim, Langmead, and Salzberg 2015)</span> in both interactive job submissions and batch submissions to
+queuing systems of clusters using the <em><code>systemPipeR's</code></em> new CWL command-line interface.</p>
+<p>Build <code>Hisat2</code> index.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/hisat2/hisat2-idx&quot;, package = &quot;systemPipeR&quot;)
+idx &lt;- loadWorkflow(targets = NULL, wf_file = &quot;hisat2-index.cwl&quot;, 
+    input_file = &quot;hisat2-index.yml&quot;, dir_path = dir_path)
+idx &lt;- renderWF(idx)
+idx
+cmdlist(idx)
+
+## Run
+runCommandline(idx, make_bam = FALSE)</code></pre>
+<p>The parameter settings of the aligner are defined in the <code>hisat2-mapping-se.cwl</code>
+and <code>hisat2-mapping-se.yml</code> files. The following shows how to construct the
+corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
+<pre class="r"><code>dir_path &lt;- system.file(&quot;extdata/cwl/hisat2/hisat2-se&quot;, package = &quot;systemPipeR&quot;)
+args &lt;- loadWorkflow(targets = targetspath, wf_file = &quot;hisat2-mapping-se.cwl&quot;, 
+    input_file = &quot;hisat2-mapping-se.yml&quot;, dir_path = dir_path)
+args &lt;- renderWF(args, inputvars = c(FileName = &quot;_FASTQ_PATH1_&quot;, 
+    SampleName = &quot;_SampleName_&quot;))
+args
+cmdlist(args)[1:2]
+output(args)[1:2]
+
+## Runc single Machine
+args &lt;- runCommandline(args)</code></pre>
+<pre class="r"><code>library(batchtools)
+resources &lt;- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
+reg &lt;- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
+    make_bam = TRUE, dir = FALSE), conffile = &quot;.batchtools.conf.R&quot;, 
+    template = &quot;batchtools.slurm.tmpl&quot;, Njobs = 18, runid = &quot;01&quot;, 
+    resourceList = resources)
 getStatus(reg = reg)
-waitForJobs(reg = reg)</code></pre>
+waitForJobs(reg = reg)
+args &lt;- output_update(args, dir = FALSE, replace = TRUE, extension = c(&quot;.sam&quot;, 
+    &quot;.bam&quot;))  ## Updates the output(args) to the right location in the subfolders
+output(args)</code></pre>
 <p>Check whether all BAM files have been created.</p>
-<pre class="r"><code>file.exists(outpaths(args))</code></pre>
+<pre class="r"><code>outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+file.exists(outpaths)</code></pre>
 </div>
 <div id="read-and-alignment-stats" class="section level2">
 <h2><span class="header-section-number">4.3</span> Read and alignment stats</h2>
@@ -2107,7 +2143,7 @@ each sample using the <code>summarizeOverlaps</code> function <span class="citat
 preformed for exonic gene regions in a non-strand-specific manner while
 ignoring overlaps among different genes. Subsequently, the expression
 count values are normalized by <em>reads per kp per million mapped reads</em>
-(RPKM). The raw read count table (<code>countDFeByg.xls</code>) and the correspoding
+(RPKM). The raw read count table (<code>countDFeByg.xls</code>) and the corresponding
 RPKM table (<code>rpkmDFeByg.xls</code>) are written to separate files in the directory of this project. Parallelization is achieved with the <code>BiocParallel</code> package, here using 8 CPU cores.</p>
 <pre class="r"><code>library(&quot;GenomicFeatures&quot;)
 library(BiocParallel)
@@ -2115,9 +2151,10 @@ txdb &lt;- makeTxDbFromGFF(file = &quot;data/tair10.gff&quot;, format = &quot;gf
     dataSource = &quot;TAIR&quot;, organism = &quot;Arabidopsis thaliana&quot;)
 saveDb(txdb, file = &quot;./data/tair10.sqlite&quot;)
 txdb &lt;- loadDb(&quot;./data/tair10.sqlite&quot;)
-(align &lt;- readGAlignments(outpaths(args)[1]))  # Demonstrates how to read bam file into R
+outpaths &lt;- subsetWF(args, slot = &quot;output&quot;, subset = 1, index = 1)
+(align &lt;- readGAlignments(outpaths[1]))  # Demonstrates how to read bam file into R
 eByg &lt;- exonsBy(txdb, by = c(&quot;gene&quot;))
-bfl &lt;- BamFileList(outpaths(args), yieldSize = 50000, index = character())
+bfl &lt;- BamFileList(outpaths, yieldSize = 50000, index = character())
 multicoreParam &lt;- MulticoreParam(workers = 2)
 register(multicoreParam)
 registered()
@@ -2155,8 +2192,8 @@ the <code>hclust</code> function and the result is plotted as a dendrogram
 <pre class="r"><code>library(DESeq2, quietly = TRUE)
 library(ape, warn.conflicts = FALSE)
 countDF &lt;- as.matrix(read.table(&quot;./results/countDFeByg.xls&quot;))
-colData &lt;- data.frame(row.names = targetsin(args)$SampleName, 
-    condition = targetsin(args)$Factor)
+colData &lt;- data.frame(row.names = targets.as.df(targets(args))$SampleName, 
+    condition = targets.as.df(targets(args))$Factor)
 dds &lt;- DESeqDataSetFromMatrix(countData = countDF, colData = colData, 
     design = ~condition)
 d &lt;- cor(assay(rlog(dds)), method = &quot;spearman&quot;)
@@ -2221,7 +2258,7 @@ Figure 3: Up and down regulated DEGs with FDR of 1%
 <h2><span class="header-section-number">6.3</span> Venn diagrams of DEG sets</h2>
 <p>The <code>overLapper</code> function can compute Venn intersects for large numbers of sample
 sets (up to 20 or more) and plots 2-5 way Venn diagrams. A useful
-feature is the possiblity to combine the counts from several Venn
+feature is the possibility to combine the counts from several Venn
 comparisons with the same number of sample sets in a single Venn diagram
 (here for 4 up and down DEG sets).</p>
 <pre class="r"><code>vennsetup &lt;- overLapper(DEG_list$Up[6:9], type = &quot;vennsets&quot;)
@@ -2349,13 +2386,13 @@ Figure 6: Heat Map with Hierarchical Clustering Dendrograms of DEGs
 <div id="version-information" class="section level1">
 <h1><span class="header-section-number">9</span> Version Information</h1>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 3.5.2 (2018-12-20)
+<pre><code>## R version 3.6.1 (2019-07-05)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 18.04.1 LTS
+## Running under: Pop!_OS 19.04
 ## 
 ## Matrix products: default
-## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
-## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.8.0
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.8.0
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -2370,63 +2407,66 @@ Figure 6: Heat Map with Hierarchical Clustering Dendrograms of DEGs
 ## [6] utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] batchtools_0.9.11           data.table_1.12.0          
-##  [3] ape_5.2                     ggplot2_3.1.0              
-##  [5] systemPipeR_1.17.5          ShortRead_1.40.0           
-##  [7] GenomicAlignments_1.18.0    SummarizedExperiment_1.12.0
-##  [9] DelayedArray_0.8.0          matrixStats_0.54.0         
-## [11] Biobase_2.42.0              BiocParallel_1.16.2        
-## [13] Rsamtools_1.34.0            Biostrings_2.50.1          
-## [15] XVector_0.22.0              GenomicRanges_1.34.0       
-## [17] GenomeInfoDb_1.18.1         IRanges_2.16.0             
-## [19] S4Vectors_0.20.1            BiocGenerics_0.28.0        
-## [21] BiocStyle_2.10.0           
+##  [1] batchtools_0.9.11           data.table_1.12.6          
+##  [3] ape_5.3                     ggplot2_3.2.1              
+##  [5] systemPipeR_1.21.0          ShortRead_1.44.0           
+##  [7] GenomicAlignments_1.22.1    SummarizedExperiment_1.16.0
+##  [9] DelayedArray_0.12.0         matrixStats_0.55.0         
+## [11] Biobase_2.46.0              BiocParallel_1.20.0        
+## [13] Rsamtools_2.2.1             Biostrings_2.54.0          
+## [15] XVector_0.26.0              GenomicRanges_1.38.0       
+## [17] GenomeInfoDb_1.22.0         IRanges_2.20.1             
+## [19] S4Vectors_0.24.0            BiocGenerics_0.32.0        
+## [21] BiocStyle_2.14.0           
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] nlme_3.1-137           Category_2.48.0       
-##  [3] bitops_1.0-6           bit64_0.9-7           
-##  [5] RColorBrewer_1.1-2     progress_1.2.0        
-##  [7] httr_1.4.0             rprojroot_1.3-2       
-##  [9] Rgraphviz_2.26.0       tools_3.5.2           
-## [11] backports_1.1.3        R6_2.3.0              
-## [13] DBI_1.0.0              lazyeval_0.2.1        
-## [15] colorspace_1.4-0       withr_2.1.2           
-## [17] tidyselect_0.2.5       prettyunits_1.0.2     
-## [19] bit_1.1-14             compiler_3.5.2        
-## [21] graph_1.60.0           formatR_1.5           
-## [23] rtracklayer_1.42.1     bookdown_0.7          
-## [25] checkmate_1.9.1        scales_1.0.0          
-## [27] genefilter_1.64.0      RBGL_1.58.1           
-## [29] rappdirs_0.3.1         stringr_1.3.1         
-## [31] digest_0.6.18          rmarkdown_1.10        
-## [33] AnnotationForge_1.24.0 pkgconfig_2.0.2       
-## [35] htmltools_0.3.6        limma_3.38.2          
-## [37] rlang_0.3.1            RSQLite_2.1.1         
-## [39] bindr_0.1.1            GOstats_2.48.0        
-## [41] hwriter_1.3.2          dplyr_0.7.8           
-## [43] RCurl_1.95-4.11        magrittr_1.5          
-## [45] GO.db_3.7.0            GenomeInfoDbData_1.2.0
-## [47] Matrix_1.2-15          Rcpp_1.0.0            
-## [49] munsell_0.5.0          stringi_1.2.4         
-## [51] yaml_2.2.0             edgeR_3.24.0          
-## [53] zlibbioc_1.28.0        plyr_1.8.4            
-## [55] grid_3.5.2             blob_1.1.1            
-## [57] crayon_1.3.4           lattice_0.20-38       
-## [59] splines_3.5.2          GenomicFeatures_1.34.1
-## [61] annotate_1.60.0        hms_0.4.2             
-## [63] locfit_1.5-9.1         knitr_1.21            
-## [65] pillar_1.3.1           rjson_0.2.20          
-## [67] base64url_1.4          codetools_0.2-16      
-## [69] biomaRt_2.38.0         XML_3.98-1.16         
-## [71] glue_1.3.0             evaluate_0.12         
-## [73] latticeExtra_0.6-28    BiocManager_1.30.4    
-## [75] gtable_0.2.0           purrr_0.2.5           
-## [77] assertthat_0.2.0       xfun_0.4              
-## [79] xtable_1.8-3           survival_2.43-3       
-## [81] pheatmap_1.0.12        tibble_2.0.1          
-## [83] AnnotationDbi_1.44.0   memoise_1.1.0         
-## [85] bindrcpp_0.2.2         brew_1.0-6            
-## [87] GSEABase_1.44.0</code></pre>
+##  [1] nlme_3.1-141             Category_2.52.1         
+##  [3] bitops_1.0-6             bit64_0.9-7             
+##  [5] RColorBrewer_1.1-2       progress_1.2.2          
+##  [7] httr_1.4.1               Rgraphviz_2.30.0        
+##  [9] tools_3.6.1              backports_1.1.5         
+## [11] R6_2.4.1                 DBI_1.0.0               
+## [13] lazyeval_0.2.2           colorspace_1.4-1        
+## [15] withr_2.1.2              tidyselect_0.2.5        
+## [17] prettyunits_1.0.2        bit_1.1-14              
+## [19] curl_4.2                 compiler_3.6.1          
+## [21] graph_1.64.0             formatR_1.7             
+## [23] rtracklayer_1.46.0       bookdown_0.15           
+## [25] checkmate_1.9.4          scales_1.1.0            
+## [27] genefilter_1.68.0        RBGL_1.62.1             
+## [29] askpass_1.1              rappdirs_0.3.1          
+## [31] stringr_1.4.0            digest_0.6.22           
+## [33] rmarkdown_1.17           AnnotationForge_1.28.0  
+## [35] pkgconfig_2.0.3          htmltools_0.4.0         
+## [37] BSgenome_1.54.0          dbplyr_1.4.2            
+## [39] limma_3.42.0             rlang_0.4.1             
+## [41] RSQLite_2.1.2            GOstats_2.52.0          
+## [43] hwriter_1.3.2            dplyr_0.8.3             
+## [45] VariantAnnotation_1.32.0 RCurl_1.95-4.12         
+## [47] magrittr_1.5             GO.db_3.10.0            
+## [49] GenomeInfoDbData_1.2.2   Matrix_1.2-17           
+## [51] Rcpp_1.0.3               munsell_0.5.0           
+## [53] lifecycle_0.1.0          stringi_1.4.3           
+## [55] yaml_2.2.0               edgeR_3.28.0            
+## [57] zlibbioc_1.32.0          BiocFileCache_1.10.2    
+## [59] grid_3.6.1               blob_1.2.0              
+## [61] crayon_1.3.4             lattice_0.20-38         
+## [63] splines_3.6.1            GenomicFeatures_1.38.0  
+## [65] annotate_1.64.0          hms_0.5.2               
+## [67] locfit_1.5-9.1           zeallot_0.1.0           
+## [69] knitr_1.26               pillar_1.4.2            
+## [71] rjson_0.2.20             base64url_1.4           
+## [73] codetools_0.2-16         biomaRt_2.42.0          
+## [75] XML_3.98-1.20            glue_1.3.1              
+## [77] evaluate_0.14            latticeExtra_0.6-28     
+## [79] BiocManager_1.30.10      vctrs_0.2.0             
+## [81] gtable_0.3.0             openssl_1.4.1           
+## [83] purrr_0.3.3              assertthat_0.2.1        
+## [85] xfun_0.11                xtable_1.8-4            
+## [87] survival_2.44-1.1        pheatmap_1.0.12         
+## [89] tibble_2.1.3             AnnotationDbi_1.48.0    
+## [91] memoise_1.1.0            brew_1.0-6              
+## [93] GSEABase_1.48.0</code></pre>
 </div>
 <div id="funding" class="section level1">
 <h1><span class="header-section-number">10</span> Funding</h1>
@@ -2440,6 +2480,9 @@ Figure 6: Heat Map with Hierarchical Clustering Dendrograms of DEGs
 </div>
 <div id="ref-Howard2013-fq">
 <p>Howard, Brian E, Qiwen Hu, Ahmet Can Babaoglu, Manan Chandra, Monica Borghi, Xiaoping Tan, Luyan He, et al. 2013. “High-Throughput RNA Sequencing of Pseudomonas-Infected Arabidopsis Reveals Hidden Transcriptome Complexity and Novel Splice Variants.” <em>PLoS One</em> 8 (10): e74183. <a href="https://doi.org/10.1371/journal.pone.0074183" class="uri">https://doi.org/10.1371/journal.pone.0074183</a>.</p>
+</div>
+<div id="ref-Kim2015-ve">
+<p>Kim, Daehwan, Ben Langmead, and Steven L Salzberg. 2015. “HISAT: A Fast Spliced Aligner with Low Memory Requirements.” <em>Nat. Methods</em> 12 (4): 357–60.</p>
 </div>
 <div id="ref-Kim2013-vg">
 <p>Kim, Daehwan, Geo Pertea, Cole Trapnell, Harold Pimentel, Ryan Kelley, and Steven L Salzberg. 2013. “TopHat2: Accurate Alignment of Transcriptomes in the Presence of Insertions, Deletions and Gene Fusions.” <em>Genome Biol.</em> 14 (4): R36. <a href="https://doi.org/10.1186/gb-2013-14-4-r36" class="uri">https://doi.org/10.1186/gb-2013-14-4-r36</a>.</p>
@@ -2474,6 +2517,54 @@ $(document).ready(function () {
 });
 
 
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
 </script>
 
 <script type="text/x-mathjax-config">

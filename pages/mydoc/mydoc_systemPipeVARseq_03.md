@@ -1,6 +1,6 @@
 ---
 title: 3. Read preprocessing
-last_updated: Fri Jun 21 16:33:06 2019
+last_updated: Thu Nov 21 15:58:58 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeVARseq_03.html
 ---
@@ -17,11 +17,11 @@ targets[1:4, 1:4]
 ```
 
 ```
-##                  FileName1                FileName2
-## 1 ./data/SRR446027_1.fastq ./data/SRR446027_2.fastq
-## 2 ./data/SRR446028_1.fastq ./data/SRR446028_2.fastq
-## 3 ./data/SRR446029_1.fastq ./data/SRR446029_2.fastq
-## 4 ./data/SRR446030_1.fastq ./data/SRR446030_2.fastq
+##                     FileName1                   FileName2
+## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz
+## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz
+## 3 ./data/SRR446029_1.fastq.gz ./data/SRR446029_2.fastq.gz
+## 4 ./data/SRR446030_1.fastq.gz ./data/SRR446030_2.fastq.gz
 ##   SampleName Factor
 ## 1        M1A     M1
 ## 2        M1B     M1
@@ -31,22 +31,26 @@ targets[1:4, 1:4]
 
 ## Read quality filtering and trimming
 
-The following removes reads with low quality base calls (here Phred
-scores below 20) from all FASTQ files.
+The following removes reads with low quality base calls (here a certain pattern) 
+from all FASTQ files. 
 
 
 ```r
-args <- systemArgs(sysma = "param/trimPE.param", mytargets = "targetsPE.txt")[1:4]
-# Note: subsetting!
-filterFct <- function(fq, cutoff = 20, Nexceptions = 0) {
-    qcount <- rowSums(as(quality(fq), "matrix") <= cutoff, na.rm = TRUE)
-    fq[qcount <= Nexceptions]
-    # Retains reads where Phred scores are >= cutoff with N
-    # exceptions
-}
-preprocessReads(args = args, Fct = "filterFct(fq, cutoff=20, Nexceptions=0)", 
-    batchsize = 1e+05)
-writeTargetsout(x = args, file = "targets_PEtrim.txt", overwrite = TRUE)
+targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+dir_path <- system.file("extdata/cwl/preprocessReads/trim-pe", 
+    package = "systemPipeR")
+trim <- loadWorkflow(targets = targetsPE, wf_file = "trim-pe.cwl", 
+    input_file = "trim-pe.yml", dir_path = dir_path)
+trim <- renderWF(trim, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
+    FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+trim
+output(trim)[1:2]
+
+preprocessReads(args = trim, Fct = "trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", 
+    batchsize = 1e+05, overwrite = TRUE, compress = TRUE)
+writeTargetsout(x = trim, file = "targets_trimPE.txt", step = 1, 
+    new_col = c("FileName1", "FileName2"), new_col_output_index = c(1, 
+        2), overwrite = TRUE)
 ```
 
 ## FASTQ quality report
@@ -56,12 +60,12 @@ useful quality statistics for a set of FASTQ files including per cycle quality b
 plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
-written to a PDF file named `fastqReport.pdf`.
+written to a PDF file named `fastqReport.pdf`. Use the output from previous step 
+(fastq trimming) as the demonstration here to generate fastq report.
 
 
 ```r
-args <- systemArgs(sysma = "param/tophat.param", mytargets = "targets.txt")
-fqlist <- seeFastq(fastq = infile1(args), batchsize = 1e+05, 
+fqlist <- seeFastq(fastq = infile1(trim), batchsize = 1e+05, 
     klength = 8)
 pdf("./results/fastqReport.pdf", height = 18, width = 4 * length(fqlist))
 seeFastqPlot(fqlist)

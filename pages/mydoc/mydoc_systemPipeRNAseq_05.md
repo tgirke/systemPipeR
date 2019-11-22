@@ -1,6 +1,6 @@
 ---
 title: 5. Read quantification
-last_updated: Fri Jun 21 16:30:25 2019
+last_updated: Thu Nov 21 15:47:56 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_05.html
 ---
@@ -12,7 +12,7 @@ each sample using the `summarizeOverlaps` function (Lawrence et al., 2013). The 
 preformed for exonic gene regions in a non-strand-specific manner while
 ignoring overlaps among different genes. Subsequently, the expression
 count values are normalized by *reads per kp per million mapped reads*
-(RPKM). The raw read count table (`countDFeByg.xls`) and the correspoding 
+(RPKM). The raw read count table (`countDFeByg.xls`) and the corresponding 
 RPKM table (`rpkmDFeByg.xls`) are written to separate files in the directory of this project. Parallelization is achieved with the `BiocParallel` package, here using 8 CPU cores.
 
 
@@ -23,9 +23,10 @@ txdb <- makeTxDbFromGFF(file = "data/tair10.gff", format = "gff",
     dataSource = "TAIR", organism = "Arabidopsis thaliana")
 saveDb(txdb, file = "./data/tair10.sqlite")
 txdb <- loadDb("./data/tair10.sqlite")
-(align <- readGAlignments(outpaths(args)[1]))  # Demonstrates how to read bam file into R
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+(align <- readGAlignments(outpaths[1]))  # Demonstrates how to read bam file into R
 eByg <- exonsBy(txdb, by = c("gene"))
-bfl <- BamFileList(outpaths(args), yieldSize = 50000, index = character())
+bfl <- BamFileList(outpaths, yieldSize = 50000, index = character())
 multicoreParam <- MulticoreParam(workers = 2)
 register(multicoreParam)
 registered()
@@ -78,8 +79,8 @@ the `hclust` function and the result is plotted as a dendrogram
 library(DESeq2, quietly = TRUE)
 library(ape, warn.conflicts = FALSE)
 countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
-colData <- data.frame(row.names = targetsin(args)$SampleName, 
-    condition = targetsin(args)$Factor)
+colData <- data.frame(row.names = targets.as.df(targets(args))$SampleName, 
+    condition = targets.as.df(targets(args))$Factor)
 dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, 
     design = ~condition)
 d <- cor(assay(rlog(dds)), method = "spearman")
