@@ -1,6 +1,6 @@
 ---
 title: 12. Clustering and heat maps
-last_updated: Fri Jun 21 16:34:15 2019
+last_updated: Thu Nov 21 16:49:12 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_12.html
 ---
@@ -12,7 +12,7 @@ above differential expression analysis. It uses a Pearson correlation-based dist
 ```r
 library(pheatmap)
 geneids <- unique(as.character(unlist(DEG_list[[1]])))
-y <- assay(rlog(dds))[geneids, ]
+y <- assay(DESeq2::rlog(dds))[geneids, ]
 png("heatmap1.png")
 pheatmap(y, scale = "row", clustering_distance_rows = "correlation", 
     clustering_distance_cols = "correlation")

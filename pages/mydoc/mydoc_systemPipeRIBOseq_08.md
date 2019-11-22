@@ -1,6 +1,6 @@
 ---
 title: 8. Read quantification per annotation range
-last_updated: Fri Jun 21 16:34:15 2019
+last_updated: Thu Nov 21 16:49:12 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_08.html
 ---
@@ -12,7 +12,7 @@ sample using the `summarizeOverlaps` function (Lawrence et al., 2013). The
 read counting is preformed for exonic gene regions in a non-strand-specific
 manner while ignoring overlaps among different genes. Subsequently, the
 expression count values are normalized by \textit{reads per kp per million
-mapped reads} (RPKM). The raw read count table (`countDFeByg.xls`) and the correspoding
+mapped reads} (RPKM). The raw read count table (`countDFeByg.xls`) and the corresponding
 RPKM table (`rpkmDFeByg.xls`) are written to
 separate files in the `results` directory of this project.
 Parallelization is achieved with the `BiocParallel` package, here
@@ -24,7 +24,7 @@ library("GenomicFeatures")
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by = c("gene"))
-bfl <- BamFileList(outpaths(args), yieldSize = 50000, index = character())
+bfl <- BamFileList(outpaths, yieldSize = 50000, index = character())
 multicoreParam <- MulticoreParam(workers = 8)
 register(multicoreParam)
 registered()
@@ -78,15 +78,15 @@ in the `results` directory.
 library(DESeq2, quietly = TRUE)
 library(ape, warn.conflicts = FALSE)
 countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
-colData <- data.frame(row.names = targetsin(args)$SampleName, 
-    condition = targetsin(args)$Factor)
-dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, 
+colData <- data.frame(row.names = targets.as.df(targets(args))$SampleName, 
+    condition = targets.as.df(targets(args))$Factor)
+dds <- DESeq2::DESeqDataSetFromMatrix(countData = countDF, colData = colData, 
     design = ~condition)
-d <- cor(assay(rlog(dds)), method = "spearman")
+d <- cor(assay(DESeq2::rlog(dds)), method = "spearman")
 hc <- hclust(dist(1 - d))
 png("results/sample_tree.pdf")
-plot.phylo(as.phylo(hc), type = "p", edge.col = "blue", edge.width = 2, 
-    show.node.label = TRUE, no.margin = TRUE)
+ape::plot.phylo(ape::as.phylo(hc), type = "p", edge.col = "blue", 
+    edge.width = 2, show.node.label = TRUE, no.margin = TRUE)
 dev.off()
 ```
 

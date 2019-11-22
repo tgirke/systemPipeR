@@ -1,6 +1,6 @@
 ---
 title: 5. Read distribution across genomic features
-last_updated: Fri Jun 21 16:34:15 2019
+last_updated: Thu Nov 21 16:49:12 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_05.html
 ---
@@ -45,7 +45,8 @@ The following generates and plots feature counts for any read length.
 ```r
 library(ggplot2)
 library(grid)
-fc <- featuretypeCounts(bfl = BamFileList(outpaths(args), yieldSize = 50000), 
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+fc <- featuretypeCounts(bfl = BamFileList(outpaths, yieldSize = 50000), 
     grl = feat, singleEnd = TRUE, readlength = NULL, type = "data.frame")
 p <- plotfeaturetypeCounts(x = fc, graphicsfile = "results/featureCounts.png", 
     graphicsformat = "png", scales = "fixed", anyreadlength = TRUE, 
@@ -61,7 +62,7 @@ To determine the approximate read length of ribosome footprints in Ribo-Seq expe
 
 
 ```r
-fc2 <- featuretypeCounts(bfl = BamFileList(outpaths(args), yieldSize = 50000), 
+fc2 <- featuretypeCounts(bfl = BamFileList(outpaths, yieldSize = 50000), 
     grl = feat, singleEnd = TRUE, readlength = c(74:76, 99:102), 
     type = "data.frame")
 p2 <- plotfeaturetypeCounts(x = fc2, graphicsfile = "results/featureCounts2.png", 

@@ -826,7 +826,7 @@ $('#toc').on('click', 'a', function() {
 
   <p>Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)</p>
 
-<p>Last update: 22 September, 2019</p>
+<p>Last update: 21 November, 2019</p>
 
 <p>Alternative formats of this tutorial:
 [ <a href="http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeR.html" target="_blank">HTML</a> ],
@@ -855,31 +855,31 @@ $('#toc').on('click', 'a', function() {
 Workflow design concepts are illustrated under (A &amp; B). Examples of
 <em>systemPipeR’s</em> visualization functionalities are given under (C).</p>
 
-<p>A central concept for designing workflows within the <em><code class="highlighter-rouge">sytemPipeR</code></em> environment 
-is the use of workflow management containers. In previous versions, <em><code class="highlighter-rouge">sytemPipeR</code></em> 
+<p>A central concept for designing workflows within the <em><code class="highlighter-rouge">systemPipeR</code></em> environment 
+is the use of workflow management containers. In previous versions, <em><code class="highlighter-rouge">systemPipeR</code></em> 
 used a custom command-line interface called <em><code class="highlighter-rouge">SYSargs</code></em> (see Figure 3) and for 
 this purpose will continue to be supported for some time. With the latest <a href="http://www.bioconductor.org/packages/release/bioc/html/systemPipeR.html">Bioconductor Release 3.9</a>, 
 we are adopting for this functionality the widely used community standard 
 <a href="https://www.commonwl.org/">Common Workflow Language</a> (CWL) for describing 
 analysis workflows in a generic and reproducible manner, introducing <em><code class="highlighter-rouge">SYSargs2</code></em>
-workflow control class (see Figure 2). Using this community standard in <em><code class="highlighter-rouge">sytemPipeR</code></em>
-has many advantages. For instance, the integration of CWL allows running <em><code class="highlighter-rouge">sytemPipeR</code></em>
+workflow control class (see Figure 2). Using this community standard in <em><code class="highlighter-rouge">systemPipeR</code></em>
+has many advantages. For instance, the integration of CWL allows running <em><code class="highlighter-rouge">systemPipeR</code></em>
 workflows from a single specification instance either entirely from within R, from various command-line
 wrappers (e.g., <em>cwl-runner</em>) or from other languages (<em>, e.g.,</em> Bash or Python).
-<em><code class="highlighter-rouge">sytemPipeR</code></em> includes support for both command-line and R/Bioconductor software 
+<em><code class="highlighter-rouge">systemPipeR</code></em> includes support for both command-line and R/Bioconductor software 
 as well as resources for containerization, parallel evaluations on computer clusters 
 along with the automated generation of interactive analysis reports.</p>
 
-<p>An important feature of <em><code class="highlighter-rouge">sytemPipeR's</code></em> CWL interface is that it provides two
+<p>An important feature of <em><code class="highlighter-rouge">systemPipeR's</code></em> CWL interface is that it provides two
 options to run command-line tools and workflows based on CWL. First, one can
 run CWL in its native way via an R-based wrapper utility for <em>cwl-runner</em> or
 <em>cwl-tools</em> (CWL-based approach). Second, one can run workflows using CWL’s
 command-line and workflow instructions from within R (R-based approach). In the
 latter case the same CWL workflow definition files (<em>e.g.</em> <code class="highlighter-rouge">*.cwl</code> and <code class="highlighter-rouge">*.yml</code>)
 are used but rendered and executed entirely with R functions defined by
-<em><code class="highlighter-rouge">sytemPipeR</code></em>, and thus use CWL mainly as a command-line and workflow
+<em><code class="highlighter-rouge">systemPipeR</code></em>, and thus use CWL mainly as a command-line and workflow
 definition format rather than software to run workflows. In this regard
-<em><code class="highlighter-rouge">sytemPipeR</code></em> also provides several convenience functions that are useful for
+<em><code class="highlighter-rouge">systemPipeR</code></em> also provides several convenience functions that are useful for
 designing and debugging workflows, such as a command-line rendering function to
 retrieve the exact command-line strings for each data set and processing step
 prior to running a command-line.</p>
@@ -890,7 +890,7 @@ the common analysis steps of NGS experiments.</p>
 
 <h2 id="workflow-design-structure-using-sysargs2">Workflow design structure using <em><code class="highlighter-rouge">SYSargs2</code></em></h2>
 
-<p>The flexibility of <em><code class="highlighter-rouge">sytemPipeR's</code></em> new interface workflow control class is the driving factor behind 
+<p>The flexibility of <em><code class="highlighter-rouge">systemPipeR's</code></em> new interface workflow control class is the driving factor behind 
 the use of as many steps necessary for the analysis, as well as the connection 
 between command-line- or R-based software. The connectivity among all
 workflow steps is achieved by the <em><code class="highlighter-rouge">SYSargs2</code></em> workflow control class (see Figure 3).
@@ -961,7 +961,7 @@ operations with any combination of command-line or R-based software.</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sun Sep 22 22:08:58 2019<br/> Site last generated: Nov 21, 2019 <br />
+<span>Page last updated:</span> Thu Nov 21 16:53:08 2019<br/> Site last generated: Nov 21, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

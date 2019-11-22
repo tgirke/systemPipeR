@@ -1,6 +1,6 @@
 ---
 title: 7. Genomic read coverage along transripts or CDSs
-last_updated: Fri Jun 21 16:34:15 2019
+last_updated: Thu Nov 21 16:49:12 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_07.html
 ---
@@ -21,10 +21,10 @@ the downstream `plotfeatureCoverage` function.
 
 ```r
 grl <- cdsBy(txdb, "tx", use.names = TRUE)
-fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:2]), 
-    grl = grl[1:4], resizereads = NULL, readlengthrange = NULL, 
-    Nbins = 20, method = mean, fixedmatrix = FALSE, resizefeatures = TRUE, 
-    upstream = 20, downstream = 20, outfile = "results/featureCoverage.xls", 
+fcov <- featureCoverage(bfl = BamFileList(outpaths[1:2]), grl = grl[1:4], 
+    resizereads = NULL, readlengthrange = NULL, Nbins = 20, method = mean, 
+    fixedmatrix = FALSE, resizefeatures = TRUE, upstream = 20, 
+    downstream = 20, outfile = "results/featureCoverage.xls", 
     overwrite = TRUE)
 ```
 
@@ -32,9 +32,9 @@ fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:2]),
 
 
 ```r
-fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:4]), 
-    grl = grl[1:12], resizereads = NULL, readlengthrange = NULL, 
-    Nbins = NULL, method = mean, fixedmatrix = TRUE, resizefeatures = TRUE, 
+fcov <- featureCoverage(bfl = BamFileList(outpaths[1:4]), grl = grl[1:12], 
+    resizereads = NULL, readlengthrange = NULL, Nbins = NULL, 
+    method = mean, fixedmatrix = TRUE, resizefeatures = TRUE, 
     upstream = 20, downstream = 20, outfile = "results/featureCoverage.xls", 
     overwrite = TRUE)
 plotfeatureCoverage(covMA = fcov, method = mean, scales = "fixed", 
@@ -47,10 +47,10 @@ plotfeatureCoverage(covMA = fcov, method = mean, scales = "fixed",
 ```r
 library(ggplot2)
 library(grid)
-fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:4]), 
-    grl = grl[1:4], resizereads = NULL, readlengthrange = NULL, 
-    Nbins = 20, method = mean, fixedmatrix = TRUE, resizefeatures = TRUE, 
-    upstream = 20, downstream = 20, outfile = "results/featureCoverage.xls", 
+fcov <- featureCoverage(bfl = BamFileList(outpaths[1:4]), grl = grl[1:4], 
+    resizereads = NULL, readlengthrange = NULL, Nbins = 20, method = mean, 
+    fixedmatrix = TRUE, resizefeatures = TRUE, upstream = 20, 
+    downstream = 20, outfile = "results/featureCoverage.xls", 
     overwrite = TRUE)
 png("./results/featurePlot.png", height = 12, width = 24, units = "in", 
     res = 72)
@@ -66,9 +66,9 @@ dev.off()
 
 
 ```r
-fcov <- featureCoverage(bfl = BamFileList(outpaths(args)[1:2]), 
-    grl = grl[1], resizereads = NULL, readlengthrange = NULL, 
-    Nbins = NULL, method = mean, fixedmatrix = FALSE, resizefeatures = TRUE, 
+fcov <- featureCoverage(bfl = BamFileList(outpaths[1:2]), grl = grl[1], 
+    resizereads = NULL, readlengthrange = NULL, Nbins = NULL, 
+    method = mean, fixedmatrix = FALSE, resizefeatures = TRUE, 
     upstream = 20, downstream = 20, outfile = NULL)
 ```
 

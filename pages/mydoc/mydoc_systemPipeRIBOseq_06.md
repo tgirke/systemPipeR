@@ -1,13 +1,13 @@
 ---
 title: 6. Adding custom features to workflow
-last_updated: Fri Jun 21 16:34:15 2019
+last_updated: Thu Nov 21 16:49:12 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_06.html
 ---
 
 ## Predicting uORFs in 5' UTR regions
 
-The function `predORF` can be used to identify open reading frames (ORFs) and coding sequences (CDSs) in DNA sequences provided as `DNAString` or `DNAStringSet` objects. The setting `mode='ORF'` returns continuous reading frames that begin with a start codon and end with a stop codon, while `mode='CDS'` returns continuous reading frames that do not need to begin or end with start or stop codons, respectively. Non-canonical start and stop condons are supported by allowing the user to provide any custom set of triplets under the `startcodon` and `stopcodon` arguments (`i.e.` non-ATG start codons). The argument `n` defines the maximum number of ORFs to return for each input sequence (_e.g._ `n=1` returns only the longest ORF). It also supports the identification of overlapping and nested ORFs. Alternatively, onecan return all non-overlapping ORFs including the longest ORF for each input sequence with `n="all"` and `longest_disjoint=TRUE`.
+The function `predORF` can be used to identify open reading frames (ORFs) and coding sequences (CDSs) in DNA sequences provided as `DNAString` or `DNAStringSet` objects. The setting `mode='ORF'` returns continuous reading frames that begin with a start codon and end with a stop codon, while `mode='CDS'` returns continuous reading frames that do not need to begin or end with start or stop codons, respectively. Non-canonical start and stop condons are supported by allowing the user to provide any custom set of triplets under the `startcodon` and `stopcodon` arguments (`i.e.` non-ATG start codons). The argument `n` defines the maximum number of ORFs to return for each input sequence (_e.g._ `n=1` returns only the longest ORF). It also supports the identification of overlapping and nested ORFs. Alternatively, one can return all non-overlapping ORFs including the longest ORF for each input sequence with `n="all"` and `longest_disjoint=TRUE`.
 
 
 ```r

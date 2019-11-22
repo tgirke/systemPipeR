@@ -1,12 +1,12 @@
 ---
 title: RIBO-Seq Workflow Template  <br> <br> 1. Introduction
-last_updated: Fri Jun 21 16:34:15 2019
+last_updated: Thu Nov 21 16:49:12 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_01.html
 ---
 Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 21 June, 2019 
+Last update: 21 November, 2019 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeRIBOseq.html){:target="_blank"} ],
@@ -76,8 +76,7 @@ After scaling the resulting ORF coordinates back to the corresponding genome
 locations using `scaleRanges`, one can use these novel features
 (_e.g._ uORFs) for expression analysis routines similar to those
 employed for pre-existing annotations, such as the exonic regions of genes. For
-instance, in Ribo-Seq experiments one can use this approach to systematically identify all
-transcripts occupied by ribosomes in their uORF regions. The binding of
+instance, in Ribo-Seq experiments one can use this approach to systematically identify all transcripts occupied by ribosomes in their uORF regions. The binding of
 ribosomes to uORF regions may indicate a regulatory role in the translation of
 the downstream main ORFs and/or translation of the uORFs into functionally
 relevant peptides. 

@@ -1,6 +1,6 @@
 ---
 title: 2. Getting Started
-last_updated: Sun Sep 22 22:08:58 2019
+last_updated: Thu Nov 21 16:53:08 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
@@ -28,9 +28,9 @@ vignette("systemPipeR")  # Opens vignette
 ## Load sample data and workflow templates
 
 The mini sample FASTQ files used by this overview vignette as well as the 
-associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ p
-ackage as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) 
-ontains 18 paired-end (PE) read sets from _Arabidposis thaliana_ (Howard et al., 2013). 
+associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ 
+package as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) 
+obtains 18 paired-end (PE) read sets from _Arabidposis thaliana_ (Howard et al., 2013). 
 To minimize processing time during testing, each FASTQ file has been subsetted to 
 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides 
 of each chromosome of the _A. thalina_ genome. The corresponding reference genome 
@@ -478,8 +478,8 @@ sysargs(args)[1]
 ```
 
 ```
-##                                                                                                                                                                                                                                                                                                                      M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
+##                                                                                                                                                                                                                                                                                              M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
 ```
 
 ```r
@@ -503,8 +503,8 @@ outpaths(args)[1]
 ```
 
 ```
-##                                                                                                                                            M1A 
-## "/home/dcassol/danielac@ucr.edu/github/Dani_system/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
+##                                                                                                                                M1A 
+## "/home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
 ```
 
 The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).

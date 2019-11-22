@@ -824,7 +824,7 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <p>Combinded with mRNA-Seq data, Ribo-Seq or polyRibo-Seq experiments can be used
+  <p>Combined with mRNA-Seq data, Ribo-Seq or polyRibo-Seq experiments can be used
 to study changes in translational efficiencies of genes and/or transcripts for
 different treatments. For test purposes the following generates a small test
 data set from the sample data used in this vignette, where two types of RNA
@@ -833,41 +833,14 @@ and total mRNA (<code class="highlighter-rouge">mRNA</code>). In addition, there
 (<code class="highlighter-rouge">conditions</code>): <code class="highlighter-rouge">M1</code> and <code class="highlighter-rouge">A1</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">DESeq2</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## 
-## Attaching package: 'DESeq2'
-</code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The following object is masked from 'package:systemPipeR':
-## 
-##     results
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targetsPE.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">parampath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tophat.param"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">countDFeBygpath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"countDFeByg.xls"</span><span class="p">,</span><span class="w"> 
     </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">suppressWarnings</span><span class="p">(</span><span class="n">systemArgs</span><span class="p">(</span><span class="n">sysma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parampath</span><span class="p">,</span><span class="w"> </span><span class="n">mytargets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">))</span><span class="w">
 </span><span class="n">countDFeByg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="n">countDFeBygpath</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
 </span><span class="n">coldata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DataFrame</span><span class="p">(</span><span class="n">assay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factor</span><span class="p">(</span><span class="nf">rep</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"Ribo"</span><span class="p">,</span><span class="w"> </span><span class="s2">"mRNA"</span><span class="p">),</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">)),</span><span class="w"> 
-    </span><span class="n">condition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factor</span><span class="p">(</span><span class="nf">rep</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">targetsin</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">$</span><span class="n">Factor</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]),</span><span class="w"> 
-        </span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">targetsin</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">$</span><span class="n">SampleName</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">8</span><span class="p">])</span><span class="w">
+    </span><span class="n">condition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">factor</span><span class="p">(</span><span class="nf">rep</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">targets.as.df</span><span class="p">(</span><span class="n">targets</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="o">$</span><span class="n">Factor</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]),</span><span class="w"> 
+        </span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">targets.as.df</span><span class="p">(</span><span class="n">targets</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="o">$</span><span class="n">SampleName</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">8</span><span class="p">])</span><span class="w">
 </span><span class="n">coldata</span><span class="w">
 </span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## DataFrame with 8 rows and 2 columns
-##        assay condition
-##     &lt;factor&gt;  &lt;factor&gt;
-## M1A     Ribo        M1
-## M1B     Ribo        M1
-## A1A     Ribo        A1
-## A1B     Ribo        A1
-## V1A     mRNA        M1
-## V1B     mRNA        M1
-## M6A     mRNA        A1
-## M6B     mRNA        A1
-</code></pre></div></div>
 
 <p>Differences in translational efficiencies can be calculated by ratios of ratios
 for the two conditions:</p>
@@ -876,60 +849,15 @@ for the two conditions:</p>
 
 <p>The latter can be modeled with the <code class="highlighter-rouge">DESeq2</code> package using the design $\sim assay + condition + assay:condition$, where the interaction term $assay:condition$ represents the ratio of ratios. Using the likelihood ratio test of <code class="highlighter-rouge">DESeq2</code>, which removes the interaction term in the reduced model, one can test whether the translational efficiency (ribosome loading) is different in condition <code class="highlighter-rouge">A1</code> than in <code class="highlighter-rouge">M1</code>.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeqDataSetFromMatrix</span><span class="p">(</span><span class="n">countData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.matrix</span><span class="p">(</span><span class="n">countDFeByg</span><span class="p">[,</span><span class="w"> 
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeq2</span><span class="o">::</span><span class="n">DESeqDataSetFromMatrix</span><span class="p">(</span><span class="n">countData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.matrix</span><span class="p">(</span><span class="n">countDFeByg</span><span class="p">[,</span><span class="w"> 
     </span><span class="n">rownames</span><span class="p">(</span><span class="n">coldata</span><span class="p">)]),</span><span class="w"> </span><span class="n">colData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">coldata</span><span class="p">,</span><span class="w"> </span><span class="n">design</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">assay</span><span class="w"> </span><span class="o">+</span><span class="w"> 
     </span><span class="n">condition</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">assay</span><span class="o">:</span><span class="n">condition</span><span class="p">)</span><span class="w">
 </span><span class="c1"># model.matrix(~ assay + condition + assay:condition,</span><span class="w">
 </span><span class="c1"># coldata) # Corresponding design matrix</span><span class="w">
-</span><span class="n">dds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeq</span><span class="p">(</span><span class="n">dds</span><span class="p">,</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"LRT"</span><span class="p">,</span><span class="w"> </span><span class="n">reduced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">assay</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">condition</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## estimating size factors
-</code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## estimating dispersions
-</code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## gene-wise dispersion estimates
-</code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## mean-dispersion relationship
-</code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## final dispersion estimates
-</code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## fitting model and testing
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">res</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeq2</span><span class="o">::</span><span class="n">results</span><span class="p">(</span><span class="n">dds</span><span class="p">)</span><span class="w">
+</span><span class="n">dds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeq2</span><span class="o">::</span><span class="n">DESeq</span><span class="p">(</span><span class="n">dds</span><span class="p">,</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"LRT"</span><span class="p">,</span><span class="w"> </span><span class="n">reduced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">assay</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">condition</span><span class="p">)</span><span class="w">
+</span><span class="n">res</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeq2</span><span class="o">::</span><span class="n">results</span><span class="p">(</span><span class="n">dds</span><span class="p">)</span><span class="w">
 </span><span class="n">head</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">res</span><span class="o">$</span><span class="n">padj</span><span class="p">),</span><span class="w"> </span><span class="p">],</span><span class="w"> </span><span class="m">4</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## log2 fold change (MLE): assayRibo.conditionM1 
-## LRT p-value: '~ assay + condition + assay:condition' vs '~ assay + condition' 
-## DataFrame with 4 rows and 6 columns
-##                   baseMean    log2FoldChange
-##                  &lt;numeric&gt;         &lt;numeric&gt;
-## AT5G01040 94.0381992637025 -5.82466460190543
-## AT5G01015 25.2269270838456  5.40801303217207
-## AT5G01100 540.714420694975 -3.61059430314322
-## AT2G01021 9227.94454051429  4.86386592044997
-##                       lfcSE             stat
-##                   &lt;numeric&gt;        &lt;numeric&gt;
-## AT5G01040  1.16210084683977 26.9712237409624
-## AT5G01015  1.19554478070704 19.3758218929368
-## AT5G01100 0.818796926001328 18.4437640849513
-## AT2G01021  1.25811711292455 13.4536187010841
-##                         pvalue                 padj
-##                      &lt;numeric&gt;            &lt;numeric&gt;
-## AT5G01040 2.06507086294339e-07 2.10637228020226e-05
-## AT5G01015 1.07357696177487e-05 0.000547524250505183
-## AT5G01100  1.7499252110199e-05 0.000594974571746765
-## AT2G01021 0.000244534065348548  0.00623561866638798
-</code></pre></div></div>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># write.table(res, file='transleff.xls', quote=FALSE,</span><span class="w">
+</span><span class="c1"># write.table(res, file='transleff.xls', quote=FALSE,</span><span class="w">
 </span><span class="c1"># col.names = NA, sep='\t')</span><span class="w">
 </span></code></pre></div></div>
 
@@ -951,7 +879,7 @@ for the two conditions:</p>
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Fri Jun 21 16:34:15 2019<br/> Site last generated: Nov 21, 2019 <br />
+<span>Page last updated:</span> Thu Nov 21 16:49:12 2019<br/> Site last generated: Nov 21, 2019 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

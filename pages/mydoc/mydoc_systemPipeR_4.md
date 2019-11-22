@@ -1,11 +1,11 @@
 ---
 title: 4. Workflow templates
-last_updated: Sun Sep 22 22:08:58 2019
+last_updated: Thu Nov 21 16:53:08 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_4.html
 ---
 
-The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ files, which 
+The intended way of running _`systemPipeR`_ workflows is via _`*.Rmd`_ files, which 
 can be executed either line-wise in interactive mode or with a single command from 
 R or the command-line. This way comprehensive and reproducible analysis reports 
 can be generated in PDF or HTML format in a fully automated manner by making use 

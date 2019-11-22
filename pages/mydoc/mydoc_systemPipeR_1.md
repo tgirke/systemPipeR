@@ -1,12 +1,12 @@
 ---
 title: systemPipeR - NGS workflow and report generation environment  <br> <br> 1. Introduction
-last_updated: Sun Sep 22 22:08:58 2019
+last_updated: Thu Nov 21 16:53:08 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_1.html
 ---
 Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 22 September, 2019 
+Last update: 21 November, 2019 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeR.html){:target="_blank"} ],
@@ -34,31 +34,31 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 Workflow design concepts are illustrated under (A & B). Examples of
 *systemPipeR’s* visualization functionalities are given under (C). 
 
-A central concept for designing workflows within the _`sytemPipeR`_ environment 
-is the use of workflow management containers. In previous versions, _`sytemPipeR`_ 
+A central concept for designing workflows within the _`systemPipeR`_ environment 
+is the use of workflow management containers. In previous versions, _`systemPipeR`_ 
 used a custom command-line interface called _`SYSargs`_ (see Figure 3) and for 
 this purpose will continue to be supported for some time. With the latest [Bioconductor Release 3.9](http://www.bioconductor.org/packages/release/bioc/html/systemPipeR.html), 
 we are adopting for this functionality the widely used community standard 
 [Common Workflow Language](https://www.commonwl.org/) (CWL) for describing 
 analysis workflows in a generic and reproducible manner, introducing _`SYSargs2`_
-workflow control class (see Figure 2). Using this community standard in _`sytemPipeR`_
-has many advantages. For instance, the integration of CWL allows running _`sytemPipeR`_
+workflow control class (see Figure 2). Using this community standard in _`systemPipeR`_
+has many advantages. For instance, the integration of CWL allows running _`systemPipeR`_
 workflows from a single specification instance either entirely from within R, from various command-line
 wrappers (e.g., *cwl-runner*) or from other languages (*, e.g.,* Bash or Python).
-_`sytemPipeR`_ includes support for both command-line and R/Bioconductor software 
+_`systemPipeR`_ includes support for both command-line and R/Bioconductor software 
 as well as resources for containerization, parallel evaluations on computer clusters 
 along with the automated generation of interactive analysis reports.
 
-An important feature of _`sytemPipeR's`_ CWL interface is that it provides two
+An important feature of _`systemPipeR's`_ CWL interface is that it provides two
 options to run command-line tools and workflows based on CWL. First, one can
 run CWL in its native way via an R-based wrapper utility for *cwl-runner* or
 *cwl-tools* (CWL-based approach). Second, one can run workflows using CWL's
 command-line and workflow instructions from within R (R-based approach). In the
 latter case the same CWL workflow definition files (*e.g.* `*.cwl` and `*.yml`)
 are used but rendered and executed entirely with R functions defined by
-_`sytemPipeR`_, and thus use CWL mainly as a command-line and workflow
+_`systemPipeR`_, and thus use CWL mainly as a command-line and workflow
 definition format rather than software to run workflows. In this regard
-_`sytemPipeR`_ also provides several convenience functions that are useful for
+_`systemPipeR`_ also provides several convenience functions that are useful for
 designing and debugging workflows, such as a command-line rendering function to
 retrieve the exact command-line strings for each data set and processing step
 prior to running a command-line.
@@ -69,7 +69,7 @@ the common analysis steps of NGS experiments.
 
 ## Workflow design structure using _`SYSargs2`_ 
 
-The flexibility of _`sytemPipeR's`_ new interface workflow control class is the driving factor behind 
+The flexibility of _`systemPipeR's`_ new interface workflow control class is the driving factor behind 
 the use of as many steps necessary for the analysis, as well as the connection 
 between command-line- or R-based software. The connectivity among all
 workflow steps is achieved by the _`SYSargs2`_ workflow control class (see Figure 3).

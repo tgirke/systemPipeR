@@ -1,6 +1,6 @@
 ---
 title: 3. Workflow overview
-last_updated: Sun Sep 22 22:08:58 2019
+last_updated: Thu Nov 21 16:53:08 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_3.html
 ---
@@ -44,7 +44,7 @@ the _`ShortRead`_ package to stream through large FASTQ files in a
 memory-efficient manner. The following example performs adaptor trimming with
 the _`trimLRPatterns`_ function from the _`Biostrings`_ package.
 After the trimming step a new targets file is generated (here
-_`targets_trim.txt`_) containing the paths to the trimmed FASTQ files.
+_`targets_trimPE.txt`_) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
 _`SYSargs2`_ instance, _e.g._ running the NGS alignments with the
 trimmed FASTQ files.
@@ -70,7 +70,6 @@ output(trim)[1:2]
 preprocessReads(args = trim, Fct = "trimLRPatterns(Rpattern='GCCCGGGTAA', 
                 subject=fq)", 
     batchsize = 1e+05, overwrite = TRUE, compress = TRUE)
-writeTargetsout(x = trim, file = "targets_trimPE.txt", step = 1)
 ```
 
 The following example shows how one can design a custom read preprocessing function 
@@ -85,7 +84,6 @@ filterFct <- function(fq, cutoff = 20, Nexceptions = 0) {
     fq[qcount <= Nexceptions]
 }
 preprocessReads(args = trim, Fct = "filterFct(fq, cutoff=20, Nexceptions=0)", batchsize = 1e+05)
-writeTargetsout(x = trim, file = "targets_trimPE.txt", step = 1)
 ```
 
 ### Preprocessing with TrimGalore!
@@ -106,13 +104,10 @@ trimG
 cmdlist(trimG)[1:2]
 output(trimG)[1:2]
 ## Run Single Machine Option
-runCommandline(trimG[1], make_bam = FALSE)
-writeTargetsout(x = trimG, file = "targets_trimG.txt", step = 1)
+trimG <- runCommandline(trimG[1], make_bam = FALSE)
 ```
 
 ### Preprocessing with Trimmomatic
-
-TODO: Add description!
 
 
 ```r
@@ -126,8 +121,7 @@ trimM
 cmdlist(trimM)[1:2]
 output(trimM)[1:2]
 ## Run Single Machine Option
-runCommandline(trimM[1], make_bam = FALSE)
-writeTargetsout(x = trimM, file = "targets_trimM.txt", step = 1)
+trimM <- runCommandline(trimM[1], make_bam = FALSE)
 ```
 
 ## FASTQ quality report
@@ -205,16 +199,16 @@ queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line int
 
 The parameter settings of the aligner are defined in the `hisat2-mapping-se.cwl` 
 and `hisat2-mapping-se.yml` files. The following shows how to construct the 
-corresponding *SYSargs2* object, here *align*.
+corresponding *SYSargs2* object, here *args*.
 
 
 ```r
 targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package = "systemPipeR")
-align <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", input_file = "hisat2-mapping-se.yml", 
+args <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", input_file = "hisat2-mapping-se.yml", 
     dir_path = dir_path)
-align <- renderWF(align, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
-align
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+args
 ```
 
 ```
@@ -230,7 +224,7 @@ align
 ```
 
 ```r
-cmdlist(align)[1:2]
+cmdlist(args)[1:2]
 ```
 
 ```
@@ -245,7 +239,7 @@ cmdlist(align)[1:2]
 ```
 
 ```r
-output(align)[1:2]
+output(args)[1:2]
 ```
 
 ```
@@ -263,7 +257,7 @@ Subsetting _`SYSargs2`_ class slots for each workflow step.
 
 
 ```r
-subsetWF(align, slot = "input", subset = "FileName")[1:2]  ## Subsetting the input files for this particular workflow 
+subsetWF(args, slot = "input", subset = "FileName")[1:2]  ## Subsetting the input files for this particular workflow 
 ```
 
 ```
@@ -272,7 +266,7 @@ subsetWF(align, slot = "input", subset = "FileName")[1:2]  ## Subsetting the inp
 ```
 
 ```r
-subsetWF(align, slot = "output", subset = 1)[1:2]  ## Subsetting the output files for one particular step in the workflow 
+subsetWF(args, slot = "output", subset = 1, index = 1)[1:2]  ## Subsetting the output files for one particular step in the workflow 
 ```
 
 ```
@@ -281,7 +275,7 @@ subsetWF(align, slot = "output", subset = 1)[1:2]  ## Subsetting the output file
 ```
 
 ```r
-subsetWF(align, slot = "step", subset = 1)[1]  ## Subsetting the command-lines for one particular step in the workflow 
+subsetWF(args, slot = "step", subset = 1)[1]  ## Subsetting the command-lines for one particular step in the workflow 
 ```
 
 ```
@@ -290,7 +284,7 @@ subsetWF(align, slot = "step", subset = 1)[1]  ## Subsetting the command-lines f
 ```
 
 ```r
-subsetWF(align, slot = "output", subset = 1, delete = TRUE)[1]  ## DELETING specific output files
+subsetWF(args, slot = "output", subset = 1, index = 1, delete = TRUE)[1]  ## DELETING specific output files
 ```
 
 ```
@@ -333,13 +327,13 @@ and can be assigned to the same object.
 
 
 ```r
-runCommandline(align, make_bam = FALSE)  ## generates alignments and writes *.sam files to ./results folder 
-align <- runCommandline(align, make_bam = TRUE)  ## same as above but writes files and converts *.sam files to sorted and indexed BAM files. Assigning the new extention of the output files to the object align.
+runCommandline(args, make_bam = FALSE)  ## generates alignments and writes *.sam files to ./results folder 
+args <- runCommandline(args, make_bam = TRUE)  ## same as above but writes files and converts *.sam files to sorted and indexed BAM files. Assigning the new extention of the output files to the object args.
 ```
 
 If available, multiple CPU cores can be used for processing each file. The number
 of CPU cores (here 4) to use for each process is defined in the _`*.yml`_ file. 
-With _`yamlinput(align)['thread']`_ one can return this value from the _`SYSargs2`_ object. 
+With _`yamlinput(args)['thread']`_ one can return this value from the _`SYSargs2`_ object. 
 
 #### Parallelization on clusters
 
@@ -350,7 +344,7 @@ the computing requests to the scheduler using the run specifications
 defined by *`runCommandline`*. 
 
 To avoid over-subscription of CPU cores on the compute nodes, the value from 
-_`yamlinput(align)['thread']`_ is passed on to the submission command, here _`ncpus`_ 
+_`yamlinput(args)['thread']`_ is passed on to the submission command, here _`ncpus`_ 
 in the _`resources`_ list object. The number of independent parallel cluster 
 processes is defined under the _`Njobs`_ argument. The following example will run 
 18 processes in parallel using for each 4 CPU cores. If the resources available
@@ -368,7 +362,7 @@ conf and template files for the Slurm scheduler provided by this package.
 ```r
 library(batchtools)
 resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
-reg <- clusterRun(align, FUN = runCommandline, more.args = list(args = align, make_bam = TRUE, 
+reg <- clusterRun(args, FUN = runCommandline, more.args = list(args = args, make_bam = TRUE, 
     dir = FALSE), conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", 
     Njobs = 18, runid = "01", resourceList = resources)
 getStatus(reg = reg)
@@ -379,9 +373,8 @@ Check and update the output location if necessary.
 
 
 ```r
-align <- output_update(align, dir = FALSE, replace = TRUE, extension = c(".sam", 
-    ".bam"))  ## Updates the output(align) to the right location in the subfolders
-output(align)
+args <- output_update(args, dir = FALSE, replace = TRUE, extension = c(".sam", ".bam"))  ## Updates the output(args) to the right location in the subfolders
+output(args)
 ```
 
 #### Create new targets file
@@ -392,8 +385,9 @@ serves as input to the next *`loadWorkflow`* and *`renderWF`* call.
 
 
 ```r
-names(clt(align))
-writeTargetsout(x = align, file = "default", step = 1)
+names(clt(args))
+writeTargetsout(x = args, file = "default", step = 1, new_col = "FileName", new_col_output_index = 1, 
+    overwrite = TRUE)
 ```
 
 #### Alignment with `HISAT2` and `SAMtools`
@@ -468,7 +462,8 @@ Create new targets file
 
 ```r
 names(clt(tophat2PE))
-writeTargetsout(x = tophat2PE, file = "default", step = 1)
+writeTargetsout(x = tophat2PE, file = "default", step = 1, new_col = "tophat2PE", 
+    new_col_output_index = 1, overwrite = TRUE)
 ```
 
 ### Alignment with _`Bowtie2`_ (_e.g._ for miRNA profiling)
@@ -527,7 +522,8 @@ Create new targets file.
 
 ```r
 names(clt(bowtiePE))
-writeTargetsout(x = bowtiePE, file = "default", step = 1)
+writeTargetsout(x = bowtiePE, file = "default", step = 1, new_col = "bowtiePE", new_col_output_index = 1, 
+    overwrite = TRUE)
 ```
 
 ### Alignment with _`BWA-MEM`_ (_e.g._ for VAR-Seq)
@@ -579,7 +575,8 @@ Create new targets file.
 
 ```r
 names(clt(bwaPE))
-writeTargetsout(x = bwaPE, file = "default", step = 1)
+writeTargetsout(x = bwaPE, file = "default", step = 1, new_col = "bwaPE", new_col_output_index = 1, 
+    overwrite = TRUE)
 ```
 
 ### Alignment with _`Rsubread`_ (_e.g._ for RNA-Seq)
@@ -615,7 +612,8 @@ Create new targets file.
 
 ```r
 names(clt(rsubread))
-writeTargetsout(x = rsubread, file = "default", step = 1)
+writeTargetsout(x = rsubread, file = "default", step = 1, new_col = "rsubread", new_col_output_index = 1, 
+    overwrite = TRUE)
 ```
 
 ### Alignment with _`gsnap`_ (_e.g._ for VAR-Seq and RNA-Seq)
@@ -652,6 +650,8 @@ reg <- clusterRun(gsnap, FUN = runCommandline, more.args = list(args = gsnap, ma
     conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs = 18, 
     runid = "01", resourceList = resources)
 getStatus(reg = reg)
+gsnap <- output_update(gsnap, dir = FALSE, replace = TRUE, extension = c(".sam", 
+    ".bam"))
 ```
 
 Create new targets file.
@@ -659,7 +659,8 @@ Create new targets file.
 
 ```r
 names(clt(gsnap))
-writeTargetsout(x = gsnap, file = "default", step = 1)
+writeTargetsout(x = gsnap, file = "default", step = 1, new_col = "gsnap", new_col_output_index = 1, 
+    overwrite = TRUE)
 ```
 
 ## Create symbolic links for viewing BAM files in IGV
@@ -672,9 +673,7 @@ symLink2bam(sysargs = args, htmldir = c("~/.html/", "somedir/"), urlbase = "http
     urlfile = "IGVurl.txt")
 ```
 
-## Transcript Quantification
-
-### Read counting for mRNA profiling experiments
+## Read counting for mRNA profiling experiments
 
 Create _`txdb`_ (needs to be done only once).
 
@@ -693,7 +692,7 @@ The following performs read counting with _`summarizeOverlaps`_ in parallel mode
 library(BiocParallel)
 txdb <- loadDb("./data/tair10.sqlite")
 eByg <- exonsBy(txdb, by = "gene")
-outpaths <- subsetWF(align, slot = "output", subset = 1)
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
 bfl <- BamFileList(outpaths, yieldSize = 50000, index = character())
 multicoreParam <- MulticoreParam(workers = 4)
 register(multicoreParam)
@@ -727,7 +726,7 @@ f <- function(x) {
     txdb <- loadDb("./data/tair10.sqlite")
     eByg <- exonsBy(txdb, by = "gene")
     args <- systemArgs(sysma = "param/tophat.param", mytargets = "targets.txt")
-    outpaths <- subsetWF(align, slot = "output", subset = 1)
+    outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
     bfl <- BamFileList(outpaths, yieldSize = 50000, index = character())
     summarizeOverlaps(eByg, bfl[x], mode = "Union", ignore.strand = TRUE, inter.feature = TRUE, 
         singleEnd = TRUE)
@@ -746,8 +745,9 @@ Useful commands for monitoring the progress of submitted jobs
 
 ```r
 getStatus(reg = reg)
-file.exists(output(tophat2PE))
-sapply(1:length(tophat2PE), function(x) loadResult(reg, id = x))  # Works after job completion
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+file.exists(outpaths)
+sapply(1:length(outpaths), function(x) loadResult(reg, id = x))  # Works after job completion
 ```
 
 #### Read and alignment count stats
@@ -756,7 +756,7 @@ Generate a table of read and alignment counts for all samples.
 
 
 ```r
-read_statsDF <- alignStats(align)
+read_statsDF <- alignStats(args)
 write.table(read_statsDF, "results/alignStats.xls", row.names = FALSE, quote = FALSE, 
     sep = "\t")
 ```
@@ -784,8 +784,8 @@ Parallelization of read/alignment stats on single machine with multiple cores.
 
 
 ```r
-f <- function(x) alignStats(align[x])
-read_statsList <- bplapply(seq(along = align), f, BPPARAM = MulticoreParam(workers = 8))
+f <- function(x) alignStats(args[x])
+read_statsList <- bplapply(seq(along = args), f, BPPARAM = MulticoreParam(workers = 8))
 read_statsDF <- do.call("rbind", read_statsList)
 ```
 
@@ -799,21 +799,21 @@ f <- function(x) {
     library(systemPipeR)
     targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
     dir_path <- "param/cwl/hisat2/hisat2-se"  ## TODO: replace path to system.file 
-    align <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", input_file = "hisat2-mapping-se.yml", 
+    args <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", input_file = "hisat2-mapping-se.yml", 
         dir_path = dir_path)
-    align <- renderWF(align, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
-    align <- output_update(align, dir = FALSE, replace = TRUE, extension = c(".sam", 
+    args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+    args <- output_update(args, dir = FALSE, replace = TRUE, extension = c(".sam", 
         ".bam"))
-    alignStats(align[x])
+    alignStats(args[x])
 }
 resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
 param <- BatchtoolsParam(workers = 4, cluster = "slurm", template = "batchtools.slurm.tmpl", 
     resources = resources)
-read_statsList <- bplapply(seq(along = align), f, BPPARAM = param)
+read_statsList <- bplapply(seq(along = args), f, BPPARAM = param)
 read_statsDF <- do.call("rbind", read_statsList)
 ```
 
-### Read counting for miRNA profiling experiments
+## Read counting for miRNA profiling experiments
 
 Download miRNA genes from miRBase.
 
@@ -843,7 +843,7 @@ library(DESeq2, warn.conflicts = FALSE, quietly = TRUE)
 library(ape, warn.conflicts = FALSE)
 countDFpath <- system.file("extdata", "countDFeByg.xls", package = "systemPipeR")
 countDF <- as.matrix(read.table(countDFpath))
-colData <- data.frame(row.names = targetsin(args)$SampleName, condition = targetsin(args)$Factor)
+colData <- data.frame(row.names = targets.as.df(targets(args))$SampleName, condition = targets.as.df(targets(args))$Factor)
 dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~condition)
 d <- cor(assay(rlog(dds)), method = "spearman")
 hc <- hclust(dist(1 - d))

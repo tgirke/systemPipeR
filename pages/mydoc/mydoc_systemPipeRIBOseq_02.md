@@ -1,6 +1,6 @@
 ---
 title: 2. Load workflow template
-last_updated: Fri Jun 21 16:34:15 2019
+last_updated: Thu Nov 21 16:49:12 2019
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_02.html
 ---
@@ -24,7 +24,7 @@ In case there is a newer version of this tutorial, download its `systemPipeRIBOs
 
 
 ```r
-download.file("https://raw.githubusercontent.com/tgirke/systemPipeRdata/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.Rmd", 
+download.file("https://raw.githubusercontent.com/tgirke/systemPipeRdata/master/vignettes/systemPipeRIBOseq.Rmd", 
     "systemPipeRIBOseq.Rmd")
 ```
 
@@ -74,25 +74,25 @@ targets
 ```
 
 ```
-##                    FileName SampleName Factor SampleLong
-## 1  ./data/SRR446027_1.fastq        M1A     M1  Mock.1h.A
-## 2  ./data/SRR446028_1.fastq        M1B     M1  Mock.1h.B
-## 3  ./data/SRR446029_1.fastq        A1A     A1   Avr.1h.A
-## 4  ./data/SRR446030_1.fastq        A1B     A1   Avr.1h.B
-## 5  ./data/SRR446031_1.fastq        V1A     V1   Vir.1h.A
-## 6  ./data/SRR446032_1.fastq        V1B     V1   Vir.1h.B
-## 7  ./data/SRR446033_1.fastq        M6A     M6  Mock.6h.A
-## 8  ./data/SRR446034_1.fastq        M6B     M6  Mock.6h.B
-## 9  ./data/SRR446035_1.fastq        A6A     A6   Avr.6h.A
-## 10 ./data/SRR446036_1.fastq        A6B     A6   Avr.6h.B
-## 11 ./data/SRR446037_1.fastq        V6A     V6   Vir.6h.A
-## 12 ./data/SRR446038_1.fastq        V6B     V6   Vir.6h.B
-## 13 ./data/SRR446039_1.fastq       M12A    M12 Mock.12h.A
-## 14 ./data/SRR446040_1.fastq       M12B    M12 Mock.12h.B
-## 15 ./data/SRR446041_1.fastq       A12A    A12  Avr.12h.A
-## 16 ./data/SRR446042_1.fastq       A12B    A12  Avr.12h.B
-## 17 ./data/SRR446043_1.fastq       V12A    V12  Vir.12h.A
-## 18 ./data/SRR446044_1.fastq       V12B    V12  Vir.12h.B
+##                       FileName SampleName Factor SampleLong
+## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
+## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
+## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
+## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B
+## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A
+## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B
+## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A
+## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B
+## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A
+## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B
+## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A
+## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B
+## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A
+## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B
+## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A
+## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B
+## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A
+## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B
 ```
 
 <br><br><center><a href="mydoc_systemPipeRIBOseq_01.html"><img src="images/left_arrow.png" alt="Previous page."></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
