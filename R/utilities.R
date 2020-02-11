@@ -806,7 +806,9 @@ run_edgeR <- function(countDF, targets, cmp, independent=TRUE, paired=NULL, mdsp
 ####################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
 run_DESeq2 <- function(countDF, targets, cmp, independent=FALSE) {
-    if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
+    ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
+    ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
+    if(all(class(cmp) != "matrix" & length(cmp)==2)) cmp <- t(as.matrix(cmp))
     samples <- as.character(targets$Factor); names(samples) <- paste(as.character(targets$SampleName), "", sep="")
     countDF <- countDF[, names(samples)]
     countDF[is.na(countDF)] <- 0
