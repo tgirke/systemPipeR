@@ -1,4 +1,8 @@
 changelog
+     version 1.21.02
+        - Fixed bug: run_edgeR/run_DESeq2 fct
+            - fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
+        
      version 1.19.07
         - Added "cwl/*" files:
             - GATK/*

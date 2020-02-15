@@ -733,18 +733,20 @@ moduleload <- function(module,envir="PATH") {
 #######################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
 run_edgeR <- function(countDF, targets, cmp, independent=TRUE, paired=NULL, mdsplot="") {
-    if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
-    samples <- as.character(targets$Factor); names(samples) <- paste(as.character(targets$SampleName), "", sep="")
-    countDF <- countDF[, names(samples)]
-    countDF[is.na(countDF)] <- 0
-    edgeDF <- data.frame(row.names=rownames(countDF))
-    group <- as.character(samples)
-    if(independent==TRUE) {
-      loopv <- seq(along=cmp[,1])
-    } else {
-	loopv <- 1
-    }
-    for(j in loopv) {
+  ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
+  ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
+  if(all(class(cmp) != "matrix" & length(cmp)==2)) cmp <- t(as.matrix(cmp))
+  samples <- as.character(targets$Factor); names(samples) <- paste(as.character(targets$SampleName), "", sep="")
+  countDF <- countDF[, names(samples)]
+  countDF[is.na(countDF)] <- 0
+  edgeDF <- data.frame(row.names=rownames(countDF))
+  group <- as.character(samples)
+  if(independent==TRUE) {
+    loopv <- seq(along=cmp[,1])
+  } else {
+    loopv <- 1
+  }
+  for(j in loopv) {
 	## Filtering and normalization
 	y <- DGEList(counts=countDF, group=group) # Constructs DGEList object
 	if(independent == TRUE) {
@@ -804,7 +806,9 @@ run_edgeR <- function(countDF, targets, cmp, independent=TRUE, paired=NULL, mdsp
 ####################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
 run_DESeq2 <- function(countDF, targets, cmp, independent=FALSE) {
-    if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
+    ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
+    ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
+    if(all(class(cmp) != "matrix" & length(cmp)==2)) cmp <- t(as.matrix(cmp))
     samples <- as.character(targets$Factor); names(samples) <- paste(as.character(targets$SampleName), "", sep="")
     countDF <- countDF[, names(samples)]
     countDF[is.na(countDF)] <- 0
