@@ -18,7 +18,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
   ## Check validity of input
   allbam <- !grepl("\\.bam$|\\.BAM", infile1(args))
   if(any(allbam)) stop("The following files lack the extension '.bam': ", paste(basename(infile1(args)[allbam]), collapse=", "))
-  if(colnames(targetsin[, 1, drop=FALSE]) != "FileName") stop("Name of first column in 'targetsin(arg)' is expected to be 'FileName'.")
+  if(!"FileName" %in% colnames(targetsin)) stop("Name of one column in 'targetsin(arg)' is expected to be 'FileName'.")
   ## Unique values in Factor column of targetsin(args) 
   sample_index <- !duplicated(as.character(mergefactor)); names(sample_index) <- names(infile1(args))
   uniorder <- unique(mergefactor) 
