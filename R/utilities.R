@@ -81,15 +81,18 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
-    ## Check if "Environment Modules" is installed in the system
+    ## Check if "Environment Modules" is in the PATH
+    try(suppressWarnings(modulecmd_path <- system("which modulecmd",intern=TRUE,ignore.stderr=TRUE)),
+        silent=TRUE)
     ## "Environment Modules" is not available
-    if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))!=1) {
+    # if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))!=1) {
+    if(length(modulecmd_path) == 0 ) {
       message("Message: 'Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.'", "\n")
-    } else {
       ## "Environment Modules" is available and proceed the module load
-      if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))==1) { # Returns TRUE if module system is present.
+      } else if (length(modulecmd_path) > 0){
+        # if(suppressWarnings(system("modulecmd bash -V", ignore.stderr = TRUE, ignore.stdout = TRUE))==1) { # Returns TRUE if module system is present.
         for(j in modules(args)) moduleload(j) # loads specified software from module system
-      }
+      # }
     }
   }
   ## SYSargs class
