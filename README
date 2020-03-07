@@ -1,4 +1,7 @@
 changelog
+     version 1.21.03
+        - Fixed bug: 'mergeBamByFactor' accepting "FileName" column in any position
+        
      version 1.21.02
         - Fixed bug: run_edgeR/run_DESeq2 fct
             - fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
