@@ -1,4 +1,7 @@
 changelog
+     version 1.21.05
+        - Fixed bug: 'renderWF': New R version bugs
+        
      version 1.21.04
         - Fixed bug: 'runCommandline' modulecmd
         

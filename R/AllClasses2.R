@@ -263,7 +263,7 @@ loadWF <- loadWorkflow
 
 ## Usage:
 # targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-# dir_path <- system.file("extdata/cwl", package="systemPipeR")
+# dir_path <- system.file("extdata/cwl/hisat2", package="systemPipeR")
 # WF <- loadWF(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl", input_file="hisat2-se/hisat2-mapping-se.yml", dir_path=dir_path)
 
 ###################################################
@@ -380,11 +380,13 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
     WF$yamlinput <- input
     WF <- as(WF, "SYSargs2")
     WF <- injectCommandlinelist(WF)
-    # outfilelist <- sapply(names(cmdlist(WF)), function(x) cmdlist(WF)[[x]]$outputs[[1]][[1]], simplify=FALSE)
     outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
+    outfile_c <- as.character()
     for(i in seq_along(outfilelist)) {
-      for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output)) 
-        outfilelist[[i]][[j]] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]][[1]]
+      for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output)) {
+        outfile_c <- c(outfile_c, cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob)
+      }
+      outfilelist[[i]] <- outfile_c
     }
     cmdlist <- renderCommandline(WF, redirect=">")
     inputvars <- as.list(inputvars)
