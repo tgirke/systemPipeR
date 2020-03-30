@@ -387,7 +387,6 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
       for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output)) 
         outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
     }
-    
     cmdlist <- renderCommandline(WF, redirect=">")
     inputvars <- as.list(inputvars)
     return(list(cmd=cmdlist, input=inputvarslist, output=outfilelist, inputvars=inputvars))
