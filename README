@@ -1,4 +1,12 @@
 changelog
+     version 1.21.06
+        - Fixed bug: 'runCommandline'
+        - Internal functions for runCommandline(): modular and sustainable develp
+        - Fixed output_update()
+        
+     version 1.21.05
+        - Fixed bug: 'renderWF': New R version bugs
+        
      version 1.21.04
         - Fixed bug: 'runCommandline' modulecmd
         
