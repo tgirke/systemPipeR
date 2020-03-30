@@ -8,14 +8,14 @@ Updates the output files paths in the \code{SYSargs2} object
 After executing all the command-lines by the \code{runCommadline} function, the output files can be created in specific directories rather then \code{results} in a particular directory. Also, the \code{runCommadline} function allows converting the SAM file outputs to sorted and indexed BAM files. Thus, the \code{output_update} function allows updating the location of these files in the output of the \code{SYSargs2}  object.
 }
 \usage{
-output_update(args, dir = TRUE, dir.name = NULL, replace = FALSE, extension = NULL)
+output_update(args, dir = FALSE, dir.name = NULL, replace = FALSE, extension = NULL, make_bam=FALSE)
 }
 \arguments{
   \item{args}{
 	object of class \code{SYSargs2}.
 }
   \item{dir}{
-  assign \code{TRUE} to update the location of the output files in the \code{args} object accordingly with the workflow name directory. Default is \code{dir=TRUE}.
+  assign \code{TRUE} to update the location of the output files in the \code{args} object accordingly with the workflow name directory. Default is \code{dir=FALSE}.
 }
   \item{dir.name}{
   if the results directory name is not specified in the \code{input} file, it is possible to specify here the name. This argument is required if the path name return \code{NULL} from the \code{input} file. Default is \code{dir.name=NULL}.
@@ -25,6 +25,9 @@ output_update(args, dir = TRUE, dir.name = NULL, replace = FALSE, extension = NU
 }
   \item{extension}{
   object of class \code{"character"} storing the current extension of the files and the respective replacement. For example, \code{runCommandline} function by default autodetects SAM file outputs in the \code{args} object and create the BAM files. In order to update the output of \code{args} object, the extension argument should be set: extension = c(\code{".sam"}, \code{".bam"}).
+}
+  \item{make_bam}{
+	Auto detects SAM file outputs and update them on the \code{SYSargs2} object for sorted and indexed BAM files. Default is \code{make_bam=FALSE}. This argument should be used in integration with \code{runCommandline} function. 
 }
 }
 \value{

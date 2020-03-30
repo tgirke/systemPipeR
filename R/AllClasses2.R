@@ -207,6 +207,7 @@ setReplaceMethod(f="[[", signature="SYSargs2", definition=function(x, i, j, valu
 loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   if(!file.exists(file.path(dir_path, wf_file))==TRUE) stop("Provide valid '.cwl' file. Check the file PATH.")
   if(!file.exists(file.path(dir_path, input_file))==TRUE) stop("Provide valid 'files.'.yml' file. Check the file PATH.")
+  if(all(!is.null(targets) && !file.exists(targets)==TRUE)) stop("Provide valid 'targets' file. Check the file PATH.")
   wf <- yaml::read_yaml(file.path(dir_path, wf_file))
   input <- yaml::read_yaml(file.path(dir_path, input_file))
   modules <- input$ModulesToLoad
@@ -380,13 +381,11 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
     WF$yamlinput <- input
     WF <- as(WF, "SYSargs2")
     WF <- injectCommandlinelist(WF)
+    ## Fix for cases like IDX/tophat/STAR, more than one output file per cmdlist
     outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
-    outfile_c <- as.character()
     for(i in seq_along(outfilelist)) {
-      for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output)) {
-        outfile_c <- c(outfile_c, cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob)
-      }
-      outfilelist[[i]] <- outfile_c
+      for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output)) 
+        outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
     }
     cmdlist <- renderCommandline(WF, redirect=">")
     inputvars <- as.list(inputvars)
@@ -407,7 +406,7 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
 }
 
 ## Usage:
-# WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH_", SampleName="_SampleName_"))
+# WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 
 ###############################################################
 ## Subsetting the input and output slots by name or position ##
@@ -496,65 +495,68 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 #########################################################
 ## Update the output location after run runCommandline ##
 #########################################################
-output_update <- function(args, dir=TRUE, dir.name=NULL, replace=FALSE, extension=NULL){
+output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extension=NULL, make_bam=FALSE){
   ## Folder name provide in the yml file
-  if(is.null(args$yamlinput$results_path$path)) {
-    if(is.null(dir.name)) {
-      stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
-    }}
-  if(is.null(dir.name)) {
-    logdir <- normalizePath(args$yamlinput$results_path$path) 
-  } else {
-    if(dir.exists(dir.name)==FALSE) {dir.create(dir.name)}
-    logdir <- normalizePath(dir.name)
-  }
+  ## this file will exists, because its create on the definition of the project or when runCommandline is used.
+  # if(is.null(args$yamlinput$results_path$path)) {
+  #   if(is.null(dir.name)) {
+  #     stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
+  #   }}
+  ## Validation for 'args'
+  if(any(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
+  ## If the argument 'replace' is TRUE, it is required to specify the 'extension' argument
   if(replace!=FALSE){
     if(is.null(extension)) {
       stop("argument 'extension' missing. The argument can only be assigned 'NULL' when no replacement is required. The argument should be assigned as a character vector with the current extension and the new one.")  
     }}
-  ## Workflow Name
-  cwl.wf <- strsplit(basename(cwlfiles(args)$cwl), split="\\.")[[1]]
-  cwl.wf <- cwl.wf[[-2]]
-  if(dir==TRUE){
-    args <- as(args, "list")
-    for(i in seq_along(args$output)){
-      for(j in seq_along(args$output[[i]])){
-        for(k in seq_along(args$output[[i]][[j]])){
-          name <- strsplit(args$output[[i]][[j]][k], split="\\/")[[1]]
-          name <- name[length(name)]
-          args$output[[i]][[j]][k] <- paste0(logdir, "/", cwl.wf, "/", names(args$output[i]), "/", name)
-        }
-      }
-    }
-  }
   if(replace==TRUE){
     args <- as(args, "list")
     for(i in seq_along(args$output)){
       for(j in seq_along(args$output[[i]])){
         for(k in seq_along(args$output[[i]][[j]])){
-          name <- strsplit(args$output[[i]][[j]][k], split="\\/")[[1]]
-          name <- name[length(name)]
-          dir <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
+          name <- basename(args$output[[i]][[j]][k])
+          dirRep <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
           if(grepl(extension[1], name)){
-            sam <- strsplit(name, split="\\.")[[1]]
-            sam <- sam[length(sam)]
-            if(sam=="sam"){
-              args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", names(args$output[i]), extension[2])))
-            } else {
-              args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", name)))
-            }
+            sam <- .getExt(name)
+            args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dirRep, "/", .getFileName(name), extension[2])))
           } else {
+            # message if the extension are not matching, return the same object
             args$output[[i]][[j]][k] <- args$output[[i]][[j]][k]
+          }
+          if(make_bam==TRUE){
+            if(grepl("bam", args$output[[i]][[j]][k])){
+              args$output[[i]][[j]][length(args$output[[i]][[j]])+1] <- paste0(gsub("\\.bam$", "", args$output[[i]][[j]][k]), ".bam.bai")
+            }
           }
         }
       }
     }
-  } 
-  return(as(args, "SYSargs2"))
+    args <- as(args, "SYSargs2")
+  }
+  if(dir==TRUE){
+    args <- as(args, "list")
+    ## Results path
+    logdir <- normalizePath(args$yamlinput$results_path$path)
+    ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
+    if(is.null(dir.name)) {
+      cwl.wf <- normalizePath(paste0(logdir, "/", .getFileName(args$cwlfiles$cwl)))
+    } else if(!is.null(dir.name)){
+      cwl.wf <- normalizePath(paste0(logdir, "/", dir.name)) 
+    }
+    ## New path
+    for(i in seq_along(args$output)){
+      for(j in seq_along(args$output[[i]])){
+        for(k in seq_along(args$output[[i]][[j]])){
+          name <- basename(args$output[[i]][[j]][k])
+          args$output[[i]][[j]][k] <- paste0(cwl.wf, "/", names(args$output[i]), "/", name)
+        }
+      }
+    }
+    args <- as(args, "SYSargs2")
+  }
+  return(args)
 }
-
 ## Usage:
-# WF <- output_update(WF)
 # WF <- output_update(WF, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
 # WF <- output_update(WF, dir=TRUE, replace=TRUE, extension=c(".sam", ".bam"))
 
