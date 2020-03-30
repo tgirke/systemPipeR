@@ -1,4 +1,4 @@
-### systemPipeR: NGS workflow and report generation environment 
+# systemPipeR <img src="https://github.com/tgirke/systemPipeR/raw/gh-pages/images/systemPipeR.png" align="right" height="139" />
 
 [![platforms](http://www.bioconductor.org/shields/availability/3.10/systemPipeR.svg)](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html#archives)
 [![rank](http://www.bioconductor.org/shields/downloads/devel/systemPipeR.svg)](http://bioconductor.org/packages/stats/bioc/systemPipeR/)
@@ -69,6 +69,19 @@ The corresponding PDFs of these report templates are linked here:
 [systemPipeChIPseq](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html)
 and
 [systemPipeVARseq](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html).
+
+### WorkFlow
+
+| WorkFlow |  Description  | Version | R CMD check | 
+|:----------------:|:----------------:|:----------------:|:----------------:|
+| [systemPipeChIPseq](https://github.com/systemPipeR/systemPipeChIPseq) | ChIP-Seq Workflow Template | v1.0 <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/check.png" align="center" height="15" /> | |
+| [systemPipeRIBOseq](https://github.com/systemPipeR/systemPipeRIBOseq) | RIBO-Seq Workflow Template | v1.0 <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/check.png" align="center" height="15" /> | |
+| [systemPipeRNAseq](https://github.com/systemPipeR/systemPipeRNAseq) | RNA-Seq Workflow Template | v1.0 <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/check.png" align="center" height="15" /> | |
+| [systemPipeVARseq](https://github.com/systemPipeR/systemPipeVARseq) | VAR-Seq Workflow Template | v1.0 <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/check.png" align="center" height="15" /> | |
+| [systemPipeMethylseq](https://github.com/systemPipeR/systemPipeMethylseq) | Methyl-Seq Workflow Template | devel <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/devel.png" align="center" height="15" /> | |
+| [systemPipeDeNovo](https://github.com/systemPipeR/systemPipeDeNovo) | De novo transcriptome assembly Workflow Template | devel <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/devel.png" align="center" height="15" /> | |
+| [systemPipeCLIPseq](https://github.com/systemPipeR/systemPipeCLIPseq) | CLIP-Seq Workflow Template | devel <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/devel.png" align="center" height="15" /> | |
+| [systemPipeMetaTrans](https://github.com/systemPipeR/systemPipeMetaTrans) | Metatranscriptomic Sequencing Workflow Template | devel <img src="https://raw.githubusercontent.com/tgirke/systemPipeR/gh-pages/images/devel.png" align="center" height="15" /> | |
 
 #### Slides
 
