@@ -824,56 +824,7 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="read-mapping-with-bowtie2tophat2">Read mapping with <code class="highlighter-rouge">Bowtie2/Tophat2</code></h2>
-
-<p>The NGS reads of this project will be aligned against the reference
-genome sequence using <code class="highlighter-rouge">Bowtie2/TopHat2</code> (Kim et al., 2013; Langmead et al., 2012) in both 
-interactive job submissions and batch submissions to queuing systems of clusters 
-using the <em><code class="highlighter-rouge">systemPipeR's</code></em> new CWL command-line interface.</p>
-
-<p>Build <em><code class="highlighter-rouge">Bowtie2</code></em> index.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/bowtie2/bowtie2-idx"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bowtie2-index.cwl"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bowtie2-index.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
-</span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="w">
-</span><span class="n">idx</span><span class="w">
-</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">## Run in single machine</span><span class="w">
-</span><span class="n">runCommandline</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<p>The parameter settings of the aligner are defined in the <code class="highlighter-rouge">tophat2-mapping-pe.cwl</code> 
-and <code class="highlighter-rouge">tophat2-mapping-pe.yml</code> files. The following shows how to construct the 
-corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/tophat2/tophat2-se"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"tophat2-mapping-se.cwl"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"tophat2-mapping-se.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
-</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH1_"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
-</span><span class="n">args</span><span class="w">
-</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
-</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
-</span><span class="c1">## Run in single machine</span><span class="w">
-</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<p>Submission of alignment jobs to compute cluster, here using 72 CPU cores
-(18 <code class="highlighter-rouge">qsub</code> processes each with 4 CPU cores).</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">## Run on the cluster</span><span class="w">
-</span><span class="n">moduleload</span><span class="p">(</span><span class="n">modules</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
-</span><span class="n">resources</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">walltime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">120</span><span class="p">,</span><span class="w"> </span><span class="n">ntasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">ncpus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1024</span><span class="p">)</span><span class="w">
-</span><span class="n">reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">clusterRun</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">FUN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">,</span><span class="w"> </span><span class="n">more.args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">),</span><span class="w"> </span><span class="n">conffile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">".batchtools.conf.R"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">template</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"batchtools.slurm.tmpl"</span><span class="p">,</span><span class="w"> </span><span class="n">Njobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">runid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"01"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">resourceList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resources</span><span class="p">)</span><span class="w">
-</span><span class="n">waitForJobs</span><span class="p">(</span><span class="n">reg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reg</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<h2 id="read-mapping-with-hisat2">Read mapping with <code class="highlighter-rouge">HISAT2</code></h2>
+  <h2 id="read-mapping-with-hisat2">Read mapping with <code class="highlighter-rouge">HISAT2</code></h2>
 
 <p>The following steps will demonstrate how to use the short read aligner <code class="highlighter-rouge">Hisat2</code>
 (Kim et al., 2015) in both interactive job submissions and batch submissions to
@@ -983,8 +934,8 @@ with a path specified under <code class="highlighter-rouge">urlfile</code> in th
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Thu Nov 21 15:47:56 2019<br/> Site last generated: Nov 21, 2019 <br />
+               &copy;2020 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: Apr 18, 2020 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

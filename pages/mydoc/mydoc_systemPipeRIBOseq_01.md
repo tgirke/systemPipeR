@@ -1,12 +1,12 @@
 ---
 title: RIBO-Seq Workflow Template  <br> <br> 1. Introduction
-last_updated: Thu Nov 21 16:49:12 2019
+last_updated: Sat Apr 18 12:33:39 2020
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_01.html
 ---
 Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 21 November, 2019 
+Last update: 18 April, 2020 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeRIBOseq.html){:target="_blank"} ],

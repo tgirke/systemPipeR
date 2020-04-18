@@ -1,65 +1,9 @@
 ---
 title: 4. Alignments
-last_updated: Thu Nov 21 16:49:12 2019
+last_updated: Sat Apr 18 12:33:39 2020
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRIBOseq_04.html
 ---
-
-## Read mapping with `Bowtie2/Tophat2` 
-
-The NGS reads of this project will be aligned against the reference
-genome sequence using `Bowtie2/TopHat2` (Kim et al., 2013; Langmead et al., 2012) in both 
-interactive job submissions and batch submissions to queuing systems of clusters 
-using the _`systemPipeR's`_ new CWL command-line interface.
-
-Build _`Bowtie2`_ index.
-
-
-```r
-dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package = "systemPipeR")
-idx <- loadWorkflow(targets = NULL, wf_file = "bowtie2-index.cwl", 
-    input_file = "bowtie2-index.yml", dir_path = dir_path)
-idx <- renderWF(idx)
-idx
-cmdlist(idx)
-
-## Run in single machine
-runCommandline(idx, make_bam = FALSE)
-```
-
-The parameter settings of the aligner are defined in the `tophat2-mapping-pe.cwl` 
-and `tophat2-mapping-pe.yml` files. The following shows how to construct the 
-corresponding *SYSargs2* object, here *args*.
-
-
-```r
-dir_path <- system.file("extdata/cwl/tophat2/tophat2-se", package = "systemPipeR")
-args <- loadWorkflow(targets = targetspath, wf_file = "tophat2-mapping-se.cwl", 
-    input_file = "tophat2-mapping-se.yml", dir_path = dir_path)
-args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
-    SampleName = "_SampleName_"))
-args
-cmdlist(args)[1:2]
-output(args)[1:2]
-
-## Run in single machine
-args <- runCommandline(args, make_bam = TRUE)
-```
-
-Submission of alignment jobs to compute cluster, here using 72 CPU cores
-(18 `qsub` processes each with 4 CPU cores).
-
-
-```r
-## Run on the cluster
-moduleload(modules(args))
-resources <- list(walltime = 120, ntasks = 1, ncpus = 4, memory = 1024)
-reg <- clusterRun(args, FUN = runCommandline, more.args = list(args = args, 
-    make_bam = TRUE, dir = FALSE), conffile = ".batchtools.conf.R", 
-    template = "batchtools.slurm.tmpl", Njobs = 18, runid = "01", 
-    resourceList = resources)
-waitForJobs(reg = reg)
-```
 
 ## Read mapping with `HISAT2`
 

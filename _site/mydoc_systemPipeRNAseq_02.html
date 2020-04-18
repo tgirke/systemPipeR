@@ -847,36 +847,20 @@ than 200MB in storage space. A PE read set has been chosen for this test
 data set for flexibility, because it can be used for testing both types
 of analysis routines requiring either SE (single end) reads or PE reads.</p>
 
-<p>The following loads one of the available NGS workflow templates (here RNA-Seq)
-into the user’s current working directory. At the moment, the package includes
+<p>Instructions for loading the demo data available for NGS workflow templates 
+into the user’s current working directory can be found here. At the moment, the package includes
 workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for
 additional NGS applications will be provided in the future.</p>
 
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeRdata</span><span class="p">)</span><span class="w">
-</span><span class="n">genWorkenvir</span><span class="p">(</span><span class="n">workflow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rnaseq"</span><span class="p">)</span><span class="w">
-</span><span class="n">setwd</span><span class="p">(</span><span class="s2">"rnaseq"</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<p>Alternatively, this can be done from the command-line as follows:</p>
-
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Rscript <span class="nt">-e</span> <span class="s2">"systemPipeRdata::genWorkenvir(workflow='rnaseq')"</span>
-</code></pre></div></div>
+<p>Alternatively, this can be done from the command-line as find here.</p>
 
 <p>Now open the R markdown script <code class="highlighter-rouge">systemPipeRNAseq.Rmd</code>in your R IDE (<em>e.g.</em>
 vim-r or RStudio) and run the workflow as outlined below. If you work under
 Vim-R-Tmux, the following command sequence will connect the user in an
-interactive session with a node on the cluster. The code of the <code class="highlighter-rouge">Rmd</code>
-script can then be sent from Vim on the login (head) node to an open R session running
+interactive session with a node on the cluster [TODO: fix, point to the main vignette]. 
+The code of the <code class="highlighter-rouge">Rmd</code>script can then be sent from Vim on the login (head) node to an open R session running
 on the corresponding computer node. This is important since Tmux sessions
 should not be run on the computer nodes.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">q</span><span class="p">(</span><span class="s2">"no"</span><span class="p">)</span><span class="w">  </span><span class="c1"># closes R session on head node</span><span class="w">
-</span></code></pre></div></div>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>srun <span class="nt">--x11</span> <span class="nt">--partition</span><span class="o">=</span>short <span class="nt">--mem</span><span class="o">=</span>2gb <span class="nt">--cpus-per-task</span> 4 <span class="nt">--ntasks</span> 1 <span class="nt">--time</span> 2:00:00 <span class="nt">--pty</span> bash <span class="nt">-l</span>
-module load R/3.4.2
-R
-</code></pre></div></div>
 
 <p>Now check whether your R session is running on a computer node of the cluster and not on a head node.</p>
 
@@ -894,9 +878,6 @@ this report (H Backman et al., 2016).</p>
 </span></code></pre></div></div>
 
 <p>If applicable load custom functions not provided by <code class="highlighter-rouge">systemPipeR</code> package.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">source</span><span class="p">(</span><span class="s2">"systemPipeRNAseq_Fct.R"</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
 
 <p>To apply workflows to custom data, the user needs to modify the <em><code class="highlighter-rouge">targets</code></em> file and if
 necessary update the corresponding <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files. A collection of pre-generated <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files are provided in the <em><code class="highlighter-rouge">param/cwl</code></em> subdirectory of each workflow template. They
@@ -951,8 +932,8 @@ comparisons of the analysis workflow.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2019 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Thu Nov 21 15:47:56 2019<br/> Site last generated: Nov 21, 2019 <br />
+               &copy;2020 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: Apr 18, 2020 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

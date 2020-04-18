@@ -39,7 +39,7 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
-```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE, eval=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 suppressPackageStartupMessages({
     library(systemPipeR)
     library(BiocParallel)
@@ -136,7 +136,7 @@ dir() # returns content of current working directory
 The `systemPipeR` package needs to be loaded to perform the analysis steps shown in
 this report [@H_Backman2016-bt].
 
-```{r load_systempiper, eval=TRUE, messages=FALSE, warnings=FALSE}
+```{r load_systempiper, eval=TRUE, message=FALSE}
 library(systemPipeR)
 ```
 

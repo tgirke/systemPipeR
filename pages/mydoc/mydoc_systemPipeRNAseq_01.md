@@ -1,12 +1,12 @@
 ---
-title: RNA-Seq Workflow Template  <br> <br> 1. Introduction
-last_updated: Thu Nov 21 15:47:56 2019
+title: RNA-Seq Workflow Template <br> <br> 1. Introduction
+last_updated: Sat Apr 18 12:43:59 2020
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_01.html
 ---
-Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
+'Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)'
 
-Last update: 21 November, 2019 
+
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeRNAseq.html){:target="_blank"} ],

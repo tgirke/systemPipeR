@@ -39,7 +39,7 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
-```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE, eval=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
 suppressPackageStartupMessages({
     library(systemPipeR)
     library(BiocParallel)
@@ -130,7 +130,7 @@ dir() # returns content of current working directory
 The `systemPipeR` package needs to be loaded to perform the analysis steps shown in
 this report [@H_Backman2016-bt].
 
-```{r load_systempiper, eval=TRUE}
+```{r load_systempiper, eval=TRUE, message=FALSE}
 library(systemPipeR)
 ```
 
@@ -173,7 +173,7 @@ output(trim)[1:2]
 
 Next, we execute the code for trimming all the raw data. 
 
-```{r proprocess_reads, eval=FALSE, messages=FALSE, warning=FALSE, cache=TRUE}
+```{r proprocess_reads, eval=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 # args <- systemArgs(sysma="param/trim.param", mytargets="targets_chip.txt")
 filterFct <- function(fq, cutoff=20, Nexceptions=0) {
     qcount <- rowSums(as(quality(fq), "matrix") <= cutoff, na.rm=TRUE)

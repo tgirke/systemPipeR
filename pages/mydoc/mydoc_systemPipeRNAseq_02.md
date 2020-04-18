@@ -1,6 +1,6 @@
 ---
 title: 2. Samples and environment settings
-last_updated: Thu Nov 21 15:47:56 2019
+last_updated: Sat Apr 18 12:43:59 2020
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeRNAseq_02.html
 ---
@@ -28,44 +28,20 @@ than 200MB in storage space. A PE read set has been chosen for this test
 data set for flexibility, because it can be used for testing both types
 of analysis routines requiring either SE (single end) reads or PE reads.
 
-The following loads one of the available NGS workflow templates (here RNA-Seq)
-into the user's current working directory. At the moment, the package includes
+Instructions for loading the demo data available for NGS workflow templates 
+into the user's current working directory can be found here. At the moment, the package includes
 workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Templates for
 additional NGS applications will be provided in the future.
 
-
-```r
-library(systemPipeRdata)
-genWorkenvir(workflow = "rnaseq")
-setwd("rnaseq")
-```
-
-Alternatively, this can be done from the command-line as follows:
-
-
-```sh
-Rscript -e "systemPipeRdata::genWorkenvir(workflow='rnaseq')"
-```
+Alternatively, this can be done from the command-line as find here. 
 
 Now open the R markdown script `systemPipeRNAseq.Rmd`in your R IDE (_e.g._
 vim-r or RStudio) and run the workflow as outlined below. If you work under
 Vim-R-Tmux, the following command sequence will connect the user in an
-interactive session with a node on the cluster. The code of the `Rmd`
-script can then be sent from Vim on the login (head) node to an open R session running
+interactive session with a node on the cluster [TODO: fix, point to the main vignette]. 
+The code of the `Rmd`script can then be sent from Vim on the login (head) node to an open R session running
 on the corresponding computer node. This is important since Tmux sessions
 should not be run on the computer nodes. 
-
-
-```r
-q("no")  # closes R session on head node
-```
-
-
-```bash
-srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-module load R/3.4.2
-R
-```
 
 Now check whether your R session is running on a computer node of the cluster and not on a head node.
 
@@ -87,11 +63,6 @@ library(systemPipeR)
 ```
 
 If applicable load custom functions not provided by `systemPipeR` package.
-
-
-```r
-source("systemPipeRNAseq_Fct.R")
-```
 
 To apply workflows to custom data, the user needs to modify the _`targets`_ file and if
 necessary update the corresponding _`.cwl`_ and _`.yml`_ files. A collection of pre-generated _`.cwl`_ and _`.yml`_ files are provided in the _`param/cwl`_ subdirectory of each workflow template. They

@@ -11,7 +11,7 @@
 ## }
 
 
-## ----style, echo = FALSE, results = 'asis'-------------------------------
+## ----style, echo = FALSE, results = 'asis'----------------
 BiocStyle::markdown()
 options(width=60, max.print=1000)
 knitr::opts_chunk$set(
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=60), tidy=TRUE)
 
 
-## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE-------------------
+## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE----
 suppressPackageStartupMessages({
     library(systemPipeR)
     library(BiocParallel)
@@ -35,113 +35,109 @@ suppressPackageStartupMessages({
 })
 
 
-## ----genRna_workflow, eval=FALSE-----------------------------------------
-## library(systemPipeRdata)
-## genWorkenvir(workflow="rnaseq")
-## setwd("rnaseq")
-
-
-## Rscript -e "systemPipeRdata::genWorkenvir(workflow='rnaseq')"
-
-
-## ----closeR, eval=FALSE--------------------------------------------------
-## q("no") # closes R session on head node
-
-
-## srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-
-## module load R/3.4.2
-
-## R
-
-
-## ----r_environment, eval=FALSE-------------------------------------------
+## ----r_environment, eval=FALSE----------------------------
 ## system("hostname") # should return name of a compute node starting with i or c
 ## getwd() # checks current working directory of R session
 ## dir() # returns content of current working directory
 
 
-## ----load_systempiper, eval=TRUE-----------------------------------------
+## ----load_systempiper, eval=TRUE,  messages=FALSE---------
 library(systemPipeR)
 
 
-## ----source_helper_fcts, eval=FALSE--------------------------------------
-## source("systemPipeRNAseq_Fct.R")
-
-
-## ----load_targets, eval=TRUE---------------------------------------------
+## ----load_targets, eval=TRUE------------------------------
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 
 
-## ----fastq_filter, eval=FALSE--------------------------------------------
-## args <- systemArgs(sysma="param/trim.param", mytargets="targets.txt")
-## preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)",
-##                 batchsize=100000, overwrite=TRUE, compress=TRUE)
-## writeTargetsout(x=args, file="targets_trim.txt", overwrite=TRUE)
+## ----construct_SYSargs2_trim-se, eval=FALSE---------------
+## dir_path <- system.file("extdata/cwl/preprocessReads/trim-se", package="systemPipeR")
+## trim <- loadWorkflow(targets=targetspath, wf_file="trim-se.cwl", input_file="trim-se.yml", dir_path=dir_path)
+## trim <- renderWF(trim, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+## trim
+## output(trim)[1:2]
 
 
-## ----fastq_report, eval=FALSE--------------------------------------------
-## args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-## fqlist <- seeFastq(fastq=infile1(args), batchsize=100000, klength=8)
+## ----preprocessing, eval=FALSE----------------------------
+## preprocessReads(args=trim, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA',
+##                 subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+## writeTargetsout(x=trim, file="targets_trimPE.txt", step = 1,
+##                 new_col = "FileName1", new_col_output_index = 1, overwrite = TRUE)
+
+
+## ----fastq_report, eval=FALSE-----------------------------
+## fqlist <- seeFastq(fastq=infile1(trim), batchsize=10000, klength=8)
 ## pdf("./results/fastqReport.pdf", height=18, width=4*length(fqlist))
 ## seeFastqPlot(fqlist)
 ## dev.off()
 
 
-## ----tophat_alignment1, eval=FALSE---------------------------------------
-## args <- systemArgs(sysma="param/tophat.param", mytargets="targets.txt")
-## sysargs(args)[1] # Command-line parameters for first FASTQ file
+## ----hisat_index, eval=FALSE------------------------------
+## dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package="systemPipeR")
+## idx <- loadWorkflow(targets=NULL, wf_file="hisat2-index.cwl", input_file="hisat2-index.yml", dir_path=dir_path)
+## idx <- renderWF(idx)
+## idx
+## cmdlist(idx)
+## 
+## ## Run
+## runCommandline(idx, make_bam = FALSE)
 
 
-## ----tophat_alignment2, eval=FALSE---------------------------------------
-## moduleload(modules(args))
-## system("bowtie2-build ./data/tair10.fasta ./data/tair10.fasta")
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
-## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
+## ----hisat_SYSargs2_object, eval=FALSE--------------------
+## dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
+## args <- loadWorkflow(targets=targetspath, wf_file="hisat2-mapping-se.cwl",
+##                      input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+## args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+## args
+## cmdlist(args)[1:2]
+## output(args)[1:2]
+## 
+## ## Runc single Machine
+## args <- runCommandline(args)
+
+
+## ----hisat2_clusterRun, eval=FALSE------------------------
+## library(batchtools)
+## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
+## reg <- clusterRun(args, FUN = runCommandline, more.args = list(args=args, make_bam=TRUE, dir=FALSE),
+##                   conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##                   Njobs=18, runid="01", resourceList=resources)
 ## getStatus(reg=reg)
 ## waitForJobs(reg=reg)
+## args <- output_update(args, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) ## Updates the output(args) to the right location in the subfolders
+## output(args)
 
 
-## ----hisat_alignment2, eval=FALSE----------------------------------------
-## args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
-## sysargs(args)[1] # Command-line parameters for first FASTQ file
-## moduleload(modules(args))
-## system("hisat2-build ./data/tair10.fasta ./data/tair10.fasta")
-## resources <- list(walltime=120, ntasks=1, ncpus=cores(args), memory=1024)
-## reg <- clusterRun(args, conffile = ".batchtools.conf.R", Njobs=18, template = "batchtools.slurm.tmpl", runid="01", resourceList=resources)
-## getStatus(reg=reg)
-## waitForJobs(reg=reg)
+## ----check_files_exist, eval=FALSE------------------------
+## outpaths <- subsetWF(args , slot="output", subset=1, index=1)
+## file.exists(outpaths)
 
 
-## ----check_files_exist, eval=FALSE---------------------------------------
-## file.exists(outpaths(args))
-
-
-## ----align_stats, eval=FALSE---------------------------------------------
+## ----align_stats, eval=FALSE------------------------------
 ## read_statsDF <- alignStats(args=args)
 ## write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 
 
-## ----align_stats_view, eval=TRUE-----------------------------------------
+## ----align_stats_view, eval=TRUE--------------------------
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 
 
-## ----bam_urls, eval=FALSE------------------------------------------------
+## ----bam_urls, eval=FALSE---------------------------------
 ## symLink2bam(sysargs=args, htmldir=c("~/.html/", "somedir/"),
 ##             urlbase="http://biocluster.ucr.edu/~tgirke/",
 ## 	        urlfile="./results/IGVurl.txt")
 
 
-## ----read_counting1, eval=FALSE------------------------------------------
+## ----read_counting1, eval=FALSE---------------------------
 ## library("GenomicFeatures"); library(BiocParallel)
 ## txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="Arabidopsis thaliana")
 ## saveDb(txdb, file="./data/tair10.sqlite")
 ## txdb <- loadDb("./data/tair10.sqlite")
-## (align <- readGAlignments(outpaths(args)[1])) # Demonstrates how to read bam file into R
+## outpaths <- subsetWF(args, slot="output", subset=1, index=1)
+## (align <- readGAlignments(outpaths[1])) # Demonstrates how to read bam file into R
 ## eByg <- exonsBy(txdb, by=c("gene"))
-## bfl <- BamFileList(outpaths(args), yieldSize=50000, index=character())
+## bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
 ## multicoreParam <- MulticoreParam(workers=2); register(multicoreParam); registered()
 ## counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union",
 ##                                                ignore.strand=TRUE,
@@ -154,18 +150,18 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
 
 
-## ----view_counts, eval=FALSE---------------------------------------------
+## ----view_counts, eval=FALSE------------------------------
 ## read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:5]
 
 
-## ----view_rpkm, eval=FALSE-----------------------------------------------
+## ----view_rpkm, eval=FALSE--------------------------------
 ## read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
 
 
-## ----sample_tree, eval=FALSE---------------------------------------------
+## ----sample_tree, eval=FALSE------------------------------
 ## library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
 ## countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
-## colData <- data.frame(row.names=targetsin(args)$SampleName, condition=targetsin(args)$Factor)
+## colData <- data.frame(row.names=targets.as.df(targets(args))$SampleName, condition=targets.as.df(targets(args))$Factor)
 ## dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
 ## d <- cor(assay(rlog(dds)), method="spearman")
 ## hc <- hclust(dist(1-d))
@@ -174,7 +170,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## dev.off()
 
 
-## ----run_edger, eval=FALSE-----------------------------------------------
+## ----run_edger, eval=FALSE--------------------------------
 ## library(edgeR)
 ## countDF <- read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)
 ## targets <- read.delim("targets.txt", comment="#")
@@ -182,7 +178,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## edgeDF <- run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
 
 
-## ----custom_annot, eval=FALSE--------------------------------------------
+## ----custom_annot, eval=FALSE-----------------------------
 ## library("biomaRt")
 ## m <- useMart("plants_mart", dataset="athaliana_eg_gene", host="plants.ensembl.org")
 ## desc <- getBM(attributes=c("tair_locus", "description"), mart=m)
@@ -192,7 +188,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## write.table(edgeDF, "./results/edgeRglm_allcomp.xls", quote=FALSE, sep="\t", col.names = NA)
 
 
-## ----filter_degs, eval=FALSE---------------------------------------------
+## ----filter_degs, eval=FALSE------------------------------
 ## edgeDF <- read.delim("results/edgeRglm_allcomp.xls", row.names=1, check.names=FALSE)
 ## pdf("results/DEGcounts.pdf")
 ## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=20))
@@ -200,7 +196,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## write.table(DEG_list$Summary, "./results/DEGcounts.xls", quote=FALSE, sep="\t", row.names=FALSE)
 
 
-## ----venn_diagram, eval=FALSE--------------------------------------------
+## ----venn_diagram, eval=FALSE-----------------------------
 ## vennsetup <- overLapper(DEG_list$Up[6:9], type="vennsets")
 ## vennsetdown <- overLapper(DEG_list$Down[6:9], type="vennsets")
 ## pdf("results/vennplot.pdf")
@@ -208,7 +204,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## dev.off()
 
 
-## ----get_go_annot, eval=FALSE--------------------------------------------
+## ----get_go_annot, eval=FALSE-----------------------------
 ## library("biomaRt")
 ## listMarts() # To choose BioMart database
 ## listMarts(host="plants.ensembl.org")
@@ -226,7 +222,7 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## save(catdb, file="data/GO/catdb.RData")
 
 
-## ----go_enrich, eval=FALSE-----------------------------------------------
+## ----go_enrich, eval=FALSE--------------------------------
 ## library("biomaRt")
 ## load("data/GO/catdb.RData")
 ## DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=50), plot=FALSE)
@@ -242,15 +238,17 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## BatchResultslim <- GOCluster_Report(catdb=catdb, setlist=DEGlist, method="slim", id_type="gene", myslimv=goslimvec, CLSZ=10, cutoff=0.01, gocats=c("MF", "BP", "CC"), recordSpecGO=NULL)
 
 
-## ----go_plot, eval=FALSE-------------------------------------------------
+## ----go_plot, eval=FALSE----------------------------------
 ## gos <- BatchResultslim[grep("M6-V6_up_down", BatchResultslim$CLID), ]
 ## gos <- BatchResultslim
-## pdf("GOslimbarplotMF.pdf", height=8, width=10); goBarplot(gos, gocat="MF"); dev.off()
+## pdf("GOslimbarplotMF.pdf", height=8, width=10)
+## goBarplot(gos, gocat="MF")
+## dev.off()
 ## goBarplot(gos, gocat="BP")
 ## goBarplot(gos, gocat="CC")
 
 
-## ----heatmap, eval=FALSE-------------------------------------------------
+## ----heatmap, eval=FALSE----------------------------------
 ## library(pheatmap)
 ## geneids <- unique(as.character(unlist(DEG_list[[1]])))
 ## y <- assay(rlog(dds))[geneids, ]
@@ -259,6 +257,6 @@ read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), head
 ## dev.off()
 
 
-## ----sessionInfo---------------------------------------------------------
+## ----sessionInfo------------------------------------------
 sessionInfo()
 

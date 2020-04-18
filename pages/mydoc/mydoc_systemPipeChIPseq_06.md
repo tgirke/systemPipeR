@@ -1,6 +1,6 @@
 ---
 title: 6. Peak calling with MACS2
-last_updated: Thu Nov 21 15:49:32 2019
+last_updated: Sat Apr 18 12:27:46 2020
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeChIPseq_06.html
 ---
