@@ -1,4 +1,8 @@
 changelog
+     version 1.21.07
+        - BugFix: citation file
+        - Updated News file
+        
      version 1.21.06
         - Fixed bug: 'runCommandline'
         - Internal functions for runCommandline(): modular and sustainable develp

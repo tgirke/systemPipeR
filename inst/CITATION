@@ -1,3 +1,16 @@
-library(methods)
-library(knitcitations)
-bib_metadata("10.1186/s12859-016-1241-0")
+citEntry(entry="article",
+         title = "systemPipeR: NGS workflow and report generation environment",
+         author = personList( as.person("Tyler W. H. Backman"),
+                              as.person("Thomas Girke")),
+         year = 2016,
+         month = "sep",
+         publisher = "Springer Science and Business Media {LLC}",
+         journal = "BMC Bioinformatics",
+         doi = "10.1186/s12859-016-1241-0",
+         url = "https://doi.org/10.1186/s12859-016-1241-0",
+         volume = 17,
+         number = 1,
+         textVersion = 
+         paste("Backman TWH, Girke T (2016)", 
+               "systemPipeR: NGS workflow and report generation environment.",
+                "BMC Bioinformatics 17 (1), doi: 10.1186/s12859-016-1241-0."))
