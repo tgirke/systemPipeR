@@ -1,3 +1,22 @@
+CHANGES IN VERSION 1.22
+-----------------------
+
+OVERVIEW
+    o systemPipeR major enhancements establish a versatile environment for designing, 
+    building and running end-to-end analysis workflows on local machines, 
+    HPC clusters, and cloud systems while generating at the same time publication-quality 
+    analysis reports.
+
+    o The most important enhancements in the upcoming release of the package are 
+      outlined below.  
+
+NEW FEATURES
+    o 
+
+BUG FIXES
+    o 
+
+
 CHANGES IN VERSION 1.3
 ----------------------
 

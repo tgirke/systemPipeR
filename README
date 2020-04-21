@@ -1,4 +1,12 @@
 changelog
+     version 1.21.08
+        - Implementing deprecated for 'SYSargs2Pipe-class'; it will be replaced for 'SYSargsList'
+        
+     version 1.21.07
+        - Replace name SYSargs2list methods to sysargs2 methods [Motivation: because we are introducing a new class called SYSargsList, to avoid any confusion]
+        - BugFix: citation file
+        - Updated News file
+        
      version 1.21.06
         - Fixed bug: 'runCommandline'
         - Internal functions for runCommandline(): modular and sustainable develp

@@ -55,8 +55,8 @@ setAs(from="list", to="SYSargs2",
 })
 
 ## Coerce back to list: as(SYSargs2, "list")
-setGeneric(name="SYSargs2list", def=function(x) standardGeneric("SYSargs2list"))
-setMethod(f="SYSargs2list", signature="SYSargs2", definition=function(x) {
+setGeneric(name="sysargs2", def=function(x) standardGeneric("sysargs2"))
+setMethod(f="sysargs2", signature="SYSargs2", definition=function(x) {
     sysargslist <- list(targets=x@targets, targetsheader=x@targetsheader, modules=x@modules, wf=x@wf, clt=x@clt, yamlinput=x@yamlinput, cmdlist=x@cmdlist, input=x@input, output=x@output, cwlfiles=x@cwlfiles, inputvars=x@inputvars)
 	return(sysargslist)
 }) 
@@ -64,7 +64,7 @@ setMethod(f="SYSargs2list", signature="SYSargs2", definition=function(x) {
 ## SYSargs2 to list with: as("SYSargs2", list)
 setAs(from="SYSargs2", to="list", 
 	def=function(from) {
-		SYSargs2list(from)
+		sysargs2(from)
 })
 
 ## Define print behavior for SYSargs2
@@ -1190,8 +1190,8 @@ write.yml <- function(commandLine, file.yml, results_path, module_load){
 ## Define SYSargs2Pipe class
 setClass("SYSargs2Pipe", representation(
   WF_steps="list",
-  track="list", 
-  summaryWF="list") 
+  track="list",
+  summaryWF="list")
 )
 ## Methods to return SYSargs2Pipe components 
 setGeneric(name="WF_steps", def=function(x) standardGeneric("WF_steps"))
@@ -1224,11 +1224,12 @@ setAs(from="SYSargs2Pipe", to="list",
 
 ## Define print behavior for SYSargs2Pipe
 setMethod(f="show", signature="SYSargs2Pipe", 
-          definition=function(object) {    
+          definition=function(object) {
             cat(paste0("Instance of '", class(object), "':"), 
                 "   WF Instances:",
                 paste0("      ", seq_along(object@WF_steps), ". ", names(object@WF_steps)), 
                 "\n",  sep="\n")
+            warning("This class is deprecated. Use 'SYSargsList' instead. See help('SYSargs2-class) and help('Deprecated'')")
           })
 
 ## Extend names() method
@@ -1262,6 +1263,7 @@ setMethod(f="[[", signature="SYSargs2Pipe",
 ## Behavior of "$" operator for SYSargs2Pipe
 setMethod("$", signature="SYSargs2Pipe",
           definition=function(x, name) { 
+            .Deprecated(new="SYSargsList")
             slot(x, name)
           })
 
@@ -1276,6 +1278,7 @@ setReplaceMethod(f="[[", signature="SYSargs2Pipe", definition=function(x, i, j, 
 ## Run_track function ##
 ########################
 run_track <- function(WF_ls){
+  .Deprecated(new="initWF")
   if(any(class(WF_ls)!="list" & class(WF_ls[[1]])!="SYSargs2")) stop("Argument 'WF_steps' needs to be assigned a list of object of class 'SYSargs2'")
   ## Define workflows names in superlist
   namesWF <- as.character()

@@ -1,10 +1,10 @@
 \name{run_track}
 \alias{run_track}
 \title{
-Keep track of the all \code{SYSargs2} object
+Deprecated \code{run_track} functions
 }
 \description{
-Keep track of the all \code{SYSargs2} object.
+Keep track of the all \code{SYSargs2} object. This function is deprecated and should be replaced by \code{SYSargsList-class}.
 }
 \usage{
 run_track(WF_ls)
@@ -17,6 +17,13 @@ run_track(WF_ls)
 \value{
 \code{SYSargs2Pipe} object
 }
+\details{
+  The following methods are deprecated and will be made defunct; use
+  the replacement indicated below:
+  \itemize{
+    \item{\code{SYSargs2Pipe}: \code{\link{SYSargs2-class}}}
+  }
+}
 \author{
 Daniela Cassol and Thomas Girke}
 \seealso{
@@ -25,6 +32,7 @@ Daniela Cassol and Thomas Girke}
 \code{renderWF}
 }
 \examples{
+\dontrun{
 ## Construct SYSargs2 object number 1
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
@@ -46,5 +54,6 @@ WF_set <- run_track(WF_ls = c(WF1, WF))
 WF_steps(WF_set)
 track(WF_set)
 summaryWF(WF_set)[1]
+}
 }
 \keyword{ utilities }
