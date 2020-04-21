@@ -42,15 +42,6 @@ knitr::opts_chunk$set(
 ```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
 suppressPackageStartupMessages({
     library(systemPipeR)
-    library(BiocParallel)
-    library(Biostrings)
-    library(Rsamtools)
-    library(GenomicRanges)
-    library(ggplot2)
-    library(GenomicAlignments)
-    library(ShortRead)
-    library(ape)
-    library(batchtools)
 })
 ```
 

@@ -1,5 +1,6 @@
 changelog
      version 1.21.07
+        - Replace name SYSargs2list methods to sysargs2 methods [Motivation: because we are introducing a new class called SYSargsList, to avoid any confusion]
         - BugFix: citation file
         - Updated News file
         

@@ -55,8 +55,8 @@ setAs(from="list", to="SYSargs2",
 })
 
 ## Coerce back to list: as(SYSargs2, "list")
-setGeneric(name="SYSargs2list", def=function(x) standardGeneric("SYSargs2list"))
-setMethod(f="SYSargs2list", signature="SYSargs2", definition=function(x) {
+setGeneric(name="sysargs2", def=function(x) standardGeneric("sysargs2"))
+setMethod(f="sysargs2", signature="SYSargs2", definition=function(x) {
     sysargslist <- list(targets=x@targets, targetsheader=x@targetsheader, modules=x@modules, wf=x@wf, clt=x@clt, yamlinput=x@yamlinput, cmdlist=x@cmdlist, input=x@input, output=x@output, cwlfiles=x@cwlfiles, inputvars=x@inputvars)
 	return(sysargslist)
 }) 
@@ -64,7 +64,7 @@ setMethod(f="SYSargs2list", signature="SYSargs2", definition=function(x) {
 ## SYSargs2 to list with: as("SYSargs2", list)
 setAs(from="SYSargs2", to="list", 
 	def=function(from) {
-		SYSargs2list(from)
+		sysargs2(from)
 })
 
 ## Define print behavior for SYSargs2
