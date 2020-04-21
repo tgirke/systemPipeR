@@ -16,8 +16,9 @@
 \alias{track,SYSargs2Pipe-method}
 \alias{WF_steps,SYSargs2Pipe-method}
 
-\title{Class \code{"SYSargs2Pipe"}}
+\title{Deprecated \code{"SYSargs2Pipe"} Class}
 \description{
+This class and methods are deprecated and should be replaced by \code{SYSargsList} class and methods.
 \code{SYSargs2Pipe class} stores a list \code{SYSargs2} objects. Each \code{SYSargs2} objects stores all the information and instructions needed for processing a set of input files with a specific command-line or a series of command-line within a workflow. 
 }
 \section{Objects from the Class}{
@@ -50,12 +51,19 @@ Objects can be created by calls of the form \code{new("SYSargs2Pipe", ...)}.
 \author{
 Daniela Cassol and Thomas Girke
 }
+\details{
+  The following methods are deprecated and will be made defunct; use
+  the replacement indicated below:
+  \itemize{
+    \item{\code{SYSargs2Pipe}: \code{\link{SYSargs2-class}}}
+  }
+}
 \seealso{
 \code{loadWorkflow} and \code{renderWF} and \code{runCommandline} and \code{clusterRun}
 }
 \examples{
 showClass("SYSargs2Pipe")
-
+\dontrun{
 ## Construct SYSargs2 object from CWl param, CWL input, and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
@@ -69,5 +77,6 @@ WF_set <- run_track(WF_ls = c(WF))
 WF_steps(WF_set)
 track(WF_set)
 summaryWF(WF_set)[1]
+}
 }
 \keyword{ classes }
