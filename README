@@ -1,4 +1,7 @@
 changelog
+     version 1.21.9
+        - Adding new utilities functions: "evalCode", "tryPath", "tryCL"
+
      version 1.21.08
         - Implementing deprecated for 'SYSargs2Pipe-class'; it will be replaced for 'SYSargsList'
         
