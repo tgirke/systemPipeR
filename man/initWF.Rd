@@ -19,11 +19,11 @@ the workflow. This function checks the project structure, which by default is:
 
 SYSproject/
 
-  ├── data/
-  
-  ├── param/
-  
-  ├── results/
+    * data/
+    
+    * param/
+    
+    * results/
   
 The default structure of the project directories can be modified here. 
 }
@@ -115,7 +115,7 @@ structure on the path provide.
 Daniela Cassol and Thomas Girke
 }
 \seealso{
-See also as \code{\link{SYSargsList}}.
+See also as \code{\link{SYSargsList-class}}.
 }
 \examples{
 \dontrun{

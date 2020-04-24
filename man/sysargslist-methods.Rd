@@ -23,7 +23,7 @@
 }
 \arguments{
   \item{x}{
-	object of class \code{SYSargsList}
+	object of class \code{SYSargsList}.
 }
 }
 \value{
