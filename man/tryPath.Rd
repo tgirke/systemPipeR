@@ -24,7 +24,10 @@ A character vector containing the name of the file or directory. If the path doe
 Daniela Cassol
 }
 \examples{
-file <- system.file("extdata/workflows/rnaseq/", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
+\dontrun{
+library(systemPipeRdata)
+file <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 tryPath(path=file)
+  }
 }
 \keyword{ utilities }
