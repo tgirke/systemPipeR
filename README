@@ -1,5 +1,7 @@
 changelog
      version 1.21.10
+        - Adding new CLASS: "SYSargsList"
+        - Adding new Methods: "codeSteps", "projectWF", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
         - Updating: "SYScreate"
         - Adding new internal functions: ".getPath ", ".getExt ", ".getFileName", ".nest", ".replace", ".sysconfigCheck", ".parse_step"
 

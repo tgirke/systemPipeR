@@ -12,7 +12,8 @@ importFrom("utils", "capture.output", "combn", "read.delim", "write.table")
 
 ## S4 Classes
 exportClasses(
-    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargs2Pipe"
+    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargs2Pipe", 
+    "SYSargsList"
 )
 
 ## Methods
@@ -22,7 +23,8 @@ exportMethods(
     "sysargs", "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
     "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
     "as.list", "[[", "[[<-", "$", "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
-    "sysargs2", "targets", "wf", "yamlinput", "SYSargs2Pipe_ls", "WF_steps", "track", "summaryWF"
+    "sysargs2", "targets", "wf", "yamlinput", "SYSargs2Pipe_ls", "WF_steps", "track", "summaryWF",
+    "codeSteps", "projectWF", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
 )
 
 ## Functions

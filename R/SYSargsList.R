@@ -1,7 +1,102 @@
 ###########
 ## Class ##
 ###########
+####################################################
+## Class and Method Definitions for SYSargsList ##
+###################################################
+## Define SYSargsList class
+setClass("SYSargsList", slots=c(
+  sysconfig="list",
+  codeSteps="list",
+  stepsWF="numeric", 
+  SYSargs2_steps="list",
+  statusWF="list",
+  projectWF="list"
+))
 
+## Methods to return SYSargsList components 
+setGeneric(name="sysconfig", def=function(x) standardGeneric("sysconfig"))
+setMethod(f="sysconfig", signature="SYSargsList", definition=function(x) {return(x@sysconfig)})
+setGeneric(name="codeSteps", def=function(x) standardGeneric("codeSteps"))
+setMethod(f="codeSteps", signature="SYSargsList", definition=function(x) {return(x@codeSteps)})
+setGeneric(name="stepsWF", def=function(x) standardGeneric("stepsWF"))
+setMethod(f="stepsWF", signature="SYSargsList", definition=function(x) {return(names(x@stepsWF))})
+setGeneric(name="SYSargs2_steps", def=function(x) standardGeneric("SYSargs2_steps"))
+setMethod(f="SYSargs2_steps", signature="SYSargsList", definition=function(x) {return(x@SYSargs2_steps)})
+setGeneric(name="statusWF", def=function(x) standardGeneric("statusWF"))
+setMethod(f="statusWF", signature="SYSargsList", definition=function(x) {return(x@statusWF)})
+setGeneric(name="projectWF", def=function(x) standardGeneric("projectWF"))
+setMethod(f="projectWF", signature="SYSargsList", definition=function(x) {return(x@projectWF)})
+
+## Constructor methods
+## List to SYSargsList
+setAs(from="list", to="SYSargsList",  
+      def=function(from) {
+        new("SYSargsList", sysconfig=from$sysconfig, codeSteps=from$codeSteps, stepsWF=from$stepsWF, SYSargs2_steps=from$SYSargs2_steps,
+            statusWF=from$statusWF, projectWF=from$projectWF) 
+      })
+
+## Coerce back to list: as(SYSargsList, "list")
+setGeneric(name="sysargslist", def=function(x) standardGeneric("sysargslist"))
+setMethod(f="sysargslist", signature="SYSargsList", definition=function(x) {
+  sysargsset <- list(sysconfig=x@sysconfig, codeSteps=x@codeSteps, stepsWF=x@stepsWF, SYSargs2_steps=x@SYSargs2_steps, statusWF=x@statusWF, projectWF=x@projectWF)
+  return(sysargsset)
+}) 
+
+## SYSargsList to list with: as("SYSargsList", list)
+setAs(from="SYSargsList", to="list", 
+      def=function(from) {
+        sysargslist(from)
+      })
+
+## Define print behavior for SYSargsList
+setMethod(f="show", signature="SYSargsList", 
+          definition=function(object) {    
+            cat(paste0("Instance of '", class(object), "':"), 
+                "   WF Steps:",
+                names(object@stepsWF), 
+                "\n",  sep="\n")
+          })
+
+## Extend names() method
+setMethod(f="names", signature="SYSargsList",
+          definition=function(x) {
+            return(slotNames(x))
+          })
+
+## Extend length() method
+setMethod(f="length", signature="SYSargsList",
+          definition=function(x) {
+            return(length(x@SYSargs2_steps))
+          })
+
+# Behavior of "[" operator for SYSargsList
+setMethod(f="[", signature="SYSargsList", definition=function(x, i, ..., drop) {
+  if(is.logical(i)) {
+    i <- which(i)
+  }
+  x@SYSargs2_steps <- x@SYSargs2_steps[i]
+  return(x)
+})
+
+## Behavior of "[[" operator for SYSargsList
+setMethod(f="[[", signature="SYSargsList",
+          definition=function(x, i, ..., drop) {
+            return(as(x, "list")[[i]]) 
+          })
+
+## Behavior of "$" operator for SYSargsList
+setMethod("$", signature="SYSargsList",
+          definition=function(x, name) { 
+            slot(x, name)
+          })
+
+## Replacement method for SYSargs2 using "[" operator 
+setReplaceMethod(f="[[", signature="SYSargsList", definition=function(x, i, j, value) {
+  if(i==1) x@SYSargs2_steps <- value
+  if(i=="SYSargs2_steps") x@SYSargs2_steps <- value
+  return(x)
+})
 
 ####################
 ## Main functions ##
