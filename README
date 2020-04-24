@@ -1,4 +1,8 @@
 changelog
+     version 1.21.10
+        - Updating: "SYScreate"
+        - Adding new internal functions: ".getPath ", ".getExt ", ".getFileName", ".nest", ".replace", ".sysconfigCheck", ".parse_step"
+
      version 1.21.9
         - Adding new utilities functions: "evalCode", "tryPath", "tryCL"
 

@@ -1,6 +1,14 @@
 ## IMPORTS
-import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, Biostrings, ShortRead, ggplot2, grid, limma, edgeR, GOstats, GO.db, annotate, pheatmap, batchtools, methods, yaml,
-    VariantAnnotation)
+import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, 
+       Biostrings, ShortRead, ggplot2, grid, limma, edgeR, GOstats, GO.db, annotate,
+       pheatmap, batchtools, methods, yaml, VariantAnnotation)
+importFrom("stringr", "str_which", "str_remove", "str_extract", "str_replace_all", 
+           "str_replace", "str_remove_all", "str_split")
+importFrom("grDevices", "dev.off", "pdf")
+importFrom("graphics", "boxplot", "close.screen", "screen", "split.screen", "symbols", "text")
+importFrom("stats", "aggregate", "model.matrix", "na.omit", "phyper", "setNames")
+importFrom("utils", "capture.output", "combn", "read.delim", "write.table")
+
 
 ## S4 Classes
 exportClasses(
@@ -35,5 +43,6 @@ export(
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
     "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
-    "targets.as.df", "run_track", "olRanges", "createWF", "evalCode", "tryPath", "tryCL"
+    "targets.as.df", "run_track", "olRanges", "createWF", "evalCode", "tryPath",
+    "tryCL"
 )  

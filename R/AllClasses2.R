@@ -1050,28 +1050,6 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 }
 
 ###################
-## SYSarg2 empty ##
-###################
-## SYSarg2 empty
-SYScreate <- function(){
-  SYS.empty <- list(targets=data.frame(),  
-                    targetsheader=list(),
-                    modules=list(),
-                    wf=list(),
-                    clt=list(),
-                    yamlinput=list(), 
-                    cmdlist=list(),
-                    input=list(),
-                    output=list(),
-                    cwlfiles=list(), 
-                    inputvars=list()) 
-  return((as(SYS.empty, "SYSargs2")))
-}
-
-## Usage:
-# SYScreate()
-
-###################
 ##   write.cwl   ##
 ###################
 write.clt <- function(commandLine, cwlVersion, class, file.cwl) {
