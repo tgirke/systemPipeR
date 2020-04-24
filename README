@@ -1,4 +1,7 @@
 changelog
+     version 1.21.11
+        - Adding 'magrittr' ImportsFrom
+        
      version 1.21.10
         - Adding new CLASS: "SYSargsList"
         - Adding new Methods: "codeSteps", "projectWF", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
