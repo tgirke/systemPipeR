@@ -9,7 +9,7 @@ importFrom("grDevices", "dev.off", "pdf")
 importFrom("graphics", "boxplot", "close.screen", "screen", "split.screen", "symbols", "text")
 importFrom("stats", "aggregate", "model.matrix", "na.omit", "phyper", "setNames")
 importFrom("utils", "capture.output", "combn", "read.delim", "write.table")
-
+importFrom(magrittr,"%>%")
 
 ## S4 Classes
 exportClasses(
