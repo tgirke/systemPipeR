@@ -3,7 +3,7 @@
 \alias{SYSproject}
 \alias{initProject}
 \title{
-Initiation of a Workflow Project
+Workflow Project Initiation
 }
 \description{
 Collection of functions to construct \code{SYSargsList} workflow control environment 
@@ -15,7 +15,18 @@ is defined either by the \code{sysconfig} file or \code{script} argument.
 Internally, \code{initWF} function calls \code{initProject} function, which creates 
 a storage folder for all the logs, and the output to stdout or stderr. This function 
 also creates the \code{SYSconfig.yml} on the fly to register all the parameters of 
-the workflow. The default structure of the project directories can be modified here. 
+the workflow. This function checks the project structure, which by default is:
+
+\itemize{
+  \item{\code{SYSproject/}}
+    \itemize{
+      \item{\code{data/}}
+      \item{\code{param/}}
+      \item{\code{results/}}
+  }
+}
+
+The default structure of the project directories can be modified here. 
 }
 \usage{
 initWF(sysconfig = NULL, subProj = FALSE, dir_str = "level0", dirName = "default", 
@@ -29,13 +40,14 @@ SYSproject(projPath = "./", overwrite = FALSE, silent = FALSE, tempdir = FALSE)
 }
 \arguments{
   \item{sysconfig}{
-  a character vector of a full \code{sysconfig} file path name. Default is \code{NULL}.
+  a character vector of a full \code{sysconfig} file path name. Default is \code{NULL}, 
+which the function understand that the \code{Rmd} will be provide.
 }
   \item{subProj}{
-  is set TRUE, a new folder it will be created, at the same level of the current 
-  project, maintaining the directory structure. It will create an empty \code{results} 
-  folder, coping the \code{param} from the current project, and creating a symbolic link 
-  for the \code{data} folder. 
+  is set TRUE, the project will be initialized and a new directory will be generated,
+  at the same level as the current project, maintaining the directory structure.
+  It will create an empty \code{results} folder, coping the \code{param} from the 
+  current project, and creating a symbolic link for the \code{data} folder.
 }
   \item{dir_str}{
   if \code{subProj} is set TRUE, it will create a directory on the same level of
@@ -51,6 +63,9 @@ The current format accepted is \code{Rmd}.
 }
   \item{targets}{
   a character vector of a full \code{sample annotation file} path name. Default is \code{NULL}.
+The targets file can be either a simple tabular or yml file. Also, it is possible 
+to assign NULL to run the pipeline without the 'targets' file. This can be useful
+for running specific workflows that do not require input files.
 }
   \item{silent}{
 if set to TRUE, all messages returned by the function will be suppressed.
@@ -94,21 +109,24 @@ structure on the path provide.
 \value{
 \code{SYSproject} will return a character vector containing the path name.
 \code{initProject} will return a list containing all the information in the 
-\code{sysconfig} file.
+  \code{sysconfig} file.
 \code{initWF} will return a \code{SYSargsList} object.
 }
 \author{
 Daniela Cassol and Thomas Girke
 }
 \seealso{
-objects to See Also as \code{\link{help}}
+See also as \code{SYSargsList-class}.
 }
 \examples{
 \dontrun{
 ## Construct SYSargsList object from Rmd file
 library(systemPipeRdata)
 script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-sysargslist <- initWF(script=script)
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- tempdir()
+SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
+sysargslist <- initWF(sysconfig ="SYSconfig.yml")
 }
 }
 \keyword{ utilities }

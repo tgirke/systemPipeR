@@ -1,10 +1,15 @@
 changelog
+     version 1.21.12
+        - Adding 'plotWF' and 'dataWF' method
+        - Adding new internal fct: '.find_long_branch', '.make_plot', '.change_branch' 
+
      version 1.21.11
         - Adding 'magrittr' ImportsFrom
         
      version 1.21.10
         - Adding new CLASS: "SYSargsList"
         - Adding new Methods: "codeSteps", "projectWF", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
+        - Adding New functions:[config.param, configWF, initProject, initWF, subsetRmd, SYSprojec]
         - Updating: "SYScreate"
         - Adding new internal functions: ".getPath ", ".getExt ", ".getFileName", ".nest", ".replace", ".sysconfigCheck", ".parse_step"
 

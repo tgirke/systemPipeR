@@ -8,6 +8,8 @@
 \alias{codeSteps-methods}
 \alias{stepsWF}
 \alias{stepsWF-methods}
+\alias{dataWF}
+\alias{dataWF-methods}
 \alias{SYSargs2_steps}
 \alias{SYSargs2_steps-methods}
 \alias{statusWF}
@@ -23,7 +25,7 @@
 }
 \arguments{
   \item{x}{
-	object of class \code{SYSargsList}
+	object of class \code{SYSargsList}.
 }
 }
 \value{
@@ -37,8 +39,10 @@ Daniela Cassol and Thomas Girke
 ## Construct SYSargsList object from Rmd file
 library(systemPipeRdata)
 script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-
-sysargslist <- initWF(script=script)
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- tempdir()
+SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
+sysargslist <- initWF(sysconfig ="SYSconfig.yml")
   }
 }
 \keyword{ utilities }

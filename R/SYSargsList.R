@@ -9,6 +9,7 @@ setClass("SYSargsList", slots=c(
   sysconfig="list",
   codeSteps="list",
   stepsWF="numeric", 
+  dataWF="data.frame",
   SYSargs2_steps="list",
   statusWF="list",
   projectWF="list"
@@ -21,6 +22,8 @@ setGeneric(name="codeSteps", def=function(x) standardGeneric("codeSteps"))
 setMethod(f="codeSteps", signature="SYSargsList", definition=function(x) {return(x@codeSteps)})
 setGeneric(name="stepsWF", def=function(x) standardGeneric("stepsWF"))
 setMethod(f="stepsWF", signature="SYSargsList", definition=function(x) {return(names(x@stepsWF))})
+setGeneric(name="dataWF", def=function(x) standardGeneric("dataWF"))
+setMethod(f="dataWF", signature="SYSargsList", definition=function(x) {return(x@dataWF)})
 setGeneric(name="SYSargs2_steps", def=function(x) standardGeneric("SYSargs2_steps"))
 setMethod(f="SYSargs2_steps", signature="SYSargsList", definition=function(x) {return(x@SYSargs2_steps)})
 setGeneric(name="statusWF", def=function(x) standardGeneric("statusWF"))
@@ -32,14 +35,14 @@ setMethod(f="projectWF", signature="SYSargsList", definition=function(x) {return
 ## List to SYSargsList
 setAs(from="list", to="SYSargsList",  
       def=function(from) {
-        new("SYSargsList", sysconfig=from$sysconfig, codeSteps=from$codeSteps, stepsWF=from$stepsWF, SYSargs2_steps=from$SYSargs2_steps,
+        new("SYSargsList", sysconfig=from$sysconfig, codeSteps=from$codeSteps, stepsWF=from$stepsWF, dataWF=from$dataWF, SYSargs2_steps=from$SYSargs2_steps,
             statusWF=from$statusWF, projectWF=from$projectWF) 
       })
 
 ## Coerce back to list: as(SYSargsList, "list")
 setGeneric(name="sysargslist", def=function(x) standardGeneric("sysargslist"))
 setMethod(f="sysargslist", signature="SYSargsList", definition=function(x) {
-  sysargsset <- list(sysconfig=x@sysconfig, codeSteps=x@codeSteps, stepsWF=x@stepsWF, SYSargs2_steps=x@SYSargs2_steps, statusWF=x@statusWF, projectWF=x@projectWF)
+  sysargsset <- list(sysconfig=x@sysconfig, codeSteps=x@codeSteps, stepsWF=x@stepsWF, dataWF=x@dataWF, SYSargs2_steps=x@SYSargs2_steps, statusWF=x@statusWF, projectWF=x@projectWF)
   return(sysargsset)
 }) 
 
@@ -337,6 +340,7 @@ configWF <- function(x = sysargslist, input_steps = "ALL", exclude_steps = NULL,
   x <- as(x, "list")
   x$stepsWF <- steps_number
   x$codeSteps <- code
+  x$dataWF <- steps_all
   # x$sysconfig$script$path <- Rmd_outfile
   return(as(x, "SYSargsList"))
 }
@@ -476,6 +480,64 @@ subsetRmd <- function(Rmd, input_steps=NULL, exclude_steps=NULL, Rmd_outfile=NUL
 # Rmd <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 # newRmd <- subsetRmd(Rmd=Rmd, input_steps="1:2.1, 3.2:4, 4:6", exclude_steps="3.1", Rmd_outfile="test_out.Rmd", save_Rmd=TRUE)
 
+######################
+## plotWF function ##
+######################
+plotWF <- function(sysargslist, plot_style="detect", out_type='html', out_path='default', height=NULL, width=NULL){
+  ## Validation for 'sysargslist'
+  if(class(sysargslist)!="SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
+  df_wf <- sysargslist$dataWF
+  # pre checks
+  assert_that(out_type %in% c('html', 'png', 'svg', 'shiny'), msg = "out_type needs to be one of 'html', 'png', 'svg'")
+  assert_that(plot_style %in% c('detect', 'none', 'linear'), msg = "out_type needs to be one of 'detect', 'none', 'linear'")
+  assert_that(is.data.frame(df_wf))
+  all(c("t_lvl", "t_number", "t_text", "selected", "no_run", "no_success", "link_to") %in% names(df_wf)) %>% 
+    assert_that(msg='One of following columns is missing: "t_lvl" "t_number" "t_text" "selected" "no_run" "no_success" "link_to"')
+  if (out_path == 'default' & !out_type %in% c('html', 'shiny')){
+    assert_that(is.writeable(out_path))
+    assert_that(is.count(height) | is.null(height))
+    assert_that(is.count(width) | is.null(width))
+    out_path = switch(out_type,
+                      'svg' = paste0('wfplot', format(Sys.time(), "%Y%m%d%H%M%S"), '.svg'),
+                      'png' = paste0('wfplot', format(Sys.time(), "%Y%m%d%H%M%S"), '.png')
+    )
+  } 
+  df_wf <- df_wf[df_wf$selected == TRUE, ]
+  if (nrow(df_wf) == 0) return(cat("no step is selected"))
+  
+  wf <- .make_plot(df_wf, plot_style, is_main_branch=FALSE)
+  wf <- append(wf, .make_plot(df_wf, plot_style, is_main_branch=TRUE), after = length(wf) - 1)
+  # special case for detection style plotting, need to move unneeded nodes out of main branch
+  if (plot_style == "detect") wf <- .change_branch(df_wf, wf)
+  # collapse entire graph
+  # return(wf)
+  wf <- paste0(wf, collapse = "")
+  # plot
+  plot <- switch(out_type,
+                 'shiny' = dot(wf, return = "verbatim"),
+                 'html' = dot(wf),
+                 'svg' = dot(wf, return = "verbatim") %>% rsvg_svg(file = out_path, height = height, width = width),
+                 'png' = dot(wf, return = "verbatim") %>% charToRaw() %>% rsvg_png(file = out_path, height = height, width = width)
+  )
+  return(plot)
+}
+
+## Usage:
+# df_wf <- dataWF(sysargslist)
+# df_wf$no_success[3:8] <- 1
+# df_wf$no_run[3:5] <- 10
+# df_wf$no_run[6:8] <- 1
+# df_wf$selected[1:35] <- TRUE
+# df_wf$link_to <- NA
+# df_wf$link_to[1:(nrow(df_wf) - 1)] <- df_wf$t_number[2:nrow(df_wf)]
+# df_wf$link_to[3] <- NA
+# df_wf$link_to[1] <- "1.1, 2"
+# df_wf$link_to[4] <- "2.1, 3"
+# df_wf$link_to[14] <- NA
+# df_wf <- df_wf[1:17,]
+# df_wf$link_to[8] <- "3, 2.5"
+# plotWF(df_wf, plot_style = "linear")
+
 ###########################
 ## config.param function ##
 ###########################
@@ -571,10 +633,9 @@ SYScreate <- function(class){
   } else if(class == "SYSargsList"){
     SYS.empty <- list(
       sysconfig=list(),
-      # initWF=list(), 
       codeSteps=list(),
       stepsWF=numeric(),
-      # runWF=list(), #should only be a method--think about
+      dataWF=data.frame(),
       # logload=list(),
       # statusWF=list(),
       # statusWF=list(),
@@ -757,10 +818,10 @@ evalCode <- function(infile, eval=TRUE, output){
 ## Uage: 
 # .sysconfigCheck(sysconfig="SYSconfig.yml")
 
-##############################
+##########################
 ## .parse_step function ##
-##############################
-## internal parse function
+##########################
+## Internal parse function used in the subsetRmd function
 .parse_step <- function(t_lvl, input_steps){
   t_lvl_name <- names(t_lvl)
   input_steps <- unlist(input_steps %>% stringr::str_remove_all(" ") %>% stringr::str_split(",") %>% list())
@@ -784,4 +845,116 @@ evalCode <- function(infile, eval=TRUE, output){
   unlist(lapply(all_step_name, function(x) stringr::str_which(t_lvl_name, paste0('^', x, '\\..*')))) %>% 
     append(which(t_lvl_name %in% all_step_name)) %>% 
     unique() %>% sort() %>% return()
+}
+
+################################
+## .find_long_branch function ##
+################################
+## Internal parse function used in the plotWF function
+.find_long_branch <- function(t_number, link_to){
+  track_back <- function(t_number, link_to, track_list){
+    for (each_track_n in 1:length(track_list)){ 
+      each_track = track_list[[each_track_n]] %>% unlist()
+      previous_t_number <- names(link_to_list[which(sapply(link_to_list, function(x) any(x == t_number[each_track[1]])))])
+      for (each_num in 1:length(previous_t_number)) {
+        previous_link <- which(t_number == previous_t_number[each_num])
+        newtrack = append(previous_link, each_track)
+        if (each_num < 2){
+          track_list[[each_track_n]] <- newtrack
+        } else {
+          track_list[[each_track_n + each_num - 1]] <- newtrack
+        }
+      }
+    }
+    if (length(previous_t_number) == 0) return(track_list)
+    track_list <- track_back(t_number, link_to, track_list)
+    return(track_list)
+  }
+  link_to_list <- str_split(link_to, ",") %>% lapply(function(x) str_remove_all(x, " "))
+  names(link_to_list) <- t_number
+  last_step <- list(length(t_number))
+  track_list <- track_back(t_number, link_to, last_step)
+  long <- sapply(track_list, function(x) all(c(1, length(t_number)) %in% x)) %>% 
+    track_list[.] %>% sapply(length) %>% which.max() %>% track_list[.] %>% unlist()
+  return(long)
+}
+
+#########################
+## .make_plot function ##
+#########################
+## Internal parse function used in the plotWF function
+.make_plot <- function(df_wf, plot_style, is_main_branch=TRUE){
+  if (is_main_branch){
+    # graph start
+    wf <- "subgraph { rank=same;\n"
+    df_wf <- switch(plot_style,
+                    "detect" = df_wf[.find_long_branch(df_wf$t_number, df_wf$link_to), ],
+                    "none"   = df_wf[0,],
+                    "linear" = {df_wf$link_to[1:(nrow(df_wf) - 1)] <- df_wf$t_number[2:nrow(df_wf)]; df_wf}
+    )
+  } else{
+    wf <- switch(plot_style,
+                 "detect" = "digraph { rankdir=LR;\n",
+                 "none"   = "digraph { rankdir=TB;\n",
+                 "linear" = "digraph { rankdir=LR;\n")
+    df_wf <- switch(plot_style,
+                    "detect" = df_wf[-.find_long_branch(df_wf$t_number, df_wf$link_to), ],
+                    "none"   = df_wf,
+                    "linear" = df_wf[0,]
+    )
+  }
+  if (nrow(df_wf) == 0) return(c(wf, "}"))
+  
+  steps <- df_wf$t_number
+  step_text <- str_replace_all(df_wf$t_text, '[\'\"]', "\\\\'")
+  link_to <- df_wf$link_to
+  # reslove 1 to n links
+  link_to <- str_split(link_to, ",") %>% lapply(function(x) str_remove_all(x, " "))
+  # set up colors
+  step_color <- ifelse(df_wf$no_run == 0, 'gray',
+                       ifelse(is.na(df_wf$no_run) | is.na(df_wf$no_success),"black",
+                              ifelse(df_wf$no_run != df_wf$no_success, 'red', 'green')
+                       )
+  )
+  # dot language
+  # add steps
+  for (t in seq_along(steps)){
+    if (!is.na(link_to[t]) & t < length(steps)){
+      for (nlink in link_to[t]){
+        wf <- append(wf,
+                     paste0('  n', str_replace_all(steps[t], "\\.", "_"), " -> ",
+                            '  n', str_replace_all(nlink, "\\.", "_"), ";\n")
+        )
+      }
+    }
+  }
+  # add color, text
+  wf <- c(wf, paste0('  n', str_replace_all(steps, "\\.", "_"),
+                     ' [label=\"',
+                     steps, step_text, ' ', ifelse(df_wf$no_run == 0, '', paste0(df_wf$no_success, '/', df_wf$no_run)),
+                     '\"', 'fontcolor=', step_color,
+                     ' color=white',
+                     '];\n'))
+  # end graph
+  wf <- paste0(c(wf, "}"))
+  return(wf)
+}
+#############################
+## .change_branch function ##
+#############################
+## Internal parse function used in the plotWF function
+.change_branch <- function(df_wf, wf){
+  long <- .find_long_branch(df_wf$t_number, df_wf$link_to)
+  plot_start <- wf %>% str_which("digraph")
+  sub_start <- wf %>% str_which("subgraph ")
+  sub_steps_lines <- wf %>% str_which(" -> [^\\[]") %>% .[. > sub_start]
+  sub_number <- wf[sub_steps_lines] %>% 
+    str_remove_all("[->;\n]") %>% str_remove("^.*[ ]+") %>% 
+    str_remove("n") %>% str_replace_all("_", "\\.") %>%
+    sapply(function(x) df_wf$t_number[df_wf$t_number == x]) %>% unlist()
+  move_line_num <- sub_steps_lines[!sub_number %in% df_wf$t_number[long]]
+  if (length(move_line_num) == 0) return(wf)
+  move_lines <- wf[move_line_num]
+  wf <- wf %>% .[-move_line_num] %>% append(move_lines, after = plot_start) 
+  return(wf)
 }
