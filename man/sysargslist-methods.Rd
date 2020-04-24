@@ -8,6 +8,8 @@
 \alias{codeSteps-methods}
 \alias{stepsWF}
 \alias{stepsWF-methods}
+\alias{dataWF}
+\alias{dataWF-methods}
 \alias{SYSargs2_steps}
 \alias{SYSargs2_steps-methods}
 \alias{statusWF}

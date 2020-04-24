@@ -55,7 +55,7 @@ Daniela Cassol and Thomas Girke
   The following methods are deprecated and will be made defunct; use
   the replacement indicated below:
   \itemize{
-    \item{\code{SYSargsList}: \code{\link{SYSargsList-class}}}
+    \item{\code{SYSargsList}: help(\code{"SYSargsList-class"})}
   }
 }
 \seealso{

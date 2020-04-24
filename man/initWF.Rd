@@ -17,14 +17,15 @@ a storage folder for all the logs, and the output to stdout or stderr. This func
 also creates the \code{SYSconfig.yml} on the fly to register all the parameters of 
 the workflow. This function checks the project structure, which by default is:
 
-SYSproject/
+\itemize{
+  \item{\code{SYSproject/}}
+    \itemize{
+      \item{\code{data/}}
+      \item{\code{param/}}
+      \item{\code{results/}}
+  }
+}
 
-    * data/
-    
-    * param/
-    
-    * results/
-  
 The default structure of the project directories can be modified here. 
 }
 \usage{
@@ -115,7 +116,7 @@ structure on the path provide.
 Daniela Cassol and Thomas Girke
 }
 \seealso{
-See also as \code{\link{SYSargsList-class}}.
+See also as \code{SYSargsList-class}.
 }
 \examples{
 \dontrun{

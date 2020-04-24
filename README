@@ -1,4 +1,8 @@
 changelog
+     version 1.21.12
+        - Adding 'plotWF' and 'dataWF' method
+        - Adding new internal fct: '.find_long_branch', '.make_plot', '.change_branch' 
+
      version 1.21.11
         - Adding 'magrittr' ImportsFrom
         
