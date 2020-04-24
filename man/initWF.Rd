@@ -104,16 +104,10 @@ Daniela Cassol and Thomas Girke
 objects to See Also as \code{\link{help}}
 }
 \examples{
-SYSproj <- SYSproject(projPath="./", overwrite=FALSE, tempdir=TRUE)
 \dontrun{
-library(systemPipeRdata)
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-SYSconfig <- initProject(projPath="./", targets=targets, script=script, overwrite=TRUE, silent=TRUE)
-
-initProject(projPath = "./", script = script)
-
 ## Construct SYSargsList object from Rmd file
+library(systemPipeRdata)
+script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 sysargslist <- initWF(script=script)
 }
 }
