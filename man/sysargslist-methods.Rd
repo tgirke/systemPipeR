@@ -37,8 +37,10 @@ Daniela Cassol and Thomas Girke
 ## Construct SYSargsList object from Rmd file
 library(systemPipeRdata)
 script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-
-sysargslist <- initWF(script=script)
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- tempdir()
+SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
+sysargslist <- initWF(sysconfig ="SYSconfig.yml")
   }
 }
 \keyword{ utilities }

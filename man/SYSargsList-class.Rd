@@ -49,7 +49,7 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
     \item{length}{\code{signature(x = "SYSargsList")}: extracts number of \code{SYSargsList} objects }
     \item{names}{\code{signature(x = "SYSargsList")}: extracts slot names }
     \item{projectWF}{\code{signature(x = "SYSargsList")}: extract data from \code{projectWF} slot }
-    \item{show}{\code{signature(object = "SYSargsList")}: summary view of \code{SYSargsList} objects }
+    \item{show}{\code{signature(object = "SYSargsList")}: summary view of \code{SYSargsList} steps }
     \item{statusWF}{\code{signature(x = "SYSargsList")}: extract data from \code{statusWF} slot }
     \item{stepsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{stepsWF} slot }
     \item{SYSargs2_steps}{\code{signature(x = "SYSargsList")}: extract data from \code{SYSargs2_steps} slot }
@@ -69,8 +69,10 @@ showClass("SYSargsList")
 ## Construct SYSargsList object from Rmd file
 library(systemPipeRdata)
 script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-
-sysargslist <- initWF(script=script)
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- tempdir()
+SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
+sysargslist <- initWF(sysconfig ="SYSconfig.yml")
   }
 }
 \keyword{ classes }
