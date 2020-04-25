@@ -1,6 +1,7 @@
-\name{SYSargs2list}
-\alias{SYSargs2list}
-\alias{SYSargs2list-method}
+\name{sysargs2}
+\docType{methods}
+\alias{sysargs2-method}
+\alias{sysargs2}
 \alias{targets}
 \alias{targets-methods}
 \alias{wf}
@@ -19,13 +20,13 @@
 \alias{cwlfiles-methods}
 \alias{inputvars}
 \alias{inputvars-methods}
-\docType{data}
+
 \title{ SYSargs2 accessor methods }                                  
 \description{
 	Methods to access information from \code{SYSargs2} object.
 }
 \usage{
-	SYSargs2list(x)
+	sysargs2(x)
 }
 \arguments{
   \item{x}{
@@ -47,5 +48,6 @@ WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl",
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
 names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
+sysargs2(WF)
 }
 \keyword{ utilities }

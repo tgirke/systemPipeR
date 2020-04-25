@@ -8,9 +8,10 @@
 \alias{summaryWF}
 \alias{summaryWF-methods}
 \docType{data}
-\title{ SYSargs2Pipe accessor methods }                                  
+\title{Deprecated \code{"SYSargs2Pipe"} accessor methods}
 \description{
-	Methods to access information from \code{SYSargs2Pipe} object.
+These methods are deprecated and should be replaced by \code{SYSargsList-methods}.
+Methods to access information from \code{SYSargs2Pipe} object.
 }
 \usage{
 	SYSargs2Pipe_ls(x)
@@ -23,10 +24,17 @@
 \value{
 	various outputs
 }
+\details{
+The following methods are deprecated and will be made defunct; use the replacement indicated below:
+  \itemize{
+    \item{\code{SYSargsList}: help(\code{"SYSargsList-class"})}
+  }
+}
 \author{
 Daniela Cassol and Thomas Girke
 }
 \examples{
+\dontrun{
 ## Construct SYSargs2 object number 1
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
@@ -48,5 +56,6 @@ WF_set <- run_track(WF_ls = c(WF1, WF))
 WF_steps(WF_set)
 track(WF_set)
 summaryWF(WF_set)[1]
+}
 }
 \keyword{ utilities }

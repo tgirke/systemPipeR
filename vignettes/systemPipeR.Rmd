@@ -39,7 +39,7 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=80), tidy=TRUE)
 ```
 
-```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 suppressPackageStartupMessages({
     library(systemPipeR)
     library(BiocParallel)
@@ -51,6 +51,7 @@ suppressPackageStartupMessages({
     library(ShortRead)
     library(ape)
     library(batchtools)
+    library(magrittr)
 })
 ```
 
@@ -274,7 +275,7 @@ them.
 ```{r targetsSE, eval=TRUE}
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
-read.delim(targetspath, comment.char = "#")
+read.delim(targetspath, comment.char = "#")[1:4,]
 ```
 
 To work with custom data, users need to generate a _`targets`_ file containing 
