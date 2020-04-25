@@ -310,7 +310,7 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
     stop(paste("I am not allowed to overwrite files; please delete existing file:", 
                file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
   ## class("CommandLineTool", "Workflow")
-  WF.temp <- SYScreate()
+  WF.temp <- SYScreate("SYSargs2")
   WF.temp <- as(WF.temp, "list")
   ## TODO: Expand to write.WF()
   WF.temp$wf <- list()

@@ -20,6 +20,8 @@ config.param(input_file = NULL, param, file = "default", silent = FALSE)
   \item{file}{
    name and path of the new file. If set to \code{default}, the name of the 
    write file will have the pattern: \code{<Date-Time>_<OriginalName>.yml}.
+   If set to \code{append}, the \code{param} information it will be append on the 
+   same file.
 }
   \item{silent}{
   if set to TRUE, all messages returned by the function will be suppressed.

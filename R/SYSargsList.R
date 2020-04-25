@@ -302,17 +302,19 @@ initWF <- function(sysconfig=NULL, subProj=FALSE, dir_str="level0", dirName="def
 ########################
 configWF <- function(x = sysargslist, input_steps = "ALL", exclude_steps = NULL, silent=FALSE, ...) {
   ## Validations
-  ## Todo: add input_stpes validation
+  if(class(x)!="SYSargsList") stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
   capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".NULL")  ##TODO: refazer 
   if("ALL" %in% input_steps) {
     input_steps <- paste0(steps_all$t_number[1], ":", steps_all$t_number[length(steps_all$t_number)])
     save_rmd <- FALSE
     Rmd_outfile <- NULL
+    Rmd_path <- x$sysconfig$script$path
   } else {
     input_steps <- input_steps
     save_rmd <- TRUE
     Rmd_outfile <- paste0(.getPath(x$sysconfig$script$path), "/", paste0(format(Sys.time(), "%b%d%Y")), 
                           "_", basename(x$sysconfig$script$path))
+    Rmd_path <- Rmd_outfile
   }
   capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path, input_steps = input_steps, 
                                         exclude_steps = exclude_steps, save_Rmd = save_rmd, Rmd_outfile = Rmd_outfile), file = ".NULL")  ##TODO: refazer
@@ -321,7 +323,7 @@ configWF <- function(x = sysargslist, input_steps = "ALL", exclude_steps = NULL,
   if (!any(names(x$sysconfig) %in% c("input_steps", "exclude_steps"))) {
     input_file <- x$sysconfig$SYSconfig
     param <- list(input_steps = input_steps, exclude_steps = exclude_steps)
-    input <- config.param(input_file = input_file, param, file = "default", silent = silent)
+    input <- config.param(input_file = input_file, param, file = "append", silent = TRUE)
     x <- as(x, "list")
     x$sysconfig <- input
     x <- as(x, "SYSargsList")
@@ -338,6 +340,9 @@ configWF <- function(x = sysargslist, input_steps = "ALL", exclude_steps = NULL,
   code <- steps_all$code[steps_all$selected]
   names(code) <- steps
   x <- as(x, "list")
+  script_path <- x$sysconfig$script$path
+  x$sysconfig$script[["path"]] <- Rmd_path
+  x$sysconfig$script[["orginal"]] <- script_path
   x$stepsWF <- steps_number
   x$codeSteps <- code
   x$dataWF <- steps_all
@@ -556,7 +561,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent=FALS
         stop("Provide valid 'input_file' file. Check the file PATH.")
       input <- yaml::read_yaml(file.path(input_file))
       input <- out_obj <- .replace(input = input, param = param)
-      path_file <- input_file
+      path_file <- normalizePath(input_file)
     }
     out_msg <- c("input_file")
     ## In the case of 'args'
@@ -575,7 +580,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent=FALS
     out_msg <- c("yamlinput(input_file)")
   } else if (class(input_file) == "SYSargsList") {
     input <- out_obj <- .replace(input = input_file$sysconfig, param = param)
-    path_file <- input_file$projectWF$sysconfig_path
+    path_file <- input_file$projectWF$project
     out_msg <- c("input_file")
   } else if (all(is.null(input_file))) 
     stop("'input_file' need to be defenid as '.yml' OR 'SYSargs2 class' OR 'SYSargsList class' ")
@@ -588,6 +593,8 @@ config.param <- function(input_file = NULL, param, file = "default", silent=FALS
     # basename(path_file), collapse = '/')
     path <- paste0(.getPath(path_file), "/", gsub("\\..*", "", basename(path_file)), fileName, ".", 
                    gsub(".*\\.", "", basename(path_file)), collapse = "/")
+  } else if(file=="append"){
+    path <- path_file
   } else {
     path <- file
   }

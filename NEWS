@@ -2,19 +2,23 @@ CHANGES IN VERSION 1.22
 -----------------------
 
 OVERVIEW
-    o systemPipeR major enhancements establish a versatile environment for designing, 
-    building and running end-to-end analysis workflows on local machines, 
-    HPC clusters, and cloud systems while generating at the same time publication-quality 
-    analysis reports.
 
-    o The most important enhancements in the upcoming release of the package are 
-      outlined below.  
+The following enhancements have been added to systemPipeR.
 
-NEW FEATURES
-    o 
+    - Overall systemPipeR has been extended to a general purpose data analysis 
+      workflow environment that is no longer limited to NGS data.
+    - A workflow control class (SYSargsList) has been added allowing users to manage
+      multiple-step workflows from a single container. This way one can select and 
+      execute multiple workflow steps with standard R subsetting syntax, e.g. runWF[1:3].
+    - Various improvements have been added to systemPipeR’s new  command-line 
+      interface including the recently introduced SYSargs2 class that supports 
+      the Common Workflow Language (CWL).
+    - Utilities have been added to visualize workflow designs and topologies with 
+      different graphical layouts.
+    - Improvements have been added to monitor the run status of workflows as well 
+      as better tracking of warning and error messages. This includes the generation 
+      of both scientific and technical status reports.
 
-BUG FIXES
-    o 
 
 
 CHANGES IN VERSION 1.3

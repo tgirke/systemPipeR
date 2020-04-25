@@ -1,5 +1,5 @@
 ---
-title: "systemPipeR: NGS workflow and report generation environment" 
+title: "systemPipeR: Workflow design and reporting generation environment" 
 author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -10,7 +10,7 @@ output:
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{systemPipeR: NGS workflow and report generation environment}
+  %\VignetteIndexEntry{systemPipeR: Workflow design and reporting generation environment}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
@@ -54,8 +54,6 @@ suppressPackageStartupMessages({
     library(magrittr)
 })
 ```
-
-**Note:** the most recent version of this tutorial can be found <a href="http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html">here</a>.
 
 **Note:** if you use _`systemPipeR`_ in published research, please cite:
 Backman, T.W.H and Girke, T. (2016). _`systemPipeR`_: NGS Workflow and Report Generation Environment. *BMC Bioinformatics*, 17: 388. [10.1186/s12859-016-1241-0](https://doi.org/10.1186/s12859-016-1241-0).
@@ -447,7 +445,7 @@ The content of the _`param`_ file can also be returned as JSON object as follows
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ```
 
-# Workflow overview
+# Workflow steps overview
 
 ## Define environment settings and samples
 
@@ -1431,6 +1429,8 @@ The workflow includes following steps:
 12. Differential ribosome binding (translational efficiency)
 
 # Version information
+
+**Note:** the most recent version of this tutorial can be found <a href="http://www.bioconductor.org/packages/devel/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html">here</a>.
 
 ```{r sessionInfo}
 sessionInfo()
