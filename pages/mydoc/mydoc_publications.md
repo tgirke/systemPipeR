@@ -19,6 +19,8 @@ permalink: mydoc_publications.html
 
 ## Publications related to this project
 
+1. Zillikens et al. (2017) Large meta-analysis of genome-wide association studies identifies five loci for lean body mass. Nature Communications: 8, 1-13. [PubMed](https://www.ncbi.nlm.nih.gov/pubmed/28724990){:target="_blank"}
+
 ...
 
 
