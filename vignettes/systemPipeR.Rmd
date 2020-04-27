@@ -134,7 +134,7 @@ required to run, control and monitor complex workflows from start to finish. Thi
 design enhances the *`systemPipeR`* workflow framework with a generalized,
 flexible, and robust design.
 
-<center><img src="SYSargs2.png"></center>
+<center><img src="SYS_WF.png"></center>
 
 **Figure 2:** Workflow steps with input/output file operations are controlled by 
 _`SYSargs2`_ objects. Each _`SYSargs2`_ instance is constructed from one *targets* 
@@ -142,6 +142,12 @@ and two *param* files. The only input provided by the user is the initial *targe
 file. Subsequent *targets* instances are created automatically, from the previous 
 output files. Any number of predefined or custom workflow steps are supported. One
 or many _`SYSargs2`_ objects are organized in an *`SYSargs2Pipe`* container.
+
+## Workflow Management using _`SYSargsList`_ 
+
+**systemPipeR** allows creation (multi-step analyses) and execution of workflow entirely for R, with control, flexibility, and scalability of the all process. The execution of the workflow can be sent to a HPC, can be parallelizes, accelerating results acquisition. A workflow management system provides an infrastructure for the set-up, performance and monitoring of a defined sequence of tasks, arranged as a workflow application.
+
+<center><img src="sysargslist.png"></center>
 
 ## Workflow design structure using _`SYSargs`_: Previous version
 
@@ -186,6 +192,8 @@ library(help="systemPipeR") # Lists package info
 vignette("systemPipeR") # Opens vignette
 ```
 
+# How to run a Workflow
+
 ## Load sample data and workflow templates
 
 The mini sample FASTQ files used by this overview vignette as well as the 
@@ -210,6 +218,25 @@ Templates for additional NGS applications will be provided in the future.
 library(systemPipeRdata)
 genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
+```
+
+If you desire run this tutorial with your data set, please follow the instruction here
+
+```{r genRna_new, eval=FALSE}
+library(systemPipeRdata)
+genWorkenvir(workflow="new", mydirname = "FEB_project")
+```
+
+### Workflow template from Package
+
+```{r genRna_npkg, eval=FALSE}
+library(systemPipeRdata)
+genWorkenvir(workflow=NULL, package_repo = "systemPipeR/systemPipeRIBOseq", ref = "master", subdir = NULL)
+```
+
+```{r genRna_pkg_branch, eval=FALSE}
+library(systemPipeRdata)
+genWorkenvir(workflow=NULL, package_repo = "systemPipeR/systemPipeRNAseq", ref = "singleMachine", subdir = NULL)
 ```
 
 ## Directory Structure
@@ -444,6 +471,57 @@ The content of the _`param`_ file can also be returned as JSON object as follows
 ```{r sysarg_json, eval=TRUE}
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ```
+
+# How to build your own Workflow
+
+This tutorial introduces the basic ideas and tools needed to build a specific workflow from scratch or modified an existing workflow.
+
+## Setup and Requirements 
+
+To go through this tutorial, you need the following software installed:
+
+* R/3.6.2 
+* systemPipeR R package (version 1.22)
+* Hisat2/2.1.0
+
+If you desire to build your pipeline with any different software then Hisat2, make sure to have the respective software installed and configured in your PATH. To make sure if the configuration is right, you always can test as follow:
+
+```{r test_software, eval=FALSE}
+tryCL(command="hisat1") 
+tryCL(command="hisat2") 
+```
+
+## Project Initialization 
+
+The Project management structure is essential, especially for reproducibility and efficiency in the analysis. Here we show how to create a simple and complete R object list storing a all the information about the project, as the path of the data and results, as well all the setting for the particular project and the Initial annotation file (targets), storing all the initial files for the project and all the metadata data related with the project. The list can be saved as a simple YAML file. 
+Note the workflow steps and all the analysis is defined in the RMarkdown file. 
+
+```{r initwf, eval=FALSE}
+library(systemPipeRdata)
+script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+sysargslist <- initWF(script = script, targets = targets)
+```
+
+Project Initialization in a temporary directory
+
+```{r initwf_tempdir, eval=FALSE}
+library(systemPipeRdata)
+script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- tempdir()
+SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
+sysargslist <- initWF(sysconfig ="SYSconfig.yml")
+```
+
+Configuration and run of the project
+
+```{r config, eval=FALSE}
+sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
+sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
+sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
+```
+
 
 # Workflow steps overview
 
