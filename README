@@ -1,4 +1,8 @@
 changelog
+     version 1.21.13
+        - Adding 'runWF' and 'renderReport' functions
+        - Adding new internal fct: '.tryCatchSYS'
+        
      version 1.21.12
         - Adding 'plotWF' and 'dataWF' method
         - Adding new internal fct: '.find_long_branch', '.make_plot', '.change_branch' 
