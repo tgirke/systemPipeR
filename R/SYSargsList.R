@@ -353,6 +353,71 @@ configWF <- function(x = sysargslist, input_steps = "ALL", exclude_steps = NULL,
 ## Usage:
 # sysargslist <- configWF(x=sysargslist)
 
+#####################
+## runWF function ##
+#####################
+runWF <- function(sysargslist = sysargslist, steps = "ALL") {
+  ## Validations
+  if(class(sysargslist)!="SYSargsList") stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
+  sysproj <- paste(sysargslist$projectWF$project, ".SYSproject", sep = "/")
+  if(!file.exists(sysproj)==TRUE) stop("Project was not initialized with the 'initWF' function.")
+  ## Storing steps list
+  codeList <- sysargslist$codeSteps
+  if ("ALL" %in% steps) {
+    stepslist <- seq_along(sysargslist$stepsWF)
+  } else {
+    stepslist <- steps
+    t_lvl <- sysargslist$dataWF$t_lvl
+    names(t_lvl) <- sysargslist$dataWF$t_number
+    stepslist <- .parse_step(t_lvl, input_steps = steps)
+  }
+  file_log <- paste0(sysproj, "/", "_logWF_", format(Sys.time(), "%b%d%Y_%H%M"), sep = "")
+  status <- as.character()
+  for (i in stepslist) {
+    cat(paste0("################ ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S")), " ################"), 
+        file = file_log, sep = "\n", append = TRUE)
+    cat(codeList[[i]], file = file_log, sep = "\n", append = TRUE)
+    .tryCatchSYS(x=codeList[[i]])
+    log <- capture.output(eval(parse(text = codeList[[i]])))
+    cat(log, file = file_log, sep = "\n", append = TRUE)
+    log <- (capture.output(eval(parse(text = codeList[[i]])), type = c("output", "message")))
+    stepS <- paste0("Step Done: ", names(codeList[i]))
+    cat(stepS, "\n")
+    status <- c(status, stepS)
+  }
+  sysargslist <- as(sysargslist, "list")
+  sysargslist$statusWF <- list(statusWF=status)
+  sysargslist$projectWF[["SYSproject"]] <- sysproj
+  return(as(sysargslist, "SYSargsList"))
+}
+
+## Usage:
+# script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
+# sysargslist <- initWF(script="systemPipeRNAseq.Rmd", overwrite = TRUE)
+# sysargslist <- configWF(x=sysargslist, input_steps = "1:2")
+# sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
+# sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
+
+###########################
+## renderReport function ##
+###########################
+## type: c("pdf_document", "html_document")
+renderReport <- function(x=sysargslist, type=c("html_document")){
+  file <- x$sysconfig$script$path
+  if(!file.exists(file)==TRUE) stop("Provide valid 'sysargslist' object. Check the initialization of the project.")
+  evalCode(infile=file, eval=FALSE, output = file)
+  rmarkdown::render(input=file, c(paste0("BiocStyle::", type)))
+  file_path <- .getPath(file)
+  file_out <- .getFileName(file)
+  ext <- strsplit(basename(type), split="\\_")[[1]][1]
+  x <- as(x, "list")
+  x$projectWF[["Report"]] <- normalizePath(paste0(file_path, "/", file_out, ".", ext))
+  return(as(x, "SYSargsList"))
+}
+
+## Usage
+# renderReport(x=sysargslist)
+
 ########################
 ## subsetRmd function ##
 ########################
@@ -946,6 +1011,7 @@ evalCode <- function(infile, eval=TRUE, output){
   wf <- paste0(c(wf, "}"))
   return(wf)
 }
+
 #############################
 ## .change_branch function ##
 #############################
@@ -965,3 +1031,30 @@ evalCode <- function(infile, eval=TRUE, output){
   wf <- wf %>% .[-move_line_num] %>% append(move_lines, after = plot_start) 
   return(wf)
 }
+
+#############################
+## .tryCatchSYS function ##
+#############################
+.tryCatchSYS <- function(x){
+  tryCatch(
+    expr = {
+      eval(parse(text = x))
+      # message("")
+    },
+    error = function(e){
+      message('Caught an error!')
+      print(e)
+    },
+    warning = function(w){
+      message('Caught an warning!')
+      print(w)
+    },
+    finally = {
+      #message('All done, quitting.')
+    }
+  )    
+}
+
+## Usage:
+# .tryCatchSYS(x=codeList[[1]])
+
