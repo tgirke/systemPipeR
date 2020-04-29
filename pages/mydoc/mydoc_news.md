@@ -6,6 +6,8 @@ permalink: mydoc_news.html
 
 # *systemPipeR* 1.22 is available
 
+![image](pages/mydoc/miscellaneous_images/SYS_WF.png) 
+
 ### OVERVIEW
 
 The following enhancements have been added to systemPipeR.
