@@ -28,6 +28,12 @@
   
   
   <url>
+    <loc>http://localhost:4000/mydoc_news.html</loc>
+  </url>
+  
+  
+  
+  <url>
     <loc>http://localhost:4000/mydoc_publications.html</loc>
   </url>
   
@@ -340,6 +346,12 @@
   
   
   <url>
+    <loc>http://localhost:4000/mydoc_systemPipeShiny.html</loc>
+  </url>
+  
+  
+  
+  <url>
     <loc>http://localhost:4000/mydoc_systemPipeVARseq_01.html</loc>
   </url>
   
@@ -443,6 +455,12 @@
   
   <url>
     <loc>http://localhost:4000/mydoc_training.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>http://localhost:4000/mydoc_wf_colletions.html</loc>
   </url>
   
   

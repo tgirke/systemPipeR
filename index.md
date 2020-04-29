@@ -21,8 +21,6 @@ a time-efficient and reproducible manner.
             
 ### Results 
 
-<img align="right" title="spr_overview" src="pages/mydoc/miscellaneous_images/genWorkenv.png" style="width:400px;"><img/>
-
 To address this need, we have developed the R/Bioconductor package
 _systemPipeR_. It is an extensible environment for both building and
 running end-to-end analysis workflows with automated report generation for a
@@ -39,6 +37,8 @@ experiments. By combining the capabilities of many R/Bioconductor and
 command-line tools, it makes efficient use of existing software resources
 without limiting the user to a set of predefined methods or environments. 
 
+
+<img align="right" title="spr_overview" src="images/SYS_WF.png"  align="center" style="width:800px;"><img/>
 
 ### Availability
 

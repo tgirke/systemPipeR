@@ -39,6 +39,17 @@
 
 
 {
+"title": "News",
+"tags": "",
+"keywords": "",
+"url": "mydoc_news.html",
+"summary": ""
+}
+,
+
+
+
+{
 "title": "Publications",
 "tags": "",
 "keywords": "",
@@ -611,6 +622,17 @@
 
 
 {
+"title": "Graphical User Interface",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeShiny.html",
+"summary": ""
+}
+,
+
+
+
+{
 "title": "VAR-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
 "tags": "",
 "keywords": "",
@@ -802,6 +824,17 @@
 "tags": "",
 "keywords": "",
 "url": "mydoc_training.html",
+"summary": ""
+}
+,
+
+
+
+{
+"title": "Workflow Colletion",
+"tags": "",
+"keywords": "",
+"url": "mydoc_wf_colletions.html",
 "summary": ""
 }
 ,
