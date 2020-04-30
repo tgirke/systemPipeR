@@ -6,7 +6,7 @@ topnav:
     - title: Bioc
       external_url: http://bioconductor.org/packages/release/bioc/html/systemPipeR.html
     - title: GitHub Repo
-      external_url: https://github.com/tgirke/systemPipeR
+      external_url: https://github.com/systemPipeR
 
 #Topnav dropdowns
 topnav_dropdowns:

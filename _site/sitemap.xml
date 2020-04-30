@@ -352,6 +352,12 @@
   
   
   <url>
+    <loc>http://localhost:4000/mydoc_systemPipeShiny_intro.html</loc>
+  </url>
+  
+  
+  
+  <url>
     <loc>http://localhost:4000/mydoc_systemPipeVARseq_01.html</loc>
   </url>
   
@@ -481,12 +487,6 @@
   
   <url>
     <loc>http://localhost:4000/assets/css/style.css</loc>
-  </url>
-  
-  
-  
-  <url>
-    <loc>http://localhost:4000/Gemfile.html</loc>
   </url>
   
   

@@ -633,6 +633,17 @@
 
 
 {
+"title": "Introduction",
+"tags": "",
+"keywords": "",
+"url": "mydoc_systemPipeShiny_intro.html",
+"summary": ""
+}
+,
+
+
+
+{
 "title": "VAR-Seq Workflow Template  &lt;br&gt; &lt;br&gt; 1. Introduction",
 "tags": "",
 "keywords": "",
@@ -865,17 +876,6 @@
 "tags": "",
 "keywords": "",
 "url": "assetscssstyle.css",
-"summary": ""
-}
-,
-
-
-
-{
-"title": "",
-"tags": "",
-"keywords": "",
-"url": "Gemfile.html",
 "summary": ""
 }
 

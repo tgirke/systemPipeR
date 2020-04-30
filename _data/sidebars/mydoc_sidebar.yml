@@ -56,7 +56,7 @@ entries:
       url: /mydoc_systemPipeR_6.html
       output: web
       
-  - title: Workflows collection
+  - title: Workflows Collection
     output: web, pdf
     folderitems:
 
@@ -67,8 +67,12 @@ entries:
   - title: Graphical User Interface
     output: web, pdf
     folderitems:
+    
+    - title: systemPipeShiny Intro
+      url: /mydoc_systemPipeShiny_intro.html
+      output: web
 
-    - title: systemPipeShiny
+    - title: systemPipeShiny App
       url: /mydoc_systemPipeShiny.html
       output: web
 
