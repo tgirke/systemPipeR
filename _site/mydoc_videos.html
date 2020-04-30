@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="keywords" content=" ">
-<title>3. Read preprocessing | systemPipeR Website</title>
+<title>Video Tutorials | systemPipeR Website</title>
 <link rel="stylesheet" href="css/syntax.css">
 
 
@@ -164,7 +164,7 @@
 
 
 
-  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:thomas.girke@ucr.edu?subject=systemPipeR Website feedback&body=I have some feedback about the 3. Read preprocessing page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:thomas.girke@ucr.edu?subject=systemPipeR Website feedback&body=I have some feedback about the Video Tutorials page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
 
 </li>
 
@@ -182,7 +182,7 @@
                                 searchInput: document.getElementById('search-input'),
                                 resultsContainer: document.getElementById('results-container'),
                                 dataSource: 'search.json',
-                                searchResultTemplate: '<li><a href="{url}" title="3. Read preprocessing">{title}</a></li>',
+                                searchResultTemplate: '<li><a href="{url}" title="Video Tutorials">{title}</a></li>',
                     noResultsText: 'No results found.',
                             limit: 10,
                             fuzzy: true,
@@ -348,7 +348,7 @@
             
             
             
-            <li><a href="mydoc_videos.html">Video Tutorials</a></li>
+            <li class="active"><a href="mydoc_videos.html">Video Tutorials</a></li>
             
             
             
@@ -417,7 +417,7 @@
     <!-- Content Column -->
     <div class="col-md-9" id="tg-sb-content">
         <div class="post-header">
-   <h1 class="post-title-main">3. Read preprocessing</h1>
+   <h1 class="post-title-main">Video Tutorials</h1>
 </div>
 
 
@@ -455,59 +455,13 @@ $('#toc').on('click', 'a', function() {
 <!--
     
 
-    <a target="_blank" href="https://github.com/tgirke/systemPipeR/blob/gh-pages/pages//mydoc_systemPipeRIBOseq_03.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+    <a target="_blank" href="https://github.com/tgirke/systemPipeR/blob/gh-pages/pages//mydoc_videos.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
 -->
     
 
-  <h2 id="quality-filtering-and-adaptor-trimming">Quality filtering and adaptor trimming</h2>
+  <h2 id="video-tutorials-are-coming-soon">Video Tutorials are coming soon…</h2>
 
-<p>The following custom function trims adaptors hierarchically from the longest to
-the shortest match of the right end of the reads. If <code class="highlighter-rouge">internalmatch=TRUE</code> then internal matches will trigger the same behavior. The argument <code class="highlighter-rouge">minpatternlength</code> defines the shortest adaptor match to consider in this iterative process. In addition, the function removes reads containing Ns or homopolymer regions. More detailed information on read preprocessing is provided in <code class="highlighter-rouge">systemPipeR's</code> main vignette.</p>
-
-<p>First, we construct <em><code class="highlighter-rouge">SYSargs2</code></em> object from <em><code class="highlighter-rouge">cwl</code></em> and <em><code class="highlighter-rouge">yml</code></em> param and <em><code class="highlighter-rouge">targets</code></em> files.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/preprocessReads/trim-se"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">trim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"trim-se.cwl"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"trim-se.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
-</span><span class="n">trim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">trim</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH1_"</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
-</span><span class="n">trim</span><span class="w">
-</span><span class="n">output</span><span class="p">(</span><span class="n">trim</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
-</span></code></pre></div></div>
-
-<p>Next, we execute the code for trimming all the raw data.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fctpath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"custom_Fct.R"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
-</span><span class="n">source</span><span class="p">(</span><span class="n">fctpath</span><span class="p">)</span><span class="w">
-</span><span class="n">iterTrim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">".iterTrimbatch1(fq, pattern='ACACGTCT', internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)"</span><span class="w">
-</span><span class="n">preprocessReads</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trim</span><span class="p">,</span><span class="w"> </span><span class="n">Fct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iterTrim</span><span class="p">,</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1e+05</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">compress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trim</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_trim.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span></code></pre></div></div>
-
-<h2 id="fastq-quality-report">FASTQ quality report</h2>
-
-<p>The following <code class="highlighter-rouge">seeFastq</code> and <code class="highlighter-rouge">seeFastqPlot</code> functions generate and plot a series of
-useful quality statistics for a set of FASTQ files including per cycle quality
-box plots, base proportions, base-level quality trends, relative k-mer
-diversity, length and occurrence distribution of reads, number of reads above
-quality cutoffs and mean quality distribution. The results are written to a PDF file named <code class="highlighter-rouge">fastqReport.png</code>.</p>
-
-<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infile1</span><span class="p">(</span><span class="n">trim</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">klength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w">
-</span><span class="n">png</span><span class="p">(</span><span class="s2">"./results/fastqReport.png"</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">18</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">fqlist</span><span class="p">),</span><span class="w"> 
-    </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"in"</span><span class="p">,</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">72</span><span class="p">)</span><span class="w">
-</span><span class="n">seeFastqPlot</span><span class="p">(</span><span class="n">fqlist</span><span class="p">)</span><span class="w">
-</span><span class="n">dev.off</span><span class="p">()</span><span class="w">
-</span></code></pre></div></div>
-
-<p><img src="./pages/mydoc/systemPipeRIBOseq_files/fastqReport.png" alt="" /></p>
-<div align="center"><b>Figure 1:</b> FASTQ quality report. To zoom in, right click image and open it in a separate browser tab. </div>
-
-<p><br /><br /><center><a href="mydoc_systemPipeRIBOseq_02.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
-<a href="mydoc_systemPipeRIBOseq_04.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
+<h3 id="page-under-development">Page under development.</h3>
 
 
     <div class="tags">
@@ -524,7 +478,7 @@ quality cutoffs and mean quality distribution. The results are written to a PDF 
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: Apr 29, 2020 <br />
+ Site last generated: Apr 29, 2020 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

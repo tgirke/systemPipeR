@@ -7,7 +7,7 @@ summary: Website of the systemPipeR project. For questions email <a href="http:/
 ---
 
 ## Overview
-          
+
 ### Motivation
 
 The analysis of Next-generation sequencing (NGS) data remains a 

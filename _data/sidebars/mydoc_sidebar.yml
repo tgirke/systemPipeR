@@ -87,6 +87,10 @@ entries:
     - title: Training Events
       url: /mydoc_training.html
       output: web
+      
+    - title: Video Tutorials
+      url: /mydoc_videos.html
+      output: web
   
   - title: Publications
     output: web, pdf
