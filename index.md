@@ -21,6 +21,8 @@ a time-efficient and reproducible manner.
             
 ### Results 
 
+<img align="right" title="spr_overview" src="pages/mydoc/miscellaneous_images/spr_overview_35.png"><img/>
+
 To address this need, we have developed the R/Bioconductor package
 _systemPipeR_. It is an extensible environment for both building and
 running end-to-end analysis workflows with automated report generation for a
@@ -28,7 +30,11 @@ wide range of NGS applications. Its unique features include a uniform workflow
 interface across different NGS applications, automated report generation, and 
 support for running both R and command-line software on local computers and
 computer clusters. A flexible sample annotation infrastructure efficiently
-handles complex sample sets and experimental designs. To simplify the analysis
+handles complex sample sets and experimental designs.
+
+
+
+To simplify the analysis
 of widely used NGS applications, the package provides pre-configured workflows
 and reporting templates for RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Additional
 workflow templates will be provided in the future. _systemPipeR_
@@ -37,8 +43,6 @@ experiments. By combining the capabilities of many R/Bioconductor and
 command-line tools, it makes efficient use of existing software resources
 without limiting the user to a set of predefined methods or environments. 
 
-
-<img align="right" title="spr_overview" src="images/SYS_WF.png"  align="center" style="width:800px;"><img/>
 
 ### Availability
 
