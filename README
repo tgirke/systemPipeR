@@ -1,4 +1,7 @@
 changelog
+     version 1.23.1
+        - Vignette update
+        
      version 1.21.13
         - Adding 'runWF' and 'renderReport' functions
         - Adding new internal fct: '.tryCatchSYS'
