@@ -1,6 +1,6 @@
 ---
 title: 2. Getting Started
-last_updated: Thu Nov 21 16:53:08 2019
+last_updated: Sat May  2 14:44:00 2020
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
@@ -52,6 +52,33 @@ genWorkenvir(workflow = "rnaseq")
 setwd("rnaseq")
 ```
 
+If you desire run this tutorial with your data set, please follow the instruction here:
+
+
+```r
+library(systemPipeRdata)
+genWorkenvir(workflow = "new", mydirname = "FEB_project")
+```
+
+### Workflow template from an individual's package
+
+The package provides pre-configured workflows and reporting templates for a wide range of NGS applications that are listed [here](https://github.com/tgirke/systemPipeR/tree/devel#workflow). Additional workflow templates will be provided in the future. 
+If you desire to use an individual package and version, follow the instruction below:
+
+
+```r
+library(systemPipeRdata)
+genWorkenvir(workflow = NULL, package_repo = "systemPipeR/systemPipeRIBOseq", ref = "master", 
+    subdir = NULL)
+```
+
+
+```r
+library(systemPipeRdata)
+genWorkenvir(workflow = NULL, package_repo = "systemPipeR/systemPipeRNAseq", ref = "singleMachine", 
+    subdir = NULL)
+```
+
 ## Directory Structure
 
 The working environment of the sample data loaded in the previous step contains
@@ -77,9 +104,9 @@ accordingly.
         + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
         + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
-<center><img src="./pages/mydoc/systemPipeR_files/directory.png"></center>
+<center><img src="./pages/mydoc/systemPipeR_files/SYSdir.png"></center>
 
-**Figure 4:** *systemPipeR's* preconfigured directory structure.
+**Figure 5:** *systemPipeR's* preconfigured directory structure.
 
 The following parameter files are included in each workflow template:
 
@@ -114,48 +141,20 @@ them.
 ```r
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
-read.delim(targetspath, comment.char = "#")
+read.delim(targetspath, comment.char = "#")[1:4, ]
 ```
 
 ```
-##                       FileName SampleName Factor SampleLong Experiment
-## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A          1
-## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B          1
-## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A          1
-## 4  ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B          1
-## 5  ./data/SRR446031_1.fastq.gz        V1A     V1   Vir.1h.A          1
-## 6  ./data/SRR446032_1.fastq.gz        V1B     V1   Vir.1h.B          1
-## 7  ./data/SRR446033_1.fastq.gz        M6A     M6  Mock.6h.A          1
-## 8  ./data/SRR446034_1.fastq.gz        M6B     M6  Mock.6h.B          1
-## 9  ./data/SRR446035_1.fastq.gz        A6A     A6   Avr.6h.A          1
-## 10 ./data/SRR446036_1.fastq.gz        A6B     A6   Avr.6h.B          1
-## 11 ./data/SRR446037_1.fastq.gz        V6A     V6   Vir.6h.A          1
-## 12 ./data/SRR446038_1.fastq.gz        V6B     V6   Vir.6h.B          1
-## 13 ./data/SRR446039_1.fastq.gz       M12A    M12 Mock.12h.A          1
-## 14 ./data/SRR446040_1.fastq.gz       M12B    M12 Mock.12h.B          1
-## 15 ./data/SRR446041_1.fastq.gz       A12A    A12  Avr.12h.A          1
-## 16 ./data/SRR446042_1.fastq.gz       A12B    A12  Avr.12h.B          1
-## 17 ./data/SRR446043_1.fastq.gz       V12A    V12  Vir.12h.A          1
-## 18 ./data/SRR446044_1.fastq.gz       V12B    V12  Vir.12h.B          1
-##           Date
-## 1  23-Mar-2012
-## 2  23-Mar-2012
-## 3  23-Mar-2012
-## 4  23-Mar-2012
-## 5  23-Mar-2012
-## 6  23-Mar-2012
-## 7  23-Mar-2012
-## 8  23-Mar-2012
-## 9  23-Mar-2012
-## 10 23-Mar-2012
-## 11 23-Mar-2012
-## 12 23-Mar-2012
-## 13 23-Mar-2012
-## 14 23-Mar-2012
-## 15 23-Mar-2012
-## 16 23-Mar-2012
-## 17 23-Mar-2012
-## 18 23-Mar-2012
+##                      FileName SampleName Factor SampleLong Experiment
+## 1 ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A          1
+## 2 ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B          1
+## 3 ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A          1
+## 4 ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B          1
+##          Date
+## 1 23-Mar-2012
+## 2 23-Mar-2012
+## 3 23-Mar-2012
+## 4 23-Mar-2012
 ```
 
 To work with custom data, users need to generate a _`targets`_ file containing 
@@ -368,10 +367,10 @@ cwlfiles(WF)
 
 ```
 ## $cwl
-## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl"
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/4.0/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl"
 ## 
 ## $yml
-## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/3.6/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.yml"
+## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/4.0/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.yml"
 ## 
 ## $steps
 ## [1] "hisat2-mapping-se"
@@ -478,8 +477,8 @@ sysargs(args)[1]
 ```
 
 ```
-##                                                                                                                                                                                                                                                                                              M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
+##                                                                                                                                                                                                                                                              M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/Desktop/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/Desktop/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
 ```
 
 ```r
@@ -503,8 +502,8 @@ outpaths(args)[1]
 ```
 
 ```
-##                                                                                                                                M1A 
-## "/home/dcassol/danielac@ucr.edu/github/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
+##                                                                                                                M1A 
+## "/home/dcassol/Desktop/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
 ```
 
 The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).

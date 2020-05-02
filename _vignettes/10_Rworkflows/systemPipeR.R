@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=80), tidy=TRUE)
 
 
-## ----setup, echo=FALSE, messages=FALSE, warnings=FALSE------------------------
+## ----setup, echo=FALSE, message=FALSE, warning=FALSE--------------------------
 suppressPackageStartupMessages({
     library(systemPipeR)
     library(BiocParallel)
@@ -32,6 +32,7 @@ suppressPackageStartupMessages({
     library(ShortRead)
     library(ape)
     library(batchtools)
+    library(magrittr)
 })
 
 
@@ -53,10 +54,25 @@ suppressPackageStartupMessages({
 ## setwd("rnaseq")
 
 
+## ----genRna_new, eval=FALSE---------------------------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow="new", mydirname = "FEB_project")
+
+
+## ----genRna_npkg, eval=FALSE--------------------------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow=NULL, package_repo = "systemPipeR/systemPipeRIBOseq", ref = "master", subdir = NULL)
+
+
+## ----genRna_pkg_branch, eval=FALSE--------------------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow=NULL, package_repo = "systemPipeR/systemPipeRNAseq", ref = "singleMachine", subdir = NULL)
+
+
 ## ----targetsSE, eval=TRUE-----------------------------------------------------
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
-read.delim(targetspath, comment.char = "#")
+read.delim(targetspath, comment.char = "#")[1:4,]
 
 
 ## ----targetsPE, eval=TRUE-----------------------------------------------------
@@ -135,6 +151,37 @@ outpaths(args)[1]
 
 ## ----sysarg_json, eval=TRUE---------------------------------------------------
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
+
+
+## ----workflow, eval=FALSE-----------------------------------------------------
+## library(systemPipeRdata)
+## genWorkenvir(workflow="rnaseq")
+## setwd("rnaseq")
+
+
+## ----test_software, eval=FALSE------------------------------------------------
+## tryCL(command="hisat2") ## "All set up, proceed!"
+
+
+## ----initwf, eval=FALSE-------------------------------------------------------
+## script <- "systemPipeRNAseq.Rmd"
+## targetspath <- "targets.txt"
+## sysargslist <- initWF(script = script, targets = targets)
+
+
+## ----initwf_tempdir, eval=FALSE-----------------------------------------------
+## library(systemPipeRdata)
+## script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
+## targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+## dir_path <- tempdir()
+## SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
+## sysargslist_temp <- initWF(sysconfig ="SYSconfig.yml")
+
+
+## ----config, eval=FALSE-------------------------------------------------------
+## sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
+## sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
+## sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
 
 
 ## ----load_package, eval=FALSE-------------------------------------------------

@@ -40,22 +40,30 @@ entries:
       url: /mydoc_systemPipeR_2.html
       output: web
 
-    - title: 3. Workflow overview
+    - title: 3. How to run a Workflow
       url: /mydoc_systemPipeR_3.html
       output: web
 
-    - title: 4. Workflow templates
+    - title: 4. Workflow steps overview
       url: /mydoc_systemPipeR_4.html
       output: web
 
-    - title: 5. Version information
+    - title: 5. Workflow templates
       url: /mydoc_systemPipeR_5.html
       output: web
 
-    - title: 6. References
+    - title: 6. Version information
       url: /mydoc_systemPipeR_6.html
       output: web
-      
+
+    - title: 7. Funding
+      url: /mydoc_systemPipeR_7.html
+      output: web
+
+    - title: 8. References
+      url: /mydoc_systemPipeR_8.html
+      output: web
+
   - title: Workflows Collection
     output: web, pdf
     folderitems:

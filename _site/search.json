@@ -534,7 +534,7 @@
 
 
 {
-"title": "systemPipeR - NGS workflow and report generation environment  &lt;br&gt; &lt;br&gt; 1. Introduction",
+"title": "systemPipeR - Workflow design and reporting generation environment  &lt;br&gt; &lt;br&gt; 1. Introduction",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeR_1.html",
@@ -556,7 +556,7 @@
 
 
 {
-"title": "3. Workflow overview",
+"title": "3. How to run a Workflow",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeR_3.html",
@@ -567,7 +567,7 @@
 
 
 {
-"title": "4. Workflow templates",
+"title": "4. Workflow steps overview",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeR_4.html",
@@ -578,7 +578,7 @@
 
 
 {
-"title": "5. Version information",
+"title": "5. Workflow templates",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeR_5.html",
@@ -589,7 +589,7 @@
 
 
 {
-"title": "6. Funding",
+"title": "6. Version information",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeR_6.html",
@@ -600,7 +600,7 @@
 
 
 {
-"title": "7. References",
+"title": "7. Funding",
 "tags": "",
 "keywords": "",
 "url": "mydoc_systemPipeR_7.html",

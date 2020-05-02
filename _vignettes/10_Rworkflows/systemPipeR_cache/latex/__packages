@@ -18,6 +18,6 @@ ShortRead
 systemPipeR
 ggplot2
 ape
-data.table
 batchtools
+magrittr
 DESeq2
