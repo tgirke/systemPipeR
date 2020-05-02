@@ -23,7 +23,7 @@
 
 \title{Class \code{"SYSargsList"}}
 \description{
-S4 class container for storing parameters and infrmation of command-line- or R-based workflow.
+S4 class container for storing parameters and information of command-line- or R-based workflow.
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("SYSargsList", ...)}.

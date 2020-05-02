@@ -14,6 +14,8 @@ vignette: |
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{css, echo=FALSE}
@@ -60,7 +62,7 @@ Backman, T.W.H and Girke, T. (2016). _`systemPipeR`_: NGS Workflow and Report Ge
 
 # Introduction
 
-[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) provides utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next-generation sequencing (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq [@H_Backman2016-bt]. Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, _`systemPipeR`_ can be used with most command-line aligners such as `BWA` [@Li2013-oy; @Li2009-oc], `HISAT2` [@Kim2015-ve], `TopHat2` [@Kim2013-vg] and `Bowtie2` [@Langmead2012-bs], as well as the R-based NGS aligners [_`Rsubread`_](http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html) [@Liao2013-bn] and [_`gsnap (gmapR)`_](http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html) [@Wu2010-iq]. Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental designs are facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area [@Lawrence2013-kt]. 
+[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) provides flexible utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next-generation sequencing (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq [@H_Backman2016-bt]. Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, _`systemPipeR`_ can be used with most command-line aligners such as `BWA` [@Li2013-oy; @Li2009-oc], `HISAT2` [@Kim2015-ve], `TopHat2` [@Kim2013-vg] and `Bowtie2` [@Langmead2012-bs], as well as the R-based NGS aligners [_`Rsubread`_](http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html) [@Liao2013-bn] and [_`gsnap (gmapR)`_](http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html) [@Wu2010-iq]. Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental designs are facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area [@Lawrence2013-kt]. 
 
 The main motivation and advantages of using _`systemPipeR`_ for complex data analysis tasks are:
 
@@ -148,6 +150,7 @@ or many _`SYSargs2`_ objects are organized in an *`SYSargs2Pipe`* container.
 **systemPipeR** allows creation (multi-step analyses) and execution of workflow entirely for R, with control, flexibility, and scalability of the all process. The execution of the workflow can be sent to a HPC, can be parallelizes, accelerating results acquisition. A workflow management system provides an infrastructure for the set-up, performance and monitoring of a defined sequence of tasks, arranged as a workflow application.
 
 <center><img src="sysargslist.png"></center>
+**Figure 3:** Workflow Management using _`SYSargsList`_.
 
 ## Workflow design structure using _`SYSargs`_: Previous version
 
@@ -170,7 +173,7 @@ operations with any combination of command-line or R-based software.
 
 <center><img src="SystemPipeR_Workflow.png"></center>
 
-**Figure 3:** Workflow design structure of _`systemPipeR`_ using _`SYSargs`_. 
+**Figure 4:** Workflow design structure of _`systemPipeR`_ using _`SYSargs`_. 
 
 # Getting Started
 
@@ -191,8 +194,6 @@ library("systemPipeR") # Loads the package
 library(help="systemPipeR") # Lists package info
 vignette("systemPipeR") # Opens vignette
 ```
-
-# How to run a Workflow
 
 ## Load sample data and workflow templates
 
@@ -220,14 +221,17 @@ genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
 ```
 
-If you desire run this tutorial with your data set, please follow the instruction here
+If you desire run this tutorial with your data set, please follow the instruction here:
 
 ```{r genRna_new, eval=FALSE}
 library(systemPipeRdata)
 genWorkenvir(workflow="new", mydirname = "FEB_project")
 ```
 
-### Workflow template from Package
+### Workflow template from an individual's package
+
+The package provides pre-configured workflows and reporting templates for a wide range of NGS applications that are listed [here](https://github.com/tgirke/systemPipeR/tree/devel#workflow). Additional workflow templates will be provided in the future. 
+If you desire to use an individual package and version, follow the instruction below:
 
 ```{r genRna_npkg, eval=FALSE}
 library(systemPipeRdata)
@@ -264,9 +268,9 @@ accordingly.
         + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
         + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
-<center><img src="directory.png"></center>
+<center><img src="SYSdir.png"></center>
 
-**Figure 4:** *systemPipeR's* preconfigured directory structure.
+**Figure 5:** *systemPipeR's* preconfigured directory structure.
 
 The following parameter files are included in each workflow template:
 
@@ -472,38 +476,43 @@ The content of the _`param`_ file can also be returned as JSON object as follows
 systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ```
 
-# How to build your own Workflow
+# How to run a Workflow
 
-This tutorial introduces the basic ideas and tools needed to build a specific workflow from scratch or modified an existing workflow.
+This tutorial introduces the basic ideas and tools needed to build a specific workflow from preconfigured templates.
+
+## Load sample data and workflow templates
+
+```{r workflow, eval=FALSE}
+library(systemPipeRdata)
+genWorkenvir(workflow="rnaseq")
+setwd("rnaseq")
+```
 
 ## Setup and Requirements 
 
 To go through this tutorial, you need the following software installed:
 
-* R/3.6.2 
+* R/>=3.6.2 
 * systemPipeR R package (version 1.22)
 * Hisat2/2.1.0
 
-If you desire to build your pipeline with any different software then Hisat2, make sure to have the respective software installed and configured in your PATH. To make sure if the configuration is right, you always can test as follow:
+If you desire to build your pipeline with any different software, make sure to have the respective software installed and configured in your PATH. To make sure if the configuration is right, you always can test as follow:
 
 ```{r test_software, eval=FALSE}
-tryCL(command="hisat1") 
-tryCL(command="hisat2") 
+tryCL(command="hisat2") ## "All set up, proceed!"
 ```
 
 ## Project Initialization 
 
-The Project management structure is essential, especially for reproducibility and efficiency in the analysis. Here we show how to create a simple and complete R object list storing a all the information about the project, as the path of the data and results, as well all the setting for the particular project and the Initial annotation file (targets), storing all the initial files for the project and all the metadata data related with the project. The list can be saved as a simple YAML file. 
-Note the workflow steps and all the analysis is defined in the RMarkdown file. 
+The Project management structure is essential, especially for reproducibility and efficiency in the analysis. Here we show how to construct an instance of this S4 object class by the _`initWF`_ function. The object of class _`SYSarsgsList`_ storing all the configuration information for the project and allows management and control at a high level. 
 
 ```{r initwf, eval=FALSE}
-library(systemPipeRdata)
-script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+script <- "systemPipeRNAseq.Rmd"
+targetspath <- "targets.txt"
 sysargslist <- initWF(script = script, targets = targets)
 ```
 
-Project Initialization in a temporary directory
+## Project Initialization in a Temporary Directory
 
 ```{r initwf_tempdir, eval=FALSE}
 library(systemPipeRdata)
@@ -511,17 +520,16 @@ script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", packag
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- tempdir()
 SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
-sysargslist <- initWF(sysconfig ="SYSconfig.yml")
+sysargslist_temp <- initWF(sysconfig ="SYSconfig.yml")
 ```
 
-Configuration and run of the project
+## Configuration and run of the project
 
 ```{r config, eval=FALSE}
 sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
 sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
 sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
 ```
-
 
 # Workflow steps overview
 
