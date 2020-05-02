@@ -12,7 +12,7 @@ importFrom("utils", "capture.output", "combn", "read.delim", "write.table")
 importFrom("magrittr","%>%")
 importFrom("DOT", "dot")
 importFrom("rsvg","rsvg_svg", "rsvg_png")
-
+importFrom("IRanges", "IRanges")
 
 ## S4 Classes
 exportClasses(
@@ -28,7 +28,7 @@ exportMethods(
     "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
     "as.list", "[[", "[[<-", "$", "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
     "sysargs2", "targets", "wf", "yamlinput", "SYSargs2Pipe_ls", "WF_steps", "track", "summaryWF",
-    "codeSteps", "projectWF", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
+    "sysconfig", "codeSteps", "stepsWF", "dataWF", "SYSargs2_steps", "statusWF", "projectWF", "sysargslist"
 )
 
 ## Functions
