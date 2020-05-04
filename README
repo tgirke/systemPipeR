@@ -1,4 +1,7 @@
 changelog
+     version 1.23.2
+        - Added 'importFrom("IRanges", "IRanges")'
+        
      version 1.23.1
         - Vignette update
         
