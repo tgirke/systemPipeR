@@ -1,7 +1,7 @@
 ---
-title: Workflow Colletion
+title: Workflow Collection
 sidebar: mydoc_sidebar
-permalink: mydoc_wf_colletions.html
+permalink: mydoc_wf_collection.html
 ---
 
 ## Workflow templates

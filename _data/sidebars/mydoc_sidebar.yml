@@ -69,7 +69,7 @@ entries:
     folderitems:
 
     - title: Workflows Collection
-      url: /mydoc_wf_colletions.html
+      url: /mydoc_wf_collection.html
       output: web
       
   - title: Graphical User Interface
