@@ -608,7 +608,7 @@ myEnvModules$init <- function(){
   # Iterate through base environment
   for (x in seq(1,length(base_env))) {
     # Set environment based on login profile
-    if (base_env[[x]][1]=="LOADEDMODULES" || base_env[[x]][1]=="MODULESHOME" || base_env[[x]][1]=="MODULEPATH" || base_env[[x]][1]=="MODULES_DIR" || base_env[[x]][1]=="IIGB_MODULES"){
+    if (base_env[[x]][1]=="LOADEDMODULES" || base_env[[x]][1]=="MODULESHOME" || base_env[[x]][1]=="MODULEPATH" || base_env[[x]][1]=="MODULES_DIR" || base_env[[x]][1]=="HPCC_MODULES"){
       if (base_env[[x]][1]=="LOADEDMODULES"){
         default_modules <- strsplit(base_env[[x]][2],":")
       }
