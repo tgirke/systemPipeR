@@ -1,4 +1,7 @@
 changelog
+     version 1.23.3
+        - moduleload function BugFix: [IIGB_MODULES >> HPCC_MODULES]
+        
      version 1.23.2
         - Added 'importFrom("IRanges", "IRanges")'
         
