@@ -187,6 +187,8 @@ BiocManager::install("systemPipeR")
 BiocManager::install("systemPipeRdata")
 ```
 
+Please note that if you desire to use a third-party command line tool, the particular tool and dependencies need to be installed and exported in your PATH. See [details](#tools). 
+
 ## Loading package and documentation
 
 ```{r documentation, eval=FALSE}
@@ -423,14 +425,15 @@ software. Alternatively, a CWL-centric workflow design can be used that defines
 all/most workflow steps with CWL workflow and parameter files. Due to time and
 space restrictions, the CWL-centric approach is not covered by this tutorial. 
 
-### Third-party software tools
+### Third-party software tools {#tools}
 
 Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
 
 ```{r, echo=FALSE, message=FALSE}
 library(tidyverse)
 library(kableExtra)
-software <- read.delim("SYS_software.csv", sep=",", comment.char = "#")
+SYS_software <- system.file("extdata", "SYS_software.csv", package="systemPipeR")
+software <- read.delim(SYS_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))
 software %>%
@@ -440,7 +443,8 @@ software %>%
    select(Tool, Description, Step) %>%
   arrange(Tool) %>% 
   kable(escape = F, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
-  kable_styling(c("striped", "condensed"), full_width = F)  
+  kable_styling(c("striped", "hover", "condensed"), full_width = T) %>%
+  scroll_box(width = "80%", height = "500px")
 ```
 
 Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 

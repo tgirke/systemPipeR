@@ -47,7 +47,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
 
         ## (A) Per cycle quality box plot
         ## Generate box plot from precomputed stats    
-        bpl <- boxplot(q, plot=FALSE)
+        bpl <- graphics::boxplot(q, plot=FALSE)
         astats <- data.frame(bpl$names, t(matrix(bpl$stats, dim(bpl$stats))))
         colnames(astats) <- c("Cycle", "min", "low", "mid", "top", "max")
         astats[,1] <- factor(astats[,1], levels=unique(astats[,1]), ordered=TRUE)  
