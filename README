@@ -1,4 +1,7 @@
 changelog
+     version 1.23.4
+        - Fixed bug: '.makeBam'
+        
      version 1.23.3
         - moduleload function BugFix: [IIGB_MODULES >> HPCC_MODULES]
         
