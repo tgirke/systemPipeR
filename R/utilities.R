@@ -79,7 +79,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
+runCommandline2 <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
   ## Validation for 'args'
   if(any(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
   ## Environment Modules section
@@ -116,7 +116,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
       ## if results doesnt exists, create
     }
     ## Check if expected files exists or not
-    return <- .checkOutArgs2(args, make_bam=make_bam)
+    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name)
     args.return <- return$args
     completed <- return$completed
     # Check if one sample/commandline expects one or more output files
@@ -239,7 +239,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
 ## .checkOutArgs2 function: internal function to check 
 ## if the expectedoutput has been created  ##
 ########################################################
-.checkOutArgs2 <- function(args, make_bam){
+.checkOutArgs2 <- function(args, make_bam, dir, dir.name){
   if(make_bam==TRUE) {
     ## Validation for Hisat2
     if(any(grepl("samtools", names(clt(args))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'")}
