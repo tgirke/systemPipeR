@@ -85,7 +85,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
   ## Environment Modules section
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is in the PATH
-    try(suppressWarnings(modulecmd_path <- system("which modulecmd",intern=TRUE,ignore.stderr=TRUE)),
+    try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern=TRUE, ignore.stderr=TRUE)),
         silent=TRUE)
     ## "Environment Modules" is not available
     if(length(modulecmd_path) == 0 ) {
@@ -116,7 +116,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
       ## if results doesnt exists, create
     }
     ## Check if expected files exists or not
-    return <- .checkOutArgs2(args, make_bam=make_bam)
+    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name)
     args.return <- return$args
     completed <- return$completed
     # Check if one sample/commandline expects one or more output files
@@ -153,7 +153,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
         }
         cat("################", file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), sep = "\n", append=TRUE)
         ## converting sam to bam using Rsamtools package
-       .makeBam(args, make_bam=make_bam,del_sam=del_sam)
+       .makeBam(output(args)[[i]][[j]], make_bam=make_bam,del_sam=del_sam)
       }
       }
     ## Create recursive the subfolders
@@ -205,17 +205,17 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
 ###########################################################################
 ## .makeBam function: internal function to convert *.sam to *.bam file ##
 ###########################################################################
-.makeBam <- function(args, make_bam=TRUE, del_sam=TRUE){
+.makeBam <- function(output_args, make_bam=TRUE, del_sam=TRUE){
   if(all(!is.logical(c(make_bam, del_sam)))) stop("Arguments needs to be assigned 'TRUE' and 'FALSE'")
   if(make_bam==TRUE) {
-    sam_files <- grepl(".sam$", output(args)[[i]][[j]])
-    others_files <- grepl("vcf$|bcf$|xls$|bed$", output(args)[[i]][[j]])
-    completed.bam <- grepl(".bam$", output(args)[[i]][[j]])
+    sam_files <- grepl(".sam$", output_args)
+    others_files <- grepl("vcf$|bcf$|xls$|bed$", output_args)
+    completed.bam <- grepl(".bam$", output_args)
     if(any(sam_files)){
       for(k in which(sam_files)){
-        Rsamtools::asBam(file=output(args)[[i]][[j]][k], destination=gsub("\\.sam$", "", output(args)[[i]][[j]][k]), overwrite=TRUE, indexDestination=TRUE)
+        Rsamtools::asBam(file=output_args[k], destination=gsub("\\.sam$", "", output_args[k]), overwrite=TRUE, indexDestination=TRUE)
         if(del_sam==TRUE){
-          unlink(output(args)[[i]][[j]][k])
+          unlink(output_args[k])
         } else if(del_sam==FALSE){
           dump <- "do nothing"
         }
@@ -224,8 +224,8 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
       }
     if(any(completed.bam)){ # If output is unindexed *.bam file (e.g. Tophat2)
       for(k in which(completed.bam)){
-        Rsamtools::sortBam(file=output(args)[[i]][[j]][k], destination=gsub("\\.bam$", "", output(args)[[i]][[j]][k]))
-        Rsamtools::indexBam(output(args)[[i]][[j]][k]) 
+        Rsamtools::sortBam(file=output_args[k], destination=gsub("\\.bam$", "", output_args[k]))
+        Rsamtools::indexBam(output_args[k]) 
       }
     }
   } else if(make_bam==FALSE){
@@ -233,13 +233,13 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
   }
 }
 ## Usage:
-# .makeBam(args, make_bam=TRUE, del_sam=FALSE)
+# .makeBam(output(args)[[1]][[1]], make_bam=TRUE, del_sam=FALSE)
 
 ########################################################
 ## .checkOutArgs2 function: internal function to check 
 ## if the expectedoutput has been created  ##
 ########################################################
-.checkOutArgs2 <- function(args, make_bam){
+.checkOutArgs2 <- function(args, make_bam, dir, dir.name){
   if(make_bam==TRUE) {
     ## Validation for Hisat2
     if(any(grepl("samtools", names(clt(args))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'")}
@@ -608,7 +608,7 @@ myEnvModules$init <- function(){
   # Iterate through base environment
   for (x in seq(1,length(base_env))) {
     # Set environment based on login profile
-    if (base_env[[x]][1]=="LOADEDMODULES" || base_env[[x]][1]=="MODULESHOME" || base_env[[x]][1]=="MODULEPATH" || base_env[[x]][1]=="MODULES_DIR" || base_env[[x]][1]=="IIGB_MODULES"){
+    if (base_env[[x]][1]=="LOADEDMODULES" || base_env[[x]][1]=="MODULESHOME" || base_env[[x]][1]=="MODULEPATH" || base_env[[x]][1]=="MODULES_DIR" || base_env[[x]][1]=="HPCC_MODULES"){
       if (base_env[[x]][1]=="LOADEDMODULES"){
         default_modules <- strsplit(base_env[[x]][2],":")
       }

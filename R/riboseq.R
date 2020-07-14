@@ -994,7 +994,7 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 			orfRanges[,1] <- orfRanges[,1] + 3
 			orfRanges[orfRanges[,2] > length(x), 2] <- length(x)
 		}
-		orfRanges <- IRanges(start=orfRanges[,1], end=orfRanges[,2])
+		orfRanges <- IRanges::IRanges(start=orfRanges[,1], end=orfRanges[,2])
 		orfRanges <- orfRanges[rev(order(width(orfRanges)))]
 		
         ## Organize results in data.frame and also add info about frame of predicted ORF to downstream ORF e.g. prediction is uORF of 5'-UTR
@@ -1012,7 +1012,7 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
         if(n=="all") {
 			## Subset to non-overlapping ORF set containing longest ORF
             if(nrow(orfRanges) > 0 & longest_disjoint==TRUE) {
-                tmpgr <- GRanges(seqnames="dummy", IRanges(orfRanges[,2], orfRanges[,3]), strand="+")
+                tmpgr <- GRanges(seqnames="dummy", IRanges::IRanges(orfRanges[,2], orfRanges[,3]), strand="+")
                 orfRanges <- orfRanges[disjointBins(tmpgr)==1, , drop=FALSE]
 			    orfRanges[,1] <- 1:nrow(orfRanges)
             }
@@ -1141,7 +1141,7 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
         names(rangev) <- seq_along(rangev)
         if(subjectstrand=="+") rangev <- rangev[start(query):end(query)]
         if(subjectstrand=="-") rangev <- rev(rangev)[start(query):end(query)]
-        ir <- reduce(IRanges(rangev, rangev))
+        ir <- reduce(IRanges::IRanges(rangev, rangev))
     
         ## Set orientation properly
         if(querystrand=="-" & subjectstrand=="-") mystrand <- "+"

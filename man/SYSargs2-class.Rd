@@ -20,7 +20,7 @@
 \alias{names,SYSargs2-method}
 \alias{output,SYSargs2-method}
 \alias{show,SYSargs2-method}
-\alias{SYSargs2list,SYSargs2-method}
+\alias{sysargs2,SYSargs2-method}
 \alias{targets,SYSargs2-method}
 \alias{targetsheader,SYSargs2-method}
 \alias{wf,SYSargs2-method}
@@ -67,7 +67,7 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{names}{\code{signature(x = "SYSargs2")}: extracts slot names }
     \item{output}{\code{signature(x = "SYSargs2")}: extracts data from \code{cmdlist} slot }
     \item{show}{\code{signature(object = "SYSargs2")}: summary view of \code{SYSargs2} objects }
-    \item{SYSargs2list}{\code{signature(x = "SYSargs2")}: Coerce back to list \code{as(SYSargs2, "list")} }
+    \item{sysargs2}{\code{signature(x = "SYSargs2")}: Coerce back to list \code{as(SYSargs2, "list")} }
     \item{targets}{\code{signature(x = "SYSargs2")}: extract data from \code{targets} slot }
     \item{targetsheader}{\code{signature(x = "SYSargs2")}: extracts data from \code{targetsheader} slot }
     \item{wf}{\code{signature(x = "SYSargs2")}:  extracts data from \code{wf} slot }
