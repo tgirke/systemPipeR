@@ -42,7 +42,8 @@ export(
     ## Utilities
     "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
-    "modulelist", "module", "run_edgeR", "run_DESeq2", "filterDEGs", "seeFastq", "seeFastqPlot",
+    "modulelist", "moduleAvail", "moduleClear", "moduleInit", "moduleUnload", 
+    "module", "run_edgeR", "run_DESeq2", "filterDEGs", "seeFastq", "seeFastqPlot",
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
     "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
     "preprocessReads", "filterVars", "variantReport", "combineVarReports", 

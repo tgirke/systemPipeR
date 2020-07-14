@@ -1,6 +1,10 @@
 \name{moduleload}
 \alias{moduleload}
 \alias{modulelist}
+\alias{moduleAvail}
+\alias{moduleClear}
+\alias{moduleInit}
+\alias{moduleUnload}
 \title{
 Interface to module system
 }
@@ -9,18 +13,18 @@ Functions to list and load software from a module system in R. The functions are
 the equivalent of \code{module avail} and \code{module load} on the Linux command-line, respectively.
 }
 \usage{
-moduleload(module, envir="PATH")
-
+moduleload(module_name)
+moduleUnload(module_name)
 modulelist()
+moduleAvail()
+moduleClear()
+moduleInit()
 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{module}{
+  \item{module_name}{
 	Name of software to load character vector. 
-}
-  \item{envir}{
-	One or many environment variables passed on as character vector. 
 }
 }
 \author{
