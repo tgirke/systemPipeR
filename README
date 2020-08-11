@@ -1,4 +1,7 @@
 changelog
+     version 1.23.4
+        - Warning fixed: [yaml::read_yaml(eval.expr=TRUE)] more details here: https://github.com/viking/r-yaml/issues/47
+        
      version 1.23.3
         - moduleload function BugFix: [IIGB_MODULES >> HPCC_MODULES]
         
