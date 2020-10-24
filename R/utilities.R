@@ -153,7 +153,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
         }
         cat("################", file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), sep = "\n", append=TRUE)
         ## converting sam to bam using Rsamtools package
-       .makeBam(output(args)[[i]][[j]], make_bam=make_bam,del_sam=del_sam)
+       .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
       }
     ## Create recursive the subfolders
