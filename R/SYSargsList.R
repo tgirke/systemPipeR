@@ -216,7 +216,7 @@ initWF <- function(sysconfig=NULL, subProj=FALSE, dir_str="level0", dirName="def
              warning = function(w) {
                w$message <- paste("Please check the", sysconfig, "file. Some file path is missing. For more details: 'help(initWF)'")
                stop(w)})
-    sysconfig <- yaml::read_yaml(sysconfig)
+    sysconfig <- yaml::read_yaml(sysconfig, eval.expr=TRUE)
     if(is.null(sysconfig$script$path)){
       if(!file.exists(script)==TRUE) stop("Provide valid 'script' file or provide this path file on the 'sysconfig' file.")
       sysconfig$script$path <- script
@@ -624,7 +624,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent=FALS
     } else {
       if (!file.exists(input_file)) 
         stop("Provide valid 'input_file' file. Check the file PATH.")
-      input <- yaml::read_yaml(file.path(input_file))
+      input <- yaml::read_yaml(file.path(input_file), eval.expr=TRUE)
       input <- out_obj <- .replace(input = input, param = param)
       path_file <- normalizePath(input_file)
     }
@@ -872,7 +872,7 @@ evalCode <- function(infile, eval=TRUE, output){
 ## Function to check with the paths provided on the sysconfig file exists.
 .sysconfigCheck <- function(sysconfig){
   if(!file.exists(sysconfig)==TRUE) stop("Provide valid 'sysconfig' file. Check the file PATH.")
-  sysconfig <- yaml::read_yaml(sysconfig)
+  sysconfig <- yaml::read_yaml(sysconfig, eval.expr=TRUE)
   project <- list(project=sysconfig$project$path, data=sysconfig$data$path, param=sysconfig$param$path,
                   results=sysconfig$results$path)
   for(i in seq_along(project)){
