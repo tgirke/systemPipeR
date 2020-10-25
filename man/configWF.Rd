@@ -8,10 +8,10 @@ This function allows the user to control of which step of the workflow will be
 run and the generation of the new RMarkdown.
 }
 \usage{
-configWF(sysargslist, input_steps = "ALL", exclude_steps = NULL, silent = FALSE, ...)
+configWF(x, input_steps = "ALL", exclude_steps = NULL, silent = FALSE, ...)
 }
 \arguments{
-  \item{sysargslist}{
+  \item{x}{
   object of class \code{SYSargsList}.
 }
   \item{input_steps}{
