@@ -1,4 +1,7 @@
 changelog
+     version 1.23.6
+        - Importing selectively functions from the `grid` package. Avoiding conflict with `Biostrings` package: "replacing previous import 'Biostrings::pattern' by 'grid::pattern'"
+        
      version 1.23.5
         - Warning fixed: [yaml::read_yaml(eval.expr=TRUE)] more details here: https://github.com/viking/r-yaml/issues/47
         

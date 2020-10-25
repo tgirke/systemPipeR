@@ -211,11 +211,11 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
     names(fqplot) <- names(fqlist)
     
     ## Final plot
-    grid.newpage() # Open a new page on grid device
-    pushViewport(viewport(layout = grid.layout(length(arrange), length(fqplot)))) 
+    grid::grid.newpage() # Open a new page on grid device
+    grid::pushViewport(viewport(layout = grid::grid.layout(length(arrange), length(fqplot)))) 
     for(i in seq(along=fqplot)) {
         for(j in seq(along=arrange)) {
-            suppressWarnings(print(fqplot[[i]][[arrange[j]]], vp = viewport(layout.pos.row = j, layout.pos.col = i)))
+            suppressWarnings(print(fqplot[[i]][[arrange[j]]], vp = grid::viewport(layout.pos.row = j, layout.pos.col = i)))
         }
     }
 }
