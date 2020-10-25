@@ -1,5 +1,6 @@
 ## This is a test
 ## Template from here: https://github.com/r-lib/actions/tree/master/examples#standard-ci-workflow
+## ubuntu-latest
 on:
   push:
     branches:
@@ -20,9 +21,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-16.04, r: '4.0', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
-          - {os: macOS-latest, r: '4.0'}
-          - {os: windows-latest, r: '4.0'}          
+          - {os: ubuntu-16.04, r: '4.0.3', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
+          - {os: macOS-latest, r: '4.0.3'}
+          - {os: windows-latest, r: '4.0.3'}          
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -63,7 +64,7 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
-          install.packages(c("BiocManager", "ape", "knitcitations", "DOT"))
+          install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "V8"))
           BiocManager::install("systemPipeR")
           BiocManager::install("systemPipeRdata")
         shell: Rscript {0}
