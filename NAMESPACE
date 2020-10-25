@@ -1,6 +1,6 @@
 ## IMPORTS
 import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, 
-       Biostrings, ShortRead, ggplot2, grid, limma, edgeR, GOstats, GO.db, annotate,
+       Biostrings, ShortRead, ggplot2, limma, edgeR, GOstats, GO.db, annotate,
        pheatmap, batchtools, methods, yaml, VariantAnnotation)
 importFrom("assertthat", "assert_that", "not_empty", "is.count", "is.writeable")
 importFrom("stringr", "str_which", "str_remove", "str_extract", "str_replace_all", 
@@ -13,6 +13,7 @@ importFrom("magrittr","%>%")
 importFrom("DOT", "dot")
 importFrom("rsvg","rsvg_svg", "rsvg_png")
 importFrom("IRanges", "IRanges")
+importFrom("grid", "grid.newpage", "pushViewport", "viewport", "grid.layout")
 
 ## S4 Classes
 exportClasses(

@@ -1249,7 +1249,7 @@ for more detailed information on this topic and how to properly run _`edgeR`_
 on data sets with more complex experimental designs. 
 
 ```{r edger_wrapper, eval=TRUE}
-targets <- read.delim(targetspath, comment="#")
+targets <- read.delim(targetspath, comment.char = "#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
 cmp[[1]]
 countDFeBygpath <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")

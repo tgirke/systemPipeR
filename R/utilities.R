@@ -153,7 +153,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
         }
         cat("################", file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), sep = "\n", append=TRUE)
         ## converting sam to bam using Rsamtools package
-       .makeBam(output(args)[[i]][[j]], make_bam=make_bam,del_sam=del_sam)
+       .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
       }
     ## Create recursive the subfolders
@@ -593,9 +593,12 @@ readComp <- function(file, format="vector", delim="-") {
 # cmp <- readComp("targets.txt", format="vector", delim="-")
 # cmp <- readComp(args, format="vector", delim="-")
 
-# #################################
-# ## Access module system from R ##
-# #################################
+#################################
+## Access module system from R ##
+#################################
+
+## S3 class converted to S4 class, please check R/modules.R file
+
 # # S3 Class for handling function calls
 # myEnvModules <- structure(list(), class="EnvModules")
 # 
@@ -712,18 +715,18 @@ readComp <- function(file, format="vector", delim="-") {
 #     stop("That action is not supported.")
 #   )
 # }
-# ## Usage: 
-# # module("load","tophat")
-# # module("load","tophat/2.1.1")
-# # module("list")
-# # module("avail")
-# # module("init")
-# # module("unload", "tophat")
-# # module("unload", "tophat/2.1.1")
-# 
-# #####################
-# ## Legacy Wrappers ##
-# #####################
+## Usage: 
+# module("load","tophat")
+# module("load","tophat/2.1.1")
+# module("list")
+# module("avail")
+# module("init")
+# module("unload", "tophat")
+# module("unload", "tophat/2.1.1")
+
+#####################
+## Legacy Wrappers ##
+#####################
 # ## List software available in module system
 # modulelist <- function() {
 #   module("avail")
