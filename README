@@ -1,4 +1,7 @@
 changelog
+     version 1.23.7
+        - Fixing: "warning in read.delim(... comment = "#"): partial argument match of 'comment' to 'comment.char'"
+        
      version 1.23.6
         - Importing selectively functions from the `grid` package. Avoiding conflict with `Biostrings` package: "replacing previous import 'Biostrings::pattern' by 'grid::pattern'"
         

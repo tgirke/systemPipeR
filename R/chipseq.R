@@ -102,7 +102,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
 writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...) {
   ## Import
   headerlines <- readLines(infile)
-  targets <- read.delim(infile, comment="#")
+  targets <- read.delim(infile, comment.char = "#")
   ## Check for expected input
   if(!c("SampleReference") %in% colnames(targets)) stop("Targets file lacks SampleReference column")
   if(!c("FileName") %in% colnames(targets)) stop("Targets file lacks FileName column")
@@ -146,7 +146,7 @@ countRangeset <- function(bfl, args, format="tabular", ...) {
   }
   for(i in seq(along=infile1(args))) {
     if(format=="tabular") {
-      df <- read.delim(infile1(args)[i], comment="#")
+      df <- read.delim(infile1(args)[i],comment.char = "#")
       peaks <- as(df, "GRanges")
     } else if(format=="bed") {
       peaks <- import.bed(infile1(args)[i])
