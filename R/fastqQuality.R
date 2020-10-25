@@ -134,7 +134,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
     fastqPlot <- function(x=fqlist) {
         ## (A) Per cycle quality box plot
         astats <- x[[1]][["astats"]]
-        a <- ggplot(astats, aes(x=Cycle, ymin = min, lower = low, middle = mid, upper = top, ymax = max)) + 
+        a <- ggplot(astats, aes(x = Cycle, ymin = min, lower = low, middle = mid, upper = top, ymax = max)) + 
                     geom_boxplot(stat = "identity", color="#606060", fill="#56B4E9") +
                     scale_x_discrete(breaks=c(1, seq(0, length(astats[,1]), by=10)[-1])) + 
                     ylab("Quality") + 
@@ -143,7 +143,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
             
         ## (B) Per cycle base proportion
         bstats <- x[[1]][["bstats"]]
-        b <- ggplot(bstats, aes(Cycle, Frequency, fill=Base), color="black") + 
+        b <- ggplot(bstats, aes(x=Cycle, y=Frequency, fill=Base), color="black") + 
                     scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
                     geom_bar(stat="identity") + 
                     theme(legend.position="top", legend.key.size=unit(0.2, "cm")) + 
@@ -151,14 +151,14 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
             
         ## (C) Per cycle average quality of each base type
         cstats <- x[[1]][["cstats"]]
-        c <- ggplot(cstats, aes(Cycle, Quality, group=Base, color=Base)) + 
+        c <- ggplot(cstats, aes(x=Cycle, y=Quality, group=Base, color=Base)) + 
                     geom_line() + 
                     scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
                     theme(legend.position = "none")
             
         ## (D) Relative K-mer Diversity 
         dstats <- x[[1]][["dstats"]]
-        d <- ggplot(dstats, aes(Cycle, RelDiv, group=Method, color=Method)) + 
+        d <- ggplot(dstats, aes(x=Cycle, y=RelDiv, group=Method, color=Method)) + 
                     geom_line() + 
                     scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
                     ylab(paste("k", x[[1]][["fqstats"]][["klength"]], "-mer Div", sep="")) +
@@ -166,7 +166,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
                 
         ## (E) Number of reads where all Phred scores are above a minimum cutoff
         estats <- x[[1]][["estats"]]
-        e <- ggplot(estats, aes(minQuality, Percent, fill = Outliers)) +
+        e <- ggplot(estats, aes(x=minQuality, y=Percent, fill = Outliers)) +
                     geom_bar(position="dodge", stat="identity") +
                     theme(legend.position="top", legend.key.size=unit(0.2, "cm")) + 
                     xlab("All Bases Above Min Quality") +
@@ -174,7 +174,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
         
         ## (F) Distribution of mean quality of reads
         fstats <- x[[1]][["fstats"]]
-        f <- ggplot(fstats, aes(Quality, Percent)) +
+        f <- ggplot(fstats, aes(x=Quality, y=Percent)) +
                     geom_bar(fill="#0072B2", stat="identity") +
                     theme(legend.position = "none", plot.title = element_text(size = 9)) +
                     ggtitle(paste(formatC(x[[1]][["fqstats"]][["batchsize"]], big.mark = ",", format="f", digits=0), "of", formatC(x[[1]][["fqstats"]][["nReads"]], big.mark = ",", format="f", digits=0), "Reads")) + 
@@ -184,7 +184,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
         
         ## (G) Read length distribution
         gstats <- x[[1]][["gstats"]]
-        g <- ggplot(gstats, aes(Cycle, Percent)) +
+        g <- ggplot(gstats, aes(x=Cycle, y=Percent)) +
                     geom_bar(fill="#0072B2", stat="identity") +
                     theme(legend.position = "none") +
                     scale_x_discrete(breaks=c(1, seq(0, length(unique(gstats$Cycle)), by=10)[-1])) +
@@ -197,7 +197,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
         iv <- sapply(seq(along=myintervals[,1]), function(x) sum(hstats[as.numeric(as.vector(hstats$nOccurrences)) >= myintervals[x,2] & as.numeric(as.vector(hstats$nOccurrences)) < myintervals[x,3], "Percent"]))
         hstats <- data.frame(labels=myintervals[,1], Percent=iv)
         hstats[,1] <- factor(hstats[,1], levels=unique(hstats[,1]), ordered=TRUE)
-        h <- ggplot(hstats, aes(labels, Percent)) +
+        h <- ggplot(hstats, aes(x=labels, y=Percent)) +
                     geom_bar(fill="#0072B2", stat="identity") +
                     theme(legend.position = "none") +
                     xlab("Read Occurrence") +
@@ -212,7 +212,7 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
     
     ## Final plot
     grid::grid.newpage() # Open a new page on grid device
-    grid::pushViewport(viewport(layout = grid::grid.layout(length(arrange), length(fqplot)))) 
+    grid::pushViewport(grid::viewport(layout = grid::grid.layout(length(arrange), length(fqplot)))) 
     for(i in seq(along=fqplot)) {
         for(j in seq(along=arrange)) {
             suppressWarnings(print(fqplot[[i]][[arrange[j]]], vp = grid::viewport(layout.pos.row = j, layout.pos.col = i)))
@@ -235,9 +235,4 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
 # pdf("fastqQuality.pdf", height=16, width=4*length(fastq))
 # seeFastqPlot(fqlist, arrange=seq(along=fqlist))
 # dev.off()
-
-
-
-
-
 
