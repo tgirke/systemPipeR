@@ -22,7 +22,7 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-16.04, r: '4.0.3', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
-          - {os: macOS-latest, r: '4.0.3'}
+         # - {os: macOS-latest, r: '4.0.3'}
           - {os: windows-latest, r: '4.0.3'}          
 
     env:
