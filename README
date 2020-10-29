@@ -1,4 +1,10 @@
 changelog
+     version 1.25.1
+        - Version bump
+        
+     version 1.23.9
+        - Vignette update
+        
      version 1.23.8
         - Converting myEnvModules S3 class to S4 class
         - Adding new Methods: "available_modules", "loaded_modules", "default_modules", "modulecmd"
