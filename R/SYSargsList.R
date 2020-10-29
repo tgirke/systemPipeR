@@ -96,8 +96,20 @@ setMethod("$", signature="SYSargsList",
 
 ## Replacement method for SYSargs2 using "[" operator 
 setReplaceMethod(f="[[", signature="SYSargsList", definition=function(x, i, j, value) {
-  if(i==1) x@SYSargs2_steps <- value
+  if(i==1) x@sysconfig <- value
+  if(i==2) x@codeSteps <- value 
+  if(i==3) x@stepsWF <- value
+  if(i==4) x@dataWF <- value
+  if(i==5) x@SYSargs2_steps <- value
+  if(i==6) x@statusWF <- value
+  if(i==7) x@projectWF <- value
+  if(i=="sysconfig") x@sysconfig <- value
+  if(i=="codeSteps") x@codeSteps <- value
+  if(i=="stepsWF") x@stepsWF <- value
+  if(i=="dataWF") x@dataWF <- value
   if(i=="SYSargs2_steps") x@SYSargs2_steps <- value
+  if(i=="statusWF") x@statusWF <- value
+  if(i=="projectWF") x@projectWF <- value
   return(x)
 })
 
@@ -216,7 +228,7 @@ initWF <- function(sysconfig=NULL, subProj=FALSE, dir_str="level0", dirName="def
              warning = function(w) {
                w$message <- paste("Please check the", sysconfig, "file. Some file path is missing. For more details: 'help(initWF)'")
                stop(w)})
-    sysconfig <- yaml::read_yaml(sysconfig)
+    sysconfig <- yaml::read_yaml(sysconfig, eval.expr=TRUE)
     if(is.null(sysconfig$script$path)){
       if(!file.exists(script)==TRUE) stop("Provide valid 'script' file or provide this path file on the 'sysconfig' file.")
       sysconfig$script$path <- script
@@ -293,17 +305,17 @@ initWF <- function(sysconfig=NULL, subProj=FALSE, dir_str="level0", dirName="def
 }
 
 ## Usage:
-# sysargslist <- initWF(script="systemPipeRNAseq.Rmd")
+# sysargslist <- initWF(script="systemPipeRNAseq.Rmd", targets = "targets.txt", overwrite = TRUE)
 # sysargslist <- initWF(sysconfig = "SYSconfig.yml") 
 # sysargslist <- initWF(sysconfig = NULL, subProj=TRUE, script="systemPipeRNAseq.Rmd", dir_str = "level0")
 
 ########################
 ## ConfigWF function ##
 ########################
-configWF <- function(x = sysargslist, input_steps = "ALL", exclude_steps = NULL, silent=FALSE, ...) {
+configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent=FALSE, ...) {
   ## Validations
   if(class(x)!="SYSargsList") stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
-  capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".NULL")  ##TODO: refazer 
+  capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL")  ##TODO: refazer 
   if("ALL" %in% input_steps) {
     input_steps <- paste0(steps_all$t_number[1], ":", steps_all$t_number[length(steps_all$t_number)])
     save_rmd <- FALSE
@@ -356,9 +368,9 @@ configWF <- function(x = sysargslist, input_steps = "ALL", exclude_steps = NULL,
 #####################
 ## runWF function ##
 #####################
-runWF <- function(sysargslist = sysargslist, steps = "ALL") {
+runWF <- function(sysargslist, steps = "ALL") {
   ## Validations
-  if(class(sysargslist)!="SYSargsList") stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
+  if(class(sysargslist)!="SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
   sysproj <- paste(sysargslist$projectWF$project, ".SYSproject", sep = "/")
   if(!file.exists(sysproj)==TRUE) stop("Project was not initialized with the 'initWF' function.")
   ## Storing steps list
@@ -397,22 +409,25 @@ runWF <- function(sysargslist = sysargslist, steps = "ALL") {
 # sysargslist <- configWF(x=sysargslist, input_steps = "1:2")
 # sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
 # sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
+# sysargslist <- initWF(script="systemPipeRNAseq.Rmd", overwrite = T) %>%
+#   configWF( input_steps = "1:5") %>%
+#   runWF(steps = 1:2)
 
 ###########################
 ## renderReport function ##
 ###########################
 ## type: c("pdf_document", "html_document")
-renderReport <- function(x=sysargslist, type=c("html_document")){
-  file <- x$sysconfig$script$path
+renderReport <- function(sysargslist, type=c("html_document")){
+  file <- sysargslist$sysconfig$script$path
   if(!file.exists(file)==TRUE) stop("Provide valid 'sysargslist' object. Check the initialization of the project.")
   evalCode(infile=file, eval=FALSE, output = file)
   rmarkdown::render(input=file, c(paste0("BiocStyle::", type)))
   file_path <- .getPath(file)
   file_out <- .getFileName(file)
   ext <- strsplit(basename(type), split="\\_")[[1]][1]
-  x <- as(x, "list")
-  x$projectWF[["Report"]] <- normalizePath(paste0(file_path, "/", file_out, ".", ext))
-  return(as(x, "SYSargsList"))
+  sysargslist <- as(sysargslist, "list")
+  sysargslist$projectWF[["Report"]] <- normalizePath(paste0(file_path, "/", file_out, ".", ext))
+  return(as(sysargslist, "SYSargsList"))
 }
 
 ## Usage
@@ -624,7 +639,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent=FALS
     } else {
       if (!file.exists(input_file)) 
         stop("Provide valid 'input_file' file. Check the file PATH.")
-      input <- yaml::read_yaml(file.path(input_file))
+      input <- yaml::read_yaml(file.path(input_file), eval.expr=TRUE)
       input <- out_obj <- .replace(input = input, param = param)
       path_file <- normalizePath(input_file)
     }
@@ -872,7 +887,7 @@ evalCode <- function(infile, eval=TRUE, output){
 ## Function to check with the paths provided on the sysconfig file exists.
 .sysconfigCheck <- function(sysconfig){
   if(!file.exists(sysconfig)==TRUE) stop("Provide valid 'sysconfig' file. Check the file PATH.")
-  sysconfig <- yaml::read_yaml(sysconfig)
+  sysconfig <- yaml::read_yaml(sysconfig, eval.expr=TRUE)
   project <- list(project=sysconfig$project$path, data=sysconfig$data$path, param=sysconfig$param$path,
                   results=sysconfig$results$path)
   for(i in seq_along(project)){

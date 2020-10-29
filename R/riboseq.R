@@ -527,9 +527,9 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
         if(tolower(graphicsformat)=="pdf") mydim <- c(height=20, width=6*length(myplotlist))
         if(tolower(graphicsformat) %in% c("png", "jpeg")) mydim <- c(height=20*96, width=6*length(myplotlist)*96)
         get(graphicsformat)(graphicsfile, width=mydim["width"], height=mydim["height"])
-            grid.newpage() # Open a new page on grid device
-            pushViewport(viewport(layout = grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
-            for(i in seq(along=myplotlist)) print(myplotlist[[i]], vp = viewport(layout.pos.row = 1, layout.pos.col = i))
+            grid::grid.newpage() # Open a new page on grid device
+            grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
+            for(i in seq(along=myplotlist)) print(myplotlist[[i]], vp = grid::viewport(layout.pos.row = 1, layout.pos.col = i))
         dev.off()
         cat("Generated graphics file", graphicsfile, "\n")
         return(myplotlist)
@@ -901,9 +901,9 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
     }
     
     ## Generate graphics 
-    grid.newpage() # Open a new page on grid device
-    pushViewport(viewport(layout = grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
-    for(i in seq(along=myplotlist)) print(myplotlist[[i]], vp = viewport(layout.pos.row = 1, layout.pos.col = i))
+    grid::grid.newpage() # Open a new page on grid device
+    grid::pushViewport(viewport(layout = grid::grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
+    for(i in seq(along=myplotlist)) print(myplotlist[[i]], vp = grid::viewport(layout.pos.row = 1, layout.pos.col = i))
 }
 
 ## Usage:

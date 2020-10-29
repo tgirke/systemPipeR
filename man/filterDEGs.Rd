@@ -56,7 +56,7 @@ Thomas Girke
 }
 \examples{
 targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
-targets <- read.delim(targetspath, comment="#")
+targets <- read.delim(targetspath, comment.char = "#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
 countfile <- system.file("extdata", "countDFeByg.xls", package="systemPipeR")
 countDF <- read.delim(countfile, row.names=1)

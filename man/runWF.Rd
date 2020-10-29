@@ -7,7 +7,7 @@ Execute SYSargsList
 Function to execute all the code list specified in SYSargsList object.
 }
 \usage{
-runWF(sysargslist = sysargslist, steps = "ALL")
+runWF(sysargslist, steps = "ALL")
 }
 \arguments{
   \item{sysargslist}{
