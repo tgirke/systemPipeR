@@ -300,13 +300,13 @@ initWF <- function(sysconfig=NULL, subProj=FALSE, dir_str="level0", dirName="def
   }
   init$sysconfig <- sysconfig
   init <- as(init, "SYSargsList")
-    init <- configWF(x = init, input_steps = "ALL", exclude_steps = NULL, silent=silent) 
+  init <- configWF(x = init, input_steps = "ALL", exclude_steps = NULL, silent=silent) 
   return(as(init, "SYSargsList"))
 }
 
 ## Usage:
 # sysargslist <- initWF(script="systemPipeRNAseq.Rmd", targets = "targets.txt", overwrite = TRUE)
-# sysargslist <- initWF(sysconfig = "SYSconfig.yml")
+# sysargslist <- initWF(sysconfig = "SYSconfig.yml") 
 # sysargslist <- initWF(sysconfig = NULL, subProj=TRUE, script="systemPipeRNAseq.Rmd", dir_str = "level0")
 
 ########################
@@ -370,7 +370,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent=FALSE,
 #####################
 runWF <- function(sysargslist, steps = "ALL") {
   ## Validations
-  if(class(sysargslist)!="SYSargsList") stop("Argument 'SYSargsList' needs to be assigned an object of class 'SYSargsList'")
+  if(class(sysargslist)!="SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
   sysproj <- paste(sysargslist$projectWF$project, ".SYSproject", sep = "/")
   if(!file.exists(sysproj)==TRUE) stop("Project was not initialized with the 'initWF' function.")
   ## Storing steps list
@@ -409,8 +409,8 @@ runWF <- function(sysargslist, steps = "ALL") {
 # sysargslist <- configWF(x=sysargslist, input_steps = "1:2")
 # sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
 # sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
-# sysargslist <- initWF(script="systemPipeRNAseq.Rmd", overwrite = T) %>% 
-#   configWF( input_steps = "1:5") %>% 
+# sysargslist <- initWF(script="systemPipeRNAseq.Rmd", overwrite = T) %>%
+#   configWF( input_steps = "1:5") %>%
 #   runWF(steps = 1:2)
 
 ###########################
@@ -609,21 +609,19 @@ plotWF <- function(sysargslist, plot_style="detect", out_type='html', out_path='
 
 ## Usage:
 # df_wf <- dataWF(sysargslist)
-# sysargslist$dataWF$no_success[3:8] <- 1
-# sysargslist$dataWF$no_run[3:5] <- 10
-# sysargslist$dataWF$no_run[6:8] <- 1
-# sysargslist$dataWF$selected[1:14] <- TRUE
-# sysargslist$dataWF$selected[15:27] <- FALSE
-# sysargslist$dataWF$link_to <- NA
-# sysargslist$dataWF$link_to[1:(nrow(df_wf) - 1)] <- sysargslist$dataWF$t_number[2:nrow(df_wf)]
-# sysargslist$dataWF$link_to[3] <- NA
-# sysargslist$dataWF$link_to[1] <- "1.1, 2"
-# sysargslist$dataWF$link_to[4] <- "2.1, 3"
-# sysargslist$dataWF$link_to[14] <- NA
-# # df_wf <- df_wf[1:17,]
-# sysargslist$dataWF$link_to[8] <- "3, 2.5"
-# 
-# plotWF(sysargslist, plot_style = "linear")
+# df_wf$no_success[3:8] <- 1
+# df_wf$no_run[3:5] <- 10
+# df_wf$no_run[6:8] <- 1
+# df_wf$selected[1:35] <- TRUE
+# df_wf$link_to <- NA
+# df_wf$link_to[1:(nrow(df_wf) - 1)] <- df_wf$t_number[2:nrow(df_wf)]
+# df_wf$link_to[3] <- NA
+# df_wf$link_to[1] <- "1.1, 2"
+# df_wf$link_to[4] <- "2.1, 3"
+# df_wf$link_to[14] <- NA
+# df_wf <- df_wf[1:17,]
+# df_wf$link_to[8] <- "3, 2.5"
+# plotWF(df_wf, plot_style = "linear")
 
 ###########################
 ## config.param function ##

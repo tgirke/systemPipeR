@@ -3,8 +3,8 @@
 #################################################
 ## Define EnvModules class
 setClass("EnvModules", slots=c(
-  available_modules="character",
-  loaded_modules="character", 
+  available_modules="list",
+  loaded_modules="list", 
   default_modules="list", 
   modulecmd="character"))
 
@@ -12,7 +12,7 @@ setClass("EnvModules", slots=c(
 setGeneric(name="available_modules", def=function(x) standardGeneric("available_modules"))
 setMethod(f="available_modules", signature="EnvModules", definition=function(x) {return(x@available_modules)})
 setGeneric(name="loaded_modules", def=function(x) standardGeneric("loaded_modules"))
-setMethod(f="loaded_modules", signature="EnvModules", definition=function(x) {return(module.List.Avail(action_type))})
+setMethod(f="loaded_modules", signature="EnvModules", definition=function(x) {return(x@loaded_modules)})
 setGeneric(name="default_modules", def=function(x) standardGeneric("default_modules"))
 setMethod(f="default_modules", signature="EnvModules", definition=function(x) {return(x@default_modules)})
 setGeneric(name="modulecmd", def=function(x) standardGeneric("modulecmd"))
@@ -47,11 +47,24 @@ setAs(from="EnvModules", to="list",
 
 ## Define print behavior for EnvModules
 setMethod(f="show", signature="EnvModules", 
-          definition=function(object) {    
+          definition=function(object) {
+            if(length(object@loaded_modules)==0){
+              name_load <- 0
+            } else {
+              name <- names(object@loaded_modules)
+              name_load <- length(object@loaded_modules[[name]])
+            }
+            if(length(object@available_modules$avail)==0){
+              s_avail <- "Run: 'moduleAvail()'"
+            } else {
+              s_avail <- length(object@available_modules$avail)
+            }
             cat(paste0("Instance of '", class(object), "':"), 
                 paste0("   Slot names/accessors: "), 
-                paste0("      avail: ", length(object@available_modules), 
-                       "      list: ", length(object@loaded_modules)), 
+                paste0("      modules available: ", s_avail), 
+                paste0("      modules loaded: ", name_load),
+                paste0("      default modules: ", length(object@default_modules$default_modules)),
+                paste0("      modulecmd: '", object@modulecmd, "'"),
                 "\n", sep="\n")
           })
 
@@ -100,62 +113,54 @@ setReplaceMethod(f="[[", signature="EnvModules", definition=function(x, i, j, va
 #################################
 module <- function(action_type, module_name=NULL){
   #  if(!action_type %in% c("load", "unload", "list", "avail", "init", "clear")) stop("That action is not supported.")
+  ## If module is not available, stop
   mymodules <- list(
-    available_modules = as.character(),
-    loaded_modules = as.character(),
+    available_modules = list(),
+    loaded_modules = list(),
     default_modules = default_modules <- myEnvModules(),
     modulecmd = modulecmd_path <- is.modules.avail())
   switch(action_type,
-         "load"   = module.Load.Unload(action_type, module_name),
-         "unload" = module.Load.Unload(action_type, module_name),
-         "list"   = mymodules$loaded_modules <- module.List.Avail(action_type, mymodules$modulecmd),
+         "load"   = mymodules$loaded_modules <-module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+         "unload" = mymodules$loaded_modules <-module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+         "list"   = mymodules$loaded_modules <- print(module.List.Avail(action_type, mymodules$modulecmd)),
          "avail"  = mymodules$available_modules <- module.List.Avail(action_type, mymodules$modulecmd),
-         "clear"  = module.Clear.Init(action_type, mymodules$modulecmd, mymodules$default_modules),
-         "init"   = module.Clear.Init(action_type, mymodules$modulecmd, mymodules$default_modules),
+         "clear"  = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd, mymodules$default_modules),
+         "init"   = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd, mymodules$default_modules),
          stop("That action is not supported."))
-  return(as(mymodules, "EnvModules"))
+return(as(mymodules, "EnvModules"))
 }
+## Usage::
+# mod <- module("init")
+# mod <- module("list")
+# mod <- module("avail")
+# mod <- module("load","samtools")
+# mod <- module("unload", "samtools")
+# mod <- module("clear")
 
 
-## Usage: 
-# moduleClear()
-
-module.Clear.Init <- function(action_type, modulecmd_path, default_modules){
-  if(action_type=="init"){
-    ## Make sure to process default modules after the environment is set with the above loop
-    for (x in seq_along(default_modules[[1]])){
-      print(paste("Loading module", default_modules[[1]][x]))
-      try(module.Load.Unload("load", default_modules[[1]][x], modulecmd_path))}
-  } else if(action_type=="clear"){
-    loaded_modules <-  strsplit(Sys.getenv("LOADEDMODULES"),":")
-    if (length(loaded_modules[[1]]) > 0) {
-      for (x in seq(1,length(loaded_modules[[1]]))){
-        module_name <- loaded_modules[[1]][x]
-        print(paste("Unloading module", module_name))
-        try(module.Load.Unload("unload", module_name, modulecmd_path))
-      }
-    }
-  }
-}
+##############
+## Wrappers ##
+##############
 
 ################
 ## moduleInit ##
 ################
 # Function to load default modules files
-moduleInit <- function(action_type){
+moduleInit <- function(){
   return(module("init"))
 }
 ## Usage:
-moduleInit()
+# mod <- moduleInit()
 
-#################
-## moduleClear ##
-#################
-# Unload all currently loaded modules
-moduleClear <- function(){
-  return(module("clear"))
+################
+## modulelist ##
+################
+## List software available in module system
+modulelist <- function() {
+  return(module("list"))
 }
-moduleClear()
+## Usage: 
+# mod <- modulelist()
 
 ################
 ## moduleAvail ##
@@ -165,7 +170,18 @@ moduleAvail <- function(){
   return(module("avail"))
 }
 ## Usage:
-moduleAvail()
+# mod <- moduleAvail()
+
+################
+## moduleload ##
+################
+## Load software from module system
+moduleload <- function(module_name) {
+  return(module("load", module_name))
+}
+## Usage: 
+# mod <- moduleload("samtools")
+# mod <- moduleload(c("samtools", "hisat2"))
 
 ##################
 ## moduleUnload ##
@@ -175,25 +191,19 @@ moduleUnload <- function(module_name){
   return(module("unload", module_name))
 }
 ## Usage: 
-moduleUnload()
+# mod <- moduleUnload("samtools")
+# mod <- moduleUnload(c("samtools", "hisat2"))
 
-#####################
-## Legacy Wrappers ##
-#####################
-
-## List software available in module system
-modulelist <- function() {
-  return(module("list"))
+#################
+## moduleClear ##
+#################
+# Unload all currently loaded modules
+moduleClear <- function(){
+  return(module("clear"))
 }
-## Usage: 
-modulelist()
 
-## Load software from module system
-moduleload <- function(module_name) {
-  return(module("load", module_name))
-}
 ## Usage: 
-moduleload()
+# mod <- moduleClear()
 
 ##################################
 ## module accessories functions ##
@@ -223,7 +233,7 @@ is.modules.avail <- function(){
 }
 
 ## Usage: 
-is.modules.avail()
+# is.modules.avail()
 
 ##################
 ## myEnvModules ##
@@ -252,7 +262,7 @@ myEnvModules <- function(){
   return(default_modules)
 }
 ## Usage: 
-myEnvModules()
+# myEnvModules()
 
 ########################
 ## module.Load.Unload ##
@@ -272,7 +282,7 @@ module.Load.Unload <- function(action_type, module_name="", modulecmd_path){
         # Isolate key, value pair
         evar <- module_var[[y]][x]
         # Filter export commands
-        if (length(grep('^ *export',evar)) == 0 && length(evar) > 0) {
+        if (length(grep('^ *export', evar)) == 0 && length(evar) > 0) {
           # Seprate key and value
           evar <- strsplit(as.character(evar),'=')
           # Stip spaces at the end of the value
@@ -301,11 +311,13 @@ module.Load.Unload <- function(action_type, module_name="", modulecmd_path){
       }
     }
   }
+  module_loaded <- module.List.Avail("list", modulecmd_path)
+  return(module_loaded)
 }
 
 ## Usage: 
-module.Load.Unload("load", "samtools")
-module.Load.Unload("unload", "samtools")
+# module.Load.Unload("load", "samtools")
+# module.Load.Unload("unload", "samtools")
 
 ########################
 ## module.List.Avail ##
@@ -334,6 +346,7 @@ module.List.Avail <- function(action_type, modulecmd_path){
       }
     }
   }
+  module <- list(module); names(module) <- action_type
   return(module)
 }
 
@@ -341,185 +354,31 @@ module.List.Avail <- function(action_type, modulecmd_path){
 # module.List.Avail("list")
 # module.List.Avail("avail")
 
+########################
+## module.Clear.Init ##
+########################
+# Internal function to module clear and module init
+module.Clear.Init <- function(action_type, modulecmd_path, default_modules){
+  if(action_type=="init"){
+    ## Make sure to process default modules after the environment is set with the above loop
+    for (x in seq_along(default_modules[[1]])){
+      print(paste("Loading module", default_modules[[1]][x]))
+      try(module.Load.Unload("load", default_modules[[1]][x], modulecmd_path))}
+    return(default_modules)
+  } else if(action_type=="clear"){
+    loaded_modules <-  strsplit(Sys.getenv("LOADEDMODULES"),":")
+    if (length(loaded_modules[[1]]) > 0) {
+      for (x in seq(1,length(loaded_modules[[1]]))){
+        module_name <- loaded_modules[[1]][x]
+        print(paste("Unloading module", module_name))
+        try(module.Load.Unload("unload", module_name, modulecmd_path))
+      }
+    }
+    return(list())
+  }
+}
 
+## Usage: 
+# module.Clear.Init("init")
+# module.Clear.Init("clear")
 
-#################################
-## Access module system from R ##
-#################################
-
-# # Define R6 class
-# RenvModule <- setRefClass("RenvModule",
-#                           fields=list(modulecmd_path="character"),
-#                           methods=list(
-#                             ## Main function to allow avail, list and list
-#                             init=function(){
-#                               # Module function assumes MODULEPATH and MODULEDIR are set in login profile
-#                               # Get base environment from login profile
-#                               base_env <- strsplit(system('bash -l -c "env"',intern = TRUE),'\n')
-#                               base_env <- strsplit(as.character(base_env),'=')
-# 
-#                               # Iterate through base environment
-#                               for (x in seq(1,length(base_env))) {
-# 
-#                                 # Set environment based on login profile
-#                                 if (base_env[[x]][1]=="LOADEDMODULES" || base_env[[x]][1]=="MODULESHOME" || base_env[[x]][1]=="MODULEPATH" || base_env[[x]][1]=="MODULES_DIR" || base_env[[x]][1]=="HPCC_MODULES"){
-#                                   if (base_env[[x]][1]=="LOADEDMODULES"){
-#                                     default_modules <- strsplit(base_env[[x]][2],":")
-#                                   }
-#                                   else{
-#                                     l <- list(base_env[[x]][2])
-#                                     names(l) <- base_env[[x]][1]
-#                                     do.call(Sys.setenv, l)
-#                                   }
-#                                 }
-#                               }
-# 
-#                               # Make sure to process default modules after the environment is set with the above loop
-#                               for (x in seq_along(default_modules[[1]])){
-#                                 print(paste("Loading module", default_modules[[1]][x]))
-#                                 try(load_unload("load", default_modules[[1]][x]))
-#                               }
-#                             },
-# 
-#                             # Return available modules or currently loaded modules
-#                             avail_list=function(action_type){
-#                               try(module_vars <- system2("module", action_type, stdout=TRUE, stderr=TRUE))
-#                               if(length(module_vars) == 0){
-#                                 try(module_vars <- system2("module", paste(action_type,'-t'), stdout=TRUE, stderr=TRUE))
-#                               }
-#                               # Return only the module names
-#                               # return(module_vars[-grep(":$",module_vars)])
-#                               module <- as.character()
-#                               module_vars <- gsub(".*:|\\(.*?\\)", "", module_vars) ## remove "Currently Loaded Modulefiles:" and "(default)"
-#                               module_vars <- strsplit(module_vars, " ")
-#                               for(i in seq_along(module_vars)){
-#                                 for(j in seq_along(module_vars[[i]])){
-#                                   module_vars[[i]][j] <-  gsub("[(].*|.*[)]|^---.*", "", module_vars[[i]][j])
-#                                   if(nchar(module_vars[[i]][j]) > 0){
-#                                     module <- c(module, module_vars[[i]][j])
-#                                   }
-#                                 }
-#                               }
-#                               return(module)
-#                             },
-# 
-#                             # Unload all currently loaded modules
-#                             clear=function(action_type){
-#                               loaded_modules <-  strsplit(Sys.getenv("LOADEDMODULES"),":")
-#                               if (length(loaded_modules[[1]]) > 0) {
-#                                 for (x in seq(1,length(loaded_modules[[1]]))){
-#                                   module_name <- loaded_modules[[1]][x]
-#                                   print(paste("Unloading module",module_name))
-#                                   try(load_unload("unload",module_name))
-#                                 }
-#                               }
-#                             },
-# 
-#                             # Load and unload actions are basically the same, set environment variables given by module command
-#                             load_unload=function(action_type, module_name=""){
-#                               module_name <- paste(module_name, collapse=' ')
-# 
-#                               # Use the low level C binary for generating module environment variables
-#                               try(module_vars <- system(paste(modulecmd_path,'bash',action_type, module_name),intern = TRUE))
-# 
-#                               if (length(module_vars) > 0){
-#                                 for (y in seq(1,length(module_vars))) {
-#                                   # Separate environment variables
-#                                   module_var <- strsplit(module_vars,";")
-# 
-#                                   # Iterate through all environment variables
-#                                   for (x in seq(1,length(module_var[[y]]))) {
-#                                     # Isolate key, value pair
-#                                     evar <- module_var[[y]][x]
-# 
-#                                     # Filter export commands
-#                                     if (length(grep('^ *export',evar)) == 0 && length(evar) > 0) {
-#                                       # Seprate key and value
-#                                       evar <- strsplit(as.character(evar),'=')
-#                                       # Stip spaces at the end of the value
-#                                       evar_val <- gsub('[[:space:]]','',evar[[1]][2])
-#                                       # Remove extra backslashes
-#                                       l <- list(gsub('\\$','',evar_val))
-# 
-#                                       # Load dependant modules
-#                                       if (length(grep('^ *module',evar[[1]][1])) > 0){
-#                                         inner_module <- strsplit(evar[[1]][1]," ")
-#                                       }
-#                                       # Source environment
-#                                       else if (length(grep('^ *source',evar[[1]][1])) > 0){
-#                                         warning(paste0("Module uses a bash script to initialize, some software may not function as expected:\n\t",evar[[1]][1]))
-#                                       }
-#                                       # Unset variables that need to be unset
-#                                       else if(length(grep("^ *unset ",evar[[1]][1])) > 0){
-#                                         evar <- gsub("^unset (.*)$","\\1",evar[[1]][1])
-#                                         Sys.unsetenv(evar)
-#                                       }
-#                                       else {
-#                                         # Assign names to each value in list
-#                                         names(l) <- evar[[1]][1]
-#                                         # Set environment variable in current environment
-#                                         do.call(Sys.setenv, l)
-#                                       }
-#                                     }
-#                                   }
-#                                 }
-#                               }
-#                             }
-#                           )
-# )
-# 
-# #Define what happens based on action
-# module <- function(action_type,module_name=""){
-#   # Create instance of RenvModule
-#   myEnvModules <- RenvModule()
-# 
-#   # Find path for module command
-#   myEnvModules$modulecmd_path <- Sys.getenv('LMOD_CMD')
-#   if(myEnvModules$modulecmd_path =="") {
-#     #    if (nchar(sub("\\s+", "", myEnvModules$modulecmd_path)) == 0) {
-#     try(
-#       suppressWarnings(myEnvModules$modulecmd_path <- system("which modulecmd",intern=TRUE,ignore.stderr=TRUE)),
-#       silent=TRUE
-#     )
-#   }
-# 
-#   # Only initialize module system if it has not yet been initialized and the module command exists
-#   if ( Sys.getenv('MODULEPATH') == "" && length(myEnvModules$modulecmd_path) > 0) {
-#     myEnvModules$init()
-#   } else if (Sys.getenv('MODULEPATH') == "" && length(myEnvModules$modulecmd_path) == 0) {
-#     stop("Cound not find the path of Environment Modules command \"modulecmd\" nor LMOD_CMD")
-#   }
-# 
-#   switch(action_type,
-#          "load"   = myEnvModules$load_unload(action_type,module_name),
-#          "unload" = myEnvModules$load_unload(action_type,module_name),
-#          "list"   = return(myEnvModules$avail_list(action_type)),
-#          "avail"  = return(myEnvModules$avail_list(action_type)),
-#          "clear"  = myEnvModules$clear(action_type),
-#          "init"   = myEnvModules$init(),
-#          stop("That action is not supported.")
-#   )
-# }
-## Usage:
-# module("load","tophat")
-# module("load","tophat/2.1.1")
-# module("list")
-# module("avail")
-# module("init")
-# module("unload", "tophat")
-# module("unload", "tophat/2.1.1")
-
-# #####################
-# ## Legacy Wrappers ##
-# #####################
-# ## List software available in module system
-# modulelist <- function() {
-#   print(module("avail"))
-#   warning("The function modulelist will be deprecated in future releases, please refer to the documentation for proper useage.")
-# }
-# 
-# ## Load software from module system
-# moduleload <- function(module,envir="PATH") {
-#   module("load",module)
-#   warning("The function moduleload will be deprecated in future releases, please refer to the documentation for proper useage.")
-# }

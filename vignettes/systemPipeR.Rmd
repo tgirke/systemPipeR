@@ -349,7 +349,7 @@ readComp(file=targetspath, format="vector", delim="-")
 _`SYSargs2`_ stores all the information and instructions needed for processing
 a set of input files with a single or many command-line steps within a workflow
 (*i.e.* several components of the software or several independent software tools).
-The _`SYSargs2`_ object is created and fully populated with the *loadWorkflow* 
+The _`SYSargs2`_ object is created and fully populated with the *loadWF* 
 and *renderWF* functions, respectively. 
 
 In CWL, files with the extension *`.cwl`* define the parameters of a chosen 
@@ -376,7 +376,7 @@ functions render the proper command-line strings for each sample and software to
 library(systemPipeR)
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl",
+WF <- loadWF(targets=targets, wf_file="hisat2-mapping-se.cwl",
                    input_file="hisat2-mapping-se.yml",
                    dir_path=dir_path)
 
@@ -429,10 +429,11 @@ space restrictions, the CWL-centric approach is not covered by this tutorial.
 
 Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
 
-```{r, echo=FALSE, message=FALSE}
-library(tidyverse)
+```{r table_tools, echo=FALSE, message=FALSE}
+library(dplyr)
 library(kableExtra)
 SYS_software <- system.file("extdata", "SYS_software.csv", package="systemPipeR")
+#SYS_software <- "SYS_software.csv"
 software <- read.delim(SYS_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))

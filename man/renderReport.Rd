@@ -7,10 +7,10 @@ Render RMarkdown Report
 Render the input file to the specified output format using pandoc.
 }
 \usage{
-renderReport(x = sysargslist, type = c("html_document"))
+renderReport(sysargslist, type = c("html_document"))
 }
 \arguments{
-  \item{x}{
+  \item{sysargslist}{
   object of class SYSargsList.
 }
   \item{type}{

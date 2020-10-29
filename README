@@ -1,6 +1,22 @@
 changelog
-     version 1.23.4
+     version 1.23.9
+        - Vignette update
+        
+     version 1.23.8
+        - Converting myEnvModules S3 class to S4 class
+        - Adding new Methods: "available_modules", "loaded_modules", "default_modules", "modulecmd"
+        
+     version 1.23.7
+        - Fixing: "warning in read.delim(... comment = "#"): partial argument match of 'comment' to 'comment.char'"
+        
+     version 1.23.6
+        - Importing selectively functions from the `grid` package. Avoiding conflict with `Biostrings` package: "replacing previous import 'Biostrings::pattern' by 'grid::pattern'"
+        
+     version 1.23.5
         - Warning fixed: [yaml::read_yaml(eval.expr=TRUE)] more details here: https://github.com/viking/r-yaml/issues/47
+        
+     version 1.23.4
+        - Fixed bug: '.makeBam'
         
      version 1.23.3
         - moduleload function BugFix: [IIGB_MODULES >> HPCC_MODULES]
