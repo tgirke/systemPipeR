@@ -57,7 +57,7 @@ jobs:
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
-          sudo apt-get install libcurl4-openssl-dev
+          sudo apt-get install libcurl3
           sudo apt-get install libv8-dev
          
       - name: Install dependencies
@@ -65,7 +65,7 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
           install.packages("RCurl")
-          install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "V8", "kableExtra"))
+          install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "kableExtra"))
           BiocManager::install("systemPipeR")
           BiocManager::install("systemPipeRdata")
         shell: Rscript {0}
