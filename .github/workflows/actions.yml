@@ -57,7 +57,6 @@ jobs:
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
-          sudo apt-get install libcurl4
           sudo apt-get install libv8-dev
           sudo apt install libcurl4-openssl-dev
          
