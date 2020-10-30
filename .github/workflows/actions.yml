@@ -21,9 +21,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-16.04, r: '4.0.3', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
-         # - {os: macOS-latest, r: '4.0.3'}
-          - {os: windows-latest, r: '4.0.3'}          
+          - {os: ubuntu-20.04, r: '4.0.3'}
+          #- {os: macOS-latest, r: '4.0.3'}
+          #- {os: windows-latest, r: '4.0.3'}          
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -59,11 +59,12 @@ jobs:
         run: |
           sudo apt-get install libcurl4-openssl-dev
           sudo apt-get install libv8-dev
-
+         
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
+          install.packages("RCurl")
           install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "V8", "kableExtra"))
           BiocManager::install("systemPipeR")
           BiocManager::install("systemPipeRdata")
