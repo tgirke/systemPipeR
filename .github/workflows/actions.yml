@@ -59,6 +59,7 @@ jobs:
         run: |
           sudo apt-get install libcurl4
           sudo apt-get install libv8-dev
+          sudo apt install libcurl4-openssl-dev
          
       - name: Install dependencies
         run: |
