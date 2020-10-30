@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest, r: '4.0.3'}
+          - {os: ubuntu-20.04, r: '4.0.3'}
           - {os: macOS-latest, r: '4.0.3'}
           - {os: windows-latest, r: '4.0.3'}          
 
