@@ -1,4 +1,8 @@
 changelog
+     version 1.25.3
+        - Adding new Methods: 'addAssay' and 'addMetadata': Extension accessor for SummarizedExperiment object 
+        - Adding New function: 'SPRdata()'
+        
      version 1.25.2
         - NAMESPACE
         

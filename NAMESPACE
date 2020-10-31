@@ -1,5 +1,5 @@
 ## IMPORTS
-import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, 
+import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools,
        Biostrings, ShortRead, ggplot2, limma, edgeR, GOstats, GO.db, annotate,
        pheatmap, batchtools, methods, yaml, VariantAnnotation)
 importFrom("assertthat", "assert_that", "not_empty", "is.count", "is.writeable")
@@ -8,12 +8,13 @@ importFrom("stringr", "str_which", "str_remove", "str_extract", "str_replace_all
 importFrom("grDevices", "dev.off", "pdf")
 importFrom("graphics", "boxplot", "close.screen", "screen", "split.screen", "symbols", "text")
 importFrom("stats", "aggregate", "model.matrix", "na.omit", "phyper", "setNames")
-importFrom("utils", "capture.output", "combn", "read.delim", "write.table")
+importFrom("utils", "capture.output", "combn", "read.delim", "write.table", "packageVersion")
 importFrom("magrittr","%>%")
 importFrom("DOT", "dot")
 importFrom("rsvg","rsvg_svg", "rsvg_png")
 importFrom("IRanges", "IRanges", "subsetByOverlaps")
 importFrom("grid", "grid.newpage", "pushViewport", "viewport", "grid.layout")
+importFrom("S4Vectors", "SimpleList", "DataFrame", "Rle", "first")
 
 ## S4 Classes
 exportClasses(

@@ -218,7 +218,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     steps <- names(wf$steps)
     cwlfiles$steps <- steps
     cltpaths <- sapply(seq_along(steps), function(x) normalizePath(wf$steps[[steps[x]]]$run))
-    cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = F) 
+    cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE) 
     names(cltlist) <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
     myinput <- sapply(names(cltlist), function(x) list(NULL))

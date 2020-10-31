@@ -36,7 +36,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
         (is.null(new_col) & is.null(new_col_output_index))){
       cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
       for (i in seq_len(length(output(x)[[1]][[step]]))){
-        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[i]]), simplify = F)
+        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[i]]), simplify = FALSE)
         targets[[paste0(cwlfiles(x)$steps, "_", i)]] = as.character(pout)
       }
     } else if(!is.null(new_col) & !is.null(new_col_output_index)){
@@ -47,7 +47,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
         stop("'new_col' should have the same length as 'new_col_output_index'")
       }
       for(i in seq_along(new_col)){
-        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[new_col_output_index[i]]]), simplify = F)
+        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[new_col_output_index[i]]]), simplify = FALSE)
         targets[[as.character(new_col[i])]] = as.character(pout)
       }
     }
