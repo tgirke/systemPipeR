@@ -64,7 +64,8 @@ inputs <- list(
 outputs <- list("hisat2_sam"=list(type="File", "./results/_SampleName_.sam"))
 commandLine <- list(baseCommand=baseCommand, inputs=inputs, outputs=outputs)
 \dontrun{
-## Create a SYSargs2 object and populate all the command-line
+## Create a SYSargs2 object and populate all command-line components
+## Note: the following expects a 'param/cwl' directory within the present working directory of a user's R session.
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 WF <- createWF(targets=targets, commandLine, results_path="./results", module_load="baseCommand", file = "default", overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool")
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
