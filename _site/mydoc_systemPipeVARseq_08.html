@@ -480,16 +480,16 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <p>To simplify comparisons among samples, the <code class="highlighter-rouge">combineVarReports</code>
+  <p>To simplify comparisons among samples, the <code class="language-plaintext highlighter-rouge">combineVarReports</code>
 function combines all variant annotation reports referenced in a
-<code class="highlighter-rouge">SYSargs2</code> instance (here <code class="highlighter-rouge">args</code>). At the same time the function
+<code class="language-plaintext highlighter-rouge">SYSargs2</code> instance (here <code class="language-plaintext highlighter-rouge">args</code>). At the same time the function
 allows to consider only certain feature types of interest. For instance, the
-below setting <code class="highlighter-rouge">filtercol=c(Consequence="nonsynonymous")</code> will include
-only nonsysynonymous variances listed in the <code class="highlighter-rouge">Consequence</code> column of
+below setting <code class="language-plaintext highlighter-rouge">filtercol=c(Consequence="nonsynonymous")</code> will include
+only nonsysynonymous variances listed in the <code class="language-plaintext highlighter-rouge">Consequence</code> column of
 the annotation reports. To omit filtering, one can use the setting
-<code class="highlighter-rouge">filtercol="All"</code>.</p>
+<code class="language-plaintext highlighter-rouge">filtercol="All"</code>.</p>
 
-<h2 id="combine-results-gatk">Combine results <code class="highlighter-rouge">GATK</code></h2>
+<h2 id="combine-results-gatk">Combine results <code class="language-plaintext highlighter-rouge">GATK</code></h2>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/varseq"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"results/targets_report_gatk.txt"</span><span class="p">,</span><span class="w"> 
@@ -500,7 +500,7 @@ the annotation reports. To omit filtering, one can use the setting
     </span><span class="n">quote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h2 id="combine-results--bcftools">Combine results  <code class="highlighter-rouge">bcftools</code></h2>
+<h2 id="combine-results--bcftools">Combine results  <code class="language-plaintext highlighter-rouge">bcftools</code></h2>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"results/targets_report_bcf.txt"</span><span class="p">,</span><span class="w"> 
     </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"combine.cwl"</span><span class="p">,</span><span class="w"> </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"varseq.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
@@ -527,8 +527,8 @@ the annotation reports. To omit filtering, one can use the setting
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

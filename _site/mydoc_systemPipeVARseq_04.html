@@ -480,22 +480,22 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="read-mapping-with-bwa-mem">Read mapping with <code class="highlighter-rouge">BWA-MEM</code></h2>
+  <h2 id="read-mapping-with-bwa-mem">Read mapping with <code class="language-plaintext highlighter-rouge">BWA-MEM</code></h2>
 
 <p>The NGS reads of this project are aligned against the reference genome
-sequence using the highly variant tolerant short read aligner <code class="highlighter-rouge">BWA-MEM</code>
+sequence using the highly variant tolerant short read aligner <code class="language-plaintext highlighter-rouge">BWA-MEM</code>
 (Li , 2013; Li et al., 2009). The parameter settings of the aligner are
-defined in the <code class="highlighter-rouge">gatk/bwa-pe.cwl</code></p>
+defined in the <code class="language-plaintext highlighter-rouge">gatk/bwa-pe.cwl</code></p>
 
 <p>DNA sequencing nowadays are usually solid for base quality and therefore, 
 trimming is usually not needed in most cases. Also, variant calling tools like 
-<code class="highlighter-rouge">GATK</code> will automatically not consider low quality bases. Therefore, this test 
-code uses untrimmed fastqs. However, it is best to test with <code class="highlighter-rouge">FASTQ quality report</code> 
+<code class="language-plaintext highlighter-rouge">GATK</code> will automatically not consider low quality bases. Therefore, this test 
+code uses untrimmed fastqs. However, it is best to test with <code class="language-plaintext highlighter-rouge">FASTQ quality report</code> 
 function provided above to verify on your real data first.</p>
 
 <h3 id="build-index-and-dictionary-files-for-bwa-and-gatk">Build index and dictionary files for BWA and GATK</h3>
 
-<p>The following object <code class="highlighter-rouge">dir_path</code> is the folder where all <code class="highlighter-rouge">BWA</code> and <code class="highlighter-rouge">GATK</code> param files are located.</p>
+<p>The following object <code class="language-plaintext highlighter-rouge">dir_path</code> is the folder where all <code class="language-plaintext highlighter-rouge">BWA</code> and <code class="language-plaintext highlighter-rouge">GATK</code> param files are located.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/gatk"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
@@ -535,7 +535,7 @@ function provided above to verify on your real data first.</p>
 </span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<p>Runs the alignments sequentially (<em>e.g.</em> on a single machine) by <code class="highlighter-rouge">runCommandline</code> function.</p>
+<p>Runs the alignments sequentially (<em>e.g.</em> on a single machine) by <code class="language-plaintext highlighter-rouge">runCommandline</code> function.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
 </span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targetsPE.txt"</span><span class="p">,</span><span class="w"> 
@@ -544,7 +544,7 @@ function provided above to verify on your real data first.</p>
 </span></code></pre></div></div>
 
 <p>Alternatively, the alignment jobs can be submitted to a compute cluster. Here is the 
-example to run cluster jobs by <code class="highlighter-rouge">clusterRun</code> on a <code class="highlighter-rouge">slurm</code> based system. 4 cpus for 
+example to run cluster jobs by <code class="language-plaintext highlighter-rouge">clusterRun</code> on a <code class="language-plaintext highlighter-rouge">slurm</code> based system. 4 cpus for 
 each task for 18 samples, totally 72 cpus.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">batchtools</span><span class="p">)</span><span class="w">
@@ -576,9 +576,9 @@ sample and how many of them aligned to the reference.</p>
 
 <h2 id="create-symbolic-links-for-viewing-bam-files-in-igv">Create symbolic links for viewing BAM files in IGV</h2>
 
-<p>The <code class="highlighter-rouge">symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
+<p>The <code class="language-plaintext highlighter-rouge">symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
 genome browser such as IGV. The corresponding URLs are written to a file
-with a path specified under <code class="highlighter-rouge">urlfile</code>, here <code class="highlighter-rouge">IGVurl.txt</code>.</p>
+with a path specified under <code class="language-plaintext highlighter-rouge">urlfile</code>, here <code class="language-plaintext highlighter-rouge">IGVurl.txt</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"somedir/"</span><span class="p">),</span><span class="w"> 
     </span><span class="n">urlbase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://cluster.hpcc.ucr.edu/~tgirke/"</span><span class="p">,</span><span class="w"> </span><span class="n">urlfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"IGVurl.txt"</span><span class="p">)</span><span class="w">
@@ -601,8 +601,8 @@ with a path specified under <code class="highlighter-rouge">urlfile</code>, here
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

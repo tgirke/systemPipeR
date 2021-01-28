@@ -480,17 +480,17 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <p>The function <code class="highlighter-rouge">variantReport</code> generates a variant report using
-utilities provided by the <code class="highlighter-rouge">VariantAnnotation</code> package. The report for
+  <p>The function <code class="language-plaintext highlighter-rouge">variantReport</code> generates a variant report using
+utilities provided by the <code class="language-plaintext highlighter-rouge">VariantAnnotation</code> package. The report for
 each sample is written to a tabular file containing genomic context annotations
 (<em>e.g.</em> coding or non-coding SNPs, amino acid changes, IDs of affected
 genes, etc.) along with confidence statistics for each variant. The CWL
-file <code class="highlighter-rouge">param/cwl/varseq_downstream/annotate.cwl</code> defines the paths to the input 
-and output files which are stored in a <code class="highlighter-rouge">SYSargs2</code> instance.</p>
+file <code class="language-plaintext highlighter-rouge">param/cwl/varseq_downstream/annotate.cwl</code> defines the paths to the input 
+and output files which are stored in a <code class="language-plaintext highlighter-rouge">SYSargs2</code> instance.</p>
 
 <h2 id="basics-of-annotating-variants">Basics of annotating variants</h2>
 
-<p>Variants overlapping with common annotation features can be identified with <code class="highlighter-rouge">locateVariants</code>.</p>
+<p>Variants overlapping with common annotation features can be identified with <code class="language-plaintext highlighter-rouge">locateVariants</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/varseq"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="s2">"GenomicFeatures"</span><span class="p">)</span><span class="w">
@@ -509,7 +509,7 @@ and output files which are stored in a <code class="highlighter-rouge">SYSargs2<
 </span><span class="n">predictCoding</span><span class="p">(</span><span class="n">vcf</span><span class="p">,</span><span class="w"> </span><span class="n">txdb</span><span class="p">,</span><span class="w"> </span><span class="n">seqSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fa</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h2 id="annotate-filtered-variants-gatk">Annotate filtered variants <code class="highlighter-rouge">GATK</code></h2>
+<h2 id="annotate-filtered-variants-gatk">Annotate filtered variants <code class="language-plaintext highlighter-rouge">GATK</code></h2>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"GenomicFeatures"</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_filter_gatk.txt"</span><span class="p">,</span><span class="w"> 
@@ -525,7 +525,7 @@ and output files which are stored in a <code class="highlighter-rouge">SYSargs2<
     </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h2 id="annotate-filtered-variants-bcftools">Annotate filtered variants <code class="highlighter-rouge">bcftools</code></h2>
+<h2 id="annotate-filtered-variants-bcftools">Annotate filtered variants <code class="language-plaintext highlighter-rouge">bcftools</code></h2>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"GenomicFeatures"</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_filter_bcf.txt"</span><span class="p">,</span><span class="w"> 
@@ -563,8 +563,8 @@ and output files which are stored in a <code class="highlighter-rouge">SYSargs2<
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

@@ -1,6 +1,6 @@
 ---
 title: 2. Getting Started
-last_updated: Sat May  2 14:44:00 2020
+last_updated: Thu Jan 28 13:38:31 2021
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_2.html
 ---
@@ -15,6 +15,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocMana
 BiocManager::install("systemPipeR")
 BiocManager::install("systemPipeRdata")
 ```
+
+Please note that if you desire to use a third-party command line tool, the particular tool and dependencies need to be installed and exported in your PATH. See [details](#tools). 
 
 ## Loading package and documentation
 
@@ -230,7 +232,7 @@ readComp(file = targetspath, format = "vector", delim = "-")
 _`SYSargs2`_ stores all the information and instructions needed for processing
 a set of input files with a single or many command-line steps within a workflow
 (*i.e.* several components of the software or several independent software tools).
-The _`SYSargs2`_ object is created and fully populated with the *loadWorkflow* 
+The _`SYSargs2`_ object is created and fully populated with the *loadWF* 
 and *renderWF* functions, respectively. 
 
 In CWL, files with the extension *`.cwl`* define the parameters of a chosen 
@@ -252,7 +254,7 @@ functions render the proper command-line strings for each sample and software to
 library(systemPipeR)
 targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package = "systemPipeR")
-WF <- loadWorkflow(targets = targets, wf_file = "hisat2-mapping-se.cwl", input_file = "hisat2-mapping-se.yml", 
+WF <- loadWF(targets = targets, wf_file = "hisat2-mapping-se.cwl", input_file = "hisat2-mapping-se.yml", 
     dir_path = dir_path)
 
 WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
@@ -398,6 +400,149 @@ software. Alternatively, a CWL-centric workflow design can be used that defines
 all/most workflow steps with CWL workflow and parameter files. Due to time and
 space restrictions, the CWL-centric approach is not covered by this tutorial. 
 
+### Third-party software tools {#tools}
+
+Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
+
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:80%; "><table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Tool Name </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Description </th>
+   <th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;"> Step </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> [BCFtools](https://samtools.github.io/bcftools/howtos/index.html) </td>
+   <td style="text-align:center;"> BCFtools is a program for variant calling and manipulating files in the Variant Call Format (VCF) and its binary counterpart BCF. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #FF6A6A !important;">Variant Discovery</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Bismark](https://www.bioinformatics.babraham.ac.uk/projects/bismark/) </td>
+   <td style="text-align:center;"> Bismark is a program to map bisulfite treated sequencing reads to a genome of interest and perform methylation calls in a single step. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #98B58B !important;">Bisulfite mapping</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Blast](https://www.ncbi.nlm.nih.gov/books/NBK279690/) </td>
+   <td style="text-align:center;"> BLAST finds regions of similarity between biological sequences. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #BD997F !important;">Blast</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) </td>
+   <td style="text-align:center;"> Bowtie 2 is an ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #8FBC8F !important;">Alignment</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Busco](https://busco.ezlab.org/) </td>
+   <td style="text-align:center;"> BUSCO assesses genome assembly and annotation completeness with Benchmarking Universal Single-Copy Orthologs. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #D98576 !important;">Quality</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [bwa](http://bio-bwa.sourceforge.net/bwa.shtml) </td>
+   <td style="text-align:center;"> BWA is a software package for mapping low-divergent sequences against a large reference genome, such as the human genome.  </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #8FBC8F !important;">Alignment</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) </td>
+   <td style="text-align:center;"> FastQC is a quality control tool for high throughput sequence data. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #D98576 !important;">Quality</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [FASTX-Toolkit](http://hannonlab.cshl.edu/fastx_toolkit/commandline.html) </td>
+   <td style="text-align:center;"> FASTX-Toolkit is a collection of command line tools for Short-Reads FASTA/FASTQ files preprocessing. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #EC7770 !important;">Read Preprocessing</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [GATK](https://gatk.broadinstitute.org/hc/en-us) </td>
+   <td style="text-align:center;"> Variant Discovery in High-Throughput Sequencing Data. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #FF6A6A !important;">Variant Discovery</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Gsnap](http://research-pub.gene.com/gmap/) </td>
+   <td style="text-align:center;"> GSNAP is a genomic short-read nucleotide alignment program. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #8FBC8F !important;">Alignment</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Hisat2](https://ccb.jhu.edu/software/hisat2/manual.shtml) </td>
+   <td style="text-align:center;"> HISAT2 is a fast and sensitive alignment program for mapping NGS reads (both DNA and RNA) to reference genomes. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #8FBC8F !important;">Alignment</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Kallisto](https://pachterlab.github.io/kallisto/manual) </td>
+   <td style="text-align:center;"> kallisto is a program for quantifying abundances of transcripts from RNA-Seq data. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #E37E73 !important;">Read counting</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [MACS2](https://macs3-project.github.io/MACS/) </td>
+   <td style="text-align:center;"> MACS2 identifies transcription factor binding sites in ChIP-seq data. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #C7937C !important;">Peak calling</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Picard](https://broadinstitute.github.io/picard/) </td>
+   <td style="text-align:center;"> Picard is a set of command line tools for manipulating high-throughput sequencing (HTS) data and formats such as SAM/BAM/CRAM and VCF. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #B4A082 !important;">Manipulating HTS data</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Rsubread](https://bioconductor.org/packages/release/bioc/vignettes/Rsubread/inst/doc/SubreadUsersGuide.pdf) </td>
+   <td style="text-align:center;"> Rsubread is a Bioconductor software package that provides high-performance alignment and read counting functions for RNA-seq reads. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #8FBC8F !important;">Alignment</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Samtools](http://www.htslib.org/doc/samtools-1.2.html) </td>
+   <td style="text-align:center;"> Samtools is a suite of programs for interacting with high-throughput sequencing data. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #D08C79 !important;">Post-processing</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [STAR](https://github.com/alexdobin/STAR) </td>
+   <td style="text-align:center;"> STAR is an ultrafast universal RNA-seq aligner. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #8FBC8F !important;">Alignment</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Tophat2](https://ccb.jhu.edu/software/tophat/manual.shtml) </td>
+   <td style="text-align:center;"> TopHat is a fast splice junction mapper for RNA-Seq reads. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #8FBC8F !important;">Alignment</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [TransDecoder](https://github.com/TransDecoder/TransDecoder/wiki) </td>
+   <td style="text-align:center;"> TransDecoder identifies candidate coding regions within transcript sequences. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #ABA785 !important;">Find Coding Regions</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [TransRate](http://hibberdlab.com/transrate/) </td>
+   <td style="text-align:center;"> Transrate is software for de-novo transcriptome assembly quality analysis. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #D98576 !important;">Quality</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Trim_galore](https://github.com/FelixKrueger/TrimGalore) </td>
+   <td style="text-align:center;"> Trim Galore is a wrapper around Cutadapt and FastQC to consistently apply adapter and quality trimming to FastQ files. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #EC7770 !important;">Read Preprocessing</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) </td>
+   <td style="text-align:center;"> Trimmomatic is a flexible read trimming tool for Illumina NGS data. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #EC7770 !important;">Read Preprocessing</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) </td>
+   <td style="text-align:center;"> Trinity assembles transcript sequences from Illumina RNA-Seq data. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #A1AE88 !important;">denovo Transcriptome Assembly</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki) </td>
+   <td style="text-align:center;"> Trinotate is a comprehensive annotation suite designed for automatic functional annotation of transcriptomes. </td>
+   <td style="text-align:center;"> <span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #F5706D !important;">Transcriptome Functional Annotation</span> </td>
+  </tr>
+</tbody>
+</table></div>
+
+Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
+
+
+```r
+tryCL(command = "grep")
+```
+
 ## Structure of _`param`_ file and _`SYSargs`_ container (Previous version)
 
 The _`param`_ file defines the parameters of a chosen command-line software. 
@@ -477,8 +622,8 @@ sysargs(args)[1]
 ```
 
 ```
-##                                                                                                                                                                                                                                                              M1A 
-## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/Desktop/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/Desktop/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
+##                                                                                                                                                                                                                                                                                                                            M1A 
+## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/projects/SPR/01282021/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/projects/SPR/01282021/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "
 ```
 
 ```r
@@ -502,8 +647,8 @@ outpaths(args)[1]
 ```
 
 ```
-##                                                                                                                M1A 
-## "/home/dcassol/Desktop/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
+##                                                                                                                                               M1A 
+## "/home/dcassol/danielac@ucr.edu/projects/SPR/01282021/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"
 ```
 
 The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).

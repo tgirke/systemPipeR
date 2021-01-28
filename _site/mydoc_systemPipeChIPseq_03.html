@@ -480,16 +480,16 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="highlighter-rouge">targets</code> file</h2>
+  <h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="language-plaintext highlighter-rouge">targets</code> file</h2>
 
-<p>The <code class="highlighter-rouge">targets</code> file defines all FASTQ files and sample comparisons of the analysis workflow.</p>
+<p>The <code class="language-plaintext highlighter-rouge">targets</code> file defines all FASTQ files and sample comparisons of the analysis workflow.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets_chip.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="m">6</span><span class="p">)]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                      FileName SampleName Factor SampleLong
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                      FileName SampleName Factor SampleLong
 ## 1 ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
 ## 2 ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
 ## 3 ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
@@ -504,12 +504,12 @@ $('#toc').on('click', 'a', function() {
 <h2 id="read-quality-filtering-and-trimming">Read quality filtering and trimming</h2>
 
 <p>The following example shows how one can design a custom read
-preprocessing function using utilities provided by the <code class="highlighter-rouge">ShortRead</code> package, and then
-apply it with <code class="highlighter-rouge">preprocessReads</code> in batch mode to all FASTQ samples referenced in the
-corresponding <code class="highlighter-rouge">SYSargs2</code> instance (<code class="highlighter-rouge">trim</code> object below). More detailed information on
-read preprocessing is provided in <code class="highlighter-rouge">systemPipeR's</code> main vignette.</p>
+preprocessing function using utilities provided by the <code class="language-plaintext highlighter-rouge">ShortRead</code> package, and then
+apply it with <code class="language-plaintext highlighter-rouge">preprocessReads</code> in batch mode to all FASTQ samples referenced in the
+corresponding <code class="language-plaintext highlighter-rouge">SYSargs2</code> instance (<code class="language-plaintext highlighter-rouge">trim</code> object below). More detailed information on
+read preprocessing is provided in <code class="language-plaintext highlighter-rouge">systemPipeR's</code> main vignette.</p>
 
-<p>First, we construct <em><code class="highlighter-rouge">SYSargs2</code></em> object from <em><code class="highlighter-rouge">cwl</code></em> and <em><code class="highlighter-rouge">yml</code></em> param and <em><code class="highlighter-rouge">targets</code></em> files.</p>
+<p>First, we construct <em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> object from <em><code class="language-plaintext highlighter-rouge">cwl</code></em> and <em><code class="language-plaintext highlighter-rouge">yml</code></em> param and <em><code class="language-plaintext highlighter-rouge">targets</code></em> files.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/preprocessReads/trim-se"</span><span class="p">,</span><span class="w"> 
     </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -539,12 +539,12 @@ read preprocessing is provided in <code class="highlighter-rouge">systemPipeR's<
 
 <h2 id="fastq-quality-report">FASTQ quality report</h2>
 
-<p>The following <code class="highlighter-rouge">seeFastq</code> and <code class="highlighter-rouge">seeFastqPlot</code> functions generate and plot a series 
+<p>The following <code class="language-plaintext highlighter-rouge">seeFastq</code> and <code class="language-plaintext highlighter-rouge">seeFastqPlot</code> functions generate and plot a series 
 of useful quality statistics for a set of FASTQ files including per cycle quality box
 plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
-written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</code>.
+written to a PDF file named <code class="language-plaintext highlighter-rouge">fastqReport.pdf</code>.
 Parallelization of FASTQ quality report via scheduler (<em>e.g.</em> Slurm) across several compute nodes.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">BiocParallel</span><span class="p">)</span><span class="w">
@@ -591,8 +591,8 @@ Parallelization of FASTQ quality report via scheduler (<em>e.g.</em> Slurm) acro
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

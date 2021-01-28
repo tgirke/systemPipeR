@@ -480,13 +480,13 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="read-mapping-with-hisat2">Read mapping with <code class="highlighter-rouge">HISAT2</code></h2>
+  <h2 id="read-mapping-with-hisat2">Read mapping with <code class="language-plaintext highlighter-rouge">HISAT2</code></h2>
 
-<p>The following steps will demonstrate how to use the short read aligner <code class="highlighter-rouge">Hisat2</code>
+<p>The following steps will demonstrate how to use the short read aligner <code class="language-plaintext highlighter-rouge">Hisat2</code>
 (Kim et al., 2015) in both interactive job submissions and batch submissions to
-queuing systems of clusters using the <em><code class="highlighter-rouge">systemPipeR's</code></em> new CWL command-line interface.</p>
+queuing systems of clusters using the <em><code class="language-plaintext highlighter-rouge">systemPipeR's</code></em> new CWL command-line interface.</p>
 
-<p>Build <code class="highlighter-rouge">Hisat2</code> index.</p>
+<p>Build <code class="language-plaintext highlighter-rouge">Hisat2</code> index.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/hisat2/hisat2-idx"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-index.cwl"</span><span class="p">,</span><span class="w"> 
@@ -499,8 +499,8 @@ queuing systems of clusters using the <em><code class="highlighter-rouge">system
 </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>The parameter settings of the aligner are defined in the <code class="highlighter-rouge">hisat2-mapping-se.cwl</code> 
-and <code class="highlighter-rouge">hisat2-mapping-se.yml</code> files. The following shows how to construct the 
+<p>The parameter settings of the aligner are defined in the <code class="language-plaintext highlighter-rouge">hisat2-mapping-se.cwl</code> 
+and <code class="language-plaintext highlighter-rouge">hisat2-mapping-se.yml</code> files. The following shows how to construct the 
 corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/hisat2/hisat2-se"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -545,13 +545,13 @@ and how many of them aligned to the reference.</p>
     </span><span class="n">quote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>The following shows the alignment statistics for a sample file provided by the <code class="highlighter-rouge">systemPipeR</code> package.</p>
+<p>The following shows the alignment statistics for a sample file provided by the <code class="language-plaintext highlighter-rouge">systemPipeR</code> package.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">read.table</span><span class="p">(</span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"alignStats.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">),</span><span class="w"> 
     </span><span class="n">header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   FileName Nreads2x Nalign Perc_Aligned Nalign_Primary
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   FileName Nreads2x Nalign Perc_Aligned Nalign_Primary
 ## 1      M1A   192918 177961     92.24697         177961
 ## 2      M1B   197484 159378     80.70426         159378
 ## 3      A1A   189870 176055     92.72397         176055
@@ -565,9 +565,9 @@ and how many of them aligned to the reference.</p>
 
 <h2 id="create-symbolic-links-for-viewing-bam-files-in-igv">Create symbolic links for viewing BAM files in IGV</h2>
 
-<p>The <code class="highlighter-rouge">symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
+<p>The <code class="language-plaintext highlighter-rouge">symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
 genome browser such as IGV. The corresponding URLs are written to a file
-with a path specified under <code class="highlighter-rouge">urlfile</code> in the <code class="highlighter-rouge">results</code> directory.</p>
+with a path specified under <code class="language-plaintext highlighter-rouge">urlfile</code> in the <code class="language-plaintext highlighter-rouge">results</code> directory.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"somedir/"</span><span class="p">),</span><span class="w"> 
     </span><span class="n">urlbase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://biocluster.ucr.edu/~tgirke/"</span><span class="p">,</span><span class="w"> </span><span class="n">urlfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/IGVurl.txt"</span><span class="p">)</span><span class="w">
@@ -590,8 +590,8 @@ with a path specified under <code class="highlighter-rouge">urlfile</code> in th
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

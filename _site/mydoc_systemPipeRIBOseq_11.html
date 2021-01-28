@@ -484,9 +484,9 @@ $('#toc').on('click', 'a', function() {
 to study changes in translational efficiencies of genes and/or transcripts for
 different treatments. For test purposes the following generates a small test
 data set from the sample data used in this vignette, where two types of RNA
-samples (<code class="highlighter-rouge">assays</code>) are considered: polyribosomal mRNA (<code class="highlighter-rouge">Ribo</code>)
-and total mRNA (<code class="highlighter-rouge">mRNA</code>). In addition, there are two treatments
-(<code class="highlighter-rouge">conditions</code>): <code class="highlighter-rouge">M1</code> and <code class="highlighter-rouge">A1</code>.</p>
+samples (<code class="language-plaintext highlighter-rouge">assays</code>) are considered: polyribosomal mRNA (<code class="language-plaintext highlighter-rouge">Ribo</code>)
+and total mRNA (<code class="language-plaintext highlighter-rouge">mRNA</code>). In addition, there are two treatments
+(<code class="language-plaintext highlighter-rouge">conditions</code>): <code class="language-plaintext highlighter-rouge">M1</code> and <code class="language-plaintext highlighter-rouge">A1</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">DESeq2</span><span class="p">)</span><span class="w">
 </span><span class="n">countDFeBygpath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"countDFeByg.xls"</span><span class="p">,</span><span class="w"> 
@@ -501,9 +501,9 @@ and total mRNA (<code class="highlighter-rouge">mRNA</code>). In addition, there
 <p>Differences in translational efficiencies can be calculated by ratios of ratios
 for the two conditions:</p>
 
-<script type="math/tex; mode=display">(Ribo\_A1 / mRNA\_A1) / (Ribo\_M1 / mRNA\_M1)</script>
+\[(Ribo\_A1 / mRNA\_A1) / (Ribo\_M1 / mRNA\_M1)\]
 
-<p>The latter can be modeled with the <code class="highlighter-rouge">DESeq2</code> package using the design $\sim assay + condition + assay:condition$, where the interaction term $assay:condition$ represents the ratio of ratios. Using the likelihood ratio test of <code class="highlighter-rouge">DESeq2</code>, which removes the interaction term in the reduced model, one can test whether the translational efficiency (ribosome loading) is different in condition <code class="highlighter-rouge">A1</code> than in <code class="highlighter-rouge">M1</code>.</p>
+<p>The latter can be modeled with the <code class="language-plaintext highlighter-rouge">DESeq2</code> package using the design $\sim assay + condition + assay:condition$, where the interaction term $assay:condition$ represents the ratio of ratios. Using the likelihood ratio test of <code class="language-plaintext highlighter-rouge">DESeq2</code>, which removes the interaction term in the reduced model, one can test whether the translational efficiency (ribosome loading) is different in condition <code class="language-plaintext highlighter-rouge">A1</code> than in <code class="language-plaintext highlighter-rouge">M1</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeq2</span><span class="o">::</span><span class="n">DESeqDataSetFromMatrix</span><span class="p">(</span><span class="n">countData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.matrix</span><span class="p">(</span><span class="n">countDFeByg</span><span class="p">[,</span><span class="w"> 
     </span><span class="n">rownames</span><span class="p">(</span><span class="n">coldata</span><span class="p">)]),</span><span class="w"> </span><span class="n">colData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">coldata</span><span class="p">,</span><span class="w"> </span><span class="n">design</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">assay</span><span class="w"> </span><span class="o">+</span><span class="w"> 
@@ -534,8 +534,8 @@ for the two conditions:</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

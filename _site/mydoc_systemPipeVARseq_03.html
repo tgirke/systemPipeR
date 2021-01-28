@@ -480,16 +480,16 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="highlighter-rouge">targets</code> file</h2>
+  <h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="language-plaintext highlighter-rouge">targets</code> file</h2>
 
-<p>The <code class="highlighter-rouge">targets</code> file defines all FASTQ files and sample comparisons of the analysis workflow.</p>
+<p>The <code class="language-plaintext highlighter-rouge">targets</code> file defines all FASTQ files and sample comparisons of the analysis workflow.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targetsPE.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
 </span><span class="n">targets</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                     FileName1                   FileName2
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                     FileName1                   FileName2
 ## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz
 ## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz
 ## 3 ./data/SRR446029_1.fastq.gz ./data/SRR446029_2.fastq.gz
@@ -525,12 +525,12 @@ from all FASTQ files.</p>
 
 <h2 id="fastq-quality-report">FASTQ quality report</h2>
 
-<p>The following <code class="highlighter-rouge">seeFastq</code> and <code class="highlighter-rouge">seeFastqPlot</code> functions generate and plot a series of 
+<p>The following <code class="language-plaintext highlighter-rouge">seeFastq</code> and <code class="language-plaintext highlighter-rouge">seeFastqPlot</code> functions generate and plot a series of 
 useful quality statistics for a set of FASTQ files including per cycle quality box
 plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
-written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</code>. Use the output from previous step 
+written to a PDF file named <code class="language-plaintext highlighter-rouge">fastqReport.pdf</code>. Use the output from previous step 
 (fastq trimming) as the demonstration here to generate fastq report.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infile1</span><span class="p">(</span><span class="n">trim</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1e+05</span><span class="p">,</span><span class="w"> 
@@ -560,8 +560,8 @@ written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</cod
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

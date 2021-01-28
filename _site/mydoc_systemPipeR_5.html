@@ -480,7 +480,7 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <p>The intended way of running <em><code class="highlighter-rouge">systemPipeR</code></em> workflows is via <em><code class="highlighter-rouge">*.Rmd</code></em> files, which 
+  <p>The intended way of running <em><code class="language-plaintext highlighter-rouge">systemPipeR</code></em> workflows is via <em><code class="language-plaintext highlighter-rouge">*.Rmd</code></em> files, which 
 can be executed either line-wise in interactive mode or with a single command from 
 R or the command-line. This way comprehensive and reproducible analysis reports 
 can be generated in PDF or HTML format in a fully automated manner by making use 
@@ -491,7 +491,7 @@ from the command-line.</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Rscript <span class="nt">-e</span> <span class="s2">"rmarkdown::render('systemPipeRNAseq.Rmd')"</span>
 </code></pre></div></div>
 
-<p>Templates for setting up custom project reports are provided as <em><code class="highlighter-rouge">*.Rmd</code></em> files by the helper package <em><code class="highlighter-rouge">systemPipeRdata</code></em> and in the vignettes subdirectory of <em><code class="highlighter-rouge">systemPipeR</code></em>. The corresponding HTML of these report templates are available here: <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.html"><em><code class="highlighter-rouge">systemPipeRNAseq</code></em></a>, <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html"><em><code class="highlighter-rouge">systemPipeRIBOseq</code></em></a>, <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html"><em><code class="highlighter-rouge">systemPipeChIPseq</code></em></a> and <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html"><em><code class="highlighter-rouge">systemPipeVARseq</code></em></a>. To work with <em><code class="highlighter-rouge">*.Rnw</code></em> or <em><code class="highlighter-rouge">*.Rmd</code></em> files efficiently, basic knowledge of <a href="https://www.stat.uni-muenchen.de/~leisch/Sweave/"><em><code class="highlighter-rouge">Sweave</code></em></a> or <a href="http://yihui.name/knitr/"><em><code class="highlighter-rouge">knitr</code></em></a> and <a href="http://www.latex-project.org/"><em><code class="highlighter-rouge">Latex</code></em></a> or <a href="http://rmarkdown.rstudio.com/"><em><code class="highlighter-rouge">R Markdown v2</code></em></a> is required.</p>
+<p>Templates for setting up custom project reports are provided as <em><code class="language-plaintext highlighter-rouge">*.Rmd</code></em> files by the helper package <em><code class="language-plaintext highlighter-rouge">systemPipeRdata</code></em> and in the vignettes subdirectory of <em><code class="language-plaintext highlighter-rouge">systemPipeR</code></em>. The corresponding HTML of these report templates are available here: <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.html"><em><code class="language-plaintext highlighter-rouge">systemPipeRNAseq</code></em></a>, <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html"><em><code class="language-plaintext highlighter-rouge">systemPipeRIBOseq</code></em></a>, <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html"><em><code class="language-plaintext highlighter-rouge">systemPipeChIPseq</code></em></a> and <a href="http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html"><em><code class="language-plaintext highlighter-rouge">systemPipeVARseq</code></em></a>. To work with <em><code class="language-plaintext highlighter-rouge">*.Rnw</code></em> or <em><code class="language-plaintext highlighter-rouge">*.Rmd</code></em> files efficiently, basic knowledge of <a href="https://www.stat.uni-muenchen.de/~leisch/Sweave/"><em><code class="language-plaintext highlighter-rouge">Sweave</code></em></a> or <a href="http://yihui.name/knitr/"><em><code class="language-plaintext highlighter-rouge">knitr</code></em></a> and <a href="http://www.latex-project.org/"><em><code class="language-plaintext highlighter-rouge">Latex</code></em></a> or <a href="http://rmarkdown.rstudio.com/"><em><code class="language-plaintext highlighter-rouge">R Markdown v2</code></em></a> is required.</p>
 
 <h2 id="rna-seq-sample">RNA-Seq sample</h2>
 
@@ -504,7 +504,7 @@ from the command-line.</p>
 
 <h3 id="run-workflow">Run workflow</h3>
 
-<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRNAseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">rnaseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
+<p>Next, run the chosen sample workflow <em><code class="language-plaintext highlighter-rouge">systemPipeRNAseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="language-plaintext highlighter-rouge">make -B</code></em> within the <em><code class="language-plaintext highlighter-rouge">rnaseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="language-plaintext highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
 <p>The workflow includes following steps:</p>
 
@@ -515,7 +515,7 @@ from the command-line.</p>
       <li>FASTQ quality report</li>
     </ul>
   </li>
-  <li>Alignments: <em><code class="highlighter-rouge">Tophat2</code></em> (or any other RNA-Seq aligner)</li>
+  <li>Alignments: <em><code class="language-plaintext highlighter-rouge">Tophat2</code></em> (or any other RNA-Seq aligner)</li>
   <li>Alignment stats</li>
   <li>Read counting</li>
   <li>Sample-wise correlation analysis</li>
@@ -535,7 +535,7 @@ from the command-line.</p>
 
 <h3 id="run-workflow-1">Run workflow</h3>
 
-<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeChIPseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">chipseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
+<p>Next, run the chosen sample workflow <em><code class="language-plaintext highlighter-rouge">systemPipeChIPseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="language-plaintext highlighter-rouge">make -B</code></em> within the <em><code class="language-plaintext highlighter-rouge">chipseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="language-plaintext highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
 <p>The workflow includes the following steps:</p>
 
@@ -546,9 +546,9 @@ from the command-line.</p>
       <li>FASTQ quality report</li>
     </ul>
   </li>
-  <li>Alignments: <em><code class="highlighter-rouge">Bowtie2</code></em> or <em><code class="highlighter-rouge">rsubread</code></em></li>
+  <li>Alignments: <em><code class="language-plaintext highlighter-rouge">Bowtie2</code></em> or <em><code class="language-plaintext highlighter-rouge">rsubread</code></em></li>
   <li>Alignment stats</li>
-  <li>Peak calling: <em><code class="highlighter-rouge">MACS2</code></em>, <em><code class="highlighter-rouge">BayesPeak</code></em></li>
+  <li>Peak calling: <em><code class="language-plaintext highlighter-rouge">MACS2</code></em>, <em><code class="language-plaintext highlighter-rouge">BayesPeak</code></em></li>
   <li>Peak annotation with genomic context</li>
   <li>Differential binding analysis</li>
   <li>GO term enrichment analysis</li>
@@ -568,7 +568,7 @@ from the command-line.</p>
 
 <h3 id="run-workflow-2">Run workflow</h3>
 
-<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeVARseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">varseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
+<p>Next, run the chosen sample workflow <em><code class="language-plaintext highlighter-rouge">systemPipeVARseq_single</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rmd">Rmd</a>) by executing from the command-line <em><code class="language-plaintext highlighter-rouge">make -B</code></em> within the <em><code class="language-plaintext highlighter-rouge">varseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="language-plaintext highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
 <p>The workflow includes following steps:</p>
 
@@ -579,17 +579,17 @@ from the command-line.</p>
       <li>FASTQ quality report</li>
     </ul>
   </li>
-  <li>Alignments: <em><code class="highlighter-rouge">gsnap</code></em>, <em><code class="highlighter-rouge">bwa</code></em></li>
-  <li>Variant calling: <em><code class="highlighter-rouge">VariantTools</code></em>, <em><code class="highlighter-rouge">GATK</code></em>, <em><code class="highlighter-rouge">BCFtools</code></em></li>
-  <li>Variant filtering: <em><code class="highlighter-rouge">VariantTools</code></em> and <em><code class="highlighter-rouge">VariantAnnotation</code></em></li>
-  <li>Variant annotation: <em><code class="highlighter-rouge">VariantAnnotation</code></em></li>
+  <li>Alignments: <em><code class="language-plaintext highlighter-rouge">gsnap</code></em>, <em><code class="language-plaintext highlighter-rouge">bwa</code></em></li>
+  <li>Variant calling: <em><code class="language-plaintext highlighter-rouge">VariantTools</code></em>, <em><code class="language-plaintext highlighter-rouge">GATK</code></em>, <em><code class="language-plaintext highlighter-rouge">BCFtools</code></em></li>
+  <li>Variant filtering: <em><code class="language-plaintext highlighter-rouge">VariantTools</code></em> and <em><code class="language-plaintext highlighter-rouge">VariantAnnotation</code></em></li>
+  <li>Variant annotation: <em><code class="language-plaintext highlighter-rouge">VariantAnnotation</code></em></li>
   <li>Combine results from many samples</li>
   <li>Summary statistics of samples</li>
 </ol>
 
 <h3 id="var-seq-workflow-for-computer-cluster">VAR-Seq workflow for computer cluster</h3>
 
-<p>The workflow template provided for this step is called <em><code class="highlighter-rouge">systemPipeVARseq.Rmd</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd">Rmd</a>).
+<p>The workflow template provided for this step is called <em><code class="language-plaintext highlighter-rouge">systemPipeVARseq.Rmd</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd">Rmd</a>).
 It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an HPC system using Slurm as the scheduler.</p>
 
 <h2 id="ribo-seq-sample">Ribo-Seq sample</h2>
@@ -603,7 +603,7 @@ It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an H
 
 <h3 id="run-workflow-3">Run workflow</h3>
 
-<p>Next, run the chosen sample workflow <em><code class="highlighter-rouge">systemPipeRIBOseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="highlighter-rouge">make -B</code></em> within the <em><code class="highlighter-rouge">ribseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
+<p>Next, run the chosen sample workflow <em><code class="language-plaintext highlighter-rouge">systemPipeRIBOseq</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true">PDF</a>, <a href="https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq.Rmd">Rmd</a>) by executing from the command-line <em><code class="language-plaintext highlighter-rouge">make -B</code></em> within the <em><code class="language-plaintext highlighter-rouge">ribseq</code></em> directory. Alternatively, one can run the code from the provided <em><code class="language-plaintext highlighter-rouge">*.Rmd</code></em> template file from within R interactively.</p>
 
 <p>The workflow includes following steps:</p>
 
@@ -614,7 +614,7 @@ It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an H
       <li>FASTQ quality report</li>
     </ul>
   </li>
-  <li>Alignments: <em><code class="highlighter-rouge">Tophat2</code></em> (or any other RNA-Seq aligner)</li>
+  <li>Alignments: <em><code class="language-plaintext highlighter-rouge">Tophat2</code></em> (or any other RNA-Seq aligner)</li>
   <li>Alignment stats</li>
   <li>Compute read distribution across genomic features</li>
   <li>Adding custom features to the workflow (e.g. uORFs)</li>
@@ -644,8 +644,8 @@ It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an H
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat May  2 14:44:00 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Thu Jan 28 13:38:31 2021<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

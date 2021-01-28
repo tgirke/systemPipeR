@@ -481,9 +481,9 @@ $('#toc').on('click', 'a', function() {
     
 
   <p>The analysis of differentially expressed genes (DEGs) is performed with the glm
-method from the <code class="highlighter-rouge">edgeR</code> package (Robinson et al., 2010). The sample
+method from the <code class="language-plaintext highlighter-rouge">edgeR</code> package (Robinson et al., 2010). The sample
 comparisons used by this analysis are defined in the header lines of the
-<code class="highlighter-rouge">targets.txt</code> file starting with <code class="highlighter-rouge">&lt;CMP&gt;</code>.</p>
+<code class="language-plaintext highlighter-rouge">targets.txt</code> file starting with <code class="language-plaintext highlighter-rouge">&lt;CMP&gt;</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">edgeR</span><span class="p">)</span><span class="w">
 </span><span class="n">countDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="s2">"results/countDFeByg.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
@@ -494,7 +494,7 @@ comparisons used by this analysis are defined in the header lines of the
     </span><span class="n">independent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">mdsplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>Add functional gene descriptions, here from <code class="highlighter-rouge">biomaRt</code>.</p>
+<p>Add functional gene descriptions, here from <code class="language-plaintext highlighter-rouge">biomaRt</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"biomaRt"</span><span class="p">)</span><span class="w">
 </span><span class="n">m</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">useMart</span><span class="p">(</span><span class="s2">"plants_mart"</span><span class="p">,</span><span class="w"> </span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"athaliana_eg_gene"</span><span class="p">,</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"plants.ensembl.org"</span><span class="p">)</span><span class="w">
@@ -509,8 +509,8 @@ comparisons used by this analysis are defined in the header lines of the
 </span></code></pre></div></div>
 
 <p>Filter and plot DEG results for up and down regulated genes. The definition of
-<code class="highlighter-rouge">up</code> and <code class="highlighter-rouge">down</code> is given in the corresponding help file. To
-open it, type <code class="highlighter-rouge">?filterDEGs</code> in the R console.</p>
+<code class="language-plaintext highlighter-rouge">up</code> and <code class="language-plaintext highlighter-rouge">down</code> is given in the corresponding help file. To
+open it, type <code class="language-plaintext highlighter-rouge">?filterDEGs</code> in the R console.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">edgeDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="s2">"results/edgeRglm_allcomp.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
     </span><span class="n">check.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
@@ -525,8 +525,8 @@ open it, type <code class="highlighter-rouge">?filterDEGs</code> in the R consol
 <p><img src="./pages/mydoc/systemPipeRIBOseq_files/DEGcounts.png" alt="" /></p>
 <div align="center">Figure 6: Up and down regulated DEGs.</div>
 
-<p>The function <code class="highlighter-rouge">overLapper</code> can compute Venn intersects for large
-numbers of sample sets (up to 20 or more) and <code class="highlighter-rouge">vennPlot</code> can plot 2-5
+<p>The function <code class="language-plaintext highlighter-rouge">overLapper</code> can compute Venn intersects for large
+numbers of sample sets (up to 20 or more) and <code class="language-plaintext highlighter-rouge">vennPlot</code> can plot 2-5
 way Venn diagrams. A useful feature is the possiblity to combine the counts
 from several Venn comparisons with the same number of sample sets in a single
 Venn diagram (here for 4 up and down DEG sets).</p>
@@ -559,8 +559,8 @@ Venn diagram (here for 4 up and down DEG sets).</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

@@ -485,16 +485,16 @@ $('#toc').on('click', 'a', function() {
 <p>A typical workflow starts with generating the expected working environment
 containing the proper directory structure, input files, and parameter settings.
 To simplify this task, one can load one of the existing NGS workflows templates
-provided by <em><code class="highlighter-rouge">systemPipeRdata</code></em> into the current working directory. The
-following does this for the <em><code class="highlighter-rouge">rnaseq</code></em> template. The name of the resulting
-workflow directory can be specified under the <em><code class="highlighter-rouge">mydirname</code></em> argument. The
-default <em><code class="highlighter-rouge">NULL</code></em> uses the name of the chosen workflow. An error is issued if a
+provided by <em><code class="language-plaintext highlighter-rouge">systemPipeRdata</code></em> into the current working directory. The
+following does this for the <em><code class="language-plaintext highlighter-rouge">rnaseq</code></em> template. The name of the resulting
+workflow directory can be specified under the <em><code class="language-plaintext highlighter-rouge">mydirname</code></em> argument. The
+default <em><code class="language-plaintext highlighter-rouge">NULL</code></em> uses the name of the chosen workflow. An error is issued if a
 directory of the same name and path exists already. On Linux and OS X systems
 one can also create new workflow instances from the command-line of a terminal as shown
 <a href="http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#generate-workflow-template">here</a>.
-To apply workflows to custom data, the user needs to modify the <em><code class="highlighter-rouge">targets</code></em> file and if
-necessary update the corresponding <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files. A collection of pre-generated <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files are provided in the <em><code class="highlighter-rouge">param/cwl</code></em> subdirectory of each workflow template. They
-are also viewable in the GitHub repository of <em><code class="highlighter-rouge">systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see
+To apply workflows to custom data, the user needs to modify the <em><code class="language-plaintext highlighter-rouge">targets</code></em> file and if
+necessary update the corresponding <em><code class="language-plaintext highlighter-rouge">.cwl</code></em> and <em><code class="language-plaintext highlighter-rouge">.yml</code></em> files. A collection of pre-generated <em><code class="language-plaintext highlighter-rouge">.cwl</code></em> and <em><code class="language-plaintext highlighter-rouge">.yml</code></em> files are provided in the <em><code class="language-plaintext highlighter-rouge">param/cwl</code></em> subdirectory of each workflow template. They
+are also viewable in the GitHub repository of <em><code class="language-plaintext highlighter-rouge">systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see
 here</a>).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
@@ -505,24 +505,24 @@ here</a>).</p>
 
 <h2 id="read-preprocessing">Read Preprocessing</h2>
 
-<h3 id="preprocessing-with-preprocessreads-function">Preprocessing with <em><code class="highlighter-rouge">preprocessReads</code></em> function</h3>
+<h3 id="preprocessing-with-preprocessreads-function">Preprocessing with <em><code class="language-plaintext highlighter-rouge">preprocessReads</code></em> function</h3>
 
-<p>The function <em><code class="highlighter-rouge">preprocessReads</code></em> allows to apply predefined or custom
+<p>The function <em><code class="language-plaintext highlighter-rouge">preprocessReads</code></em> allows to apply predefined or custom
 read preprocessing functions to all FASTQ files referenced in a
-<em><code class="highlighter-rouge">SYSargs2</code></em> container, such as quality filtering or adaptor trimming
+<em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> container, such as quality filtering or adaptor trimming
 routines. The paths to the resulting output FASTQ files are stored in the
-<em><code class="highlighter-rouge">output</code></em> slot of the <em><code class="highlighter-rouge">SYSargs2</code></em> object. Internally,
-<em><code class="highlighter-rouge">preprocessReads</code></em> uses the <em><code class="highlighter-rouge">FastqStreamer</code></em> function from
-the <em><code class="highlighter-rouge">ShortRead</code></em> package to stream through large FASTQ files in a
+<em><code class="language-plaintext highlighter-rouge">output</code></em> slot of the <em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> object. Internally,
+<em><code class="language-plaintext highlighter-rouge">preprocessReads</code></em> uses the <em><code class="language-plaintext highlighter-rouge">FastqStreamer</code></em> function from
+the <em><code class="language-plaintext highlighter-rouge">ShortRead</code></em> package to stream through large FASTQ files in a
 memory-efficient manner. The following example performs adaptor trimming with
-the <em><code class="highlighter-rouge">trimLRPatterns</code></em> function from the <em><code class="highlighter-rouge">Biostrings</code></em> package.
+the <em><code class="language-plaintext highlighter-rouge">trimLRPatterns</code></em> function from the <em><code class="language-plaintext highlighter-rouge">Biostrings</code></em> package.
 After the trimming step a new targets file is generated (here
-<em><code class="highlighter-rouge">targets_trimPE.txt</code></em>) containing the paths to the trimmed FASTQ files.
+<em><code class="language-plaintext highlighter-rouge">targets_trimPE.txt</code></em>) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
-<em><code class="highlighter-rouge">SYSargs2</code></em> instance, <em>e.g.</em> running the NGS alignments with the
+<em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> instance, <em>e.g.</em> running the NGS alignments with the
 trimmed FASTQ files.</p>
 
-<p>Construct <em><code class="highlighter-rouge">SYSargs2</code></em> object from <em><code class="highlighter-rouge">cwl</code></em> and <em><code class="highlighter-rouge">yml</code></em> param and <em><code class="highlighter-rouge">targets</code></em> files.</p>
+<p>Construct <em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> object from <em><code class="language-plaintext highlighter-rouge">cwl</code></em> and <em><code class="language-plaintext highlighter-rouge">yml</code></em> param and <em><code class="language-plaintext highlighter-rouge">targets</code></em> files.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetsPE</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targetsPE.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/preprocessReads/trim-pe"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -540,7 +540,7 @@ trimmed FASTQ files.</p>
 </span></code></pre></div></div>
 
 <p>The following example shows how one can design a custom read preprocessing function 
-using utilities provided by the <em><code class="highlighter-rouge">ShortRead</code></em> package, and then run it
+using utilities provided by the <em><code class="language-plaintext highlighter-rouge">ShortRead</code></em> package, and then run it
 in batch mode with the <em>‘preprocessReads’</em> function (here on paired-end reads).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">filterFct</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">fq</span><span class="p">,</span><span class="w"> </span><span class="n">cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">Nexceptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -587,15 +587,14 @@ with some extra functionality for removing Reduced Representation Bisulfite-Seq
 
 <h2 id="fastq-quality-report">FASTQ quality report</h2>
 
-<p>The following <em><code class="highlighter-rouge">seeFastq</code></em> and <em><code class="highlighter-rouge">seeFastqPlot</code></em> functions generate and plot a series of
+<p>The following <em><code class="language-plaintext highlighter-rouge">seeFastq</code></em> and <em><code class="language-plaintext highlighter-rouge">seeFastqPlot</code></em> functions generate and plot a series of
 useful quality statistics for a set of FASTQ files including per cycle quality
 box plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution.<br />
-The function <em><code class="highlighter-rouge">seeFastq</code></em> computes the quality statistics and stores the results in a
-relatively small list object that can be saved to disk with <em><code class="highlighter-rouge">save()</code></em> and
-reloaded with <em><code class="highlighter-rouge">load()</code></em> for later plotting. The argument <em><code class="highlighter-rouge">klength</code></em> specifies the
-k-mer length and <em><code class="highlighter-rouge">batchsize</code></em> the number of reads to a random sample from each
+The function <em><code class="language-plaintext highlighter-rouge">seeFastq</code></em> computes the quality statistics and stores the results in a
+relatively small list object that can be saved to disk with <em><code class="language-plaintext highlighter-rouge">save()</code></em> and
+reloaded with <em><code class="language-plaintext highlighter-rouge">load()</code></em> for later plotting. The argument <em><code class="language-plaintext highlighter-rouge">klength</code></em> specifies the k-mer length and <em><code class="language-plaintext highlighter-rouge">batchsize</code></em> the number of reads to a random sample from each
 FASTQ file.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infile1</span><span class="p">(</span><span class="n">trim</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span><span class="w"> </span><span class="n">klength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w">
@@ -643,17 +642,17 @@ software. Select the most accurate aligner and determining the optimal parameter
 for your custom data set project.</p>
 
 <p>For all the following examples, it is necessary to install the respective software 
-and export the <code class="highlighter-rouge">PATH</code> accordingly. If it is available <a href="http://modules.sourceforge.net/">Environment Module</a> 
-in the system, you can load all the request software with <em><code class="highlighter-rouge">moduleload(args)</code></em> function.</p>
+and export the <code class="language-plaintext highlighter-rouge">PATH</code> accordingly. If it is available <a href="http://modules.sourceforge.net/">Environment Module</a> 
+in the system, you can load all the request software with <em><code class="language-plaintext highlighter-rouge">moduleload(args)</code></em> function.</p>
 
-<h3 id="alignment-with-hisat2-using-sysargs2">Alignment with <code class="highlighter-rouge">HISAT2</code> using <em><code class="highlighter-rouge">SYSargs2</code></em></h3>
+<h3 id="alignment-with-hisat2-using-sysargs2">Alignment with <code class="language-plaintext highlighter-rouge">HISAT2</code> using <em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em></h3>
 
-<p>The following steps will demonstrate how to use the short read aligner <code class="highlighter-rouge">Hisat2</code>
+<p>The following steps will demonstrate how to use the short read aligner <code class="language-plaintext highlighter-rouge">Hisat2</code>
 (Kim et al., 2015) in both interactive job submissions and batch submissions to
-queuing systems of clusters using the <em><code class="highlighter-rouge">systemPipeR's</code></em> new CWL command-line interface.</p>
+queuing systems of clusters using the <em><code class="language-plaintext highlighter-rouge">systemPipeR's</code></em> new CWL command-line interface.</p>
 
-<p>The parameter settings of the aligner are defined in the <code class="highlighter-rouge">hisat2-mapping-se.cwl</code> 
-and <code class="highlighter-rouge">hisat2-mapping-se.yml</code> files. The following shows how to construct the 
+<p>The parameter settings of the aligner are defined in the <code class="language-plaintext highlighter-rouge">hisat2-mapping-se.cwl</code> 
+and <code class="language-plaintext highlighter-rouge">hisat2-mapping-se.yml</code> files. The following shows how to construct the 
 corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -664,7 +663,7 @@ corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
 </span><span class="n">args</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Instance of 'SYSargs2':
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Instance of 'SYSargs2':
 ##    Slot names/accessors: 
 ##       targets: 18 (M1A...V12B), targetsheader: 4 (lines)
 ##       modules: 1
@@ -678,7 +677,7 @@ corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
 ## $M1A$`hisat2-mapping-se`
 ## [1] "hisat2 -S ./results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
 ## 
@@ -691,7 +690,7 @@ corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## $M1A
 ## $M1A$`hisat2-mapping-se`
 ## [1] "./results/M1A.sam"
 ## 
@@ -701,40 +700,40 @@ corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
 ## [1] "./results/M1B.sam"
 </code></pre></div></div>
 
-<p>Subsetting <em><code class="highlighter-rouge">SYSargs2</code></em> class slots for each workflow step.</p>
+<p>Subsetting <em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> class slots for each workflow step.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"input"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">  </span><span class="c1">## Subsetting the input files for this particular workflow </span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                           M1A                           M1B 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                           M1A                           M1B 
 ## "./data/SRR446027_1.fastq.gz" "./data/SRR446028_1.fastq.gz"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">  </span><span class="c1">## Subsetting the output files for one particular step in the workflow </span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                 M1A                 M1B 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                 M1A                 M1B 
 ## "./results/M1A.sam" "./results/M1B.sam"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"step"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">  </span><span class="c1">## Subsetting the command-lines for one particular step in the workflow </span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                               M1A 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                                                                                                                                               M1A 
 ## "hisat2 -S ./results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">subsetWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">delete</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">  </span><span class="c1">## DELETING specific output files</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The subset cannot be deleted: no such file
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## The subset cannot be deleted: no such file
 </code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                 M1A 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                 M1A 
 ## "./results/M1A.sam"
 </code></pre></div></div>
 
-<p>Build <code class="highlighter-rouge">Hisat2</code> index.</p>
+<p>Build <code class="language-plaintext highlighter-rouge">Hisat2</code> index.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/hisat2/hisat2-idx"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-index.cwl"</span><span class="p">,</span><span class="w"> </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hisat2-index.yml"</span><span class="p">,</span><span class="w"> 
@@ -750,12 +749,12 @@ corresponding <em>SYSargs2</em> object, here <em>args</em>.</p>
 <h4 id="interactive-job-submissions-in-a-single-machine">Interactive job submissions in a single machine</h4>
 
 <p>To simplify the short read alignment execution for the user, the command-line 
-can be run with the <em><code class="highlighter-rouge">runCommandline</code></em> function.
+can be run with the <em><code class="language-plaintext highlighter-rouge">runCommandline</code></em> function.
 The execution will be on a single machine without submitting to a queuing system 
 of a computer cluster. This way, the input FASTQ files will be processed sequentially. 
-By default <em><code class="highlighter-rouge">runCommandline</code></em> auto detects SAM file outputs and converts them 
-to sorted and indexed BAM files, using internally the <code class="highlighter-rouge">Rsamtools</code> package 
-(Martin Morgan et al., 2019). Besides, <em><code class="highlighter-rouge">runCommandline</code></em> allows the user to create a dedicated
+By default <em><code class="language-plaintext highlighter-rouge">runCommandline</code></em> auto detects SAM file outputs and converts them 
+to sorted and indexed BAM files, using internally the <code class="language-plaintext highlighter-rouge">Rsamtools</code> package 
+(Martin Morgan et al., 2019). Besides, <em><code class="language-plaintext highlighter-rouge">runCommandline</code></em> allows the user to create a dedicated
 results folder for each workflow and a sub-folder for each sample 
 defined in the <em>targets</em> file. This includes all the output and log files for each 
 step. When these options are used, the output location will be updated by default 
@@ -766,29 +765,29 @@ and can be assigned to the same object.</p>
 </span></code></pre></div></div>
 
 <p>If available, multiple CPU cores can be used for processing each file. The number
-of CPU cores (here 4) to use for each process is defined in the <em><code class="highlighter-rouge">*.yml</code></em> file. 
-With <em><code class="highlighter-rouge">yamlinput(args)['thread']</code></em> one can return this value from the <em><code class="highlighter-rouge">SYSargs2</code></em> object.</p>
+of CPU cores (here 4) to use for each process is defined in the <em><code class="language-plaintext highlighter-rouge">*.yml</code></em> file. 
+With <em><code class="language-plaintext highlighter-rouge">yamlinput(args)['thread']</code></em> one can return this value from the <em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> object.</p>
 
 <h4 id="parallelization-on-clusters">Parallelization on clusters</h4>
 
 <p>Alternatively, the computation can be greatly accelerated by processing many files 
 in parallel using several compute nodes of a cluster, where a scheduling/queuing
-system is used for load balancing. For this the <em><code class="highlighter-rouge">clusterRun</code></em> function submits 
+system is used for load balancing. For this the <em><code class="language-plaintext highlighter-rouge">clusterRun</code></em> function submits 
 the computing requests to the scheduler using the run specifications
-defined by <em><code class="highlighter-rouge">runCommandline</code></em>.</p>
+defined by <em><code class="language-plaintext highlighter-rouge">runCommandline</code></em>.</p>
 
 <p>To avoid over-subscription of CPU cores on the compute nodes, the value from 
-<em><code class="highlighter-rouge">yamlinput(args)['thread']</code></em> is passed on to the submission command, here <em><code class="highlighter-rouge">ncpus</code></em> 
-in the <em><code class="highlighter-rouge">resources</code></em> list object. The number of independent parallel cluster 
-processes is defined under the <em><code class="highlighter-rouge">Njobs</code></em> argument. The following example will run 
+<em><code class="language-plaintext highlighter-rouge">yamlinput(args)['thread']</code></em> is passed on to the submission command, here <em><code class="language-plaintext highlighter-rouge">ncpus</code></em> 
+in the <em><code class="language-plaintext highlighter-rouge">resources</code></em> list object. The number of independent parallel cluster 
+processes is defined under the <em><code class="language-plaintext highlighter-rouge">Njobs</code></em> argument. The following example will run 
 18 processes in parallel using for each 4 CPU cores. If the resources available
 on a cluster allow running all 18 processes at the same time then the shown sample 
-submission will utilize in total 72 CPU cores. Note, <em><code class="highlighter-rouge">clusterRun</code></em> can be used
-with most queueing systems as it is based on utilities from the <em><code class="highlighter-rouge">batchtools</code></em> 
-package which supports the use of template files (<em><code class="highlighter-rouge">*.tmpl</code></em>) for defining the 
+submission will utilize in total 72 CPU cores. Note, <em><code class="language-plaintext highlighter-rouge">clusterRun</code></em> can be used
+with most queueing systems as it is based on utilities from the <em><code class="language-plaintext highlighter-rouge">batchtools</code></em> 
+package which supports the use of template files (<em><code class="language-plaintext highlighter-rouge">*.tmpl</code></em>) for defining the 
 run parameters of different schedulers. To run the following code, one needs to 
-have both a conf file (see <em><code class="highlighter-rouge">.batchtools.conf.R</code></em> samples <a href="https://mllg.github.io/batchtools/">here</a>) 
-and a template file (see <em><code class="highlighter-rouge">*.tmpl</code></em> samples <a href="https://github.com/mllg/batchtools/tree/master/inst/templates">here</a>) 
+have both a conf file (see <em><code class="language-plaintext highlighter-rouge">.batchtools.conf.R</code></em> samples <a href="https://mllg.github.io/batchtools/">here</a>) 
+and a template file (see <em><code class="language-plaintext highlighter-rouge">*.tmpl</code></em> samples <a href="https://github.com/mllg/batchtools/tree/master/inst/templates">here</a>) 
 for the queueing available on a system. The following example uses the sample 
 conf and template files for the Slurm scheduler provided by this package.</p>
 
@@ -810,17 +809,17 @@ conf and template files for the Slurm scheduler provided by this package.</p>
 <h4 id="create-new-targets-file">Create new targets file</h4>
 
 <p>To establish the connectivity to the next workflow step, one can write a new
-<em>targets</em> file with the <em><code class="highlighter-rouge">writeTargetsout</code></em> function. The new <em>targets</em> file
-serves as input to the next <em><code class="highlighter-rouge">loadWorkflow</code></em> and <em><code class="highlighter-rouge">renderWF</code></em> call.</p>
+<em>targets</em> file with the <em><code class="language-plaintext highlighter-rouge">writeTargetsout</code></em> function. The new <em>targets</em> file
+serves as input to the next <em><code class="language-plaintext highlighter-rouge">loadWorkflow</code></em> and <em><code class="language-plaintext highlighter-rouge">renderWF</code></em> call.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">clt</span><span class="p">(</span><span class="n">args</span><span class="p">))</span><span class="w">
 </span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"default"</span><span class="p">,</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
     </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h4 id="alignment-with-hisat2-and-samtools">Alignment with <code class="highlighter-rouge">HISAT2</code> and <code class="highlighter-rouge">SAMtools</code></h4>
+<h4 id="alignment-with-hisat2-and-samtools">Alignment with <code class="language-plaintext highlighter-rouge">HISAT2</code> and <code class="language-plaintext highlighter-rouge">SAMtools</code></h4>
 
-<p>Alternatively, it possible to build an workflow with <code class="highlighter-rouge">HISAT2</code> and <code class="highlighter-rouge">SAMtools</code>.</p>
+<p>Alternatively, it possible to build an workflow with <code class="language-plaintext highlighter-rouge">HISAT2</code> and <code class="language-plaintext highlighter-rouge">SAMtools</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/workflow-hisat2/workflow-hisat2-se"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -832,12 +831,12 @@ serves as input to the next <em><code class="highlighter-rouge">loadWorkflow</co
 </span><span class="n">output</span><span class="p">(</span><span class="n">WF</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<h3 id="alignment-with-tophat2">Alignment with <em><code class="highlighter-rouge">Tophat2</code></em></h3>
+<h3 id="alignment-with-tophat2">Alignment with <em><code class="language-plaintext highlighter-rouge">Tophat2</code></em></h3>
 
 <p>The NGS reads of this project can also be aligned against the reference genome 
-sequence using <code class="highlighter-rouge">Bowtie2/TopHat2</code> (Kim et al., 2013; Langmead et al., 2012).</p>
+sequence using <code class="language-plaintext highlighter-rouge">Bowtie2/TopHat2</code> (Kim et al., 2013; Langmead et al., 2012).</p>
 
-<p>Build <em><code class="highlighter-rouge">Bowtie2</code></em> index.</p>
+<p>Build <em><code class="language-plaintext highlighter-rouge">Bowtie2</code></em> index.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/bowtie2/bowtie2-idx"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bowtie2-index.cwl"</span><span class="p">,</span><span class="w"> </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bowtie2-index.yml"</span><span class="p">,</span><span class="w"> 
@@ -850,8 +849,8 @@ sequence using <code class="highlighter-rouge">Bowtie2/TopHat2</code> (Kim et al
 </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>The parameter settings of the aligner are defined in the <code class="highlighter-rouge">tophat2-mapping-pe.cwl</code> 
-and <code class="highlighter-rouge">tophat2-mapping-pe.yml</code> files. The following shows how to construct the 
+<p>The parameter settings of the aligner are defined in the <code class="language-plaintext highlighter-rouge">tophat2-mapping-pe.cwl</code> 
+and <code class="language-plaintext highlighter-rouge">tophat2-mapping-pe.yml</code> files. The following shows how to construct the 
 corresponding <em>SYSargs2</em> object, here <em>tophat2PE</em>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetsPE</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targetsPE.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -884,9 +883,9 @@ corresponding <em>SYSargs2</em> object, here <em>tophat2PE</em>.</p>
     </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h3 id="alignment-with-bowtie2-eg-for-mirna-profiling">Alignment with <em><code class="highlighter-rouge">Bowtie2</code></em> (<em>e.g.</em> for miRNA profiling)</h3>
+<h3 id="alignment-with-bowtie2-eg-for-mirna-profiling">Alignment with <em><code class="language-plaintext highlighter-rouge">Bowtie2</code></em> (<em>e.g.</em> for miRNA profiling)</h3>
 
-<p>The following example runs <em><code class="highlighter-rouge">Bowtie2</code></em> as a single process without submitting it to a cluster.</p>
+<p>The following example runs <em><code class="language-plaintext highlighter-rouge">Bowtie2</code></em> as a single process without submitting it to a cluster.</p>
 
 <p>Building the index:</p>
 
@@ -935,7 +934,7 @@ corresponding <em>SYSargs2</em> object, here <em>tophat2PE</em>.</p>
     </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h3 id="alignment-with-bwa-mem-eg-for-var-seq">Alignment with <em><code class="highlighter-rouge">BWA-MEM</code></em> (<em>e.g.</em> for VAR-Seq)</h3>
+<h3 id="alignment-with-bwa-mem-eg-for-var-seq">Alignment with <em><code class="language-plaintext highlighter-rouge">BWA-MEM</code></em> (<em>e.g.</em> for VAR-Seq)</h3>
 
 <p>The following example runs BWA-MEM as a single process without submitting it to a cluster. ##TODO: add reference</p>
 
@@ -982,7 +981,7 @@ corresponding <em>SYSargs2</em> object, here <em>tophat2PE</em>.</p>
     </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h3 id="alignment-with-rsubread-eg-for-rna-seq">Alignment with <em><code class="highlighter-rouge">Rsubread</code></em> (<em>e.g.</em> for RNA-Seq)</h3>
+<h3 id="alignment-with-rsubread-eg-for-rna-seq">Alignment with <em><code class="language-plaintext highlighter-rouge">Rsubread</code></em> (<em>e.g.</em> for RNA-Seq)</h3>
 
 <p>The following example shows how one can use within the \Rpackage{systemPipeR} environment the R-based aligner \Rpackage{Rsubread}, allowing running from R or command-line.</p>
 
@@ -1015,9 +1014,9 @@ corresponding <em>SYSargs2</em> object, here <em>tophat2PE</em>.</p>
     </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h3 id="alignment-with-gsnap-eg-for-var-seq-and-rna-seq">Alignment with <em><code class="highlighter-rouge">gsnap</code></em> (<em>e.g.</em> for VAR-Seq and RNA-Seq)</h3>
+<h3 id="alignment-with-gsnap-eg-for-var-seq-and-rna-seq">Alignment with <em><code class="language-plaintext highlighter-rouge">gsnap</code></em> (<em>e.g.</em> for VAR-Seq and RNA-Seq)</h3>
 
-<p>Another R-based short read aligner is <em><code class="highlighter-rouge">gsnap</code></em> from the <em><code class="highlighter-rouge">gmapR</code></em> package (Wu et al., 2010). 
+<p>Another R-based short read aligner is <em><code class="language-plaintext highlighter-rouge">gsnap</code></em> from the <em><code class="language-plaintext highlighter-rouge">gmapR</code></em> package (Wu et al., 2010). 
 The code sample below introduces how to run this aligner on multiple nodes of a compute cluster.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">## Build the index:</span><span class="w">
@@ -1060,7 +1059,7 @@ The code sample below introduces how to run this aligner on multiple nodes of a 
 
 <h2 id="create-symbolic-links-for-viewing-bam-files-in-igv">Create symbolic links for viewing BAM files in IGV</h2>
 
-<p>The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with Http access needs to be available in the user account (<em>e.g.</em> <em><code class="highlighter-rouge">home/publichtml</code></em>) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, <em><code class="highlighter-rouge">htmldir</code></em> defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the <code class="highlighter-rouge">_urlfile</code>_ argument.</p>
+<p>The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with Http access needs to be available in the user account (<em>e.g.</em> <em><code class="language-plaintext highlighter-rouge">home/publichtml</code></em>) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, <em><code class="language-plaintext highlighter-rouge">htmldir</code></em> defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the <code class="language-plaintext highlighter-rouge">_urlfile</code>_ argument.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"somedir/"</span><span class="p">),</span><span class="w"> </span><span class="n">urlbase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://myserver.edu/~username/"</span><span class="p">,</span><span class="w"> 
     </span><span class="n">urlfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"IGVurl.txt"</span><span class="p">)</span><span class="w">
@@ -1068,7 +1067,7 @@ The code sample below introduces how to run this aligner on multiple nodes of a 
 
 <h2 id="read-counting-for-mrna-profiling-experiments">Read counting for mRNA profiling experiments</h2>
 
-<p>Create <em><code class="highlighter-rouge">txdb</code></em> (needs to be done only once).</p>
+<p>Create <em><code class="language-plaintext highlighter-rouge">txdb</code></em> (needs to be done only once).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">GenomicFeatures</span><span class="p">)</span><span class="w">
 </span><span class="n">txdb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">makeTxDbFromGFF</span><span class="p">(</span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data/tair10.gff"</span><span class="p">,</span><span class="w"> </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gff"</span><span class="p">,</span><span class="w"> </span><span class="n">dataSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"TAIR"</span><span class="p">,</span><span class="w"> 
@@ -1076,7 +1075,7 @@ The code sample below introduces how to run this aligner on multiple nodes of a 
 </span><span class="n">saveDb</span><span class="p">(</span><span class="n">txdb</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./data/tair10.sqlite"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>The following performs read counting with <em><code class="highlighter-rouge">summarizeOverlaps</code></em> in parallel mode with multiple cores.</p>
+<p>The following performs read counting with <em><code class="language-plaintext highlighter-rouge">summarizeOverlaps</code></em> in parallel mode with multiple cores.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">BiocParallel</span><span class="p">)</span><span class="w">
 </span><span class="n">txdb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadDb</span><span class="p">(</span><span class="s2">"./data/tair10.sqlite"</span><span class="p">)</span><span class="w">
@@ -1101,9 +1100,9 @@ The code sample below introduces how to run this aligner on multiple nodes of a 
     </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>Please note, in addition to read counts this step generates RPKM normalized expression values. For most statistical differential expression or abundance analysis methods, such as <em><code class="highlighter-rouge">edgeR</code></em> or <em><code class="highlighter-rouge">DESeq2</code></em>, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, <em>e.g.</em> manually comparing the expression levels of different genes or features.</p>
+<p>Please note, in addition to read counts this step generates RPKM normalized expression values. For most statistical differential expression or abundance analysis methods, such as <em><code class="language-plaintext highlighter-rouge">edgeR</code></em> or <em><code class="language-plaintext highlighter-rouge">DESeq2</code></em>, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, <em>e.g.</em> manually comparing the expression levels of different genes or features.</p>
 
-<p>Read counting with <em><code class="highlighter-rouge">summarizeOverlaps</code></em> using multiple nodes of a cluster.</p>
+<p>Read counting with <em><code class="language-plaintext highlighter-rouge">summarizeOverlaps</code></em> using multiple nodes of a cluster.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">BiocParallel</span><span class="p">)</span><span class="w">
 </span><span class="n">f</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -1145,7 +1144,7 @@ The code sample below introduces how to run this aligner on multiple nodes of a 
 </span></code></pre></div></div>
 
 <p>The following shows the first four lines of the sample alignment stats file 
-provided by the <em><code class="highlighter-rouge">systemPipeR</code></em> package. For simplicity the number of PE reads 
+provided by the <em><code class="language-plaintext highlighter-rouge">systemPipeR</code></em> package. For simplicity the number of PE reads 
 is multiplied here by 2 to approximate proper alignment frequencies where each 
 read in a pair is counted.</p>
 
@@ -1153,7 +1152,7 @@ read in a pair is counted.</p>
     </span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   FileName Nreads2x Nalign Perc_Aligned Nalign_Primary Perc_Aligned_Primary
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##   FileName Nreads2x Nalign Perc_Aligned Nalign_Primary Perc_Aligned_Primary
 ## 1      M1A   192918 177961     92.24697         177961             92.24697
 ## 2      M1B   197484 159378     80.70426         159378             80.70426
 ## 3      A1A   189870 176055     92.72397         176055             92.72397
@@ -1209,7 +1208,7 @@ read in a pair is counted.</p>
 
 <h2 id="correlation-analysis-of-samples">Correlation analysis of samples</h2>
 
-<p>The following computes the sample-wise Spearman correlation coefficients from the <em><code class="highlighter-rouge">rlog</code></em> (regularized-logarithm) transformed expression values generated with the <em><code class="highlighter-rouge">DESeq2</code></em> package. After transformation to a distance matrix, hierarchical clustering is performed with the <em><code class="highlighter-rouge">hclust</code></em> function and the result is plotted as a dendrogram (<a href="./results/sample_tree.pdf">sample_tree.pdf</a>).</p>
+<p>The following computes the sample-wise Spearman correlation coefficients from the <em><code class="language-plaintext highlighter-rouge">rlog</code></em> (regularized-logarithm) transformed expression values generated with the <em><code class="language-plaintext highlighter-rouge">DESeq2</code></em> package. After transformation to a distance matrix, hierarchical clustering is performed with the <em><code class="language-plaintext highlighter-rouge">hclust</code></em> function and the result is plotted as a dendrogram (<a href="./results/sample_tree.pdf">sample_tree.pdf</a>).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">DESeq2</span><span class="p">,</span><span class="w"> </span><span class="n">warn.conflicts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">quietly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="n">ape</span><span class="p">,</span><span class="w"> </span><span class="n">warn.conflicts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
@@ -1219,7 +1218,7 @@ read in a pair is counted.</p>
 </span><span class="n">dds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DESeqDataSetFromMatrix</span><span class="p">(</span><span class="n">countData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countDF</span><span class="p">,</span><span class="w"> </span><span class="n">colData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">colData</span><span class="p">,</span><span class="w"> </span><span class="n">design</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">condition</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
 ## design formula are characters, converting to factors
 </code></pre></div></div>
 
@@ -1233,7 +1232,7 @@ read in a pair is counted.</p>
 
 <div align="center">**Figure 6:** Correlation dendrogram of samples for _`rlog`_ values. </div>
 
-<p>Alternatively, the clustering can be performed with <em><code class="highlighter-rouge">RPKM</code></em> normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar.</p>
+<p>Alternatively, the clustering can be performed with <em><code class="language-plaintext highlighter-rouge">RPKM</code></em> normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rpkmDFeBygpath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"rpkmDFeByg.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">rpkmDFeByg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">rpkmDFeBygpath</span><span class="p">,</span><span class="w"> </span><span class="n">check.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
@@ -1244,15 +1243,15 @@ read in a pair is counted.</p>
     </span><span class="n">no.margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<h2 id="deg-analysis-with-edger">DEG analysis with <em><code class="highlighter-rouge">edgeR</code></em></h2>
+<h2 id="deg-analysis-with-edger">DEG analysis with <em><code class="language-plaintext highlighter-rouge">edgeR</code></em></h2>
 
-<p>The following <em><code class="highlighter-rouge">run_edgeR</code></em> function is a convenience wrapper for
+<p>The following <em><code class="language-plaintext highlighter-rouge">run_edgeR</code></em> function is a convenience wrapper for
 identifying differentially expressed genes (DEGs) in batch mode with
-<em><code class="highlighter-rouge">edgeR</code></em>’s GML method (Robinson et al., 2010) for any number of
-pairwise sample comparisons specified under the <em><code class="highlighter-rouge">cmp</code></em> argument. Users
+<em><code class="language-plaintext highlighter-rouge">edgeR</code></em>’s GML method (Robinson et al., 2010) for any number of
+pairwise sample comparisons specified under the <em><code class="language-plaintext highlighter-rouge">cmp</code></em> argument. Users
 are strongly encouraged to consult the 
-<a href="\href{http://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf"><em><code class="highlighter-rouge">edgeR</code></em></a> vignette 
-for more detailed information on this topic and how to properly run <em><code class="highlighter-rouge">edgeR</code></em> 
+<a href="\href{http://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf"><em><code class="language-plaintext highlighter-rouge">edgeR</code></em></a> vignette 
+for more detailed information on this topic and how to properly run <em><code class="language-plaintext highlighter-rouge">edgeR</code></em> 
 on data sets with more complex experimental designs.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="n">targetspath</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)</span><span class="w">
@@ -1260,7 +1259,7 @@ on data sets with more complex experimental designs.</p>
 </span><span class="n">cmp</span><span class="p">[[</span><span class="m">1</span><span class="p">]]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##       [,1]  [,2] 
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##       [,1]  [,2] 
 ##  [1,] "M1"  "A1" 
 ##  [2,] "M1"  "V1" 
 ##  [3,] "A1"  "V1" 
@@ -1278,10 +1277,10 @@ on data sets with more complex experimental designs.</p>
     </span><span class="n">mdsplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Disp = 0.21829 , BCV = 0.4672
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Disp = 0.21829 , BCV = 0.4672
 </code></pre></div></div>
 
-<p>Filter and plot DEG results for up and down-regulated genes. Because of the small size of the toy data set used by this vignette, the <em>FDR</em> value has been set to a relatively high threshold (here 10%). More commonly used <em>FDR</em> cutoffs are 1% or 5%. The definition of ‘<em>up</em>’ and ‘<em>down</em>’ is given in the corresponding help file. To open it, type <em><code class="highlighter-rouge">?filterDEGs</code></em> in the R console.</p>
+<p>Filter and plot DEG results for up and down-regulated genes. Because of the small size of the toy data set used by this vignette, the <em>FDR</em> value has been set to a relatively high threshold (here 10%). More commonly used <em>FDR</em> cutoffs are 1% or 5%. The definition of ‘<em>up</em>’ and ‘<em>down</em>’ is given in the corresponding help file. To open it, type <em><code class="language-plaintext highlighter-rouge">?filterDEGs</code></em> in the R console.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DEG_list</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">filterDEGs</span><span class="p">(</span><span class="n">degDF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edgeDF</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Fold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">FDR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">))</span><span class="w">
 </span></code></pre></div></div>
@@ -1293,34 +1292,34 @@ on data sets with more complex experimental designs.</p>
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">names</span><span class="p">(</span><span class="n">DEG_list</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] "UporDown" "Up"       "Down"     "Summary"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## [1] "UporDown" "Up"       "Down"     "Summary"
 </code></pre></div></div>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">DEG_list</span><span class="o">$</span><span class="n">Summary</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##       Comparisons Counts_Up_or_Down Counts_Up Counts_Down
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##       Comparisons Counts_Up_or_Down Counts_Up Counts_Down
 ## M1-A1       M1-A1                 0         0           0
 ## M1-V1       M1-V1                 1         1           0
 ## A1-V1       A1-V1                 1         1           0
 ## M6-A6       M6-A6                 0         0           0
 </code></pre></div></div>
 
-<h2 id="deg-analysis-with-deseq2">DEG analysis with <em><code class="highlighter-rouge">DESeq2</code></em></h2>
+<h2 id="deg-analysis-with-deseq2">DEG analysis with <em><code class="language-plaintext highlighter-rouge">DESeq2</code></em></h2>
 
-<p>The following <em><code class="highlighter-rouge">run_DESeq2</code></em> function is a convenience wrapper for
-identifying DEGs in batch mode with <em><code class="highlighter-rouge">DESeq2</code></em> (Love et al., 2014) for any number of
-pairwise sample comparisons specified under the <em><code class="highlighter-rouge">cmp</code></em> argument. Users
+<p>The following <em><code class="language-plaintext highlighter-rouge">run_DESeq2</code></em> function is a convenience wrapper for
+identifying DEGs in batch mode with <em><code class="language-plaintext highlighter-rouge">DESeq2</code></em> (Love et al., 2014) for any number of
+pairwise sample comparisons specified under the <em><code class="language-plaintext highlighter-rouge">cmp</code></em> argument. Users
 are strongly encouraged to consult the 
-<a href="http://www.bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf"><em><code class="highlighter-rouge">DESeq2</code></em></a> vignette
-for more detailed information on this topic and how to properly run <em><code class="highlighter-rouge">DESeq2</code></em> 
+<a href="http://www.bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf"><em><code class="language-plaintext highlighter-rouge">DESeq2</code></em></a> vignette
+for more detailed information on this topic and how to properly run <em><code class="language-plaintext highlighter-rouge">DESeq2</code></em> 
 on data sets with more complex experimental designs.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">degseqDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">run_DESeq2</span><span class="p">(</span><span class="n">countDF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">countDFeByg</span><span class="p">,</span><span class="w"> </span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets</span><span class="p">,</span><span class="w"> </span><span class="n">cmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cmp</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> 
     </span><span class="n">independent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
 ## design formula are characters, converting to factors
 </code></pre></div></div>
 
@@ -1335,7 +1334,7 @@ on data sets with more complex experimental designs.</p>
 
 <h2 id="venn-diagrams">Venn Diagrams</h2>
 
-<p>The function <em><code class="highlighter-rouge">overLapper</code></em> can compute Venn intersects for large numbers of sample sets (up to 20 or more) and <em><code class="highlighter-rouge">vennPlot</code></em> can plot 2-5 way Venn diagrams. A useful feature is the possibility to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).</p>
+<p>The function <em><code class="language-plaintext highlighter-rouge">overLapper</code></em> can compute Venn intersects for large numbers of sample sets (up to 20 or more) and <em><code class="language-plaintext highlighter-rouge">vennPlot</code></em> can plot 2-5 way Venn diagrams. A useful feature is the possibility to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">vennsetup</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">overLapper</span><span class="p">(</span><span class="n">DEG_list</span><span class="o">$</span><span class="n">Up</span><span class="p">[</span><span class="m">6</span><span class="o">:</span><span class="m">9</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"vennsets"</span><span class="p">)</span><span class="w">
 </span><span class="n">vennsetdown</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">overLapper</span><span class="p">(</span><span class="n">DEG_list</span><span class="o">$</span><span class="n">Down</span><span class="p">[</span><span class="m">6</span><span class="o">:</span><span class="m">9</span><span class="p">],</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"vennsets"</span><span class="p">)</span><span class="w">
@@ -1351,7 +1350,7 @@ on data sets with more complex experimental designs.</p>
 
 <h3 id="obtain-gene-to-go-mappings">Obtain gene-to-GO mappings</h3>
 
-<p>The following shows how to obtain gene-to-GO mappings from <em><code class="highlighter-rouge">biomaRt</code></em> (here for <em>A. thaliana</em>) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor’s  <em><code class="highlighter-rouge">*.db</code></em> genome annotation packages or GO annotation files provided by various genome databases. For each annotation, this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the <em><code class="highlighter-rouge">load</code></em> function as shown in the next subsection.</p>
+<p>The following shows how to obtain gene-to-GO mappings from <em><code class="language-plaintext highlighter-rouge">biomaRt</code></em> (here for <em>A. thaliana</em>) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor’s  <em><code class="language-plaintext highlighter-rouge">*.db</code></em> genome annotation packages or GO annotation files provided by various genome databases. For each annotation, this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the <em><code class="language-plaintext highlighter-rouge">load</code></em> function as shown in the next subsection.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"biomaRt"</span><span class="p">)</span><span class="w">
 </span><span class="n">listMarts</span><span class="p">()</span><span class="w">  </span><span class="c1"># To choose BioMart database</span><span class="w">
@@ -1377,7 +1376,7 @@ on data sets with more complex experimental designs.</p>
 
 <h3 id="batch-go-term-enrichment-analysis">Batch GO term enrichment analysis</h3>
 
-<p>Apply the enrichment analysis to the DEG sets obtained in the above differential expression analysis. Note, in the following example the <em>FDR</em> filter is set here to an unreasonably high value, simply because of the small size of the toy data set used in this vignette. Batch enrichment analysis of many gene sets is performed with the <em><code class="highlighter-rouge">GOCluster_Report</code></em> function. When <em><code class="highlighter-rouge">method="all"</code></em>, it returns all GO terms passing the p-value cutoff specified under the <em><code class="highlighter-rouge">cutoff</code></em> arguments. When <em><code class="highlighter-rouge">method="slim"</code></em>, it returns only the GO terms specified under the <em><code class="highlighter-rouge">myslimv</code></em> argument. The given example shows how one can obtain such a GO slim vector from BioMart for a specific organism.</p>
+<p>Apply the enrichment analysis to the DEG sets obtained in the above differential expression analysis. Note, in the following example the <em>FDR</em> filter is set here to an unreasonably high value, simply because of the small size of the toy data set used in this vignette. Batch enrichment analysis of many gene sets is performed with the <em><code class="language-plaintext highlighter-rouge">GOCluster_Report</code></em> function. When <em><code class="language-plaintext highlighter-rouge">method="all"</code></em>, it returns all GO terms passing the p-value cutoff specified under the <em><code class="language-plaintext highlighter-rouge">cutoff</code></em> arguments. When <em><code class="language-plaintext highlighter-rouge">method="slim"</code></em>, it returns only the GO terms specified under the <em><code class="language-plaintext highlighter-rouge">myslimv</code></em> argument. The given example shows how one can obtain such a GO slim vector from BioMart for a specific organism.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s2">"data/GO/catdb.RData"</span><span class="p">)</span><span class="w">
 </span><span class="n">DEG_list</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">filterDEGs</span><span class="p">(</span><span class="n">degDF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edgeDF</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Fold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">FDR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">),</span><span class="w"> </span><span class="n">plot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
@@ -1402,7 +1401,7 @@ on data sets with more complex experimental designs.</p>
 
 <h3 id="plot-batch-go-term-results">Plot batch GO term results</h3>
 
-<p>The <em><code class="highlighter-rouge">data.frame</code></em> generated by <em><code class="highlighter-rouge">GOCluster_Report</code></em> can be plotted with the <em><code class="highlighter-rouge">goBarplot</code></em> function. Because of the variable size of the sample sets, it may not always be desirable to show the results from different DEG sets in the same bar plot. Plotting single sample sets is achieved by subsetting the input data frame as shown in the first line of the following example.</p>
+<p>The <em><code class="language-plaintext highlighter-rouge">data.frame</code></em> generated by <em><code class="language-plaintext highlighter-rouge">GOCluster_Report</code></em> can be plotted with the <em><code class="language-plaintext highlighter-rouge">goBarplot</code></em> function. Because of the variable size of the sample sets, it may not always be desirable to show the results from different DEG sets in the same bar plot. Plotting single sample sets is achieved by subsetting the input data frame as shown in the first line of the following example.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">BatchResultslim</span><span class="p">[</span><span class="n">grep</span><span class="p">(</span><span class="s2">"M6-V6_up_down"</span><span class="p">,</span><span class="w"> </span><span class="n">BatchResultslim</span><span class="o">$</span><span class="n">CLID</span><span class="p">),</span><span class="w"> </span><span class="p">]</span><span class="w">
 </span><span class="n">gos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">BatchResultslim</span><span class="w">
@@ -1418,7 +1417,7 @@ on data sets with more complex experimental designs.</p>
 
 <h2 id="clustering-and-heat-maps">Clustering and heat maps</h2>
 
-<p>The following example performs hierarchical clustering on the <em><code class="highlighter-rouge">rlog</code></em> transformed expression matrix subsetted by the DEGs identified in the 
+<p>The following example performs hierarchical clustering on the <em><code class="language-plaintext highlighter-rouge">rlog</code></em> transformed expression matrix subsetted by the DEGs identified in the 
 above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster join.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">pheatmap</span><span class="p">)</span><span class="w">
@@ -1449,8 +1448,8 @@ above differential expression analysis. It uses a Pearson correlation-based dist
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat May  2 14:44:00 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Thu Jan 28 13:38:31 2021<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

@@ -1,0 +1,2496 @@
+\documentclass[14pt,]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+
+\usepackage{longtable,booktabs}
+\usepackage{graphicx}
+% grffile has become a legacy package: https://ctan.org/pkg/grffile
+\IfFileExists{grffile.sty}{%
+\usepackage{grffile}
+}{}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+\RequirePackage[]{/home/dcassol/R/x86_64-pc-linux-gnu-library/4.1/BiocStyle/resources/tex/Bioconductor}
+
+\bioctitle[]{systemPipeR: Workflow design and reporting generation environment}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+\author{Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{Last update: 28 January, 2021}
+
+% code highlighting
+\definecolor{fgcolor}{rgb}{0.251, 0.251, 0.251}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.816,0.125,0.439}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.251,0.627,0.251}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.502,0.502,0.502}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.251,0.251,0.251}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.125,0.125,0.941}{#1}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.251,0.251,0.251}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.878,0.439,0.125}{#1}}%
+\let\hlipl\hlkwb
+%
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+%
+\newenvironment{Shaded}{\begin{myshaded}}{\end{myshaded}}
+% set background for result chunks
+\let\oldverbatim\verbatim
+\renewenvironment{verbatim}{\color{codecolor}\begin{myshaded}\begin{oldverbatim}}{\end{oldverbatim}\end{myshaded}}
+%
+\newcommand{\KeywordTok}[1]{\hlkwd{#1}}
+\newcommand{\DataTypeTok}[1]{\hlkwc{#1}}
+\newcommand{\DecValTok}[1]{\hlnum{#1}}
+\newcommand{\BaseNTok}[1]{\hlnum{#1}}
+\newcommand{\FloatTok}[1]{\hlnum{#1}}
+\newcommand{\ConstantTok}[1]{\hlnum{#1}}
+\newcommand{\CharTok}[1]{\hlstr{#1}}
+\newcommand{\SpecialCharTok}[1]{\hlstr{#1}}
+\newcommand{\StringTok}[1]{\hlstr{#1}}
+\newcommand{\VerbatimStringTok}[1]{\hlstr{#1}}
+\newcommand{\SpecialStringTok}[1]{\hlstr{#1}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\CommentTok}[1]{\hlcom{#1}}
+\newcommand{\DocumentationTok}[1]{\hlcom{#1}}
+\newcommand{\AnnotationTok}[1]{\hlcom{#1}}
+\newcommand{\CommentVarTok}[1]{\hlcom{#1}}
+\newcommand{\OtherTok}[1]{{#1}}
+\newcommand{\FunctionTok}[1]{\hlstd{#1}}
+\newcommand{\VariableTok}[1]{\hlstd{#1}}
+\newcommand{\ControlFlowTok}[1]{\hlkwd{#1}}
+\newcommand{\OperatorTok}[1]{\hlopt{#1}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textit{#1}}
+\newcommand{\AttributeTok}[1]{{#1}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\InformationTok}[1]{\textcolor{messagecolor}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor{warningcolor}{#1}}
+\newcommand{\AlertTok}[1]{\textcolor{errorcolor}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor{errorcolor}{#1}}
+\newcommand{\NormalTok}[1]{\hlstd{#1}}
+%
+\AtBeginDocument{\bibliographystyle{/home/dcassol/R/x86_64-pc-linux-gnu-library/4.1/BiocStyle/resources/tex/unsrturl}}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\begin{document}
+\maketitle
+
+\packageVersion{systemPipeR 1.25.3}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+}
+\textbf{Note:} if you use \emph{\texttt{systemPipeR}} in published research, please cite:
+Backman, T.W.H and Girke, T. (2016). \emph{\texttt{systemPipeR}}: NGS Workflow and Report Generation Environment. \emph{BMC Bioinformatics}, 17: 388. \href{https://doi.org/10.1186/s12859-016-1241-0}{10.1186/s12859-016-1241-0}.
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+\href{http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html}{\emph{\texttt{systemPipeR}}} provides flexible utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next-generation sequencing (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq (H Backman and Girke 2016). Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, \emph{\texttt{systemPipeR}} can be used with most command-line aligners such as \texttt{BWA} (Li 2013; Li and Durbin 2009), \texttt{HISAT2} (Kim, Langmead, and Salzberg 2015), \texttt{TopHat2} (Kim et al. 2013) and \texttt{Bowtie2} (Langmead and Salzberg 2012), as well as the R-based NGS aligners \href{http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html}{\emph{\texttt{Rsubread}}} (Liao, Smyth, and Shi 2013) and \href{http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html}{\emph{\texttt{gsnap (gmapR)}}} (Wu and Nacu 2010). Efficient handling of complex sample sets (\emph{e.g.} FASTQ/BAM files) and experimental designs are facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area (Lawrence et al. 2013).
+
+The main motivation and advantages of using \emph{\texttt{systemPipeR}} for complex data analysis tasks are:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Facilitates the design of complex NGS workflows involving multiple R/Bioconductor packages
+\item
+  Common workflow interface for different NGS applications
+\item
+  Makes NGS analysis with Bioconductor utilities more accessible to new users
+\item
+  Simplifies usage of command-line software from within R
+\item
+  Reduces the complexity of using compute clusters for R and command-line software
+\item
+  Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes
+\item
+  Improves reproducibility by automating analyses and generation of analysis reports
+\end{enumerate}
+
+\textbf{Figure 1:} Relevant features in \emph{\texttt{systemPipeR}}.
+Workflow design concepts are illustrated under (A \& B). Examples of
+\emph{systemPipeR's} visualization functionalities are given under (C).
+
+A central concept for designing workflows within the \emph{\texttt{systemPipeR}} environment
+is the use of workflow management containers. In previous versions, \emph{\texttt{systemPipeR}}
+used a custom command-line interface called \emph{\texttt{SYSargs}} (see Figure 3) and for
+this purpose will continue to be supported for some time. With the latest \href{http://www.bioconductor.org/packages/release/bioc/html/systemPipeR.html}{Bioconductor Release 3.9},
+we are adopting for this functionality the widely used community standard
+\href{https://www.commonwl.org/}{Common Workflow Language} (CWL) for describing
+analysis workflows in a generic and reproducible manner, introducing \emph{\texttt{SYSargs2}}
+workflow control class (see Figure 2). Using this community standard in \emph{\texttt{systemPipeR}}
+has many advantages. For instance, the integration of CWL allows running \emph{\texttt{systemPipeR}}
+workflows from a single specification instance either entirely from within R, from various command-line
+wrappers (e.g., \emph{cwl-runner}) or from other languages (\emph{, e.g.,} Bash or Python).
+\emph{\texttt{systemPipeR}} includes support for both command-line and R/Bioconductor software
+as well as resources for containerization, parallel evaluations on computer clusters
+along with the automated generation of interactive analysis reports.
+
+An important feature of \emph{\texttt{systemPipeR\textquotesingle{}s}} CWL interface is that it provides two
+options to run command-line tools and workflows based on CWL. First, one can
+run CWL in its native way via an R-based wrapper utility for \emph{cwl-runner} or
+\emph{cwl-tools} (CWL-based approach). Second, one can run workflows using CWL's
+command-line and workflow instructions from within R (R-based approach). In the
+latter case the same CWL workflow definition files (\emph{e.g.} \texttt{*.cwl} and \texttt{*.yml})
+are used but rendered and executed entirely with R functions defined by
+\emph{\texttt{systemPipeR}}, and thus use CWL mainly as a command-line and workflow
+definition format rather than software to run workflows. In this regard
+\emph{\texttt{systemPipeR}} also provides several convenience functions that are useful for
+designing and debugging workflows, such as a command-line rendering function to
+retrieve the exact command-line strings for each data set and processing step
+prior to running a command-line.
+
+This overview introduces the design of a new CWL S4 class in \emph{\texttt{systemPipeR}},
+as well as the custom command-line interface, combined with the overview of all
+the common analysis steps of NGS experiments.
+
+\hypertarget{workflow-design-structure-using-sysargs2}{%
+\subsection{\texorpdfstring{Workflow design structure using \emph{\texttt{SYSargs2}}}{Workflow design structure using SYSargs2}}\label{workflow-design-structure-using-sysargs2}}
+
+The flexibility of \emph{\texttt{systemPipeR\textquotesingle{}s}} new interface workflow control class is the driving factor behind
+the use of as many steps necessary for the analysis, as well as the connection
+between command-line- or R-based software. The connectivity among all
+workflow steps is achieved by the \emph{\texttt{SYSargs2}} workflow control class (see Figure 3).
+This S4 class is a list-like container where each instance stores all the
+input/output paths and parameter components required for a particular data
+analysis step. \emph{\texttt{SYSargs2}} instances are generated by two constructor
+functions, \emph{loadWorkflow} and \emph{renderWF}, using as data input \emph{targets} or
+\emph{yaml} files as well as two \emph{cwl} parameter files (for details see below). When
+running preconfigured workflows, the only input the user needs to provide is
+the initial \emph{targets} file containing the paths to the input files (\emph{e.g.}
+FASTQ) along with unique sample labels. Subsequent targets instances are
+created automatically. The parameters required for running command-line
+software is provided by the parameter (\emph{.cwl}) files described below.
+
+We also introduce the \emph{\texttt{SYSargs2Pipe}} class that organizes one or many
+SYSargs2 containers in a single compound object capturing all information
+required to run, control and monitor complex workflows from start to finish. This
+design enhances the \emph{\texttt{systemPipeR}} workflow framework with a generalized,
+flexible, and robust design.
+
+\textbf{Figure 2:} Workflow steps with input/output file operations are controlled by
+\emph{\texttt{SYSargs2}} objects. Each \emph{\texttt{SYSargs2}} instance is constructed from one \emph{targets}
+and two \emph{param} files. The only input provided by the user is the initial \emph{targets}
+file. Subsequent \emph{targets} instances are created automatically, from the previous
+output files. Any number of predefined or custom workflow steps are supported. One
+or many \emph{\texttt{SYSargs2}} objects are organized in an \emph{\texttt{SYSargs2Pipe}} container.
+
+\hypertarget{workflow-management-using-sysargslist}{%
+\subsection{\texorpdfstring{Workflow Management using \emph{\texttt{SYSargsList}}}{Workflow Management using SYSargsList}}\label{workflow-management-using-sysargslist}}
+
+\textbf{systemPipeR} allows creation (multi-step analyses) and execution of workflow entirely for R, with control, flexibility, and scalability of the all process. The execution of the workflow can be sent to a HPC, can be parallelizes, accelerating results acquisition. A workflow management system provides an infrastructure for the set-up, performance and monitoring of a defined sequence of tasks, arranged as a workflow application.
+
+\textbf{Figure 3:} Workflow Management using \emph{\texttt{SYSargsList}}.
+
+\hypertarget{workflow-design-structure-using-sysargs-previous-version}{%
+\subsection{\texorpdfstring{Workflow design structure using \emph{\texttt{SYSargs}}: Previous version}{Workflow design structure using SYSargs: Previous version}}\label{workflow-design-structure-using-sysargs-previous-version}}
+
+Instances of this S4 object class are constructed by the \emph{\texttt{systemArgs}} function
+from two simple tabular files: a \emph{\texttt{targets}} file and a \emph{\texttt{param}} file. The latter
+is optional for workflow steps lacking command-line software. Typically, a
+\emph{\texttt{SYSargs}} instance stores all sample-level inputs as well as the paths to the
+corresponding outputs generated by command-line- or R-based software generating
+sample-level output files, such as read preprocessors (trimmed/filtered FASTQ
+files), aligners (SAM/BAM files), variant callers (VCF/BCF files) or peak callers
+(BED/WIG files). Each sample level input/output operation uses its own \emph{\texttt{SYSargs}}
+instance. The outpaths of \emph{\texttt{SYSargs}} usually define the sample inputs for the
+next \emph{\texttt{SYSargs}} instance. This connectivity is established by writing the
+outpaths with the \emph{\texttt{writeTargetsout}} function to a new \emph{\texttt{targets}} file that
+serves as input to the next \emph{\texttt{systemArgs}} call. Typically, the user has to
+provide only the initial \emph{\texttt{targets}} file. All downstream \emph{\texttt{targets}} files are
+generated automatically. By chaining several \emph{\texttt{SYSargs}} steps together one can
+construct complex workflows involving many sample-level input/output file
+operations with any combination of command-line or R-based software.
+
+\textbf{Figure 4:} Workflow design structure of \emph{\texttt{systemPipeR}} using \emph{\texttt{SYSargs}}.
+
+\hypertarget{getting-started}{%
+\section{Getting Started}\label{getting-started}}
+
+\hypertarget{installation}{%
+\subsection{Installation}\label{installation}}
+
+The R software for running \href{http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html}{\emph{\texttt{systemPipeR}}} can be downloaded from \href{http://cran.at.r-project.org/}{\emph{CRAN}}. The \emph{\texttt{systemPipeR}} environment can be installed from the R console using the \href{https://cran.r-project.org/web/packages/BiocManager/index.html}{\emph{\texttt{BiocManager::install}}} command. The associated data package \href{http://www.bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html}{\emph{\texttt{systemPipeRdata}}} can be installed the same way. The latter is a helper package for generating \emph{\texttt{systemPipeR}} workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{if}\NormalTok{ (}\OperatorTok{!}\KeywordTok{requireNamespace}\NormalTok{(}\StringTok{"BiocManager"}\NormalTok{, }\DataTypeTok{quietly =} \OtherTok{TRUE}\NormalTok{)) }\KeywordTok{install.packages}\NormalTok{(}\StringTok{"BiocManager"}\NormalTok{)}
+\NormalTok{BiocManager}\OperatorTok{::}\KeywordTok{install}\NormalTok{(}\StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{BiocManager}\OperatorTok{::}\KeywordTok{install}\NormalTok{(}\StringTok{"systemPipeRdata"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Please note that if you desire to use a third-party command line tool, the particular tool and dependencies need to be installed and exported in your PATH. See \protect\hyperlink{tools}{details}.
+
+\hypertarget{loading-package-and-documentation}{%
+\subsection{Loading package and documentation}\label{loading-package-and-documentation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(}\StringTok{"systemPipeR"}\NormalTok{)  }\CommentTok{# Loads the package}
+\KeywordTok{library}\NormalTok{(}\DataTypeTok{help =} \StringTok{"systemPipeR"}\NormalTok{)  }\CommentTok{# Lists package info}
+\KeywordTok{vignette}\NormalTok{(}\StringTok{"systemPipeR"}\NormalTok{)  }\CommentTok{# Opens vignette}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{load-sample-data-and-workflow-templates}{%
+\subsection{Load sample data and workflow templates}\label{load-sample-data-and-workflow-templates}}
+
+The mini sample FASTQ files used by this overview vignette as well as the
+associated workflow reporting vignettes can be loaded via the \emph{\texttt{systemPipeRdata}}
+package as shown below. The chosen data set \href{http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938}{\texttt{SRP010938}}
+obtains 18 paired-end (PE) read sets from \emph{Arabidposis thaliana} (Howard et al. 2013).
+To minimize processing time during testing, each FASTQ file has been subsetted to
+90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides
+of each chromosome of the \emph{A. thalina} genome. The corresponding reference genome
+sequence (FASTA) and its GFF annotation files (provided in the same download) have
+been truncated accordingly. This way the entire test sample data set requires
+less than 200MB disk storage space. A PE read set has been chosen for this test
+data set for flexibility, because it can be used for testing both types of analysis
+routines requiring either SE (single-end) reads or PE reads.
+
+The following generates a fully populated \emph{\texttt{systemPipeR}} workflow environment
+(here for RNA-Seq) in the current working directory of an R session. At this time
+the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq, and Ribo-Seq.
+Templates for additional NGS applications will be provided in the future.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"rnaseq"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"rnaseq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+If you desire run this tutorial with your data set, please follow the instruction here:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"new"}\NormalTok{, }\DataTypeTok{mydirname =} \StringTok{"FEB_project"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{workflow-template-from-an-individuals-package}{%
+\subsubsection{Workflow template from an individual's package}\label{workflow-template-from-an-individuals-package}}
+
+The package provides pre-configured workflows and reporting templates for a wide range of NGS applications that are listed \href{https://github.com/tgirke/systemPipeR/tree/devel\#workflow}{here}. Additional workflow templates will be provided in the future.
+If you desire to use an individual package and version, follow the instruction below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{package_repo =} \StringTok{"systemPipeR/systemPipeRIBOseq"}\NormalTok{, }\DataTypeTok{ref =} \StringTok{"master"}\NormalTok{, }
+    \DataTypeTok{subdir =} \OtherTok{NULL}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{package_repo =} \StringTok{"systemPipeR/systemPipeRNAseq"}\NormalTok{, }\DataTypeTok{ref =} \StringTok{"singleMachine"}\NormalTok{, }
+    \DataTypeTok{subdir =} \OtherTok{NULL}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{directory-structure}{%
+\subsection{Directory Structure}\label{directory-structure}}
+
+The working environment of the sample data loaded in the previous step contains
+the following pre-configured directory structure (Figure 4). Directory names are indicated
+in {\textbf{\emph{green}}}. Users can change this
+structure as needed, but need to adjust the code in their workflows
+accordingly.
+
+\begin{itemize}
+\tightlist
+\item
+  {\emph{\textbf{workflow/}}} (\emph{e.g.} \emph{rnaseq/})
+
+  \begin{itemize}
+  \tightlist
+  \item
+    This is the root directory of the R session running the workflow.
+  \item
+    Run script ( \emph{*.Rmd}) and sample annotation (\emph{targets.txt}) files are located here.
+  \item
+    Note, this directory can have any name (\emph{e.g.} {\emph{\textbf{rnaseq}}}, {\emph{\textbf{varseq}}}). Changing its name does not require any modifications in the run script(s).
+  \item
+    \textbf{Important subdirectories}:
+
+    \begin{itemize}
+    \tightlist
+    \item
+      {\emph{\textbf{param/}}}
+
+      \begin{itemize}
+      \tightlist
+      \item
+        Stores non-CWL parameter files such as: \emph{*.param}, \emph{*.tmpl} and \emph{*.run.sh}. These files are only required for backwards compatibility to run old workflows using the previous custom command-line interface.
+      \item
+        {\emph{\textbf{param/cwl/}}}: This subdirectory stores all the CWL parameter files. To organize workflows, each can have its own subdirectory, where all \texttt{CWL param} and \texttt{input.yml} files need to be in the same subdirectory.
+      \end{itemize}
+    \item
+      {\emph{\textbf{data/}} }
+
+      \begin{itemize}
+      \tightlist
+      \item
+        FASTQ files
+      \item
+        FASTA file of reference (\emph{e.g.} reference genome)
+      \item
+        Annotation files
+      \item
+        etc.
+      \end{itemize}
+    \item
+      {\emph{\textbf{results/}}}
+
+      \begin{itemize}
+      \tightlist
+      \item
+        Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
+      \item
+        Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\textbf{Figure 5:} \emph{systemPipeR's} preconfigured directory structure.
+
+The following parameter files are included in each workflow template:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \emph{\texttt{targets.txt}}: initial one provided by user; downstream \emph{\texttt{targets\_*.txt}} files are generated automatically
+\item
+  \emph{\texttt{*.param/cwl}}: defines parameter for input/output file operations, \emph{e.g.}:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \emph{\texttt{hisat2-se/hisat2-mapping-se.cwl}}
+  \item
+    \emph{\texttt{hisat2-se/hisat2-mapping-se.yml}}
+  \end{itemize}
+\item
+  \emph{\texttt{*\_run.sh}}: optional bash scripts
+\item
+  Configuration files for computer cluster environments (skip on single machines):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \emph{\texttt{.batchtools.conf.R}}: defines the type of scheduler for \emph{\texttt{batchtools}} pointing to template file of cluster, and located in user's home directory
+  \item
+    \emph{\texttt{*.tmpl}}: specifies parameters of scheduler used by a system, \emph{e.g.} Torque, SGE, Slurm, etc.
+  \end{itemize}
+\end{enumerate}
+
+\hypertarget{structure-of-targets-file}{%
+\subsection{\texorpdfstring{Structure of \emph{\texttt{targets}} file}{Structure of targets file}}\label{structure-of-targets-file}}
+
+The \emph{\texttt{targets}} file defines all input files (\emph{e.g.} FASTQ, BAM, BCF) and sample
+comparisons of an analysis workflow. The following shows the format of a sample
+\emph{\texttt{targets}} file included in the package. It also can be viewed and downloaded
+from \emph{\texttt{systemPipeR}}'s GitHub repository \href{https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt}{here}.
+In a target file with a single type of input files, here FASTQ files of single-end (SE) reads, the first three columns are mandatory including their column
+names, while it is four mandatory columns for FASTQ files of PE reads. All
+subsequent columns are optional and any number of additional columns can be added as needed.
+
+Users should note here, the usage of targets files is optional when using
+\emph{systemPipeR's} new CWL interface. They can be replaced by a standard YAML
+input file used by CWL. Since for organizing experimental variables targets
+files are extremely useful and user-friendly. Thus, we encourage users to keep using
+them.
+
+\hypertarget{structure-of-targets-file-for-single-end-se-samples}{%
+\subsubsection{\texorpdfstring{Structure of \emph{\texttt{targets}} file for single-end (SE) samples}{Structure of targets file for single-end (SE) samples}}\label{structure-of-targets-file-for-single-end-se-samples}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeR)}
+\NormalTok{targetspath <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\KeywordTok{read.delim}\NormalTok{(targetspath, }\DataTypeTok{comment.char =} \StringTok{"#"}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{, ]}
+\CommentTok{##                      FileName SampleName Factor SampleLong Experiment}
+\CommentTok{## 1 ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A          1}
+\CommentTok{## 2 ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B          1}
+\CommentTok{## 3 ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A          1}
+\CommentTok{## 4 ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B          1}
+\CommentTok{##          Date}
+\CommentTok{## 1 23-Mar-2012}
+\CommentTok{## 2 23-Mar-2012}
+\CommentTok{## 3 23-Mar-2012}
+\CommentTok{## 4 23-Mar-2012}
+\end{Highlighting}
+\end{Shaded}
+
+To work with custom data, users need to generate a \emph{\texttt{targets}} file containing
+the paths to their own FASTQ files and then provide under \emph{\texttt{targetspath}} the
+path to the corresponding \emph{\texttt{targets}} file.
+
+\hypertarget{structure-of-targets-file-for-paired-end-pe-samples}{%
+\subsubsection{\texorpdfstring{Structure of \emph{\texttt{targets}} file for paired-end (PE) samples}{Structure of targets file for paired-end (PE) samples}}\label{structure-of-targets-file-for-paired-end-pe-samples}}
+
+For paired-end (PE) samples, the structure of the targets file is similar, where
+users need to provide two FASTQ path columns: \emph{\texttt{FileName1}} and \emph{\texttt{FileName2}}
+with the paths to the PE FASTQ files.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targetspath <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\KeywordTok{read.delim}\NormalTok{(targetspath, }\DataTypeTok{comment.char =} \StringTok{"#"}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{]}
+\CommentTok{##                     FileName1                   FileName2 SampleName Factor}
+\CommentTok{## 1 ./data/SRR446027_1.fastq.gz ./data/SRR446027_2.fastq.gz        M1A     M1}
+\CommentTok{## 2 ./data/SRR446028_1.fastq.gz ./data/SRR446028_2.fastq.gz        M1B     M1}
+\CommentTok{##   SampleLong Experiment}
+\CommentTok{## 1  Mock.1h.A          1}
+\CommentTok{## 2  Mock.1h.B          1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{sample-comparisons}{%
+\subsubsection{Sample comparisons}\label{sample-comparisons}}
+
+Sample comparisons are defined in the header lines of the \emph{\texttt{targets}} file
+starting with `\texttt{\# \textless{}CMP\textgreater{}}'.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{readLines}\NormalTok{(targetspath)[}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{]}
+\CommentTok{## [1] "# Project ID: Arabidopsis - Pseudomonas alternative splicing study (SRA: SRP010938; PMID: 24098335)"                                                                              }
+\CommentTok{## [2] "# The following line(s) allow to specify the contrasts needed for comparative analyses, such as DEG identification. All possible comparisons can be specified with 'CMPset: ALL'."}
+\CommentTok{## [3] "# <CMP> CMPset1: M1-A1, M1-V1, A1-V1, M6-A6, M6-V6, A6-V6, M12-A12, M12-V12, A12-V12"                                                                                             }
+\CommentTok{## [4] "# <CMP> CMPset2: ALL"}
+\end{Highlighting}
+\end{Shaded}
+
+The function \emph{\texttt{readComp}} imports the comparison information and stores it in a
+\emph{\texttt{list}}. Alternatively, \emph{\texttt{readComp}} can obtain the comparison information from
+the corresponding \emph{\texttt{SYSargs}} object (see below). Note, these header lines are
+optional. They are mainly useful for controlling comparative analyses according
+to certain biological expectations, such as identifying differentially expressed
+genes in RNA-Seq experiments based on simple pair-wise comparisons.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{readComp}\NormalTok{(}\DataTypeTok{file =}\NormalTok{ targetspath, }\DataTypeTok{format =} \StringTok{"vector"}\NormalTok{, }\DataTypeTok{delim =} \StringTok{"-"}\NormalTok{)}
+\CommentTok{## $CMPset1}
+\CommentTok{## [1] "M1-A1"   "M1-V1"   "A1-V1"   "M6-A6"   "M6-V6"   "A6-V6"   "M12-A12"}
+\CommentTok{## [8] "M12-V12" "A12-V12"}
+\CommentTok{## }
+\CommentTok{## $CMPset2}
+\CommentTok{##  [1] "M1-A1"   "M1-V1"   "M1-M6"   "M1-A6"   "M1-V6"   "M1-M12"  "M1-A12" }
+\CommentTok{##  [8] "M1-V12"  "A1-V1"   "A1-M6"   "A1-A6"   "A1-V6"   "A1-M12"  "A1-A12" }
+\CommentTok{## [15] "A1-V12"  "V1-M6"   "V1-A6"   "V1-V6"   "V1-M12"  "V1-A12"  "V1-V12" }
+\CommentTok{## [22] "M6-A6"   "M6-V6"   "M6-M12"  "M6-A12"  "M6-V12"  "A6-V6"   "A6-M12" }
+\CommentTok{## [29] "A6-A12"  "A6-V12"  "V6-M12"  "V6-A12"  "V6-V12"  "M12-A12" "M12-V12"}
+\CommentTok{## [36] "A12-V12"}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{structure-of-the-new-param-files-and-construct-sysargs2-container}{%
+\subsection{\texorpdfstring{Structure of the new \emph{\texttt{param}} files and construct \emph{\texttt{SYSargs2}} container}{Structure of the new param files and construct SYSargs2 container}}\label{structure-of-the-new-param-files-and-construct-sysargs2-container}}
+
+\emph{\texttt{SYSargs2}} stores all the information and instructions needed for processing
+a set of input files with a single or many command-line steps within a workflow
+(\emph{i.e.} several components of the software or several independent software tools).
+The \emph{\texttt{SYSargs2}} object is created and fully populated with the \emph{loadWF}
+and \emph{renderWF} functions, respectively.
+
+In CWL, files with the extension \emph{\texttt{.cwl}} define the parameters of a chosen
+command-line step or workflow, while files with the extension \emph{\texttt{.yml}} define
+the input variables of command-line steps. Note, input variables provided
+by a \emph{targets} file can be passed on to a \emph{\texttt{SYSargs2}} instance via the \emph{inputvars}
+argument of the \emph{renderWF} function.
+
+The following imports a \emph{\texttt{.cwl}} file (here \emph{\texttt{hisat2-mapping-se.cwl}}) for running
+the short read aligner HISAT2 (Kim, Langmead, and Salzberg 2015). The \emph{loadWorkflow} and \emph{renderWF}
+functions render the proper command-line strings for each sample and software tool.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeR)}
+\NormalTok{targets <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/hisat2/hisat2-se"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{WF <-}\StringTok{ }\KeywordTok{loadWF}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{wf_file =} \StringTok{"hisat2-mapping-se.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"hisat2-mapping-se.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+
+\NormalTok{WF <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(WF, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Several accessor methods are available that are named after the slot names of the \emph{\texttt{SYSargs2}} object.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(WF)}
+\CommentTok{##  [1] "targets"       "targetsheader" "modules"       "wf"           }
+\CommentTok{##  [5] "clt"           "yamlinput"     "cmdlist"       "input"        }
+\CommentTok{##  [9] "output"        "cwlfiles"      "inputvars"}
+\end{Highlighting}
+\end{Shaded}
+
+Of particular interest is the \emph{\texttt{cmdlist()}} method. It constructs the system
+commands for running command-line software as specified by a given \emph{\texttt{.cwl}}
+file combined with the paths to the input samples (\emph{e.g.} FASTQ files) provided
+by a \emph{\texttt{targets}} file. The example below shows the \emph{\texttt{cmdlist()}} output for
+running HISAT2 on the first SE read sample. Evaluating the output of
+\emph{\texttt{cmdlist()}} can be very helpful for designing and debugging \emph{\texttt{.cwl}} files
+of new command-line software or changing the parameter settings of existing
+ones.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{cmdlist}\NormalTok{(WF)[}\DecValTok{1}\NormalTok{]}
+\CommentTok{## $M1A}
+\CommentTok{## $M1A$`hisat2-mapping-se`}
+\CommentTok{## [1] "hisat2 -S ./results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"}
+\end{Highlighting}
+\end{Shaded}
+
+The output components of \emph{\texttt{SYSargs2}} define the expected output files for
+each step in the workflow; some of which are the input for the next workflow step,
+here next \emph{\texttt{SYSargs2}} instance (see Figure 2).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{output}\NormalTok{(WF)[}\DecValTok{1}\NormalTok{]}
+\CommentTok{## $M1A}
+\CommentTok{## $M1A$`hisat2-mapping-se`}
+\CommentTok{## [1] "./results/M1A.sam"}
+\KeywordTok{modules}\NormalTok{(WF)}
+\CommentTok{##        module1 }
+\CommentTok{## "hisat2/2.1.0"}
+\KeywordTok{targets}\NormalTok{(WF)[}\DecValTok{1}\NormalTok{]}
+\CommentTok{## $M1A}
+\CommentTok{## $M1A$FileName}
+\CommentTok{## [1] "./data/SRR446027_1.fastq.gz"}
+\CommentTok{## }
+\CommentTok{## $M1A$SampleName}
+\CommentTok{## [1] "M1A"}
+\CommentTok{## }
+\CommentTok{## $M1A$Factor}
+\CommentTok{## [1] "M1"}
+\CommentTok{## }
+\CommentTok{## $M1A$SampleLong}
+\CommentTok{## [1] "Mock.1h.A"}
+\CommentTok{## }
+\CommentTok{## $M1A$Experiment}
+\CommentTok{## [1] 1}
+\CommentTok{## }
+\CommentTok{## $M1A$Date}
+\CommentTok{## [1] "23-Mar-2012"}
+\KeywordTok{targets.as.df}\NormalTok{(}\KeywordTok{targets}\NormalTok{(WF))[}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{, }\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{]}
+\CommentTok{##                      FileName SampleName Factor SampleLong}
+\CommentTok{## 1 ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A}
+\CommentTok{## 2 ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B}
+\CommentTok{## 3 ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A}
+\CommentTok{## 4 ./data/SRR446030_1.fastq.gz        A1B     A1   Avr.1h.B}
+\KeywordTok{output}\NormalTok{(WF)[}\DecValTok{1}\NormalTok{]}
+\CommentTok{## $M1A}
+\CommentTok{## $M1A$`hisat2-mapping-se`}
+\CommentTok{## [1] "./results/M1A.sam"}
+\KeywordTok{cwlfiles}\NormalTok{(WF)}
+\CommentTok{## $cwl}
+\CommentTok{## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/4.1/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl"}
+\CommentTok{## }
+\CommentTok{## $yml}
+\CommentTok{## [1] "/home/dcassol/R/x86_64-pc-linux-gnu-library/4.1/systemPipeR/extdata/cwl/hisat2/hisat2-se/hisat2-mapping-se.yml"}
+\CommentTok{## }
+\CommentTok{## $steps}
+\CommentTok{## [1] "hisat2-mapping-se"}
+\KeywordTok{inputvars}\NormalTok{(WF)}
+\CommentTok{## $FileName}
+\CommentTok{## [1] "_FASTQ_PATH1_"}
+\CommentTok{## }
+\CommentTok{## $SampleName}
+\CommentTok{## [1] "_SampleName_"}
+\end{Highlighting}
+\end{Shaded}
+
+In an `R-centric' rather than a `CWL-centric' workflow design the connectivity
+among workflow steps is established by writing all relevant output with the
+\emph{writeTargetsout} function to a new targets file that serves as input to the
+next \emph{loadWorkflow} and \emph{renderWF} call. By chaining several \emph{\texttt{SYSargs2}} steps
+together one can construct complex workflows involving many sample-level
+input/output file operations with any combination of command-line or R-based
+software. Alternatively, a CWL-centric workflow design can be used that defines
+all/most workflow steps with CWL workflow and parameter files. Due to time and
+space restrictions, the CWL-centric approach is not covered by this tutorial.
+
+\hypertarget{tools}{%
+\subsubsection{Third-party software tools}\label{tools}}
+
+Current, \emph{systemPipeR} provides the \emph{\texttt{param}} file templates for third-party software tools. Please check the listed software tools.
+
+\textbackslash{}begin\{tabu\} to \linewidth {>{\centering}X>{\centering}X>{\centering}X}
+\hline
+Tool Name \& Description \& Step\textbackslash{}
+\hline
+[BCFtools](\url{https://samtools.github.io/bcftools/howtos/index.html}) \& BCFtools is a program for variant calling and manipulating files in the Variant Call Format (VCF) and its binary counterpart BCF. \& \cellcolor[HTML]{FF6A6A}{\textcolor{white}{\textbf{Variant Discovery}}}\textbackslash{}
+\hline
+[Bismark](\url{https://www.bioinformatics.babraham.ac.uk/projects/bismark/}) \& Bismark is a program to map bisulfite treated sequencing reads to a genome of interest and perform methylation calls in a single step. \& \cellcolor[HTML]{98B58B}{\textcolor{white}{\textbf{Bisulfite mapping}}}\textbackslash{}
+\hline
+[Blast](\url{https://www.ncbi.nlm.nih.gov/books/NBK279690/}) \& BLAST finds regions of similarity between biological sequences. \& \cellcolor[HTML]{BD997F}{\textcolor{white}{\textbf{Blast}}}\textbackslash{}
+\hline
+[Bowtie2](\url{http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml}) \& Bowtie 2 is an ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences. \& \cellcolor[HTML]{8FBC8F}{\textcolor{white}{\textbf{Alignment}}}\textbackslash{}
+\hline
+[Busco](\url{https://busco.ezlab.org/}) \& BUSCO assesses genome assembly and annotation completeness with Benchmarking Universal Single-Copy Orthologs. \& \cellcolor[HTML]{D98576}{\textcolor{white}{\textbf{Quality}}}\textbackslash{}
+\hline
+[bwa](\url{http://bio-bwa.sourceforge.net/bwa.shtml}) \& BWA is a software package for mapping low-divergent sequences against a large reference genome, such as the human genome.~ \& \cellcolor[HTML]{8FBC8F}{\textcolor{white}{\textbf{Alignment}}}\textbackslash{}
+\hline
+[Fastqc](\url{https://www.bioinformatics.babraham.ac.uk/projects/fastqc/}) \& FastQC is a quality control tool for high throughput sequence data. \& \cellcolor[HTML]{D98576}{\textcolor{white}{\textbf{Quality}}}\textbackslash{}
+\hline
+[FASTX-Toolkit](\url{http://hannonlab.cshl.edu/fastx_toolkit/commandline.html}) \& FASTX-Toolkit is a collection of command line tools for Short-Reads FASTA/FASTQ files preprocessing. \& \cellcolor[HTML]{EC7770}{\textcolor{white}{\textbf{Read Preprocessing}}}\textbackslash{}
+\hline
+[GATK](\url{https://gatk.broadinstitute.org/hc/en-us}) \& Variant Discovery in High-Throughput Sequencing Data. \& \cellcolor[HTML]{FF6A6A}{\textcolor{white}{\textbf{Variant Discovery}}}\textbackslash{}
+\hline
+[Gsnap](\url{http://research-pub.gene.com/gmap/}) \& GSNAP is a genomic short-read nucleotide alignment program. \& \cellcolor[HTML]{8FBC8F}{\textcolor{white}{\textbf{Alignment}}}\textbackslash{}
+\hline
+[Hisat2](\url{https://ccb.jhu.edu/software/hisat2/manual.shtml}) \& HISAT2 is a fast and sensitive alignment program for mapping NGS reads (both DNA and RNA) to reference genomes. \& \cellcolor[HTML]{8FBC8F}{\textcolor{white}{\textbf{Alignment}}}\textbackslash{}
+\hline
+[Kallisto](\url{https://pachterlab.github.io/kallisto/manual}) \& kallisto is a program for quantifying abundances of transcripts from RNA-Seq data. \& \cellcolor[HTML]{E37E73}{\textcolor{white}{\textbf{Read counting}}}\textbackslash{}
+\hline
+[MACS2](\url{https://macs3-project.github.io/MACS/}) \& MACS2 identifies transcription factor binding sites in ChIP-seq data. \& \cellcolor[HTML]{C7937C}{\textcolor{white}{\textbf{Peak calling}}}\textbackslash{}
+\hline
+[Picard](\url{https://broadinstitute.github.io/picard/}) \& Picard is a set of command line tools for manipulating high-throughput sequencing (HTS) data and formats such as SAM/BAM/CRAM and VCF. \& \cellcolor[HTML]{B4A082}{\textcolor{white}{\textbf{Manipulating HTS data}}}\textbackslash{}
+\hline
+[Rsubread](\url{https://bioconductor.org/packages/release/bioc/vignettes/Rsubread/inst/doc/SubreadUsersGuide.pdf}) \& Rsubread is a Bioconductor software package that provides high-performance alignment and read counting functions for RNA-seq reads. \& \cellcolor[HTML]{8FBC8F}{\textcolor{white}{\textbf{Alignment}}}\textbackslash{}
+\hline
+[Samtools](\url{http://www.htslib.org/doc/samtools-1.2.html}) \& Samtools is a suite of programs for interacting with high-throughput sequencing data. \& \cellcolor[HTML]{D08C79}{\textcolor{white}{\textbf{Post-processing}}}\textbackslash{}
+\hline
+[STAR](\url{https://github.com/alexdobin/STAR}) \& STAR is an ultrafast universal RNA-seq aligner. \& \cellcolor[HTML]{8FBC8F}{\textcolor{white}{\textbf{Alignment}}}\textbackslash{}
+\hline
+[Tophat2](\url{https://ccb.jhu.edu/software/tophat/manual.shtml}) \& TopHat~is a fast splice junction mapper for RNA-Seq reads. \& \cellcolor[HTML]{8FBC8F}{\textcolor{white}{\textbf{Alignment}}}\textbackslash{}
+\hline
+[TransDecoder](\url{https://github.com/TransDecoder/TransDecoder/wiki}) \& TransDecoder identifies candidate coding regions within transcript sequences. \& \cellcolor[HTML]{ABA785}{\textcolor{white}{\textbf{Find Coding Regions}}}\textbackslash{}
+\hline
+[TransRate](\url{http://hibberdlab.com/transrate/}) \& Transrate is software for de-novo transcriptome assembly quality analysis. \& \cellcolor[HTML]{D98576}{\textcolor{white}{\textbf{Quality}}}\textbackslash{}
+\hline
+[Trim_galore](\url{https://github.com/FelixKrueger/TrimGalore}) \& Trim Galore~is a wrapper around~Cutadapt~and~FastQC~to consistently apply adapter and quality trimming to FastQ files. \& \cellcolor[HTML]{EC7770}{\textcolor{white}{\textbf{Read Preprocessing}}}\textbackslash{}
+\hline
+[Trimmomatic](\url{http://www.usadellab.org/cms/?page=trimmomatic}) \& Trimmomatic is a flexible read trimming tool for Illumina NGS data. \& \cellcolor[HTML]{EC7770}{\textcolor{white}{\textbf{Read Preprocessing}}}\textbackslash{}
+\hline
+[Trinity](\url{https://github.com/trinityrnaseq/trinityrnaseq/wiki}) \& Trinity assembles transcript sequences from Illumina RNA-Seq data. \& \cellcolor[HTML]{A1AE88}{\textcolor{white}{\textbf{denovo Transcriptome Assembly}}}\textbackslash{}
+\hline
+[Trinotate](\url{https://github.com/Trinotate/Trinotate.github.io/wiki}) \& Trinotate is a comprehensive annotation suite designed for automatic functional annotation of transcriptomes. \& \cellcolor[HTML]{F5706D}{\textcolor{white}{\textbf{Transcriptome Functional Annotation}}}\textbackslash{}
+\hline
+\textbackslash{}end\{tabu\}
+
+Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tryCL}\NormalTok{(}\DataTypeTok{command =} \StringTok{"grep"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{structure-of-param-file-and-sysargs-container-previous-version}{%
+\subsection{\texorpdfstring{Structure of \emph{\texttt{param}} file and \emph{\texttt{SYSargs}} container (Previous version)}{Structure of param file and SYSargs container (Previous version)}}\label{structure-of-param-file-and-sysargs-container-previous-version}}
+
+The \emph{\texttt{param}} file defines the parameters of a chosen command-line software.
+The following shows the format of a sample \emph{\texttt{param}} file provided by this package.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{parampath <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"tophat.param"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\KeywordTok{read.delim}\NormalTok{(parampath, }\DataTypeTok{comment.char =} \StringTok{"#"}\NormalTok{)}
+\CommentTok{##      PairSet         Name                                  Value}
+\CommentTok{## 1    modules         <NA>                          bowtie2/2.2.5}
+\CommentTok{## 2    modules         <NA>                          tophat/2.0.14}
+\CommentTok{## 3   software         <NA>                                 tophat}
+\CommentTok{## 4      cores           -p                                      4}
+\CommentTok{## 5      other         <NA> -g 1 --segment-length 25 -i 30 -I 3000}
+\CommentTok{## 6   outfile1           -o                            <FileName1>}
+\CommentTok{## 7   outfile1         path                             ./results/}
+\CommentTok{## 8   outfile1       remove                                   <NA>}
+\CommentTok{## 9   outfile1       append                                .tophat}
+\CommentTok{## 10  outfile1 outextension              .tophat/accepted_hits.bam}
+\CommentTok{## 11 reference         <NA>                    ./data/tair10.fasta}
+\CommentTok{## 12   infile1         <NA>                            <FileName1>}
+\CommentTok{## 13   infile1         path                                   <NA>}
+\CommentTok{## 14   infile2         <NA>                            <FileName2>}
+\CommentTok{## 15   infile2         path                                   <NA>}
+\end{Highlighting}
+\end{Shaded}
+
+The \emph{\texttt{systemArgs}} function imports the definitions of both the \emph{\texttt{param}} file
+and the \emph{\texttt{targets}} file, and stores all relevant information in a \emph{\texttt{SYSargs}}
+object (S4 class). To run the pipeline without command-line software, one can
+assign \emph{\texttt{NULL}} to \emph{\texttt{sysma}} instead of a \emph{\texttt{param}} file. In addition, one can
+start \emph{\texttt{systemPipeR}} workflows with pre-generated BAM files by providing a
+targets file where the \emph{\texttt{FileName}} column provides the paths to the BAM files.
+Note, in the following example the usage of \emph{\texttt{suppressWarnings()}} is only relevant for
+building this vignette. In typical workflows it should be removed.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targetspath <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{args <-}\StringTok{ }\KeywordTok{suppressWarnings}\NormalTok{(}\KeywordTok{systemArgs}\NormalTok{(}\DataTypeTok{sysma =}\NormalTok{ parampath, }\DataTypeTok{mytargets =}\NormalTok{ targetspath))}
+\NormalTok{args}
+\CommentTok{## An instance of 'SYSargs' for running 'tophat' on 18 samples}
+\end{Highlighting}
+\end{Shaded}
+
+Several accessor methods are available that are named after the slot names of the \emph{\texttt{SYSargs}} object.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(args)}
+\CommentTok{##  [1] "targetsin"     "targetsout"    "targetsheader" "modules"      }
+\CommentTok{##  [5] "software"      "cores"         "other"         "reference"    }
+\CommentTok{##  [9] "results"       "infile1"       "infile2"       "outfile1"     }
+\CommentTok{## [13] "sysargs"       "outpaths"}
+\end{Highlighting}
+\end{Shaded}
+
+Of particular interest is the \emph{\texttt{sysargs()}} method. It constructs the system
+commands for running command-lined software as specified by a given \emph{\texttt{param}}
+file combined with the paths to the input samples (\emph{e.g.} FASTQ files) provided
+by a \emph{\texttt{targets}} file. The example below shows the \emph{\texttt{sysargs()}} output for
+running TopHat2 on the first PE read sample. Evaluating the output of
+\emph{\texttt{sysargs()}} can be very helpful for designing and debugging \emph{\texttt{param}} files
+of new command-line software or changing the parameter settings of existing
+ones.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sysargs}\NormalTok{(args)[}\DecValTok{1}\NormalTok{]}
+\CommentTok{##                                                                                                                                                                                                                                                                                                                            M1A }
+\CommentTok{## "tophat -p 4 -g 1 --segment-length 25 -i 30 -I 3000 -o /home/dcassol/danielac@ucr.edu/projects/SPR/01282021/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat /home/dcassol/danielac@ucr.edu/projects/SPR/01282021/systemPipeR/_vignettes/10_Rworkflows/data/tair10.fasta ./data/SRR446027_1.fastq.gz "}
+\KeywordTok{modules}\NormalTok{(args)}
+\CommentTok{## [1] "bowtie2/2.2.5" "tophat/2.0.14"}
+\KeywordTok{cores}\NormalTok{(args)}
+\CommentTok{## [1] 4}
+\KeywordTok{outpaths}\NormalTok{(args)[}\DecValTok{1}\NormalTok{]}
+\CommentTok{##                                                                                                                                               M1A }
+\CommentTok{## "/home/dcassol/danielac@ucr.edu/projects/SPR/01282021/systemPipeR/_vignettes/10_Rworkflows/results/SRR446027_1.fastq.gz.tophat/accepted_hits.bam"}
+\end{Highlighting}
+\end{Shaded}
+
+The content of the \emph{\texttt{param}} file can also be returned as JSON object as follows (requires \emph{\texttt{rjson}} package).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{systemArgs}\NormalTok{(}\DataTypeTok{sysma =}\NormalTok{ parampath, }\DataTypeTok{mytargets =}\NormalTok{ targetspath, }\DataTypeTok{type =} \StringTok{"json"}\NormalTok{)}
+\CommentTok{## [1] "\{\textbackslash{}"modules\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"v2\textbackslash{}":\textbackslash{}"bowtie2/2.2.5\textbackslash{}",\textbackslash{}"n1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"v2\textbackslash{}":\textbackslash{}"tophat/2.0.14\textbackslash{}"\},\textbackslash{}"software\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"v1\textbackslash{}":\textbackslash{}"tophat\textbackslash{}"\},\textbackslash{}"cores\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"-p\textbackslash{}",\textbackslash{}"v1\textbackslash{}":\textbackslash{}"4\textbackslash{}"\},\textbackslash{}"other\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"v1\textbackslash{}":\textbackslash{}"-g 1 --segment-length 25 -i 30 -I 3000\textbackslash{}"\},\textbackslash{}"outfile1\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"-o\textbackslash{}",\textbackslash{}"v2\textbackslash{}":\textbackslash{}"<FileName1>\textbackslash{}",\textbackslash{}"n3\textbackslash{}":\textbackslash{}"path\textbackslash{}",\textbackslash{}"v4\textbackslash{}":\textbackslash{}"./results/\textbackslash{}",\textbackslash{}"n5\textbackslash{}":\textbackslash{}"remove\textbackslash{}",\textbackslash{}"v1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"n2\textbackslash{}":\textbackslash{}"append\textbackslash{}",\textbackslash{}"v3\textbackslash{}":\textbackslash{}".tophat\textbackslash{}",\textbackslash{}"n4\textbackslash{}":\textbackslash{}"outextension\textbackslash{}",\textbackslash{}"v5\textbackslash{}":\textbackslash{}".tophat/accepted_hits.bam\textbackslash{}"\},\textbackslash{}"reference\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"v1\textbackslash{}":\textbackslash{}"./data/tair10.fasta\textbackslash{}"\},\textbackslash{}"infile1\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"v2\textbackslash{}":\textbackslash{}"<FileName1>\textbackslash{}",\textbackslash{}"n1\textbackslash{}":\textbackslash{}"path\textbackslash{}",\textbackslash{}"v2\textbackslash{}":\textbackslash{}"\textbackslash{}"\},\textbackslash{}"infile2\textbackslash{}":\{\textbackslash{}"n1\textbackslash{}":\textbackslash{}"\textbackslash{}",\textbackslash{}"v2\textbackslash{}":\textbackslash{}"<FileName2>\textbackslash{}",\textbackslash{}"n1\textbackslash{}":\textbackslash{}"path\textbackslash{}",\textbackslash{}"v2\textbackslash{}":\textbackslash{}"\textbackslash{}"\}\}"}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{how-to-run-a-workflow}{%
+\section{How to run a Workflow}\label{how-to-run-a-workflow}}
+
+This tutorial introduces the basic ideas and tools needed to build a specific workflow from preconfigured templates.
+
+\hypertarget{load-sample-data-and-workflow-templates-1}{%
+\subsection{Load sample data and workflow templates}\label{load-sample-data-and-workflow-templates-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"rnaseq"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"rnaseq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{setup-and-requirements}{%
+\subsection{Setup and Requirements}\label{setup-and-requirements}}
+
+To go through this tutorial, you need the following software installed:
+
+\begin{itemize}
+\tightlist
+\item
+  R/\textgreater{}=3.6.2
+\item
+  systemPipeR R package (version 1.22)
+\item
+  Hisat2/2.1.0
+\end{itemize}
+
+If you desire to build your pipeline with any different software, make sure to have the respective software installed and configured in your PATH. To make sure if the configuration is right, you always can test as follow:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{tryCL}\NormalTok{(}\DataTypeTok{command =} \StringTok{"hisat2"}\NormalTok{)  }\CommentTok{## 'All set up, proceed!'}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{project-initialization}{%
+\subsection{Project Initialization}\label{project-initialization}}
+
+The Project management structure is essential, especially for reproducibility and efficiency in the analysis. Here we show how to construct an instance of this S4 object class by the \emph{\texttt{initWF}} function. The object of class \emph{\texttt{SYSarsgsList}} storing all the configuration information for the project and allows management and control at a high level.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{script <-}\StringTok{ "systemPipeRNAseq.Rmd"}
+\NormalTok{targetspath <-}\StringTok{ "targets.txt"}
+\NormalTok{sysargslist <-}\StringTok{ }\KeywordTok{initWF}\NormalTok{(}\DataTypeTok{script =}\NormalTok{ script, }\DataTypeTok{targets =}\NormalTok{ targetspath)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{project-initialization-in-a-temporary-directory}{%
+\subsection{Project Initialization in a Temporary Directory}\label{project-initialization-in-a-temporary-directory}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\NormalTok{script <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/workflows/rnaseq"}\NormalTok{, }\StringTok{"systemPipeRNAseq.Rmd"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeRdata"}\NormalTok{)}
+\NormalTok{targets <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{tempdir}\NormalTok{()}
+\NormalTok{SYSconfig <-}\StringTok{ }\KeywordTok{initProject}\NormalTok{(}\DataTypeTok{projPath =}\NormalTok{ dir_path, }\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{script =}\NormalTok{ script, }
+    \DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{sysargslist_temp <-}\StringTok{ }\KeywordTok{initWF}\NormalTok{(}\DataTypeTok{sysconfig =} \StringTok{"SYSconfig.yml"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{configuration-and-run-of-the-project}{%
+\subsection{Configuration and run of the project}\label{configuration-and-run-of-the-project}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sysargslist <-}\StringTok{ }\KeywordTok{configWF}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ sysargslist, }\DataTypeTok{input_steps =} \StringTok{"1:3"}\NormalTok{)}
+\NormalTok{sysargslist <-}\StringTok{ }\KeywordTok{runWF}\NormalTok{(}\DataTypeTok{sysargslist =}\NormalTok{ sysargslist, }\DataTypeTok{steps =} \StringTok{"ALL"}\NormalTok{)}
+\NormalTok{sysargslist <-}\StringTok{ }\KeywordTok{runWF}\NormalTok{(}\DataTypeTok{sysargslist =}\NormalTok{ sysargslist, }\DataTypeTok{steps =} \StringTok{"1:2"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{how-to-use-pipes-with-systempiper}{%
+\subsection{\texorpdfstring{How to Use Pipes with \emph{systemPipeR}}{How to Use Pipes with systemPipeR}}\label{how-to-use-pipes-with-systempiper}}
+
+At first encounter, you may wonder whether an operator such as \emph{\%\textgreater{}\%} can really be all that beneficial; but as you may notice, it semantically changes your code in a way that makes it more intuitive to both read and write.
+
+Consider the following example, in which the steps are the initialization, configuration and running the entire workflow.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeR)}
+\NormalTok{sysargslist <-}\StringTok{ }\KeywordTok{initWF}\NormalTok{(}\DataTypeTok{script =} \StringTok{"systemPipeRNAseq.Rmd"}\NormalTok{, }\DataTypeTok{overwrite =}\NormalTok{ T) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{configWF}\NormalTok{(}\DataTypeTok{input_steps =} \StringTok{"1:3"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{runWF}\NormalTok{(}\DataTypeTok{steps =} \StringTok{"1:2"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{how-to-run-the-workflow-on-a-cluster}{%
+\subsection{How to run the workflow on a cluster}\label{how-to-run-the-workflow-on-a-cluster}}
+
+This section of the tutorial provides an introduction to the usage of the \emph{systemPipeR} features on a cluster.
+
+Now open the R markdown script \texttt{*.Rmd}in your R IDE (\_e.g.\_vim-r or RStudio) and run the workflow as outlined below. If you work under Vim-R-Tmux, the following command sequence will connect the user in an
+interactive session with a node on the cluster. The code of the \texttt{Rmd}
+script can then be sent from Vim on the login (head) node to an open R session running
+on the corresponding computer node. This is important since Tmux sessions
+should not be run on the computer nodes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{q}\NormalTok{(}\StringTok{"no"}\NormalTok{)  }\CommentTok{# closes R session on head node}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{srun}\NormalTok{ --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l}
+\ExtensionTok{module}\NormalTok{ load R/3.4.2}
+\ExtensionTok{R}
+\end{Highlighting}
+\end{Shaded}
+
+Now check whether your R session is running on a computer node of the cluster and not on a head node.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{system}\NormalTok{(}\StringTok{"hostname"}\NormalTok{)  }\CommentTok{# should return name of a compute node starting with i or c }
+\KeywordTok{getwd}\NormalTok{()  }\CommentTok{# checks current working directory of R session}
+\KeywordTok{dir}\NormalTok{()  }\CommentTok{# returns content of current working directory}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{parallelization-on-clusters}{%
+\subsubsection{Parallelization on clusters}\label{parallelization-on-clusters}}
+
+Alternatively, the computation can be greatly accelerated by processing many files
+in parallel using several compute nodes of a cluster, where a scheduling/queuing
+system is used for load balancing. For this the \emph{\texttt{clusterRun}} function submits
+the computing requests to the scheduler using the run specifications
+defined by \emph{\texttt{runCommandline}}.
+
+To avoid over-subscription of CPU cores on the compute nodes, the value from
+\emph{\texttt{yamlinput(args){[}\textquotesingle{}thread\textquotesingle{}{]}}} is passed on to the submission command, here \emph{\texttt{ncpus}}
+in the \emph{\texttt{resources}} list object. The number of independent parallel cluster
+processes is defined under the \emph{\texttt{Njobs}} argument. The following example will run
+18 processes in parallel using for each 4 CPU cores. If the resources available
+on a cluster allow running all 18 processes at the same time then the shown sample
+submission will utilize in total 72 CPU cores. Note, \emph{\texttt{clusterRun}} can be used
+with most queueing systems as it is based on utilities from the \emph{\texttt{batchtools}}
+package which supports the use of template files (\emph{\texttt{*.tmpl}}) for defining the
+run parameters of different schedulers. To run the following code, one needs to
+have both a conf file (see \emph{\texttt{.batchtools.conf.R}} samples \href{https://mllg.github.io/batchtools/}{here})
+and a template file (see \emph{\texttt{*.tmpl}} samples \href{https://github.com/mllg/batchtools/tree/master/inst/templates}{here})
+for the queueing available on a system. The following example uses the sample
+conf and template files for the Slurm scheduler provided by this package.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(batchtools)}
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{clusterRun}\NormalTok{(args, }\DataTypeTok{FUN =}\NormalTok{ runCommandline, }\DataTypeTok{more.args =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ args, }\DataTypeTok{make_bam =} \OtherTok{TRUE}\NormalTok{, }
+    \DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{), }\DataTypeTok{conffile =} \StringTok{".batchtools.conf.R"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }
+    \DataTypeTok{Njobs =} \DecValTok{18}\NormalTok{, }\DataTypeTok{runid =} \StringTok{"01"}\NormalTok{, }\DataTypeTok{resourceList =}\NormalTok{ resources)}
+\KeywordTok{getStatus}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\KeywordTok{waitForJobs}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{workflow-steps-overview}{%
+\section{Workflow steps overview}\label{workflow-steps-overview}}
+
+\hypertarget{define-environment-settings-and-samples}{%
+\subsection{Define environment settings and samples}\label{define-environment-settings-and-samples}}
+
+A typical workflow starts with generating the expected working environment
+containing the proper directory structure, input files, and parameter settings.
+To simplify this task, one can load one of the existing NGS workflows templates
+provided by \emph{\texttt{systemPipeRdata}} into the current working directory. The
+following does this for the \emph{\texttt{rnaseq}} template. The name of the resulting
+workflow directory can be specified under the \emph{\texttt{mydirname}} argument. The
+default \emph{\texttt{NULL}} uses the name of the chosen workflow. An error is issued if a
+directory of the same name and path exists already. On Linux and OS X systems
+one can also create new workflow instances from the command-line of a terminal as shown
+\href{http://bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html\#generate-workflow-template}{here}.
+To apply workflows to custom data, the user needs to modify the \emph{\texttt{targets}} file and if
+necessary update the corresponding \emph{\texttt{.cwl}} and \emph{\texttt{.yml}} files. A collection of pre-generated \emph{\texttt{.cwl}} and \emph{\texttt{.yml}} files are provided in the \emph{\texttt{param/cwl}} subdirectory of each workflow template. They
+are also viewable in the GitHub repository of \emph{\texttt{systemPipeRdata}} (\href{https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param}{see
+here}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeR)}
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"rnaseq"}\NormalTok{, }\DataTypeTok{mydirname =} \OtherTok{NULL}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"rnaseq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{read-preprocessing}{%
+\subsection{Read Preprocessing}\label{read-preprocessing}}
+
+\hypertarget{preprocessing-with-preprocessreads-function}{%
+\subsubsection{\texorpdfstring{Preprocessing with \emph{\texttt{preprocessReads}} function}{Preprocessing with preprocessReads function}}\label{preprocessing-with-preprocessreads-function}}
+
+The function \emph{\texttt{preprocessReads}} allows to apply predefined or custom
+read preprocessing functions to all FASTQ files referenced in a
+\emph{\texttt{SYSargs2}} container, such as quality filtering or adaptor trimming
+routines. The paths to the resulting output FASTQ files are stored in the
+\emph{\texttt{output}} slot of the \emph{\texttt{SYSargs2}} object. Internally,
+\emph{\texttt{preprocessReads}} uses the \emph{\texttt{FastqStreamer}} function from
+the \emph{\texttt{ShortRead}} package to stream through large FASTQ files in a
+memory-efficient manner. The following example performs adaptor trimming with
+the \emph{\texttt{trimLRPatterns}} function from the \emph{\texttt{Biostrings}} package.
+After the trimming step a new targets file is generated (here
+\emph{\texttt{targets\_trimPE.txt}}) containing the paths to the trimmed FASTQ files.
+The new targets file can be used for the next workflow step with an updated
+\emph{\texttt{SYSargs2}} instance, \emph{e.g.} running the NGS alignments with the
+trimmed FASTQ files.
+
+Construct \emph{\texttt{SYSargs2}} object from \emph{\texttt{cwl}} and \emph{\texttt{yml}} param and \emph{\texttt{targets}} files.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targetsPE <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/preprocessReads/trim-pe"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{trim <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targetsPE, }\DataTypeTok{wf_file =} \StringTok{"trim-pe.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"trim-pe.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{trim <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(trim, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName1 =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{FileName2 =} \StringTok{"_FASTQ_PATH2_"}\NormalTok{, }
+    \DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{trim}
+\KeywordTok{output}\NormalTok{(trim)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{preprocessReads}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ trim, }\DataTypeTok{Fct =} \StringTok{"trimLRPatterns(Rpattern='GCCCGGGTAA', }
+\StringTok{                subject=fq)"}\NormalTok{, }
+    \DataTypeTok{batchsize =} \FloatTok{1e+05}\NormalTok{, }\DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{compress =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+The following example shows how one can design a custom read preprocessing function
+using utilities provided by the \emph{\texttt{ShortRead}} package, and then run it
+in batch mode with the \emph{`preprocessReads'} function (here on paired-end reads).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{filterFct <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(fq, }\DataTypeTok{cutoff =} \DecValTok{20}\NormalTok{, }\DataTypeTok{Nexceptions =} \DecValTok{0}\NormalTok{) \{}
+\NormalTok{    qcount <-}\StringTok{ }\KeywordTok{rowSums}\NormalTok{(}\KeywordTok{as}\NormalTok{(}\KeywordTok{quality}\NormalTok{(fq), }\StringTok{"matrix"}\NormalTok{) }\OperatorTok{<=}\StringTok{ }\NormalTok{cutoff, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}
+    \CommentTok{# Retains reads where Phred scores are >= cutoff with N exceptions}
+\NormalTok{    fq[qcount }\OperatorTok{<=}\StringTok{ }\NormalTok{Nexceptions]}
+\NormalTok{\}}
+\KeywordTok{preprocessReads}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ trim, }\DataTypeTok{Fct =} \StringTok{"filterFct(fq, cutoff=20, Nexceptions=0)"}\NormalTok{, }\DataTypeTok{batchsize =} \FloatTok{1e+05}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{preprocessing-with-trimgalore}{%
+\subsubsection{Preprocessing with TrimGalore!}\label{preprocessing-with-trimgalore}}
+
+\href{http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/}{TrimGalore!} is
+a wrapper tool to consistently apply quality and adapter trimming to fastq files,
+with some extra functionality for removing Reduced Representation Bisulfite-Seq
+(RRBS) libraries.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targets <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/trim_galore/trim_galore-se"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{trimG <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{wf_file =} \StringTok{"trim_galore-se.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"trim_galore-se.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{trimG <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(trimG, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{trimG}
+\KeywordTok{cmdlist}\NormalTok{(trimG)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\KeywordTok{output}\NormalTok{(trimG)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\CommentTok{## Run Single Machine Option}
+\NormalTok{trimG <-}\StringTok{ }\KeywordTok{runCommandline}\NormalTok{(trimG[}\DecValTok{1}\NormalTok{], }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{preprocessing-with-trimmomatic}{%
+\subsubsection{Preprocessing with Trimmomatic}\label{preprocessing-with-trimmomatic}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targetsPE <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/trimmomatic/trimmomatic-pe"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{trimM <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targetsPE, }\DataTypeTok{wf_file =} \StringTok{"trimmomatic-pe.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"trimmomatic-pe.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{trimM <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(trimM, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName1 =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{FileName2 =} \StringTok{"_FASTQ_PATH2_"}\NormalTok{, }
+    \DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{trimM}
+\KeywordTok{cmdlist}\NormalTok{(trimM)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\KeywordTok{output}\NormalTok{(trimM)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\CommentTok{## Run Single Machine Option}
+\NormalTok{trimM <-}\StringTok{ }\KeywordTok{runCommandline}\NormalTok{(trimM[}\DecValTok{1}\NormalTok{], }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{fastq-quality-report}{%
+\subsection{FASTQ quality report}\label{fastq-quality-report}}
+
+The following \emph{\texttt{seeFastq}} and \emph{\texttt{seeFastqPlot}} functions generate and plot a series of
+useful quality statistics for a set of FASTQ files including per cycle quality
+box plots, base proportions, base-level quality trends, relative k-mer
+diversity, length and occurrence distribution of reads, number of reads above
+quality cutoffs and mean quality distribution.\\
+The function \emph{\texttt{seeFastq}} computes the quality statistics and stores the results in a
+relatively small list object that can be saved to disk with \emph{\texttt{save()}} and
+reloaded with \emph{\texttt{load()}} for later plotting. The argument \emph{\texttt{klength}} specifies the k-mer length and \emph{\texttt{batchsize}} the number of reads to a random sample from each
+FASTQ file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fqlist <-}\StringTok{ }\KeywordTok{seeFastq}\NormalTok{(}\DataTypeTok{fastq =} \KeywordTok{infile1}\NormalTok{(trim), }\DataTypeTok{batchsize =} \DecValTok{10000}\NormalTok{, }\DataTypeTok{klength =} \DecValTok{8}\NormalTok{)}
+\KeywordTok{pdf}\NormalTok{(}\StringTok{"./results/fastqReport.pdf"}\NormalTok{, }\DataTypeTok{height =} \DecValTok{18}\NormalTok{, }\DataTypeTok{width =} \DecValTok{4} \OperatorTok{*}\StringTok{ }\KeywordTok{length}\NormalTok{(fqlist))}
+\KeywordTok{seeFastqPlot}\NormalTok{(fqlist)}
+\KeywordTok{dev.off}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Figure 5:} FASTQ quality report
+
+Parallelization of FASTQ quality report on a single machine with multiple cores.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{seeFastq}\NormalTok{(}\DataTypeTok{fastq =} \KeywordTok{infile1}\NormalTok{(trim)[x], }\DataTypeTok{batchsize =} \FloatTok{1e+05}\NormalTok{, }\DataTypeTok{klength =} \DecValTok{8}\NormalTok{)}
+\NormalTok{fqlist <-}\StringTok{ }\KeywordTok{bplapply}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DataTypeTok{along =}\NormalTok{ trim), f, }\DataTypeTok{BPPARAM =} \KeywordTok{MulticoreParam}\NormalTok{(}\DataTypeTok{workers =} \DecValTok{4}\NormalTok{))}
+\KeywordTok{seeFastqPlot}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(fqlist, }\DataTypeTok{recursive =} \OtherTok{FALSE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Parallelization of FASTQ quality report via scheduler (\emph{e.g.} Slurm) across several compute nodes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(BiocParallel)}
+\KeywordTok{library}\NormalTok{(batchtools)}
+\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
+    \KeywordTok{library}\NormalTok{(systemPipeR)}
+\NormalTok{    targetsPE <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{    dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/preprocessReads/trim-pe"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{    trim <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targetsPE, }\DataTypeTok{wf_file =} \StringTok{"trim-pe.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"trim-pe.yml"}\NormalTok{, }
+        \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{    trim <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(trim, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName1 =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{FileName2 =} \StringTok{"_FASTQ_PATH2_"}\NormalTok{, }
+        \DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+    \KeywordTok{seeFastq}\NormalTok{(}\DataTypeTok{fastq =} \KeywordTok{infile1}\NormalTok{(trim)[x], }\DataTypeTok{batchsize =} \FloatTok{1e+05}\NormalTok{, }\DataTypeTok{klength =} \DecValTok{8}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{param <-}\StringTok{ }\KeywordTok{BatchtoolsParam}\NormalTok{(}\DataTypeTok{workers =} \DecValTok{4}\NormalTok{, }\DataTypeTok{cluster =} \StringTok{"slurm"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }
+    \DataTypeTok{resources =}\NormalTok{ resources)}
+\NormalTok{fqlist <-}\StringTok{ }\KeywordTok{bplapply}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DataTypeTok{along =}\NormalTok{ trim), f, }\DataTypeTok{BPPARAM =}\NormalTok{ param)}
+\KeywordTok{seeFastqPlot}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(fqlist, }\DataTypeTok{recursive =} \OtherTok{FALSE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{ngs-alignment-software}{%
+\subsection{NGS Alignment software}\label{ngs-alignment-software}}
+
+After quality control, the sequence reads can be aligned to a reference genome or
+transcriptome database. The following sessions present some NGS sequence alignment
+software. Select the most accurate aligner and determining the optimal parameter
+for your custom data set project.
+
+For all the following examples, it is necessary to install the respective software
+and export the \texttt{PATH} accordingly. If it is available \href{http://modules.sourceforge.net/}{Environment Module}
+in the system, you can load all the request software with \emph{\texttt{moduleload(args)}} function.
+
+\hypertarget{alignment-with-hisat2-using-sysargs2}{%
+\subsubsection{\texorpdfstring{Alignment with \texttt{HISAT2} using \emph{\texttt{SYSargs2}}}{Alignment with HISAT2 using SYSargs2}}\label{alignment-with-hisat2-using-sysargs2}}
+
+The following steps will demonstrate how to use the short read aligner \texttt{Hisat2}
+(Kim, Langmead, and Salzberg 2015) in both interactive job submissions and batch submissions to
+queuing systems of clusters using the \emph{\texttt{systemPipeR\textquotesingle{}s}} new CWL command-line interface.
+
+The parameter settings of the aligner are defined in the \texttt{hisat2-mapping-se.cwl}
+and \texttt{hisat2-mapping-se.yml} files. The following shows how to construct the
+corresponding \emph{SYSargs2} object, here \emph{args}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targets <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/hisat2/hisat2-se"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{args <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{wf_file =} \StringTok{"hisat2-mapping-se.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"hisat2-mapping-se.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{args <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(args, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{args}
+\CommentTok{## Instance of 'SYSargs2':}
+\CommentTok{##    Slot names/accessors: }
+\CommentTok{##       targets: 18 (M1A...V12B), targetsheader: 4 (lines)}
+\CommentTok{##       modules: 1}
+\CommentTok{##       wf: 0, clt: 1, yamlinput: 7 (components)}
+\CommentTok{##       input: 18, output: 18}
+\CommentTok{##       cmdlist: 18}
+\CommentTok{##    WF Steps:}
+\CommentTok{##       1. hisat2-mapping-se (rendered: TRUE)}
+\KeywordTok{cmdlist}\NormalTok{(args)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\CommentTok{## $M1A}
+\CommentTok{## $M1A$`hisat2-mapping-se`}
+\CommentTok{## [1] "hisat2 -S ./results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"}
+\CommentTok{## }
+\CommentTok{## }
+\CommentTok{## $M1B}
+\CommentTok{## $M1B$`hisat2-mapping-se`}
+\CommentTok{## [1] "hisat2 -S ./results/M1B.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446028_1.fastq.gz --threads 4"}
+\KeywordTok{output}\NormalTok{(args)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\CommentTok{## $M1A}
+\CommentTok{## $M1A$`hisat2-mapping-se`}
+\CommentTok{## [1] "./results/M1A.sam"}
+\CommentTok{## }
+\CommentTok{## }
+\CommentTok{## $M1B}
+\CommentTok{## $M1B$`hisat2-mapping-se`}
+\CommentTok{## [1] "./results/M1B.sam"}
+\end{Highlighting}
+\end{Shaded}
+
+Subsetting \emph{\texttt{SYSargs2}} class slots for each workflow step.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{subsetWF}\NormalTok{(args, }\DataTypeTok{slot =} \StringTok{"input"}\NormalTok{, }\DataTypeTok{subset =} \StringTok{"FileName"}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]  }\CommentTok{## Subsetting the input files for this particular workflow }
+\CommentTok{##                           M1A                           M1B }
+\CommentTok{## "./data/SRR446027_1.fastq.gz" "./data/SRR446028_1.fastq.gz"}
+\KeywordTok{subsetWF}\NormalTok{(args, }\DataTypeTok{slot =} \StringTok{"output"}\NormalTok{, }\DataTypeTok{subset =} \DecValTok{1}\NormalTok{, }\DataTypeTok{index =} \DecValTok{1}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]  }\CommentTok{## Subsetting the output files for one particular step in the workflow }
+\CommentTok{##                 M1A                 M1B }
+\CommentTok{## "./results/M1A.sam" "./results/M1B.sam"}
+\KeywordTok{subsetWF}\NormalTok{(args, }\DataTypeTok{slot =} \StringTok{"step"}\NormalTok{, }\DataTypeTok{subset =} \DecValTok{1}\NormalTok{)[}\DecValTok{1}\NormalTok{]  }\CommentTok{## Subsetting the command-lines for one particular step in the workflow }
+\CommentTok{##                                                                                                                                               M1A }
+\CommentTok{## "hisat2 -S ./results/M1A.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000  -U ./data/SRR446027_1.fastq.gz --threads 4"}
+\KeywordTok{subsetWF}\NormalTok{(args, }\DataTypeTok{slot =} \StringTok{"output"}\NormalTok{, }\DataTypeTok{subset =} \DecValTok{1}\NormalTok{, }\DataTypeTok{index =} \DecValTok{1}\NormalTok{, }\DataTypeTok{delete =} \OtherTok{TRUE}\NormalTok{)[}\DecValTok{1}\NormalTok{]  }\CommentTok{## DELETING specific output files}
+\CommentTok{## The subset cannot be deleted: no such file}
+\CommentTok{##                 M1A }
+\CommentTok{## "./results/M1A.sam"}
+\end{Highlighting}
+\end{Shaded}
+
+Build \texttt{Hisat2} index.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/hisat2/hisat2-idx"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{wf_file =} \StringTok{"hisat2-index.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"hisat2-index.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(idx)}
+\NormalTok{idx}
+\KeywordTok{cmdlist}\NormalTok{(idx)}
+
+\CommentTok{## Run}
+\KeywordTok{runCommandline}\NormalTok{(idx, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{interactive-job-submissions-in-a-single-machine}{%
+\paragraph{Interactive job submissions in a single machine}\label{interactive-job-submissions-in-a-single-machine}}
+
+To simplify the short read alignment execution for the user, the command-line
+can be run with the \emph{\texttt{runCommandline}} function.
+The execution will be on a single machine without submitting to a queuing system
+of a computer cluster. This way, the input FASTQ files will be processed sequentially.
+By default \emph{\texttt{runCommandline}} auto detects SAM file outputs and converts them
+to sorted and indexed BAM files, using internally the \texttt{Rsamtools} package
+(Morgan et al. 2019). Besides, \emph{\texttt{runCommandline}} allows the user to create a dedicated
+results folder for each workflow and a sub-folder for each sample
+defined in the \emph{targets} file. This includes all the output and log files for each
+step. When these options are used, the output location will be updated by default
+and can be assigned to the same object.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{runCommandline}\NormalTok{(args, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)  }\CommentTok{## generates alignments and writes *.sam files to ./results folder }
+\NormalTok{args <-}\StringTok{ }\KeywordTok{runCommandline}\NormalTok{(args, }\DataTypeTok{make_bam =} \OtherTok{TRUE}\NormalTok{)  }\CommentTok{## same as above but writes files and converts *.sam files to sorted and indexed BAM files. Assigning the new extention of the output files to the object args.}
+\end{Highlighting}
+\end{Shaded}
+
+If available, multiple CPU cores can be used for processing each file. The number
+of CPU cores (here 4) to use for each process is defined in the \emph{\texttt{*.yml}} file.
+With \emph{\texttt{yamlinput(args){[}\textquotesingle{}thread\textquotesingle{}{]}}} one can return this value from the \emph{\texttt{SYSargs2}} object.
+
+\hypertarget{parallelization-on-clusters-1}{%
+\paragraph{Parallelization on clusters}\label{parallelization-on-clusters-1}}
+
+Alternatively, the computation can be greatly accelerated by processing many files
+in parallel using several compute nodes of a cluster, where a scheduling/queuing
+system is used for load balancing. For this the \emph{\texttt{clusterRun}} function submits
+the computing requests to the scheduler using the run specifications
+defined by \emph{\texttt{runCommandline}}.
+
+To avoid over-subscription of CPU cores on the compute nodes, the value from
+\emph{\texttt{yamlinput(args){[}\textquotesingle{}thread\textquotesingle{}{]}}} is passed on to the submission command, here \emph{\texttt{ncpus}}
+in the \emph{\texttt{resources}} list object. The number of independent parallel cluster
+processes is defined under the \emph{\texttt{Njobs}} argument. The following example will run
+18 processes in parallel using for each 4 CPU cores. If the resources available
+on a cluster allow running all 18 processes at the same time then the shown sample
+submission will utilize in total 72 CPU cores. Note, \emph{\texttt{clusterRun}} can be used
+with most queueing systems as it is based on utilities from the \emph{\texttt{batchtools}}
+package which supports the use of template files (\emph{\texttt{*.tmpl}}) for defining the
+run parameters of different schedulers. To run the following code, one needs to
+have both a conf file (see \emph{\texttt{.batchtools.conf.R}} samples \href{https://mllg.github.io/batchtools/}{here})
+and a template file (see \emph{\texttt{*.tmpl}} samples \href{https://github.com/mllg/batchtools/tree/master/inst/templates}{here})
+for the queueing available on a system. The following example uses the sample
+conf and template files for the Slurm scheduler provided by this package.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(batchtools)}
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{clusterRun}\NormalTok{(args, }\DataTypeTok{FUN =}\NormalTok{ runCommandline, }\DataTypeTok{more.args =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ args, }\DataTypeTok{make_bam =} \OtherTok{TRUE}\NormalTok{, }
+    \DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{), }\DataTypeTok{conffile =} \StringTok{".batchtools.conf.R"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }
+    \DataTypeTok{Njobs =} \DecValTok{18}\NormalTok{, }\DataTypeTok{runid =} \StringTok{"01"}\NormalTok{, }\DataTypeTok{resourceList =}\NormalTok{ resources)}
+\KeywordTok{getStatus}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\KeywordTok{waitForJobs}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\end{Highlighting}
+\end{Shaded}
+
+Check and update the output location if necessary.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{args <-}\StringTok{ }\KeywordTok{output_update}\NormalTok{(args, }\DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{extension =} \KeywordTok{c}\NormalTok{(}\StringTok{".sam"}\NormalTok{, }\StringTok{".bam"}\NormalTok{))  }\CommentTok{## Updates the output(args) to the right location in the subfolders}
+\KeywordTok{output}\NormalTok{(args)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{create-new-targets-file}{%
+\paragraph{Create new targets file}\label{create-new-targets-file}}
+
+To establish the connectivity to the next workflow step, one can write a new
+\emph{targets} file with the \emph{\texttt{writeTargetsout}} function. The new \emph{targets} file
+serves as input to the next \emph{\texttt{loadWorkflow}} and \emph{\texttt{renderWF}} call.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(}\KeywordTok{clt}\NormalTok{(args))}
+\KeywordTok{writeTargetsout}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ args, }\DataTypeTok{file =} \StringTok{"default"}\NormalTok{, }\DataTypeTok{step =} \DecValTok{1}\NormalTok{, }\DataTypeTok{new_col =} \StringTok{"FileName"}\NormalTok{, }\DataTypeTok{new_col_output_index =} \DecValTok{1}\NormalTok{, }
+    \DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{alignment-with-hisat2-and-samtools}{%
+\paragraph{\texorpdfstring{Alignment with \texttt{HISAT2} and \texttt{SAMtools}}{Alignment with HISAT2 and SAMtools}}\label{alignment-with-hisat2-and-samtools}}
+
+Alternatively, it possible to build an workflow with \texttt{HISAT2} and \texttt{SAMtools}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targets <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/workflow-hisat2/workflow-hisat2-se"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{WF <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{wf_file =} \StringTok{"workflow_hisat2-se.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"workflow_hisat2-se.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{WF <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(WF, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{WF}
+\KeywordTok{cmdlist}\NormalTok{(WF)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\KeywordTok{output}\NormalTok{(WF)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{alignment-with-tophat2}{%
+\subsubsection{\texorpdfstring{Alignment with \emph{\texttt{Tophat2}}}{Alignment with Tophat2}}\label{alignment-with-tophat2}}
+
+The NGS reads of this project can also be aligned against the reference genome
+sequence using \texttt{Bowtie2/TopHat2} (Kim et al. 2013; Langmead and Salzberg 2012).
+
+Build \emph{\texttt{Bowtie2}} index.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/bowtie2/bowtie2-idx"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{wf_file =} \StringTok{"bowtie2-index.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"bowtie2-index.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(idx)}
+\NormalTok{idx}
+\KeywordTok{cmdlist}\NormalTok{(idx)}
+
+\CommentTok{## Run in single machine}
+\KeywordTok{runCommandline}\NormalTok{(idx, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+The parameter settings of the aligner are defined in the \texttt{tophat2-mapping-pe.cwl}
+and \texttt{tophat2-mapping-pe.yml} files. The following shows how to construct the
+corresponding \emph{SYSargs2} object, here \emph{tophat2PE}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targetsPE <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/tophat2/tophat2-pe"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{tophat2PE <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targetsPE, }\DataTypeTok{wf_file =} \StringTok{"tophat2-mapping-pe.cwl"}\NormalTok{, }
+    \DataTypeTok{input_file =} \StringTok{"tophat2-mapping-pe.yml"}\NormalTok{, }\DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{tophat2PE <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(tophat2PE, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName1 =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{FileName2 =} \StringTok{"_FASTQ_PATH2_"}\NormalTok{, }
+    \DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{tophat2PE}
+\KeywordTok{cmdlist}\NormalTok{(tophat2PE)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\KeywordTok{output}\NormalTok{(tophat2PE)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+
+\CommentTok{## Run in single machine}
+\NormalTok{tophat2PE <-}\StringTok{ }\KeywordTok{runCommandline}\NormalTok{(tophat2PE[}\DecValTok{1}\NormalTok{], }\DataTypeTok{make_bam =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Parallelization on clusters.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{clusterRun}\NormalTok{(tophat2PE, }\DataTypeTok{FUN =}\NormalTok{ runCommandline, }\DataTypeTok{more.args =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ tophat2PE, }
+    \DataTypeTok{make_bam =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{), }\DataTypeTok{conffile =} \StringTok{".batchtools.conf.R"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }
+    \DataTypeTok{Njobs =} \DecValTok{18}\NormalTok{, }\DataTypeTok{runid =} \StringTok{"01"}\NormalTok{, }\DataTypeTok{resourceList =}\NormalTok{ resources)}
+\KeywordTok{waitForJobs}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\end{Highlighting}
+\end{Shaded}
+
+Create new targets file
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(}\KeywordTok{clt}\NormalTok{(tophat2PE))}
+\KeywordTok{writeTargetsout}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tophat2PE, }\DataTypeTok{file =} \StringTok{"default"}\NormalTok{, }\DataTypeTok{step =} \DecValTok{1}\NormalTok{, }\DataTypeTok{new_col =} \StringTok{"tophat2PE"}\NormalTok{, }
+    \DataTypeTok{new_col_output_index =} \DecValTok{1}\NormalTok{, }\DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{alignment-with-bowtie2-e.g.-for-mirna-profiling}{%
+\subsubsection{\texorpdfstring{Alignment with \emph{\texttt{Bowtie2}} (\emph{e.g.} for miRNA profiling)}{Alignment with Bowtie2 (e.g. for miRNA profiling)}}\label{alignment-with-bowtie2-e.g.-for-mirna-profiling}}
+
+The following example runs \emph{\texttt{Bowtie2}} as a single process without submitting it to a cluster.
+
+Building the index:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/bowtie2/bowtie2-idx"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{wf_file =} \StringTok{"bowtie2-index.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"bowtie2-index.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(idx)}
+\NormalTok{idx}
+\KeywordTok{cmdlist}\NormalTok{(idx)}
+
+\CommentTok{## Run in single machine}
+\KeywordTok{runCommandline}\NormalTok{(idx, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Building all the command-line:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targetsPE <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/bowtie2/bowtie2-pe"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{bowtiePE <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targetsPE, }\DataTypeTok{wf_file =} \StringTok{"bowtie2-mapping-pe.cwl"}\NormalTok{, }
+    \DataTypeTok{input_file =} \StringTok{"bowtie2-mapping-pe.yml"}\NormalTok{, }\DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{bowtiePE <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(bowtiePE, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName1 =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{FileName2 =} \StringTok{"_FASTQ_PATH2_"}\NormalTok{, }
+    \DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{bowtiePE}
+\KeywordTok{cmdlist}\NormalTok{(bowtiePE)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\KeywordTok{output}\NormalTok{(bowtiePE)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+Running all the jobs to computing nodes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{clusterRun}\NormalTok{(bowtiePE, }\DataTypeTok{FUN =}\NormalTok{ runCommandline, }\DataTypeTok{more.args =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ bowtiePE, }
+    \DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{), }\DataTypeTok{conffile =} \StringTok{".batchtools.conf.R"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }
+    \DataTypeTok{Njobs =} \DecValTok{18}\NormalTok{, }\DataTypeTok{runid =} \StringTok{"01"}\NormalTok{, }\DataTypeTok{resourceList =}\NormalTok{ resources)}
+\KeywordTok{getStatus}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\end{Highlighting}
+\end{Shaded}
+
+Alternatively, it possible to run all the jobs in a single machine.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bowtiePE <-}\StringTok{ }\KeywordTok{runCommandline}\NormalTok{(bowtiePE)}
+\end{Highlighting}
+\end{Shaded}
+
+Create new targets file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(}\KeywordTok{clt}\NormalTok{(bowtiePE))}
+\KeywordTok{writeTargetsout}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ bowtiePE, }\DataTypeTok{file =} \StringTok{"default"}\NormalTok{, }\DataTypeTok{step =} \DecValTok{1}\NormalTok{, }\DataTypeTok{new_col =} \StringTok{"bowtiePE"}\NormalTok{, }\DataTypeTok{new_col_output_index =} \DecValTok{1}\NormalTok{, }
+    \DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{alignment-with-bwa-mem-e.g.-for-var-seq}{%
+\subsubsection{\texorpdfstring{Alignment with \emph{\texttt{BWA-MEM}} (\emph{e.g.} for VAR-Seq)}{Alignment with BWA-MEM (e.g. for VAR-Seq)}}\label{alignment-with-bwa-mem-e.g.-for-var-seq}}
+
+The following example runs BWA-MEM as a single process without submitting it to a cluster. \#\#TODO: add reference
+
+Build the index:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/bwa/bwa-idx"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{wf_file =} \StringTok{"bwa-index.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"bwa-index.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(idx)}
+\NormalTok{idx}
+\KeywordTok{cmdlist}\NormalTok{(idx)  }\CommentTok{# Indexes reference genome}
+
+\CommentTok{## Run}
+\KeywordTok{runCommandline}\NormalTok{(idx, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Running the alignment:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targetsPE <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/bwa/bwa-pe"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{bwaPE <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targetsPE, }\DataTypeTok{wf_file =} \StringTok{"bwa-pe.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"bwa-pe.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{bwaPE <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(bwaPE, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName1 =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{FileName2 =} \StringTok{"_FASTQ_PATH2_"}\NormalTok{, }
+    \DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{bwaPE}
+\KeywordTok{cmdlist}\NormalTok{(bwaPE)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\KeywordTok{output}\NormalTok{(bwaPE)[}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{]}
+\CommentTok{## Single Machine}
+\NormalTok{bwaPE <-}\StringTok{ }\KeywordTok{runCommandline}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ bwaPE, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{## Cluster}
+\KeywordTok{library}\NormalTok{(batchtools)}
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{clusterRun}\NormalTok{(bwaPE, }\DataTypeTok{FUN =}\NormalTok{ runCommandline, }\DataTypeTok{more.args =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ bwaPE, }\DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{), }
+    \DataTypeTok{conffile =} \StringTok{".batchtools.conf.R"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }\DataTypeTok{Njobs =} \DecValTok{18}\NormalTok{, }
+    \DataTypeTok{runid =} \StringTok{"01"}\NormalTok{, }\DataTypeTok{resourceList =}\NormalTok{ resources)}
+\KeywordTok{getStatus}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\end{Highlighting}
+\end{Shaded}
+
+Create new targets file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(}\KeywordTok{clt}\NormalTok{(bwaPE))}
+\KeywordTok{writeTargetsout}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ bwaPE, }\DataTypeTok{file =} \StringTok{"default"}\NormalTok{, }\DataTypeTok{step =} \DecValTok{1}\NormalTok{, }\DataTypeTok{new_col =} \StringTok{"bwaPE"}\NormalTok{, }\DataTypeTok{new_col_output_index =} \DecValTok{1}\NormalTok{, }
+    \DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{alignment-with-rsubread-e.g.-for-rna-seq}{%
+\subsubsection{\texorpdfstring{Alignment with \emph{\texttt{Rsubread}} (\emph{e.g.} for RNA-Seq)}{Alignment with Rsubread (e.g. for RNA-Seq)}}\label{alignment-with-rsubread-e.g.-for-rna-seq}}
+
+The following example shows how one can use within the \Rpackage{systemPipeR} environment the R-based aligner \Rpackage{Rsubread}, allowing running from R or command-line.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## Build the index:}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/rsubread/rsubread-idx"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{wf_file =} \StringTok{"rsubread-index.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"rsubread-index.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(idx)}
+\NormalTok{idx}
+\KeywordTok{cmdlist}\NormalTok{(idx)}
+\KeywordTok{runCommandline}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ idx, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{## Running the alignment:}
+\NormalTok{targets <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/rsubread/rsubread-se"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{rsubread <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{wf_file =} \StringTok{"rsubread-mapping-se.cwl"}\NormalTok{, }
+    \DataTypeTok{input_file =} \StringTok{"rsubread-mapping-se.yml"}\NormalTok{, }\DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{rsubread <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(rsubread, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{rsubread}
+\KeywordTok{cmdlist}\NormalTok{(rsubread)[}\DecValTok{1}\NormalTok{]}
+
+\CommentTok{## Single Machine}
+\NormalTok{rsubread <-}\StringTok{ }\KeywordTok{runCommandline}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ rsubread[}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+Create new targets file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(}\KeywordTok{clt}\NormalTok{(rsubread))}
+\KeywordTok{writeTargetsout}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ rsubread, }\DataTypeTok{file =} \StringTok{"default"}\NormalTok{, }\DataTypeTok{step =} \DecValTok{1}\NormalTok{, }\DataTypeTok{new_col =} \StringTok{"rsubread"}\NormalTok{, }\DataTypeTok{new_col_output_index =} \DecValTok{1}\NormalTok{, }
+    \DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{alignment-with-gsnap-e.g.-for-var-seq-and-rna-seq}{%
+\subsubsection{\texorpdfstring{Alignment with \emph{\texttt{gsnap}} (\emph{e.g.} for VAR-Seq and RNA-Seq)}{Alignment with gsnap (e.g. for VAR-Seq and RNA-Seq)}}\label{alignment-with-gsnap-e.g.-for-var-seq-and-rna-seq}}
+
+Another R-based short read aligner is \emph{\texttt{gsnap}} from the \emph{\texttt{gmapR}} package (Wu and Nacu 2010).
+The code sample below introduces how to run this aligner on multiple nodes of a compute cluster.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{## Build the index:}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/gsnap/gsnap-idx"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{wf_file =} \StringTok{"gsnap-index.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"gsnap-index.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{idx <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(idx)}
+\NormalTok{idx}
+\KeywordTok{cmdlist}\NormalTok{(idx)}
+\KeywordTok{runCommandline}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ idx, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{## Running the alignment:}
+\NormalTok{targetsPE <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targetsPE.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{dir_path <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata/cwl/gsnap/gsnap-pe"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{gsnap <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targetsPE, }\DataTypeTok{wf_file =} \StringTok{"gsnap-mapping-pe.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"gsnap-mapping-pe.yml"}\NormalTok{, }
+    \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{gsnap <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(gsnap, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName1 =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{FileName2 =} \StringTok{"_FASTQ_PATH2_"}\NormalTok{, }
+    \DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{gsnap}
+\KeywordTok{cmdlist}\NormalTok{(gsnap)[}\DecValTok{1}\NormalTok{]}
+\KeywordTok{output}\NormalTok{(gsnap)[}\DecValTok{1}\NormalTok{]}
+
+\CommentTok{## Cluster}
+\KeywordTok{library}\NormalTok{(batchtools)}
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{reg <-}\StringTok{ }\KeywordTok{clusterRun}\NormalTok{(gsnap, }\DataTypeTok{FUN =}\NormalTok{ runCommandline, }\DataTypeTok{more.args =} \KeywordTok{list}\NormalTok{(}\DataTypeTok{args =}\NormalTok{ gsnap, }\DataTypeTok{make_bam =} \OtherTok{FALSE}\NormalTok{), }
+    \DataTypeTok{conffile =} \StringTok{".batchtools.conf.R"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }\DataTypeTok{Njobs =} \DecValTok{18}\NormalTok{, }
+    \DataTypeTok{runid =} \StringTok{"01"}\NormalTok{, }\DataTypeTok{resourceList =}\NormalTok{ resources)}
+\KeywordTok{getStatus}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\NormalTok{gsnap <-}\StringTok{ }\KeywordTok{output_update}\NormalTok{(gsnap, }\DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{extension =} \KeywordTok{c}\NormalTok{(}\StringTok{".sam"}\NormalTok{, }
+    \StringTok{".bam"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Create new targets file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(}\KeywordTok{clt}\NormalTok{(gsnap))}
+\KeywordTok{writeTargetsout}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ gsnap, }\DataTypeTok{file =} \StringTok{"default"}\NormalTok{, }\DataTypeTok{step =} \DecValTok{1}\NormalTok{, }\DataTypeTok{new_col =} \StringTok{"gsnap"}\NormalTok{, }\DataTypeTok{new_col_output_index =} \DecValTok{1}\NormalTok{, }
+    \DataTypeTok{overwrite =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{create-symbolic-links-for-viewing-bam-files-in-igv}{%
+\subsection{Create symbolic links for viewing BAM files in IGV}\label{create-symbolic-links-for-viewing-bam-files-in-igv}}
+
+The genome browser IGV supports reading of indexed/sorted BAM files via web URLs. This way it can be avoided to create unnecessary copies of these large files. To enable this approach, an HTML directory with Http access needs to be available in the user account (\emph{e.g.} \emph{\texttt{home/publichtml}}) of a system. If this is not the case then the BAM files need to be moved or copied to the system where IGV runs. In the following, \emph{\texttt{htmldir}} defines the path to the HTML directory with http access where the symbolic links to the BAM files will be stored. The corresponding URLs will be written to a text file specified under the \texttt{\_urlfile}\_ argument.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{symLink2bam}\NormalTok{(}\DataTypeTok{sysargs =}\NormalTok{ args, }\DataTypeTok{htmldir =} \KeywordTok{c}\NormalTok{(}\StringTok{"~/.html/"}\NormalTok{, }\StringTok{"somedir/"}\NormalTok{), }\DataTypeTok{urlbase =} \StringTok{"http://myserver.edu/~username/"}\NormalTok{, }
+    \DataTypeTok{urlfile =} \StringTok{"IGVurl.txt"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{read-counting-for-mrna-profiling-experiments}{%
+\subsection{Read counting for mRNA profiling experiments}\label{read-counting-for-mrna-profiling-experiments}}
+
+Create \emph{\texttt{txdb}} (needs to be done only once).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(GenomicFeatures)}
+\NormalTok{txdb <-}\StringTok{ }\KeywordTok{makeTxDbFromGFF}\NormalTok{(}\DataTypeTok{file =} \StringTok{"data/tair10.gff"}\NormalTok{, }\DataTypeTok{format =} \StringTok{"gff"}\NormalTok{, }\DataTypeTok{dataSource =} \StringTok{"TAIR"}\NormalTok{, }
+    \DataTypeTok{organism =} \StringTok{"Arabidopsis thaliana"}\NormalTok{)}
+\KeywordTok{saveDb}\NormalTok{(txdb, }\DataTypeTok{file =} \StringTok{"./data/tair10.sqlite"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+The following performs read counting with \emph{\texttt{summarizeOverlaps}} in parallel mode with multiple cores.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(BiocParallel)}
+\NormalTok{txdb <-}\StringTok{ }\KeywordTok{loadDb}\NormalTok{(}\StringTok{"./data/tair10.sqlite"}\NormalTok{)}
+\NormalTok{eByg <-}\StringTok{ }\KeywordTok{exonsBy}\NormalTok{(txdb, }\DataTypeTok{by =} \StringTok{"gene"}\NormalTok{)}
+\NormalTok{outpaths <-}\StringTok{ }\KeywordTok{subsetWF}\NormalTok{(args, }\DataTypeTok{slot =} \StringTok{"output"}\NormalTok{, }\DataTypeTok{subset =} \DecValTok{1}\NormalTok{, }\DataTypeTok{index =} \DecValTok{1}\NormalTok{)}
+\NormalTok{bfl <-}\StringTok{ }\KeywordTok{BamFileList}\NormalTok{(outpaths, }\DataTypeTok{yieldSize =} \DecValTok{50000}\NormalTok{, }\DataTypeTok{index =} \KeywordTok{character}\NormalTok{())}
+\NormalTok{multicoreParam <-}\StringTok{ }\KeywordTok{MulticoreParam}\NormalTok{(}\DataTypeTok{workers =} \DecValTok{4}\NormalTok{)}
+\KeywordTok{register}\NormalTok{(multicoreParam)}
+\KeywordTok{registered}\NormalTok{()}
+\NormalTok{counteByg <-}\StringTok{ }\KeywordTok{bplapply}\NormalTok{(bfl, }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{summarizeOverlaps}\NormalTok{(eByg, x, }\DataTypeTok{mode =} \StringTok{"Union"}\NormalTok{, }
+    \DataTypeTok{ignore.strand =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{inter.feature =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{singleEnd =} \OtherTok{TRUE}\NormalTok{))}
+
+\CommentTok{# Note: for strand-specific RNA-Seq set 'ignore.strand=FALSE' and for PE data set}
+\CommentTok{# 'singleEnd=FALSE'}
+\NormalTok{countDFeByg <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DataTypeTok{along =}\NormalTok{ counteByg), }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{assays}\NormalTok{(counteByg[[x]])}\OperatorTok{$}\NormalTok{counts)}
+\KeywordTok{rownames}\NormalTok{(countDFeByg) <-}\StringTok{ }\KeywordTok{names}\NormalTok{(}\KeywordTok{rowRanges}\NormalTok{(counteByg[[}\DecValTok{1}\NormalTok{]]))}
+\KeywordTok{colnames}\NormalTok{(countDFeByg) <-}\StringTok{ }\KeywordTok{names}\NormalTok{(bfl)}
+\NormalTok{rpkmDFeByg <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(countDFeByg, }\DecValTok{2}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{returnRPKM}\NormalTok{(}\DataTypeTok{counts =}\NormalTok{ x, }\DataTypeTok{ranges =}\NormalTok{ eByg))}
+\KeywordTok{write.table}\NormalTok{(countDFeByg, }\StringTok{"results/countDFeByg.xls"}\NormalTok{, }\DataTypeTok{col.names =} \OtherTok{NA}\NormalTok{, }\DataTypeTok{quote =} \OtherTok{FALSE}\NormalTok{, }
+    \DataTypeTok{sep =} \StringTok{"}\CharTok{\textbackslash{}t}\StringTok{"}\NormalTok{)}
+\KeywordTok{write.table}\NormalTok{(rpkmDFeByg, }\StringTok{"results/rpkmDFeByg.xls"}\NormalTok{, }\DataTypeTok{col.names =} \OtherTok{NA}\NormalTok{, }\DataTypeTok{quote =} \OtherTok{FALSE}\NormalTok{, }
+    \DataTypeTok{sep =} \StringTok{"}\CharTok{\textbackslash{}t}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Please note, in addition to read counts this step generates RPKM normalized expression values. For most statistical differential expression or abundance analysis methods, such as \emph{\texttt{edgeR}} or \emph{\texttt{DESeq2}}, the raw count values should be used as input. The usage of RPKM values should be restricted to specialty applications required by some users, \emph{e.g.} manually comparing the expression levels of different genes or features.
+
+Read counting with \emph{\texttt{summarizeOverlaps}} using multiple nodes of a cluster.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(BiocParallel)}
+\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
+    \KeywordTok{library}\NormalTok{(systemPipeR)}
+    \KeywordTok{library}\NormalTok{(BiocParallel)}
+    \KeywordTok{library}\NormalTok{(GenomicFeatures)}
+\NormalTok{    txdb <-}\StringTok{ }\KeywordTok{loadDb}\NormalTok{(}\StringTok{"./data/tair10.sqlite"}\NormalTok{)}
+\NormalTok{    eByg <-}\StringTok{ }\KeywordTok{exonsBy}\NormalTok{(txdb, }\DataTypeTok{by =} \StringTok{"gene"}\NormalTok{)}
+\NormalTok{    args <-}\StringTok{ }\KeywordTok{systemArgs}\NormalTok{(}\DataTypeTok{sysma =} \StringTok{"param/tophat.param"}\NormalTok{, }\DataTypeTok{mytargets =} \StringTok{"targets.txt"}\NormalTok{)}
+\NormalTok{    outpaths <-}\StringTok{ }\KeywordTok{subsetWF}\NormalTok{(args, }\DataTypeTok{slot =} \StringTok{"output"}\NormalTok{, }\DataTypeTok{subset =} \DecValTok{1}\NormalTok{, }\DataTypeTok{index =} \DecValTok{1}\NormalTok{)}
+\NormalTok{    bfl <-}\StringTok{ }\KeywordTok{BamFileList}\NormalTok{(outpaths, }\DataTypeTok{yieldSize =} \DecValTok{50000}\NormalTok{, }\DataTypeTok{index =} \KeywordTok{character}\NormalTok{())}
+    \KeywordTok{summarizeOverlaps}\NormalTok{(eByg, bfl[x], }\DataTypeTok{mode =} \StringTok{"Union"}\NormalTok{, }\DataTypeTok{ignore.strand =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{inter.feature =} \OtherTok{TRUE}\NormalTok{, }
+        \DataTypeTok{singleEnd =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{\}}
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{param <-}\StringTok{ }\KeywordTok{BatchtoolsParam}\NormalTok{(}\DataTypeTok{workers =} \DecValTok{4}\NormalTok{, }\DataTypeTok{cluster =} \StringTok{"slurm"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }
+    \DataTypeTok{resources =}\NormalTok{ resources)}
+\NormalTok{counteByg <-}\StringTok{ }\KeywordTok{bplapply}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DataTypeTok{along =}\NormalTok{ args), f, }\DataTypeTok{BPPARAM =}\NormalTok{ param)}
+\NormalTok{countDFeByg <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DataTypeTok{along =}\NormalTok{ counteByg), }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{assays}\NormalTok{(counteByg[[x]])}\OperatorTok{$}\NormalTok{counts)}
+\KeywordTok{rownames}\NormalTok{(countDFeByg) <-}\StringTok{ }\KeywordTok{names}\NormalTok{(}\KeywordTok{rowRanges}\NormalTok{(counteByg[[}\DecValTok{1}\NormalTok{]]))}
+\KeywordTok{colnames}\NormalTok{(countDFeByg) <-}\StringTok{ }\KeywordTok{names}\NormalTok{(outpaths)}
+\end{Highlighting}
+\end{Shaded}
+
+Useful commands for monitoring the progress of submitted jobs
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{getStatus}\NormalTok{(}\DataTypeTok{reg =}\NormalTok{ reg)}
+\NormalTok{outpaths <-}\StringTok{ }\KeywordTok{subsetWF}\NormalTok{(args, }\DataTypeTok{slot =} \StringTok{"output"}\NormalTok{, }\DataTypeTok{subset =} \DecValTok{1}\NormalTok{, }\DataTypeTok{index =} \DecValTok{1}\NormalTok{)}
+\KeywordTok{file.exists}\NormalTok{(outpaths)}
+\KeywordTok{sapply}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(outpaths), }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{loadResult}\NormalTok{(reg, }\DataTypeTok{id =}\NormalTok{ x))  }\CommentTok{# Works after job completion}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{read-and-alignment-count-stats}{%
+\paragraph{Read and alignment count stats}\label{read-and-alignment-count-stats}}
+
+Generate a table of read and alignment counts for all samples.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{read_statsDF <-}\StringTok{ }\KeywordTok{alignStats}\NormalTok{(args)}
+\KeywordTok{write.table}\NormalTok{(read_statsDF, }\StringTok{"results/alignStats.xls"}\NormalTok{, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{quote =} \OtherTok{FALSE}\NormalTok{, }
+    \DataTypeTok{sep =} \StringTok{"}\CharTok{\textbackslash{}t}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+The following shows the first four lines of the sample alignment stats file
+provided by the \emph{\texttt{systemPipeR}} package. For simplicity the number of PE reads
+is multiplied here by 2 to approximate proper alignment frequencies where each
+read in a pair is counted.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{read.table}\NormalTok{(}\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"alignStats.xls"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{), }\DataTypeTok{header =} \OtherTok{TRUE}\NormalTok{)[}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{, }
+\NormalTok{    ]}
+\CommentTok{##   FileName Nreads2x Nalign Perc_Aligned Nalign_Primary Perc_Aligned_Primary}
+\CommentTok{## 1      M1A   192918 177961     92.24697         177961             92.24697}
+\CommentTok{## 2      M1B   197484 159378     80.70426         159378             80.70426}
+\CommentTok{## 3      A1A   189870 176055     92.72397         176055             92.72397}
+\CommentTok{## 4      A1B   188854 147768     78.24457         147768             78.24457}
+\end{Highlighting}
+\end{Shaded}
+
+Parallelization of read/alignment stats on single machine with multiple cores.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{alignStats}\NormalTok{(args[x])}
+\NormalTok{read_statsList <-}\StringTok{ }\KeywordTok{bplapply}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DataTypeTok{along =}\NormalTok{ args), f, }\DataTypeTok{BPPARAM =} \KeywordTok{MulticoreParam}\NormalTok{(}\DataTypeTok{workers =} \DecValTok{8}\NormalTok{))}
+\NormalTok{read_statsDF <-}\StringTok{ }\KeywordTok{do.call}\NormalTok{(}\StringTok{"rbind"}\NormalTok{, read_statsList)}
+\end{Highlighting}
+\end{Shaded}
+
+Parallelization of read/alignment stats via scheduler (\emph{e.g.} Slurm) across several compute nodes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(BiocParallel)}
+\KeywordTok{library}\NormalTok{(batchtools)}
+\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
+    \KeywordTok{library}\NormalTok{(systemPipeR)}
+\NormalTok{    targets <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"targets.txt"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{    dir_path <-}\StringTok{ "param/cwl/hisat2/hisat2-se"}  \CommentTok{## }\AlertTok{TODO}\CommentTok{: replace path to system.file }
+\NormalTok{    args <-}\StringTok{ }\KeywordTok{loadWorkflow}\NormalTok{(}\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{wf_file =} \StringTok{"hisat2-mapping-se.cwl"}\NormalTok{, }\DataTypeTok{input_file =} \StringTok{"hisat2-mapping-se.yml"}\NormalTok{, }
+        \DataTypeTok{dir_path =}\NormalTok{ dir_path)}
+\NormalTok{    args <-}\StringTok{ }\KeywordTok{renderWF}\NormalTok{(args, }\DataTypeTok{inputvars =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{FileName =} \StringTok{"_FASTQ_PATH1_"}\NormalTok{, }\DataTypeTok{SampleName =} \StringTok{"_SampleName_"}\NormalTok{))}
+\NormalTok{    args <-}\StringTok{ }\KeywordTok{output_update}\NormalTok{(args, }\DataTypeTok{dir =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{extension =} \KeywordTok{c}\NormalTok{(}\StringTok{".sam"}\NormalTok{, }
+        \StringTok{".bam"}\NormalTok{))}
+    \KeywordTok{alignStats}\NormalTok{(args[x])}
+\NormalTok{\}}
+\NormalTok{resources <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\DataTypeTok{walltime =} \DecValTok{120}\NormalTok{, }\DataTypeTok{ntasks =} \DecValTok{1}\NormalTok{, }\DataTypeTok{ncpus =} \DecValTok{4}\NormalTok{, }\DataTypeTok{memory =} \DecValTok{1024}\NormalTok{)}
+\NormalTok{param <-}\StringTok{ }\KeywordTok{BatchtoolsParam}\NormalTok{(}\DataTypeTok{workers =} \DecValTok{4}\NormalTok{, }\DataTypeTok{cluster =} \StringTok{"slurm"}\NormalTok{, }\DataTypeTok{template =} \StringTok{"batchtools.slurm.tmpl"}\NormalTok{, }
+    \DataTypeTok{resources =}\NormalTok{ resources)}
+\NormalTok{read_statsList <-}\StringTok{ }\KeywordTok{bplapply}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DataTypeTok{along =}\NormalTok{ args), f, }\DataTypeTok{BPPARAM =}\NormalTok{ param)}
+\NormalTok{read_statsDF <-}\StringTok{ }\KeywordTok{do.call}\NormalTok{(}\StringTok{"rbind"}\NormalTok{, read_statsList)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{read-counting-for-mirna-profiling-experiments}{%
+\subsection{Read counting for miRNA profiling experiments}\label{read-counting-for-mirna-profiling-experiments}}
+
+Download miRNA genes from miRBase.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{system}\NormalTok{(}\StringTok{"wget ftp://mirbase.org/pub/mirbase/19/genomes/My_species.gff3 -P ./data/"}\NormalTok{)}
+\NormalTok{gff <-}\StringTok{ }\KeywordTok{import.gff}\NormalTok{(}\StringTok{"./data/My_species.gff3"}\NormalTok{)}
+\NormalTok{gff <-}\StringTok{ }\KeywordTok{split}\NormalTok{(gff, }\KeywordTok{elementMetadata}\NormalTok{(gff)}\OperatorTok{$}\NormalTok{ID)}
+\NormalTok{bams <-}\StringTok{ }\KeywordTok{names}\NormalTok{(bampaths)}
+\KeywordTok{names}\NormalTok{(bams) <-}\StringTok{ }\NormalTok{targets}\OperatorTok{$}\NormalTok{SampleName}
+\NormalTok{bfl <-}\StringTok{ }\KeywordTok{BamFileList}\NormalTok{(bams, }\DataTypeTok{yieldSize =} \DecValTok{50000}\NormalTok{, }\DataTypeTok{index =} \KeywordTok{character}\NormalTok{())}
+\NormalTok{countDFmiR <-}\StringTok{ }\KeywordTok{summarizeOverlaps}\NormalTok{(gff, bfl, }\DataTypeTok{mode =} \StringTok{"Union"}\NormalTok{, }\DataTypeTok{ignore.strand =} \OtherTok{FALSE}\NormalTok{, }
+    \DataTypeTok{inter.feature =} \OtherTok{FALSE}\NormalTok{)  }\CommentTok{# Note: inter.feature=FALSE important since pre and mature miRNA ranges overlap}
+\NormalTok{rpkmDFmiR <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(countDFmiR, }\DecValTok{2}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{returnRPKM}\NormalTok{(}\DataTypeTok{counts =}\NormalTok{ x, }\DataTypeTok{gffsub =}\NormalTok{ gff))}
+\KeywordTok{write.table}\NormalTok{(}\KeywordTok{assays}\NormalTok{(countDFmiR)}\OperatorTok{$}\NormalTok{counts, }\StringTok{"results/countDFmiR.xls"}\NormalTok{, }\DataTypeTok{col.names =} \OtherTok{NA}\NormalTok{, }
+    \DataTypeTok{quote =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"}\CharTok{\textbackslash{}t}\StringTok{"}\NormalTok{)}
+\KeywordTok{write.table}\NormalTok{(rpkmDFmiR, }\StringTok{"results/rpkmDFmiR.xls"}\NormalTok{, }\DataTypeTok{col.names =} \OtherTok{NA}\NormalTok{, }\DataTypeTok{quote =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"}\CharTok{\textbackslash{}t}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{correlation-analysis-of-samples}{%
+\subsection{Correlation analysis of samples}\label{correlation-analysis-of-samples}}
+
+The following computes the sample-wise Spearman correlation coefficients from the \emph{\texttt{rlog}} (regularized-logarithm) transformed expression values generated with the \emph{\texttt{DESeq2}} package. After transformation to a distance matrix, hierarchical clustering is performed with the \emph{\texttt{hclust}} function and the result is plotted as a dendrogram (\href{./results/sample_tree.pdf}{sample\_tree.pdf}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(DESeq2, }\DataTypeTok{warn.conflicts =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{quietly =} \OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(ape, }\DataTypeTok{warn.conflicts =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{countDFpath <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"countDFeByg.xls"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{countDF <-}\StringTok{ }\KeywordTok{as.matrix}\NormalTok{(}\KeywordTok{read.table}\NormalTok{(countDFpath))}
+\NormalTok{colData <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{row.names =} \KeywordTok{targets.as.df}\NormalTok{(}\KeywordTok{targets}\NormalTok{(args))}\OperatorTok{$}\NormalTok{SampleName, }\DataTypeTok{condition =} \KeywordTok{targets.as.df}\NormalTok{(}\KeywordTok{targets}\NormalTok{(args))}\OperatorTok{$}\NormalTok{Factor)}
+\NormalTok{dds <-}\StringTok{ }\KeywordTok{DESeqDataSetFromMatrix}\NormalTok{(}\DataTypeTok{countData =}\NormalTok{ countDF, }\DataTypeTok{colData =}\NormalTok{ colData, }\DataTypeTok{design =} \OperatorTok{~}\NormalTok{condition)}
+\CommentTok{## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in}
+\CommentTok{## design formula are characters, converting to factors}
+\NormalTok{d <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(}\KeywordTok{assay}\NormalTok{(}\KeywordTok{rlog}\NormalTok{(dds)), }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{)}
+\NormalTok{hc <-}\StringTok{ }\KeywordTok{hclust}\NormalTok{(}\KeywordTok{dist}\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{d))}
+\KeywordTok{plot.phylo}\NormalTok{(}\KeywordTok{as.phylo}\NormalTok{(hc), }\DataTypeTok{type =} \StringTok{"p"}\NormalTok{, }\DataTypeTok{edge.col =} \DecValTok{4}\NormalTok{, }\DataTypeTok{edge.width =} \DecValTok{3}\NormalTok{, }\DataTypeTok{show.node.label =} \OtherTok{TRUE}\NormalTok{, }
+    \DataTypeTok{no.margin =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics{systemPipeR_files/figure-latex/sample_tree_rlog-1} \end{adjustwidth}
+
+\textbf{Figure 6:} Correlation dendrogram of samples for \emph{\texttt{rlog}} values.
+
+Alternatively, the clustering can be performed with \emph{\texttt{RPKM}} normalized expression values. In combination with Spearman correlation the results of the two clustering methods are often relatively similar.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rpkmDFeBygpath <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"rpkmDFeByg.xls"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{rpkmDFeByg <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(rpkmDFeBygpath, }\DataTypeTok{check.names =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{rpkmDFeByg <-}\StringTok{ }\NormalTok{rpkmDFeByg[}\KeywordTok{rowMeans}\NormalTok{(rpkmDFeByg) }\OperatorTok{>}\StringTok{ }\DecValTok{50}\NormalTok{, ]}
+\NormalTok{d <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(rpkmDFeByg, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{)}
+\NormalTok{hc <-}\StringTok{ }\KeywordTok{hclust}\NormalTok{(}\KeywordTok{as.dist}\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{d))}
+\KeywordTok{plot.phylo}\NormalTok{(}\KeywordTok{as.phylo}\NormalTok{(hc), }\DataTypeTok{type =} \StringTok{"p"}\NormalTok{, }\DataTypeTok{edge.col =} \StringTok{"blue"}\NormalTok{, }\DataTypeTok{edge.width =} \DecValTok{2}\NormalTok{, }\DataTypeTok{show.node.label =} \OtherTok{TRUE}\NormalTok{, }
+    \DataTypeTok{no.margin =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{deg-analysis-with-edger}{%
+\subsection{\texorpdfstring{DEG analysis with \emph{\texttt{edgeR}}}{DEG analysis with edgeR}}\label{deg-analysis-with-edger}}
+
+The following \emph{\texttt{run\_edgeR}} function is a convenience wrapper for
+identifying differentially expressed genes (DEGs) in batch mode with
+\emph{\texttt{edgeR}}'s GML method (Robinson, McCarthy, and Smyth 2010) for any number of
+pairwise sample comparisons specified under the \emph{\texttt{cmp}} argument. Users
+are strongly encouraged to consult the
+\href{/href\%7Bhttp://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf}{\emph{\texttt{edgeR}}} vignette
+for more detailed information on this topic and how to properly run \emph{\texttt{edgeR}}
+on data sets with more complex experimental designs.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targets <-}\StringTok{ }\KeywordTok{read.delim}\NormalTok{(targetspath, }\DataTypeTok{comment =} \StringTok{"#"}\NormalTok{)}
+\NormalTok{cmp <-}\StringTok{ }\KeywordTok{readComp}\NormalTok{(}\DataTypeTok{file =}\NormalTok{ targetspath, }\DataTypeTok{format =} \StringTok{"matrix"}\NormalTok{, }\DataTypeTok{delim =} \StringTok{"-"}\NormalTok{)}
+\NormalTok{cmp[[}\DecValTok{1}\NormalTok{]]}
+\CommentTok{##       [,1]  [,2] }
+\CommentTok{##  [1,] "M1"  "A1" }
+\CommentTok{##  [2,] "M1"  "V1" }
+\CommentTok{##  [3,] "A1"  "V1" }
+\CommentTok{##  [4,] "M6"  "A6" }
+\CommentTok{##  [5,] "M6"  "V6" }
+\CommentTok{##  [6,] "A6"  "V6" }
+\CommentTok{##  [7,] "M12" "A12"}
+\CommentTok{##  [8,] "M12" "V12"}
+\CommentTok{##  [9,] "A12" "V12"}
+\NormalTok{countDFeBygpath <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"extdata"}\NormalTok{, }\StringTok{"countDFeByg.xls"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"systemPipeR"}\NormalTok{)}
+\NormalTok{countDFeByg <-}\StringTok{ }\KeywordTok{read.delim}\NormalTok{(countDFeBygpath, }\DataTypeTok{row.names =} \DecValTok{1}\NormalTok{)}
+\NormalTok{edgeDF <-}\StringTok{ }\KeywordTok{run_edgeR}\NormalTok{(}\DataTypeTok{countDF =}\NormalTok{ countDFeByg, }\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{cmp =}\NormalTok{ cmp[[}\DecValTok{1}\NormalTok{]], }\DataTypeTok{independent =} \OtherTok{FALSE}\NormalTok{, }
+    \DataTypeTok{mdsplot =} \StringTok{""}\NormalTok{)}
+\CommentTok{## Disp = 0.21829 , BCV = 0.4672}
+\end{Highlighting}
+\end{Shaded}
+
+Filter and plot DEG results for up and down-regulated genes. Because of the small size of the toy data set used by this vignette, the \emph{FDR} value has been set to a relatively high threshold (here 10\%). More commonly used \emph{FDR} cutoffs are 1\% or 5\%. The definition of `\emph{up}' and `\emph{down}' is given in the corresponding help file. To open it, type \emph{\texttt{?filterDEGs}} in the R console.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DEG_list <-}\StringTok{ }\KeywordTok{filterDEGs}\NormalTok{(}\DataTypeTok{degDF =}\NormalTok{ edgeDF, }\DataTypeTok{filter =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{Fold =} \DecValTok{2}\NormalTok{, }\DataTypeTok{FDR =} \DecValTok{10}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics{systemPipeR_files/figure-latex/edger_deg_counts-1} \end{adjustwidth}
+
+\textbf{Figure 7:} Up and down regulated DEGs identified by \emph{\texttt{edgeR}}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(DEG_list)}
+\CommentTok{## [1] "UporDown" "Up"       "Down"     "Summary"}
+\NormalTok{DEG_list}\OperatorTok{$}\NormalTok{Summary[}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{, ]}
+\CommentTok{##       Comparisons Counts_Up_or_Down Counts_Up Counts_Down}
+\CommentTok{## M1-A1       M1-A1                 0         0           0}
+\CommentTok{## M1-V1       M1-V1                 1         1           0}
+\CommentTok{## A1-V1       A1-V1                 1         1           0}
+\CommentTok{## M6-A6       M6-A6                 0         0           0}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{deg-analysis-with-deseq2}{%
+\subsection{\texorpdfstring{DEG analysis with \emph{\texttt{DESeq2}}}{DEG analysis with DESeq2}}\label{deg-analysis-with-deseq2}}
+
+The following \emph{\texttt{run\_DESeq2}} function is a convenience wrapper for
+identifying DEGs in batch mode with \emph{\texttt{DESeq2}} (Love, Huber, and Anders 2014) for any number of
+pairwise sample comparisons specified under the \emph{\texttt{cmp}} argument. Users
+are strongly encouraged to consult the
+\href{http://www.bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf}{\emph{\texttt{DESeq2}}} vignette
+for more detailed information on this topic and how to properly run \emph{\texttt{DESeq2}}
+on data sets with more complex experimental designs.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{degseqDF <-}\StringTok{ }\KeywordTok{run_DESeq2}\NormalTok{(}\DataTypeTok{countDF =}\NormalTok{ countDFeByg, }\DataTypeTok{targets =}\NormalTok{ targets, }\DataTypeTok{cmp =}\NormalTok{ cmp[[}\DecValTok{1}\NormalTok{]], }
+    \DataTypeTok{independent =} \OtherTok{FALSE}\NormalTok{)}
+\CommentTok{## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in}
+\CommentTok{## design formula are characters, converting to factors}
+\end{Highlighting}
+\end{Shaded}
+
+Filter and plot DEG results for up and down-regulated genes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{DEG_list2 <-}\StringTok{ }\KeywordTok{filterDEGs}\NormalTok{(}\DataTypeTok{degDF =}\NormalTok{ degseqDF, }\DataTypeTok{filter =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{Fold =} \DecValTok{2}\NormalTok{, }\DataTypeTok{FDR =} \DecValTok{10}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics{systemPipeR_files/figure-latex/deseq2_deg_counts-1} \end{adjustwidth}
+
+\textbf{Figure 8:} Up and down regulated DEGs identified by \emph{\texttt{DESeq2}}.
+
+\hypertarget{venn-diagrams}{%
+\subsection{Venn Diagrams}\label{venn-diagrams}}
+
+The function \emph{\texttt{overLapper}} can compute Venn intersects for large numbers of sample sets (up to 20 or more) and \emph{\texttt{vennPlot}} can plot 2-5 way Venn diagrams. A useful feature is the possibility to combine the counts from several Venn comparisons with the same number of sample sets in a single Venn diagram (here for 4 up and down DEG sets).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vennsetup <-}\StringTok{ }\KeywordTok{overLapper}\NormalTok{(DEG_list}\OperatorTok{$}\NormalTok{Up[}\DecValTok{6}\OperatorTok{:}\DecValTok{9}\NormalTok{], }\DataTypeTok{type =} \StringTok{"vennsets"}\NormalTok{)}
+\NormalTok{vennsetdown <-}\StringTok{ }\KeywordTok{overLapper}\NormalTok{(DEG_list}\OperatorTok{$}\NormalTok{Down[}\DecValTok{6}\OperatorTok{:}\DecValTok{9}\NormalTok{], }\DataTypeTok{type =} \StringTok{"vennsets"}\NormalTok{)}
+\KeywordTok{vennPlot}\NormalTok{(}\KeywordTok{list}\NormalTok{(vennsetup, vennsetdown), }\DataTypeTok{mymain =} \StringTok{""}\NormalTok{, }\DataTypeTok{mysub =} \StringTok{""}\NormalTok{, }\DataTypeTok{colmode =} \DecValTok{2}\NormalTok{, }\DataTypeTok{ccol =} \KeywordTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }
+    \StringTok{"red"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics{systemPipeR_files/figure-latex/vennplot-1} \end{adjustwidth}
+
+\textbf{Figure 9:} Venn Diagram for 4 Up and Down DEG Sets.
+
+\hypertarget{go-term-enrichment-analysis-of-degs}{%
+\subsection{GO term enrichment analysis of DEGs}\label{go-term-enrichment-analysis-of-degs}}
+
+\hypertarget{obtain-gene-to-go-mappings}{%
+\subsubsection{Obtain gene-to-GO mappings}\label{obtain-gene-to-go-mappings}}
+
+The following shows how to obtain gene-to-GO mappings from \emph{\texttt{biomaRt}} (here for \emph{A. thaliana}) and how to organize them for the downstream GO term enrichment analysis. Alternatively, the gene-to-GO mappings can be obtained for many organisms from Bioconductor's \emph{\texttt{*.db}} genome annotation packages or GO annotation files provided by various genome databases. For each annotation, this relatively slow preprocessing step needs to be performed only once. Subsequently, the preprocessed data can be loaded with the \emph{\texttt{load}} function as shown in the next subsection.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(}\StringTok{"biomaRt"}\NormalTok{)}
+\KeywordTok{listMarts}\NormalTok{()  }\CommentTok{# To choose BioMart database}
+\KeywordTok{listMarts}\NormalTok{(}\DataTypeTok{host =} \StringTok{"plants.ensembl.org"}\NormalTok{)}
+\NormalTok{m <-}\StringTok{ }\KeywordTok{useMart}\NormalTok{(}\StringTok{"plants_mart"}\NormalTok{, }\DataTypeTok{host =} \StringTok{"plants.ensembl.org"}\NormalTok{)}
+\KeywordTok{listDatasets}\NormalTok{(m)}
+\NormalTok{m <-}\StringTok{ }\KeywordTok{useMart}\NormalTok{(}\StringTok{"plants_mart"}\NormalTok{, }\DataTypeTok{dataset =} \StringTok{"athaliana_eg_gene"}\NormalTok{, }\DataTypeTok{host =} \StringTok{"plants.ensembl.org"}\NormalTok{)}
+\KeywordTok{listAttributes}\NormalTok{(m)  }\CommentTok{# Choose data types you want to download}
+\NormalTok{go <-}\StringTok{ }\KeywordTok{getBM}\NormalTok{(}\DataTypeTok{attributes =} \KeywordTok{c}\NormalTok{(}\StringTok{"go_id"}\NormalTok{, }\StringTok{"tair_locus"}\NormalTok{, }\StringTok{"namespace_1003"}\NormalTok{), }\DataTypeTok{mart =}\NormalTok{ m)}
+\NormalTok{go <-}\StringTok{ }\NormalTok{go[go[, }\DecValTok{3}\NormalTok{] }\OperatorTok{!=}\StringTok{ ""}\NormalTok{, ]}
+\NormalTok{go[, }\DecValTok{3}\NormalTok{] <-}\StringTok{ }\KeywordTok{as.character}\NormalTok{(go[, }\DecValTok{3}\NormalTok{])}
+\NormalTok{go[go[, }\DecValTok{3}\NormalTok{] }\OperatorTok{==}\StringTok{ "molecular_function"}\NormalTok{, }\DecValTok{3}\NormalTok{] <-}\StringTok{ "F"}
+\NormalTok{go[go[, }\DecValTok{3}\NormalTok{] }\OperatorTok{==}\StringTok{ "biological_process"}\NormalTok{, }\DecValTok{3}\NormalTok{] <-}\StringTok{ "P"}
+\NormalTok{go[go[, }\DecValTok{3}\NormalTok{] }\OperatorTok{==}\StringTok{ "cellular_component"}\NormalTok{, }\DecValTok{3}\NormalTok{] <-}\StringTok{ "C"}
+\NormalTok{go[}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{, ]}
+\KeywordTok{dir.create}\NormalTok{(}\StringTok{"./data/GO"}\NormalTok{)}
+\KeywordTok{write.table}\NormalTok{(go, }\StringTok{"data/GO/GOannotationsBiomart_mod.txt"}\NormalTok{, }\DataTypeTok{quote =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{, }
+    \DataTypeTok{col.names =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"}\CharTok{\textbackslash{}t}\StringTok{"}\NormalTok{)}
+\NormalTok{catdb <-}\StringTok{ }\KeywordTok{makeCATdb}\NormalTok{(}\DataTypeTok{myfile =} \StringTok{"data/GO/GOannotationsBiomart_mod.txt"}\NormalTok{, }\DataTypeTok{lib =} \OtherTok{NULL}\NormalTok{, }\DataTypeTok{org =} \StringTok{""}\NormalTok{, }
+    \DataTypeTok{colno =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{), }\DataTypeTok{idconv =} \OtherTok{NULL}\NormalTok{)}
+\KeywordTok{save}\NormalTok{(catdb, }\DataTypeTok{file =} \StringTok{"data/GO/catdb.RData"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{batch-go-term-enrichment-analysis}{%
+\subsubsection{Batch GO term enrichment analysis}\label{batch-go-term-enrichment-analysis}}
+
+Apply the enrichment analysis to the DEG sets obtained in the above differential expression analysis. Note, in the following example the \emph{FDR} filter is set here to an unreasonably high value, simply because of the small size of the toy data set used in this vignette. Batch enrichment analysis of many gene sets is performed with the \emph{\texttt{GOCluster\_Report}} function. When \emph{\texttt{method="all"}}, it returns all GO terms passing the p-value cutoff specified under the \emph{\texttt{cutoff}} arguments. When \emph{\texttt{method="slim"}}, it returns only the GO terms specified under the \emph{\texttt{myslimv}} argument. The given example shows how one can obtain such a GO slim vector from BioMart for a specific organism.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{load}\NormalTok{(}\StringTok{"data/GO/catdb.RData"}\NormalTok{)}
+\NormalTok{DEG_list <-}\StringTok{ }\KeywordTok{filterDEGs}\NormalTok{(}\DataTypeTok{degDF =}\NormalTok{ edgeDF, }\DataTypeTok{filter =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{Fold =} \DecValTok{2}\NormalTok{, }\DataTypeTok{FDR =} \DecValTok{50}\NormalTok{), }\DataTypeTok{plot =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{up_down <-}\StringTok{ }\NormalTok{DEG_list}\OperatorTok{$}\NormalTok{UporDown}
+\KeywordTok{names}\NormalTok{(up_down) <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{names}\NormalTok{(up_down), }\StringTok{"_up_down"}\NormalTok{, }\DataTypeTok{sep =} \StringTok{""}\NormalTok{)}
+\NormalTok{up <-}\StringTok{ }\NormalTok{DEG_list}\OperatorTok{$}\NormalTok{Up}
+\KeywordTok{names}\NormalTok{(up) <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{names}\NormalTok{(up), }\StringTok{"_up"}\NormalTok{, }\DataTypeTok{sep =} \StringTok{""}\NormalTok{)}
+\NormalTok{down <-}\StringTok{ }\NormalTok{DEG_list}\OperatorTok{$}\NormalTok{Down}
+\KeywordTok{names}\NormalTok{(down) <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{names}\NormalTok{(down), }\StringTok{"_down"}\NormalTok{, }\DataTypeTok{sep =} \StringTok{""}\NormalTok{)}
+\NormalTok{DEGlist <-}\StringTok{ }\KeywordTok{c}\NormalTok{(up_down, up, down)}
+\NormalTok{DEGlist <-}\StringTok{ }\NormalTok{DEGlist[}\KeywordTok{sapply}\NormalTok{(DEGlist, length) }\OperatorTok{>}\StringTok{ }\DecValTok{0}\NormalTok{]}
+\NormalTok{BatchResult <-}\StringTok{ }\KeywordTok{GOCluster_Report}\NormalTok{(}\DataTypeTok{catdb =}\NormalTok{ catdb, }\DataTypeTok{setlist =}\NormalTok{ DEGlist, }\DataTypeTok{method =} \StringTok{"all"}\NormalTok{, }
+    \DataTypeTok{id_type =} \StringTok{"gene"}\NormalTok{, }\DataTypeTok{CLSZ =} \DecValTok{2}\NormalTok{, }\DataTypeTok{cutoff =} \FloatTok{0.9}\NormalTok{, }\DataTypeTok{gocats =} \KeywordTok{c}\NormalTok{(}\StringTok{"MF"}\NormalTok{, }\StringTok{"BP"}\NormalTok{, }\StringTok{"CC"}\NormalTok{), }\DataTypeTok{recordSpecGO =} \OtherTok{NULL}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"biomaRt"}\NormalTok{)}
+\NormalTok{m <-}\StringTok{ }\KeywordTok{useMart}\NormalTok{(}\StringTok{"plants_mart"}\NormalTok{, }\DataTypeTok{dataset =} \StringTok{"athaliana_eg_gene"}\NormalTok{, }\DataTypeTok{host =} \StringTok{"plants.ensembl.org"}\NormalTok{)}
+\NormalTok{goslimvec <-}\StringTok{ }\KeywordTok{as.character}\NormalTok{(}\KeywordTok{getBM}\NormalTok{(}\DataTypeTok{attributes =} \KeywordTok{c}\NormalTok{(}\StringTok{"goslim_goa_accession"}\NormalTok{), }\DataTypeTok{mart =}\NormalTok{ m)[, }
+    \DecValTok{1}\NormalTok{])}
+\NormalTok{BatchResultslim <-}\StringTok{ }\KeywordTok{GOCluster_Report}\NormalTok{(}\DataTypeTok{catdb =}\NormalTok{ catdb, }\DataTypeTok{setlist =}\NormalTok{ DEGlist, }\DataTypeTok{method =} \StringTok{"slim"}\NormalTok{, }
+    \DataTypeTok{id_type =} \StringTok{"gene"}\NormalTok{, }\DataTypeTok{myslimv =}\NormalTok{ goslimvec, }\DataTypeTok{CLSZ =} \DecValTok{10}\NormalTok{, }\DataTypeTok{cutoff =} \FloatTok{0.01}\NormalTok{, }\DataTypeTok{gocats =} \KeywordTok{c}\NormalTok{(}\StringTok{"MF"}\NormalTok{, }
+        \StringTok{"BP"}\NormalTok{, }\StringTok{"CC"}\NormalTok{), }\DataTypeTok{recordSpecGO =} \OtherTok{NULL}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{plot-batch-go-term-results}{%
+\subsubsection{Plot batch GO term results}\label{plot-batch-go-term-results}}
+
+The \emph{\texttt{data.frame}} generated by \emph{\texttt{GOCluster\_Report}} can be plotted with the \emph{\texttt{goBarplot}} function. Because of the variable size of the sample sets, it may not always be desirable to show the results from different DEG sets in the same bar plot. Plotting single sample sets is achieved by subsetting the input data frame as shown in the first line of the following example.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gos <-}\StringTok{ }\NormalTok{BatchResultslim[}\KeywordTok{grep}\NormalTok{(}\StringTok{"M6-V6_up_down"}\NormalTok{, BatchResultslim}\OperatorTok{$}\NormalTok{CLID), ]}
+\NormalTok{gos <-}\StringTok{ }\NormalTok{BatchResultslim}
+\KeywordTok{pdf}\NormalTok{(}\StringTok{"GOslimbarplotMF.pdf"}\NormalTok{, }\DataTypeTok{height =} \DecValTok{8}\NormalTok{, }\DataTypeTok{width =} \DecValTok{10}\NormalTok{)}
+\KeywordTok{goBarplot}\NormalTok{(gos, }\DataTypeTok{gocat =} \StringTok{"MF"}\NormalTok{)}
+\KeywordTok{dev.off}\NormalTok{()}
+\KeywordTok{goBarplot}\NormalTok{(gos, }\DataTypeTok{gocat =} \StringTok{"BP"}\NormalTok{)}
+\KeywordTok{goBarplot}\NormalTok{(gos, }\DataTypeTok{gocat =} \StringTok{"CC"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GOslimbarplotMF.png}
+
+\textbf{Figure 10:} GO Slim Barplot for MF Ontology.
+
+\hypertarget{clustering-and-heat-maps}{%
+\subsection{Clustering and heat maps}\label{clustering-and-heat-maps}}
+
+The following example performs hierarchical clustering on the \emph{\texttt{rlog}} transformed expression matrix subsetted by the DEGs identified in the
+above differential expression analysis. It uses a Pearson correlation-based distance measure and complete linkage for cluster join.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(pheatmap)}
+\NormalTok{geneids <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(}\KeywordTok{as.character}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(DEG_list[[}\DecValTok{1}\NormalTok{]])))}
+\NormalTok{y <-}\StringTok{ }\KeywordTok{assay}\NormalTok{(}\KeywordTok{rlog}\NormalTok{(dds))[geneids, ]}
+\KeywordTok{pdf}\NormalTok{(}\StringTok{"heatmap1.pdf"}\NormalTok{)}
+\KeywordTok{pheatmap}\NormalTok{(y, }\DataTypeTok{scale =} \StringTok{"row"}\NormalTok{, }\DataTypeTok{clustering_distance_rows =} \StringTok{"correlation"}\NormalTok{, }\DataTypeTok{clustering_distance_cols =} \StringTok{"correlation"}\NormalTok{)}
+\KeywordTok{dev.off}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Figure 11:} Heat map with hierarchical clustering dendrograms of DEGs.
+
+\hypertarget{workflow-templates}{%
+\section{Workflow templates}\label{workflow-templates}}
+
+The intended way of running \emph{\texttt{systemPipeR}} workflows is via \emph{\texttt{*.Rmd}} files, which
+can be executed either line-wise in interactive mode or with a single command from
+R or the command-line. This way comprehensive and reproducible analysis reports
+can be generated in PDF or HTML format in a fully automated manner by making use
+of the highly functional reporting utilities available for R.
+The following shows how to execute a workflow (\emph{e.g.}, systemPipeRNAseq.Rmd)
+from the command-line.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{Rscript}\NormalTok{ -e }\StringTok{"rmarkdown::render('systemPipeRNAseq.Rmd')"}
+\end{Highlighting}
+\end{Shaded}
+
+Templates for setting up custom project reports are provided as \emph{\texttt{*.Rmd}} files by the helper package \emph{\texttt{systemPipeRdata}} and in the vignettes subdirectory of \emph{\texttt{systemPipeR}}. The corresponding HTML of these report templates are available here: \href{http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.html}{\emph{\texttt{systemPipeRNAseq}}}, \href{http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html}{\emph{\texttt{systemPipeRIBOseq}}}, \href{http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html}{\emph{\texttt{systemPipeChIPseq}}} and \href{http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html}{\emph{\texttt{systemPipeVARseq}}}. To work with \emph{\texttt{*.Rnw}} or \emph{\texttt{*.Rmd}} files efficiently, basic knowledge of \href{https://www.stat.uni-muenchen.de/~leisch/Sweave/}{\emph{\texttt{Sweave}}} or \href{http://yihui.name/knitr/}{\emph{\texttt{knitr}}} and \href{http://www.latex-project.org/}{\emph{\texttt{Latex}}} or \href{http://rmarkdown.rstudio.com/}{\emph{\texttt{R Markdown v2}}} is required.
+
+\hypertarget{rna-seq-sample}{%
+\subsection{RNA-Seq sample}\label{rna-seq-sample}}
+
+Load the RNA-Seq sample workflow into your current working directory.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"rnaseq"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"rnaseq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{run-workflow}{%
+\subsubsection{Run workflow}\label{run-workflow}}
+
+Next, run the chosen sample workflow \emph{\texttt{systemPipeRNAseq}} (\href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.pdf?raw=true}{PDF}, \href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/rnaseq/systemPipeRNAseq.Rmd}{Rmd}) by executing from the command-line \emph{\texttt{make -B}} within the \emph{\texttt{rnaseq}} directory. Alternatively, one can run the code from the provided \emph{\texttt{*.Rmd}} template file from within R interactively.
+
+The workflow includes following steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Read preprocessing
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Quality filtering (trimming)
+  \item
+    FASTQ quality report
+  \end{itemize}
+\item
+  Alignments: \emph{\texttt{Tophat2}} (or any other RNA-Seq aligner)
+\item
+  Alignment stats
+\item
+  Read counting
+\item
+  Sample-wise correlation analysis
+\item
+  Analysis of differentially expressed genes (DEGs)
+\item
+  GO term enrichment analysis
+\item
+  Gene-wise clustering
+\end{enumerate}
+
+\hypertarget{chip-seq-sample}{%
+\subsection{ChIP-Seq sample}\label{chip-seq-sample}}
+
+Load the ChIP-Seq sample workflow into your current working directory.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"chipseq"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"chipseq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{run-workflow-1}{%
+\subsubsection{Run workflow}\label{run-workflow-1}}
+
+Next, run the chosen sample workflow \emph{\texttt{systemPipeChIPseq\_single}} (\href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.pdf?raw=true}{PDF}, \href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/chipseq/systemPipeChIPseq.Rmd}{Rmd}) by executing from the command-line \emph{\texttt{make -B}} within the \emph{\texttt{chipseq}} directory. Alternatively, one can run the code from the provided \emph{\texttt{*.Rmd}} template file from within R interactively.
+
+The workflow includes the following steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Read preprocessing
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Quality filtering (trimming)
+  \item
+    FASTQ quality report
+  \end{itemize}
+\item
+  Alignments: \emph{\texttt{Bowtie2}} or \emph{\texttt{rsubread}}
+\item
+  Alignment stats
+\item
+  Peak calling: \emph{\texttt{MACS2}}, \emph{\texttt{BayesPeak}}
+\item
+  Peak annotation with genomic context
+\item
+  Differential binding analysis
+\item
+  GO term enrichment analysis
+\item
+  Motif analysis
+\end{enumerate}
+
+\hypertarget{var-seq-sample}{%
+\subsection{VAR-Seq sample}\label{var-seq-sample}}
+
+\hypertarget{var-seq-workflow-for-the-single-machine}{%
+\subsubsection{VAR-Seq workflow for the single machine}\label{var-seq-workflow-for-the-single-machine}}
+
+Load the VAR-Seq sample workflow into your current working directory.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"varseq"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"varseq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{run-workflow-2}{%
+\subsubsection{Run workflow}\label{run-workflow-2}}
+
+Next, run the chosen sample workflow \emph{\texttt{systemPipeVARseq\_single}} (\href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.pdf?raw=true}{PDF}, \href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq_single.Rmd}{Rmd}) by executing from the command-line \emph{\texttt{make -B}} within the \emph{\texttt{varseq}} directory. Alternatively, one can run the code from the provided \emph{\texttt{*.Rmd}} template file from within R interactively.
+
+The workflow includes following steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Read preprocessing
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Quality filtering (trimming)
+  \item
+    FASTQ quality report
+  \end{itemize}
+\item
+  Alignments: \emph{\texttt{gsnap}}, \emph{\texttt{bwa}}
+\item
+  Variant calling: \emph{\texttt{VariantTools}}, \emph{\texttt{GATK}}, \emph{\texttt{BCFtools}}
+\item
+  Variant filtering: \emph{\texttt{VariantTools}} and \emph{\texttt{VariantAnnotation}}
+\item
+  Variant annotation: \emph{\texttt{VariantAnnotation}}
+\item
+  Combine results from many samples
+\item
+  Summary statistics of samples
+\end{enumerate}
+
+\hypertarget{var-seq-workflow-for-computer-cluster}{%
+\subsubsection{VAR-Seq workflow for computer cluster}\label{var-seq-workflow-for-computer-cluster}}
+
+The workflow template provided for this step is called \emph{\texttt{systemPipeVARseq.Rmd}} (\href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.pdf?raw=true}{PDF}, \href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/varseq/systemPipeVARseq.Rmd}{Rmd}).
+It runs the above VAR-Seq workflow in parallel on multiple compute nodes of an HPC system using Slurm as the scheduler.
+
+\hypertarget{ribo-seq-sample}{%
+\subsection{Ribo-Seq sample}\label{ribo-seq-sample}}
+
+Load the Ribo-Seq sample workflow into your current working directory.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(systemPipeRdata)}
+\KeywordTok{genWorkenvir}\NormalTok{(}\DataTypeTok{workflow =} \StringTok{"riboseq"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"riboseq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{run-workflow-3}{%
+\subsubsection{Run workflow}\label{run-workflow-3}}
+
+Next, run the chosen sample workflow \emph{\texttt{systemPipeRIBOseq}} (\href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/riboseq/systemPipeRIBOseq.pdf?raw=true}{PDF}, \href{https://github.com/tgirke/systemPipeRdata/blob/master/inst/extdata/workflows/ribseq/systemPipeRIBOseq.Rmd}{Rmd}) by executing from the command-line \emph{\texttt{make -B}} within the \emph{\texttt{ribseq}} directory. Alternatively, one can run the code from the provided \emph{\texttt{*.Rmd}} template file from within R interactively.
+
+The workflow includes following steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Read preprocessing
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Adaptor trimming and quality filtering
+  \item
+    FASTQ quality report
+  \end{itemize}
+\item
+  Alignments: \emph{\texttt{Tophat2}} (or any other RNA-Seq aligner)
+\item
+  Alignment stats
+\item
+  Compute read distribution across genomic features
+\item
+  Adding custom features to the workflow (e.g.~uORFs)
+\item
+  Genomic read coverage along with transcripts
+\item
+  Read counting
+\item
+  Sample-wise correlation analysis
+\item
+  Analysis of differentially expressed genes (DEGs)
+\item
+  GO term enrichment analysis
+\item
+  Gene-wise clustering
+\item
+  Differential ribosome binding (translational efficiency)
+\end{enumerate}
+
+\hypertarget{version-information}{%
+\section{Version information}\label{version-information}}
+
+\textbf{Note:} the most recent version of this tutorial can be found here.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sessionInfo}\NormalTok{()}
+\CommentTok{## R Under development (unstable) (2020-10-24 r79367)}
+\CommentTok{## Platform: x86_64-pc-linux-gnu (64-bit)}
+\CommentTok{## Running under: Ubuntu 20.04.1 LTS}
+\CommentTok{## }
+\CommentTok{## Matrix products: default}
+\CommentTok{## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.9.0}
+\CommentTok{## LAPACK: /home/dcassol/src/R-devel/lib/libRlapack.so}
+\CommentTok{## }
+\CommentTok{## locale:}
+\CommentTok{##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              }
+\CommentTok{##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    }
+\CommentTok{##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   }
+\CommentTok{##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 }
+\CommentTok{##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            }
+\CommentTok{## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       }
+\CommentTok{## }
+\CommentTok{## attached base packages:}
+\CommentTok{## [1] stats4    parallel  stats     graphics  grDevices utils     datasets }
+\CommentTok{## [8] methods   base     }
+\CommentTok{## }
+\CommentTok{## other attached packages:}
+\CommentTok{##  [1] kableExtra_1.3.1            dplyr_1.0.2                }
+\CommentTok{##  [3] DESeq2_1.31.0               magrittr_1.5               }
+\CommentTok{##  [5] batchtools_0.9.14           ape_5.4-1                  }
+\CommentTok{##  [7] ggplot2_3.3.2               systemPipeR_1.25.3         }
+\CommentTok{##  [9] ShortRead_1.49.0            GenomicAlignments_1.27.0   }
+\CommentTok{## [11] SummarizedExperiment_1.21.0 DelayedArray_0.15.16       }
+\CommentTok{## [13] MatrixGenerics_1.3.0        Matrix_1.2-18              }
+\CommentTok{## [15] matrixStats_0.57.0          Biobase_2.51.0             }
+\CommentTok{## [17] BiocParallel_1.25.0         Rsamtools_2.7.0            }
+\CommentTok{## [19] Biostrings_2.59.0           XVector_0.31.0             }
+\CommentTok{## [21] GenomicRanges_1.43.0        GenomeInfoDb_1.27.0        }
+\CommentTok{## [23] IRanges_2.25.0              S4Vectors_0.29.0           }
+\CommentTok{## [25] BiocGenerics_0.37.0         BiocStyle_2.19.0           }
+\CommentTok{## }
+\CommentTok{## loaded via a namespace (and not attached):}
+\CommentTok{##   [1] colorspace_1.4-1         rjson_0.2.20             hwriter_1.3.2           }
+\CommentTok{##   [4] ellipsis_0.3.1           rstudioapi_0.11          farver_2.0.3            }
+\CommentTok{##   [7] bit64_4.0.5              AnnotationDbi_1.53.0     xml2_1.3.2              }
+\CommentTok{##  [10] codetools_0.2-16         splines_4.1.0            geneplotter_1.69.0      }
+\CommentTok{##  [13] knitr_1.30               jsonlite_1.7.1           annotate_1.69.0         }
+\CommentTok{##  [16] GO.db_3.12.1             dbplyr_1.4.4             png_0.1-7               }
+\CommentTok{##  [19] pheatmap_1.0.12          graph_1.69.0             BiocManager_1.30.10     }
+\CommentTok{##  [22] compiler_4.1.0           httr_1.4.2               GOstats_2.57.0          }
+\CommentTok{##  [25] backports_1.1.10         assertthat_0.2.1         limma_3.47.0            }
+\CommentTok{##  [28] formatR_1.7              htmltools_0.5.0          prettyunits_1.1.1       }
+\CommentTok{##  [31] tools_4.1.0              gtable_0.3.0             glue_1.4.2              }
+\CommentTok{##  [34] GenomeInfoDbData_1.2.4   Category_2.57.0          rsvg_2.1                }
+\CommentTok{##  [37] rappdirs_0.3.1           V8_3.3.1                 Rcpp_1.0.5              }
+\CommentTok{##  [40] vctrs_0.3.4              nlme_3.1-150             rtracklayer_1.51.0      }
+\CommentTok{##  [43] xfun_0.18                stringr_1.4.0            rvest_0.3.6             }
+\CommentTok{##  [46] lifecycle_0.2.0          XML_3.99-0.5             edgeR_3.33.0            }
+\CommentTok{##  [49] zlibbioc_1.37.0          scales_1.1.1             BSgenome_1.59.0         }
+\CommentTok{##  [52] VariantAnnotation_1.37.0 hms_0.5.3                RBGL_1.67.0             }
+\CommentTok{##  [55] RColorBrewer_1.1-2       yaml_2.2.1               curl_4.3                }
+\CommentTok{##  [58] memoise_1.1.0            biomaRt_2.47.0           latticeExtra_0.6-29     }
+\CommentTok{##  [61] stringi_1.5.3            RSQLite_2.2.1            genefilter_1.73.0       }
+\CommentTok{##  [64] checkmate_2.0.0          GenomicFeatures_1.43.0   DOT_0.1                 }
+\CommentTok{##  [67] rlang_0.4.8              pkgconfig_2.0.3          bitops_1.0-6            }
+\CommentTok{##  [70] evaluate_0.14            lattice_0.20-41          purrr_0.3.4             }
+\CommentTok{##  [73] labeling_0.4.2           bit_4.0.4                tidyselect_1.1.0        }
+\CommentTok{##  [76] GSEABase_1.53.0          AnnotationForge_1.33.0   bookdown_0.21           }
+\CommentTok{##  [79] R6_2.5.0                 generics_0.1.0           base64url_1.4           }
+\CommentTok{##  [82] DBI_1.1.0                pillar_1.4.6             withr_2.3.0             }
+\CommentTok{##  [85] survival_3.2-7           RCurl_1.98-1.2           tibble_3.0.4            }
+\CommentTok{##  [88] crayon_1.3.4             BiocFileCache_1.15.0     rmarkdown_2.5           }
+\CommentTok{##  [91] jpeg_0.1-8.1             progress_1.2.2           locfit_1.5-9.4          }
+\CommentTok{##  [94] grid_4.1.0               data.table_1.13.2        blob_1.2.1              }
+\CommentTok{##  [97] Rgraphviz_2.35.0         webshot_0.5.2            digest_0.6.27           }
+\CommentTok{## [100] xtable_1.8-4             brew_1.0-6               openssl_1.4.3           }
+\CommentTok{## [103] munsell_0.5.0            viridisLite_0.3.0        askpass_1.1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{funding}{%
+\section{Funding}\label{funding}}
+
+This project is funded by NSF award \href{https://www.nsf.gov/awardsearch/showAward?AWD_ID=1661152}{ABI-1661152}.
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-H_Backman2016-bt}{}%
+H Backman, Tyler W, and Thomas Girke. 2016. ``systemPipeR: NGS workflow and report generation environment.'' \emph{BMC Bioinformatics} 17 (1): 388. \url{https://doi.org/10.1186/s12859-016-1241-0}.
+
+\leavevmode\hypertarget{ref-Howard2013-fq}{}%
+Howard, Brian E, Qiwen Hu, Ahmet Can Babaoglu, Manan Chandra, Monica Borghi, Xiaoping Tan, Luyan He, et al. 2013. ``High-Throughput RNA Sequencing of Pseudomonas-Infected Arabidopsis Reveals Hidden Transcriptome Complexity and Novel Splice Variants.'' \emph{PLoS One} 8 (10): e74183. \url{https://doi.org/10.1371/journal.pone.0074183}.
+
+\leavevmode\hypertarget{ref-Kim2015-ve}{}%
+Kim, Daehwan, Ben Langmead, and Steven L Salzberg. 2015. ``HISAT: A Fast Spliced Aligner with Low Memory Requirements.'' \emph{Nat. Methods} 12 (4): 357--60.
+
+\leavevmode\hypertarget{ref-Kim2013-vg}{}%
+Kim, Daehwan, Geo Pertea, Cole Trapnell, Harold Pimentel, Ryan Kelley, and Steven L Salzberg. 2013. ``TopHat2: Accurate Alignment of Transcriptomes in the Presence of Insertions, Deletions and Gene Fusions.'' \emph{Genome Biol.} 14 (4): R36. \url{https://doi.org/10.1186/gb-2013-14-4-r36}.
+
+\leavevmode\hypertarget{ref-Langmead2012-bs}{}%
+Langmead, Ben, and Steven L Salzberg. 2012. ``Fast Gapped-Read Alignment with Bowtie 2.'' \emph{Nat. Methods} 9 (4): 357--59. \url{https://doi.org/10.1038/nmeth.1923}.
+
+\leavevmode\hypertarget{ref-Lawrence2013-kt}{}%
+Lawrence, Michael, Wolfgang Huber, Hervé Pagès, Patrick Aboyoun, Marc Carlson, Robert Gentleman, Martin T Morgan, and Vincent J Carey. 2013. ``Software for Computing and Annotating Genomic Ranges.'' \emph{PLoS Comput. Biol.} 9 (8): e1003118. \url{https://doi.org/10.1371/journal.pcbi.1003118}.
+
+\leavevmode\hypertarget{ref-Li2009-oc}{}%
+Li, H, and R Durbin. 2009. ``Fast and Accurate Short Read Alignment with Burrows-Wheeler Transform.'' \emph{Bioinformatics} 25 (14): 1754--60. \url{https://doi.org/10.1093/bioinformatics/btp324}.
+
+\leavevmode\hypertarget{ref-Li2013-oy}{}%
+Li, Heng. 2013. ``Aligning Sequence Reads, Clone Sequences and Assembly Contigs with BWA-MEM.'' \emph{arXiv {[}Q-bio.GN{]}}, March. \url{http://arxiv.org/abs/1303.3997}.
+
+\leavevmode\hypertarget{ref-Liao2013-bn}{}%
+Liao, Yang, Gordon K Smyth, and Wei Shi. 2013. ``The Subread Aligner: Fast, Accurate and Scalable Read Mapping by Seed-and-Vote.'' \emph{Nucleic Acids Res.} 41 (10): e108. \url{https://doi.org/10.1093/nar/gkt214}.
+
+\leavevmode\hypertarget{ref-Love2014-sh}{}%
+Love, Michael, Wolfgang Huber, and Simon Anders. 2014. ``Moderated Estimation of Fold Change and Dispersion for RNA-seq Data with DESeq2.'' \emph{Genome Biol.} 15 (12): 550. \url{https://doi.org/10.1186/s13059-014-0550-8}.
+
+\leavevmode\hypertarget{ref-Rsamtools}{}%
+Morgan, Martin, Hervé Pagès, Valerie Obenchain, and Nathaniel Hayden. 2019. \emph{Rsamtools: Binary Alignment (Bam), Fasta, Variant Call (Bcf), and Tabix File Import}. \url{http://bioconductor.org/packages/Rsamtools}.
+
+\leavevmode\hypertarget{ref-Robinson2010-uk}{}%
+Robinson, M D, D J McCarthy, and G K Smyth. 2010. ``EdgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.'' \emph{Bioinformatics} 26 (1): 139--40. \url{https://doi.org/10.1093/bioinformatics/btp616}.
+
+\leavevmode\hypertarget{ref-Wu2010-iq}{}%
+Wu, T D, and S Nacu. 2010. ``Fast and SNP-tolerant Detection of Complex Variants and Splicing in Short Reads.'' \emph{Bioinformatics} 26 (7): 873--81. \url{https://doi.org/10.1093/bioinformatics/btq057}.
+
+
+\end{document}

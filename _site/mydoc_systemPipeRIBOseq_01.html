@@ -516,9 +516,9 @@ well as a variety of genome-wide summary plots for visualizing RNA expression
 trends. Functions are provided for evaluating the quality of Ribo-seq data,
 for identifying novel expressed regions in the genomes, and for gaining
 insights into gene regulation at the post-transcriptional and translational
-levels. For example, the functions <code class="highlighter-rouge">genFeatures</code> and
-<code class="highlighter-rouge">featuretypeCounts</code> can be used to quantify the expression output for
-all feature types included in a genome annotation (<code class="highlighter-rouge">e.g.</code> genes,
+levels. For example, the functions <code class="language-plaintext highlighter-rouge">genFeatures</code> and
+<code class="language-plaintext highlighter-rouge">featuretypeCounts</code> can be used to quantify the expression output for
+all feature types included in a genome annotation (<code class="language-plaintext highlighter-rouge">e.g.</code> genes,
 introns, exons, miRNAs, intergenic regions, etc.). To determine the approximate
 read length of ribosome footprints in Ribo-Seq experiments, these feature type
 counts can be obtained and plotted for specific read lengths separately.
@@ -532,11 +532,11 @@ RNA digestion step and various factors associated with translational
 regulation.  For quality control purposes of Ribo-Seq experiments it is also
 useful to monitor the abundance of reads mapping to rRNA genes due to the high
 rRNA content of ribosomes. This information can be generated with the 
-<code class="highlighter-rouge">featuretypeCounts</code> function described above.</p>
+<code class="language-plaintext highlighter-rouge">featuretypeCounts</code> function described above.</p>
 
 <p>Coverage trends along transcripts summarized for any number of transcripts can
-be obtained and plotted with the functions <code class="highlighter-rouge">featureCoverage</code> and
-<code class="highlighter-rouge">plotfeatureCoverage</code>, respectively. Their results allow monitoring
+be obtained and plotted with the functions <code class="language-plaintext highlighter-rouge">featureCoverage</code> and
+<code class="language-plaintext highlighter-rouge">plotfeatureCoverage</code>, respectively. Their results allow monitoring
 of the phasing of ribosome movements along triplets of coding sequences.
 Commonly, high quality data will display here for the first nucleotide of each
 codon the highest depth of coverage computed for the 5’ ends of the aligned
@@ -545,10 +545,10 @@ reads.</p>
 <p>Ribo-seq data can also be used to evaluate various aspects of translational
 control due to ribosome occupancy in upstream open reading frames (uORFs). The
 latter are frequently present in (or near) 5’ UTRs of transcripts. For this,
-the function <code class="highlighter-rouge">predORFs</code> can be used to identify ORFs in the
+the function <code class="language-plaintext highlighter-rouge">predORFs</code> can be used to identify ORFs in the
 nucleotide sequences of transcripts or their subcomponents such as UTR regions.
 After scaling the resulting ORF coordinates back to the corresponding genome
-locations using <code class="highlighter-rouge">scaleRanges</code>, one can use these novel features
+locations using <code class="language-plaintext highlighter-rouge">scaleRanges</code>, one can use these novel features
 (<em>e.g.</em> uORFs) for expression analysis routines similar to those
 employed for pre-existing annotations, such as the exonic regions of genes. For
 instance, in Ribo-Seq experiments one can use this approach to systematically identify all transcripts occupied by ribosomes in their uORF regions. The binding of
@@ -579,8 +579,8 @@ experimental design, reference genome, gene annotations, etc.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

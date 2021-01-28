@@ -482,19 +482,19 @@ $('#toc').on('click', 'a', function() {
 
   <h2 id="read-quality-filtering-and-trimming">Read quality filtering and trimming</h2>
 
-<p>The function <code class="highlighter-rouge">preprocessReads</code> allows to apply predefined or custom
+<p>The function <code class="language-plaintext highlighter-rouge">preprocessReads</code> allows to apply predefined or custom
 read preprocessing functions to all FASTQ files referenced in a
-<code class="highlighter-rouge">SYSargs2</code> container, such as quality filtering or adapter trimming
+<code class="language-plaintext highlighter-rouge">SYSargs2</code> container, such as quality filtering or adapter trimming
 routines. The paths to the resulting output FASTQ files are stored in the
-<code class="highlighter-rouge">output</code> slot of the <code class="highlighter-rouge">SYSargs2</code> object. The following example performs adapter trimming with
-the <code class="highlighter-rouge">trimLRPatterns</code> function from the <code class="highlighter-rouge">Biostrings</code> package.
+<code class="language-plaintext highlighter-rouge">output</code> slot of the <code class="language-plaintext highlighter-rouge">SYSargs2</code> object. The following example performs adapter trimming with
+the <code class="language-plaintext highlighter-rouge">trimLRPatterns</code> function from the <code class="language-plaintext highlighter-rouge">Biostrings</code> package.
 After the trimming step a new targets file is generated (here
-<code class="highlighter-rouge">targets_trim.txt</code>) containing the paths to the trimmed FASTQ files.
+<code class="language-plaintext highlighter-rouge">targets_trim.txt</code>) containing the paths to the trimmed FASTQ files.
 The new targets file can be used for the next workflow step with an updated
-<code class="highlighter-rouge">SYSargs2</code> instance, <em>e.g.</em> running the NGS alignments using the
+<code class="language-plaintext highlighter-rouge">SYSargs2</code> instance, <em>e.g.</em> running the NGS alignments using the
 trimmed FASTQ files.</p>
 
-<p>Construct <em><code class="highlighter-rouge">SYSargs2</code></em> object from <em><code class="highlighter-rouge">cwl</code></em> and <em><code class="highlighter-rouge">yml</code></em> param and <em><code class="highlighter-rouge">targets</code></em> files.</p>
+<p>Construct <em><code class="language-plaintext highlighter-rouge">SYSargs2</code></em> object from <em><code class="language-plaintext highlighter-rouge">cwl</code></em> and <em><code class="language-plaintext highlighter-rouge">yml</code></em> param and <em><code class="language-plaintext highlighter-rouge">targets</code></em> files.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/preprocessReads/trim-se"</span><span class="p">,</span><span class="w"> 
     </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -515,12 +515,12 @@ trimmed FASTQ files.</p>
 
 <h2 id="fastq-quality-report">FASTQ quality report</h2>
 
-<p>The following <code class="highlighter-rouge">seeFastq</code> and <code class="highlighter-rouge">seeFastqPlot</code> functions generate and plot a series of useful 
+<p>The following <code class="language-plaintext highlighter-rouge">seeFastq</code> and <code class="language-plaintext highlighter-rouge">seeFastqPlot</code> functions generate and plot a series of useful 
 quality statistics for a set of FASTQ files including per cycle quality box
 plots, base proportions, base-level quality trends, relative k-mer
 diversity, length and occurrence distribution of reads, number of reads
 above quality cutoffs and mean quality distribution. The results are
-written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</code>.</p>
+written to a PDF file named <code class="language-plaintext highlighter-rouge">fastqReport.pdf</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fqlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">seeFastq</span><span class="p">(</span><span class="n">fastq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infile1</span><span class="p">(</span><span class="n">trim</span><span class="p">),</span><span class="w"> </span><span class="n">batchsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span><span class="w"> 
     </span><span class="n">klength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w">
@@ -549,8 +549,8 @@ written to a PDF file named <code class="highlighter-rouge">fastqReport.pdf</cod
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

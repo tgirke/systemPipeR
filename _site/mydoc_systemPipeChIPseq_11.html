@@ -485,11 +485,11 @@ $('#toc').on('click', 'a', function() {
 <p>Enrichment analysis of known DNA binding motifs or <em>de novo</em> discovery
 of novel motifs requires the DNA sequences of the identified peak
 regions. To parse the corresponding sequences from the reference genome,
-the <code class="highlighter-rouge">getSeq</code> function from the <code class="highlighter-rouge">Biostrings</code> package can be used. The 
+the <code class="language-plaintext highlighter-rouge">getSeq</code> function from the <code class="language-plaintext highlighter-rouge">Biostrings</code> package can be used. The 
 following example parses the sequences for each peak set and saves the 
 results to separate FASTA files, one for each peak set. In addition, the 
 sequences in the FASTA files are ranked (sorted) by increasing p-values 
-as expected by some motif discovery tools, such as <code class="highlighter-rouge">BCRANK</code>.</p>
+as expected by some motif discovery tools, such as <code class="language-plaintext highlighter-rouge">BCRANK</code>.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">Biostrings</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="n">seqLogo</span><span class="p">)</span><span class="w">
@@ -513,9 +513,9 @@ as expected by some motif discovery tools, such as <code class="highlighter-roug
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div></div>
 
-<h2 id="motif-discovery-with-bcrank">Motif discovery with <code class="highlighter-rouge">BCRANK</code></h2>
+<h2 id="motif-discovery-with-bcrank">Motif discovery with <code class="language-plaintext highlighter-rouge">BCRANK</code></h2>
 
-<p>The Bioconductor package <code class="highlighter-rouge">BCRANK</code> is one of the many tools available for 
+<p>The Bioconductor package <code class="language-plaintext highlighter-rouge">BCRANK</code> is one of the many tools available for 
 <em>de novo</em> discovery of DNA binding motifs in peak regions of ChIP-Seq
 experiments. The given example applies this method on the first peak
 sample set and plots the sequence logo of the highest ranking motif.</p>
@@ -552,8 +552,8 @@ sample set and plots the sequence logo of the highest ranking motif.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

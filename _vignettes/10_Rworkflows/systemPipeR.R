@@ -102,7 +102,7 @@ readComp(file=targetspath, format="vector", delim="-")
 library(systemPipeR)
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl",
+WF <- loadWF(targets=targets, wf_file="hisat2-mapping-se.cwl",
                    input_file="hisat2-mapping-se.yml",
                    dir_path=dir_path)
 
@@ -125,6 +125,29 @@ targets.as.df(targets(WF))[1:4,1:4]
 output(WF)[1]
 cwlfiles(WF)
 inputvars(WF)
+
+
+## ----table_tools, echo=FALSE, message=FALSE, eval=TRUE------------------------
+library(dplyr)
+library(kableExtra)
+SYS_software <- system.file("extdata", "SYS_software.csv", package="systemPipeR")
+#SYS_software <- "SYS_software.csv"
+software <- read.delim(SYS_software, sep=",", comment.char = "#")
+colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
+id <- as.numeric(c((unique(software$Category))))
+software %>%
+  mutate(Step = cell_spec(Step, color = "white", bold = T,
+    background = factor(Category, id, colors)
+  )) %>%
+   select(Tool, Description, Step) %>%
+  arrange(Tool) %>% 
+  kable(escape = F, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
+  kable_styling(c("striped", "hover", "condensed"), full_width = T) %>%
+  scroll_box(width = "80%", height = "500px")
+
+
+## ----test_tool_path, eval=FALSE-----------------------------------------------
+## tryCL(command="grep")
 
 
 ## ----param_structure, eval=TRUE-----------------------------------------------
@@ -166,7 +189,7 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## ----initwf, eval=FALSE-------------------------------------------------------
 ## script <- "systemPipeRNAseq.Rmd"
 ## targetspath <- "targets.txt"
-## sysargslist <- initWF(script = script, targets = targets)
+## sysargslist <- initWF(script = script, targets = targetspath)
 
 
 ## ----initwf_tempdir, eval=FALSE-----------------------------------------------
@@ -182,6 +205,40 @@ systemArgs(sysma=parampath, mytargets=targetspath, type="json")
 ## sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
 ## sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
 ## sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
+
+
+## ----pipes, eval=FALSE--------------------------------------------------------
+## library(systemPipeR)
+## sysargslist <- initWF(script ="systemPipeRNAseq.Rmd", overwrite = T) %>%
+##     configWF(input_steps = "1:3") %>%
+##     runWF(steps = "1:2")
+
+
+## ----closeR, eval=FALSE-------------------------------------------------------
+## q("no") # closes R session on head node
+
+
+## srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
+
+## module load R/3.4.2
+
+## R
+
+
+## ----r_environment, eval=FALSE------------------------------------------------
+## system("hostname") # should return name of a compute node starting with i or c
+## getwd() # checks current working directory of R session
+## dir() # returns content of current working directory
+
+
+## ----clusterRun, eval=FALSE---------------------------------------------------
+## library(batchtools)
+## resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
+## reg <- clusterRun(args, FUN = runCommandline, more.args = list(args=args, make_bam=TRUE, dir=FALSE),
+##                   conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl",
+##                   Njobs=18, runid="01", resourceList=resources)
+## getStatus(reg=reg)
+## waitForJobs(reg=reg)
 
 
 ## ----load_package, eval=FALSE-------------------------------------------------

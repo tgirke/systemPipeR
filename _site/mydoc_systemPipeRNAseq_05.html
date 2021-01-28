@@ -480,15 +480,15 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="read-counting-with-summarizeoverlaps-in-parallel-mode-using-multiple-cores">Read counting with <code class="highlighter-rouge">summarizeOverlaps</code> in parallel mode using multiple cores</h2>
+  <h2 id="read-counting-with-summarizeoverlaps-in-parallel-mode-using-multiple-cores">Read counting with <code class="language-plaintext highlighter-rouge">summarizeOverlaps</code> in parallel mode using multiple cores</h2>
 
 <p>Reads overlapping with annotation ranges of interest are counted for
-each sample using the <code class="highlighter-rouge">summarizeOverlaps</code> function (Lawrence et al., 2013). The read counting is
+each sample using the <code class="language-plaintext highlighter-rouge">summarizeOverlaps</code> function (Lawrence et al., 2013). The read counting is
 preformed for exonic gene regions in a non-strand-specific manner while
 ignoring overlaps among different genes. Subsequently, the expression
 count values are normalized by <em>reads per kp per million mapped reads</em>
-(RPKM). The raw read count table (<code class="highlighter-rouge">countDFeByg.xls</code>) and the corresponding 
-RPKM table (<code class="highlighter-rouge">rpkmDFeByg.xls</code>) are written to separate files in the directory of this project. Parallelization is achieved with the <code class="highlighter-rouge">BiocParallel</code> package, here using 8 CPU cores.</p>
+(RPKM). The raw read count table (<code class="language-plaintext highlighter-rouge">countDFeByg.xls</code>) and the corresponding 
+RPKM table (<code class="language-plaintext highlighter-rouge">rpkmDFeByg.xls</code>) are written to separate files in the directory of this project. Parallelization is achieved with the <code class="language-plaintext highlighter-rouge">BiocParallel</code> package, here using 8 CPU cores.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"GenomicFeatures"</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="n">BiocParallel</span><span class="p">)</span><span class="w">
@@ -530,7 +530,7 @@ RPKM table (<code class="highlighter-rouge">rpkmDFeByg.xls</code>) are written t
 </span></code></pre></div></div>
 
 <p>Note, for most statistical differential expression or abundance analysis
-methods, such as <code class="highlighter-rouge">edgeR</code> or <code class="highlighter-rouge">DESeq2</code>, the raw count values should be used as input. The
+methods, such as <code class="language-plaintext highlighter-rouge">edgeR</code> or <code class="language-plaintext highlighter-rouge">DESeq2</code>, the raw count values should be used as input. The
 usage of RPKM values should be restricted to specialty applications
 required by some users, <em>e.g.</em> manually comparing the expression levels
 among different genes or features.</p>
@@ -538,10 +538,10 @@ among different genes or features.</p>
 <h2 id="sample-wise-correlation-analysis">Sample-wise correlation analysis</h2>
 
 <p>The following computes the sample-wise Spearman correlation coefficients from
-the <code class="highlighter-rouge">rlog</code> transformed expression values generated with the <code class="highlighter-rouge">DESeq2</code> package. After
+the <code class="language-plaintext highlighter-rouge">rlog</code> transformed expression values generated with the <code class="language-plaintext highlighter-rouge">DESeq2</code> package. After
 transformation to a distance matrix, hierarchical clustering is performed with
-the <code class="highlighter-rouge">hclust</code> function and the result is plotted as a dendrogram
-(also see file <code class="highlighter-rouge">sample_tree.pdf</code>).</p>
+the <code class="language-plaintext highlighter-rouge">hclust</code> function and the result is plotted as a dendrogram
+(also see file <code class="language-plaintext highlighter-rouge">sample_tree.pdf</code>).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">DESeq2</span><span class="p">,</span><span class="w"> </span><span class="n">quietly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="n">ape</span><span class="p">,</span><span class="w"> </span><span class="n">warn.conflicts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
@@ -578,8 +578,8 @@ the <code class="highlighter-rouge">hclust</code> function and the result is plo
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

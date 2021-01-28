@@ -21,3 +21,7 @@ ape
 batchtools
 magrittr
 DESeq2
+Matrix
+MatrixGenerics
+dplyr
+kableExtra

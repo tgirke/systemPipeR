@@ -1,6 +1,6 @@
 ---
 title: 4. Workflow steps overview
-last_updated: Sat May  2 14:44:00 2020
+last_updated: Thu Jan 28 13:38:31 2021
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_4.html
 ---
@@ -133,8 +133,7 @@ diversity, length and occurrence distribution of reads, number of reads above
 quality cutoffs and mean quality distribution.  
 The function _`seeFastq`_ computes the quality statistics and stores the results in a
 relatively small list object that can be saved to disk with _`save()`_ and
-reloaded with _`load()`_ for later plotting. The argument _`klength`_ specifies the
-k-mer length and _`batchsize`_ the number of reads to a random sample from each
+reloaded with _`load()`_ for later plotting. The argument _`klength`_ specifies the k-mer length and _`batchsize`_ the number of reads to a random sample from each
 FASTQ file.
 
 

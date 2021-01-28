@@ -481,11 +481,11 @@ $('#toc').on('click', 'a', function() {
     
 
   <p>The analysis of differentially expressed genes (DEGs) is performed with
-the glm method of the <code class="highlighter-rouge">edgeR</code> package (Robinson et al., 2010). The sample
+the glm method of the <code class="language-plaintext highlighter-rouge">edgeR</code> package (Robinson et al., 2010). The sample
 comparisons used by this analysis are defined in the header lines of the 
-<code class="highlighter-rouge">targets.txt</code> file starting with <code class="highlighter-rouge">&lt;CMP&gt;</code>.</p>
+<code class="language-plaintext highlighter-rouge">targets.txt</code> file starting with <code class="language-plaintext highlighter-rouge">&lt;CMP&gt;</code>.</p>
 
-<h2 id="run-edger">Run <code class="highlighter-rouge">edgeR</code></h2>
+<h2 id="run-edger">Run <code class="language-plaintext highlighter-rouge">edgeR</code></h2>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">edgeR</span><span class="p">)</span><span class="w">
 </span><span class="n">countDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="s2">"results/countDFeByg.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
@@ -514,7 +514,7 @@ comparisons used by this analysis are defined in the header lines of the
 
 <p>Filter and plot DEG results for up and down regulated genes. The
 definition of <em>up</em> and <em>down</em> is given in the corresponding help
-file. To open it, type <code class="highlighter-rouge">?filterDEGs</code> in the R console.</p>
+file. To open it, type <code class="language-plaintext highlighter-rouge">?filterDEGs</code> in the R console.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">edgeDF</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.delim</span><span class="p">(</span><span class="s2">"results/edgeRglm_allcomp.xls"</span><span class="p">,</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
     </span><span class="n">check.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
@@ -530,7 +530,7 @@ file. To open it, type <code class="highlighter-rouge">?filterDEGs</code> in the
 
 <h2 id="venn-diagrams-of-deg-sets">Venn diagrams of DEG sets</h2>
 
-<p>The <code class="highlighter-rouge">overLapper</code> function can compute Venn intersects for large numbers of sample
+<p>The <code class="language-plaintext highlighter-rouge">overLapper</code> function can compute Venn intersects for large numbers of sample
 sets (up to 20 or more) and plots 2-5 way Venn diagrams. A useful
 feature is the possibility to combine the counts from several Venn
 comparisons with the same number of sample sets in a single Venn diagram
@@ -564,8 +564,8 @@ comparisons with the same number of sample sets in a single Venn diagram
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

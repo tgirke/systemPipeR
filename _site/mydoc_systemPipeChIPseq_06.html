@@ -484,9 +484,9 @@ $('#toc').on('click', 'a', function() {
 
 <p>Merging BAM files of technical and/or biological replicates can improve
 the sensitivity of the peak calling by increasing the depth of read
-coverage. The <code class="highlighter-rouge">mergeBamByFactor</code> function merges BAM files based on grouping information
-specified by a <code class="highlighter-rouge">factor</code>, here the <code class="highlighter-rouge">Factor</code> column of the imported targets file. It 
-also returns an updated <code class="highlighter-rouge">SYSargs2</code> object containing the paths to the
+coverage. The <code class="language-plaintext highlighter-rouge">mergeBamByFactor</code> function merges BAM files based on grouping information
+specified by a <code class="language-plaintext highlighter-rouge">factor</code>, here the <code class="language-plaintext highlighter-rouge">Factor</code> column of the imported targets file. It 
+also returns an updated <code class="language-plaintext highlighter-rouge">SYSargs2</code> object containing the paths to the
 merged BAM files as well as to any unmerged files without replicates.
 This step can be skipped if merging of BAM files is not desired.</p>
 
@@ -512,10 +512,10 @@ This step can be skipped if merging of BAM files is not desired.</p>
 
 <p>MACS2 can perform peak calling on ChIP-Seq data with and without input
 samples (Zhang et al., 2008). The following performs peak calling without
-input on all samples specified in the corresponding <code class="highlighter-rouge">args</code> object. Note, due to
+input on all samples specified in the corresponding <code class="language-plaintext highlighter-rouge">args</code> object. Note, due to
 the small size of the sample data, MACS2 needs to be run here with the
-<code class="highlighter-rouge">nomodel</code> setting. For real data sets, users want to remove this parameter 
-in the corresponding <code class="highlighter-rouge">*.param</code> file(s).</p>
+<code class="language-plaintext highlighter-rouge">nomodel</code> setting. For real data sets, users want to remove this parameter 
+in the corresponding <code class="language-plaintext highlighter-rouge">*.param</code> file(s).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/MACS2/MACS2-noinput/"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
 </span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWF</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"macs2.cwl"</span><span class="p">,</span><span class="w"> 
@@ -533,8 +533,8 @@ in the corresponding <code class="highlighter-rouge">*.param</code> file(s).</p>
 <h2 id="peak-calling-with-inputreference-sample">Peak calling with input/reference sample</h2>
 
 <p>To perform peak calling with input samples, they can be most
-conveniently specified in the <code class="highlighter-rouge">SampleReference</code> column of the initial
-<code class="highlighter-rouge">targets</code> file. The <code class="highlighter-rouge">writeTargetsRef</code> function uses this information to create a <code class="highlighter-rouge">targets</code> 
+conveniently specified in the <code class="language-plaintext highlighter-rouge">SampleReference</code> column of the initial
+<code class="language-plaintext highlighter-rouge">targets</code> file. The <code class="language-plaintext highlighter-rouge">writeTargetsRef</code> function uses this information to create a <code class="language-plaintext highlighter-rouge">targets</code> 
 file intermediate for running MACS2 with the corresponding input samples.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">writeTargetsRef</span><span class="p">(</span><span class="n">infile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">outfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam_ref.txt"</span><span class="p">,</span><span class="w"> 
@@ -556,12 +556,12 @@ file intermediate for running MACS2 with the corresponding input samples.</p>
 </span></code></pre></div></div>
 
 <p>The peak calling results from MACS2 are written for each sample to
-separate files in the <code class="highlighter-rouge">results</code> directory. They are named after the corresponding
+separate files in the <code class="language-plaintext highlighter-rouge">results</code> directory. They are named after the corresponding
 files with extensions used by MACS2.</p>
 
 <h2 id="identify-consensus-peaks">Identify consensus peaks</h2>
 
-<p>The following example shows how one can identify consensus preaks among two peak sets sharing either a minimum absolute overlap and/or minimum relative overlap using the <code class="highlighter-rouge">subsetByOverlaps</code> or <code class="highlighter-rouge">olRanges</code> functions, respectively. Note, the latter is a custom function imported below by sourcing it.</p>
+<p>The following example shows how one can identify consensus preaks among two peak sets sharing either a minimum absolute overlap and/or minimum relative overlap using the <code class="language-plaintext highlighter-rouge">subsetByOverlaps</code> or <code class="language-plaintext highlighter-rouge">olRanges</code> functions, respectively. Note, the latter is a custom function imported below by sourcing it.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># source('http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/rangeoverlapper.R')</span><span class="w">
 </span><span class="n">outpaths</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subsetWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">  </span><span class="c1">## escolher um dos outputs index</span><span class="w">
@@ -594,8 +594,8 @@ files with extensions used by MACS2.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

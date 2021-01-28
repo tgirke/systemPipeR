@@ -484,9 +484,9 @@ $('#toc').on('click', 'a', function() {
 
 <p>Typically, the user wants to record here the sources and versions of the
 reference genome sequence along with the corresponding annotations. In
-the provided sample data set all data inputs are stored in a <code class="highlighter-rouge">data</code>
-subdirectory and all results will be written to a separate <code class="highlighter-rouge">results</code> directory,
-while the <code class="highlighter-rouge">systemPipeRNAseq.Rmd</code> script and the <code class="highlighter-rouge">targets</code> file are expected to be located in the parent directory. The R session is expected to run from this parent directory.</p>
+the provided sample data set all data inputs are stored in a <code class="language-plaintext highlighter-rouge">data</code>
+subdirectory and all results will be written to a separate <code class="language-plaintext highlighter-rouge">results</code> directory,
+while the <code class="language-plaintext highlighter-rouge">systemPipeRNAseq.Rmd</code> script and the <code class="language-plaintext highlighter-rouge">targets</code> file are expected to be located in the parent directory. The R session is expected to run from this parent directory.</p>
 
 <p>To run this sample report, mini sample FASTQ and reference genome files
 can be downloaded from
@@ -510,11 +510,11 @@ additional NGS applications will be provided in the future.</p>
 
 <p>Alternatively, this can be done from the command-line as find here.</p>
 
-<p>Now open the R markdown script <code class="highlighter-rouge">systemPipeRNAseq.Rmd</code>in your R IDE (<em>e.g.</em>
+<p>Now open the R markdown script <code class="language-plaintext highlighter-rouge">systemPipeRNAseq.Rmd</code>in your R IDE (<em>e.g.</em>
 vim-r or RStudio) and run the workflow as outlined below. If you work under
 Vim-R-Tmux, the following command sequence will connect the user in an
 interactive session with a node on the cluster [TODO: fix, point to the main vignette]. 
-The code of the <code class="highlighter-rouge">Rmd</code>script can then be sent from Vim on the login (head) node to an open R session running
+The code of the <code class="language-plaintext highlighter-rouge">Rmd</code>script can then be sent from Vim on the login (head) node to an open R session running
 on the corresponding computer node. This is important since Tmux sessions
 should not be run on the computer nodes.</p>
 
@@ -527,22 +527,22 @@ should not be run on the computer nodes.</p>
 
 <h2 id="required-packages-and-resources">Required packages and resources</h2>
 
-<p>The <code class="highlighter-rouge">systemPipeR</code> package needs to be loaded to perform the analysis steps shown in
+<p>The <code class="language-plaintext highlighter-rouge">systemPipeR</code> package needs to be loaded to perform the analysis steps shown in
 this report (H Backman et al., 2016).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">systemPipeR</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>If applicable load custom functions not provided by <code class="highlighter-rouge">systemPipeR</code> package.</p>
+<p>If applicable load custom functions not provided by <code class="language-plaintext highlighter-rouge">systemPipeR</code> package.</p>
 
-<p>To apply workflows to custom data, the user needs to modify the <em><code class="highlighter-rouge">targets</code></em> file and if
-necessary update the corresponding <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files. A collection of pre-generated <em><code class="highlighter-rouge">.cwl</code></em> and <em><code class="highlighter-rouge">.yml</code></em> files are provided in the <em><code class="highlighter-rouge">param/cwl</code></em> subdirectory of each workflow template. They
-are also viewable in the GitHub repository of <em><code class="highlighter-rouge">systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see
+<p>To apply workflows to custom data, the user needs to modify the <em><code class="language-plaintext highlighter-rouge">targets</code></em> file and if
+necessary update the corresponding <em><code class="language-plaintext highlighter-rouge">.cwl</code></em> and <em><code class="language-plaintext highlighter-rouge">.yml</code></em> files. A collection of pre-generated <em><code class="language-plaintext highlighter-rouge">.cwl</code></em> and <em><code class="language-plaintext highlighter-rouge">.yml</code></em> files are provided in the <em><code class="language-plaintext highlighter-rouge">param/cwl</code></em> subdirectory of each workflow template. They
+are also viewable in the GitHub repository of <em><code class="language-plaintext highlighter-rouge">systemPipeRdata</code></em> (<a href="https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param">see
 here</a>).</p>
 
-<h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="highlighter-rouge">targets</code> file</h2>
+<h2 id="experiment-definition-provided-by-targets-file">Experiment definition provided by <code class="language-plaintext highlighter-rouge">targets</code> file</h2>
 
-<p>The <code class="highlighter-rouge">targets</code> file defines all FASTQ files and sample
+<p>The <code class="language-plaintext highlighter-rouge">targets</code> file defines all FASTQ files and sample
 comparisons of the analysis workflow.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targetspath</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata"</span><span class="p">,</span><span class="w"> </span><span class="s2">"targets.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
@@ -550,7 +550,7 @@ comparisons of the analysis workflow.</p>
 </span><span class="n">targets</span><span class="w">
 </span></code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                       FileName SampleName Factor SampleLong
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>##                       FileName SampleName Factor SampleLong
 ## 1  ./data/SRR446027_1.fastq.gz        M1A     M1  Mock.1h.A
 ## 2  ./data/SRR446028_1.fastq.gz        M1B     M1  Mock.1h.B
 ## 3  ./data/SRR446029_1.fastq.gz        A1A     A1   Avr.1h.A
@@ -588,8 +588,8 @@ comparisons of the analysis workflow.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:43:59 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

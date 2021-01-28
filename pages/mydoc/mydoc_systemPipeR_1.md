@@ -1,12 +1,12 @@
 ---
 title: systemPipeR - Workflow design and reporting generation environment  <br> <br> 1. Introduction
-last_updated: Sat May  2 14:44:00 2020
+last_updated: Thu Jan 28 13:38:31 2021
 sidebar: mydoc_sidebar
 permalink: mydoc_systemPipeR_1.html
 ---
 Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)
 
-Last update: 02 May, 2020 
+Last update: 28 January, 2021 
 
 Alternative formats of this tutorial:
 [ [HTML](http://girke.bioinformatics.ucr.edu/systemPipeR/pages/mydoc/systemPipeR.html){:target="_blank"} ],

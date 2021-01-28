@@ -480,14 +480,14 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="read-mapping-with-bowtie2">Read mapping with <code class="highlighter-rouge">Bowtie2</code></h2>
+  <h2 id="read-mapping-with-bowtie2">Read mapping with <code class="language-plaintext highlighter-rouge">Bowtie2</code></h2>
 
-<p>The NGS reads of this project will be aligned with <code class="highlighter-rouge">Bowtie2</code> against the
+<p>The NGS reads of this project will be aligned with <code class="language-plaintext highlighter-rouge">Bowtie2</code> against the
 reference genome sequence (Langmead et al., 2012). The parameter settings of the
-aligner are defined in the <code class="highlighter-rouge">bowtie2-index.cwl</code> and <code class="highlighter-rouge">bowtie2-index.yml</code> files. 
+aligner are defined in the <code class="language-plaintext highlighter-rouge">bowtie2-index.cwl</code> and <code class="language-plaintext highlighter-rouge">bowtie2-index.yml</code> files. 
 In ChIP-Seq experiments it is usually more appropriate to eliminate reads mapping 
 to multiple locations. To achieve this, users want to remove the argument setting 
-<code class="highlighter-rouge">-k 50 non-deterministic</code> in the configuration files.</p>
+<code class="language-plaintext highlighter-rouge">-k 50 non-deterministic</code> in the configuration files.</p>
 
 <p>Building the index:</p>
 
@@ -553,10 +553,10 @@ and how many of them aligned to the reference.</p>
 
 <h2 id="create-symbolic-links-for-viewing-bam-files-in-igv">Create symbolic links for viewing BAM files in IGV</h2>
 
-<p>The <code class="highlighter-rouge">symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
+<p>The <code class="language-plaintext highlighter-rouge">symLink2bam</code> function creates symbolic links to view the BAM alignment files in a
 genome browser such as IGV without moving these large files to a local
 system. The corresponding URLs are written to a file with a path
-specified under <code class="highlighter-rouge">urlfile</code>, here <code class="highlighter-rouge">IGVurl.txt</code>. Please replace the directory and the user name.</p>
+specified under <code class="language-plaintext highlighter-rouge">urlfile</code>, here <code class="language-plaintext highlighter-rouge">IGVurl.txt</code>. Please replace the directory and the user name.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">symLink2bam</span><span class="p">(</span><span class="n">sysargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">htmldir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"~/.html/"</span><span class="p">,</span><span class="w"> </span><span class="s2">"somedir/"</span><span class="p">),</span><span class="w"> 
     </span><span class="n">urlbase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://cluster.hpcc.ucr.edu/~tgirke/"</span><span class="p">,</span><span class="w"> </span><span class="n">urlfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/IGVurl.txt"</span><span class="p">)</span><span class="w">
@@ -579,8 +579,8 @@ specified under <code class="highlighter-rouge">urlfile</code>, here <code class
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->

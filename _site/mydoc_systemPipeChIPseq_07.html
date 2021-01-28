@@ -480,9 +480,9 @@ $('#toc').on('click', 'a', function() {
 -->
     
 
-  <h2 id="annotation-with-chippeakanno-package">Annotation with <code class="highlighter-rouge">ChIPpeakAnno</code> package</h2>
+  <h2 id="annotation-with-chippeakanno-package">Annotation with <code class="language-plaintext highlighter-rouge">ChIPpeakAnno</code> package</h2>
 
-<p>The following annotates the identified peaks with genomic context information using the <code class="highlighter-rouge">ChIPpeakAnno</code> and <code class="highlighter-rouge">ChIPseeker</code> packages, respectively (Zhu et al., 2010; Yu et al., 2015).</p>
+<p>The following annotates the identified peaks with genomic context information using the <code class="language-plaintext highlighter-rouge">ChIPpeakAnno</code> and <code class="language-plaintext highlighter-rouge">ChIPseeker</code> packages, respectively (Zhu et al., 2010; Yu et al., 2015).</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ChIPpeakAnno</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="n">GenomicFeatures</span><span class="p">)</span><span class="w">
@@ -510,13 +510,13 @@ $('#toc').on('click', 'a', function() {
 </span></code></pre></div></div>
 
 <p>The peak annotation results are written for each peak set to separate
-files in the <code class="highlighter-rouge">results</code> directory. They are named after the corresponding peak
-files with extensions specified in the <code class="highlighter-rouge">annotate_peaks.param</code> file, 
-here <code class="highlighter-rouge">*.peaks.annotated.xls</code>.</p>
+files in the <code class="language-plaintext highlighter-rouge">results</code> directory. They are named after the corresponding peak
+files with extensions specified in the <code class="language-plaintext highlighter-rouge">annotate_peaks.param</code> file, 
+here <code class="language-plaintext highlighter-rouge">*.peaks.annotated.xls</code>.</p>
 
-<h2 id="annotation-with-chipseeker-package">Annotation with <code class="highlighter-rouge">ChIPseeker</code> package</h2>
+<h2 id="annotation-with-chipseeker-package">Annotation with <code class="language-plaintext highlighter-rouge">ChIPseeker</code> package</h2>
 
-<p>Same as in previous step but using the <code class="highlighter-rouge">ChIPseeker</code> package for annotating the peaks.</p>
+<p>Same as in previous step but using the <code class="language-plaintext highlighter-rouge">ChIPseeker</code> package for annotating the peaks.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">ChIPseeker</span><span class="p">)</span><span class="w">
 </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="n">along</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -530,7 +530,7 @@ here <code class="highlighter-rouge">*.peaks.annotated.xls</code>.</p>
     </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
 </span></code></pre></div></div>
 
-<p>Summary plots provided by the <code class="highlighter-rouge">ChIPseeker</code> package. Here applied only to one sample
+<p>Summary plots provided by the <code class="language-plaintext highlighter-rouge">ChIPseeker</code> package. Here applied only to one sample
 for demonstration purposes.</p>
 
 <div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">peak</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readPeakFile</span><span class="p">(</span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">])</span><span class="w">
@@ -559,8 +559,8 @@ for demonstration purposes.</p>
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2020 UC Riverside. All rights reserved. <br />
-<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: May 5, 2020 <br />
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: Jan 28, 2021 <br />
 <!--
 <p><img src="images/company_logo.png" alt="Company logo"/></p>
 -->
