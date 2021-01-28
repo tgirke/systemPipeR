@@ -134,13 +134,13 @@ SYS_software <- system.file("extdata", "SYS_software.csv", package="systemPipeR"
 #SYS_software <- "SYS_software.csv"
 software <- read.delim(SYS_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
-id <- as.numeric(c((unique(software$Category))))
+id <- as.numeric(c(unique(software$Category)))
 software %>%
-  mutate(Step = cell_spec(Step, color = "white", bold = T,
+  mutate(Step = cell_spec(Step, color = "white", bold = TRUE,
     background = factor(Category, id, colors)
   )) %>%
+    arrange(Name) %>% 
    select(Tool, Description, Step) %>%
-  arrange(Tool) %>% 
   kable(escape = F, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
   kable_styling(c("striped", "hover", "condensed"), full_width = T) %>%
   scroll_box(width = "80%", height = "500px")
