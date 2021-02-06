@@ -289,7 +289,7 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
   ## 1. file="default"
   ## 2. file = c("test.cwl", "test.yml")
   if("default" %in% file){
-    if(dir.exists(paste("param/cwl/", commandLine$baseCommand, sep=""))==FALSE) dir.create(path=paste("param/cwl/", commandLine$baseCommand, sep=""))
+    if(dir.exists(paste("param/cwl/", commandLine$baseCommand, sep=""))==FALSE) dir.create(path=paste("param/cwl/", commandLine$baseCommand, sep=""), recursive = TRUE)
     file.cwl <- paste("param/cwl/", commandLine$baseCommand, "/", commandLine$baseCommand, ".cwl", sep="")
     file.yml <- paste("param/cwl/", commandLine$baseCommand, "/", commandLine$baseCommand, ".yml", sep="")
   } else {
@@ -366,31 +366,6 @@ renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
   if(length(ids)==0) ids <- "defaultid"
   bucket <- sapply(ids, function(x) "", simplify=FALSE)
   bucketlist <- list(cmd=bucket, input=bucket, output=bucket)
-  .renderWFsingle <- function(WF, id) { 
-    inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
-    if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
-    input <- yamlinput(WF)
-    for(i in seq_along(inputvars)) {
-      subvalue <- targets(WF)[[id]][[names(inputvars)[i]]]
-      if(length(subvalue)!=0) {
-        input <- rapply(input, function(x) gsub(inputvars[[i]], subvalue, x), how = "replace")
-        inputvarslist[[i]] <- subvalue
-      }
-    }
-    WF <- as(WF, "list")
-    WF$yamlinput <- input
-    WF <- as(WF, "SYSargs2")
-    WF <- injectCommandlinelist(WF)
-    ## Fix for cases like IDX/tophat/STAR, more than one output file per cmdlist
-    outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
-    for(i in seq_along(outfilelist)) {
-      for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output)) 
-        outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
-    }
-    cmdlist <- renderCommandline(WF, redirect=">")
-    inputvars <- as.list(inputvars)
-    return(list(cmd=cmdlist, input=inputvarslist, output=outfilelist, inputvars=inputvars))
-  }
   for(i in ids) {
     tmplist <- .renderWFsingle(WF=WF, id=i) 
     bucketlist[["cmd"]][[i]] <- tmplist[["cmd"]]
@@ -1047,6 +1022,35 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 			stop("Argument 'returntype' can only be assigned one of: 'values' or 'logical'.")
 		}
 	}
+}
+
+#########################
+##   .renderWFsingle   ##
+#########################
+.renderWFsingle <- function(WF, id) { 
+  inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
+  if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
+  input <- yamlinput(WF)
+  for(i in seq_along(inputvars)) {
+    subvalue <- targets(WF)[[id]][[names(inputvars)[i]]]
+    if(length(subvalue)!=0) {
+      input <- rapply(input, function(x) gsub(inputvars[[i]], subvalue, x), how = "replace")
+      inputvarslist[[i]] <- subvalue
+    }
+  }
+  WF <- as(WF, "list")
+  WF$yamlinput <- input
+  WF <- as(WF, "SYSargs2")
+  WF <- injectCommandlinelist(WF)
+  ## Fix for cases like IDX/tophat/STAR, more than one output file per cmdlist
+  outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
+  for(i in seq_along(outfilelist)) {
+    for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output))
+      outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
+  }
+  cmdlist <- renderCommandline(WF, redirect=">")
+  inputvars <- as.list(inputvars)
+  return(list(cmd=cmdlist, input=inputvarslist, output=outfilelist, inputvars=inputvars))
 }
 
 ###################
