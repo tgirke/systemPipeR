@@ -252,8 +252,10 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
       targetsheader <- readLines(normalizePath(file.path(targets)))
       targetsheader <- targetsheader[grepl("^#", targetsheader)] 
     }
+    WF$cwlfiles["targets"] <- file.path(targets)
     WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
   } else {
+    WF$cwlfiles["targets"] <- NA
     WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
   }
   return(as(WF, "SYSargs2"))
@@ -265,7 +267,8 @@ loadWF <- loadWorkflow
 ## Usage:
 # targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 # dir_path <- system.file("extdata/cwl/hisat2", package="systemPipeR")
-# WF <- loadWF(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl", input_file="hisat2-se/hisat2-mapping-se.yml", dir_path=dir_path)
+# WF <- loadWF(targets=targets, wf_file="hisat2-se/hisat2-mapping-se.cwl",
+#              input_file="hisat2-se/hisat2-mapping-se.yml", dir_path=dir_path)
 
 ###################################################
 ##   Create CommandLineTools from Command-line   ##
@@ -320,15 +323,19 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
   WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$output <- sapply(names(WF.temp$clt), function(x) list(NULL))
-  WF.temp$cwlfiles <- list(cwl=normalizePath(file.path(file.cwl)), yml=normalizePath(file.path(file.yml)), steps=names(WF.temp$clt))
+  WF.temp$cwlfiles <- list(cwl=normalizePath(file.path(file.cwl)), 
+                           yml=normalizePath(file.path(file.yml)), 
+                           steps=names(WF.temp$clt))
   ## targets
   if(!is.null(targets)) {
     mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
     mytargets <- targets.as.list(mytargets)
     targetsheader <- readLines(normalizePath(file.path(targets)))
     targetsheader <- targetsheader[grepl("^#", targetsheader)]
+    WF.temp$cwlfiles["targets"] <- normalizePath(file.path(targets))
     WF.temp <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF.temp)
   } else {
+    WF.temp$cwlfiles["targets"] <- NA
     WF.temp <- c(list(targets=data.frame(), targetsheader=list()), WF.temp)
   }
   return(as(WF.temp, "SYSargs2"))
@@ -360,14 +367,19 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
 ###############################################
 ## Render WF for all samples in targets slot ##
 ###############################################
-renderWF <- function(WF, inputvars=c(FileName="_FASTQ_PATH_")) {
+renderWF <- function(WF, inputvars=NULL) {
   if(any(length(cmdlist(WF)[[1]])!=0)) stop("Argument 'WF' needs to be assigned an object of class 'SYSargs2' and an object created by the 'loadWorkflow' function")  
   ids <- names(targets(WF))
   if(length(ids)==0) ids <- "defaultid"
   bucket <- sapply(ids, function(x) "", simplify=FALSE)
   bucketlist <- list(cmd=bucket, input=bucket, output=bucket)
+  if(length(targets(WF))==0){
+    if(!is.null(inputvars)){
+      
+    }
+  }
   for(i in ids) {
-    tmplist <- .renderWFsingle(WF=WF, id=i) 
+    tmplist <- .renderWFsingle(WF=WF, id=i, inputvars=inputvars) 
     bucketlist[["cmd"]][[i]] <- tmplist[["cmd"]]
     bucketlist[["input"]][[i]] <- tmplist[["input"]]
     bucketlist[["output"]][[i]] <- tmplist[["output"]]
@@ -1027,7 +1039,7 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 #########################
 ##   .renderWFsingle   ##
 #########################
-.renderWFsingle <- function(WF, id) { 
+.renderWFsingle <- function(WF, id, inputvars) { 
   inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
   if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
   input <- yamlinput(WF)

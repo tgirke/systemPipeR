@@ -702,48 +702,49 @@ plotWF <- function(sysargslist, plot_style = "detect", out_type = "html", out_pa
 ## config.param function ##
 ###########################
 config.param <- function(input_file = NULL, param, file = "default", silent = FALSE) {
-  ## In the case of 'input_file'
+  ## In the case of 'input_file' == character (file)
   if (class(input_file) == "character") {
-    if (!class(param) == "list") {
-      stop("'param' needs to be object of class 'list'.")
+    if (!file.exists(input_file)) {
+      stop("Provide valid 'input_file' file. Check the file PATH.")
     }
+    input <- yaml::read_yaml(file.path(input_file), eval.expr = TRUE)
+    input <- out_obj <- .replace(input = input, param = param)
+    path_file <- normalizePath(input_file)
+    out_msg <- c("input_file")
+  } else if (class(input_file) == "list") {
     if (is.null(names(param))) {
       stop("for each element of the 'param' list need to assign a name.")
     }
-    if (class(input_file) == "list") {
-      input <- out_obj <- .replace(input = input_file, param = param)
-      path_file <- normalizePath(file) ## TOD find a better solution!
-    } else {
-      if (!file.exists(input_file)) {
-        stop("Provide valid 'input_file' file. Check the file PATH.")
-      }
-      input <- yaml::read_yaml(file.path(input_file), eval.expr = TRUE)
-      input <- out_obj <- .replace(input = input, param = param)
-      path_file <- normalizePath(input_file)
-    }
+    input <- out_obj <- .replace(input = input_file, param = param)
+    path_file <- normalizePath(file) ## TODO find a better solution!
     out_msg <- c("input_file")
-    ## In the case of 'args'
   } else if (class(input_file) == "SYSargs2") {
-    dir_path <- .getPath(input_file$cwlfiles$cwl)
+    input <- .replace(input = yamlinput(input_file), param = param)
+    dir_path <- .getPath(cwlfiles(input_file)[['yml']])
+    if(is.na(cwlfiles(input_file)[['targets']])) {
+      targets <- NULL
+    } else {
+      targets <- targets(input_file)
+    }
     args1 <- loadWorkflow(
-      targets = input_file, wf_file = basename(input_file$cwlfiles$cwl), input_file = basename(input_file$cwlfiles$yml),
-      dir_path = dir_path
+      targets = targets, wf_file = basename(cwlfiles(input_file)[['cwl']]), 
+      input_file = basename(cwlfiles(input_file)[['yml']]), dir_path = dir_path
     )
-    input <- args1$yamlinput
-    input <- .replace(input = input, param = param)
     args1 <- as(args1, "list")
     args1$yamlinput <- input
-    args1 <- as(args1, "SYSargs2")
-    inputvars <- args1$inputvars
-    args1 <- out_obj <- renderWF(WF = args1, inputvars = inputvars)
-    path_file <- args1$cwlfiles$yml
-    out_msg <- c("yamlinput(input_file)")
-  } else if (class(input_file) == "SYSargsList") {
+    if("ModulesToLoad" %in% names(param))
+      for (i in seq_along(param$ModulesToLoad)){
+        args1$modules[names(param$ModulesToLoad[i])] <- param$ModulesToLoad[[i]]
+      }
+    args1 <- out_obj <- as(args1, "SYSargs2")
+    out_msg <- c("yamlinput(args1)")
+    path_file <- cwlfiles(input_file)[['yml']]
+  } else if (class(input_file) == "SYSargsList") { ##TODO
     input <- out_obj <- .replace(input = input_file$sysconfig, param = param)
     path_file <- input_file$projectWF$project
     out_msg <- c("input_file")
   } else if (all(is.null(input_file))) {
-    stop("'input_file' need to be defenid as '.yml' OR 'SYSargs2 class' OR 'SYSargsList class' ")
+    stop("'input_file' need to be defenid as '.yml' OR 'SYSargs2 class' OR 'SYSargsList class' OR 'list class' ")
   }
   ## File and Path to be written
   if (file == "default") {
@@ -764,11 +765,17 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
     path <- file
   }
   ## Rename original file
-  file.rename(from = path_file, to = path)
-  if (silent != TRUE) cat("\t", "The original file was renamed to:", "\n", paste0(path), "\n")
+  # file.rename(from = path_file, to = path)
+  # if (silent != TRUE) cat("\t", "The original file was renamed to:", "\n", paste0(path), "\n")
   ## Write YML file
-  yaml::write_yaml(x = input, file = path_file)
-  if (silent != TRUE) cat("\t", "All the new param + ", out_msg, "were written to:", "\n", paste0(path_file), "\n")
+  yaml::write_yaml(x = input, file = path)
+  if (silent != TRUE) cat("\t", "All the new param + ", out_msg, "were written to:", "\n", paste0(path), "\n")
+  if (class(input_file) == "SYSargs2") {
+    args1 <- as(args1, "list")
+    args1$cwlfiles$yml <- path
+    args1 <- as(args1, "SYSargs2")
+    out_obj <- args1
+  }
   return(out_obj)
 }
 

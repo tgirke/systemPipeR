@@ -1,4 +1,10 @@
 changelog
+     version 1.25.5
+        - Updating 'renderWF' and 'config.param' functions
+        
+     version 1.25.4
+        - Help file update in 'creadWF.Rd'
+        
      version 1.25.3
         - Adding new Methods: 'addAssay' and 'addMetadata': Extension accessor for SummarizedExperiment object 
         - Adding New function: 'SPRdata()'
