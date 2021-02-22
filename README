@@ -1,4 +1,9 @@
 changelog
+     version 1.25.6
+        - Function wrapper showDT(DT::datatable)
+        - Fixed bug: 'symLink2bam()'
+        - Vignette update
+        
      version 1.25.5
         - Updating 'renderWF' and 'config.param' functions
         

@@ -466,11 +466,8 @@ symLink2bam <- function(sysargs, command="ln -s", htmldir, ext=c(".bam", ".bai")
     symname <- SampleName(sysargs)
     ## SYSargs2 class ##
   } else if (class(sysargs)=="SYSargs2") {
-    bampaths <- subsetWF(args = sysargs, slot = "output", subset = 1, index=1)
-    symname <- sysargs$targets[[1]][[2]]
-    for(i in seq(along=sysargs)) {
-      symname[i] <- sysargs$targets[[i]][[2]]
-    }
+    bampaths <- normalizePath(subsetWF(args = sysargs, slot = "output", subset = 1, index=1))
+    symname <- names(targets(sysargs))
   }
   urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep="")
   writeLines(urls, urlfile)

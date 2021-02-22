@@ -1128,6 +1128,7 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl) {
   clt <- c(clt, list(baseCommand=baseCommand, inputs=inputs, outputs=outputs))
   
   yaml::write_yaml(x=clt, file = file.cwl) 
+  ## print message TODO
   clt <- list(clt)
   names(clt) <- baseCommand
   return(clt)

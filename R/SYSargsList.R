@@ -902,8 +902,8 @@ evalCode <- function(infile, eval = TRUE, output) {
 ##################################
 ## [x] A character vector or an object containing file PATH.
 .getPath <- function(x) {
-  x <- normalizePath(x) ## add latter
-  if (!file.exists(x)) warning("No such file or directory. Check the file PATH.")
+  if(!file.exists(x)) warning("No such file or directory. Check the file PATH.")
+  x <- normalizePath(x) 
   path_un <- unlist(strsplit(x, "/"))
   path <- path_un[path_un != basename(x)]
   path <- paste0(path, collapse = "/")
@@ -1206,3 +1206,22 @@ evalCode <- function(infile, eval = TRUE, output) {
 
 ## Usage:
 # .tryCatchSYS(x=codeList[[1]])
+
+#############################
+## showDT function ##
+#############################
+showDT <- function(data, ...) {
+  DT::datatable(
+    data,
+    extensions = c("FixedColumns", "Scroller"),
+    options = list(
+      scrollX = TRUE,
+      fixedColumns = TRUE,
+      deferRender = TRUE,
+      scrollY = 200,
+      scroller = TRUE
+    )
+  )
+}
+## Usage:
+# showDT(iris)

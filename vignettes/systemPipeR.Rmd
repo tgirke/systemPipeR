@@ -432,9 +432,9 @@ Current, *systemPipeR* provides the _`param`_ file templates for third-party sof
 ```{r table_tools, echo=FALSE, message=FALSE}
 library(dplyr)
 library(kableExtra)
-SYS_software <- system.file("extdata", "SYS_software.csv", package="systemPipeR")
-#SYS_software <- "SYS_software.csv"
-software <- read.delim(SYS_software, sep=",", comment.char = "#")
+SPR_software <- system.file("extdata", "SPR_software.csv", package="systemPipeR")
+#SPR_software <- "SPR_software.csv"
+software <- read.delim(SPR_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))
 software %>%
@@ -443,8 +443,8 @@ software %>%
   )) %>%
    select(Tool, Description, Step) %>%
   arrange(Tool) %>% 
-  kable(escape = F, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
-  kable_styling(c("striped", "hover", "condensed"), full_width = T) %>%
+  kable(escape = FALSE, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
+  kable_styling(c("striped", "hover", "condensed"), full_width = TRUE) %>%
   scroll_box(width = "80%", height = "500px")
 ```
 
