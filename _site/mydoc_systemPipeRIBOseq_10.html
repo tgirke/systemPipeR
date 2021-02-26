@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content=" ">
+<title>10. GO term enrichment analysis of DEGs | systemPipeR Website</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-red.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> Data Analysis Workflow Environment</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html" target="_blank">Bioc</a></li>
+                
+                
+                
+                <li><a href="https://github.com/systemPipeR" target="_blank">GitHub Repo</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://cran.r-project.org/" target="_blank">CRAN</a></li>
+                        
+                        
+                        
+                        <li><a href="http://bioconductor.org/" target="_blank">Bioconductor</a></li>
+                        
+                        
+                        
+                        <li><a href="http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual" target="_blank">R & Bioconductor Manual</a></li>
+                        
+                        
+                        
+                        <li><a href="https://guides.github.com/activities/hello-world/" target="_blank">GitHub</a></li>
+                        
+                        
+                        
+                        <li><a href="http://hpcc.ucr.edu/" target="_blank">HPC Center (HPCC)</a></li>
+                        
+                        
+                        
+                        <li><a href="http://girke.bioinformatics.ucr.edu/" target="_blank">Girke Lab</a></li>
+                        
+                        
+                        
+                        <li><a href="http://idratherbewriting.com/documentation-theme-jekyll" target="_blank">Jekyll Doc Theme</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:thomas.girke@ucr.edu?subject=systemPipeR Website feedback&body=I have some feedback about the 10. GO term enrichment analysis of DEGs page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="10. GO term enrichment analysis of DEGs">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3" id="tg-sb-sidebar">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle"><center><img src="pages/mydoc/miscellaneous_images/systemPipeR_site.png" align="middle" style="width:150px;"></li> 
+    <!-- <li class="sidebarTitle"><center><font color="#7a1f1f" size="6"><i>systemPipeR</i></font></center> <center><font color="#8b9299" size="3">Project Site</font></center></li>-->
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home</a>
+        <ul>
+            
+            
+            
+            <li><a href="index.html">Introduction</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">systemPipeR</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_1.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_2.html">2. Getting Started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_3.html">3. How to run a Workflow</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_4.html">4. Workflow steps overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_5.html">5. Workflow templates</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_6.html">6. Version information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_7.html">7. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_8.html">8. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Workflows Collection</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_wf_collection.html">Workflows Collection</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Graphical User Interface</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeShiny_intro.html">systemPipeShiny Intro</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeShiny.html">systemPipeShiny App</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">News</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_news.html">News</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Training Events</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_training.html">Training Events</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_videos.html">Video Tutorials</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Publications</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_publications.html">Publications</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Acknowledgement</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_acknowledgement.html">Acknowledgement</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Contacts</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_contacts.html">Contacts</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9" id="tg-sb-content">
+        <div class="post-header">
+   <h1 class="post-title-main">10. GO term enrichment analysis of DEGs</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+<!--
+    
+
+    <a target="_blank" href="https://github.com/tgirke/systemPipeR/blob/gh-pages/pages//mydoc_systemPipeRIBOseq_10.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+-->
+    
+
+  <h2 id="obtain-gene-to-go-mappings">Obtain gene-to-GO mappings</h2>
+
+<p>The following shows how to obtain gene-to-GO mappings from <code class="highlighter-rouge">biomaRt</code>
+(here for <em>A. thaliana</em>) and how to organize them for the downstream GO
+term enrichment analysis. Alternatively, the gene-to-GO mappings can be
+obtained for many organisms from Bioconductor’s <code class="highlighter-rouge">*.db</code> genome
+annotation packages or GO annotation files provided by various genome
+databases. For each annotation this relatively slow preprocessing step needs to
+be performed only once. Subsequently, the preprocessed data can be loaded with
+the <code class="highlighter-rouge">load</code> function as shown in the next subsection.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"biomaRt"</span><span class="p">)</span><span class="w">
+</span><span class="n">listMarts</span><span class="p">()</span><span class="w">  </span><span class="c1"># To choose BioMart database</span><span class="w">
+</span><span class="n">listMarts</span><span class="p">(</span><span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"plants.ensembl.org"</span><span class="p">)</span><span class="w">
+</span><span class="n">m</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">useMart</span><span class="p">(</span><span class="s2">"plants_mart"</span><span class="p">,</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"plants.ensembl.org"</span><span class="p">)</span><span class="w">
+</span><span class="n">listDatasets</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w">
+</span><span class="n">m</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">useMart</span><span class="p">(</span><span class="s2">"plants_mart"</span><span class="p">,</span><span class="w"> </span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"athaliana_eg_gene"</span><span class="p">,</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"plants.ensembl.org"</span><span class="p">)</span><span class="w">
+</span><span class="n">listAttributes</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w">  </span><span class="c1"># Choose data types you want to download</span><span class="w">
+</span><span class="n">go</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getBM</span><span class="p">(</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"go_id"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tair_locus"</span><span class="p">,</span><span class="w"> </span><span class="s2">"namespace_1003"</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">mart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w">
+</span><span class="n">go</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">go</span><span class="p">[</span><span class="n">go</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="n">go</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">go</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">])</span><span class="w">
+</span><span class="n">go</span><span class="p">[</span><span class="n">go</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"molecular_function"</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"F"</span><span class="w">
+</span><span class="n">go</span><span class="p">[</span><span class="n">go</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"biological_process"</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"P"</span><span class="w">
+</span><span class="n">go</span><span class="p">[</span><span class="n">go</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"cellular_component"</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"C"</span><span class="w">
+</span><span class="n">go</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="n">dir.create</span><span class="p">(</span><span class="s2">"./data/GO"</span><span class="p">)</span><span class="w">
+</span><span class="n">write.table</span><span class="p">(</span><span class="n">go</span><span class="p">,</span><span class="w"> </span><span class="s2">"data/GO/GOannotationsBiomart_mod.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">quote</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">col.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\t"</span><span class="p">)</span><span class="w">
+</span><span class="n">catdb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">makeCATdb</span><span class="p">(</span><span class="n">myfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data/GO/GOannotationsBiomart_mod.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">lib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">org</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="n">colno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">),</span><span class="w"> </span><span class="n">idconv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">
+</span><span class="n">save</span><span class="p">(</span><span class="n">catdb</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data/GO/catdb.RData"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="batch-go-term-enrichment-analysis">Batch GO term enrichment analysis</h2>
+
+<p>Apply the enrichment analysis to the DEG sets obtained the above differential
+expression analysis. Note, in the following example the <code class="highlighter-rouge">FDR</code> filter is set
+here to an unreasonably high value, simply because of the small size of the toy
+data set used in this vignette. Batch enrichment analysis of many gene sets is
+performed with the function. When <code class="highlighter-rouge">method=all</code>, it returns all GO terms passing
+the p-value cutoff specified under the <code class="highlighter-rouge">cutoff</code> arguments. When <code class="highlighter-rouge">method=slim</code>,
+it returns only the GO terms specified under the <code class="highlighter-rouge">myslimv</code> argument. The given
+example shows how a GO slim vector for a specific organism can be obtained from
+BioMart.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="s2">"biomaRt"</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">BBmisc</span><span class="p">)</span><span class="w">  </span><span class="c1"># Defines suppressAll()</span><span class="w">
+</span><span class="n">load</span><span class="p">(</span><span class="s2">"data/GO/catdb.RData"</span><span class="p">)</span><span class="w">
+</span><span class="n">DEG_list</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">filterDEGs</span><span class="p">(</span><span class="n">degDF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edgeDF</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">Fold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">FDR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">plot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">up_down</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DEG_list</span><span class="o">$</span><span class="n">UporDown</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">up_down</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">up_down</span><span class="p">),</span><span class="w"> </span><span class="s2">"_up_down"</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w">
+</span><span class="n">up</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DEG_list</span><span class="o">$</span><span class="n">Up</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">up</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">up</span><span class="p">),</span><span class="w"> </span><span class="s2">"_up"</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w">
+</span><span class="n">down</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DEG_list</span><span class="o">$</span><span class="n">Down</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">down</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="nf">names</span><span class="p">(</span><span class="n">down</span><span class="p">),</span><span class="w"> </span><span class="s2">"_down"</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w">
+</span><span class="n">DEGlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">up_down</span><span class="p">,</span><span class="w"> </span><span class="n">up</span><span class="p">,</span><span class="w"> </span><span class="n">down</span><span class="p">)</span><span class="w">
+</span><span class="n">DEGlist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">DEGlist</span><span class="p">[</span><span class="n">sapply</span><span class="p">(</span><span class="n">DEGlist</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="p">]</span><span class="w">
+</span><span class="n">BatchResult</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GOCluster_Report</span><span class="p">(</span><span class="n">catdb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">catdb</span><span class="p">,</span><span class="w"> </span><span class="n">setlist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DEGlist</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span><span class="w"> </span><span class="n">id_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gene"</span><span class="p">,</span><span class="w"> </span><span class="n">CLSZ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">gocats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"MF"</span><span class="p">,</span><span class="w"> </span><span class="s2">"BP"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CC"</span><span class="p">),</span><span class="w"> </span><span class="n">recordSpecGO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="s2">"biomaRt"</span><span class="p">)</span><span class="w">
+</span><span class="n">m</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">useMart</span><span class="p">(</span><span class="s2">"plants_mart"</span><span class="p">,</span><span class="w"> </span><span class="n">dataset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"athaliana_eg_gene"</span><span class="p">,</span><span class="w"> </span><span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"plants.ensembl.org"</span><span class="p">)</span><span class="w">
+</span><span class="n">goslimvec</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">getBM</span><span class="p">(</span><span class="n">attributes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"goslim_goa_accession"</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">mart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">)[,</span><span class="w"> </span><span class="m">1</span><span class="p">])</span><span class="w">
+</span><span class="n">BatchResultslim</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">GOCluster_Report</span><span class="p">(</span><span class="n">catdb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">catdb</span><span class="p">,</span><span class="w"> </span><span class="n">setlist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DEGlist</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"slim"</span><span class="p">,</span><span class="w"> </span><span class="n">id_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gene"</span><span class="p">,</span><span class="w"> </span><span class="n">myslimv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">goslimvec</span><span class="p">,</span><span class="w"> </span><span class="n">CLSZ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.01</span><span class="p">,</span><span class="w"> </span><span class="n">gocats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"MF"</span><span class="p">,</span><span class="w"> </span><span class="s2">"BP"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CC"</span><span class="p">),</span><span class="w"> </span><span class="n">recordSpecGO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">data.frame</code> generated by <code class="highlighter-rouge">GOCluster</code> can be plotted with the <code class="highlighter-rouge">goBarplot</code> function. Because of the
+variable size of the sample sets, it may not always be desirable to show
+the results from different DEG sets in the same bar plot. Plotting
+single sample sets is achieved by subsetting the input data frame as
+shown in the first line of the following example.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">BatchResultslim</span><span class="p">[</span><span class="n">grep</span><span class="p">(</span><span class="s2">"M6-V6_up_down"</span><span class="p">,</span><span class="w"> </span><span class="n">BatchResultslim</span><span class="o">$</span><span class="n">CLID</span><span class="p">),</span><span class="w"> 
+    </span><span class="p">]</span><span class="w">
+</span><span class="n">gos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">BatchResultslim</span><span class="w">
+</span><span class="n">png</span><span class="p">(</span><span class="s2">"./results/GOslimbarplotMF.png"</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"in"</span><span class="p">,</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">72</span><span class="p">)</span><span class="w">
+</span><span class="n">goBarplot</span><span class="p">(</span><span class="n">gos</span><span class="p">,</span><span class="w"> </span><span class="n">gocat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"MF"</span><span class="p">)</span><span class="w">
+</span><span class="n">dev.off</span><span class="p">()</span><span class="w">
+</span><span class="n">goBarplot</span><span class="p">(</span><span class="n">gos</span><span class="p">,</span><span class="w"> </span><span class="n">gocat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"BP"</span><span class="p">)</span><span class="w">
+</span><span class="n">goBarplot</span><span class="p">(</span><span class="n">gos</span><span class="p">,</span><span class="w"> </span><span class="n">gocat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"CC"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="./pages/mydoc/systemPipeRIBOseq_files/GOslimbarplotMF.png" alt="" /></p>
+<div align="center">Figure 8: GO Slim Barplot for MF Ontology.</div>
+
+<p><br /><br /><center><a href="mydoc_systemPipeRIBOseq_09.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
+<a href="mydoc_systemPipeRIBOseq_11.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:33:39 2020<br/> Site last generated: Feb 25, 2021 <br />
+<!--
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+-->
+</div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+
+</body>
+
+</html>

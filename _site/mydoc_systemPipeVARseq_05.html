@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content=" ">
+<title>5. Variant calling | systemPipeR Website</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-red.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> Data Analysis Workflow Environment</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html" target="_blank">Bioc</a></li>
+                
+                
+                
+                <li><a href="https://github.com/systemPipeR" target="_blank">GitHub Repo</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://cran.r-project.org/" target="_blank">CRAN</a></li>
+                        
+                        
+                        
+                        <li><a href="http://bioconductor.org/" target="_blank">Bioconductor</a></li>
+                        
+                        
+                        
+                        <li><a href="http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual" target="_blank">R & Bioconductor Manual</a></li>
+                        
+                        
+                        
+                        <li><a href="https://guides.github.com/activities/hello-world/" target="_blank">GitHub</a></li>
+                        
+                        
+                        
+                        <li><a href="http://hpcc.ucr.edu/" target="_blank">HPC Center (HPCC)</a></li>
+                        
+                        
+                        
+                        <li><a href="http://girke.bioinformatics.ucr.edu/" target="_blank">Girke Lab</a></li>
+                        
+                        
+                        
+                        <li><a href="http://idratherbewriting.com/documentation-theme-jekyll" target="_blank">Jekyll Doc Theme</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:thomas.girke@ucr.edu?subject=systemPipeR Website feedback&body=I have some feedback about the 5. Variant calling page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="5. Variant calling">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3" id="tg-sb-sidebar">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle"><center><img src="pages/mydoc/miscellaneous_images/systemPipeR_site.png" align="middle" style="width:150px;"></li> 
+    <!-- <li class="sidebarTitle"><center><font color="#7a1f1f" size="6"><i>systemPipeR</i></font></center> <center><font color="#8b9299" size="3">Project Site</font></center></li>-->
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home</a>
+        <ul>
+            
+            
+            
+            <li><a href="index.html">Introduction</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">systemPipeR</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_1.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_2.html">2. Getting Started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_3.html">3. How to run a Workflow</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_4.html">4. Workflow steps overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_5.html">5. Workflow templates</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_6.html">6. Version information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_7.html">7. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_8.html">8. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Workflows Collection</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_wf_collection.html">Workflows Collection</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Graphical User Interface</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeShiny_intro.html">systemPipeShiny Intro</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeShiny.html">systemPipeShiny App</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">News</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_news.html">News</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Training Events</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_training.html">Training Events</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_videos.html">Video Tutorials</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Publications</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_publications.html">Publications</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Acknowledgement</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_acknowledgement.html">Acknowledgement</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Contacts</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_contacts.html">Contacts</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9" id="tg-sb-content">
+        <div class="post-header">
+   <h1 class="post-title-main">5. Variant calling</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+<!--
+    
+
+    <a target="_blank" href="https://github.com/tgirke/systemPipeR/blob/gh-pages/pages//mydoc_systemPipeVARseq_05.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+-->
+    
+
+  <p>The following performs variant calling with <code class="highlighter-rouge">GATK</code> and <code class="highlighter-rouge">BCFtools</code> on a single 
+machine by <code class="highlighter-rouge">runCommandline</code> function can be used to run the variant 
+calling with <code class="highlighter-rouge">GATK</code> and <code class="highlighter-rouge">BCFtools</code> for each sample sequentially. If a cluster 
+is available, running in parallel mode on a compute cluster can be performed by 
+<code class="highlighter-rouge">clusterRun</code> (McKenna et al., 2010; Li , 2011). Typically, the user would choose here 
+only one variant caller rather than running several ones.</p>
+
+<p>Not all users have a cluster system, so here to demonstrate an example variant calling 
+workflow, only single-machine commands are shown. For cluster jobs, please refer 
+to previous steps like code for <code class="highlighter-rouge">BWA</code> as a template to run on the cluster.</p>
+
+<h2 id="variant-calling-with-gatk">Variant calling with <code class="highlighter-rouge">GATK</code></h2>
+
+<p>The following steps are based on <code class="highlighter-rouge">GATK 4.1.1.0</code> <a href="https://software.broadinstitute.org/gatk/best-practices/">Best Practice</a>. 
+A <code class="highlighter-rouge">targets</code> file is needed to load samples to a <code class="highlighter-rouge">SYSargs2</code> intance. There are 10 
+individual steps where the user can choose where to jump in and where to skip. 
+All scripts are located at <code class="highlighter-rouge">param/cwl/gatk</code>. <code class="highlighter-rouge">BQSR</code> (Base Quality Score Recalibration) 
+and <code class="highlighter-rouge">VQSR</code> (Variant Quality Score Recalibration) are very specific 
+to a limited species like human, so this workflow does not support these steps.</p>
+
+<h3 id="step1-fastq-to-ubam">Step1: <code class="highlighter-rouge">fastq</code> to <code class="highlighter-rouge">ubam</code></h3>
+
+<p>Convert <code class="highlighter-rouge">fastq</code> files to <code class="highlighter-rouge">bam</code> files to prepare for the following step. It is very 
+important to specific your sequencing platform, default is <code class="highlighter-rouge">illumina</code>. User need 
+to change <code class="highlighter-rouge">gatk_fastq2ubam.cwl</code> if the platform is different. Platform information 
+is needed for the variant caller in later steps to correct calling parameters.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/gatk"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">targets.gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targetsPE.txt"</span><span class="w">  </span><span class="c1">## targets generated from BWA</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets.gatk</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_fastq2ubam.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH1_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">FileName2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH2_"</span><span class="p">,</span><span class="w"> </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GATK_UBAM"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step2-merge-bam-and-ubam">Step2: Merge <code class="highlighter-rouge">bam</code> and <code class="highlighter-rouge">ubam</code></h3>
+
+<p>This step merges a <code class="highlighter-rouge">bam</code> and <code class="highlighter-rouge">ubam</code> and creates a third <code class="highlighter-rouge">bam</code> file that contains 
+alignment information and remaining information that was removed by the aligner like <code class="highlighter-rouge">BWA</code>. 
+The removed information is essential for variant statistics calculation. Previous steps are 
+recommended, but variant calling can still be performed without these steps.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets.gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets.gatk</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_mergebams.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">BWA_SAM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_bwasam_"</span><span class="p">,</span><span class="w"> </span><span class="n">GATK_UBAM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_ubam_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GATK_MERGE"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step3-sort-bam-files-by-genomic-coordinates">Step3: Sort <code class="highlighter-rouge">bam</code> files by genomic coordinates</h3>
+
+<p>Sort <code class="highlighter-rouge">bam</code> files by genomic coordinates.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets.gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets.gatk</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_sort.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">GATK_MERGE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_mergebam_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GATK_SORT"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step4-mark-duplicates">Step4: Mark duplicates</h3>
+
+<p>Mark PCR artifacts in sequencing. A <code class="highlighter-rouge">duplicate_metrics</code> file will also be produced 
+by this step, but will not be used for the next step. This file is just for the user 
+to check duplicates status summary.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets.gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets.gatk</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_markduplicates.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">GATK_SORT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_sort_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"GATK_MARK"</span><span class="p">,</span><span class="w"> </span><span class="s2">"GATK_MARK_METRICS"</span><span class="p">),</span><span class="w"> 
+    </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step5-fixing-tags">Step5: Fixing tags</h3>
+
+<p>Takes the <code class="highlighter-rouge">bam</code> from the last step and calculates the NM, MD, and UQ tags. 
+These tags are important for variant calling and filtering. 
+This step is recommended but can be skipped.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets.gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets.gatk</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_fixtag.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">GATK_MARK</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_mark_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GATK_FIXED"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Up till this step, sample preprocess is done. All analysis ready <code class="highlighter-rouge">BAM</code> files and 
+  their index <code class="highlighter-rouge">.bai</code> files are created. Individual and cohort calling by 
+  <code class="highlighter-rouge">HaplotypeCaller</code> is performed from the next step.</p>
+
+<h3 id="step6-haplotypecaller-gvcf">Step6: HaplotypeCaller <code class="highlighter-rouge">gvcf</code></h3>
+
+<p>The <code class="highlighter-rouge">HaplotypeCaller</code> is running a <strong>gvcf</strong> mode in this step. G stands for ‘genomic’. 
+The file not only contains variant sites information but also non-variant sites information; 
+thus, at the following step, the cohort caller can use this information to validate the true variants.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets.gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets.gatk</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_haplotypecaller.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">GATK_FIXED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_fixed_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GVCF"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step7-import-all-gvcfs">Step7: Import all <code class="highlighter-rouge">gvcfs</code></h3>
+
+<p>It is recommended to import all <strong>gvcfs</strong> to a 
+<a href="https://github.com/Intel-HLS/GenomicsDB/wiki">TileDB</a> database for fast cohort 
+variant calling at the following step. Note: if you are working with non-diploid data, 
+use <code class="highlighter-rouge">CombineGVCFs</code> function from <code class="highlighter-rouge">GATK</code> and change the <code class="highlighter-rouge">gvcf_db_folder</code> parameter 
+in <code class="highlighter-rouge">param/cwl/gatk/gatk.yaml</code> to be your combined <strong>gvcf</strong> file.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># drop all *.g.vcf.gz files into results folder, make sure</span><span class="w">
+</span><span class="c1"># the tbi index is also there.</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_genomicsDBImport.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step8-cohort-calling-of-gvcf">Step8: Cohort calling of <code class="highlighter-rouge">gvcf</code></h3>
+
+<p>Assess variants by information from all gvcfs. A collective vcf called 
+<code class="highlighter-rouge">samples.vcf.gz</code> is created by default naming.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_genotypeGVCFs.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step9-cohort-hard-filter-variants">Step9: Cohort hard filter variants</h3>
+
+<p>VQSR is not included in this workflow. Variants are hard filtered together.
+See this <a href="https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set">Post</a> for parameters for hard filtering. Change these settings in <code class="highlighter-rouge">param/cwl/gak/gatk_variantFiltration.sh</code> if needed.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_variantFiltration.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="step10-extract-variant">Step10: Extract variant</h3>
+
+<p>After cohort calling, filtering, all variants for all samples are stored in one big file. 
+Extract variants for each sample and save them separately (only variants that have 
+passed the filters are stored).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">targets.gatk</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targets.gatk</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk_select_variant.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gatk.yaml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName1"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="variant-calling-with-bcftools">Variant calling with <code class="highlighter-rouge">BCFtools</code></h2>
+
+<p>The following runs the variant calling with <code class="highlighter-rouge">BCFtools</code>. This tool takes <code class="highlighter-rouge">BWA</code> 
+aligned <code class="highlighter-rouge">BAM</code> files, sort, mark duplicates by <code class="highlighter-rouge">samtools</code> and finally call variants 
+by <code class="highlighter-rouge">BCFtools</code>.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/workflow-bcftools"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">targetsPE</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"./results/targetsPE.txt"</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">targetsPE</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"workflow_bcftools.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bcftools.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">BWA_SAM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SAM_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="w">
+</span><span class="n">output</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_bcf.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName1"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Variant calling ends here. Downstream analysis starts from the next section.</p>
+
+<h2 id="inspect-vcf-file">Inspect VCF file</h2>
+
+<p>Scripts of downstream analysis are stored in <code class="highlighter-rouge">param/cwl/varseq_downstream</code></p>
+
+<pre><code class="language-r_vcf">dir_path &lt;- system.file("extdata/cwl/varseq", package="systemPipeR")   
+</code></pre>
+
+<p>VCF files can be imported into R with the <code class="highlighter-rouge">readVcf</code> function. 
+Both <code class="highlighter-rouge">VCF</code> and <code class="highlighter-rouge">VRanges</code> objects provide convenient data structure for
+working with variant data (<em>e.g.</em> SNP quality filtering).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">VariantAnnotation</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWorkflow</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./results/targets_gatk.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"filter.cwl"</span><span class="p">,</span><span class="w"> </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"varseq.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FILE1_"</span><span class="p">))</span><span class="w">
+</span><span class="n">vcf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">readVcf</span><span class="p">(</span><span class="n">infile1</span><span class="p">(</span><span class="n">args</span><span class="p">)[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="s2">"A. thaliana"</span><span class="p">)</span><span class="w">
+</span><span class="n">vcf</span><span class="w">
+</span><span class="n">vr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">vcf</span><span class="p">,</span><span class="w"> </span><span class="s2">"VRanges"</span><span class="p">)</span><span class="w">
+</span><span class="n">vr</span><span class="w">
+</span></code></pre></div></div>
+
+<p><br /><br /><center><a href="mydoc_systemPipeVARseq_04.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
+<a href="mydoc_systemPipeVARseq_06.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:30:50 2020<br/> Site last generated: Feb 25, 2021 <br />
+<!--
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+-->
+</div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+
+</body>
+
+</html>

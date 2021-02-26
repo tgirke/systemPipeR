@@ -1,0 +1,30 @@
+## Topnav single links
+## if you want to list an external url, use external_url instead of url. the theme will apply a different link base.
+topnav:
+- title: Topnav
+  items:
+    - title: Bioc
+      external_url: http://bioconductor.org/packages/release/bioc/html/systemPipeR.html
+    - title: GitHub Repo
+      external_url: https://github.com/systemPipeR
+
+#Topnav dropdowns
+topnav_dropdowns:
+- title: Topnav dropdowns
+  folders:
+    - title: Resources
+      folderitems:
+        - title: CRAN
+          external_url: https://cran.r-project.org/
+        - title: Bioconductor
+          external_url: http://bioconductor.org/
+        - title: R & Bioconductor Manual
+          external_url: http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual
+        - title: GitHub
+          external_url: https://guides.github.com/activities/hello-world/
+        - title: HPC Center (HPCC)
+          external_url: http://hpcc.ucr.edu/
+        - title: Girke Lab
+          external_url: http://girke.bioinformatics.ucr.edu/
+        - title: Jekyll Doc Theme
+          external_url: http://idratherbewriting.com/documentation-theme-jekyll

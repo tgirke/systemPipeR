@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content=" ">
+<title>6. Peak calling with MACS2 | systemPipeR Website</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-red.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="alternate" type="application/rss+xml" title="systemPipeR" href="http://localhost:4000feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            $("#tg-sb-link").click(function() {
+                $("#tg-sb-sidebar").toggle();
+                $("#tg-sb-content").toggleClass('col-md-9');
+                $("#tg-sb-content").toggleClass('col-md-12');
+                $("#tg-sb-icon").toggleClass('fa-toggle-on');
+                $("#tg-sb-icon").toggleClass('fa-toggle-off');
+            });
+        });
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="fa fa-home fa-lg navbar-brand" href="index.html">&nbsp;<span class="projectTitle"> Data Analysis Workflow Environment</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- toggle sidebar button -->
+                <li><a id="tg-sb-link" href="#"><i id="tg-sb-icon" class="fa fa-toggle-on"></i> Nav</a></li>
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="http://bioconductor.org/packages/release/bioc/html/systemPipeR.html" target="_blank">Bioc</a></li>
+                
+                
+                
+                <li><a href="https://github.com/systemPipeR" target="_blank">GitHub Repo</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://cran.r-project.org/" target="_blank">CRAN</a></li>
+                        
+                        
+                        
+                        <li><a href="http://bioconductor.org/" target="_blank">Bioconductor</a></li>
+                        
+                        
+                        
+                        <li><a href="http://manuals.bioinformatics.ucr.edu/home/R_BioCondManual" target="_blank">R & Bioconductor Manual</a></li>
+                        
+                        
+                        
+                        <li><a href="https://guides.github.com/activities/hello-world/" target="_blank">GitHub</a></li>
+                        
+                        
+                        
+                        <li><a href="http://hpcc.ucr.edu/" target="_blank">HPC Center (HPCC)</a></li>
+                        
+                        
+                        
+                        <li><a href="http://girke.bioinformatics.ucr.edu/" target="_blank">Girke Lab</a></li>
+                        
+                        
+                        
+                        <li><a href="http://idratherbewriting.com/documentation-theme-jekyll" target="_blank">Jekyll Doc Theme</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<li>
+
+
+
+  <a class="email" title="Submit feedback" href="#" onclick="javascript:window.location='mailto:thomas.girke@ucr.edu?subject=systemPipeR Website feedback&body=I have some feedback about the 6. Peak calling with MACS2 page: ' + window.location.href;"><i class="fa fa-envelope-o"></i> Feedback</a>
+
+</li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: 'search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="6. Peak calling with MACS2">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3" id="tg-sb-sidebar">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle"><center><img src="pages/mydoc/miscellaneous_images/systemPipeR_site.png" align="middle" style="width:150px;"></li> 
+    <!-- <li class="sidebarTitle"><center><font color="#7a1f1f" size="6"><i>systemPipeR</i></font></center> <center><font color="#8b9299" size="3">Project Site</font></center></li>-->
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Home</a>
+        <ul>
+            
+            
+            
+            <li><a href="index.html">Introduction</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">systemPipeR</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_1.html">1. Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_2.html">2. Getting Started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_3.html">3. How to run a Workflow</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_4.html">4. Workflow steps overview</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_5.html">5. Workflow templates</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_6.html">6. Version information</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_7.html">7. Funding</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeR_8.html">8. References</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Workflows Collection</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_wf_collection.html">Workflows Collection</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Graphical User Interface</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_systemPipeShiny_intro.html">systemPipeShiny Intro</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_systemPipeShiny.html">systemPipeShiny App</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">News</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_news.html">News</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Training Events</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_training.html">Training Events</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="mydoc_videos.html">Video Tutorials</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Publications</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_publications.html">Publications</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Acknowledgement</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_acknowledgement.html">Acknowledgement</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Contacts</a>
+        <ul>
+            
+            
+            
+            <li><a href="mydoc_contacts.html">Contacts</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9" id="tg-sb-content">
+        <div class="post-header">
+   <h1 class="post-title-main">6. Peak calling with MACS2</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+
+<!--
+    
+
+    <a target="_blank" href="https://github.com/tgirke/systemPipeR/blob/gh-pages/pages//mydoc_systemPipeChIPseq_06.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+-->
+    
+
+  <h2 id="merge-bam-files-of-replicates-prior-to-peak-calling">Merge BAM files of replicates prior to peak calling</h2>
+
+<p>Merging BAM files of technical and/or biological replicates can improve
+the sensitivity of the peak calling by increasing the depth of read
+coverage. The <code class="highlighter-rouge">mergeBamByFactor</code> function merges BAM files based on grouping information
+specified by a <code class="highlighter-rouge">factor</code>, here the <code class="highlighter-rouge">Factor</code> column of the imported targets file. It 
+also returns an updated <code class="highlighter-rouge">SYSargs2</code> object containing the paths to the
+merged BAM files as well as to any unmerged files without replicates.
+This step can be skipped if merging of BAM files is not desired.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/mergeBamByFactor"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWF</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"merge-bam.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"merge-bam.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_BAM_PATH_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+
+</span><span class="n">args_merge</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mergeBamByFactor</span><span class="p">(</span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args_merge</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Skip if a module system is not used</span><span class="w">
+</span><span class="n">module</span><span class="p">(</span><span class="s2">"list"</span><span class="p">)</span><span class="w">
+</span><span class="n">module</span><span class="p">(</span><span class="s2">"unload"</span><span class="p">,</span><span class="w"> </span><span class="s2">"miniconda2"</span><span class="p">)</span><span class="w">
+</span><span class="n">module</span><span class="p">(</span><span class="s2">"load"</span><span class="p">,</span><span class="w"> </span><span class="s2">"python/2.7.14"</span><span class="p">)</span><span class="w">  </span><span class="c1"># Make sure to set up your enviroment variable for MACS2 </span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="peak-calling-without-inputreference-sample">Peak calling without input/reference sample</h2>
+
+<p>MACS2 can perform peak calling on ChIP-Seq data with and without input
+samples (Zhang et al., 2008). The following performs peak calling without
+input on all samples specified in the corresponding <code class="highlighter-rouge">args</code> object. Note, due to
+the small size of the sample data, MACS2 needs to be run here with the
+<code class="highlighter-rouge">nomodel</code> setting. For real data sets, users want to remove this parameter 
+in the corresponding <code class="highlighter-rouge">*.param</code> file(s).</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/MACS2/MACS2-noinput/"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWF</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"macs2.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"macs2.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH1_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+
+</span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">outpaths</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subsetWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_macs.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="peak-calling-with-inputreference-sample">Peak calling with input/reference sample</h2>
+
+<p>To perform peak calling with input samples, they can be most
+conveniently specified in the <code class="highlighter-rouge">SampleReference</code> column of the initial
+<code class="highlighter-rouge">targets</code> file. The <code class="highlighter-rouge">writeTargetsRef</code> function uses this information to create a <code class="highlighter-rouge">targets</code> 
+file intermediate for running MACS2 with the corresponding input samples.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">writeTargetsRef</span><span class="p">(</span><span class="n">infile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_mergeBamByFactor.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">outfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam_ref.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">silent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">dir_path</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">system.file</span><span class="p">(</span><span class="s2">"extdata/cwl/MACS2/MACS2-input/"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"systemPipeR"</span><span class="p">)</span><span class="w">
+</span><span class="n">args_input</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">loadWF</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_bam_ref.txt"</span><span class="p">,</span><span class="w"> </span><span class="n">wf_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"macs2-input.cwl"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">input_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"macs2.yml"</span><span class="p">,</span><span class="w"> </span><span class="n">dir_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dir_path</span><span class="p">)</span><span class="w">
+</span><span class="n">args_input</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderWF</span><span class="p">(</span><span class="n">args_input</span><span class="p">,</span><span class="w"> </span><span class="n">inputvars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">FileName1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH1_"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">FileName2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_FASTQ_PATH2_"</span><span class="p">,</span><span class="w"> </span><span class="n">SampleName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"_SampleName_"</span><span class="p">))</span><span class="w">
+</span><span class="n">cmdlist</span><span class="p">(</span><span class="n">args_input</span><span class="p">)[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span><span class="c1">## Run</span><span class="w">
+</span><span class="n">args_input</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">runCommandline</span><span class="p">(</span><span class="n">args_input</span><span class="p">,</span><span class="w"> </span><span class="n">make_bam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">outpaths_input</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subsetWF</span><span class="p">(</span><span class="n">args_input</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">file.exists</span><span class="p">(</span><span class="n">outpaths_input</span><span class="p">)</span><span class="w">
+</span><span class="n">writeTargetsout</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args_input</span><span class="p">,</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"targets_macs_input.txt"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">new_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"FileName"</span><span class="p">,</span><span class="w"> </span><span class="n">new_col_output_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The peak calling results from MACS2 are written for each sample to
+separate files in the <code class="highlighter-rouge">results</code> directory. They are named after the corresponding
+files with extensions used by MACS2.</p>
+
+<h2 id="identify-consensus-peaks">Identify consensus peaks</h2>
+
+<p>The following example shows how one can identify consensus preaks among two peak sets sharing either a minimum absolute overlap and/or minimum relative overlap using the <code class="highlighter-rouge">subsetByOverlaps</code> or <code class="highlighter-rouge">olRanges</code> functions, respectively. Note, the latter is a custom function imported below by sourcing it.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># source('http://faculty.ucr.edu/~tgirke/Documents/R_BioCond/My_R_Scripts/rangeoverlapper.R')</span><span class="w">
+</span><span class="n">outpaths</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subsetWF</span><span class="p">(</span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"output"</span><span class="p">,</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">  </span><span class="c1">## escolher um dos outputs index</span><span class="w">
+</span><span class="n">peak_M1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">outpaths</span><span class="p">[</span><span class="s2">"M1A"</span><span class="p">]</span><span class="w">
+</span><span class="n">peak_M1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">read.delim</span><span class="p">(</span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)[,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">)</span><span class="w">
+</span><span class="n">peak_A1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">outpaths</span><span class="p">[</span><span class="s2">"A1A"</span><span class="p">]</span><span class="w">
+</span><span class="n">peak_A1A</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as</span><span class="p">(</span><span class="n">read.delim</span><span class="p">(</span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#"</span><span class="p">)[,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="s2">"GRanges"</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="n">myol1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subsetByOverlaps</span><span class="p">(</span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">minoverlap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="c1"># Returns any overlap</span><span class="w">
+</span><span class="n">myol2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">olRanges</span><span class="p">(</span><span class="n">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">peak_M1A</span><span class="p">,</span><span class="w"> </span><span class="n">subject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">peak_A1A</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gr"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Returns any overlap with OL length information</span><span class="w">
+</span><span class="n">myol2</span><span class="p">[</span><span class="n">values</span><span class="p">(</span><span class="n">myol2</span><span class="p">)[</span><span class="s2">"OLpercQ"</span><span class="p">][,</span><span class="w"> </span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">50</span><span class="p">]</span><span class="w">
+</span><span class="c1"># Returns only query peaks with a minimum overlap of 50%</span><span class="w">
+</span></code></pre></div></div>
+
+<p><br /><br /><center><a href="mydoc_systemPipeChIPseq_05.html"><img src="images/left_arrow.png" alt="Previous page." /></a>Previous Page &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Next Page
+<a href="mydoc_systemPipeChIPseq_07.html"><img src="images/right_arrow.png" alt="Next page." /></a></center></p>
+
+
+    <div class="tags">
+        
+    </div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2021 UC Riverside. All rights reserved. <br />
+<span>Page last updated:</span> Sat Apr 18 12:27:46 2020<br/> Site last generated: Feb 25, 2021 <br />
+<!--
+<p><img src="images/company_logo.png" alt="Company logo"/></p>
+-->
+</div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+
+</body>
+
+</html>
