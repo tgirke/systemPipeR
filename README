@@ -1,4 +1,7 @@
 changelog
+     version 1.25.7
+        - Updated URL
+        
      version 1.25.6
         - Function wrapper showDT(DT::datatable)
         - Fixed bug: 'symLink2bam()'
