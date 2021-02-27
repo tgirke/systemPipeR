@@ -1,6 +1,8 @@
 changelog
      version 1.25.7
         - Updated URL
+        - Organized functions files: "SYSargsList and SYSargs2" classes --> R/AllClasses2.R
+        - Removed 'SYSargs2Pipe-class'
         
      version 1.25.6
         - Function wrapper showDT(DT::datatable)
