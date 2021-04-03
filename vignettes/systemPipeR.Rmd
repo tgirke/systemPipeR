@@ -430,22 +430,22 @@ space restrictions, the CWL-centric approach is not covered by this tutorial.
 Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
 
 ```{r table_tools, echo=FALSE, message=FALSE}
-library(dplyr)
-library(kableExtra)
+# library(dplyr)
+# library(kableExtra)
 SPR_software <- system.file("extdata", "SPR_software.csv", package="systemPipeR")
 #SPR_software <- "SPR_software.csv"
 software <- read.delim(SPR_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))
 software %>%
-  mutate(Step = cell_spec(Step, color = "white", bold = T,
+  dplyr::mutate(Step = kableExtra::cell_spec(Step, color = "white", bold = T,
     background = factor(Category, id, colors)
   )) %>%
-   select(Tool, Description, Step) %>%
-  arrange(Tool) %>% 
-  kable(escape = FALSE, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
-  kable_styling(c("striped", "hover", "condensed"), full_width = TRUE) %>%
-  scroll_box(width = "80%", height = "500px")
+   dplyr::select(Tool, Description, Step) %>%
+  dplyr::arrange(Tool) %>% 
+  kableExtra::kable(escape = FALSE, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
+  kableExtra::kable_styling(c("striped", "hover", "condensed"), full_width = TRUE) %>%
+  kableExtra::scroll_box(width = "80%", height = "500px")
 ```
 
 Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
