@@ -1,4 +1,8 @@
 changelog
+     version 1.25.8
+        - Reducing package dependency
+        - Reducing 'Undefined global functions or variables'
+        
      version 1.25.7
         - Updated URL
         - Organized functions files: "SYSargsList and SYSargs2" classes --> R/AllClasses2.R
