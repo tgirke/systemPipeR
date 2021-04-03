@@ -451,6 +451,8 @@ pathUtils <- function(x, type, dropdir=TRUE) {
 ## Assemble Commandline Components in List ##
 #############################################
 assembleCommandlineList <- function(clt=WF$clt[[1]]) {
+    ## global functions or variables
+    WF <- NULL
     ## Base command and arguments
     basecommand <- clt$baseCommand
     arguments <- clt$arguments
@@ -606,6 +608,8 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
 ## Helper Function to render inputs of single clt object ##
 ###########################################################
 renderInputs <- function(x=WF$clt[[1]]$inputs, returntags=list(inputBinding=c("prefix"), type="any")) {
+    ## global functions or variables
+    WF <- NULL
     inputnames <- names(x)
     ## Remove entries where inputBinding is missing since those parameters do not appear on the command-line
     inputnames <- inputnames[!sapply(inputnames, function(i) is.null(x[[i]]$inputBinding))]
@@ -626,6 +630,8 @@ renderInputs <- function(x=WF$clt[[1]]$inputs, returntags=list(inputBinding=c("p
 ## Helper Function to render outputs of single clt object ##
 ############################################################
 renderOutputs <- function(x=WF$clt[[1]]$outputs, stdout=WF$clt[[1]]$stdout, returntags=list(outputBinding=c("prefix", "glob"), type="any")) {
+    ## global functions or variables
+    WF <- NULL
     outputnames <- names(x)
     outputlist <- sapply(outputnames, function(i) {
             tmp <- c(x[[i]][[names(returntags["outputBinding"])]][returntags$outputBinding[1]],

@@ -2,6 +2,8 @@
 ## Filter VCF files ##
 ######################
 filterVars <- function (args, filter, varcaller, organism) {
+  ## global functions or variables
+  totalDepth<- refDepth <- altDepth <- totalDepth <- refDepth <- altDepth <- NULL
   if (!class(args) %in% c("SYSargs", "SYSargs2")) 
     stop("Argument 'args' needs to be of class SYSargs or SYSargs2")
   if (all(!c("gatk", "bcftools") %in% varcaller)) 

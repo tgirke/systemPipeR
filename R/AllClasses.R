@@ -289,6 +289,7 @@ systemArgs <- function(sysma, mytargets, type="SYSargs") {
 #########################
 getQsubargs <- function(software="qsub", queue="batch", Nnodes="nodes=1", cores=as.numeric(gsub("^.* ", "", tophatargs$args["p"])), memory="mem=10gb", time="walltime=20:00:00") {
   .Deprecated("clusterRun")
+  tophatargs <- NULL
   qsubargs <- list(software=software, 
                    queue=queue, 
                    Nnodes=Nnodes, 

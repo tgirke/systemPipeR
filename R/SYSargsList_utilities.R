@@ -468,7 +468,7 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
       names(t_lvl[index_final]), " "
     )
   ) %>%
-    paste0(., collapse = "\n") %>%
+    paste0(collapse = "\n") %>%
     stringr::str_replace("$", "\n") %>%
     cat()
   # to print new titles and return
@@ -487,7 +487,7 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
   return(rmd_df)
 }
 
-## Usage:
+# # Usage:
 # Rmd <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 # newRmd <- subsetRmd(Rmd=Rmd, input_steps="1:2.1, 3.2:4, 4:6", exclude_steps="3.1", Rmd_outfile="test_out.Rmd", save_Rmd=TRUE)
 

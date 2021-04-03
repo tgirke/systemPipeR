@@ -22,6 +22,8 @@
 ## (C) Extract 100,000 reads from each fastq file mapping to the truncated regions in reference
 ## Step (C) is performed with the following function
 .subsetReadsByMappingRegion <- function(args) {
+  ## global functions or variables
+  readGAlignments <- seqlengths <- NULL
 	chromosomelength <- 100000
 	mydir <- getwd()
 	setwd("./data/SRP010938_sub") # outdir

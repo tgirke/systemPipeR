@@ -2,6 +2,8 @@
 ## Generate various feature types from TxDb objects ##
 ######################################################
 genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, downstream=0, verbose=TRUE) {
+    ## global functions or variables
+    seqinfo <- mcols <- seqlengths <- strand <- NULL
     ## Check validity of inputs
     supported_features <- c("tx_type", "promoter", "intron", "exon", "cds", "fiveUTR", "threeUTR", "intergenic")
     if(tolower(featuretype[1])=="all") featuretype <- supported_features
@@ -150,7 +152,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
         } else {
             if(reduce_ranges==TRUE) {
                 mycds <- reduce(mycds)
-                cds_red_count <- sapply(width(mycds), length) 
+                cds_red_count <- sapply(width(mycds), length)
                 ge_id_red_cds <- rep(names(cds_red_count), cds_red_count)
                 feature_id <- paste(ge_id_red_cds, sprintf("CDS%03d_red", unlist(sapply(as.integer(cds_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 mycds <- unlist(mycds) 
@@ -289,6 +291,8 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
 #############################################################
 ## Compute distribution of reads across feature types
 featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="data.frame") {
+    ## global functions or variables
+    readGAlignments <- readGAlignmentPairs <- qwidth <- last <- strand <- NULL
     ## Check for valid inputs
     if(!(is.null(readlength[1]) | is.integer(readlength))) stop("readlength needs to be assigned NULL or integer vector")
     if(length(type) != 1) stop("Argument needs to be character vector of length 1.")
@@ -419,7 +423,8 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
     if(class(x)!="data.frame") stop("x needs to be object of class 'data.frame'")
     if(any(colnames(x)[1:3]!=c("SampleName", "Strand", "Featuretype"))) stop("First three column names need to be: 'SampleName', 'Strand', 'Featuretype'")
     if(!is.numeric(as.matrix(x[,-c(1:3)]))) stop("Following columns (after 3rd one) need to be numeric.")
-    
+    ## global functions or variables
+    Strand <- Feature <- Counts <- Length <- NULL
     ## Store Featuretypelength and remove it from x
     featuretypelength <- tapply(x$Featuretypelength, x$Featuretype, unique)
     featuretypelength <- featuretypelength[!is.na(featuretypelength)]
@@ -548,6 +553,8 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
 ##############################################
 ## Computes coverage along single and multi component features, such as exons/cds by transcripts. 
 featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix, resizefeatures, upstream, downstream, outfile, overwrite=FALSE) {
+    ## global functions or variables
+    readGAlignments <- qwidth <- NULL
     ## Input validity checks
     if(!is.null(outfile)) {
         if(file.exists(outfile) & overwrite==FALSE) stop(paste("File", outfile, "exists. Delete it or set 'overwrite=TRUE'"))
@@ -752,6 +759,8 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
 ## such as exons in CDSs or transcripts so that only the first and last components 
 ## get extended. Single component features will be extended the same way.
 .resizeFeature <- function(grl, upstream, downstream, component_resort=TRUE) { 
+    ## global functions or variables
+    end <- start <- mcols <- NULL
     if(!is(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
     gr <- unlist(grl)    
     if(!all(names(grl) %in% unique(names(gr)))) stop("None or not all components in grl are named.")
@@ -805,7 +814,8 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
     if(class(covMA) != "data.frame") stop("'covMA' needs to be assigned an object of class 'data.frame'.")
     expectedcol <- c("SampleName", "N_total_aligned", "IDs", "Strand")
     if(any(!colnames(covMA)[1:4] %in% expectedcol)) stop(paste("The first 4 columns in 'covMA' need to be named:", paste(expectedcol, collapse=", ")))
-    
+    ## global functions or variables
+    Coverage <- Strand <- NULL
     ## Determine split type required for provided input 
     splitloc <- which(grepl("(<S\\|B>)|(<B\\|E>)|(<S\\|E>)", colnames(covMA)))
     
@@ -1113,6 +1123,8 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 ## (e.g. between exons of transcribed regions) that are absent in 
 ## the query ranges, but present in the corresponding subject ranges.
 scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
+    ## global functions or variables
+    mcols <- NULL
     ## Both input objects need to be of class GRangesList
     if(!is(subject, "GRangesList") | !is(query, "GRangesList")) stop("Both subject and query need to be GRangesList objects.")
     ## All names(query) need to be present in names(subject)
@@ -1120,6 +1132,8 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
 
     ## Perform scaling on single subject/query pair each containing on entry
     .scaleRanges <- function(subject, query, returntype="df") {
+        ## global functions or variables
+        mcols <- NULL
         ## Check for validity of query
         if(length(query)>1) warning("Only the first range in 'query' will be used.")
         query <- query[1]
