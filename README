@@ -1,4 +1,9 @@
 changelog
+     version 1.25.9
+        - Added print behavior to `write.cwl` and `write.yml`
+        - Fixed bug `genFeatures()`
+        - Vignette update
+        
      version 1.25.8
         - Reducing package dependency
         - Reducing 'Undefined global functions or variables'

@@ -118,7 +118,7 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
   WF.temp <- as(WF.temp, "list")
   ## TODO: Expand to write.WF()
   WF.temp$wf <- list()
-  WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl) 
+  WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, silent = FALSE) 
   WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load) 
   WF.temp$modules <- WF.temp$yamlinput$ModulesToLoad
   WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
@@ -875,25 +875,30 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 ###################
 ##   write.cwl   ##
 ###################
-write.clt <- function(commandLine, cwlVersion, class, file.cwl) {
+write.clt <- function(commandLine, cwlVersion, class, file.cwl, silent=FALSE) {
   cwlVersion <- cwlVersion 
   class <- class
   baseCommand <- commandLine$baseCommand[[1]]
-  ##requeriments
+  ## File
+  clt <- list(cwlVersion=cwlVersion, class=class)
+  ##requirements
   if(is.null(commandLine$requeriments)){
     dump <- "do nothing" 
-  } else {
+  } else if(!is.null(commandLine$requeriments)) {
     requeriments <- list() ##TODO
+    clt <- c(clt, list(requeriments=requeriments))
   }
   ##ARGUMENTS
   if(is.null(commandLine$arguments)){
-    dump <- "do nothing"
-  } else {
+      dump <- "do nothing"
+  } else if(!is.null(commandLine$arguments)) {
     arguments <- sapply(seq_along(commandLine$arguments), function(x) list())
     for(i in seq_along(commandLine$arguments)){
       arguments[[i]]["prefix"] <- commandLine$arguments[[i]]$preF
       arguments[[i]]["valueFrom"] <- commandLine$arguments[[i]]$valueFrom
     }
+    clt <- c(clt, list(arguments=arguments))
+    print(clt)
   }
   ##INPUTS
   if(any(names(commandLine$inputs)=="")) stop("Each element of the list 'commandLine' needs to be assigned a name")
@@ -925,17 +930,12 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl) {
     outputs[[i]]["type"] <- commandLine$outputs[[i]]$type
     outputs[[i]]["outputBinding"] <- list(list(glob=commandLine$outputs[[i]][[2]]))
   }
-  clt <- list(cwlVersion=cwlVersion, class=class)
-  if(exists("requeriments")){
-    clt <- c(clt, list(requeriments=requeriments))
-  }
-  if(exists("arguments")){
-    clt <- c(clt, list(arguments=arguments))
-  }
-  clt <- c(clt, list(baseCommand=baseCommand, inputs=inputs, outputs=outputs))
-  
-  yaml::write_yaml(x=clt, file = file.cwl) 
-  ## print message TODO
+  ## FILE
+    clt <- c(clt, list(baseCommand=baseCommand, inputs=inputs, outputs=outputs))
+  ## writting file
+  yaml::write_yaml(x=clt, file = file.cwl)
+  ## print message 
+  if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.cwl, "\n")
   clt <- list(clt)
   names(clt) <- baseCommand
   return(clt)
@@ -948,7 +948,7 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl) {
 ##   write.yml   ##
 ###################
 ## Write the yaml file  
-write.yml <- function(commandLine, file.yml, results_path, module_load){
+write.yml <- function(commandLine, file.yml, results_path, module_load, silent=FALSE){
   inputs <- commandLine$inputs
   if(any(names(inputs)=="")) stop("Each element of the list 'commandLine' needs to be assigned a name")
   if(is.null(names(inputs))) stop("Each element of the list 'commandLine' needs to be assigned a name")
@@ -975,7 +975,9 @@ write.yml <- function(commandLine, file.yml, results_path, module_load){
     yamlinput_yml[["ModulesToLoad"]][paste0("module", i)] <- list(module_load[[i]])
   }
   ## write out the '.yml' file
-  yaml::write_yaml(x=yamlinput_yml, file = file.yml) 
+  yaml::write_yaml(x=yamlinput_yml, file = file.yml)
+  ## print message 
+  if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.yml, "\n")
   return(yamlinput_yml)
 }
 

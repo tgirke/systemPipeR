@@ -1354,6 +1354,7 @@ for more detailed information on this topic and how to properly run _`edgeR`_
 on data sets with more complex experimental designs. 
 
 ```{r edger_wrapper, eval=TRUE}
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
 targets <- read.delim(targetspath, comment="#")
 cmp <- readComp(file=targetspath, format="matrix", delim="-")
 cmp[[1]]
@@ -1373,6 +1374,13 @@ DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 ```{r edger_deg_stats, eval=TRUE}
 names(DEG_list)
 DEG_list$Summary[1:4,]
+```
+
+Save table with filter DEG results for up and down-regulated genes for a specific sample comparison, as follows: 
+
+```{r edger_deg_table, eval=FALSE}
+edgeDF_M12_A12 <- edgeDF[DEG_list$UporDown$`M12-A12`,31:35]
+write.table(edgeDF_M12_A12, "./results/edgeDF_M12_A12.xls", quote=FALSE, sep="\t", col.names = NA)   
 ```
 
 ## DEG analysis with _`DESeq2`_ 
