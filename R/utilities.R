@@ -145,7 +145,8 @@ runCommandline <- function(args, runid = "01", make_bam = TRUE, del_sam = TRUE, 
           commandargs <- gsub("^.*? ", "", as.character(cmdlist(args)[[i]][[j]]))
           ## Check if the command is in the PATH
           if (!command == c("bash")) {
-            tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning = function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", "\n", "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+            #tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning = function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", "\n", "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+            tryCL(command=command)
           }
           ## Run executable
           if (command %in% "bwa") {
@@ -842,7 +843,7 @@ run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, 
 ## Run DESeq2 with entire count matrix or subsetted by comparison ##
 ####################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
-run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE) {
+run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE, lfcShrink=FALSE, type="normal") {
   ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
   ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
   if (all(class(cmp) != "matrix" & length(cmp) == 2)) cmp <- t(as.matrix(cmp))
@@ -873,6 +874,15 @@ run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE) {
     for (i in seq(along = mycmp[, 1])) {
       ## Extracts DEG results for specific contrasts from DESeqDataSet object
       res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
+      
+      ## lfcShrink
+      if (lfcShrink == FALSE) {
+        res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
+      } else if (lfcShrink == TRUE) {
+        suppressMessages(
+        res <- DESeq2::lfcShrink(dds, contrast = c("condition", mycmp[i, ]), type=type)
+        )
+      }
       ## Set NAs to reasonable values to avoid errors in downstream filtering steps
       res[is.na(res[, "padj"]), "padj"] <- 1
       res[is.na(res[, "log2FoldChange"]), "log2FoldChange"] <- 0
@@ -886,9 +896,9 @@ run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE) {
 }
 ## Usage:
 # cmp <- readComp(file=targetspath, format="matrix", delim="-")
-# degseqDF <- run_DESeq2(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=TRUE)
+# degseqDF <- run_DESeq2(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE)
 
-############################################
+###########################################
 ## Filter DEGs by p-value and fold change ##
 ############################################
 filterDEGs <- function(degDF, filter, plot = TRUE) {
