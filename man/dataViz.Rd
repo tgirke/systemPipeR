@@ -12,27 +12,7 @@
 
 \title{Visualization Methods for Differential Expression Analysis}
 
-\description{
-\code{exploreDDS} Convenience wrapper function to transform raw read counts using the \code{\link[DESeq2:DESeq2-package]{DESeq2::DESeq2-package()}} package transformations methods. The input file has to contain all the genes, not just differentially expressed ones.
-
-\code{exploreDDSplot} Scatterplot of transformed counts from two samples or grid of all samples.
-
-\code{hclustplot} This function computes the sample-wise correlation coefficients using the \code{\link[stats:cor]{stats::cor()}} function from the transformed expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \code{\link[stats:hclust]{stats::hclust()}} function, and the result is plotted as a dendrogram.
-
-\code{heatMaplot} This function performs hierarchical clustering on the transformed expression matrix. It uses, by default, a Pearson correlation-based distance measure and complete linkage for cluster join.
-
-\code{PCAplot} This function plots a Principal Component Analysis (PCA) from transformed expression matrix. This plot shows samples variation based on the expression values and identifies batch effects.
-
-\code{MDSplot} This function computes and plots multidimensional scaling analysis for dimension reduction of count expression matrix. Internally, it is applied the \code{\link[stats:dist]{stats::dist()}} function to the transformed count matrix to get sample-to-sample distances.
-
-\code{GLMplot} This function computes and plots generalized principal components analysis for dimension reduction of count expression matrix.
-
-\code{MAplot} This function plots log2 fold changes (y-axis) versus the mean of normalized counts (on the x-axis). Statistically significant features are colored.
-
-\code{tSNEplot} This function computes and plots t-Distributed Stochastic Neighbor embedding (t-SNE) analysis for unsupervised nonlinear dimensionality reduction of count expression matrix. Internally, it is applied the \code{\link[Rtsne:Rtsne]{Rtsne::Rtsne()}} function, using the exact t-SNE computing with \code{theta=0.0}.
-
-\code{volcanoplot} A simple function that shows statistical significance (\code{p-value}) versus magnitude of change (\verb{log2 fold change}).
-}
+\description{These functions provide several visualization plots for differential expression analysis}
 
 \usage{
 exploreDDS(countMatrix, targets, cmp = cmp[[1]], preFilter = NULL, transformationMethod = "raw", blind = TRUE)
@@ -42,9 +22,9 @@ heatMaplot(exploredds, clust, DEGlist = NULL, plotly = FALSE, savePlot = FALSE, 
 PCAplot(exploredds, plotly = FALSE, savePlot = FALSE, filePlot = NULL)
 MDSplot(exploredds, method = "spearman", plotly = FALSE, savePlot = FALSE, filePlot = NULL)
 GLMplot(exploredds, plotly = FALSE, savePlot = FALSE, filePlot = NULL, ...)
-MAplot(exploredds, lfcShrink = FALSE, padj.cutoff = 0.05, plotly = FALSE, savePlot = FALSE, filePlot = NULL)
+MAplot(degseqDF, FDR.cutoff = 0.05, comparison, filter = c(Fold = 2, FDR = 10), genes="NULL", plotly = FALSE, savePlot = FALSE, filePlot = NULL)
 tSNEplot(countMatrix, targets, plotly = FALSE, savePlot = FALSE, filePlot = NULL, ...)
-volcanoplot(degseqDF, comparison = "M12-A12", filter = c(Fold = 2, FDR = 10), genes = "NULL", plotly = FALSE, savePlot = FALSE, filePlot = NULL)
+volcanoplot(degseqDF, comparison, filter = c(Fold = 2, FDR = 10), genes = "NULL", plotly = FALSE, savePlot = FALSE, filePlot = NULL)
 }
 \arguments{
 \item{countMatrix}{\code{date.frame} or \code{matrix} containing raw read counts.}
@@ -68,7 +48,7 @@ transformation.}
 design (see varianceStabilizingTransformation), from \code{\link[DESeq2:vst]{DESeq2::vst()}} 
 or \code{\link[DESeq2:rlog]{DESeq2::rlog()}}.}
 
-\item{samples}{a \verb{character vector} of two samples or \code{ALL} samples in 
+\item{samples}{a \code{character vector} of two samples or \code{ALL} samples in 
 the dataset. Could be specified the \code{SampleName} column name of the targets 
 file or the respective numeric values. Also, if set as \code{ALL}, a correlation
 matrix it will be plot.}
@@ -86,8 +66,8 @@ If \code{TRUE} the plot will be saved, and requires the \code{filePlot} argument
 please consult the \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}} function.}
 
 \item{exploredds}{object of class \code{\link[DESeq2:DESeqTransform]{DESeq2::DESeqTransform()}}.
-\code{GLMplot} and \code{MAplot}, \code{exploredds} object of class \code{\link[DESeq2:DESeqDataSet]{DESeq2::DESeqDataSet()}}, 
-generated from \code{exploreDDS} function.}
+\code{GLMplot} \code{exploredds} object of class \code{\link[DESeq2:DESeqDataSet]{DESeq2::DESeqDataSet()}}, 
+generated from \code{exploreDDS} function. Also, accepts the \code{date.frame} containing raw read counts.}
 
 \item{method}{a \verb{character string} indicating which correlation coefficient
 is to be computed, based on the \code{\link[stats:cor]{stats::cor()}} function. 
@@ -103,9 +83,7 @@ it is necessary to provide the list of differentially expressed genes, for the
 the chosen filter settings for all comparisons defined in data frames \code{pval} 
 and \code{log2FC}.}
 
-\item{lfcShrink}{logiacal. If \code{TRUE} adds shrunken log2 fold changes (LFC) to the object.}
-
-\item{padj.cutoff}{filter cutoffs for the p-value adjusted.}
+\item{FDR.cutoff}{filter cutoffs for the p-value adjusted.}
 
 \item{degseqDF}{object of class \code{data.frame} generated by \code{\link[systemPipeR:run_edgeR]{systemPipeR::run_edgeR()}}
 or \code{\link[systemPipeR:run_DESeq2]{systemPipeR::run_DESeq2()}}.}
@@ -122,6 +100,29 @@ heatMaplot
 For \code{GLMplot} additional parameters for the \code{\link[glmpca:glmpca]{glmpca::glmpca()}} function. 
 For \code{tSNEplot} additional parameters for the \code{\link[Rtsne:Rtsne]{Rtsne::Rtsne()}} function.}
 }
+
+\details{
+\code{exploreDDS} Convenience wrapper function to transform raw read counts using the \code{\link[DESeq2:DESeq2-package]{DESeq2::DESeq2-package()}} package transformations methods. The input file has to contain all the genes, not just differentially expressed ones.
+
+\code{exploreDDSplot} Scatterplot of transformed counts from two samples or grid of all samples.
+
+\code{hclustplot} This function computes the sample-wise correlation coefficients using the \code{\link[stats:cor]{stats::cor()}} function from the transformed expression values. After transformation to a distance matrix, hierarchical clustering is performed with the \code{\link[stats:hclust]{stats::hclust()}} function, and the result is plotted as a dendrogram.
+
+\code{heatMaplot} This function performs hierarchical clustering on the transformed expression matrix. It uses, by default, a Pearson correlation-based distance measure and complete linkage for cluster join.
+
+\code{PCAplot} This function plots a Principal Component Analysis (PCA) from transformed expression matrix. This plot shows samples variation based on the expression values and identifies batch effects.
+
+\code{MDSplot} This function computes and plots multidimensional scaling analysis for dimension reduction of count expression matrix. Internally, it is applied the \code{\link[stats:dist]{stats::dist()}} function to the transformed count matrix to get sample-to-sample distances.
+
+\code{GLMplot} This function computes and plots generalized principal components analysis for dimension reduction of count expression matrix.
+
+\code{MAplot} This function plots log2 fold changes (y-axis) versus the mean of normalized counts (on the x-axis). Statistically significant features are colored.
+
+\code{tSNEplot} This function computes and plots t-Distributed Stochastic Neighbor embedding (t-SNE) analysis for unsupervised nonlinear dimensionality reduction of count expression matrix. Internally, it is applied the \code{\link[Rtsne:Rtsne]{Rtsne::Rtsne()}} function, using the exact t-SNE computing with \code{theta=0.0}.
+
+\code{volcanoplot} A simple function that shows statistical significance (\code{p-value}) versus magnitude of change (\verb{log2 fold change}).
+}
+
 \value{
 \code{exploreDDS} function returns an object of class \code{\link[DESeq2:DESeqTransform]{DESeq2::DESeqTransform()}}.
 \code{heatMaplot} function returns an object of \code{pheatmap} or \code{plotly} class.
@@ -130,7 +131,7 @@ For \code{tSNEplot} additional parameters for the \code{\link[Rtsne:Rtsne]{Rtsne
 \code{tSNEplot}, and \code{volcanoplot} functions returns an object of \code{ggplot} or \code{plotly} class.
 }
 
-\details{
+\seealso{
 Note that the recommendation is to use the resulting transformed values in the
 \code{transformationMethod} argument only for visualization and clustering,
 not for differential expression analysis which needs raw counts. Users are
@@ -178,7 +179,7 @@ exploredds_raw <- exploreDDS(countMatrix, targets, cmp=cmp[[1]], preFilter=NULL,
 GLMplot(exploredds_raw, plotly = FALSE)
 
 ## Plot MAplot
-MAplot(exploredds_raw, plotly = TRUE)
+MAplot(degseqDF, FDR.cutoff = 0.05, comparison = "M12-A12", filter = c(Fold = 1, FDR = 20), genes = "ATCG00280", plotly = TRUE)
 
 ## Plot tSNEplot
 tSNEplot(countMatrix, targets, perplexity = 5)

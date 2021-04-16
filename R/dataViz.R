@@ -285,30 +285,35 @@ tSNEplot <- function(countMatrix, targets, plotly = FALSE, savePlot = FALSE, fil
 #############
 ## MAplot ##
 #############
-MAplot <- function(exploredds, lfcShrink= FALSE, padj.cutoff = 0.05, plotly = FALSE, savePlot = FALSE, filePlot = NULL) {
+MAplot <- function(degseqDF, FDR.cutoff = 0.05, comparison, filter = c(Fold = 2, FDR = 10),
+                   genes="NULL", plotly = FALSE, savePlot = FALSE, filePlot = NULL) {
   ## Add validation, need to be raw, counts
   padj <- NULL
-  if (!class(exploredds) == "DESeqDataSet") {
-    stop("'exploredds' needs to be assignes an object of class 'DESeqDataSet'.
-                For more information check 'help(exploreDDS)'")
+  if (!class(degseqDF) == "data.frame") {
+    stop("'degseqDF' needs to be assignes an object of class 'data.frame'.
+                For more information check 'help(run_DESeq2)'")
   }
-  ## lfcShrink
-  if (lfcShrink == FALSE) {
-    res <- DESeq2::results(DESeq2::DESeq(exploredds))
-  } else if (lfcShrink == TRUE) {
-    resLFC <- DESeq2::lfcShrink(DESeq2::DESeq(exploredds))
-  }
-  results <- as.data.frame(res)
-  if (any(is.na(results$padj))) {
-    print("removing NA from the results")
-    results[is.na(results)] = 0.99
+  ## Selecting comparison
+  table <- degseqDF %>%
+    dplyr::select(paste0(comparison,"_baseMean"), paste0(comparison,"_logFC"),
+                 paste0(comparison,"_FDR")) %>%
+    tibble::rownames_to_column(var = "names") %>%
+    dplyr::mutate(significant = .data[[paste0(comparison,"_FDR")]] <= filter["FDR"]/100 &
+                    abs(as.numeric(.data[[paste0(comparison,"_logFC")]])) > filter["Fold"])
+  table$significant[is.na(table$significant)] <- FALSE
+  if(!is.null(genes)){
+    genes <- table %>%
+      dplyr::filter(names %in% genes)
   }
   ## plot
-  plot <- ggplot2::ggplot(results, ggplot2::aes_string(x = "baseMean", y = "log2FoldChange")) +
-    ggplot2::geom_point(ggplot2::aes(colour = padj < padj.cutoff), size = 0.5) +
-    ggplot2::scale_colour_manual(name = paste0('padj < ', padj.cutoff),
+  plot <- ggplot2::ggplot(table, ggplot2::aes(x=.data[[paste0(comparison,"_baseMean")]],
+                                      y=.data[[paste0(comparison,"_logFC")]], label=names)) +
+    ggplot2::geom_point(ggplot2::aes(colour = .data[[paste0(comparison,"_FDR")]] < FDR.cutoff), size = 0.5) +
+    ggplot2::scale_colour_manual(name = paste0('FDR < ', FDR.cutoff),
                                  values = stats::setNames(c('red','grey'), c(TRUE, FALSE))) +
-    ggplot2::scale_x_continuous(trans = "log10", limits = c(0.1,300000))
+    ggplot2::scale_x_continuous(trans = "log10", limits = c(0.1,300000)) +
+    ggplot2::ggtitle(comparison) +
+    ggrepel::geom_text_repel(data=genes)
   #ggplot2::geom_smooth(colour = "red")
   ## Save plot
   if (savePlot == TRUE) {
@@ -323,7 +328,7 @@ MAplot <- function(exploredds, lfcShrink= FALSE, padj.cutoff = 0.05, plotly = FA
 ##################
 ## volcanoplot ##
 ##################
-volcanoplot <- function(degseqDF, comparison = "M12-A12", filter = c(Fold = 2, FDR = 10),
+volcanoplot <- function(degseqDF, comparison, filter = c(Fold = 2, FDR = 10),
                         genes="NULL", plotly = FALSE, savePlot = FALSE, filePlot = NULL) {
   ## Validations
   ##TODO
