@@ -11,7 +11,7 @@ config.param(input_file = NULL, param, file = "default", silent = FALSE)
 }
 \arguments{
   \item{input_file}{
-  a character vector of a full \code{param file} path name.
+  a \code{list} of parameters, \code{param file} path, or \code{SYSargs2} object.
 }
   \item{param}{
   object of class \code{list}, expressing the values and names to be added or 

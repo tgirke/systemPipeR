@@ -1,4 +1,39 @@
 changelog
+     version 1.25.9
+        - Added print behavior to `write.cwl` and `write.yml`
+        - Fixed bug `genFeatures()`
+        - Vignette update
+        
+     version 1.25.8
+        - Reducing package dependency
+        - Reducing 'Undefined global functions or variables'
+        
+     version 1.25.7
+        - Updated URL
+        - Organized functions files: "SYSargsList and SYSargs2" classes --> R/AllClasses2.R
+        - Removed 'SYSargs2Pipe-class'
+        
+     version 1.25.6
+        - Function wrapper showDT(DT::datatable)
+        - Fixed bug: 'symLink2bam()'
+        - Vignette update
+        
+     version 1.25.5
+        - Updating 'renderWF' and 'config.param' functions
+        
+     version 1.25.4
+        - Help file update in 'creadWF.Rd'
+        
+     version 1.25.3
+        - Adding new Methods: 'addAssay' and 'addMetadata': Extension accessor for SummarizedExperiment object 
+        - Adding New function: 'SPRdata()'
+        
+     version 1.25.2
+        - NAMESPACE
+        
+     version 1.25.1
+        - Version bump
+        
      version 1.23.9
         - Vignette update
         

@@ -1,24 +1,49 @@
 ## IMPORTS
-import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, 
-       Biostrings, ShortRead, ggplot2, limma, edgeR, GOstats, GO.db, annotate,
-       pheatmap, batchtools, methods, yaml, VariantAnnotation)
+import("GenomicRanges")
+importFrom("annotate", "Term", "Ontology")
 importFrom("assertthat", "assert_that", "not_empty", "is.count", "is.writeable")
+importFrom("batchtools", "batchMap", "chunk", "makeRegistry", "submitJobs")
+importFrom("Biostrings", "reverseComplement", "DNAStringSet", "alphabetFrequency",
+           "codons", "PhredQuality", "quality", "Views", "reverse", "tail", "unstrsplit")
+importFrom("BiocGenerics", "end<-", "start<-","strand<-", "width", "width<-") 
+importFrom("DOT", "dot")
+importFrom("edgeR", "glmLRT", "DGEList", "calcNormFactors", "estimateGLMCommonDisp", 
+           "estimateGLMTrendedDisp", "estimateGLMTagwiseDisp", "glmFit", "topTags")
+importFrom("graphics", "boxplot", "close.screen", "screen", "split.screen", "symbols", "text")
+importFrom("grid", "grid.newpage", "pushViewport", "viewport", "grid.layout")
+importFrom("grDevices", "dev.off", "pdf")
+importFrom("GenomicFeatures", "transcripts", "transcriptsBy", "intronsByTranscript", 
+           "exonsBy", "cdsBy", "fiveUTRsByTranscript", "threeUTRsByTranscript", 
+           "makeTxDbFromGFF", "genes")
+importFrom("GenomeInfoDb", "seqinfo<-", "seqlengths<-")
+importFrom("ggplot2", "ggplot", "aes", "geom_bar", "facet_wrap", "scale_y_continuous",
+           "theme", "element_text", "coord_flip", "ggtitle", "xlab", "ylab", "ylim", 
+           "geom_boxplot", "scale_x_discrete", "unit", "geom_line", "labs")
+importFrom("IRanges", "IRanges", "subsetByOverlaps")
+importFrom("limma", "makeContrasts", "plotMDS")
+importFrom("magrittr","%>%")
+importFrom("methods","as", "is", "show", "new", "slot", "slotNames")
+importFrom("Rsamtools", "mergeBam", "ScanBamParam", "scanBamWhat", "scanBamFlag", 
+           "countBam", "asBam", "sortBam", "indexBam", "BamFileList", "BamFile")
+importFrom("rjson", "toJSON")
+importFrom("rsvg","rsvg_svg", "rsvg_png")
+importFrom("SummarizedExperiment", "SummarizedExperiment", "assays", "assayNames", "rowRanges",
+           "assays<-", "metadata<-", "assayNames<-")
 importFrom("stringr", "str_which", "str_remove", "str_extract", "str_replace_all", 
            "str_replace", "str_remove_all", "str_split")
-importFrom("grDevices", "dev.off", "pdf")
-importFrom("graphics", "boxplot", "close.screen", "screen", "split.screen", "symbols", "text")
 importFrom("stats", "aggregate", "model.matrix", "na.omit", "phyper", "setNames")
-importFrom("utils", "capture.output", "combn", "read.delim", "write.table")
-importFrom("magrittr","%>%")
-importFrom("DOT", "dot")
-importFrom("rsvg","rsvg_svg", "rsvg_png")
-importFrom("IRanges", "IRanges")
-importFrom("grid", "grid.newpage", "pushViewport", "viewport", "grid.layout")
+importFrom("ShortRead", "FastqSampler", "yield", "sread", "qa", "FastqStreamer", 
+           "writeFastq", "id", "countLines", "readFastq")
+importFrom("utils", "capture.output", "combn", "read.delim", "write.table", "packageVersion", "head")
+importFrom("VariantAnnotation", "readVcf", "locateVariants", "AllVariants", "predictCoding",
+           "ref", "alt", "reference", "totalDepth", "refDepth", "altDepth", "asVCF", "writeVcf", 
+           "altDepth<-", "refDepth<-", "totalDepth<-")
+importFrom("S4Vectors", "SimpleList", "DataFrame", "Rle", "first", "elementMetadata<-", "mcols<-")
+importFrom("yaml", "read_yaml", "write_yaml", "yaml.load", "as.yaml")
 
 ## S4 Classes
 exportClasses(
-    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargs2Pipe", 
-    "SYSargsList"
+    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargsList"
 )
 
 ## Methods
@@ -28,8 +53,8 @@ exportMethods(
     "sysargs", "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
     "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
     "as.list", "[[", "[[<-", "$", "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
-    "sysargs2", "targets", "wf", "yamlinput", "SYSargs2Pipe_ls", "WF_steps", "track", "summaryWF",
-    "sysconfig", "codeSteps", "stepsWF", "dataWF", "SYSargs2_steps", "statusWF", "projectWF", "sysargslist"
+    "sysargs2", "targets", "wf", "yamlinput", "sysconfig", "codeSteps", "stepsWF", "dataWF",
+    "SYSargs2_steps", "statusWF", "projectWF", "sysargslist"
 )
 
 ## Functions
@@ -51,7 +76,7 @@ export(
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
     "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
-    "targets.as.df", "run_track", "olRanges", "createWF", "evalCode", "tryPath",
+    "targets.as.df", "olRanges", "createWF", "evalCode", "tryPath",
     "tryCL", "SYSproject", "initProject", "initWF", "configWF", "config.param", 
-    "plotWF", "runWF", "renderReport", "%>%"
+    "plotWF", "runWF", "renderReport", "showDT"
 )  
