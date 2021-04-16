@@ -1,4 +1,8 @@
 changelog
+     version 1.25.10
+        - Visualization functions and documentation: 
+       	- "GLMplot", "MAplot", "MDSplot", "PCAplot", "exploreDDS", "exploreDDSplot", "hclustplot", "heatMaplot", "tSNEplot", "volcanoplot"
+        
      version 1.25.9
         - Added print behavior to `write.cwl` and `write.yml`
         - Fixed bug `genFeatures()`

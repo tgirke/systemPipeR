@@ -1,0 +1,223 @@
+---
+title: "systemPipeR: Data Visualizations" 
+author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  BiocStyle::html_document:
+    toc_float: true
+    code_folding: show
+  BiocStyle::pdf_document: default
+package: systemPipeR
+vignette: |
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{systemPipeR: Data Visualizations}
+  %\VignetteEngine{knitr::rmarkdown}
+fontsize: 14pt
+bibliography: bibtex.bib
+---
+
+```{css, echo=FALSE}
+pre code {
+white-space: pre !important;
+overflow-x: scroll !important;
+word-break: keep-all !important;
+word-wrap: initial !important;
+}
+```
+
+<!--
+- Compile from command-line
+Rscript -e "rmarkdown::render('systemPipeR_dataViz.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeR_dataViz.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeR.knit.md 2; Rscript -e "rmarkdown::render('systemPipeR_dataViz.Rmd', c('BiocStyle::pdf_document'))"
+-->
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+options(width = 80, max.print = 1000)
+knitr::opts_chunk$set(
+  eval = as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
+  cache = as.logical(Sys.getenv("KNITR_CACHE", "TRUE")),
+  tidy.opts = list(width.cutoff = 80), tidy = TRUE
+)
+```
+
+```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+suppressPackageStartupMessages({
+    library(systemPipeR)
+})
+```
+
+# Data Visualization with `systemPipeR`
+
+## Metadata and Reads Counting Information
+
+The first step is importing the `targets` file and raw reads counting table. 
+- The `targets` file defines all FASTQ files and sample comparisons of the analysis workflow.
+- The raw reads counting table represents all the reads that map to gene (row) for each sample (columns). 
+
+```{r targets_counts, eval=FALSE}
+## Targets file
+targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
+targets <- read.delim(targetspath, comment = "#")
+cmp <- systemPipeR::readComp(file = targetspath, format = "matrix", delim = "-")
+## Count table file
+countMatrixPath <- system.file("extdata", "countDFeByg.xls", package = "systemPipeR")
+countMatrix <- read.delim(countMatrixPath, row.names = 1)
+systemPipeR::showDT(countMatrix)
+```
+
+## Data Transformation
+
+For gene differential expression, raw counts are required, however for data 
+visualization or clustering, it can be useful to work with transformed count data. 
+`exploreDDS` function is convenience wrapper to transform raw read counts using the 
+[`DESeq2`](@Love2014-sh) package transformations methods. The input file
+has to contain all the genes, not just differentially expressed ones. 
+
+```{r exploreDDS, eval=FALSE, warning=FALSE}
+exploredds <- exploreDDS(countMatrix, targets, cmp=cmp[[1]], preFilter=NULL, transformationMethod="rlog")
+exploredds
+```
+
+Users are strongly encouraged to consult the [`DESeq2`](@Love2014-sh) vignette for 
+more detailed information on this topic and how to properly run `DESeq2` on data 
+sets with more complex experimental designs.
+
+## Scatterplot
+
+To decide which transformation to choose, we can visualize the transformation effect 
+comparing two samples or a grid of all samples, as follows:
+
+```{r exploreDDSplot, eval=FALSE, warning=FALSE}
+exploreDDSplot(countMatrix, targets, cmp = cmp[[1]], preFilter = NULL, samples = c("M12A", "A12A"), scattermatrix = FALSE)
+exploreDDSplot(countMatrix, targets,
+  cmp = cmp[[1]], preFilter = NULL,
+  samples = c("M12A", "M12A", "A12A", "A12A"), scattermatrix = TRUE)
+```
+
+The scatterplots are created using the log2 transform normalized reads count, 
+variance stabilizing transformation (VST) (@Anders2010-tp), and regularized-logarithm transformation
+or `rlog` (@Love2014-sh). 
+
+## Hierarchical Clustering Dendrogram 
+
+The following computes the sample-wise correlation coefficients using the `stats::cor()`
+function from the transformed expression values. After transformation to a distance matrix,
+hierarchical clustering is performed with the `stats::hclust` function and the 
+result is plotted as a dendrogram, as follows:
+
+```{r hclustplot, eval=FALSE, warning=FALSE}
+hclustplot(exploredds, method = "spearman")
+hclustplot(exploredds, method = "spearman", savePlot = TRUE, filePlot = "cor.pdf")
+```
+
+The function provides the utility to save the plot automatically. 
+
+## Hierarchical Clustering HeatMap 
+
+This function performs hierarchical clustering on the transformed expression matrix
+generated within the `DESeq2` package. It uses, by default, a `Pearson` correlation-based distance
+measure and complete linkage for cluster join.
+If `samples` selected in the `clust` argument, it will be applied the `stats::dist()`
+function to the transformed count matrix to get sample-to-sample distances. Also, 
+it is possible to generate the `pheatmap` or `plotly` plot format. 
+
+```{r heatMaplot_samples, eval=FALSE, warning=FALSE}
+## Samples plot
+heatMaplot(exploredds, clust = "samples")
+heatMaplot(exploredds, clust = "samples", plotly = TRUE)
+```
+
+If `ind` selected in the `clust` argument, it is necessary to provide the list of
+differentially expressed genes for the `exploredds` subset.
+
+```{r heatMaplot_DEG, eval=FALSE, warning=FALSE}
+## Individuals genes identified in DEG analysis
+### DEG analysis with `systemPipeR`
+degseqDF <- systemPipeR::run_DESeq2(countDF = countMatrix, targets = targets, cmp = cmp[[1]], independent = FALSE)
+DEG_list <- systemPipeR::filterDEGs(degDF = degseqDF, filter = c(Fold = 2, FDR = 10))
+### Plot
+heatMaplot(exploredds, clust = "ind", DEGlist = unique(as.character(unlist(DEG_list[[1]]))))
+```
+
+The function provides the utility to save the plot automatically. 
+
+## Principal Component Analysis
+
+This function plots a Principal Component Analysis (PCA) from transformed expression 
+matrix. This plot shows samples variation based on the expression values and identifies
+batch effects.
+
+```{r PCAplot, eval=FALSE, warning=FALSE}
+PCAplot(exploredds, plotly = TRUE)
+PCAplot(exploredds, save = TRUE, filePlot = "pca.pdf")
+```
+
+The function provides the utility to save the plot automatically. 
+
+## Multidimensional scaling with `MDSplot`
+
+This function computes and plots multidimensional scaling analysis for dimension 
+reduction of count expression matrix. Internally, it is applied the `stats::dist()`
+function to the transformed count matrix to get sample-to-sample distances.
+
+```{r MDSplot, eval=FALSE, warning=FALSE}
+MDSplot(exploredds, plotly = TRUE, save = TRUE, filePlot = "MDSplot.pdf")
+```
+
+The function provides the utility to save the plot automatically. 
+
+## Dimension Reduction with `GLMplot`
+
+This function computes and plots generalized principal components analysis for 
+dimension reduction of count expression matrix.
+
+```{r GLMplot, eval=FALSE, warning=FALSE}
+exploredds <- exploreDDS(countMatrix, targets, cmp = cmp[[1]], preFilter = NULL, transformationMethod = "raw")
+GLMplot(exploredds, plotly = FALSE)
+GLMplot(exploredds, plotly = FALSE, savePlot = TRUE, filePlot = "GLM.pdf")
+```
+
+The function provides the utility to save the plot automatically. 
+
+## MA plot
+
+This function plots log2 fold changes (y-axis) versus the mean of normalized counts 
+(on the x-axis). Statistically significant features are colored.
+
+```{r MAplot, eval=FALSE, warning=FALSE}
+MAplot(exploredds)
+```
+
+The function provides the utility to save the plot automatically. 
+
+## t-Distributed Stochastic Neighbor embedding with `tSNEplot`
+
+This function computes and plots t-Distributed Stochastic Neighbor embedding (t-SNE) 
+analysis for unsupervised nonlinear dimensionality reduction of count expression 
+matrix. Internally, it is applied the `Rtsne::Rtsne()` function, using the exact 
+t-SNE computing with `theta=0.0`.
+
+```{r tSNEplot, eval=FALSE, warning=FALSE}
+tSNEplot(countMatrix, targets, perplexity = 5)
+```
+
+## Volcano plot 
+
+A simple function that shows statistical significance (`p-value`) versus magnitude
+of change (`log2 fold change`).
+
+```{r volcanoplot, eval=FALSE, warning=FALSE}
+volcanoplot(degseqDF, comparison = "M12-A12", filter = c(Fold = 1, FDR = 20), genes = "ATCG00280")
+```
+
+# Version information
+
+```{r sessionInfo}
+sessionInfo()
+```
+
+# Funding
+
+This project is funded by NSF award [ABI-1661152](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1661152). 
+
+# References
