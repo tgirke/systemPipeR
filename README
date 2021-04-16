@@ -1,4 +1,10 @@
 changelog
+     version 1.25.11
+        - Added `lfcShrink` option to `run_DESeq2` function
+        - Fixed "MAplot"
+        - Added `check.output` function
+        - `tryCL` deals with `fastqc` commandline test
+       	
      version 1.25.10
         - Visualization functions and documentation: 
        	- "GLMplot", "MAplot", "MDSplot", "PCAplot", "exploreDDS", "exploreDDSplot", "hclustplot", "heatMaplot", "tSNEplot", "volcanoplot"
