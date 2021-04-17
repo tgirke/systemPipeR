@@ -95,8 +95,8 @@ exploreDDSplot(countMatrix, targets,
 ```
 
 The scatterplots are created using the log2 transform normalized reads count, 
-variance stabilizing transformation (VST) (@Anders2010-tp), and regularized-logarithm transformation
-or `rlog` (@Love2014-sh). 
+variance stabilizing transformation (VST) [@Anders2010-tp], and regularized-logarithm transformation
+or `rlog` [@Love2014-sh]. 
 
 ## Hierarchical Clustering Dendrogram 
 
@@ -185,7 +185,7 @@ This function plots log2 fold changes (y-axis) versus the mean of normalized cou
 (on the x-axis). Statistically significant features are colored.
 
 ```{r MAplot, eval=FALSE, warning=FALSE}
-MAplot(exploredds)
+MAplot(degseqDF, FDR.cutoff = 0.05, comparison = "M12-A12", filter = c(Fold = 2, FDR = 10), genes="ATCG00280")
 ```
 
 The function provides the utility to save the plot automatically. 
