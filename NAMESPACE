@@ -248,5 +248,5 @@ export(
     "tryCL", "SYSproject", "initProject", "initWF", "configWF", "config.param", 
     "plotWF", "runWF", "renderReport", "showDT", 
     "GLMplot", "MAplot", "MDSplot", "PCAplot", "exploreDDS", "exploreDDSplot", 
-    "hclustplot", "heatMaplot", "tSNEplot", "volcanoplot"
+    "hclustplot", "heatMaplot", "tSNEplot", "volcanoplot", "check.output"
 )  
