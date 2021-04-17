@@ -503,13 +503,15 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
 #####################
 ## Alignment Stats ##
 #####################
-alignStats <- function(args, output_index = 1) {
-  fqpaths <- infile1(args)
+alignStats <- function(args, output_index = 1, subset="FileName1") {
+  #fqpaths <- infile1(args)
   ## SYSargs class
   if (class(args) == "SYSargs") {
+    fqpaths <- infile1(args)
     bampaths <- outpaths(args)
     # SYSargs2 class
   } else if (class(args) == "SYSargs2") {
+    fqpaths <- subsetWF(args, slot = "input", subset=subset)
     output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
     bampaths <- as.character()
     for (i in seq_along(output.all)) {
