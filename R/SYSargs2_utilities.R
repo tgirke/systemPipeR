@@ -879,7 +879,11 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
   outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
   for(i in seq_along(outfilelist)) {
     for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output))
-      outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
+        if(names(cmdlist(WF)[[names(outfilelist[i])]]$output[[j]])=="stdout"){
+            outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$stdout
+        } else {
+            outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
+        }
   }
   cmdlist <- renderCommandline(WF, redirect=">")
   inputvars <- as.list(inputvars)
