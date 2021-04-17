@@ -1,4 +1,10 @@
 changelog
+     version 1.25.12
+        - Exported `check.output` function
+        - Updated `modules` documentation
+        - Fixed `renderWF` fct (`.renderWFsingle`) to accept stdout
+        - Allow `alignStats` fct accepts different `subset="FileName1"` from targets
+       	
      version 1.25.11
         - Added `lfcShrink` option to `run_DESeq2` function
         - Fixed "MAplot"
