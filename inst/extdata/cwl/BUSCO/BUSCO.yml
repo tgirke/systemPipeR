@@ -1,0 +1,22 @@
+###########################
+##       BUSCO.yml       ##
+###########################
+
+assembly:
+  class: File
+  path: ./results_trinity/Trinity.fasta
+  
+outputName: BUSCO
+
+lineage:
+  class: Directory
+  path: ./results/BUSCO
+  
+results_path:
+  class: Directory
+  path: ./results
+
+cpu: 34
+
+ModulesToLoad: 
+  module1: busco/3.0.2
