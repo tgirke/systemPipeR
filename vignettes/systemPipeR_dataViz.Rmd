@@ -16,7 +16,7 @@ fontsize: 14pt
 bibliography: bibtex.bib
 ---
 
-```{css, echo=FALSE}
+```{css, echo=FALSE, eval=TRUE}
 pre code {
 white-space: pre !important;
 overflow-x: scroll !important;
@@ -30,7 +30,7 @@ word-wrap: initial !important;
 Rscript -e "rmarkdown::render('systemPipeR_dataViz.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeR_dataViz.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeR.knit.md 2; Rscript -e "rmarkdown::render('systemPipeR_dataViz.Rmd', c('BiocStyle::pdf_document'))"
 -->
 
-```{r style, echo = FALSE, results = 'asis'}
+```{r style, echo = FALSE, results = 'asis', eval=TRUE}
 BiocStyle::markdown()
 options(width = 80, max.print = 1000)
 knitr::opts_chunk$set(
@@ -40,7 +40,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE}
+```{r setup, echo=FALSE, messages=FALSE, warnings=FALSE, eval=TRUE}
 suppressPackageStartupMessages({
     library(systemPipeR)
 })
@@ -54,7 +54,7 @@ The first step is importing the `targets` file and raw reads counting table.
 - The `targets` file defines all FASTQ files and sample comparisons of the analysis workflow.
 - The raw reads counting table represents all the reads that map to gene (row) for each sample (columns). 
 
-```{r targets_counts, eval=FALSE}
+```{r targets_counts, eval=TRUE}
 ## Targets file
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
 targets <- read.delim(targetspath, comment = "#")
@@ -73,7 +73,7 @@ visualization or clustering, it can be useful to work with transformed count dat
 [`DESeq2`](@Love2014-sh) package transformations methods. The input file
 has to contain all the genes, not just differentially expressed ones. 
 
-```{r exploreDDS, eval=FALSE, warning=FALSE}
+```{r exploreDDS, eval=TRUE}
 exploredds <- exploreDDS(countMatrix, targets, cmp=cmp[[1]], preFilter=NULL, transformationMethod="rlog")
 exploredds
 ```
@@ -94,6 +94,10 @@ exploreDDSplot(countMatrix, targets,
   samples = c("M12A", "M12A", "A12A", "A12A"), scattermatrix = TRUE)
 ```
 
+![](Scatterplot1.png)
+
+![](Scatterplot2.png)
+
 The scatterplots are created using the log2 transform normalized reads count, 
 variance stabilizing transformation (VST) [@Anders2010-tp], and regularized-logarithm transformation
 or `rlog` [@Love2014-sh]. 
@@ -105,10 +109,12 @@ function from the transformed expression values. After transformation to a dista
 hierarchical clustering is performed with the `stats::hclust` function and the 
 result is plotted as a dendrogram, as follows:
 
-```{r hclustplot, eval=FALSE, warning=FALSE}
+```{r hclustplot, eval=FALSE}
 hclustplot(exploredds, method = "spearman")
-hclustplot(exploredds, method = "spearman", savePlot = TRUE, filePlot = "cor.pdf")
+hclustplot(exploredds, method = "spearman", savePlot = TRUE, filePlot = "cor.png")
 ```
+
+![](cor.png)
 
 The function provides the utility to save the plot automatically. 
 
@@ -121,16 +127,20 @@ If `samples` selected in the `clust` argument, it will be applied the `stats::di
 function to the transformed count matrix to get sample-to-sample distances. Also, 
 it is possible to generate the `pheatmap` or `plotly` plot format. 
 
-```{r heatMaplot_samples, eval=FALSE, warning=FALSE}
+```{r heatMaplot_samples, eval=FALSE}
 ## Samples plot
 heatMaplot(exploredds, clust = "samples")
 heatMaplot(exploredds, clust = "samples", plotly = TRUE)
 ```
 
+![](heatMap.png)
+
+![](heatMap2.png)
+
 If `ind` selected in the `clust` argument, it is necessary to provide the list of
 differentially expressed genes for the `exploredds` subset.
 
-```{r heatMaplot_DEG, eval=FALSE, warning=FALSE}
+```{r heatMaplot_DEG, eval=FALSE}
 ## Individuals genes identified in DEG analysis
 ### DEG analysis with `systemPipeR`
 degseqDF <- systemPipeR::run_DESeq2(countDF = countMatrix, targets = targets, cmp = cmp[[1]], independent = FALSE)
@@ -138,6 +148,8 @@ DEG_list <- systemPipeR::filterDEGs(degDF = degseqDF, filter = c(Fold = 2, FDR =
 ### Plot
 heatMaplot(exploredds, clust = "ind", DEGlist = unique(as.character(unlist(DEG_list[[1]]))))
 ```
+
+![](heatMap_sample.png)
 
 The function provides the utility to save the plot automatically. 
 
@@ -147,10 +159,12 @@ This function plots a Principal Component Analysis (PCA) from transformed expres
 matrix. This plot shows samples variation based on the expression values and identifies
 batch effects.
 
-```{r PCAplot, eval=FALSE, warning=FALSE}
-PCAplot(exploredds, plotly = TRUE)
-PCAplot(exploredds, save = TRUE, filePlot = "pca.pdf")
+```{r PCAplot, eval=FALSE}
+PCAplot(exploredds, plotly = TRUE, filePlot = "pca.png")
+PCAplot(exploredds, save = TRUE)
 ```
+
+![](pca.png)
 
 The function provides the utility to save the plot automatically. 
 
@@ -160,9 +174,11 @@ This function computes and plots multidimensional scaling analysis for dimension
 reduction of count expression matrix. Internally, it is applied the `stats::dist()`
 function to the transformed count matrix to get sample-to-sample distances.
 
-```{r MDSplot, eval=FALSE, warning=FALSE}
-MDSplot(exploredds, plotly = TRUE, save = TRUE, filePlot = "MDSplot.pdf")
+```{r MDSplot, eval=FALSE}
+MDSplot(exploredds, plotly = TRUE, save = TRUE, filePlot = "MDSplot.png")
 ```
+
+![](MDSplot.png)
 
 The function provides the utility to save the plot automatically. 
 
@@ -174,8 +190,9 @@ dimension reduction of count expression matrix.
 ```{r GLMplot, eval=FALSE, warning=FALSE}
 exploredds <- exploreDDS(countMatrix, targets, cmp = cmp[[1]], preFilter = NULL, transformationMethod = "raw")
 GLMplot(exploredds, plotly = FALSE)
-GLMplot(exploredds, plotly = FALSE, savePlot = TRUE, filePlot = "GLM.pdf")
 ```
+
+![](GLMplot.png)
 
 The function provides the utility to save the plot automatically. 
 
@@ -184,9 +201,11 @@ The function provides the utility to save the plot automatically.
 This function plots log2 fold changes (y-axis) versus the mean of normalized counts 
 (on the x-axis). Statistically significant features are colored.
 
-```{r MAplot, eval=FALSE, warning=FALSE}
+```{r MAplot, eval=FALSE}
 MAplot(degseqDF, FDR.cutoff = 0.05, comparison = "M12-A12", filter = c(Fold = 2, FDR = 10), genes="ATCG00280")
 ```
+
+![](MAplot.png)
 
 The function provides the utility to save the plot automatically. 
 
@@ -197,22 +216,26 @@ analysis for unsupervised nonlinear dimensionality reduction of count expression
 matrix. Internally, it is applied the `Rtsne::Rtsne()` function, using the exact 
 t-SNE computing with `theta=0.0`.
 
-```{r tSNEplot, eval=FALSE, warning=FALSE}
+```{r tSNEplot, eval=FALSE}
 tSNEplot(countMatrix, targets, perplexity = 5)
 ```
+
+![](tSNEplot.png)
 
 ## Volcano plot 
 
 A simple function that shows statistical significance (`p-value`) versus magnitude
 of change (`log2 fold change`).
 
-```{r volcanoplot, eval=FALSE, warning=FALSE}
+```{r volcanoplot, eval=FALSE}
 volcanoplot(degseqDF, comparison = "M12-A12", filter = c(Fold = 1, FDR = 20), genes = "ATCG00280")
 ```
 
+![](volcanoplot.png)
+
 # Version information
 
-```{r sessionInfo}
+```{r sessionInfo, eval=TRUE}
 sessionInfo()
 ```
 
