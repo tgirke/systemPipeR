@@ -4,10 +4,10 @@
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 name: R-CMD-check
 
@@ -21,9 +21,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-16.04, r: '4.0.3', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
-          - {os: macOS-latest, r: '4.0.3'}
-          - {os: windows-latest, r: '4.0.3'}          
+          - {os: ubuntu-16.04, r: '4.0.5', rspm: "https://demo.rstudiopm.com/all/__linux__/xenial/latest"}
+          - {os: macOS-latest, r: '4.0.5'}
+          - {os: windows-latest, r: '4.0.5'}  
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
