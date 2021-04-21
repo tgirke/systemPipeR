@@ -1,19 +1,30 @@
 changelog
-     version 1.25.12
-        - Exported `check.output` function
-        - Updated `modules` documentation
-        - Fixed `renderWF` fct (`.renderWFsingle`) to accept stdout
-        - Allow `alignStats` fct accepts different `subset="FileName1"` from targets
-       	
      version 1.25.11
-        - Added `lfcShrink` option to `run_DESeq2` function
-        - Fixed "MAplot"
-        - Added `check.output` function
-        - `tryCL` deals with `fastqc` commandline test
-       	
+     	- Added "cwl/*" files:
+		- BUSCO/*
+		- blast/*
+		- bowtie2/bowtie2-mi/*
+		- bwa/bwa-aln/*
+		- bwa/bwa-mem-pe/*
+		- bwa/bwa-mem-se/*
+		- bwa/bwa-samse/*
+		- cutadapt/*
+		- fastqc/*
+		- fastx_toolkit/*
+		- gunzip/*
+		- kallisto/*
+		- picard/*
+		- star/*
+		- workflow-bwa-aln/*
+
      version 1.25.10
-        - Visualization functions and documentation: 
-       	- "GLMplot", "MAplot", "MDSplot", "PCAplot", "exploreDDS", "exploreDDSplot", "hclustplot", "heatMaplot", "tSNEplot", "volcanoplot"
+        - `moduleload` updated help file
+        - Added `check.output` function
+        - Fixed `renderWF` fct (`.renderWFsingle`) to accept stdout
+        - `tryCL` deals with `fastqc` commandline test
+        - Added `lfcShrink` option to `run_DESeq2` function
+        - Allow `alignStats` fct accepts different `subset="FileName1"` from targets
+>>>>>>> 26429a7f186d086901c98f724c2cd7c2d094dc7e
         
      version 1.25.9
         - Added print behavior to `write.cwl` and `write.yml`
