@@ -1,4 +1,7 @@
 changelog
+     version 1.25.10
+        - `moduleload` updated help file
+        
      version 1.25.9
         - Added print behavior to `write.cwl` and `write.yml`
         - Fixed bug `genFeatures()`

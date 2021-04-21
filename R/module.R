@@ -177,11 +177,13 @@ moduleAvail <- function(){
 ################
 ## Load software from module system
 moduleload <- function(module_name) {
-  return(module("load", module_name))
+    return(module("load", module_name))
+  }
 }
 ## Usage: 
 # mod <- moduleload("samtools")
 # mod <- moduleload(c("samtools", "hisat2"))
+# mod <- moduleload(modules(args))
 
 ##################
 ## moduleUnload ##
