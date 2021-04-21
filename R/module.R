@@ -178,7 +178,6 @@ moduleAvail <- function(){
 ## Load software from module system
 moduleload <- function(module_name) {
     return(module("load", module_name))
-  }
 }
 ## Usage: 
 # mod <- moduleload("samtools")
