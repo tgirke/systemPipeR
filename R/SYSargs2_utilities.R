@@ -280,6 +280,20 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 # subsetWF(WF, slot="output", subset=1, index=1)
 # subsetWF(WF, slot="output", subset=1, index=1, delete=TRUE) ## in order to delete the subset files list
 
+###############################################################
+## Subsetting the input and output slots by name or position ##
+###############################################################
+check.output <- function(args, subset=1, index=1){
+    ## Check the class and slot
+    if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")  
+    check <- subsetWF(args, slot="output", subset=subset, index=index, delete=FALSE)
+    exists <- file.exists(check)
+    names(exists) <- names(check)
+    return(exists)
+}
+## Usage:
+# check.output(WF)
+
 #########################################################
 ## Update the output location after run runCommandline ##
 #########################################################
@@ -865,7 +879,11 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
   outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
   for(i in seq_along(outfilelist)) {
     for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output))
-      outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
+        if("stdout" %in% names(cmdlist(WF)[[names(outfilelist[i])]]$output[[j]])){
+            outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$stdout
+        } else {
+            outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
+        }
   }
   cmdlist <- renderCommandline(WF, redirect=">")
   inputvars <- as.list(inputvars)
