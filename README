@@ -4,6 +4,8 @@ changelog
         - Added `check.output` function
         - Fixed `renderWF` fct (`.renderWFsingle`) to accept stdout
         - `tryCL` deals with `fastqc` commandline test
+        - Added `lfcShrink` option to `run_DESeq2` function
+        - Allow `alignStats` fct accepts different `subset="FileName1"` from targets
         
      version 1.25.9
         - Added print behavior to `write.cwl` and `write.yml`
