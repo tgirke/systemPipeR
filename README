@@ -1,20 +1,21 @@
 changelog
      version 1.25.11
-	- BUSCO/*
-	- blast/*
-	- bowtie2/bowtie2-mi/*
-	- bwa/bwa-aln/*
-	- bwa/bwa-mem-pe/*
-	- bwa/bwa-mem-se/*
-	- bwa/bwa-samse/*
-	- cutadapt/*
-	- fastqc/*
-	- fastx_toolkit/*
-	- gunzip/*
-	- kallisto/*
-	- picard/*
-	- star/*
-	- workflow-bwa-aln/*
+     	- Added "cwl/*" files:
+		- BUSCO/*
+		- blast/*
+		- bowtie2/bowtie2-mi/*
+		- bwa/bwa-aln/*
+		- bwa/bwa-mem-pe/*
+		- bwa/bwa-mem-se/*
+		- bwa/bwa-samse/*
+		- cutadapt/*
+		- fastqc/*
+		- fastx_toolkit/*
+		- gunzip/*
+		- kallisto/*
+		- picard/*
+		- star/*
+		- workflow-bwa-aln/*
 
      version 1.25.10
         - `moduleload` updated help file
