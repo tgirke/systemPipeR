@@ -13,6 +13,7 @@ name: R-CMD-check
 
 jobs:
   R-CMD-check:
+    if: "contains(toJSON(github.event.commits.*.message), 'build_check')"
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
