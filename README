@@ -1,6 +1,9 @@
 changelog
      version 1.25.10
         - `moduleload` updated help file
+        - Added `check.output` function
+        - Fixed `renderWF` fct (`.renderWFsingle`) to accept stdout
+        - `tryCL` deals with `fastqc` commandline test
         
      version 1.25.9
         - Added print behavior to `write.cwl` and `write.yml`

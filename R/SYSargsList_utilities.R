@@ -690,6 +690,7 @@ SYScreate <- function(class) {
 ## Function to check if the command line / Software is installed and set in your PATH ##
 #########################################################################################
 tryCL <- function(command) {
+  if(command=="fastqc") command <- "fastqc --version"
   tryCatch(
     {
       system(command, ignore.stdout = TRUE, ignore.stderr = TRUE)
@@ -707,7 +708,7 @@ tryCL <- function(command) {
 ## Usage:
 # tryCL(command="R")
 # tryCL(command="blastp")
-# tryCL(command="hisat2")
+# tryCL(command="fastqc")
 
 ########################################################
 ## Function to check if the Path (file or dir) exists ##
