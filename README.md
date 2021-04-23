@@ -9,7 +9,7 @@
 [![dependencies](http://www.bioconductor.org/shields/dependencies/devel/systemPipeR.svg)](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html#since)
 
 <!-- -->
-![R-CMD-check](https://github.com/tgirke/systemPipeR/workflows/R-CMD-check/badge.svg)
+[![R-CMD-check](https://github.com/tgirke/systemPipeR/actions/workflows/actions.yml/badge.svg)](https://github.com/tgirke/systemPipeR/actions/workflows/actions.yml)
 
 ### Introduction
 
