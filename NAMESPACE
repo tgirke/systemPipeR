@@ -1,5 +1,6 @@
 ## IMPORTS
 import("GenomicRanges")
+import("GO.db")
 importFrom("annotate", "Ontology")
 importFrom("annotate", "Term")
 importFrom("assertthat", "assert_that")

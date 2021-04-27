@@ -62,7 +62,7 @@ setMethod(
 ## (A.1.1) Obtain mappings from geneontology.org
 .readGOorg <- function(myfile, colno, org) {
   ## global functions or variables
-  GOTERM <- NULL
+  #GOTERM <- NULL
   go_org <- read.delim(myfile, na.strings = "", header = FALSE, comment.char = "!", sep = "\t")
   go_org <- go_org[, colno]
   names(go_org) <- c("GOID", "GeneID", "GOCAT")
@@ -95,7 +95,7 @@ setMethod(
 ## (A.1.2) Obtain mappings from BioC
 .sampleDFgene2GO <- function(lib) {
   ## global functions or variables
-  GOTERM <- getOntology <- NULL
+  #GOTERM <- getOntology <- NULL
   require(lib, character.only = TRUE)
   mylibbase <- gsub(".db", "", lib)
   GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), getOntology, "MF") # generates list with GeneID components containing MFGOs
@@ -118,7 +118,7 @@ setMethod(
 ## This is slow (3 minutes), but needs to be done only once!
 .gene2GOlist <- function(catdf, rootUK = FALSE) { # If the argument 'rootUK' is set to TRUE then the root nodes are treated as terminal nodes to account for the new unknown terms
   ## global functions or variables
-  GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
+  #GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
   ## Import required data frames
   GO_MF_DF <- catdf$D_MF
   GO_BP_DF <- catdf$D_BP
@@ -321,7 +321,7 @@ GOHyperGAll <- function(catdb, gocat = "MF", sample, Nannot = 2) {
 ## (C.1) Define subsetting function
 GOHyperGAll_Subset <- function(catdb, GOHyperGAll_result, sample = test_sample, type = "goSlim", myslimv) { # type: "goSlim" or "assigned"; optional argument "myslimv" to privde custom goSlim vector
   ## global functions or variables
-  test_sample <- GO_CC_DF <- NULL
+  #test_sample <- GO_CC_DF <- NULL
   if (type == "goSlim") {
     if (missing(myslimv)) {
       slimv <- c("GO:0003674", "GO:0008150", "GO:0005575", "GO:0030246", "GO:0008289", "GO:0003676", "GO:0000166", "GO:0019825", "GO:0005515", "GO:0003824", "GO:0030234", "GO:0003774", "GO:0004871", "GO:0005198", "GO:0030528", "GO:0045182", "GO:0005215", "GO:0006519", "GO:0007154", "GO:0016043", "GO:0006412", "GO:0006464", "GO:0006810", "GO:0007275", "GO:0007049", "GO:0005975", "GO:0006629", "GO:0006139", "GO:0019748", "GO:0015979", "GO:0005618", "GO:0005829", "GO:0005783", "GO:0005768", "GO:0005794", "GO:0005739", "GO:0005777", "GO:0009536", "GO:0005840", "GO:0005773", "GO:0005764", "GO:0005856", "GO:0005634", "GO:0005886", "GO:0005576") # contains new unknown terms: "GO:0003674", "GO:0008150", "GO:0005575"
@@ -365,7 +365,7 @@ GOHyperGAll_Simplify <- function(GOHyperGAll_result, gocat = "MF", cutoff = 0.00
     stop("The GO categories in GOHyperGAll_Simplify() and GOHyperGAll_result need to match")
   }
   ## global functions or variables
-  GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
+  #GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
   testDF <- GOHyperGAll_result[GOHyperGAll_result$Padj <= cutoff, ]
   testDF <- data.frame(testDF, test = rep(0, times = length(testDF[, 1])))
   testDF <- testDF[!is.na(testDF$Ont), ]
@@ -545,7 +545,7 @@ GOCluster_Report <- function(catdb, setlist, id_type = "affy", method = "all", C
 ######################
 goBarplot <- function(GOBatchResult, gocat) {
   ## global functions or variables
-  SampleMatch <- Sample <- NULL
+  #SampleMatch <- Sample <- NULL
   x <- GOBatchResult
   x <- x[, c("SampleMatch", "Term", "CLID", "Ont")]
   x <- x[x$Ont == gocat, 1:3]
