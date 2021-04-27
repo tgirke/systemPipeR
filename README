@@ -1,5 +1,8 @@
 changelog
-     version 1.24.2
+     version 1.24.5
+        - Updated vignette
+        
+     version 1.24.4
         - Updated vignette
      	- Added "cwl/*" files:
 		- BUSCO/*
