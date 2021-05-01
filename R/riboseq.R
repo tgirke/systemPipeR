@@ -42,7 +42,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                     names(featuresGRl)[length(featuresGRl)] <- paste0(tx_type[i], "_red")
                 } else {
                     mcols(tmp) <- DataFrame(feature_by=mcols(tmp)$gene_id, featuretype_id=mcols(tmp)$tx_name, featuretype=tx_type[i])
-                    featuresGRl <- c(featuresGRl, GRangesList(tmp=tmp))
+                    featuresGRl <- c(tmp=featuresGRl, GRangesList(tmp=tmp))
                     names(tmp) <- seq_along(tmp)
                     names(featuresGRl)[length(featuresGRl)] <- tx_type[i]
                 }

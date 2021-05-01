@@ -8,7 +8,7 @@
 setClass("SYSargsList", slots=c(
   sysconfig="list",
   codeSteps="list",
-  stepsWF="numeric", 
+  stepsWF="character", 
   dataWF="data.frame",
   SYSargs2_steps="list",
   statusWF="list",
@@ -330,7 +330,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent=FALSE,
   }
   capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path, input_steps = input_steps, 
                                         exclude_steps = exclude_steps, save_Rmd = save_rmd, Rmd_outfile = Rmd_outfile), file = ".NULL")  ##TODO: refazer
-  steps_number <- as.numeric(steps_all$t_number[steps_all$selected])
+  steps_number <- steps_all$t_number[steps_all$selected]
   ## Save input_steps in the SYSconfig.yml
   if (!any(names(x$sysconfig) %in% c("input_steps", "exclude_steps"))) {
     input_file <- x$sysconfig$SYSconfig
@@ -721,7 +721,7 @@ SYScreate <- function(class){
     SYS.empty <- list(
       sysconfig=list(),
       codeSteps=list(),
-      stepsWF=numeric(),
+      stepsWF=character(),
       dataWF=data.frame(),
       # logload=list(),
       # statusWF=list(),

@@ -1,4 +1,9 @@
 changelog
+    version 1.24.6
+        - Clean message from `runCommandline()`
+        - Fixed bug on `initWF()`
+        - Fixed bug `genFeatures()`
+        
      version 1.24.5
         - Updated vignette
         

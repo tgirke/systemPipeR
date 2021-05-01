@@ -16,7 +16,7 @@ any existing files. If a file exists then the user has to explicitly
 remove it or set \code{overwrite=TRUE}. 
 }
 \usage{
-writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL, new_col_output_index=NULL, ...)
+writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL, new_col_output_index=NULL, remove=FALSE, ...)
 }
 \arguments{
   \item{x}{
@@ -39,6 +39,9 @@ A vector of character strings of the new column name to add to target file.
 }
   \item{new_col_output_index}{
 A vector of numeric index positions of the file in \code{SYSargs2} class \code{output}. It requires \code{new_col} definition.
+}
+  \item{remove}{
+To remove the original columns. Default is \code{FALSE}. 
 }
   \item{\dots}{
 To pass on additional arguments.
