@@ -85,7 +85,6 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
   ## Validation for 'args'
   if(any(is(args)!="SYSargs" & is(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
-  if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) stop("Results PATH defined at `yamlinput(args)` is required to be created.")
   ## Environment Modules section
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is in the PATH
@@ -103,6 +102,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
   if(class(args)=="SYSargs") {
     .sysargsrunCommandline(args=args, runid=runid, make_bam=make_bam, del_sam=del_sam)
   } else if(class(args)=="SYSargs2") {
+    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) stop("Results PATH defined at `yamlinput(args)` is required to be created.")
     ## SYSargs2 class ##
     ## Workflow Name (Workflow OR CommandLineTool class)
     cwl.wf <- strsplit(basename(cwlfiles(args)$cwl), split="\\.")[[1]][1]
