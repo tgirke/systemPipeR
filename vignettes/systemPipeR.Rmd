@@ -130,7 +130,7 @@ FASTQ) along with unique sample labels. Subsequent targets instances are
 created automatically. The parameters required for running command-line
 software is provided by the parameter (*.cwl*) files described below. 
 
-We also introduce the *`SYSargs2Pipe`* class that organizes one or many
+We also introduce the *`SYSargsList`* class that organizes one or many
 SYSargs2 containers in a single compound object capturing all information
 required to run, control and monitor complex workflows from start to finish. This
 design enhances the *`systemPipeR`* workflow framework with a generalized,
@@ -143,11 +143,11 @@ _`SYSargs2`_ objects. Each _`SYSargs2`_ instance is constructed from one *target
 and two *param* files. The only input provided by the user is the initial *targets* 
 file. Subsequent *targets* instances are created automatically, from the previous 
 output files. Any number of predefined or custom workflow steps are supported. One
-or many _`SYSargs2`_ objects are organized in an *`SYSargs2Pipe`* container.
+or many _`SYSargs2`_ objects are organized in an *`SYSargsList`* container.
 
 ## Workflow Management using _`SYSargsList`_ 
 
-**systemPipeR** allows creation (multi-step analyses) and execution of workflow entirely for R, with control, flexibility, and scalability of the all process. The execution of the workflow can be sent to a HPC, can be parallelizes, accelerating results acquisition. A workflow management system provides an infrastructure for the set-up, performance and monitoring of a defined sequence of tasks, arranged as a workflow application.
+**systemPipeR** allows creation (multi-step analyses) and workflow execution entirely for R, with control, flexibility, and scalability of all processes. The workflow execution can be sent to an HPC, can be parallelized, accelerating results acquisition. **systemPipeR** workflow management system provides an infrastructure for organizing all steps, execution, and monitoring all tasks.
 
 <center><img src="sysargslist.png"></center>
 **Figure 3:** Workflow Management using _`SYSargsList`_.
@@ -217,17 +217,12 @@ The following generates a fully populated _`systemPipeR`_ workflow environment
 the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq, and Ribo-Seq. 
 Templates for additional NGS applications will be provided in the future.
 
+If you desire run this tutorial with your data set, please follow the instruction here:
+
 ```{r genRna_workflow, eval=FALSE}
 library(systemPipeRdata)
 genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
-```
-
-If you desire run this tutorial with your data set, please follow the instruction here:
-
-```{r genRna_new, eval=FALSE}
-library(systemPipeRdata)
-genWorkenvir(workflow="new", mydirname = "FEB_project")
 ```
 
 ### Workflow template from an individual's package
@@ -237,12 +232,12 @@ If you desire to use an individual package and version, follow the instruction b
 
 ```{r genRna_npkg, eval=FALSE}
 library(systemPipeRdata)
-genWorkenvir(workflow=NULL, package_repo = "systemPipeR/systemPipeRIBOseq", ref = "master", subdir = NULL)
+genWorkenvir(workflow=NULL, package_repo = "systemPipeR/SPriboseq", ref = "master", subdir = NULL)
 ```
 
 ```{r genRna_pkg_branch, eval=FALSE}
 library(systemPipeRdata)
-genWorkenvir(workflow=NULL, package_repo = "systemPipeR/systemPipeRNAseq", ref = "singleMachine", subdir = NULL)
+genWorkenvir(workflow=NULL, package_repo = "systemPipeR/SPrnaseq", ref = "singleMachine", subdir = NULL)
 ```
 
 ## Directory Structure
@@ -369,7 +364,7 @@ yaml::read_yaml(hisat2.yml)
 ```
 
 The following imports a *`.cwl`* file (here *`hisat2-mapping-se.cwl`*) for running
-the short read aligner HISAT2 [@Kim2015-ve]. The *loadWorkflow* and *renderWF* 
+the short read aligner HISAT2 [@Kim2015-ve]. The *loadWF* and *renderWF* 
 functions render the proper command-line strings for each sample and software tool.
 
 ```{r SYSargs2_structure, eval=TRUE}
@@ -383,7 +378,8 @@ WF <- loadWF(targets=targets, wf_file="hisat2-mapping-se.cwl",
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 ```
 
-Several accessor methods are available that are named after the slot names of the _`SYSargs2`_ object. 
+Several accessor methods are available that are named after the slot names of the _`SYSargs2`_ object.
+
 ```{r names_WF, eval=TRUE}
 names(WF)
 ```
@@ -430,7 +426,7 @@ space restrictions, the CWL-centric approach is not covered by this tutorial.
 Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
 
 ```{r table_tools, echo=FALSE, message=FALSE}
-# library(dplyr)
+library(magrittr)
 # library(kableExtra)
 SPR_software <- system.file("extdata", "SPR_software.csv", package="systemPipeR")
 #SPR_software <- "SPR_software.csv"
@@ -438,7 +434,7 @@ software <- read.delim(SPR_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))
 software %>%
-  dplyr::mutate(Step = kableExtra::cell_spec(Step, color = "white", bold = T,
+  dplyr::mutate(Step = kableExtra::cell_spec(Step, color = "white", bold = TRUE,
     background = factor(Category, id, colors)
   )) %>%
    dplyr::select(Tool, Description, Step) %>%
@@ -538,6 +534,7 @@ tryCL(command="hisat2") ## "All set up, proceed!"
 The Project management structure is essential, especially for reproducibility and efficiency in the analysis. Here we show how to construct an instance of this S4 object class by the _`initWF`_ function. The object of class _`SYSarsgsList`_ storing all the configuration information for the project and allows management and control at a high level. 
 
 ```{r initwf, eval=FALSE}
+getwd() ## rnaseq
 script <- "systemPipeRNAseq.Rmd"
 targetspath <- "targets.txt"
 sysargslist <- initWF(script = script, targets = targetspath)
@@ -558,7 +555,6 @@ sysargslist_temp <- initWF(sysconfig ="SYSconfig.yml")
 
 ```{r config, eval=FALSE}
 sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
-sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
 sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
 ```
 
@@ -570,7 +566,7 @@ Consider the following example, in which the steps are the initialization, confi
 
 ```{r pipes, eval=FALSE}
 library(systemPipeR)
-sysargslist <- initWF(script ="systemPipeRNAseq.Rmd", overwrite = T) %>%
+sysargslist <- initWF(script ="systemPipeRNAseq.Rmd", overwrite = TRUE) %>%
     configWF(input_steps = "1:3") %>%
     runWF(steps = "1:2")
 ```
@@ -591,7 +587,7 @@ q("no") # closes R session on head node
 
 ```{bash node_environment, eval=FALSE}
 srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-module load R/3.4.2
+module load R/4.0.3
 R
 ```
 
@@ -1374,13 +1370,6 @@ DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=10))
 ```{r edger_deg_stats, eval=TRUE}
 names(DEG_list)
 DEG_list$Summary[1:4,]
-```
-
-Save table with filter DEG results for up and down-regulated genes for a specific sample comparison, as follows: 
-
-```{r edger_deg_table, eval=FALSE}
-edgeDF_M12_A12 <- edgeDF[DEG_list$UporDown$`M12-A12`,31:35]
-write.table(edgeDF_M12_A12, "./results/edgeDF_M12_A12.xls", quote=FALSE, sep="\t", col.names = NA)   
 ```
 
 ## DEG analysis with _`DESeq2`_ 

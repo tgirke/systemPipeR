@@ -107,20 +107,20 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
   if(!c("SampleReference") %in% colnames(targets)) stop("Targets file lacks SampleReference column")
   if(!c("FileName") %in% colnames(targets)) stop("Targets file lacks FileName column")
   if(all(c("FileName1", "FileName2") %in% colnames(targets))) stop("Targets file is expected to have only one FileName column")
-  if(file.exists(outfile) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", outfile, "or set 'overwrite=TRUE'")) 
-  testv <- as.character(targets$SampleReference); testv <- testv[!is.na(testv)]; testv <- testv[testv!=""] 
+  if(file.exists(outfile) & overwrite==FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", outfile, "or set 'overwrite=TRUE'"))
+  testv <- as.character(targets$SampleReference); testv <- testv[!is.na(testv)]; testv <- testv[testv!=""]
   myfiles <- as.character(targets$FileName); names(myfiles) <- as.character(targets$SampleName)
   if(!all(testv %in% names(myfiles))) stop(paste("Value(s)", paste(testv[!testv %in% names(myfiles)], collapse=", "), "from SampleReference column have no matches in SampleName column!"))
   ## Rearrange targets file
-  targets <- data.frame(FileName1=targets$FileName, FileName2=NA, targets[,2:length(targets[1,])])
+  targets <- data.frame(FileName1=targets$FileName, FileName2=NA, targets)
   targets[,"FileName2"] <- myfiles[as.character(targets$SampleReference)]
-  targets <- targets[!is.na(as.character(targets$SampleReference)), , drop=FALSE] 
-  targets <- targets[targets$SampleReference!="", , drop=FALSE] 
+  targets <- targets[!is.na(as.character(targets$SampleReference)), , drop=FALSE]
+  targets <- targets[targets$SampleReference!="", , drop=FALSE]
   ## Export targets file including header lines
   headerlines <- headerlines[grepl("^#", headerlines)]
   targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
   writeLines(c(headerlines, targetslines), outfile, ...)
-  if(silent!=TRUE) cat("\t", "Modified", infile, "file with sample-wise reference has been written to outfile", outfile, "\n") 
+  if(silent!=TRUE) cat("\t", "Modified", infile, "file with sample-wise reference has been written to outfile", outfile, "\n")
 }
 ## Usage:
 # writeTargetsRef(infile="~/targets.txt", outfile="~/targets_refsample.txt", silent=FALSE, overwrite=FALSE)
@@ -131,8 +131,6 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ## Convenience function to perform read counting over serveral different
 ## range sets, e.g. peak ranges or feature types
 countRangeset <- function(bfl, args, format="tabular", ...) {
-  ## global functions or variables
-  import.bed <- summarizeOverlaps <- NULL
   ## Input validity checks
   if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
   if(all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
@@ -210,8 +208,6 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
 ###########################################################
 ##  Identify Range Overlaps 
 olRanges <- function(query, subject, output="gr") {
-  ## global functions or variables
-  seqlengths <- elementMetadata <- NULL
   ## Input check
   if(!((class(query)=="GRanges" & class(subject)=="GRanges") | (class(query)=="IRanges" & class(subject)=="IRanges"))) {
     stop("Query and subject need to be of same class, either GRanges or IRanges!")

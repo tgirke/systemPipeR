@@ -258,7 +258,7 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
 setClass("SYSargsList", slots = c(
   sysconfig = "list",
   codeSteps = "list",
-  stepsWF = "numeric",
+  stepsWF = "character",
   dataWF = "data.frame",
   SYSargs2_steps = "list",
   statusWF = "list",

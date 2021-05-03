@@ -1,4 +1,10 @@
 changelog
+     version 1.25.14
+        - Clean message from `runCommandline()`
+        - Fixed bug on `initWF()`
+        - Updated Vignette
+     	
+     	
      version 1.25.13
      	- Fixed `GO.db` dependency
      	

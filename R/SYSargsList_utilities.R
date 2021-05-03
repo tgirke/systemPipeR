@@ -235,7 +235,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
     Rmd = x$sysconfig$script$path, input_steps = input_steps,
     exclude_steps = exclude_steps, save_Rmd = save_rmd, Rmd_outfile = Rmd_outfile
   ), file = ".NULL") ## TODO: refazer
-  steps_number <- as.numeric(steps_all$t_number[steps_all$selected])
+  steps_number <- steps_all$t_number[steps_all$selected]
   ## Save input_steps in the SYSconfig.yml
   if (!any(names(x$sysconfig) %in% c("input_steps", "exclude_steps"))) {
     input_file <- x$sysconfig$SYSconfig
@@ -339,7 +339,7 @@ renderReport <- function(sysargslist, type = c("html_document")) {
 }
 
 ## Usage
-# renderReport(x=sysargslist)
+# renderReport(sysargslist)
 
 ########################
 ## subsetRmd function ##
@@ -667,7 +667,7 @@ SYScreate <- function(class) {
     SYS.empty <- list(
       sysconfig = list(),
       codeSteps = list(),
-      stepsWF = numeric(),
+      stepsWF = character(),
       dataWF = data.frame(),
       # logload=list(),
       # statusWF=list(),
