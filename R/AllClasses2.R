@@ -347,7 +347,7 @@ setMethod(
 setMethod(
   f = "length", signature = "SYSargsList",
   definition = function(x) {
-    return(length(x@SYSargs2_steps))
+    return(length(x@stepsWF))
   }
 )
 
@@ -356,13 +356,13 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   if (is.logical(i)) {
     i <- which(i)
   }
-  x@SYSargs2_steps <- x@SYSargs2_steps[i]
+  x@codeSteps <- x@codeSteps[i]
   return(x)
 })
 
 ## Behavior of "[[" operator for SYSargsList
 setMethod(
-  f = "[[", signature = "SYSargsList",
+  f = "[[", signature = c("SYSargsList","ANY", "missing"),
   definition = function(x, i, ..., drop) {
     return(as(x, "list")[[i]])
   }
@@ -376,7 +376,7 @@ setMethod("$",
   }
 )
 
-## Replacement method for SYSargs2 using "[" operator
+## Replacement method for SYSargsList using "[" operator
 setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, j, value) {
   if (i == 1) x@sysconfig <- value
   if (i == 2) x@codeSteps <- value
