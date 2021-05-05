@@ -75,7 +75,7 @@ loadWF <- loadWorkflow
 ##   Create CommandLineTools from Command-line   ##
 ###################################################
 createWF <- function(targets=NULL, commandLine, results_path="./results", module_load="baseCommand", file = "default", 
-                     overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool"){
+                     overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", silent=FALSE){
   ## TODO if is not default, module load and file
   if(!class(commandLine)=="list") stop("'commandLine' needs to be object of class 'list'.")  
   if(any(!c("baseCommand", "inputs", "outputs") %in% names(commandLine))) stop("Argument 'commandLine' needs to be assigned at least to: 'baseCommand', 'input' or 'output'.")
@@ -118,8 +118,8 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
   WF.temp <- as(WF.temp, "list")
   ## TODO: Expand to write.WF()
   WF.temp$wf <- list()
-  WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, silent = FALSE) 
-  WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load) 
+  WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, silent = silent) 
+  WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, silent = silent) 
   WF.temp$modules <- WF.temp$yamlinput$ModulesToLoad
   WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
@@ -916,7 +916,6 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, silent=FALSE) {
       arguments[[i]]["valueFrom"] <- commandLine$arguments[[i]]$valueFrom
     }
     clt <- c(clt, list(arguments=arguments))
-    print(clt)
   }
   ##INPUTS
   if(any(names(commandLine$inputs)=="")) stop("Each element of the list 'commandLine' needs to be assigned a name")
