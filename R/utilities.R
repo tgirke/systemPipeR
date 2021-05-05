@@ -92,7 +92,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
         silent=TRUE)
     ## "Environment Modules" is not available
     if(length(modulecmd_path) == 0 ) {
-      #message("Message: 'Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.'", "\n")
+      dump <- "do nothing"
       ## "Environment Modules" is available and proceed the module load
     } else if (length(modulecmd_path) > 0) {
       for(j in modules(args)) moduleload(j) # loads specified software from module system
