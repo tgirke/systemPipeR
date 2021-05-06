@@ -3,8 +3,9 @@ changelog
         - Clean message from `runCommandline()`
         - Fixed bug on `initWF()`
         - Updated Vignette
-     	
-     	
+        - Printing message for `createWF()`
+        - upgrade `runWF()`
+     	     	
      version 1.25.13
      	- Fixed `GO.db` dependency
      	

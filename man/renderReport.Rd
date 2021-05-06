@@ -7,7 +7,7 @@ Render RMarkdown Report
 Render the input file to the specified output format using pandoc.
 }
 \usage{
-renderReport(sysargslist, type = c("html_document"))
+renderReport(sysargslist, type = c("html_document"),  silent = FALSE)
 }
 \arguments{
   \item{sysargslist}{
@@ -16,6 +16,9 @@ renderReport(sysargslist, type = c("html_document"))
   \item{type}{
   	The R Markdown output format to convert to. Default is \code{"ALL"}.The option 
   	can be the name of a format (e.g. \code{"pdf_document"} or \code{"html_document"}).
+}
+  \item{silent}{
+If set to \code{TRUE}, all messages returned by the function will be suppressed.
 }
 }
 \value{

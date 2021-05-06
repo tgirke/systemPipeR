@@ -133,7 +133,7 @@ initWF <- function(sysconfig = NULL, subProj = FALSE, dir_str = "level0", dirNam
   if (subProj == FALSE) {
     init$projectWF <- list(
       project = sysconfig$project$path, data = sysconfig$data$path, param = sysconfig$param$path,
-      results = sysconfig$results$path
+      results = sysconfig$results$path, logs=NA
     )
   } else if (subProj == TRUE) {
     if (dirName == "default") {
@@ -176,7 +176,7 @@ initWF <- function(sysconfig = NULL, subProj = FALSE, dir_str = "level0", dirNam
       sysconfig <- initProject(projPath = project, targets = targets, script = script, overwrite = overwrite, silent = TRUE, subProj = FALSE)
       init$projectWF <- list(
         project = project, data = data, param = param,
-        results = results, targets = targets, script = script, original_dir = original_dir
+        results = results, targets = targets, script = script, original_dir = original_dir, logs=NA
       )
     } else if (dir_str == "level1") {
       ## TODO: Rethink whether this structure is worth it
@@ -275,7 +275,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
 #####################
 ## runWF function ##
 #####################
-runWF <- function(sysargslist, steps = "ALL") {
+runWF <- function(sysargslist, steps = "ALL", warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
   ## Validations
   if (class(sysargslist) != "SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
   sysproj <- paste(sysargslist$projectWF$project, ".SYSproject", sep = "/")
@@ -284,30 +284,50 @@ runWF <- function(sysargslist, steps = "ALL") {
   codeList <- sysargslist$codeSteps
   if ("ALL" %in% steps) {
     stepslist <- seq_along(sysargslist$stepsWF)
+    level <- sysargslist$stepsWF[`stepslist`]
   } else {
     stepslist <- steps
     t_lvl <- sysargslist$dataWF$t_lvl
     names(t_lvl) <- sysargslist$dataWF$t_number
     stepslist <- .parse_step(t_lvl, input_steps = steps)
+    level <- sysargslist$stepsWF[`stepslist`]
   }
-  file_log <- paste0(sysproj, "/", "_logWF_", format(Sys.time(), "%b%d%Y_%H%M"), sep = "")
+  file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "%b%d%Y_%H%M")))
   status <- as.character()
   for (i in stepslist) {
-    cat(paste0("################ ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S")), " ################"),
-      file = file_log, sep = "\n", append = TRUE
-    )
-    cat(codeList[[i]], file = file_log, sep = "\n", append = TRUE)
-    .tryCatchSYS(x = codeList[[i]])
-    log <- capture.output(eval(parse(text = codeList[[i]])))
-    cat(log, file = file_log, sep = "\n", append = TRUE)
-    log <- (capture.output(eval(parse(text = codeList[[i]])), type = c("output", "message")))
-    stepS <- paste0("Step Done: ", names(codeList[i]))
-    cat(stepS, "\n")
-    status <- c(status, stepS)
+    cat(c(paste0("# ", sub(".*[.]\\s", "", names(codeList[i]))), 
+          paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
+          "## Code: ", 
+          "```{r, eval=FALSE} ", 
+          codeList[[i]], 
+          "```", 
+          "## Output: ",
+          "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
+    capture.output(capture.output(.tryCatch(codeList[[i]], file_log), file=file_log, append = TRUE), 
+                   file=file.path(sysproj, "err"), type = "message", append = FALSE)
+    err <- readLines(file.path(sysproj, "err"))
+    if(err=="WARNING"){
+      if(warning.stop==TRUE) {
+        message("Caught an warning!")
+        break() }
+    } else if(err=="ERROR"){
+      if(error.stop==TRUE) {
+        message("Caught an error!")
+        break()
+      }
+    }
+    err <- paste0("Step ", names(level)[i], ": ",  err)
+    print(err)
+    cat("```", file = file_log, sep = "\n", append = TRUE)
+    cat("\n", file = file_log, append = TRUE)
+    status <- c(status, err)
+    unlink(file.path(sysproj, "err"))
   }
+  if(silent != TRUE) cat("\t", "Written content of 'stdout and stderr' to file:", file_log, "\n")
   sysargslist <- as(sysargslist, "list")
   sysargslist$statusWF <- list(statusWF = status)
   sysargslist$projectWF[["SYSproject"]] <- sysproj
+  sysargslist$projectWF[["logs"]] <- file_log
   return(as(sysargslist, "SYSargsList"))
 }
 
@@ -320,26 +340,74 @@ runWF <- function(sysargslist, steps = "ALL") {
 # sysargslist <- initWF(script="systemPipeRNAseq.Rmd", overwrite = T) %>%
 #   configWF( input_steps = "1:5") %>%
 #   runWF(steps = 1:2)
+# sysargslist <- renderReport(sysargslist)
+# sysargslist <- renderLogs(sysargslist)
 
 ###########################
 ## renderReport function ##
 ###########################
 ## type: c("pdf_document", "html_document")
-renderReport <- function(sysargslist, type = c("html_document")) {
+renderReport <- function(sysargslist, type = c("html_document"), silent=FALSE) {
   file <- sysargslist$sysconfig$script$path
   if (!file.exists(file) == TRUE) stop("Provide valid 'sysargslist' object. Check the initialization of the project.")
   evalCode(infile = file, eval = FALSE, output = file)
-  rmarkdown::render(input = file, c(paste0("BiocStyle::", type)))
+ # rmarkdown::render(input = file, c(paste0("BiocStyle::", type)), quiet = TRUE, envir = new.env())
+  rmarkdown::render(input = file, c(paste0(type)), quiet = TRUE, envir = new.env())
   file_path <- .getPath(file)
   file_out <- .getFileName(file)
   ext <- strsplit(basename(type), split = "\\_")[[1]][1]
   sysargslist <- as(sysargslist, "list")
   sysargslist$projectWF[["Report"]] <- normalizePath(paste0(file_path, "/", file_out, ".", ext))
+  if(silent != TRUE) cat("\t", "Written content of 'Report' to file:", paste0(file_out, ".", ext), "\n")
   return(as(sysargslist, "SYSargsList"))
 }
 
 ## Usage
 # renderReport(sysargslist)
+
+###########################
+## renderLogs function ##
+###########################
+## type: c("pdf_document", "html_document")
+renderLogs <- function(sysargslist, type = "html_document", fileName="default", silent=FALSE) {
+  file <-  projectWF(sysargslist)$logs
+  if (!file.exists(file) == TRUE) stop("Provide valid 'sysargslist' object. Check the initialization of the project.")
+  if(fileName=="default"){
+    fileName <- file.path(projectWF(sysargslist)$project, paste0("logs_", format(Sys.time(), "%b%d%Y_%H%M"),".Rmd"))
+  } else {
+    fileName <- fileName
+  }
+  log <- readLines(file)
+  writeLines(c(
+    "---",
+    "title: 'Report'",
+    paste0("date: 'Last update: ", format(Sys.time(), '%d %B, %Y'), "'"),
+    "output:",
+    paste0("  BiocStyle::", type, ":"),
+    "    toc_float: true",
+    "    code_folding: show",
+    "package: systemPipeR",
+    "fontsize: 14pt",
+    "---", 
+    log), 
+    con = fileName)
+  #rmarkdown::render(input = fileName, c(paste0("BiocStyle::", type)), quiet = TRUE, envir = new.env())
+  rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
+  file_path <- .getPath(fileName)
+  file_out <- .getFileName(fileName)
+  if(type=="html_document"){
+    ext <- "html"
+  } else {
+    ext <- "pdf"
+  }
+  sysargslist <- as(sysargslist, "list")
+  sysargslist$projectWF[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep="."))
+  if(silent != TRUE) cat("\t", "Written content of 'Report' to file:", paste(file_out, ext, sep="."), "\n")
+  return(as(sysargslist, "SYSargsList"))
+}
+
+## Usage
+# sysargslist <- renderLogs(sysargslist)
 
 ########################
 ## subsetRmd function ##
@@ -1036,30 +1104,32 @@ evalCode <- function(infile, eval = TRUE, output) {
 }
 
 #############################
-## .tryCatchSYS function ##
+## .tryCatch function ##
 #############################
-.tryCatchSYS <- function(x) {
+.tryCatch <- function(x, file=NULL) {
+  if(is.null(file)) file=tempfile()
   tryCatch(
     expr = {
-      eval(parse(text = x))
-      # message("")
+      cat("## Output", append = TRUE, file = file, "\n")
+      capture.output(out <- eval(parse(text = x), envir = globalenv()), file = file, append = TRUE)
+      message("DONE")
+      return(out)
     },
     error = function(e) {
-      message("Caught an error!")
       print(e)
+      message("ERROR")
+      return("Caught an error!")
     },
     warning = function(w) {
-      message("Caught an warning!")
       print(w)
-    },
-    finally = {
-      # message('All done, quitting.')
+      message("WARNING")
+      return("Caught an warning!")
     }
   )
 }
 
 ## Usage:
-# .tryCatchSYS(x=codeList[[1]])
+# .tryCatch(x=codeList[[1]])
 
 #############################
 ## showDT function ##
