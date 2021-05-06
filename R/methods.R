@@ -3,7 +3,7 @@
 ##################################################################
 setGeneric(name = "addAssay", def = function(x, ...) standardGeneric("addAssay"))
 setMethod(f = "addAssay", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
-  listSE <- S4Vectors::SimpleList()
+  listSE <- SimpleList()
   for (i in seq_along(assays(x))) {
     listSE[[i]] <- assays(x)[[i]]
   }
@@ -35,7 +35,7 @@ SPRdata <- function(counts = SimpleList(), rowData = NULL, rowRanges = GRangesLi
                     cmp = FALSE, targetspath = NULL, SEobj = NULL, SEobjName = "default") {
   if (is.null(SEobj)) {
     if (is.null(targetspath)) {
-      targets <- S4Vectors::DataFrame()
+      targets <- DataFrame()
     } else {
       targets <- read.delim(targetspath, comment.char = "#")
     }
