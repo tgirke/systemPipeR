@@ -193,5 +193,5 @@ export(
     "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
     "targets.as.df", "olRanges", "createWF", "evalCode", "tryPath",
     "tryCL", "SYSproject", "initProject", "initWF", "configWF", "config.param", 
-    "plotWF", "runWF", "renderReport", "showDT", "check.output"
+    "plotWF", "runWF", "renderReport", "check.output"
 )  
