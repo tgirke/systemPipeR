@@ -1,4 +1,6 @@
 changelog
+     version 1.25.15
+     	     	
      version 1.25.14
         - Clean message from `runCommandline()`
         - Fixed bug on `initWF()`
