@@ -477,7 +477,8 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
                         facet_wrap(~SampleName) + 
                         scale_y_continuous(axis_label) +
                         theme(axis.text.x=element_text(angle = -90, hjust = 0, vjust=0.4)) +
-                        coord_flip()
+                        coord_flip() +
+            scale_x_discrete(limits = unique(x$Feature))
                         
         get(graphicsformat)(graphicsfile)
             print(myplot)
@@ -513,7 +514,8 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
                              facet_wrap(~Featuretype, ncol=1, scales=scales) + 
                              theme(legend.position="bottom") +
                              theme(axis.text.x=element_text(angle=-90, hjust=0, vjust=0.4)) +
-                             ggtitle(featureCountslist[[i]][1,1])
+                             ggtitle(featureCountslist[[i]][1,1]) +
+                scale_x_discrete(limits = unique(featureCountslist[[i]]$Length))
             ## Assure same scale for all panels if scales="fixed"
             if(scales=="fixed") {
                 myplot <- myplot + scale_y_continuous(axis_label, limits=c(0, mymax)) 
@@ -890,7 +892,8 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
                          geom_bar(aes(fill=Strand), position="stack", stat="identity") + 
                          facet_wrap(~SampleName, ncol=1, scales=scales) +
                          theme(legend.position="bottom") + 
-                         ggtitle(malist[["title"]][i])
+                         ggtitle(malist[["title"]][i]) +
+            scale_x_discrete(limits = unique(malist[[names(myplotlist)[i]]]$Position))
         ## Assure same scale for all panels if scales="fixed"
         if(scales=="fixed") {
             myplot <- myplot + scale_y_continuous(axis_label, limits=c(0, mymax)) 

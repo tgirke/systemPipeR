@@ -286,7 +286,7 @@ module.Load.Unload <- function(action_type, module_name="", modulecmd_path){
           # Seprate key and value
           evar <- strsplit(as.character(evar),'=')
           # Stip spaces at the end of the value
-          evar_val <- gsub('[[:space:]]','',evar[[1]][2])
+          evar_val <- gsub("\\\\", "", gsub('[[:space:]]','',evar[[1]][2]))
           # Remove extra backslashes
           l <- list(gsub('\\$','',evar_val))
           # Load dependant modules
