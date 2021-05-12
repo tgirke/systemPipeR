@@ -1,5 +1,7 @@
 changelog
-     version 1.25.15
+     version 1.25.16
+     	- `module()` bug fix for RStudio Server
+     	- `plotfeaturetypeCounts()` and `plotfeaturetypeCounts()` --> `scale_x_discrete`
      	     	
      version 1.25.14
         - Clean message from `runCommandline()`
