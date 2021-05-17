@@ -1,4 +1,7 @@
 changelog
+     version 1.25.17
+     	- Fixed bug: 'symLink2bam()'
+     	     	
      version 1.25.16
      	- `module()` bug fix for RStudio Server
      	- `plotfeaturetypeCounts()` and `plotfeaturetypeCounts()` --> `scale_x_discrete`
