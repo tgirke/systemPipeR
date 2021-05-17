@@ -487,33 +487,30 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
 ##################################################################
 ## Function to create sym links to bam files for viewing in IGV ##
 ##################################################################
-symLink2bam <- function(sysargs, command="ln -s", htmldir, ext=c(".bam", ".bai"), urlbase, urlfile) {
+symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".bai"), urlbase, urlfile) {
   ## Create URL file
-  if(all(class(sysargs) != "SYSargs" & class(sysargs) != "SYSargs2")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  if(all(is(sysargs, "SYSargs") & is(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
   ## SYSargs class
-  if((class(sysargs)) == "SYSargs") {
+  if(is(sysargs, "SYSargs")) {
     bampaths <- outpaths(sysargs)
     symname <- SampleName(sysargs)
     ## SYSargs2 class ##
-  } else if (class(sysargs)=="SYSargs2") {
-    bampaths <- subsetWF(args = sysargs, slot = "output", subset = 1, index=1)
-    symname <- sysargs$targets[[1]][[2]]
-    for(i in seq(along=sysargs)) {
-      symname[i] <- sysargs$targets[[i]][[2]]
-    }
+  } else if (is(sysargs, "SYSargs2")) {
+    bampaths <- normalizePath(subsetWF(args = sysargs, slot = "output", subset = 1, index = 1))
+    symname <- names(targets(sysargs))
   }
-  urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep="")
+  urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep = "")
   writeLines(urls, urlfile)
   ## Creat correspoding sym links
-  dir.create(paste(htmldir, collapse=""))
-  symname <- rep(symname, each=2)
-  symname <- paste(symname, c(ext[1], paste(ext, collapse="")), sep="")
-  bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep=""))))	
-  symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse=""), symname, sep="") 
-  for(i in symcommands) system(i)
+  dir.create(paste(htmldir, collapse = ""))
+  symname <- rep(symname, each = 2)
+  symname <- paste(symname, c(ext[1], paste(ext, collapse = "")), sep = "")
+  bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep = ""))))
+  symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse = ""), symname, sep = "")
+  for (i in symcommands) system(i)
 }
-## Usage: 
-# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt") 
+## Usage:
+# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt")
 
 #####################
 ## Alignment Stats ##
