@@ -3,6 +3,7 @@ changelog
         - Clean message from `runCommandline()`
         - Fixed bug on `initWF()`
         - Fixed bug `genFeatures()`
+        - Fixed behavior `writeTargetsout()`
         
      version 1.24.5
         - Updated vignette
