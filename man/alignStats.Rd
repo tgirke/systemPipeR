@@ -9,7 +9,7 @@ total number of reads in the FASTQ files, the number of total alignments, as
 well as the number of primary alignments in the corresponding BAM files. 
 }
 \usage{
-alignStats(args, output_index = 1)
+alignStats(args, output_index = 1, subset="FileName1")
 }
 \arguments{
   \item{args}{
@@ -17,6 +17,9 @@ alignStats(args, output_index = 1)
 }
   \item{output_index}{
   A numeric index positions of the file in \code{SYSargs2} object, slot \code{output}. Default is \code{output_index=1}.
+}
+  \item{subset}{
+  \code{subset} are the variables defined in the \code{param.yml} file, for example "FileName1".
 }
 }
 \value{

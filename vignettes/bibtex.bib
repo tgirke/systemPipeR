@@ -438,6 +438,192 @@ file import},
     note = {R package version 2.0.0},
     url = {http://bioconductor.org/packages/Rsamtools},
 }
+@ARTICLE{Anders2010-tp,
+  title    = "Differential expression analysis for sequence count data",
+  author   = "Anders, Simon and Huber, Wolfgang",
+  abstract = "High-throughput sequencing assays such as RNA-Seq, ChIP-Seq or
+              barcode counting provide quantitative readouts in the form of
+              count data. To infer differential signal in such data correctly
+              and with good statistical power, estimation of data variability
+              throughout the dynamic range and a suitable error model are
+              required. We propose a method based on the negative binomial
+              distribution, with variance and mean linked by local regression
+              and present an implementation, DESeq, as an R/Bioconductor
+              package.",
+  journal  = "Genome Biol.",
+  volume   =  11,
+  number   =  10,
+  pages    = "R106",
+  month    =  oct,
+  year     =  2010,
+  language = "en"
+}
+@ARTICLE{Martin2011-bh,
+  title    = "Cutadapt removes adapter sequences from high-throughput
+              sequencing reads",
+  author   = "Martin, Marcel",
+  abstract = "When small RNA is sequenced on current sequencing machines, the
+              resulting reads are usually longer than the RNA and therefore
+              contain parts of the 3' adapter. That adapter must be found and
+              removed error-tolerantly from each read before read mapping.
+              Previous solutions are either hard to use or do not offer
+              required features, in particular support for color space data. As
+              an easy to use alternative, we developed the command-line tool
+              cutadapt, which supports 454, Illumina and SOLiD (color space)
+              data, offers two adapter trimming algorithms, and has other
+              useful features. Cutadapt, including its MIT-licensed source
+              code, is available for download at
+              http://code.google.com/p/cutadapt/",
+  journal  = "EMBnet.journal",
+  volume   =  17,
+  number   =  1,
+  pages    = "10--12",
+  month    =  may,
+  year     =  2011,
+  keywords = "next generation sequencing; small RNA; microRNA; adapter removal",
+  language = "en"
+}
+
+@ARTICLE{Bolger2014-yr,
+  title    = "Trimmomatic: a flexible trimmer for Illumina sequence data",
+  author   = "Bolger, Anthony M and Lohse, Marc and Usadel, Bjoern",
+  abstract = "MOTIVATION: Although many next-generation sequencing (NGS) read
+              preprocessing tools already existed, we could not find any tool
+              or combination of tools that met our requirements in terms of
+              flexibility, correct handling of paired-end data and high
+              performance. We have developed Trimmomatic as a more flexible and
+              efficient preprocessing tool, which could correctly handle
+              paired-end data. RESULTS: The value of NGS read preprocessing is
+              demonstrated for both reference-based and reference-free tasks.
+              Trimmomatic is shown to produce output that is at least
+              competitive with, and in many cases superior to, that produced by
+              other tools, in all scenarios tested. AVAILABILITY AND
+              IMPLEMENTATION: Trimmomatic is licensed under GPL V3. It is
+              cross-platform (Java 1.5+ required) and available at
+              http://www.usadellab.org/cms/index.php?page=trimmomatic CONTACT:
+              usadel@bio1.rwth-aachen.de SUPPLEMENTARY INFORMATION:
+              Supplementary data are available at Bioinformatics online.",
+  journal  = "Bioinformatics",
+  volume   =  30,
+  number   =  15,
+  pages    = "2114--2120",
+  month    =  aug,
+  year     =  2014,
+  language = "en"
+}
+
+% The entry below contains non-ASCII chars that could not be converted
+% to a LaTeX equivalent.
+@ARTICLE{Ziemann2016-mp,
+  title    = "Evaluation of {microRNA} alignment techniques",
+  author   = "Ziemann, Mark and Kaspi, Antony and El-Osta, Assam",
+  abstract = "Genomic alignment of small RNA (smRNA) sequences such as
+              microRNAs poses considerable challenges due to their short length
+              (∼21 nucleotides [nt]) as well as the large size and complexity
+              of plant and animal genomes. While several tools have been
+              developed for high-throughput mapping of longer mRNA-seq reads
+              (>30 nt), there are few that are specifically designed for
+              mapping of smRNA reads including microRNAs. The accuracy of these
+              mappers has not been systematically determined in the case of
+              smRNA-seq. In addition, it is unknown whether these aligners
+              accurately map smRNA reads containing sequence errors and
+              polymorphisms. By using simulated read sets, we determine the
+              alignment sensitivity and accuracy of 16 short-read mappers and
+              quantify their robustness to mismatches, indels, and nontemplated
+              nucleotide additions. These were explored in the context of a
+              plant genome (Oryza sativa, ∼500 Mbp) and a mammalian genome
+              (Homo sapiens, ∼3.1 Gbp). Analysis of simulated and real
+              smRNA-seq data demonstrates that mapper selection impacts
+              differential expression results and interpretation. These results
+              will inform on best practice for smRNA mapping and enable more
+              accurate smRNA detection and quantification of expression and RNA
+              editing.",
+  journal  = "RNA",
+  volume   =  22,
+  number   =  8,
+  pages    = "1120--1138",
+  month    =  aug,
+  year     =  2016,
+  keywords = "gene expression; microRNA; next-generation sequencing; short-read
+              aligners; small RNA sequencing",
+  language = "en"
+}
+
+@ARTICLE{Li2009-ys,
+  title    = "Fast and accurate short read alignment with {Burrows-Wheeler}
+              transform",
+  author   = "Li, Heng and Durbin, Richard",
+  abstract = "MOTIVATION: The enormous amount of short reads generated by the
+              new DNA sequencing technologies call for the development of fast
+              and accurate read alignment programs. A first generation of hash
+              table-based methods has been developed, including MAQ, which is
+              accurate, feature rich and fast enough to align short reads from
+              a single individual. However, MAQ does not support gapped
+              alignment for single-end reads, which makes it unsuitable for
+              alignment of longer reads where indels may occur frequently. The
+              speed of MAQ is also a concern when the alignment is scaled up to
+              the resequencing of hundreds of individuals. RESULTS: We
+              implemented Burrows-Wheeler Alignment tool (BWA), a new read
+              alignment package that is based on backward search with
+              Burrows-Wheeler Transform (BWT), to efficiently align short
+              sequencing reads against a large reference sequence such as the
+              human genome, allowing mismatches and gaps. BWA supports both
+              base space reads, e.g. from Illumina sequencing machines, and
+              color space reads from AB SOLiD machines. Evaluations on both
+              simulated and real data suggest that BWA is approximately 10-20x
+              faster than MAQ, while achieving similar accuracy. In addition,
+              BWA outputs alignment in the new standard SAM (Sequence
+              Alignment/Map) format. Variant calling and other downstream
+              analyses after the alignment can be achieved with the open source
+              SAMtools software package. AVAILABILITY:
+              http://maq.sourceforge.net.",
+  journal  = "Bioinformatics",
+  volume   =  25,
+  number   =  14,
+  pages    = "1754--1760",
+  month    =  jul,
+  year     =  2009,
+  language = "en"
+}
+
+@ARTICLE{Tam2015-gb,
+  title    = "Optimization of {miRNA-seq} data preprocessing",
+  author   = "Tam, Shirley and Tsao, Ming-Sound and McPherson, John D",
+  abstract = "The past two decades of microRNA (miRNA) research has solidified
+              the role of these small non-coding RNAs as key regulators of many
+              biological processes and promising biomarkers for disease. The
+              concurrent development in high-throughput profiling technology
+              has further advanced our understanding of the impact of their
+              dysregulation on a global scale. Currently, next-generation
+              sequencing is the platform of choice for the discovery and
+              quantification of miRNAs. Despite this, there is no clear
+              consensus on how the data should be preprocessed before
+              conducting downstream analyses. Often overlooked, data
+              preprocessing is an essential step in data analysis: the presence
+              of unreliable features and noise can affect the conclusions drawn
+              from downstream analyses. Using a spike-in dilution study, we
+              evaluated the effects of several general-purpose aligners (BWA,
+              Bowtie, Bowtie 2 and Novoalign), and normalization methods
+              (counts-per-million, total count scaling, upper quartile scaling,
+              Trimmed Mean of M, DESeq, linear regression, cyclic loess and
+              quantile) with respect to the final miRNA count data
+              distribution, variance, bias and accuracy of differential
+              expression analysis. We make practical recommendations on the
+              optimal preprocessing methods for the extraction and
+              interpretation of miRNA count data from small RNA-sequencing
+              experiments.",
+  journal  = "Brief. Bioinform.",
+  volume   =  16,
+  number   =  6,
+  pages    = "950--963",
+  month    =  nov,
+  year     =  2015,
+  keywords = "data preprocessing; miRNA sequencing; miRNA-seq normalization;
+              small RNA sequence alignment",
+  language = "en"
+}
+
+
 
 
 

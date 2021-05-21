@@ -83,7 +83,7 @@ unlist(feat)
 ## Sample from systemPipeRdata package
 file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
 txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
-feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE, upstream=1000, downstream=0)
+feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0)
 }
 }
 \keyword{ utilities }

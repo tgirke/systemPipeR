@@ -12,20 +12,26 @@ on this topic and how to properly run \code{DESeq2} on data sets with more
 complex experimental designs.
 }
 \usage{
-run_DESeq2(countDF, targets, cmp, independent = FALSE)
+run_DESeq2(countDF, targets, cmp, independent = FALSE, lfcShrink=FALSE, type="normal")
 }
 \arguments{
   \item{countDF}{
-\code{date.frame} containing raw read counts
+    \code{date.frame} containing raw read counts
 }
   \item{targets}{
-	targets \code{data.frame}
+    targets \code{data.frame}
 }
   \item{cmp}{
-	\code{character matrix} where comparisons are defined in two columns. This matrix should be generated with the \code{readComp()} function from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
+    \code{character matrix} where comparisons are defined in two columns. This matrix should be generated with the \code{readComp()} function from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
 }
   \item{independent}{
-	If \code{independent=TRUE} then the \code{countDF} will be subsetted for each comparison. This behavior can be useful when working with samples from unrelated studies. For samples from the same or comparable studies, the setting \code{independent=FALSE} is usually preferred.
+    If \code{independent=TRUE} then the \code{countDF} will be subsetted for each comparison. This behavior can be useful when working with samples from unrelated studies. For samples from the same or comparable studies, the setting \code{independent=FALSE} is usually preferred.
+}
+  \item{lfcShrink}{
+  logiacal. If \code{TRUE} adds shrunken log2 fold changes (LFC) to the object.
+}
+  \item{type}{
+   please check \code{\link[DESeq2:lfcShrink]{DESeq2::lfcShrink()}} documentation. Available \code{character} alternatives: "apeglm"; "ashr"; "normal".
 }
 }
 \value{

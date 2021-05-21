@@ -1,24 +1,54 @@
 ## IMPORTS
 import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, 
        Biostrings, ShortRead, ggplot2, limma, edgeR, GOstats, GO.db, annotate,
-       pheatmap, batchtools, methods, yaml, VariantAnnotation)
-importFrom("assertthat", "assert_that", "not_empty", "is.count", "is.writeable")
-importFrom("stringr", "str_which", "str_remove", "str_extract", "str_replace_all", 
-           "str_replace", "str_remove_all", "str_split")
-importFrom("grDevices", "dev.off", "pdf")
-importFrom("graphics", "boxplot", "close.screen", "screen", "split.screen", "symbols", "text")
-importFrom("stats", "aggregate", "model.matrix", "na.omit", "phyper", "setNames")
-importFrom("utils", "capture.output", "combn", "read.delim", "write.table")
-importFrom("magrittr","%>%")
+       pheatmap, batchtools, methods, VariantAnnotation)
+importFrom("assertthat", "assert_that")
+importFrom("assertthat", "is.count")
+importFrom("assertthat", "is.writeable")
+importFrom("assertthat", "not_empty")
 importFrom("DOT", "dot")
-importFrom("rsvg","rsvg_svg", "rsvg_png")
+importFrom("graphics", "boxplot")
+importFrom("graphics", "close.screen")
+importFrom("graphics", "screen")
+importFrom("graphics", "split.screen")
+importFrom("graphics", "symbols")
+importFrom("graphics", "text")
+importFrom("grDevices", "dev.off")
+importFrom("grDevices", "pdf")
+importFrom("grid", "grid.layout")
+importFrom("grid", "grid.newpage")
+importFrom("grid", "pushViewport")
+importFrom("grid", "viewport")
 importFrom("IRanges", "IRanges")
-importFrom("grid", "grid.newpage", "pushViewport", "viewport", "grid.layout")
+importFrom("IRanges", "subsetByOverlaps")
+importFrom("magrittr", "%>%")
+importFrom("rsvg", "rsvg_png")
+importFrom("rsvg", "rsvg_svg")
+importFrom("stats", "aggregate")
+importFrom("stats", "model.matrix")
+importFrom("stats", "na.omit")
+importFrom("stats", "phyper")
+importFrom("stats", "setNames")
+importFrom("stringr", "str_extract")
+importFrom("stringr", "str_remove_all")
+importFrom("stringr", "str_remove")
+importFrom("stringr", "str_replace_all")
+importFrom("stringr", "str_replace")
+importFrom("stringr", "str_split")
+importFrom("stringr", "str_which")
+importFrom("utils", "capture.output")
+importFrom("utils", "combn")
+importFrom("utils", "packageVersion")
+importFrom("utils", "read.delim")
+importFrom("utils", "write.table")
+importFrom("yaml", "as.yaml")
+importFrom("yaml", "read_yaml")
+importFrom("yaml", "write_yaml")
+importFrom("yaml", "yaml.load")
 
 ## S4 Classes
 exportClasses(
-    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargs2Pipe", 
-    "SYSargsList"
+    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargsList"
 )
 
 ## Methods
@@ -28,18 +58,16 @@ exportMethods(
     "sysargs", "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
     "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
     "as.list", "[[", "[[<-", "$", "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
-    "sysargs2", "targets", "wf", "yamlinput", "SYSargs2Pipe_ls", "WF_steps", "track", "summaryWF",
-    "sysconfig", "codeSteps", "stepsWF", "dataWF", "SYSargs2_steps", "statusWF", "projectWF", "sysargslist"
+    "sysargs2", "targets", "wf", "yamlinput", "sysconfig", "codeSteps", "stepsWF", "dataWF",
+    "SYSargs2_steps", "statusWF", "projectWF", "sysargslist"
 )
 
 ## Functions
 # exportPattern("^[[:alpha:]]+")
 export(
     ## Data sets
-
     ## Import/exports
     "readComp", "writeTargetsout", "writeTargetsRef", "mergeBamByFactor",
-
     ## Utilities
     "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
@@ -51,7 +79,7 @@ export(
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
     "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
-    "targets.as.df", "run_track", "olRanges", "createWF", "evalCode", "tryPath",
+    "targets.as.df", "olRanges", "createWF", "evalCode", "tryPath",
     "tryCL", "SYSproject", "initProject", "initWF", "configWF", "config.param", 
-    "plotWF", "runWF", "renderReport"
+    "plotWF", "runWF", "renderReport", "check.output"
 )  

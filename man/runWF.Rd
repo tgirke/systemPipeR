@@ -7,7 +7,7 @@ Execute SYSargsList
 Function to execute all the code list specified in SYSargsList object.
 }
 \usage{
-runWF(sysargslist, steps = "ALL")
+runWF(sysargslist, steps = "ALL", warning.stop=FALSE, error.stop=TRUE, silent=FALSE)
 }
 \arguments{
   \item{sysargslist}{
@@ -23,6 +23,15 @@ runWF(sysargslist, steps = "ALL")
   	in a unique step. It is recommended to put major steps in input_steps, like 1:4, 6:8, 10; 
   	and unwanted sub-steps in exclude_step, like 1.1, 3.1.1-3.1.3, 6.5. Reverse selecting 
   	is supported e.g. 10:1.
+}
+  \item{warning.stop}{
+If set to \code{TRUE}, the process will be interrupted when a warning is detected.
+}
+  \item{error.stop}{
+If set to \code{TRUE}, the process will be interrupted when a error is detected.
+}
+  \item{silent}{
+If set to \code{TRUE}, all messages returned by the function will be suppressed.
 }
 }
 \value{

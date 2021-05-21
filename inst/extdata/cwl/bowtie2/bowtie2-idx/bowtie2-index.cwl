@@ -5,7 +5,7 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml): Fast and sensitive read alignment"
-label: Last updated 09/2019
+label: Last updated 02/2020
 hints:
   SoftwareRequirement:
     packages:
@@ -42,24 +42,24 @@ outputs:
   index_files1:
     type: File
     outputBinding:
-      glob: $(inputs.idx_basedir.path)/tair10.fasta.1.bt2
+      glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename.path).1.bt2
   index_files2:
     type: File
     outputBinding:
-      glob: $(inputs.idx_basedir.path)/tair10.fasta.2.bt2
+      glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename.path).2.bt2
   index_files3:
     type: File
     outputBinding:
-      glob: $(inputs.idx_basedir.path)/tair10.fasta.3.bt2
+      glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename.path).3.bt2
   index_files4:
     type: File
     outputBinding:
-      glob: $(inputs.idx_basedir.path)/tair10.fasta.4.bt2
+      glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename.path).4.bt2
   index_files5:
     type: File
     outputBinding:
-      glob: $(inputs.idx_basedir.path)/tair10.fasta.rev.1.bt2
+      glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename.path).rev.1.bt2
   index_files6:
     type: File
     outputBinding:
-      glob: $(inputs.idx_basedir.path)/tair10.fasta.rev.2.bt2
+      glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename.path).rev.2.bt2

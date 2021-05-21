@@ -1,4 +1,86 @@
 changelog
+     version 1.27.1
+     	- Added unittest 
+     	- 
+     	     	
+     version 1.25.17
+     	- Fixed bug: 'symLink2bam()'
+     	     	
+     version 1.25.16
+     	- `module()` bug fix for RStudio Server
+     	- `plotfeaturetypeCounts()` and `plotfeaturetypeCounts()` --> `scale_x_discrete`
+     	     	
+     version 1.25.14
+        - Clean message from `runCommandline()`
+        - Fixed bug on `initWF()`
+        - Updated Vignette
+        - Printing message for `createWF()`
+        - upgrade `runWF()`
+     	     	
+     version 1.25.13
+     	- Fixed `GO.db` dependency
+     	
+     version 1.25.12
+     	- Fixed .Rbuildignore
+     	
+     version 1.25.11
+     	- Added "cwl/*" files:
+		- BUSCO/*
+		- blast/*
+		- bowtie2/bowtie2-mi/*
+		- bwa/bwa-aln/*
+		- bwa/bwa-mem-pe/*
+		- bwa/bwa-mem-se/*
+		- bwa/bwa-samse/*
+		- cutadapt/*
+		- fastqc/*
+		- fastx_toolkit/*
+		- gunzip/*
+		- kallisto/*
+		- picard/*
+		- star/*
+		- workflow-bwa-aln/*
+
+     version 1.25.10
+        - `moduleload` updated help file
+        - Added `check.output` function
+        - Fixed `renderWF` fct (`.renderWFsingle`) to accept stdout
+        - `tryCL` deals with `fastqc` commandline test
+        - Added `lfcShrink` option to `run_DESeq2` function
+        - Allow `alignStats` fct accepts different `subset="FileName1"` from targets
+        
+     version 1.25.9
+        - Added print behavior to `write.cwl` and `write.yml`
+        - Fixed bug `genFeatures()`
+        - Vignette update
+        
+     version 1.25.8
+        - Reducing package dependency
+        - Reducing 'Undefined global functions or variables'
+        
+     version 1.25.7
+        - Updated URL
+        - Organized functions files: "SYSargsList and SYSargs2" classes --> R/AllClasses2.R
+        - Removed 'SYSargs2Pipe-class'
+        
+     version 1.25.6
+        - Function wrapper showDT(DT::datatable)
+        - Fixed bug: 'symLink2bam()'
+        - Vignette update
+        
+     version 1.25.5
+        - Updating 'renderWF' and 'config.param' functions
+        
+     version 1.25.4
+        - Help file update in 'creadWF.Rd'
+        
+     version 1.25.3
+        - Adding new Methods: 'addAssay' and 'addMetadata': Extension accessor for SummarizedExperiment object 
+        - Adding New function: 'SPRdata()'
+        
+     version 1.25.2
+        - NAMESPACE
+        
      version 1.25.1
         - Version bump
         

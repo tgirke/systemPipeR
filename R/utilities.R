@@ -5,7 +5,8 @@
 ######################################################
 ## Convenience write function for targetsout(args) ##
 ######################################################
-writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL, new_col_output_index=NULL, ...) {
+writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col=NULL,
+                             new_col_output_index=NULL, remove=FALSE, ...) {
   if(all(class(x) != "SYSargs" & class(x) != "SYSargs2")) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
   ## SYSargs class
   if(class(x) == "SYSargs") {
@@ -30,13 +31,16 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
       stop(paste("Argument 'step' can only be assigned one of the following position:", 
                  paste(seq_along(names(x$clt)), collapse = ", "), "OR the corresponding names"))
     targets <- targets.as.df(targets(x))
-    ## Adding the collums
+    if(remove==TRUE){
+      targets <- targets[,-c(which(grepl("FileName", colnames(targets))))]
+    }
+    ## Adding the columns
     if ((!is.null(new_col) & is.null(new_col_output_index)) | 
         (is.null(new_col) & !is.null(new_col_output_index)) |
         (is.null(new_col) & is.null(new_col_output_index))){
       cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
       for (i in seq_len(length(output(x)[[1]][[step]]))){
-        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[i]]), simplify = F)
+        pout <- sapply(names(output(x)), function(y) output(x)[[y]][[step]][[i]], simplify = FALSE)
         targets[[paste0(cwlfiles(x)$steps, "_", i)]] = as.character(pout)
       }
     } else if(!is.null(new_col) & !is.null(new_col_output_index)){
@@ -47,7 +51,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
         stop("'new_col' should have the same length as 'new_col_output_index'")
       }
       for(i in seq_along(new_col)){
-        pout <- sapply(names(output(x)), function(y) normalizePath(output(x)[[y]][[step]][[new_col_output_index[i]]]), simplify = F)
+        pout <- sapply(names(output(x)), function(y) output(x)[[y]][[step]][[new_col_output_index[i]]], simplify = FALSE)
         targets[[as.character(new_col[i])]] = as.character(pout)
       }
     }
@@ -67,11 +71,13 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
     headerlines <- targetsheader(x)[[1]]
   }
   if(file.exists(file) & overwrite == FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
+  names <- c(new_col,  colnames(targets[, -c(which(grepl(paste(new_col,collapse="|"), colnames(targets))))]))
+  targets <- cbind(targets[, new_col], targets[, -c(which(grepl(paste(new_col,collapse="|"), colnames(targets))))])
+  colnames(targets) <- names
   targetslines <- c(paste(colnames(targets), collapse = "\t"), apply(targets, 1, paste, collapse = "\t"))
   writeLines(c(headerlines, targetslines), file, ...)
   if(silent != TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
 }
-
 ## Usage:
 # writeTargetsout(x=args, file="default") ## SYSargs class
 # writeTargetsout(x=WF, file="default", step=1, new_col = "FileName1", new_col_output_index = 1) ## SYSargs2 class
@@ -81,7 +87,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
   ## Validation for 'args'
-  if(any(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
+  if(any(is(args)!="SYSargs" & is(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
   ## Environment Modules section
   if(any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
     ## Check if "Environment Modules" is in the PATH
@@ -89,39 +95,42 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
         silent=TRUE)
     ## "Environment Modules" is not available
     if(length(modulecmd_path) == 0 ) {
-      message("Message: 'Environment Modules is not available. Please make sure to configure your PATH environment variable according to the software in use.'", "\n")
+      dump <- "do nothing"
       ## "Environment Modules" is available and proceed the module load
-      } else if (length(modulecmd_path) > 0) {
-        for(j in modules(args)) moduleload(j) # loads specified software from module system
+    } else if (length(modulecmd_path) > 0) {
+      for(j in modules(args)) moduleload(j) # loads specified software from module system
     }
   }
   ## SYSargs class ##
   if(class(args)=="SYSargs") {
-    #TODO: Should we add a message here for the old param?
     .sysargsrunCommandline(args=args, runid=runid, make_bam=make_bam, del_sam=del_sam)
   } else if(class(args)=="SYSargs2") {
-  ## SYSargs2 class ##
+    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) stop("Results PATH defined at `yamlinput(args)` is required to be created.")
+    ## SYSargs2 class ##
     ## Workflow Name (Workflow OR CommandLineTool class)
     cwl.wf <- strsplit(basename(cwlfiles(args)$cwl), split="\\.")[[1]][1]
+    ## Check if expected files exists or not
+    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name)
+    args.return <- return$args
+    completed <- return$completed
+    ## Check if one sample/commandline expects one or more output files
+    outputList <- unlist((output(args)))
+    names(outputList) <- rep(names(output(args)), each=sum(lengths(output(args)[[1]])))
     ## Folder name provide in the yml file or in the dir.name
-    if(is.null(args$yamlinput$results_path$path)) {
+    if(is.null(yamlinput(args)$results_path$path)) {
       if(is.null(dir.name)) {
         stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
       }
     }
     if(is.null(dir.name)) {
-      logdir <- normalizePath(args$yamlinput$results_path$path)
+      logdir <- normalizePath(yamlinput(args)$results_path$path)
+      dir.name <- cwl.wf
     } else {
       logdir <- paste(getwd(), "/results/", sep="")
-      ## if results doesnt exists, create
     }
-    ## Check if expected files exists or not
-    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name)
-    args.return <- return$args
-    completed <- return$completed
-    # Check if one sample/commandline expects one or more output files
-    outputList <- unlist((args$output))
-    names(outputList) <- rep(names(output(args)), each=sum(lengths(args$output[[1]])))
+    ## Create log files
+    file_cmdlist <- file.path(logdir, paste0("submitargs", runid, "_", cwl.wf, "_cmd_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
+    file_log <- file.path(logdir, paste0("submitargs", runid, "_", cwl.wf, "_log_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
     for(i in seq_along(cmdlist(args))){
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
@@ -129,7 +138,7 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
           next()
         } else {
           # Create soubmitargsID_command file
-          cat(cmdlist(args)[[i]][[j]], file=paste(logdir, "/submitargs", runid, "_", cwl.wf, sep=""), fill=TRUE, labels=paste0(names(cmdlist(args))[[i]], ":"), append=TRUE)
+          cat(cmdlist(args)[[i]][[j]], file=file_cmdlist, fill=TRUE, labels=paste0(names(cmdlist(args))[[i]], ":"), append=TRUE)
           ## Create an object for executable
           command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
           commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
@@ -137,6 +146,8 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
           if(!command == c("bash")){ 
             tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
           }
+          ## Printing sample name
+          print(paste0("Running `cmdlist` for ", names(cmdlist(args)[i])))
           ## Run executable
           if(command %in% "bwa") {
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
@@ -148,14 +159,13 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
             stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
           }
           ## Create submitargsID_stdout file
-          cat(cmdlist(args)[[i]][[j]], file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), fill=TRUE, labels=paste0(names(cmdlist(args))[[i]], ":"), sep = "\n", append=TRUE)
-          cat(unlist(stdout), file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), sep = "\n", append=TRUE)
+          cat(unlist(stdout), file=file_log, sep = "\n", append=TRUE)
         }
-        cat("################", file=paste(logdir, "/submitargs", runid, "_", cwl.wf, "_log", sep=""), sep = "\n", append=TRUE)
+        cat("################", file=file_log, sep = "\n", append=TRUE)
         ## converting sam to bam using Rsamtools package
-       .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
+        .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
-      }
+    }
     ## Create recursive the subfolders
     if(dir==TRUE){
       if(!is.null(dir.name)){
@@ -168,32 +178,29 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
       }
       if(dir.exists(paste0(logdir, "/", cwl.wf, "/_logs/"))==FALSE){
         dir.create(paste0(logdir, "/", cwl.wf, "/_logs/"), recursive = TRUE) }
-      # 
-      files_log <- list.files(path=logdir, pattern = "submitargs")
-      for(i in seq_along(files_log)){
-        file.rename(from=paste0(logdir, "/", files_log[i]), to=paste0(logdir, "/", cwl.wf, "/_logs/", files_log[i]))
+      ## 
+      log <- c(file_cmdlist, file_log)
+      for(i in seq_along(log)){
+        file.rename(from=log[i], to=paste0(logdir, "/", cwl.wf, "/_logs/", basename(log[i])))
       }
+      if(make_bam==TRUE) args.return <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, dir.name=dir.name)$args
       outputList_new <- as.character()
-      for(i in seq_along(outputList)){
-        if(file.exists(outputList[i])){
-          name <- strsplit(outputList[i], split="\\/")[[1]]
-          name <- name[length(name)]
-          file.rename(from=outputList[i], to=paste0(logdir, "/", cwl.wf, "/", names(outputList[i]), "/", name))
-          outputList_new <- c(outputList_new, paste0(logdir, "/", cwl.wf, "/", names(outputList[i]), "/", name))
-        } else if(file.exists(outputList[i])==FALSE){
-          dump <- "No such file or directory"
-        }
-      }
-      outputList <- outputList_new
-      args.return <- output_update(args.return, dir=TRUE, replace=FALSE)
+      for(i in seq_along(output(args.return))){
+        for(j in seq_along(output(args.return)[[i]][[1]])){
+          if(file.exists(output(args.return)[[i]][[1]][j])){
+            name <- strsplit(output(args.return)[[i]][[1]][j], split="\\/")[[1]]
+            name <- name[length(name)]
+            file.rename(from=output(args.return)[[i]][[1]][j], to=paste0(logdir, "/", cwl.wf, "/", names(output(args.return)[i]), "/", name))
+            outputList_new <- c(outputList_new, paste0(logdir, "/", cwl.wf, "/", names(output(args.return)[i]), "/", name))
+          } else if(file.exists(output(args.return)[[i]][[1]][j])){
+            dump <- "No such file or directory"
+          }
+        }}
+      args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
-    output_completed <- as.character()
-    for(i in seq_along(outputList)){
-      output_completed[i] <- file.exists(outputList[i])
-    }
-    names(output_completed) <- outputList
-    cat("Missing expected outputs files:", sum(!as.logical(output_completed)), "\n"); cat("Existing expected outputs files:", sum(as.logical(output_completed)), "\n")
-    print(output_completed)
+    cat("Missing expected outputs files:", sum(!as.logical(check.output(args.return))), "\n"); cat("Existing expected outputs files:", 
+                                                                                                   sum(as.logical(check.output(args.return))), "\n")
+    print(check.output(args.return))
     return(args.return)
   }
 }
@@ -201,6 +208,20 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
 # WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder
 # WF <- runCommandline(WF, dir=TRUE) # creates the files in the ./results/workflowName/Samplename folder
 # WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE) ## For hisat2-mapping.cwl template
+
+###############################################################
+## Subsetting the input and output slots by name or position ##
+###############################################################
+check.output <- function(args, subset=1, index=1){
+  ## Check the class and slot
+  if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")  
+  check <- subsetWF(args, slot="output", subset=subset, index=index, delete=FALSE)
+  exists <- file.exists(check)
+  names(exists) <- names(check)
+  return(exists)
+}
+## Usage:
+# check.output(WF)
 
 ###########################################################################
 ## .makeBam function: internal function to convert *.sam to *.bam file ##
@@ -240,6 +261,16 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
 ## if the expectedoutput has been created  ##
 ########################################################
 .checkOutArgs2 <- function(args, make_bam, dir, dir.name){
+  suppressWarnings({
+    if(dir==TRUE){
+      if(!is.null(dir.name)){
+        if(!file.exists(normalizePath(file.path(yamlinput(args)$results_path$path, dir.name)))) {
+          dir.create(normalizePath(file.path(yamlinput(args)$results_path$path, dir.name)), recursive = TRUE)
+        }
+        
+      } 
+    }
+  })
   if(make_bam==TRUE) {
     ## Validation for Hisat2
     if(any(grepl("samtools", names(clt(args))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'")}
@@ -264,6 +295,8 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
 ## .sysargsrunCommandline function: Old version of runCommandline accepts SYSargs class ##
 ##########################################################################################
 .sysargsrunCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, ...) {
+  message("This method is using the previus version of SYSargs workflow control modules.
+          Please check the new version SYSargs2.")
   commands <- sysargs(args)
   completed <- file.exists(outpaths(args))
   names(completed) <- outpaths(args)
@@ -323,71 +356,71 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
 ## batchtools-based function to submit runCommandline jobs to queuing system of a cluster ##
 ############################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
-clusterRun <- function(args, FUN = runCommandline, more.args=list(args=args, make_bam=TRUE), conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
+clusterRun <- function(args, FUN = runCommandline, more.args = list(args = args, make_bam = TRUE), conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
   ## Validity checks of inputs
-  if(any(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
-  if(class(FUN)!="function") stop("Value assigned to 'FUN' argument is not an object of class function.")
-  if(!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html. Note: in this file *.tmpl needs to point to a valid template file.")
-  if(!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
-  if(!class(more.args)=="list") stop("'more.args' needs to be object of class 'list'.")    
-  if(any(!names(more.args) %in% names(as.list(formals(FUN))))) stop(paste("The list of arguments assigned to 'more.args' can only be the following arguments defined in the function 'FUN':", paste(names(as.list(formals(FUN))), collapse=", "))) 
+  if (any(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
+  if (class(FUN) != "function") stop("Value assigned to 'FUN' argument is not an object of class function.")
+  if (!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html. Note: in this file *.tmpl needs to point to a valid template file.")
+  if (!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
+  if (!class(more.args) == "list") stop("'more.args' needs to be object of class 'list'.")
+  if (any(!names(more.args) %in% names(as.list(formals(FUN))))) stop(paste("The list of arguments assigned to 'more.args' can only be the following arguments defined in the function 'FUN':", paste(names(as.list(formals(FUN))), collapse = ", ")))
   ## SYSargs class
-  if(class(args)=="SYSargs") {
+  if (class(args) == "SYSargs") {
     path <- normalizePath(results(args))
     args.f <- seq(along = args)
     ## SYSargs2 class
-  } else if (class(args)=="SYSargs2") {
+  } else if (class(args) == "SYSargs2") {
     path <- normalizePath(args$yamlinput$results_path$path)
-    args.f <- seq(along=cmdlist(args))
+    args.f <- seq(along = cmdlist(args))
   }
   ## batchtools routines
-  f <- function(i, args, ...) FUN(args=args[i], ...)
+  f <- function(i, args, ...) FUN(args = args[i], ...)
   logdir1 <- paste0(path, "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
   reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-  ids <- batchMap(fun = f, args.f, more.args = more.args, reg=reg)
+  ids <- batchMap(fun = f, args.f, more.args = more.args, reg = reg)
   chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
   ids$chunk <- chunk
-  done <- submitJobs(ids=ids, reg=reg, resources = resourceList)
+  done <- submitJobs(ids = ids, reg = reg, resources = resourceList)
   return(reg)
 }
-## Usage: 
-# resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
+## Usage:
+# resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
 # reg <- clusterRun(args, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
-# getStatus(reg=reg)  
+# getStatus(reg=reg)
 # waitForJobs(reg=reg)
 
 ########################
 ## Read preprocessing ##
 ########################
-preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
-  if(all(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
-  if(class(Fct)!="character") stop("Argument 'Fct' needs to be of class character")
-  if(class(args)=="SYSargs"){
-    colnames_args <- colnames(targetsout(args)) #SYSargs
-    outpaths <- outpaths(args) #SYSargs 
+preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...) {
+  if (all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  if (class(Fct) != "character") stop("Argument 'Fct' needs to be of class character")
+  if (class(args) == "SYSargs") {
+    colnames_args <- colnames(targetsout(args)) # SYSargs
+    outpaths <- outpaths(args) # SYSargs
     targets_in <- targetsin(args)
-  } else if (class(args)=="SYSargs2") {
-    colnames_args <- colnames(targets.as.df(args$targets)) #SYSargs2
-    outpaths <- subsetWF(args = args, slot = "output", subset = 1, index=1)
+  } else if (class(args) == "SYSargs2") {
+    colnames_args <- colnames(targets.as.df(args$targets)) # SYSargs2
+    outpaths <- subsetWF(args = args, slot = "output", subset = 1, index = 1)
     targets_in <- targets.as.df(args$targets)
   }
   ## Run function in loop over all fastq files
   ## Single end fastq files
-  if(!all(c("FileName1", "FileName2") %in% colnames_args)) {
-    for(i in seq(along=args)) {
+  if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
+    for (i in seq(along = args)) {
       outfile <- outpaths[i]
       ## Delete existing fastq files with same names, since writeFastq will append to them
-      if(overwrite==TRUE) {
-        if(any(file.exists(outfile))) unlink(outfile)
+      if (overwrite == TRUE) {
+        if (any(file.exists(outfile))) unlink(outfile)
       } else {
-        if(any(file.exists(outfile))) stop(paste("File", outfile , "exists. Please delete file first or set overwrite=TRUE."))
+        if (any(file.exists(outfile))) stop(paste("File", outfile, "exists. Please delete file first or set overwrite=TRUE."))
       }
       ## Run preprocessor function with FastqStreamer
       counter <- 0
       f <- FastqStreamer(infile1(args)[i], batchsize)
-      while(length(fq <- yield(f))) {
-        fqtrim <- eval(parse(text=Fct))
-        writeFastq(fqtrim, outfile, mode="a", ...)
+      while (length(fq <- yield(f))) {
+        fqtrim <- eval(parse(text = Fct))
+        writeFastq(fqtrim, outfile, mode = "a", ...)
         counter <- counter + length(fqtrim)
         cat(counter, "processed reads written to file:", outfile, "\n")
       }
@@ -395,52 +428,52 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
     }
   }
   ## Paired end fastq files
-  if(all(c("FileName1", "FileName2") %in% colnames_args)) {
-    for(i in seq(along=args)) {
+  if (all(c("FileName1", "FileName2") %in% colnames_args)) {
+    for (i in seq(along = args)) {
       p1 <- as.character(targets_in$FileName1[i])
       p2 <- as.character(targets_in$FileName2[i])
-      if(class(args)=="SYSargs"){
+      if (class(args) == "SYSargs") {
         p1out <- as.character(targetsout(args)$FileName1[i])
         p2out <- as.character(targetsout(args)$FileName2[i])
-      } else if (class(args)=="SYSargs2") {
+      } else if (class(args) == "SYSargs2") {
         p1out <- args$output[[i]][[1]][[1]]
         p2out <- args$output[[i]][[1]][[2]]
       }
       ## Delete existing fastq files with same names, since writeFastq will append to them
-      if(overwrite==TRUE) {
-        if(any(file.exists(p1out))) unlink(p1out)
-        if(any(file.exists(p2out))) unlink(p2out)
+      if (overwrite == TRUE) {
+        if (any(file.exists(p1out))) unlink(p1out)
+        if (any(file.exists(p2out))) unlink(p2out)
       } else {
-        if(any(file.exists(p1out))) stop(paste("File", p1out , "exists. Please delete file first or set overwrite=TRUE."))
-        if(any(file.exists(p2out))) stop(paste("File", p2out , "exists. Please delete file first or set overwrite=TRUE."))
+        if (any(file.exists(p1out))) stop(paste("File", p1out, "exists. Please delete file first or set overwrite=TRUE."))
+        if (any(file.exists(p2out))) stop(paste("File", p2out, "exists. Please delete file first or set overwrite=TRUE."))
       }
       ## Run preprocessor function with FastqStreamer
       counter1 <- 0
       counter2 <- 0
       f1 <- FastqStreamer(p1, batchsize)
       f2 <- FastqStreamer(p2, batchsize)
-      while(length(fq1 <- yield(f1))) {
+      while (length(fq1 <- yield(f1))) {
         fq2 <- yield(f2)
-        if(length(fq1)!=length(fq2)) stop("Paired end files cannot have different read numbers.")
+        if (length(fq1) != length(fq2)) stop("Paired end files cannot have different read numbers.")
         ## Process p1
         fq <- fq1 # for simplicity in eval
-        fq1trim <- eval(parse(text=Fct))
+        fq1trim <- eval(parse(text = Fct))
         ## Index for p1
         index1 <- as.character(id(fq1)) %in% as.character(id(fq1trim))
-        names(index1) <- seq(along=index1)
+        names(index1) <- seq(along = index1)
         index1 <- names(index1[index1])
         ## Process p2
         fq <- fq2 # for simplicity in eval
-        fq2trim <- eval(parse(text=Fct))
+        fq2trim <- eval(parse(text = Fct))
         ## Index for p1
         index2 <- as.character(id(fq2)) %in% as.character(id(fq2trim))
-        names(index2) <- seq(along=index2)
+        names(index2) <- seq(along = index2)
         index2 <- names(index2[index2])
         ## Export to processed paired files
         indexpair1 <- index1 %in% index2
-        writeFastq(fq1trim[indexpair1], p1out, mode="a", ...)
+        writeFastq(fq1trim[indexpair1], p1out, mode = "a", ...)
         indexpair2 <- index2 %in% index1
-        writeFastq(fq2trim[indexpair2], p2out, mode="a", ...)
+        writeFastq(fq2trim[indexpair2], p2out, mode = "a", ...)
         counter1 <- counter1 + sum(indexpair1)
         cat(counter1, "processed reads written to file:", p1out, "\n")
         counter2 <- counter2 + sum(indexpair2)
@@ -457,52 +490,53 @@ preprocessReads <- function(args, Fct, batchsize=100000, overwrite=TRUE, ...) {
 ##################################################################
 ## Function to create sym links to bam files for viewing in IGV ##
 ##################################################################
-symLink2bam <- function(sysargs, command="ln -s", htmldir, ext=c(".bam", ".bai"), urlbase, urlfile) {
+symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".bai"), urlbase, urlfile) {
   ## Create URL file
-  if(all(class(sysargs) != "SYSargs" & class(sysargs) != "SYSargs2")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  if(all(is(sysargs, "SYSargs") & is(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
   ## SYSargs class
-  if((class(sysargs)) == "SYSargs") {
+  if(is(sysargs, "SYSargs")) {
     bampaths <- outpaths(sysargs)
     symname <- SampleName(sysargs)
     ## SYSargs2 class ##
-  } else if (class(sysargs)=="SYSargs2") {
-    bampaths <- subsetWF(args = sysargs, slot = "output", subset = 1, index=1)
-    symname <- sysargs$targets[[1]][[2]]
-    for(i in seq(along=sysargs)) {
-      symname[i] <- sysargs$targets[[i]][[2]]
-    }
+  } else if (is(sysargs, "SYSargs2")) {
+    bampaths <- normalizePath(subsetWF(args = sysargs, slot = "output", subset = 1, index = 1))
+    symname <- names(targets(sysargs))
   }
-  urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep="")
+  urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep = "")
   writeLines(urls, urlfile)
   ## Creat correspoding sym links
-  dir.create(paste(htmldir, collapse=""))
-  symname <- rep(symname, each=2)
-  symname <- paste(symname, c(ext[1], paste(ext, collapse="")), sep="")
-  bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep=""))))	
-  symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse=""), symname, sep="") 
-  for(i in symcommands) system(i)
+  dir.create(paste(htmldir, collapse = ""))
+  symname <- rep(symname, each = 2)
+  symname <- paste(symname, c(ext[1], paste(ext, collapse = "")), sep = "")
+  bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep = ""))))
+  symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse = ""), symname, sep = "")
+  for (i in symcommands) system(i)
 }
-## Usage: 
-# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt") 
+## Usage:
+# symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt")
 
 #####################
 ## Alignment Stats ##
 #####################
-alignStats <- function(args, output_index = 1) {
-  fqpaths <- infile1(args)
+alignStats <- function(args, output_index = 1, subset="FileName1") {
+  #fqpaths <- infile1(args)
   ## SYSargs class
-  if(class(args)=="SYSargs") {
+  if (class(args) == "SYSargs") {
+    fqpaths <- infile1(args)
     bampaths <- outpaths(args)
     # SYSargs2 class
-  } else if (class(args)=="SYSargs2") {
+  } else if (class(args) == "SYSargs2") {
+    fqpaths <- subsetWF(args, slot = "input", subset=subset)
     output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
     bampaths <- as.character()
-    for(i in seq_along(output.all)){
-      for(j in seq_along(output.all[[i]])){
-        if(grepl(".sam$", output.all[[i]][[j]])==TRUE & grepl(".bam$", output.all[[i]][[j]])==FALSE){
-          stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.") } 
-        else if(grepl(".bam$", output.all[[i]][[j]])==TRUE & grepl("sorted.bam$", output.all[[i]][[j]])==FALSE){
-          bampaths <- c(bampaths, output.all[[i]][[j]]) }
+    for (i in seq_along(output.all)) {
+      for (j in seq_along(output.all[[i]])) {
+        if (grepl(".sam$", output.all[[i]][[j]]) == TRUE & grepl(".bam$", output.all[[i]][[j]]) == FALSE) {
+          stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.")
+        }
+        else if (grepl(".bam$", output.all[[i]][[j]]) == TRUE & grepl("sorted.bam$", output.all[[i]][[j]]) == FALSE) {
+          bampaths <- c(bampaths, output.all[[i]][[j]])
+        }
       }
     }
     names(bampaths) <- names(output.all)
@@ -511,25 +545,26 @@ alignStats <- function(args, output_index = 1) {
   fqpaths <- fqpaths[bamexists]
   bampaths <- bampaths[bamexists]
   ## Obtain total read number from FASTQ files
-  Nreads <- countLines(fqpaths)/4
-  names(Nreads) <- names(fqpaths)		
+  Nreads <- countLines(fqpaths) / 4
+  names(Nreads) <- names(fqpaths)
   ## If reads are PE multiply by 2 as a rough approximation
-  if(nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2	
+  if (nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2
   ## Obtain total number of alignments from BAM files
-  bfl <- BamFileList(bampaths, yieldSize=50000, index=character())
-  param <- ScanBamParam(flag=scanBamFlag(isUnmappedQuery=FALSE))
-  Nalign <- countBam(bfl, param=param)
+  bfl <- BamFileList(bampaths, yieldSize = 50000, index = character())
+  param <- ScanBamParam(flag = scanBamFlag(isUnmappedQuery = FALSE))
+  Nalign <- countBam(bfl, param = param)
   ## Obtain number of primary alignments from BAM files
-  param <- ScanBamParam(flag=scanBamFlag(isSecondaryAlignment=FALSE, isUnmappedQuery=FALSE))
-  Nalignprim <- countBam(bfl, param=param)
-  statsDF <- data.frame(FileName=names(Nreads), 
-                        Nreads=Nreads, 
-                        Nalign=Nalign$records, 
-                        Perc_Aligned=Nalign$records/Nreads*100, 
-                        Nalign_Primary=Nalignprim$records, 
-                        Perc_Aligned_Primary=Nalignprim$records/Nreads*100
+  param <- ScanBamParam(flag = scanBamFlag(isSecondaryAlignment = FALSE, isUnmappedQuery = FALSE))
+  Nalignprim <- countBam(bfl, param = param)
+  statsDF <- data.frame(
+    FileName = names(Nreads),
+    Nreads = Nreads,
+    Nalign = Nalign$records,
+    Perc_Aligned = Nalign$records / Nreads * 100,
+    Nalign_Primary = Nalignprim$records,
+    Perc_Aligned_Primary = Nalignprim$records / Nreads * 100
   )
-  if(nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF)=="Nreads")] <- "Nreads2x"
+  if (nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF) == "Nreads")] <- "Nreads2x"
   return(statsDF)
 }
 ## Usage:
@@ -539,10 +574,10 @@ alignStats <- function(args, output_index = 1) {
 ## RPKM Normalization ##
 ########################
 returnRPKM <- function(counts, ranges) {
-  geneLengthsInKB <- sum(width(reduce(ranges)))/1000 # Length of exon union per gene in kbp
-  millionsMapped <- sum(counts)/1e+06 # Factor for converting to million of mapped reads.
-  rpm <- counts/millionsMapped # RPK: reads per kilobase of exon model.
-  rpkm <- rpm/geneLengthsInKB # RPKM: reads per kilobase of exon model per million mapped reads.
+  geneLengthsInKB <- sum(width(reduce(ranges))) / 1000 # Length of exon union per gene in kbp
+  millionsMapped <- sum(counts) / 1e+06 # Factor for converting to million of mapped reads.
+  rpm <- counts / millionsMapped # RPK: reads per kilobase of exon model.
+  rpkm <- rpm / geneLengthsInKB # RPKM: reads per kilobase of exon model per million mapped reads.
   return(rpkm)
 }
 ## Usage:
@@ -551,43 +586,50 @@ returnRPKM <- function(counts, ranges) {
 ###############################################
 ## Read Sample Comparisons from Targets File ##
 ###############################################
-## Parses sample comparisons from <CMP> line(s) in targets.txt file or SYSars object. 
+## Parses sample comparisons from <CMP> line(s) in targets.txt file or SYSars object.
 ## All possible comparisons can be specified with 'CMPset: ALL'.
-readComp <- function(file, format="vector", delim="-") {
-  if(!format %in% c("vector", "matrix")) stop("Argument format can only be assigned: vector or matrix!")
-  if(class(file) == "SYSargs") {
-    if(length(targetsheader(file))==0) stop("Input has no targets header lines.")
+readComp <- function(file, format = "vector", delim = "-") {
+  ## global functions or variables
+  args_bam <- NULL
+  if (!format %in% c("vector", "matrix")) stop("Argument format can only be assigned: vector or matrix!")
+  if (class(file) == "SYSargs") {
+    if (length(targetsheader(file)) == 0) stop("Input has no targets header lines.")
     comp <- targetsheader(file)
-    ## SYSargs2 class  
-  } else if (class(file) == "SYSargs2"){
-    if(length(targetsheader(file)[[1]])==0) stop("Input has no targets header lines.")
+    ## SYSargs2 class
+  } else if (class(file) == "SYSargs2") {
+    if (length(targetsheader(file)[[1]]) == 0) stop("Input has no targets header lines.")
     comp <- targetsheader(file)[[1]]
   } else {
     comp <- readLines(file)
   }
   comp <- comp[grepl("<CMP>", comp)]
   comp <- gsub("#.*<CMP>| {1,}", "", comp)
-  comp <- gsub("\t", "", comp); comp <- gsub("^\"|\"$", "", comp) # Often required if Excel is used for editing targets file
+  comp <- gsub("\t", "", comp)
+  comp <- gsub("^\"|\"$", "", comp) # Often required if Excel is used for editing targets file
   comp <- strsplit(comp, ":|,")
-  names(comp) <- lapply(seq(along=comp), function(x) comp[[x]][1])	
-  comp <- sapply(names(comp), function(x) comp[[x]][-1], simplify=FALSE)	
+  names(comp) <- lapply(seq(along = comp), function(x) comp[[x]][1])
+  comp <- sapply(names(comp), function(x) comp[[x]][-1], simplify = FALSE)
   ## Check whether all samples are present in Factor column of targets file
   checkvalues <- unique(unlist(strsplit(unlist(comp), "-")))
-  checkvalues <- checkvalues[checkvalues!="ALL"]
-  if(class(file)=="SYSargs") {
+  checkvalues <- checkvalues[checkvalues != "ALL"]
+  if (class(file) == "SYSargs") {
     all <- unique(as.character(targetsin(file)$Factor))
-  } else if(class(file)=="SYSargs2")  {
+  } else if (class(file) == "SYSargs2") {
     all <- unique(as.character(targets.as.df(targets(args_bam))$Factor))
   } else {
     all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
   }
-  if(any(!checkvalues %in% all)) stop(paste("The following samples are not present in Factor column of targets file:", paste(checkvalues[!checkvalues %in% all], collapse=", ")))	
-  ## Generate outputs 
+  if (any(!checkvalues %in% all)) stop(paste("The following samples are not present in Factor column of targets file:", paste(checkvalues[!checkvalues %in% all], collapse = ", ")))
+  ## Generate outputs
   allindex <- sapply(names(comp), function(x) any(grepl("ALL", comp[[x]])))
-  if(any(allindex)) for(i in which(allindex)) comp[[i]] <- combn(all, m=2, FUN=paste, collapse=delim)
-  if(format == "vector" & delim != "-") comp <- sapply(names(comp), function(x) gsub("-", delim, comp[[x]]), simplify=FALSE)
-  if(format == "vector") return(comp)
-  if(format == "matrix") return(sapply(names(comp), function(x) do.call("rbind", strsplit(comp[[x]], "-")), simplify=FALSE))
+  if (any(allindex)) for (i in which(allindex)) comp[[i]] <- combn(all, m = 2, FUN = paste, collapse = delim)
+  if (format == "vector" & delim != "-") comp <- sapply(names(comp), function(x) gsub("-", delim, comp[[x]]), simplify = FALSE)
+  if (format == "vector") {
+    return(comp)
+  }
+  if (format == "matrix") {
+    return(sapply(names(comp), function(x) do.call("rbind", strsplit(comp[[x]], "-")), simplify = FALSE))
+  }
 }
 ## Usage:
 # cmp <- readComp("targets.txt", format="vector", delim="-")
@@ -601,7 +643,7 @@ readComp <- function(file, format="vector", delim="-") {
 
 # # S3 Class for handling function calls
 # myEnvModules <- structure(list(), class="EnvModules")
-# 
+#
 # ## Main function to allow avail, list and list
 # myEnvModules$init <- function(){
 #   # Module function assumes MODULEPATH and MODULEDIR are set in login profile
@@ -629,12 +671,12 @@ readComp <- function(file, format="vector", delim="-") {
 #     try(myEnvModules$load_unload("load",module_name))
 #   }
 # }
-# 
+#
 # # Print available modules or currently loaded modules on stderr
 # myEnvModules$avail_list <- function(action_type){
 #   try(module_vars <- system(paste('modulecmd bash',action_type),intern = TRUE))
 # }
-# 
+#
 # # Unload all currently loaded modules
 # myEnvModules$clear <- function(action_type){
 #   loaded_modules <-  strsplit(Sys.getenv("LOADEDMODULES"),":")
@@ -646,7 +688,7 @@ readComp <- function(file, format="vector", delim="-") {
 #     }
 #   }
 # }
-# 
+#
 # # Load and unload actions are basically the same, set environment variables given by modulecmd
 # myEnvModules$load_unload <- function(action_type, module_name=""){
 #   module_name <- paste(module_name, collapse=' ')
@@ -692,7 +734,7 @@ readComp <- function(file, format="vector", delim="-") {
 #     }
 #   }
 # }
-# 
+#
 # #Define what happens bases on action
 # module <- function(action_type,module_name=""){
 #   # Check to see if modulecmd is in current PATH
@@ -715,7 +757,7 @@ readComp <- function(file, format="vector", delim="-") {
 #     stop("That action is not supported.")
 #   )
 # }
-## Usage: 
+## Usage:
 # module("load","tophat")
 # module("load","tophat/2.1.1")
 # module("list")
@@ -732,7 +774,7 @@ readComp <- function(file, format="vector", delim="-") {
 #   module("avail")
 #   # warning("The function modulelist will be deprecated in future releases, please refer to the documentation for proper useage.")
 # }
-# 
+#
 # ## Load software from module system
 # moduleload <- function(module,envir="PATH") {
 #   module("load", module)
@@ -743,65 +785,67 @@ readComp <- function(file, format="vector", delim="-") {
 ## Run edgeR GLM with entire count matrix or subsetted by comparison ##
 #######################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
-run_edgeR <- function(countDF, targets, cmp, independent=TRUE, paired=NULL, mdsplot="") {
+run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, mdsplot = "") {
   ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
   ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
-  if(all(class(cmp) != "matrix" & length(cmp)==2)) cmp <- t(as.matrix(cmp))
-  samples <- as.character(targets$Factor); names(samples) <- paste(as.character(targets$SampleName), "", sep="")
+  if (all(class(cmp) != "matrix" & length(cmp) == 2)) cmp <- t(as.matrix(cmp))
+  samples <- as.character(targets$Factor)
+  names(samples) <- paste(as.character(targets$SampleName), "", sep = "")
   countDF <- countDF[, names(samples)]
   countDF[is.na(countDF)] <- 0
-  edgeDF <- data.frame(row.names=rownames(countDF))
+  edgeDF <- data.frame(row.names = rownames(countDF))
   group <- as.character(samples)
-  if(independent==TRUE) {
-    loopv <- seq(along=cmp[,1])
+  if (independent == TRUE) {
+    loopv <- seq(along = cmp[, 1])
   } else {
     loopv <- 1
   }
-  for(j in loopv) {
+  for (j in loopv) {
     ## Filtering and normalization
-    y <- DGEList(counts=countDF, group=group) # Constructs DGEList object
-    if(independent == TRUE) {
-      subset <- samples[samples %in% cmp[j,]]
+    y <- DGEList(counts = countDF, group = group) # Constructs DGEList object
+    if (independent == TRUE) {
+      subset <- samples[samples %in% cmp[j, ]]
       y <- y[, names(subset)]
       y$samples$group <- factor(as.character(y$samples$group))
     }
-    keep <- rowSums(cpm(y)>1) >= 2; y <- y[keep, ]
+    keep <- rowSums(edgeR::cpm(y) > 1) >= 2
+    y <- y[keep, ]
     y <- calcNormFactors(y)
     ## Design matrix
-    if(length(paired)==0) {
-      design <- model.matrix(~0+y$samples$group, data=y$samples)
+    if (length(paired) == 0) {
+      design <- model.matrix(~ 0 + y$samples$group, data = y$samples)
       colnames(design) <- levels(y$samples$group)
     } else {
-      if(length(paired)>0 & independent==FALSE) stop("When providing values under 'paired' also set independent=TRUE")
-      Subject <- factor(paired[samples %in% cmp[j,]]) # corrected Jun 2014 (won't change results)
+      if (length(paired) > 0 & independent == FALSE) stop("When providing values under 'paired' also set independent=TRUE")
+      Subject <- factor(paired[samples %in% cmp[j, ]]) # corrected Jun 2014 (won't change results)
       Treat <- y$samples$group
-      design <- model.matrix(~Subject+Treat)
+      design <- model.matrix(~ Subject + Treat)
       levels(design) <- levels(y$samples$group)
     }
     ## Estimate dispersion
-    y <- estimateGLMCommonDisp(y, design, verbose=TRUE) # Estimates common dispersions
+    y <- estimateGLMCommonDisp(y, design, verbose = TRUE) # Estimates common dispersions
     y <- estimateGLMTrendedDisp(y, design) # Estimates trended dispersions
-    y <- estimateGLMTagwiseDisp(y, design) # Estimates tagwise dispersions 
+    y <- estimateGLMTagwiseDisp(y, design) # Estimates tagwise dispersions
     fit <- glmFit(y, design) # Fits the negative binomial GLM for each tag and produces an object of class DGEGLM with some new components.
     ## Contrast matrix is optional but makes anlysis more transparent
-    if(independent == TRUE) {
-      mycomp <- paste(cmp[j,1], cmp[j,2], sep="-")
+    if (independent == TRUE) {
+      mycomp <- paste(cmp[j, 1], cmp[j, 2], sep = "-")
     } else {
-      mycomp <- paste(cmp[,1], cmp[,2], sep="-")
+      mycomp <- paste(cmp[, 1], cmp[, 2], sep = "-")
     }
-    if(length(paired)==0) contrasts <- makeContrasts(contrasts=mycomp, levels=design)
-    for(i in seq(along=mycomp)) {
-      if(length(paired)==0) {
-        lrt <- glmLRT(fit, contrast=contrasts[,i]) # Takes DGEGLM object and carries out the likelihood ratio test. 
+    if (length(paired) == 0) contrasts <- makeContrasts(contrasts = mycomp, levels = design)
+    for (i in seq(along = mycomp)) {
+      if (length(paired) == 0) {
+        lrt <- glmLRT(fit, contrast = contrasts[, i]) # Takes DGEGLM object and carries out the likelihood ratio test.
       } else {
         lrt <- glmLRT(fit) # No contrast matrix with paired design
       }
-      deg <- as.data.frame(topTags(lrt, n=length(rownames(y))))
-      colnames(deg) <- paste(paste(mycomp[i], collapse="_"), colnames(deg), sep="_")
-      edgeDF <- cbind(edgeDF, deg[rownames(edgeDF),]) 
+      deg <- as.data.frame(topTags(lrt, n = length(rownames(y))))
+      colnames(deg) <- paste(paste(mycomp[i], collapse = "_"), colnames(deg), sep = "_")
+      edgeDF <- cbind(edgeDF, deg[rownames(edgeDF), ])
     }
-    if(nchar(mdsplot)>0) {
-      pdf(paste("./results/sample_MDS_", paste(unique(subset), collapse="-"), ".pdf", sep=""))
+    if (nchar(mdsplot) > 0) {
+      pdf(paste("./results/sample_MDS_", paste(unique(subset), collapse = "-"), ".pdf", sep = ""))
       plotMDS(y)
       dev.off()
     }
@@ -816,78 +860,94 @@ run_edgeR <- function(countDF, targets, cmp, independent=TRUE, paired=NULL, mdsp
 ## Run DESeq2 with entire count matrix or subsetted by comparison ##
 ####################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
-run_DESeq2 <- function(countDF, targets, cmp, independent=FALSE) {
+run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE, lfcShrink=FALSE, type="normal") {
   ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
   ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
-  if(all(class(cmp) != "matrix" & length(cmp)==2)) cmp <- t(as.matrix(cmp))
-  samples <- as.character(targets$Factor); names(samples) <- paste(as.character(targets$SampleName), "", sep="")
+  if (all(class(cmp) != "matrix" & length(cmp) == 2)) cmp <- t(as.matrix(cmp))
+  samples <- as.character(targets$Factor)
+  names(samples) <- paste(as.character(targets$SampleName), "", sep = "")
   countDF <- countDF[, names(samples)]
   countDF[is.na(countDF)] <- 0
-  deseqDF <- data.frame(row.names=rownames(countDF))
-  if(independent==TRUE) {
-    loopv <- seq(along=cmp[,1])
+  deseqDF <- data.frame(row.names = rownames(countDF))
+  if (independent == TRUE) {
+    loopv <- seq(along = cmp[, 1])
   } else {
     loopv <- 1
   }
-  for(j in loopv) {
-    if(independent==TRUE) {
+  for (j in loopv) {
+    if (independent == TRUE) {
       ## Create subsetted DESeqDataSet object
-      subset <- samples[samples %in% cmp[j,]]
+      subset <- samples[samples %in% cmp[j, ]]
       countDFsub <- countDF[, names(subset)]
-      dds <- DESeq2::DESeqDataSetFromMatrix(countData=as.matrix(countDFsub), colData=data.frame(condition=subset), design = ~ condition)
-      mycmp <- cmp[j, , drop=FALSE]	
+      dds <- DESeq2::DESeqDataSetFromMatrix(countData = as.matrix(countDFsub), colData = data.frame(condition = subset), design = ~condition)
+      mycmp <- cmp[j, , drop = FALSE]
     } else {
       ## Create full DESeqDataSet object
-      dds <- DESeq2::DESeqDataSetFromMatrix(countData=as.matrix(countDF), colData=data.frame(condition=samples), design = ~ condition)
+      dds <- DESeq2::DESeqDataSetFromMatrix(countData = as.matrix(countDF), colData = data.frame(condition = samples), design = ~condition)
       mycmp <- cmp
     }
     ## Estimate of (i) size factors, (ii) dispersion, (iii) negative binomial GLM fitting and (iv) Wald statistics
-    dds <- DESeq2::DESeq(dds, quiet=TRUE)
-    for(i in seq(along=mycmp[,1])) { 
-      ## Extracts DEG results for specific contrasts from DESeqDataSet object 
-      res <- DESeq2::results(dds, contrast=c("condition", mycmp[i,])) 
+    dds <- DESeq2::DESeq(dds, quiet = TRUE)
+    for (i in seq(along = mycmp[, 1])) {
+      ## Extracts DEG results for specific contrasts from DESeqDataSet object
+      res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
+      
+      ## lfcShrink
+      if (lfcShrink == FALSE) {
+        res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
+      } else if (lfcShrink == TRUE) {
+        suppressMessages(
+        res <- DESeq2::lfcShrink(dds, contrast = c("condition", mycmp[i, ]), type=type)
+        )
+      }
       ## Set NAs to reasonable values to avoid errors in downstream filtering steps
-      res[is.na(res[,"padj"]), "padj"] <- 1
-      res[is.na(res[,"log2FoldChange"]), "log2FoldChange"] <- 0
-      deg <- as.data.frame(res)	
+      res[is.na(res[, "padj"]), "padj"] <- 1
+      res[is.na(res[, "log2FoldChange"]), "log2FoldChange"] <- 0
+      deg <- as.data.frame(res)
       colnames(deg)[colnames(deg) %in% c("log2FoldChange", "padj")] <- c("logFC", "FDR")
-      colnames(deg) <- paste(paste(mycmp[i,], collapse="-"), colnames(deg), sep="_")
-      deseqDF <- cbind(deseqDF, deg[rownames(deseqDF),]) 
+      colnames(deg) <- paste(paste(mycmp[i, ], collapse = "-"), colnames(deg), sep = "_")
+      deseqDF <- cbind(deseqDF, deg[rownames(deseqDF), ])
     }
   }
   return(deseqDF)
-} 
+}
 ## Usage:
 # cmp <- readComp(file=targetspath, format="matrix", delim="-")
-# degseqDF <- run_DESeq2(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=TRUE)
+# degseqDF <- run_DESeq2(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE)
 
-############################################
+###########################################
 ## Filter DEGs by p-value and fold change ##
 ############################################
-filterDEGs <- function(degDF, filter, plot=TRUE) {
-  pval <- degDF[, grep("_FDR$", colnames(degDF)), drop=FALSE]
-  log2FC <- degDF[, grep("_logFC$", colnames(degDF)), drop=FALSE]
+filterDEGs <- function(degDF, filter, plot = TRUE) {
+  ## global functions or variables
+  Comparisons <- Counts <- Type <- NULL
+  pval <- degDF[, grep("_FDR$", colnames(degDF)), drop = FALSE]
+  log2FC <- degDF[, grep("_logFC$", colnames(degDF)), drop = FALSE]
   ## DEGs that are up or down regulated
-  pf <- pval <= filter["FDR"]/100 & (log2FC >= log2(filter["Fold"]) | log2FC <= -log2(filter["Fold"]))
+  pf <- pval <= filter["FDR"] / 100 & (log2FC >= log2(filter["Fold"]) | log2FC <= -log2(filter["Fold"]))
   colnames(pf) <- gsub("_FDR", "", colnames(pf))
   pf[is.na(pf)] <- FALSE
-  DEGlistUPorDOWN <- sapply(colnames(pf), function(x) rownames(pf[pf[,x,drop=FALSE],,drop=FALSE]), simplify=FALSE)
+  DEGlistUPorDOWN <- sapply(colnames(pf), function(x) rownames(pf[pf[, x, drop = FALSE], , drop = FALSE]), simplify = FALSE)
   ## DEGs that are up regulated
-  pf <- pval <= filter["FDR"]/100 & log2FC >= log2(filter["Fold"])
+  pf <- pval <= filter["FDR"] / 100 & log2FC >= log2(filter["Fold"])
   colnames(pf) <- gsub("_FDR", "", colnames(pf))
   pf[is.na(pf)] <- FALSE
-  DEGlistUP <- sapply(colnames(pf), function(x) rownames(pf[pf[,x,drop=FALSE],,drop=FALSE]), simplify=FALSE)
+  DEGlistUP <- sapply(colnames(pf), function(x) rownames(pf[pf[, x, drop = FALSE], , drop = FALSE]), simplify = FALSE)
   ## DEGs that are down regulated
-  pf <- pval <= filter["FDR"]/100 & log2FC <= -log2(filter["Fold"])
+  pf <- pval <= filter["FDR"] / 100 & log2FC <= -log2(filter["Fold"])
   colnames(pf) <- gsub("_FDR", "", colnames(pf))
   pf[is.na(pf)] <- FALSE
-  DEGlistDOWN <- sapply(colnames(pf), function(x) rownames(pf[pf[,x,drop=FALSE],,drop=FALSE]), simplify=FALSE)
-  df <- data.frame(Comparisons=names(DEGlistUPorDOWN), Counts_Up_or_Down=sapply(DEGlistUPorDOWN, length), Counts_Up=sapply(DEGlistUP, length), Counts_Down=sapply(DEGlistDOWN, length))
-  resultlist <- list(UporDown=DEGlistUPorDOWN, Up=DEGlistUP, Down=DEGlistDOWN, Summary=df)
-  if(plot==TRUE) {
-    mytitle <- paste("DEG Counts (", names(filter)[1], ": ", filter[1], " & " , names(filter)[2], ": ", filter[2], "%)", sep="")
-    df_plot <- data.frame(Comparisons=rep(as.character(df$Comparisons), 2), Counts=c(df$Counts_Up, df$Counts_Down), Type=rep(c("Up", "Down"), each=length(df[,1])))
-    p <- ggplot(df_plot, aes(Comparisons, Counts, fill = Type)) + geom_bar(position="stack", stat="identity") + coord_flip() + theme(axis.text.y=element_text(angle=0, hjust=1)) + ggtitle(mytitle)
+  DEGlistDOWN <- sapply(colnames(pf), function(x) rownames(pf[pf[, x, drop = FALSE], , drop = FALSE]), simplify = FALSE)
+  df <- data.frame(Comparisons = names(DEGlistUPorDOWN), Counts_Up_or_Down = sapply(DEGlistUPorDOWN, length), Counts_Up = sapply(DEGlistUP, length), Counts_Down = sapply(DEGlistDOWN, length))
+  resultlist <- list(UporDown = DEGlistUPorDOWN, Up = DEGlistUP, Down = DEGlistDOWN, Summary = df)
+  if (plot == TRUE) {
+    mytitle <- paste("DEG Counts (", names(filter)[1], ": ", filter[1], " & ", names(filter)[2], ": ", filter[2], "%)", sep = "")
+    df_plot <- data.frame(Comparisons = rep(as.character(df$Comparisons), 2), Counts = c(df$Counts_Up, df$Counts_Down), Type = rep(c("Up", "Down"), each = length(df[, 1])))
+    p <- ggplot(df_plot, aes(Comparisons, Counts, fill = Type)) +
+      geom_bar(position = "stack", stat = "identity") +
+      coord_flip() +
+      theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
+      ggtitle(mytitle)
     print(p)
   }
   return(resultlist)

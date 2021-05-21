@@ -7,7 +7,7 @@ Constructs SYSargs2 object and creates CWL param files
 The constructor function creates an \code{SYSargs2} S4 class object from three input files: a \code{CWL param} and \code{input} files, and one simple tabular files, a \code{targets} file. The latter is optional for workflow steps lacking input files. Also, the function creates and saves the\code{CWL param} files. The latest storages all the parameters required for running command-line software, following the standard and specification defined on \href{https://www.commonwl.org/}{Common Workflow Language (CWL)}.
 }
 \usage{
-createWF(targets = NULL, commandLine, results_path = "./results", module_load = "baseCommand", file = "default", overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool")
+createWF(targets = NULL, commandLine, results_path = "./results", module_load = "baseCommand", file = "default", overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", silent=FALSE)
 }
 \arguments{
   \item{targets}{
@@ -33,6 +33,9 @@ version of the Common Workflow Language. More information here: https://www.comm
 }
   \item{class}{
 Names of Common Workflow Language Specification. The following switches are accepted: \code{CommandLineTool} and \code{Workflow}.
+}
+  \item{silent}{
+If set to \code{TRUE}, all messages returned by the function will be suppressed.
 }
 }
 \value{
@@ -64,7 +67,8 @@ inputs <- list(
 outputs <- list("hisat2_sam"=list(type="File", "./results/_SampleName_.sam"))
 commandLine <- list(baseCommand=baseCommand, inputs=inputs, outputs=outputs)
 \dontrun{
-## Create a SYSargs2 object and populate all the command-line
+## Create a SYSargs2 object and populate all command-line components
+## Note: the following expects a 'param/cwl' directory within the present working directory of a user's R session.
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 WF <- createWF(targets=targets, commandLine, results_path="./results", module_load="baseCommand", file = "default", overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool")
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))

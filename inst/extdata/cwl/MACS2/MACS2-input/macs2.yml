@@ -16,5 +16,5 @@ results_path:
   path: ./results
 
 ModulesToLoad: 
-  module1: python/2.7.14
+  module1: MACS2
 
