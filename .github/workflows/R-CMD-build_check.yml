@@ -65,15 +65,9 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
-<<<<<<< HEAD:.github/workflows/actions.yml
-          install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "kableExtra"))
-          BiocManager::install("systemPipeR")
-          BiocManager::install("systemPipeRdata")
-=======
-          install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "V8", "kableExtra"))
+          install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "V8", "kableExtra", "docopt"))
           BiocManager::install("tgirke/systemPipeR")
           BiocManager::install("tgirke/systemPipeRdata")
->>>>>>> 1dce03d31bdc4f9aeba774d7fe2a6439bf6f9685:.github/workflows/R-CMD-build_check.yml
         shell: Rscript {0}
 
       - name: Check
