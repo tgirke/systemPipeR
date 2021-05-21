@@ -318,7 +318,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
         for(k in seq_along(args$output[[i]][[j]])){
           name <- basename(args$output[[i]][[j]][k])
           dirRep <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
-          if(grepl(extension[1], name)){
+          if(grepl(paste0(extension[1], "$"), name)){
             sam <- .getExt(name)
             args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dirRep, "/", .getFileName(name), extension[2])))
           } else {

@@ -843,7 +843,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## Function to return the extension of the file. The argument 'x' is a character vector or an object containing the file PATH.
 .getExt <- function(x) {
   ext <- strsplit(basename(x), split = "\\.")[[1]]
-  ext <- ext[[-1]]
+  ext <- ext[[length(ext)]]
   return(ext)
 }
 
