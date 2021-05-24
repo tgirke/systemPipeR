@@ -1,7 +1,9 @@
 changelog
+     version 1.27.2
+     	- Special case for Rscript
+     	
      version 1.27.1
      	- Added unittest 
-     	- 
      	     	
      version 1.25.17
      	- Fixed bug: 'symLink2bam()'
