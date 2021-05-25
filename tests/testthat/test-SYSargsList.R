@@ -20,8 +20,6 @@ test_that("check_SYSargsList_test", {
     expect_length(length(sal), 1)
     expect_length(cmdlist(sal)[[1]], 3)
     
-    # runWF() // check.output()
-    # args <- runWF(sal)
-    # out <- check.output(sal)
-    # expect_type(out, "logical")
+    ##runWF()
+   # sal <- runWF(sal)
 })

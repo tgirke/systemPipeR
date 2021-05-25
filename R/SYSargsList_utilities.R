@@ -343,7 +343,7 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
     }
   }
   ## Check status, rerun if warning or error...
-  file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "_%b%d%Y_%H%M")))
+  file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "%b%d%Y_%H%M")))
   for (i in seq_along(stepsWF(args))){
     step <- names(stepsWF(args)[i])
     print(paste0("Running Step: ", step))
@@ -400,7 +400,11 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
       run_status <- c(run_status, err)
       unlink(file.path(sysproj, "err"))
       status_files <- outfiles(args)[[i]][j,]
-      status_files_check[[j]] <- file.exists(as.character(as.data.frame(status_files[1,])))
+      if(length(status_files)==1){
+        status_files_check[[j]] <- file.exists(as.character(as.data.frame(status_files[1])))
+      } else{
+        status_files_check[[j]] <- file.exists(as.character(as.data.frame(status_files[1,])))
+      }
     }
     args <- as(args, "list")
     df.status <- data.frame(matrix(unlist(status_files_check), nrow=length(status_files_check), byrow=T))
@@ -417,8 +421,6 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
   args$projectWF[["logs"]] <- file_log
   return(as(args, "SYSargsList"))
 }
-
-
 
 
 #############################
