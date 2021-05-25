@@ -1,6 +1,6 @@
 \name{initWF}
 \alias{initWF}
-\alias{SYSproject}
+\alias{SPRproject}
 \alias{initProject}
 \title{
 Workflow Project Initiation
@@ -18,7 +18,7 @@ also creates the \code{SYSconfig.yml} on the fly to register all the parameters 
 the workflow. This function checks the project structure, which by default is:
 
 \itemize{
-  \item{\code{SYSproject/}}
+  \item{\code{SPRproject/}}
     \itemize{
       \item{\code{data/}}
       \item{\code{param/}}
@@ -29,32 +29,18 @@ the workflow. This function checks the project structure, which by default is:
 The default structure of the project directories can be modified here. 
 }
 \usage{
-initWF(sysconfig = NULL, subProj = FALSE, dir_str = "level0", dirName = "default", 
-script, targets = NULL, silent = FALSE, overwrite = FALSE)
+initWF(sprconfig = NULL, script = NULL, targets = NULL, silent = FALSE, overwrite = FALSE)
 
 initProject(projPath = "./", data = "data", param = "param", results = "results", 
-script = NULL, targets = NULL, subProj = FALSE, filename = "SYSconfig.yml", 
-overwrite = FALSE, silent = FALSE)
+script = NULL, targets = NULL, filename = "SPRconfig.yml", 
+overwrite = FALSE, silent = FALSE, tempdir = FALSE)
 
-SYSproject(projPath = "./", overwrite = FALSE, silent = FALSE, tempdir = FALSE)
+SPRproject(projPath = "./", overwrite = FALSE, silent = FALSE, tempdir = FALSE)
 }
 \arguments{
-  \item{sysconfig}{
-  a character vector of a full \code{sysconfig} file path name. Default is \code{NULL}, 
+  \item{sprconfig}{
+  a character vector of a full \code{sprconfig} file path name. Default is \code{NULL}, 
 which the function understand that the \code{Rmd} will be provide.
-}
-  \item{subProj}{
-  is set TRUE, the project will be initialized and a new directory will be generated,
-  at the same level as the current project, maintaining the directory structure.
-  It will create an empty \code{results} folder, coping the \code{param} from the 
-  current project, and creating a symbolic link for the \code{data} folder.
-}
-  \item{dir_str}{
-  if \code{subProj} is set TRUE, it will create a directory on the same level of
-  the current location.Default is \code{level0}.
-}
-  \item{dirName}{
-  if \code{subProj} is set TRUE, the directory name can be defined here. 
 }
   \item{script}{
   a character vector of a full \code{script} file path name.
@@ -98,7 +84,7 @@ if set to TRUE, the temporary directory for the workflow management files will b
 }
 }
 \details{
-\code{SYSproject} function detects and creates the project directory to store all 
+\code{SPRproject} function detects and creates the project directory to store all 
 the flat files from the workflow management. If \code{overwrite} is TRUE, the previous 
 folder will be deleted and replace for a new one. Also, the user can choose to store 
 all this information on a temporary folder, setting \code{tempdir} = TRUE. 
@@ -107,7 +93,7 @@ all this information on a temporary folder, setting \code{tempdir} = TRUE.
 structure on the path provide.
 }
 \value{
-\code{SYSproject} will return a character vector containing the path name.
+\code{SPRproject} will return a character vector containing the path name.
 \code{initProject} will return a list containing all the information in the 
   \code{sysconfig} file.
 \code{initWF} will return a \code{SYSargsList} object.
@@ -125,8 +111,8 @@ library(systemPipeRdata)
 script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- tempdir()
-SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
-sysargslist <- initWF(sysconfig ="SYSconfig.yml")
+SPRconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
+sysargslist <- initWF(sprconfig =file.path(dir_path, "SPRconfig.yml"))
 }
 }
 \keyword{ utilities }

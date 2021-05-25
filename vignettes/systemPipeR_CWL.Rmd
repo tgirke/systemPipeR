@@ -129,17 +129,26 @@ yaml::read_yaml(file.path(dir_path, "example_single.yml"))
 Note that if we define an input component in the *.cwl* file, this value needs 
 to be also defined here in the *.yml* file. 
 
-## How to connect both files within `systemPipeR`
+## How to connect CWL description files within `systemPipeR`
+
+`SYSargsList` container stores all the information and instructions needed for processing 
+a set of input files with a single or many command-line steps within a workflow 
+(i.e. several components of the software or several independent software tools). 
+The `SYSargsList` object is created and fully populated with the `SYSargsList` construct
+function.
+
+The following imports a `.cwl` file (here `example.cwl`) for running the `echo Hello World` 
+example.
 
 ```{r fromFile, eval=TRUE}
-HW <- loadWorkflow(wf_file="example.cwl", input_file="example_single.yml", dir_path = dir_path)
-HW <- renderWF(HW)
+HW <- SYSargsList(wf_file="example.cwl", input_file="example_single.yml", dir_path = dir_path)
 HW
 cmdlist(HW)
 ```
 
 However, we are limited to run just one command line or one sample in this example. 
-To scale the command line over many samples, a simple solution offered by `systemPipeR` is to provide a `variable` for each of the parameters that we want to run with multiple samples. 
+To scale the command line over many samples, a simple solution offered by `systemPipeR` 
+is to provide a `variable` for each of the parameters that we want to run with multiple samples. 
 
 Let's explore the example:
 
@@ -149,9 +158,10 @@ yml
 ```
 
 For the `message` and `SampleName` parameter, we are passing a variable connecting 
-with a third file called `targets.`
+with a third file called `targets.` 
+Even though the variable pattern `_XXXX_` is not required, we recommend adopting for consistency and easy identification as the variable notation rather them an argument.
 
-Let's explore the `targets` file structure:
+Now, let's explore the `targets` file structure:
 
 ```{r}
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
@@ -169,32 +179,27 @@ Users should note here, the usage of `targets` files is optional when using
 
 ### How to connect the parameter files and `targets` file information?
 
-The constructor functions create an `SYSargs2` S4 class object from three input files:
+The constructor function creates an `SYSargsList` S4 class object connecting three input files:
 
     - CWL command line specification file (`wf_file` argument);
     - Input variables (`input_file` argument);
     - Targets file (`targets` argument).
     
-The latter is optional for workflow steps lacking input files. 
+AS demonstrated above, the latter is optional for workflow steps lacking input files. 
 The connection between input variables and the targets file are defined under the
 `inputvars` argument. It is required a named vector, where each element name needs 
-to match with column names in the targets file and the value must match the names of the *.yml* variables.
+to match with column names in the `targets` file and the value must match the 
+names of the *.yml* variables.
 
-In CWL, files with the extension `.cwl` define the parameters of a chosen 
-command line step or workflow, while files with the extension `.yml` define 
-the input variables of command line steps. Note, input variables provided
-by a `targets` file can be passed on to a `SYSargs2` instance via the `inputvars`
-argument of the `renderWF` function. 
-
-The following imports a `.cwl` file (here `hisat2-mapping-se.cwl`) for running
-the short read aligner HISAT2 [@Kim2015-ve]. The `loadWorkflow` and `renderWF` 
-functions render the proper command line strings for each sample and software tool.
+The following imports a `.cwl` file (same example demonstrated above) for running
+the `echo Hello World` example. However, now we are connecting the variable defined 
+on the `.yml` file with the `targets` file inputs.
 
 
 ```{r fromFile_example, eval=TRUE}
-HW_mul <- loadWorkflow(targets = targetspath, wf_file="example.cwl",
-                   input_file="example.yml", dir_path = dir_path)
-HW_mul <- renderWF(HW_mul, inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+HW_mul <- SYSargsList(targets=targetspath, 
+                      wf_file="example.cwl", input_file="example.yml", dir_path = dir_path, 
+                      inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 HW_mul
 cmdlist(HW_mul)
 ```
@@ -236,8 +241,7 @@ hisat2 \
 - Then, use `:` to separate keywords and default values, any non-space value after the `:`
   will be treated as the default value. 
   
-- If any arg has no default value, just a flag, like `--verbose`, there no need to 
-  add any `<...>`.
+- If any argument has no default value, just a flag, like `--verbose`, there is no need to add any `<...>`
 
 ## `createParamFiles` Function
 
@@ -270,7 +274,7 @@ writeParamFiles(cmd, overwrite = TRUE)
 
 ## How to access and edit param files
 
-- Print a component
+### Print a component
 
 ```{r}
 printParam(cmd, position = "baseCommand") ## Print a baseCommand section
@@ -279,14 +283,18 @@ printParam(cmd, position = "inputs", index = 1:2) ## Print by index
 printParam(cmd, position = "inputs", index = -1:-2) ## Negative indexing printing to exclude certain indices in a position
 ```
 
-- Subsetting the command line
+### Subsetting the command line
 
 ```{r}
 cmd2 <- subsetParam(cmd, position = "inputs", index = 1:2, trim = TRUE)
 cmdlist(cmd2)
+
+cmd2 <- subsetParam(cmd, position = "inputs", index = c("S", "x"), trim = TRUE)
+cmdlist(cmd2)
+
 ```
 
-- Replacing a existing argument in the command line
+### Replacing a existing argument in the command line
 
 ```{r}
 cmd3 <- replaceParam(cmd, "base", index = 1, replace = list(baseCommand = "bwa"))
@@ -302,7 +310,7 @@ cmd4 <- replaceParam(cmd, "inputs", index = 1:2, replace = new_inputs)
 cmdlist(cmd4)
 ```
 
-- Adding new arguments
+### Adding new arguments
 
 ```{r}
 newIn <- new_inputs <- list(
@@ -312,16 +320,19 @@ newIn <- new_inputs <- list(
 )
 cmd5 <- appendParam(cmd, "inputs", index = 1:2, append = new_inputs)
 cmdlist(cmd5)
+
+cmd6 <- appendParam(cmd, "inputs", index = 1:2, after=0, append = new_inputs)
+cmdlist(cmd6)
 ```
 
-- Editing `output` param
+### Editing `output` param
 
 ```{r}
 new_outs <- list(
     "sam_out" = "<F: $(inputs.results_path)/test.sam>"
 ) 
-cmd6 <- replaceParam(cmd, "outputs", index = 1, replace = new_outs)
-output(cmd6) 
+cmd7 <- replaceParam(cmd, "outputs", index = 1, replace = new_outs)
+output(cmd7) 
 ```
 
 ### Internal Check
