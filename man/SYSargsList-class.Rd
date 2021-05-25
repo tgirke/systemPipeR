@@ -3,7 +3,8 @@
 \docType{class}
 \alias{SYSargsList-class}
 \alias{[,SYSargsList,ANY,ANY,ANY-method}
-\alias{[[,SYSargsList,ANY,missing-method}
+\alias{[[,SYSargsList,ANY,ANY,missing-method}
+\alias{[[,SYSargsList,ANY,ANY-method}
 \alias{[[<-,SYSargsList,ANY,ANY,ANY-method}
 \alias{$,SYSargsList-method}
 \alias{codeSteps,SYSargsList-method}
@@ -11,15 +12,37 @@
 \alias{coerce,SYSargsList,list-method}
 \alias{length,SYSargsList-method}
 \alias{names,SYSargsList-method}
-\alias{projectWF,SYSargsList-method}
 \alias{show,SYSargsList-method}
-\alias{statusWF,SYSargsList-method}
-\alias{dataWF,SYSargsList-method}
-\alias{stepsWF,SYSargsList-method}
-\alias{summaryWF,SYSargsList-method}
-\alias{SYSargs2_steps,SYSargsList-method}
+\alias{sysargslist}
 \alias{sysargslist,SYSargsList-method}
-\alias{sysconfig,SYSargsList-method}
+\alias{sprconfig}
+\alias{sprconfig,SYSargsList-method}
+\alias{stepsWF}
+\alias{stepsWF,SYSargsList-method}
+\alias{statusWF}
+\alias{statusWF,SYSargsList-method}
+\alias{dependency}
+\alias{dependency,SYSargsList-method}
+\alias{projectWF}
+\alias{projectWF,SYSargsList-method}
+\alias{targetsWF}
+\alias{targetsWF,SYSargsList-method}
+\alias{SEobj}
+\alias{SEobj,SYSargsList-method}
+\alias{outfiles}
+\alias{outfiles,SYSargsList-method}
+\alias{targets_connection}
+\alias{targets_connection,SYSargsList-method}
+\alias{cmdlist,SYSargsList-method}
+\alias{appendStep<-}
+\alias{appendStep<-,SYSargsList-method}
+\alias{replaceStep<-}
+\alias{replaceStep<-,SYSargsList-method}
+\alias{renameStep<-}
+\alias{renameStep<-,SYSargsList-method}
+\alias{yamlinput,SYSargsList-method}
+\alias{yamlinput<-,SYSargsList-method}
+\alias{yamlinput<-,SYSargsList,ANY,ANY-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
@@ -30,34 +53,42 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{sysconfig}:}{Object of class \code{"list"} storing all the config information for the project }
-    \item{\code{codeSteps}:}{Object of class \code{"list"} storing all the \code{code steps} of the workflow }
-    \item{\code{stepsWF}:}{Object of class \code{"numeric"} storing all the index steps levels in the workflow }
-    \item{\code{dataWF}:}{Object of class \code{"data.frame"} storing all the data steps in the workflow }
-    \item{\code{SYSargs2_steps}:}{Object of class \code{"list"} storing all the \code{SYSargs2} objects of the workflow }
-    \item{\code{statusWF}:}{Object of class \code{"list"} storing all the success and failure of each step in the workflow}
-    \item{\code{projectWF}:}{Object of class \code{"list"} storing all the directories from the project }
+    \item{\code{sprconfig}:}{Object of class \code{"list"} storing all the config information for the project }
+    \item{\code{stepsWF}:}{Object of class \code{"list"} storing all the \code{SYSargs2} objects of the workflow }
+    \item{\code{statusWF}:}{Object of class \code{"list"} storing all the success and failure of each step in the workflow }
+    \item{\code{dependency}:}{Object of class \code{"list"} storing all the dependency steps in the workflow }
+    \item{\code{projectWF}:}{Object of class \code{"list"} storing all the \code{projectWF} information of the workflow }
+    \item{\code{targetsWF}:}{Object of class \code{"list"} storing all the targets files for each step in the workflow}
+    \item{\code{SEobj}:}{Object of class \code{"list"} storing all the SummarizedExperiment objects in the workflow }
+    \item{\code{outfiles}:}{Object of class \code{"list"} storing all the output files in the workflow }
+    \item{\code{targets_connection}:}{Object of class \code{"list"} storing all targets files connection in the workflow }
   }
 }
 \section{Methods}{
   \describe{
     \item{[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", drop = "ANY")}: subsetting of class with bracket operator }
     \item{[[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY")}: subsetting of class with bracket operator }
-    \item{[[<-}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", value = "ANY")}: replacement method for SYSargs2 class }
+    \item{[[<-}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", value = "ANY")}: replacement method for \code{SYSargsList} class }
     \item{$}{\code{signature(x = "SYSargsList")}: extracting slots elements by name }
-    \item{codeSteps}{\code{signature(x = "SYSargsList")}: ... }
     \item{coerce}{\code{signature(from = "list", to = "SYSargsList")}: \code{as(list, "SYSargsList")} }
     \item{coerce}{\code{signature(from = "SYSargsList", to = "list")}: \code{as(SYSargsList, "list")} }
-    \item{length}{\code{signature(x = "SYSargsList")}: extracts number of \code{SYSargsList} objects }
+    \item{length}{\code{signature(x = "SYSargsList")}: extracts number of \code{SYSargs2} objects }
     \item{names}{\code{signature(x = "SYSargsList")}: extracts slot names }
-    \item{projectWF}{\code{signature(x = "SYSargsList")}: extract data from \code{projectWF} slot }
     \item{show}{\code{signature(object = "SYSargsList")}: summary view of \code{SYSargsList} steps }
-    \item{statusWF}{\code{signature(x = "SYSargsList")}: extract data from \code{statusWF} slot }
-    \item{dataWF}{\code{signature(x = "SYSargsList")}: extract data from \code{dataWF} slot }
+    \item{sprconfig}{\code{signature(x = "SYSargsList")}: extract data from \code{sprconfig} slot }
     \item{stepsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{stepsWF} slot }
-    \item{SYSargs2_steps}{\code{signature(x = "SYSargsList")}: extract data from \code{SYSargs2_steps} slot }
+    \item{statusWF}{\code{signature(x = "SYSargsList")}: extract data from \code{statusWF} slot }
+    \item{dependency}{\code{signature(x = "SYSargsList")}: extract data from \code{dependency} slot }
+    \item{projectWF}{\code{signature(x = "SYSargsList")}: extract data from \code{projectWF} slot }
+    \item{targetsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{targetsWF} slot }
     \item{sysargslist}{\code{signature(x = "SYSargsList")}: Coerce back to list \code{as(SYSargsList, "list")} }
-    \item{sysconfig}{\code{signature(x = "SYSargsList")}: extract data from \code{sysconfig} slot }
+    \item{SEobj}{\code{signature(x = "SYSargsList")}: extract data from \code{SEobj} slot }
+    \item{cmdlist}{\code{signature(x = "SYSargsList")}: extracts data from \code{cmdlist} slot for each step }
+    \item{appendStep<-}{\code{signature(x = "SYSargsList")}: replacement method for append a step }
+    \item{appendStep<-}{\code{signature(x = "SYSargsList")}: replacement method for append a step }
+    \item{replaceStep<-}{\code{signature(x = "SYSargsList")}: replacement method for replace a step }
+    \item{renameStep<-}{\code{signature(x = "SYSargsList")}: replacement method for rename a step}
+    \item{yamlinput<-}{\code{signature(x = "SYSargs2")}: replacement method for \code{yamlinput} slot for each step }
   }
 }
 \author{
