@@ -218,15 +218,13 @@ setMethod(f = "[", signature = "SYSargs2", definition = function(x, i, ..., drop
 })
 
 ## Behavior of "[[" operator for SYSargs2
-setMethod(
-  f = "[[", signature = c("SYSargs2", "ANY", "missing"),
+setMethod(f = "[[", signature = c("SYSargs2", "ANY", "missing"),
   definition = function(x, i, ..., drop) {
     return(as(x, "list")[[i]])
 })
 
 ## Behavior of "$" operator for SYSargs2
-setMethod("$",
-          signature = "SYSargs2",
+setMethod("$", signature = "SYSargs2",
           definition = function(x, name) {
             slot(x, name)
 })
@@ -263,10 +261,10 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
 })
 
 ## Replacement method
-setGeneric(name="yamlinput<-", def=function(x, paramName, value) standardGeneric("yamlinput<-"))
-setReplaceMethod("yamlinput", c("SYSargs2"), function(x, paramName, value) {
+setGeneric(name="yamlinput<-", def=function(x, ..., value) standardGeneric("yamlinput<-"))
+setReplaceMethod("yamlinput", c("SYSargs2"), function(x, ..., value) {
   x <- as(x, "list")
-  x$yamlinput[[paramName]] <- value
+  x$yamlinput[[...]] <- value
   x <- as(x, "SYSargs2")
   x <- updateWF(x)
   x
@@ -324,9 +322,7 @@ setMethod(f = "projectWF", signature = "SYSargsList", definition = function(x) {
 
 ## Constructor methods
 ## List to SYSargsList
-setAs(
-  from = "list", to = "SYSargsList",
-  def = function(from) {
+setAs(from = "list", to = "SYSargsList", def = function(from) {
     new("SYSargsList",
       sysconfig = from$sysconfig, codeSteps = from$codeSteps, stepsWF = from$stepsWF, dataWF = from$dataWF, SYSargs2_steps = from$SYSargs2_steps,
       statusWF = from$statusWF, projectWF = from$projectWF
@@ -342,41 +338,32 @@ setMethod(f = "sysargslist", signature = "SYSargsList", definition = function(x)
 })
 
 ## SYSargsList to list with: as("SYSargsList", list)
-setAs(
-  from = "SYSargsList", to = "list",
+setAs(from = "SYSargsList", to = "list",
   def = function(from) {
     sysargslist(from)
-  }
-)
+})
 
 ## Define print behavior for SYSargsList
-setMethod(
-  f = "show", signature = "SYSargsList",
-  definition = function(object) {
+setMethod(f = "show", signature = "SYSargsList", definition = function(object) {
     cat(paste0("Instance of '", class(object), "':"),
       "   WF Steps:",
       names(object@stepsWF),
       "\n",
       sep = "\n"
     )
-  }
-)
+})
 
 ## Extend names() method
-setMethod(
-  f = "names", signature = "SYSargsList",
+setMethod(f = "names", signature = "SYSargsList",
   definition = function(x) {
     return(slotNames(x))
-  }
-)
+})
 
 ## Extend length() method
-setMethod(
-  f = "length", signature = "SYSargsList",
+setMethod(f = "length", signature = "SYSargsList",
   definition = function(x) {
     return(length(x@stepsWF))
-  }
-)
+})
 
 # Behavior of "[" operator for SYSargsList
 setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
@@ -388,20 +375,17 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
 })
 
 ## Behavior of "[[" operator for SYSargsList
-setMethod(
-  f = "[[", signature = c("SYSargsList","ANY", "missing"),
+setMethod(f = "[[", signature = c("SYSargsList","ANY", "missing"),
   definition = function(x, i, ..., drop) {
     return(as(x, "list")[[i]])
-  }
-)
+})
 
 ## Behavior of "$" operator for SYSargsList
 setMethod("$",
   signature = "SYSargsList",
   definition = function(x, name) {
     slot(x, name)
-  }
-)
+})
 
 ## Replacement method for SYSargsList using "[" operator
 setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, j, value) {

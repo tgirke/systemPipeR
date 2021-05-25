@@ -61,6 +61,7 @@ exportMethods(
     "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
     "as.list", "[[", "[[<-", "$", "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
     "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
+    "yamlinput<-",
     "sysconfig", "codeSteps", "stepsWF", "dataWF",
     "SYSargs2_steps", "statusWF", "projectWF", "sysargslist"
 )

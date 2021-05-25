@@ -32,6 +32,7 @@
 \alias{clt,SYSargs2-method}
 \alias{yamlinput}
 \alias{yamlinput,SYSargs2-method}
+\alias{yamlinput<-}
 \alias{yamlinput<-,SYSargs2-method}
 \alias{yamlinput<-,SYSargs2,ANY,ANY-method}
 \alias{cmdlist}
@@ -46,8 +47,6 @@
 \alias{inputvars,SYSargs2-method}
 \alias{cmdToCwl}
 \alias{cmdToCwl,SYSargs2-method}
-\alias{cmdToCwl<-,SYSargs2-method}
-\alias{cmdToCwl<-,SYSargs2,ANY,ANY-method}
 \alias{baseCommand}
 \alias{baseCommand,SYSargs2-method}
 
@@ -100,7 +99,6 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{yamlinput}{\code{signature(x = "SYSargs2")}:  extracts data from \code{yamlinput} slot }
     \item{cmdToCwl}{\code{signature(x = "SYSargs2")}:  extracts data from \code{cmdToCwl} slot }
     \item{yamlinput<-}{\code{signature(x = "SYSargs2")}: replacement method for \code{yamlinput} slot }
-    \item{cmdToCwl<-}{\code{signature(x = "SYSargs2")}: replacement method for \code{cmdToCwl} slot}
 	 }
 }
 \author{

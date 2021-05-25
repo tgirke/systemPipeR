@@ -207,7 +207,7 @@ Users need to define the command line in a pseudo-bash script format:
 
 ```{r cmd, eval=TRUE}
 command <- "
-echo \
+hisat2 \
     -S <F, out: ./results/M1A.sam> \
     -x <F: ./data/tair10.fasta> \
     -k <int: 1> \
@@ -346,4 +346,14 @@ WF_test
 cmdlist(WF_test)
 ```
 
+# Version information
 
+```{r sessionInfo}
+sessionInfo()
+```
+
+# Funding
+
+This project is funded by NSF award [ABI-1661152](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1661152). 
+
+# References
