@@ -541,7 +541,7 @@ assembleCommandlineList <- function(clt=WF$clt[[1]]) {
     basecommand <- clt$baseCommand
     arguments <- clt$arguments
     ## Special case for Rscript --  get the absolute path to the Rscript command
-    if(basecommand=="Rscript"){
+    if("Rscript" %in% basecommand){
         basecommand <- file.path(R.home('bin'), 'Rscript')
     }
     if(!is.null(arguments)){
