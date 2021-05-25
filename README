@@ -1,9 +1,9 @@
 changelog
      version 1.27.3
-     	- Adding createParamFiles, "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", "updateWF" functions
-     	- Adding "cmdToCwl", "baseCommand" methods
-     	- Updating SYSargs2 class
-    	- Updating "loadWorkflow", "createWF", "output_update", "write.clt", "write.yml", "SYScreate" functions
+     	- Adding createParamFiles, "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", "updateWF", "SYSargsList" functions
+     	- Adding "cmdToCwl", "baseCommand", "sprconfig", "stepsWF", "statusWF", "dependency", "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-", "replaceStep<-", "renameStep<-" methods
+     	- Updating SYSargs2 and SYSargsList class
+    	- Updating "loadWorkflow", "createWF", "output_update", "write.clt", "write.yml", "SYScreate", "runWF", "initWF"  functions
     	- Adding systemPipeR_CWL.Rmd vignette
     	
      version 1.27.2
