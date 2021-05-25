@@ -6,14 +6,25 @@
 ## Load Workflow ##
 ###################
 loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
-  if(!file.exists(file.path(dir_path, wf_file))==TRUE) stop("Provide valid '.cwl' file. Check the file PATH.")
-  if(!file.exists(file.path(dir_path, input_file))==TRUE) stop("Provide valid 'files.'.yml' file. Check the file PATH.")
-  if(all(!is.null(targets) && !file.exists(targets)==TRUE)) stop("Provide valid 'targets' file. Check the file PATH.")
-  wf <- yaml::read_yaml(file.path(dir_path, wf_file))
-  input <- yaml::read_yaml(file.path(dir_path, input_file))
+    if(any(is(wf_file)=="list")) {
+        wf <- wf_file
+    } else {
+        if(!file.exists(file.path(dir_path, wf_file))==TRUE) stop("Provide valid '.cwl' file. Check the file PATH.")
+        wf <- yaml::read_yaml(file.path(dir_path, wf_file))
+    }
+    if(any(is(input_file)=="list")) {
+        input <- input_file
+    } else {
+        if(!file.exists(file.path(dir_path, input_file))==TRUE) stop("Provide valid 'files.'.yml' file. Check the file PATH.")
+        input <- yaml::read_yaml(file.path(dir_path, input_file))
+    }
   modules <- input$ModulesToLoad
-  if(is.null(modules)) modules <- list()   
-  cwlfiles <- list(cwl=normalizePath(file.path(dir_path, wf_file)), yml=normalizePath(file.path(dir_path, input_file)))
+  if(is.null(modules)) modules <- list()
+  if(is.null(dir_path)){
+      cwlfiles <- list(cwl=NA, yml=NA)
+  } else {
+      cwlfiles <- list(cwl=normalizePath(file.path(dir_path, wf_file)), yml=normalizePath(file.path(dir_path, input_file)))
+  }
   inputvars <- list()
   if(tolower(wf$class) == "workflow") { 
     steps <- names(wf$steps)
@@ -24,7 +35,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
-    WF <- list(modules=modules, wf=wf, clt=cltlist, yamlinput=input, cmdlist=cmdlist, input=myinput, output=myoutput, cwlfiles=cwlfiles, inputvars=inputvars)
+    WF <- list(modules=modules, wf=wf, clt=cltlist, yamlinput=input, cmdlist=cmdlist, input=myinput, output=myoutput, cwlfiles=cwlfiles, inputvars=inputvars, cmdToCwl=list())
   } else if(tolower(wf$class) == "commandlinetool") {
     cltlist <- list(wf)
     names(cltlist) <- basename(wf_file)
@@ -32,12 +43,16 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
     cwlfiles$steps <- strsplit(basename(wf_file), ".cwl")[[1]]
-    WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist, input=myinput, output=myoutput, cwlfiles=cwlfiles, inputvars=inputvars)
+    WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist, input=myinput, output=myoutput, cwlfiles=cwlfiles, inputvars=inputvars, cmdToCwl=list())
   } else {
     stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
   }
   if(!is.null(targets)) {
-    if(class(targets)=="SYSargs2"){
+      if(inherits(targets, "SummarizedExperiment")){
+          mytargets <- as.data.frame(colData(targets))
+          targetsheader <- metadata(targets)
+          WF <- c(list(targets=mytargets, targetsheader=targetsheader), WF)
+      } else if(class(targets)=="SYSargs2"){
       mytargets <- targets(targets)
       targetsheader <- targetsheader(targets)[[1]]
     } else {
@@ -52,9 +67,9 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
       }
       targetsheader <- readLines(normalizePath(file.path(targets)))
       targetsheader <- targetsheader[grepl("^#", targetsheader)] 
+      WF$cwlfiles["targets"] <- file.path(targets)
+      WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
     }
-    WF$cwlfiles["targets"] <- file.path(targets)
-    WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
   } else {
     WF$cwlfiles["targets"] <- NA
     WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
@@ -75,9 +90,9 @@ loadWF <- loadWorkflow
 ##   Create CommandLineTools from Command-line   ##
 ###################################################
 createWF <- function(targets=NULL, commandLine, results_path="./results", module_load="baseCommand", file = "default", 
-                     overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", silent=FALSE){
+                     overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", writeout=FALSE, silent=FALSE){
   ## TODO if is not default, module load and file
-  if(!class(commandLine)=="list") stop("'commandLine' needs to be object of class 'list'.")  
+  if(all(!is(commandLine)=="list")) stop("'commandLine' needs to be object of class 'list'.")  
   if(any(!c("baseCommand", "inputs", "outputs") %in% names(commandLine))) stop("Argument 'commandLine' needs to be assigned at least to: 'baseCommand', 'input' or 'output'.")
   if(all(!c("Workflow", "CommandLineTool") %in% class)) stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
   if(dir.exists(results_path)==FALSE) dir.create(path=results_path)
@@ -114,19 +129,19 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
     stop(paste("I am not allowed to overwrite files; please delete existing file:", 
                file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
   ## class("CommandLineTool", "Workflow")
-  WF.temp <- SYScreate("SYSargs2")
-  WF.temp <- as(WF.temp, "list")
-  ## TODO: Expand to write.WF()
+  # WF.temp <- SYScreate("SYSargs2")
+  WF.temp <- as(SYScreate("SYSargs2"), "list")
   WF.temp$wf <- list()
-  WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, silent = silent) 
-  WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, silent = silent) 
+  WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, writeout= writeout, silent = silent) 
+  WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, writeout=writeout, silent = silent) 
   WF.temp$modules <- WF.temp$yamlinput$ModulesToLoad
   WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$output <- sapply(names(WF.temp$clt), function(x) list(NULL))
-  WF.temp$cwlfiles <- list(cwl=normalizePath(file.path(file.cwl)), 
-                           yml=normalizePath(file.path(file.yml)), 
+  WF.temp$cwlfiles <- list(cwl=file.path(file.cwl), 
+                           yml=file.path(file.yml), 
                            steps=names(WF.temp$clt))
+  WF.temp$cmdToCwl <- commandLine
   ## targets
   if(!is.null(targets)) {
     mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
@@ -195,6 +210,61 @@ renderWF <- function(WF, inputvars=NULL) {
 
 ## Usage:
 # WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+
+###############################################################
+## Update  WF container for all samples in targets slot  ##
+###############################################################
+updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
+                     inputvars=NULL, silent=FALSE){
+    if(!is(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
+    args <- sysargs2(args)
+    if(is.null(inputvars)){
+        args$inputvars <- args$inputvars
+    }
+    args$inputvars <- list()
+    if(length(args$cmdToCwl)>1){
+        cwlVersion <- args$clt[[1]]$cwlVersion
+        class <- args$clt[[1]]$class
+        module_load <- args$yamlinput$ModulesToLoad[[1]]
+        results_path <- args$yamlinput$results_path$path
+        args$clt <- write.clt(args$cmdToCwl, cwlVersion=cwlVersion, class=class, writeout= FALSE, silent = silent) 
+        args$yamlinput <- write.yml(args$cmdToCwl, results_path=results_path, module_load=module_load, writeout=FALSE, silent = silent) 
+    } else if (length(args$cmdToCwl)==0){
+        if(!is.null(new_targets)){
+            args$targets <- new_targets
+        } else{
+            args$targets <- args$targets
+        }
+        args$yamlinput <- args$yamlinput
+        args$clt <- args$clt
+        results_path <- args$yamlinput$results_path$path
+    }
+    args$input <- args$output <- args$cmdlist <- sapply(names(args$clt), function(x) list(NULL))
+    ## write the new yaml
+    if(write.yaml==TRUE){
+        if(name.yaml=="default"){
+            path <- .getPath(args$cwlfiles$yml)
+            name <- paste0(.getFileName(args$cwlfiles$yml), 
+                           format(Sys.time(), "%b%d%Y_%H%M"), ".yml")
+            name.yaml <- file.path(path, name)
+        } else{
+            name.yaml <- name.yaml
+        }
+        yaml::write_yaml(args$yamlinput, name.yaml)
+        if (silent != TRUE) 
+            cat("\t", "Written content of 'yamlinput(x)' to file:",  "\n",
+                name.yaml, "\n")
+        args$cwlfiles$yml <- name.yaml
+    }
+    args <- as(args, "SYSargs2")
+    args <- renderWF(args, inputvars=inputvars)
+    return(args)
+}
+
+## Usage:
+# yamlinput(WF)$thread <- 6
+# WF <- updateWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+
 
 ###############################################################
 ## Subsetting the input and output slots by name or position ##
@@ -318,7 +388,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
         for(k in seq_along(args$output[[i]][[j]])){
           name <- basename(args$output[[i]][[j]][k])
           dirRep <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
-          if(grepl(paste0(extension[1], "$"), name)){
+          if(grepl(extension[1], name)){
             sam <- .getExt(name)
             args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dirRep, "/", .getFileName(name), extension[2])))
           } else {
@@ -469,11 +539,11 @@ assembleCommandlineList <- function(clt=WF$clt[[1]]) {
     WF <- NULL
     ## Base command and arguments
     basecommand <- clt$baseCommand
+    arguments <- clt$arguments
     ## Special case for Rscript --  get the absolute path to the Rscript command
     if(basecommand=="Rscript"){
         basecommand <- file.path(R.home('bin'), 'Rscript')
     }
-    arguments <- clt$arguments
     if(!is.null(arguments)){
       for(i in seq_along(arguments)) arguments[[i]][["position"]] <- ""
     }
@@ -612,7 +682,7 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
         return(cmd)
     }
     ## Check here for WF class instead of names once implemented
-    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "cwlfiles", "inputvars"))) {
+    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "cwlfiles", "inputvars", "cmdToCwl"))) {
         cmdstring <- sapply(names(x$cmdlist), 
                             function(i) .renderCommandline(x=x$cmdlist[[i]], redirect=redirect),
                             simplify=FALSE)
@@ -897,7 +967,7 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 ###################
 ##   write.cwl   ##
 ###################
-write.clt <- function(commandLine, cwlVersion, class, file.cwl, silent=FALSE) {
+write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout=TRUE, silent=FALSE) {
   cwlVersion <- cwlVersion 
   class <- class
   baseCommand <- commandLine$baseCommand[[1]]
@@ -953,10 +1023,12 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, silent=FALSE) {
   }
   ## FILE
     clt <- c(clt, list(baseCommand=baseCommand, inputs=inputs, outputs=outputs))
-  ## writting file
-  yaml::write_yaml(x=clt, file = file.cwl)
-  ## print message 
-  if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.cwl, "\n")
+  ## writing file
+    if (writeout == TRUE) {
+        yaml::write_yaml(x=clt, file = file.cwl)
+        ## print message 
+        if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.cwl, "\n")
+    }
   clt <- list(clt)
   names(clt) <- baseCommand
   return(clt)
@@ -969,13 +1041,14 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, silent=FALSE) {
 ##   write.yml   ##
 ###################
 ## Write the yaml file  
-write.yml <- function(commandLine, file.yml, results_path, module_load, silent=FALSE){
+write.yml <- function(commandLine, file.yml, results_path, module_load, writeout=TRUE, silent=FALSE){
   inputs <- commandLine$inputs
   if(any(names(inputs)=="")) stop("Each element of the list 'commandLine' needs to be assigned a name")
   if(is.null(names(inputs))) stop("Each element of the list 'commandLine' needs to be assigned a name")
   ##yamlinput_yml 
   yamlinput_yml <- sapply(names(inputs), function(x) list())
   for(i in seq_along(inputs)){
+      ##TODO!!!
     if(!c("type") %in% names(inputs[[i]])) stop("Each element of the sublist 'inputs' in 'commandLine' needs to be defined the type of the argument, for example: type='Directory' or type='File' or type='int' or type='string'")
     if("type" %in% names(inputs[[i]])){
       if(any(c("File", "Directory") %in% inputs[[i]])){
@@ -996,9 +1069,11 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, silent=F
     yamlinput_yml[["ModulesToLoad"]][paste0("module", i)] <- list(module_load[[i]])
   }
   ## write out the '.yml' file
-  yaml::write_yaml(x=yamlinput_yml, file = file.yml)
-  ## print message 
-  if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.yml, "\n")
+  if (writeout == TRUE) {
+      yaml::write_yaml(x=yamlinput_yml, file = file.yml)
+      ## print message 
+    if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.yml, "\n")
+  }
   return(yamlinput_yml)
 }
 

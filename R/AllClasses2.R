@@ -13,13 +13,15 @@ setClass("SYSargs2", representation(
   input = "list",
   output = "list",
   cwlfiles = "list",
-  inputvars = "list"
+  inputvars = "list", 
+  cmdToCwl = "list"
 ))
 ## Methods to return SYSargs2 components
 setGeneric(name = "targets", def = function(x) standardGeneric("targets"))
 setMethod(f = "targets", signature = "SYSargs2", definition = function(x) {
   return(x@targets)
 })
+
 setMethod(f = "targetsheader", signature = "SYSargs2", definition = function(x) {
   return(x@targetsheader)
 })
@@ -59,83 +61,85 @@ setMethod(f = "inputvars", signature = "SYSargs2", definition = function(x) {
   return(x@inputvars)
 })
 
+setGeneric(name = "cmdToCwl", def = function(x) standardGeneric("cmdToCwl"))
+setMethod(f = "cmdToCwl", signature = "SYSargs2", definition = function(x) {
+  return(x@cmdToCwl)
+})
+
+
 ## Constructor methods
 ## List to SYSargs2 with: as(mylist, "SYSargs2")
 setAs(
   from = "list", to = "SYSargs2",
   def = function(from) {
     new("SYSargs2",
-      targets = from$targets,
-      targetsheader = from$targetsheader,
-      modules = from$modules,
-      wf = from$wf,
-      clt = from$clt,
-      yamlinput = from$yamlinput,
-      cmdlist = from$cmdlist,
-      input = from$input,
-      output = from$output,
-      cwlfiles = from$cwlfiles,
-      inputvars = from$inputvars
+        targets = from$targets,
+        targetsheader = from$targetsheader,
+        modules = from$modules,
+        wf = from$wf,
+        clt = from$clt,
+        yamlinput = from$yamlinput,
+        cmdlist = from$cmdlist,
+        input = from$input,
+        output = from$output,
+        cwlfiles = from$cwlfiles,
+        inputvars = from$inputvars, 
+        cmdToCwl = from$cmdToCwl
     )
-  }
-)
+})
 
 ## Coerce back to list: as(SYSargs2, "list")
 setGeneric(name = "sysargs2", def = function(x) standardGeneric("sysargs2"))
 setMethod(f = "sysargs2", signature = "SYSargs2", definition = function(x) {
-  sysargslist <- list(targets = x@targets, targetsheader = x@targetsheader, modules = x@modules, wf = x@wf, clt = x@clt, yamlinput = x@yamlinput, cmdlist = x@cmdlist, input = x@input, output = x@output, cwlfiles = x@cwlfiles, inputvars = x@inputvars)
-  return(sysargslist)
+  sysargs2 <- list(targets = x@targets, targetsheader = x@targetsheader, modules = x@modules, wf = x@wf,
+                   clt = x@clt, yamlinput = x@yamlinput, cmdlist = x@cmdlist, input = x@input, output = x@output, 
+                   cwlfiles = x@cwlfiles, inputvars = x@inputvars, cmdToCwl = x@cmdToCwl)
+  return(sysargs2)
 })
 
-## SYSargs2 to list with: as("SYSargs2", list)
-setAs(
-  from = "SYSargs2", to = "list",
-  def = function(from) {
+## SYSargs2 to list with: as(SYSargs2, "list")
+setAs(from = "SYSargs2", to = "list",  def = function(from) {
     sysargs2(from)
-  }
-)
+})
 
 ## Define print behavior for SYSargs2
 setMethod(
   f = "show", signature = "SYSargs2",
   definition = function(object) {
     cat(paste0("Instance of '", class(object), "':"),
-      paste0("   Slot names/accessors: "),
-      paste0(
-        "      targets: ", length(object@targets),
-        " (", head(names(object@targets), 1), "...",
-        tail(names(object@targets), 1), ")",
-        ", targetsheader: ", length(unlist(object@targetsheader)), " (lines)"
-      ),
-      paste0("      modules: ", length(object@modules)),
-      paste0(
-        "      wf: ", length(object@wf),
-        ", clt: ", length(object@clt),
-        ", yamlinput: ", length(object@yamlinput), " (components)"
-      ),
-      paste0(
-        "      input: ", length(object@input),
-        ", output: ", length(object@output)
-      ),
-      paste0("      cmdlist: ", length(object@cmdlist)),
-      "   WF Steps:",
-      paste0(
-        "      ", seq_along(object@clt), ". ", object@cwlfiles$steps,
-        " (rendered: ", length(object@cmdlist[[1]]) != 0, ")"
-      ),
-      "\n",
-      sep = "\n"
+        paste0("   Slot names/accessors: "),
+        paste0(
+          "      targets: ", length(object@targets),
+          " (", head(names(object@targets), 1), "...",
+          tail(names(object@targets), 1), ")",
+          ", targetsheader: ", length(unlist(object@targetsheader)), " (lines)"
+        ),
+        paste0("      modules: ", length(object@modules)),
+        paste0(
+          "      wf: ", length(object@wf),
+          ", clt: ", length(object@clt),
+          ", yamlinput: ", length(object@yamlinput), " (components)"
+        ),
+        paste0(
+          "      input: ", length(object@input),
+          ", output: ", length(object@output)
+        ),
+        paste0("      cmdlist: ", length(object@cmdlist)),
+        "   WF Steps:",
+        paste0(
+          "      ", seq_along(object@clt), ". ", object@cwlfiles$steps,
+          " (rendered: ", length(object@cmdlist[[1]]) != 0, ")"
+        ),
+        "\n",
+        sep = "\n"
     )
-  }
-)
+})
 
 ## Extend names() method
-setMethod(
-  f = "names", signature = "SYSargs2",
+setMethod(f = "names", signature = "SYSargs2",
   definition = function(x) {
     return(slotNames(x))
-  }
-)
+})
 
 ## Extend infile1() method
 setMethod(f = "infile1", signature = "SYSargs2", definition = function(x) {
@@ -169,11 +173,9 @@ setMethod(f = "infile2", signature = "SYSargs2", definition = function(x) {
 
 ## Extend length() method
 setMethod(
-  f = "length", signature = "SYSargs2",
-  definition = function(x) {
+  f = "length", signature = "SYSargs2", definition = function(x) {
     return(length(x@targets))
-  }
-)
+})
 
 ## Convert targets data.frame to list
 targets.as.list <- function(x) {
@@ -192,11 +194,16 @@ targets.as.df <- function(x) {
   targetsDF <- as.data.frame(do.call("rbind", targetstmp))
   rownames(targetsDF) <- NULL
   colnames(targetsDF) <- names(x[[1]])
-  return(targetsDF)
+  return(S4Vectors::DataFrame(targetsDF))
 }
 
 ## Usage:
 # targets.as.df(x=targetslist)
+
+## targets slot from a SYSargs2 obj to df with: as(SYSargs2, "data.frame")
+setAs(from = "SYSargs2", to = "data.frame", def = function(from) {
+    targets.as.df(targets(from))
+})
 
 # Behavior of "[" operator for SYSargs2
 setMethod(f = "[", signature = "SYSargs2", definition = function(x, i, ..., drop) {
@@ -215,16 +222,19 @@ setMethod(
   f = "[[", signature = c("SYSargs2", "ANY", "missing"),
   definition = function(x, i, ..., drop) {
     return(as(x, "list")[[i]])
-  }
-)
+})
 
 ## Behavior of "$" operator for SYSargs2
 setMethod("$",
-  signature = "SYSargs2",
-  definition = function(x, name) {
-    slot(x, name)
-  }
-)
+          signature = "SYSargs2",
+          definition = function(x, name) {
+            slot(x, name)
+})
+
+setGeneric(name = "baseCommand", def = function(x) standardGeneric("baseCommand"))
+setMethod("baseCommand", signature = "SYSargs2", definition = function(x) {
+  return(x@clt[[1]]$baseCommand)
+})
 
 ## Replacement method for SYSargs2 using "[" operator
 setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j, value) {
@@ -248,7 +258,24 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
   if (i == "input") x@input <- value
   if (i == "output") x@output <- value
   if (i == "cwlfiles") x@cwlfiles <- value
+  if (i == "cmdToCwl") x@cmdToCwl <- value
   return(x)
+})
+
+## Replacement method
+setGeneric(name="yamlinput<-", def=function(x, paramName, value) standardGeneric("yamlinput<-"))
+setReplaceMethod("yamlinput", c("SYSargs2"), function(x, paramName, value) {
+  x <- as(x, "list")
+  x$yamlinput[[paramName]] <- value
+  x <- as(x, "SYSargs2")
+  x <- updateWF(x)
+  x
+})
+
+setGeneric(name="cmdToCwl<-", def=function(x, ..., value) standardGeneric("cmdToCwl<-"))
+setReplaceMethod("cmdToCwl", c("SYSargs2"), function(x,..., value) {
+  x@cmdToCwl <- value
+  x
 })
 
 ####################################################

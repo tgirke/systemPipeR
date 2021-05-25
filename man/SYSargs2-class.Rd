@@ -1,30 +1,55 @@
 \name{SYSargs2-class}
 \Rdversion{1.1}
 \docType{class}
+% Class
 \alias{SYSargs2-class}
+% Subsetting and Quick access
 \alias{[,SYSargs2,ANY,ANY,ANY-method}
-\alias{[[,SYSargs2,ANY,missing-method}
-\alias{[[<-,SYSargs2,ANY,ANY,ANY-method}
 \alias{$,SYSargs2-method}
-\alias{clt,SYSargs2-method}
-\alias{cmdlist,SYSargs2-method}
+
+% Coercion
 \alias{coerce,list,SYSargs2-method}
 \alias{coerce,SYSargs2,list-method}
-\alias{cwlfiles,SYSargs2-method}
-\alias{infile1,SYSargs2-method}
-\alias{infile2,SYSargs2-method}
-\alias{input,SYSargs2-method}
-\alias{inputvars,SYSargs2-method}
-\alias{length,SYSargs2-method}
-\alias{modules,SYSargs2-method}
-\alias{names,SYSargs2-method}
-\alias{output,SYSargs2-method}
-\alias{show,SYSargs2-method}
+% Replacement
+\alias{[[,SYSargs2,ANY,missing-method}
+\alias{[[<-,SYSargs2,ANY,ANY,ANY-method}
+
+%Accessors
+\alias{sysargs2}
 \alias{sysargs2,SYSargs2-method}
+\alias{length,SYSargs2-method}
+\alias{names,SYSargs2-method}
+\alias{show,SYSargs2-method}
+\alias{modules,SYSargs2-method}
+\alias{targets}
 \alias{targets,SYSargs2-method}
 \alias{targetsheader,SYSargs2-method}
+\alias{infile1,SYSargs2-method}
+\alias{infile2,SYSargs2-method}
+\alias{wf}
 \alias{wf,SYSargs2-method}
+\alias{clt}
+\alias{clt,SYSargs2-method}
+\alias{yamlinput}
 \alias{yamlinput,SYSargs2-method}
+\alias{yamlinput<-,SYSargs2-method}
+\alias{yamlinput<-,SYSargs2,ANY,ANY-method}
+\alias{cmdlist}
+\alias{cmdlist,SYSargs2-method}
+\alias{input}
+\alias{input,SYSargs2-method}
+\alias{output}
+\alias{output,SYSargs2-method}
+\alias{cwlfiles}
+\alias{cwlfiles,SYSargs2-method}
+\alias{inputvars}
+\alias{inputvars,SYSargs2-method}
+\alias{cmdToCwl}
+\alias{cmdToCwl,SYSargs2-method}
+\alias{cmdToCwl<-,SYSargs2-method}
+\alias{cmdToCwl<-,SYSargs2,ANY,ANY-method}
+\alias{baseCommand}
+\alias{baseCommand,SYSargs2-method}
 
 \title{Class \code{"SYSargs2"}}
 \description{
@@ -46,6 +71,7 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{\code{output}:}{Object of class \code{"list"} paths to final outputs files }
     \item{\code{cwlfiles}:}{Object of class \code{"list"} paths to \code{input} and \code{CWL param} files }
     \item{\code{inputvars}:}{Object of class \code{"list"} storing data from each \code{inputvars} }
+    \item{\code{cmdToCwl}:}{Object of class \code{"list"} storing data from each \code{cmdToCwl} }
   }
 }
 \section{Methods}{
@@ -72,6 +98,9 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{targetsheader}{\code{signature(x = "SYSargs2")}: extracts data from \code{targetsheader} slot }
     \item{wf}{\code{signature(x = "SYSargs2")}:  extracts data from \code{wf} slot }
     \item{yamlinput}{\code{signature(x = "SYSargs2")}:  extracts data from \code{yamlinput} slot }
+    \item{cmdToCwl}{\code{signature(x = "SYSargs2")}:  extracts data from \code{cmdToCwl} slot }
+    \item{yamlinput<-}{\code{signature(x = "SYSargs2")}: replacement method for \code{yamlinput} slot }
+    \item{cmdToCwl<-}{\code{signature(x = "SYSargs2")}: replacement method for \code{cmdToCwl} slot}
 	 }
 }
 \author{

@@ -728,7 +728,8 @@ SYScreate <- function(class) {
       input = list(),
       output = list(),
       cwlfiles = list(),
-      inputvars = list()
+      inputvars = list(), 
+      cmdToCwl = list()
     )
     return((as(SYS.empty, "SYSargs2")))
   } else if (class == "SYSargsList") {
@@ -1131,23 +1132,4 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## Usage:
 # .tryCatch(x=codeList[[1]])
 
-#############################
-## showDT function ##
-#############################
-showDT <- function(data, ...) {
-  DT::datatable(
-    data,
-    extensions = c("FixedColumns", "Scroller"),
-    options = list(
-      scrollX = TRUE,
-      fixedColumns = TRUE,
-      deferRender = TRUE,
-      scrollY = 200,
-      scroller = TRUE
-    )
-  )
-}
-## Usage:
-# targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
-# targets <- read.delim(targetspath, comment.char = "#")
-# showDT(targets)
+

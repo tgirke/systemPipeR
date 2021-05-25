@@ -6,6 +6,7 @@ importFrom("assertthat", "assert_that")
 importFrom("assertthat", "is.count")
 importFrom("assertthat", "is.writeable")
 importFrom("assertthat", "not_empty")
+importFrom("crayon", "bgBlue", "bgMagenta")
 importFrom("DOT", "dot")
 importFrom("graphics", "boxplot")
 importFrom("graphics", "close.screen")
@@ -36,6 +37,7 @@ importFrom("stringr", "str_replace_all")
 importFrom("stringr", "str_replace")
 importFrom("stringr", "str_split")
 importFrom("stringr", "str_which")
+importFrom("S4Vectors", "DataFrame")
 importFrom("utils", "capture.output")
 importFrom("utils", "combn")
 importFrom("utils", "packageVersion")
@@ -58,7 +60,8 @@ exportMethods(
     "sysargs", "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
     "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
     "as.list", "[[", "[[<-", "$", "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
-    "sysargs2", "targets", "wf", "yamlinput", "sysconfig", "codeSteps", "stepsWF", "dataWF",
+    "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
+    "sysconfig", "codeSteps", "stepsWF", "dataWF",
     "SYSargs2_steps", "statusWF", "projectWF", "sysargslist"
 )
 
@@ -79,7 +82,8 @@ export(
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
     "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
-    "targets.as.df", "olRanges", "createWF", "evalCode", "tryPath",
+    "targets.as.df", "olRanges", "evalCode", "tryPath",
     "tryCL", "SYSproject", "initProject", "initWF", "configWF", "config.param", 
-    "plotWF", "runWF", "renderReport", "check.output"
+    "plotWF", "runWF", "renderReport", "check.output", "createParamFiles", "writeParamFiles", 
+    "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam"
 )  
