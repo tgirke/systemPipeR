@@ -159,7 +159,6 @@ yml
 
 For the `message` and `SampleName` parameter, we are passing a variable connecting 
 with a third file called `targets.` 
-Even though the variable pattern `_XXXX_` is not required, we recommend adopting for consistency and easy identification as the variable notation rather them an argument.
 
 Now, let's explore the `targets` file structure:
 
@@ -185,16 +184,21 @@ The constructor function creates an `SYSargsList` S4 class object connecting thr
     - Input variables (`input_file` argument);
     - Targets file (`targets` argument).
     
-AS demonstrated above, the latter is optional for workflow steps lacking input files. 
-The connection between input variables and the targets file are defined under the
-`inputvars` argument. It is required a named vector, where each element name needs 
-to match with column names in the `targets` file and the value must match the 
-names of the *.yml* variables.
+As demonstrated above, the latter is optional for workflow steps lacking input files. 
+The connection between input variables (here defined by `input_file` argument) 
+and the `targets` file are defined under the `inputvars` argument. 
+A named vector is required, where each element name needs to match with column 
+names in the `targets` file, and the value must match the names of the *.yml* 
+variables. This is used to replace the CWL variable and construct all the command-line
+for that particular step. 
+
+The variable pattern `_XXXX_` is used to distinguish CWL variables that target 
+columns will replace. This pattern is recommended for consistency and easy identification
+but not enforced.
 
 The following imports a `.cwl` file (same example demonstrated above) for running
 the `echo Hello World` example. However, now we are connecting the variable defined 
 on the `.yml` file with the `targets` file inputs.
-
 
 ```{r fromFile_example, eval=TRUE}
 HW_mul <- SYSargsList(targets=targetspath, 
@@ -204,7 +208,7 @@ HW_mul
 cmdlist(HW_mul)
 ```
 
-![](SPR_CWL_hello.png)
+![**Figure 1:** Connectivity between CWL param files and targets files.](SPR_CWL_hello.png)
 
 # Creating the CWL param files from the command line
 
