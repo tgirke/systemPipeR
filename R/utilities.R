@@ -595,7 +595,7 @@ readComp <- function(file, format = "vector", delim = "-") {
     comp <- targetsheader(file)
     ## SYSargs2 class
   } else if (class(file) == "SYSargs2") {
-    if (length(targetsheader(file)[[1]]) == 0) stop("Input has no targets header lines.")
+    if (length(targetsheader(file))[[1]] == 0) stop("Input has no targets header lines.")
     comp <- targetsheader(file)[[1]]
   } else {
     comp <- readLines(file)
