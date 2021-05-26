@@ -539,17 +539,13 @@ assembleCommandlineList <- function(clt=WF$clt[[1]]) {
     WF <- NULL
     ## Base command and arguments
     basecommand <- clt$baseCommand
-    ## Special case for Rscript --  get the absolute path to the Rscript command
-    if(basecommand=="Rscript"){
-        basecommand <- file.path(R.home('bin'), 'Rscript')
-    }
     arguments <- clt$arguments
     ## Special case for Rscript --  get the absolute path to the Rscript command
     if("Rscript" %in% basecommand){
         basecommand <- file.path(R.home('bin'), 'Rscript')
     }
     if(!is.null(arguments)){
-      for(i in seq_along(arguments)) arguments[[i]][["position"]] <- ""
+        for(i in seq_along(arguments)) arguments[[i]][["position"]] <- ""
     }
     # ## Handling of special cases (here mkdir)
     # if(basecommand[1]=="mkdir") {
