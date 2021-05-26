@@ -589,15 +589,13 @@ returnRPKM <- function(counts, ranges) {
 ## Parses sample comparisons from <CMP> line(s) in targets.txt file or SYSars object.
 ## All possible comparisons can be specified with 'CMPset: ALL'.
 readComp <- function(file, format = "vector", delim = "-") {
-  ## global functions or variables
-  args_bam <- NULL
   if (!format %in% c("vector", "matrix")) stop("Argument format can only be assigned: vector or matrix!")
   if (class(file) == "SYSargs") {
     if (length(targetsheader(file)) == 0) stop("Input has no targets header lines.")
     comp <- targetsheader(file)
     ## SYSargs2 class
   } else if (class(file) == "SYSargs2") {
-    if (length(targetsheader(file)[[1]]) == 0) stop("Input has no targets header lines.")
+    if (length(targetsheader(file))[[1]] == 0) stop("Input has no targets header lines.")
     comp <- targetsheader(file)[[1]]
   } else {
     comp <- readLines(file)
@@ -615,7 +613,7 @@ readComp <- function(file, format = "vector", delim = "-") {
   if (class(file) == "SYSargs") {
     all <- unique(as.character(targetsin(file)$Factor))
   } else if (class(file) == "SYSargs2") {
-    all <- unique(as.character(targets.as.df(targets(args_bam))$Factor))
+    all <- unique(as.character(targets.as.df(targets(file))$Factor))
   } else {
     all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
   }
@@ -632,8 +630,9 @@ readComp <- function(file, format = "vector", delim = "-") {
   }
 }
 ## Usage:
-# cmp <- readComp("targets.txt", format="vector", delim="-")
-# cmp <- readComp(args, format="vector", delim="-")
+# targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+# cmp <- readComp(targetspath, format="vector", delim="-")
+# cmp <- readComp(WF, format="vector", delim="-")
 
 #################################
 ## Access module system from R ##
