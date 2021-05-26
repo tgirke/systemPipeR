@@ -2,8 +2,7 @@
 
 library(systemPipeR)
 
-# genWorkenvir("rnaseq", mydirname = file.path(tempdir(), "rnaseq"))
-# setwd(file.path(tempdir(), "rnaseq"))
+setwd(file.path(tempdir(), "rnaseq"))
 
 test_that("check_SYSargsList_test", {
     ## build instance 
