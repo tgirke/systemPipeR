@@ -10,7 +10,7 @@ setwd(file.path(tempdir(), "chipseq"))
 
 test_that("check_SYSargs", {
     ## build instance 
-    ## systemArgs() // 
+    ## systemArgs() // Methods
     param <- system.file("extdata", "rsubread.param", package="systemPipeR")
     targets <- system.file("extdata", "targets.txt", package="systemPipeR")
     args <- systemArgs(sysma=param, mytargets=targets)
@@ -23,6 +23,11 @@ test_that("check_SYSargs", {
     expect_type(infile1(args), "character")
     expect_type(infile2(args), "character")
     expect_type(outfile1(args), "character")
+    expect_type(software(args), "character")
+    expect_type(results(args), "character")
+    expect_type(targetsin(args), "list")
+    expect_type(targetsout(args), "list")
+    expect_type(targetsheader(args), "character")
     expect_s4_class(args, "SYSargs")
     ## reference // infile1 // outfile1
     library(Rsubread)

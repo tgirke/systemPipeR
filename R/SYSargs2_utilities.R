@@ -353,16 +353,36 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 ###############################################################
 ## Subsetting the input and output slots by name or position ##
 ###############################################################
-check.output <- function(args, subset=1, index=1){
+check.output <- function(args){
     ## Check the class and slot
-    if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")  
-    check <- subsetWF(args, slot="output", subset=subset, index=index, delete=FALSE)
-    exists <- file.exists(check)
-    names(exists) <- names(check)
-    return(exists)
+    ## inte
+    if(inherits(args, c("SYSargs2"))){
+        return(.check.output.sysargs2(args))
+    } else if(inherits(args, c("SYSargsList"))){
+        steps <- sapply(names(stepsWF(args)), function(x) list(NULL))
+        for(i in seq_along(stepsWF(args))){
+            steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]])
+        }
+        return(steps)
+    } else {
+        stop("args needs to be object of class 'SYSargs2' or 'SYSargsList'.")   
+    }
 }
+
 ## Usage:
 # check.output(WF)
+
+## .check.output.sysargs2
+.check.output.sysargs2 <- function(args){
+    sample <- sapply(names(output(args)), function(x) list(NULL))
+    for(i in seq_along(output(args))){
+        sample[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[1]])))
+        sample[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - sum(file.exists(unlist(output(args)[[i]])))
+    }
+    sample <- data.frame(matrix(unlist(sample), nrow=length(sample), byrow=T))
+    sample <- as.data.frame(cbind(Samples=names(output(args)), Existing_Files = sample$X1, Missing_Files=sample$X2))
+    return(sample)
+}
 
 #########################################################
 ## Update the output location after run runCommandline ##

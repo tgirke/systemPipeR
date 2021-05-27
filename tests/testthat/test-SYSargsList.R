@@ -1,7 +1,5 @@
-#devtools::test()
-
+## It will check the SYSargs2 class and methods
 library(systemPipeR)
-
 setwd(file.path(tempdir(), "rnaseq"))
 
 test_that("check_SYSargsList_test", {
@@ -13,12 +11,27 @@ test_that("check_SYSargsList_test", {
     appendStep(sal) <- SYSargsList(targets=targetspath, 
                                    wf_file="example.cwl", input_file="example.yml", dir_path = dir_path, 
                                    inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
-    sal
-    cmdlist(sal)
+    ## Methods
+    expect_type(names(sal), "character")
+    expect_type(sprconfig(sal), "list")
+    expect_type(length(sal), "integer")
+    expect_type(stepsWF(sal), "list")
+    expect_type(statusWF(sal), "list")
+    expect_type(dependency(sal), "list")
+    expect_type(projectWF(sal), "list")
+    expect_type(targetsWF(sal), "list")
+    expect_type(SEobj(sal), "list")
+    expect_type(outfiles(sal), "list")
+    expect_type(cmdlist(sal), "list")
+    expect_type(sysargslist(sal), "list")
+    ## Class
     expect_s4_class(sal, "SYSargsList")
     expect_length(length(sal), 1)
     expect_length(cmdlist(sal)[[1]], 3)
     
     ##runWF()
-   # sal <- runWF(sal)
+   sal <- runWF(sal)
+   expect_setequal(statusWF(sal)[[1]][[1]], "DONE")
+   check <- check.output(sal)[[1]]
+   expect_length(check$Existing_Files, 3)
 })
