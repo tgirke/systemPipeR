@@ -219,9 +219,10 @@ updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NU
     if(!is(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
     args <- sysargs2(args)
     if(is.null(inputvars)){
-        args$inputvars <- args$inputvars
+        args$inputvars <- inputvars <- args$inputvars
+    } else {
+        args$inputvars <- inputvars
     }
-    args$inputvars <- list()
     if(length(args$cmdToCwl)>1){
         cwlVersion <- args$clt[[1]]$cwlVersion
         class <- args$clt[[1]]$class
@@ -355,7 +356,6 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 ###############################################################
 check.output <- function(args){
     ## Check the class and slot
-    ## inte
     if(inherits(args, c("SYSargs2"))){
         return(.check.output.sysargs2(args))
     } else if(inherits(args, c("SYSargsList"))){

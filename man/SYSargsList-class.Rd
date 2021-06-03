@@ -43,6 +43,9 @@
 \alias{yamlinput,SYSargsList-method}
 \alias{yamlinput<-,SYSargsList-method}
 \alias{yamlinput<-,SYSargsList,ANY,ANY-method}
+\alias{appendCodeLine<-,SYSargsList-method}
+\alias{replaceCodeLine<-,SYSargsList-method}
+\alias{codeLine,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{

@@ -26,12 +26,18 @@ test_that("check_SYSargsList_test", {
     expect_type(sysargslist(sal), "list")
     ## Class
     expect_s4_class(sal, "SYSargsList")
-    expect_length(length(sal), 1)
+    expect_length(sal, 1)
     expect_length(cmdlist(sal)[[1]], 3)
-    
     ##runWF()
-   sal <- runWF(sal)
-   expect_setequal(statusWF(sal)[[1]][[1]], "DONE")
-   check <- check.output(sal)[[1]]
-   expect_length(check$Existing_Files, 3)
+   # sal <- runWF(sal)
+   # expect_setequal(statusWF(sal)[[1]][[1]], "DONE")
+   # check <- check.output(sal)
+   # expect_setequal(check$Step_1$Existing_Files, "1")
+   # 
+   ## replacement methods
+   expect_warning(appendStep(sal) <- sal)
+   renameStep(sal, 2) <- "newStep"
+   ## `+` method
+   sal <- sal[1] + sal[2] 
+   expect_length(sal, 2)
 })

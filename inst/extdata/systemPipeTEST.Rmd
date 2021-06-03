@@ -1,0 +1,267 @@
+---
+title: "TEST Workflow Template" 
+author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  BiocStyle::html_document:
+    toc_float: true
+    code_folding: show
+package: systemPipeR
+vignette: |
+  %\VignetteIndexEntry{WF: TEST Workflow Template}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+fontsize: 14pt
+bibliography: bibtex.bib
+---
+
+<!--
+Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeRNAseq.Rmd', tangle=TRUE)"; Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd', c('BiocStyle::pdf_document'))"
+-->
+
+```{css, echo=FALSE}
+pre code {
+white-space: pre !important;
+overflow-x: scroll !important;
+word-break: keep-all !important;
+word-wrap: initial !important;
+}
+```
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+options(width=60, max.print=1000)
+knitr::opts_chunk$set(
+    eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+
+```{r setup_libraries, echo=FALSE, message=FALSE, warning=FALSE, spr='r'}
+suppressPackageStartupMessages({
+    library(systemPipeR)
+})
+```
+
+# Introduction
+
+Users want to provide here background information about the design of their RNA-Seq project.
+
+# Samples and environment settings
+
+## Environment settings and input data
+
+Typically, the user wants to record here the sources and versions of the
+reference genome sequence along with the corresponding annotations. In
+the provided sample data set all data inputs are stored in a `data`
+subdirectory and all results will be written to a separate `results` directory,
+while the `systemPipeRNAseq.Rmd` script and the `targets` file are expected to be 
+located in the parent directory. The R session is expected to run from this parent directory.
+
+[*systemPipeRdata*](http://bioconductor.org/packages/release/data/experiment/html/systemPipeRdata.html) package is a helper package to generate a fully populated [*systemPipeR*](http://bioconductor.org/packages/release/bioc/html/systemPipeR.html)
+workflow environment in the current working directory with a single command. 
+All the instruction for generating the workflow are provide in the *systemPipeRdata* vignette [here](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#1_Introduction). 
+
+The mini sample FASTQ files used by this report as well as the associated reference genome files
+can be loaded via the *systemPipeRdata* package. 
+The chosen data set [SRP010938](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938)
+contains 18 paired-end (PE) read sets from *Arabidposis thaliana*
+[@Howard2013-fq]. To minimize processing time during testing, each FASTQ
+file has been subsetted to 90,000-100,000 randomly sampled PE reads that
+map to the first 100,000 nucleotides of each chromosome of the *A.
+thalina* genome. The corresponding reference genome sequence (FASTA) and
+its GFF annotation files have been truncated accordingly. This way the entire 
+test sample data set is less than 200MB in storage space. A PE read set has been
+chosen for this test data set for flexibility, because it can be used for testing both types
+of analysis routines requiring either SE (single end) reads or PE reads.
+
+## Required packages and resources
+
+The `systemPipeR` package needs to be loaded to perform the analysis steps shown in
+this report [@H_Backman2016-bt].
+
+```{r load_systempiper, eval=TRUE, message=FALSE, spr='r'}
+library(systemPipeR)
+```
+
+To apply workflows to custom data, the user needs to modify the _`targets`_ file and if
+necessary update the corresponding parameter (_`.cwl`_ and _`.yml`_) files. 
+A collection of pre-generated _`.cwl`_ and _`.yml`_ files are provided in the _`param/cwl`_ subdirectory 
+of each workflow template. They are also viewable in the GitHub repository of _`systemPipeRdata`_ ([see
+here](https://github.com/tgirke/systemPipeRdata/tree/master/inst/extdata/param/cwl)).
+For more information of the structure of the *targets* file, please consult the documentation 
+[here](http://www.bioconductor.org/packages/release/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html#25_structure_of_targets_file). More details about the new parameter files from systemPipeR can be found [here](http://www.bioconductor.org/packages/release/bioc/vignettes/systemPipeR/inst/doc/systemPipeR.html#26_structure_of_the_new_param_files_and_construct_sysargs2_container). 
+
+## Experiment definition provided by `targets` file
+
+The `targets` file defines all FASTQ files and sample
+comparisons of the analysis workflow.
+
+```{r load_targets, eval=TRUE, spr='r'}
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+targets <- read.delim(targetspath, comment.char = "#")[,1:4]
+targets
+```
+
+# Alignments
+
+## Read mapping with `HISAT2`
+
+The following steps will demonstrate how to use the short read aligner `Hisat2`
+[@Kim2015-ve] in both interactive job submissions and batch submissions to
+queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line interface.
+
+Build `Hisat2` index.
+
+```{r hisat_index, eval=FALSE, spr='sysargs'}
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package="systemPipeR")
+idx <- loadWorkflow(targets=NULL, wf_file="hisat2-index.cwl", input_file="hisat2-index.yml", dir_path=dir_path)
+idx <- renderWF(idx)
+```
+
+```{r hisat_index2, eval=FALSE, spr='r'}
+## Run 
+#runCommandline(idx, make_bam = FALSE)
+```
+
+The parameter settings of the aligner are defined in the `hisat2-mapping-se.cwl` 
+and `hisat2-mapping-se.yml` files. The following shows how to construct the 
+corresponding *SYSargs2* object, here *args*.
+
+```{r hisat_SYSargs2_object, eval=TRUE, spr='sysargs'}
+dir_path <- system.file("extdata/cwl/hisat2/hisat2-pe", package="systemPipeR")
+args <- loadWorkflow(targets=targetspath, wf_file="hisat2-mapping-pe.cwl", 
+                     input_file="hisat2-mapping-pe.yml", dir_path=dir_path)
+args <- renderWF(args, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+```
+
+### Interactive job submissions in a single machine
+
+To simplify the short read alignment execution for the user, the command-line 
+can be run with the *`runCommandline`* function.
+The execution will be on a single machine without submitting to a queuing system 
+of a computer cluster. This way, the input FASTQ files will be processed sequentially. 
+By default *`runCommandline`* auto detects SAM file outputs and converts them 
+to sorted and indexed BAM files, using internally the `Rsamtools` package 
+[@Rsamtools]. Besides, *`runCommandline`* allows the user to create a dedicated
+results folder for each workflow and a sub-folder for each sample 
+defined in the *targets* file. This includes all the output and log files for each 
+step. When these options are used, the output location will be updated by default 
+and can be assigned to the same object.
+
+```{r hisat_SYSargs2_singleM, eval=FALSE, spr='r'}
+## Run single Machine
+#args <- runCommandline(args)
+```
+
+
+Check whether all BAM files have been created.
+
+```{r check_files_exist, eval=FALSE, spr='r'}
+outpaths <- subsetWF(args , slot="output", subset=1, index=1)
+file.exists(outpaths)
+```
+
+## Read and alignment stats
+
+The following provides an overview of the number of reads in each sample
+and how many of them aligned to the reference.
+
+```{r align_stats, eval=FALSE, spr='r'}
+read_statsDF <- alignStats(args=args) 
+write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+```
+
+The following shows the alignment statistics for a sample file provided by the `systemPipeR` package. 
+
+```{r align_stats_view, eval=TRUE, spr='r'}
+read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
+```
+
+
+# Read quantification
+
+## Read counting with `summarizeOverlaps` in parallel mode using multiple cores
+
+Reads overlapping with annotation ranges of interest are counted for
+each sample using the `summarizeOverlaps` function [@Lawrence2013-kt]. The read counting is
+preformed for exonic gene regions in a non-strand-specific manner while
+ignoring overlaps among different genes. Subsequently, the expression
+count values are normalized by *reads per kp per million mapped reads*
+(RPKM). The raw read count table (`countDFeByg.xls`) and the corresponding 
+RPKM table (`rpkmDFeByg.xls`) are written to separate files in the directory of this project. Parallelization is achieved with the `BiocParallel` package, here using 8 CPU cores.
+
+```{r read_counting1, eval=FALSE, spr='r'}
+library("GenomicFeatures"); library(BiocParallel)
+txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="Arabidopsis thaliana")
+saveDb(txdb, file="./data/tair10.sqlite")
+txdb <- loadDb("./data/tair10.sqlite")
+outpaths <- subsetWF(args, slot="output", subset=1, index=1)
+(align <- readGAlignments(outpaths[1])) # Demonstrates how to read bam file into R
+eByg <- exonsBy(txdb, by=c("gene"))
+bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
+multicoreParam <- MulticoreParam(workers=2); register(multicoreParam); registered()
+counteByg <- bplapply(bfl, function(x) summarizeOverlaps(eByg, x, mode="Union", 
+                                               ignore.strand=TRUE, 
+                                               inter.feature=FALSE, 
+                                               singleEnd=TRUE)) 
+countDFeByg <- sapply(seq(along=counteByg), function(x) assays(counteByg[[x]])$counts)
+rownames(countDFeByg) <- names(rowRanges(counteByg[[1]])); colnames(countDFeByg) <- names(bfl)
+rpkmDFeByg <- apply(countDFeByg, 2, function(x) returnRPKM(counts=x, ranges=eByg))
+write.table(countDFeByg, "results/countDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
+write.table(rpkmDFeByg, "results/rpkmDFeByg.xls", col.names=NA, quote=FALSE, sep="\t")
+```
+
+Sample of data slice of count table
+
+```{r view_counts, eval=FALSE, spr='r'}
+read.delim("results/countDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:5]
+```
+
+Sample of data slice of RPKM table
+
+```{r view_rpkm, eval=FALSE, spr='r'}
+read.delim("results/rpkmDFeByg.xls", row.names=1, check.names=FALSE)[1:4,1:4]
+```
+
+Note, for most statistical differential expression or abundance analysis
+methods, such as `edgeR` or `DESeq2`, the raw count values should be used as input. The
+usage of RPKM values should be restricted to specialty applications
+required by some users, *e.g.* manually comparing the expression levels
+among different genes or features.
+
+## Sample-wise correlation analysis
+
+The following computes the sample-wise Spearman correlation coefficients from
+the `rlog` transformed expression values generated with the `DESeq2` package. After
+transformation to a distance matrix, hierarchical clustering is performed with
+the `hclust` function and the result is plotted as a dendrogram
+(also see file `sample_tree.pdf`).
+
+```{r sample_tree, eval=FALSE, spr='r'}
+library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
+countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
+colData <- data.frame(row.names=targets.as.df(targets(args))$SampleName, condition=targets.as.df(targets(args))$Factor)
+dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
+d <- cor(assay(rlog(dds)), method="spearman")
+hc <- hclust(dist(1-d))
+pdf("results/sample_tree.pdf")
+plot.phylo(as.phylo(hc), type="p", edge.col="blue", edge.width=2, show.node.label=TRUE, no.margin=TRUE)
+dev.off()
+```
+
+![](results/sample_tree.png)
+<div align="center">Figure 2: Correlation dendrogram of samples</div></br>
+
+# Version Information
+
+```{r sessionInfo, spr='r'}
+sessionInfo()
+```
+
+# Funding
+
+This project was supported by funds from the National Institutes of Health (NIH).
+
+# References

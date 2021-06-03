@@ -50,7 +50,8 @@ importFrom("yaml", "yaml.load")
 
 ## S4 Classes
 exportClasses(
-    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargsList"
+    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargsList",
+    "LineWise"
 )
 
 ## Methods
@@ -64,9 +65,10 @@ exportMethods(
     "yamlinput<-",
     "sprconfig", "stepsWF", "statusWF", "dependency",
     "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-",
-    "replaceStep<-", "renameStep<-"
+    "replaceStep<-", "renameStep<-", 
+    "codeLine", "rmdStart", "script", "linewise", "replaceCodeLine<-", "appendCodeLine<-"
 )
-
+S3method("+", SYSargsList)
 ## Functions
 # exportPattern("^[[:alpha:]]+")
 export(
@@ -88,5 +90,5 @@ export(
     "tryCL", "SPRproject", "initProject", "initWF", "configWF", "config.param", 
     "plotWF", "runWF", "renderReport", "check.output", "createParamFiles", "writeParamFiles", 
     "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", 
-    "SYSargsList"
+    "SYSargsList", "importRmd"
 )  

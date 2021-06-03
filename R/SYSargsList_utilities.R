@@ -152,7 +152,7 @@ initWF <- function(sprconfig = NULL, script=NULL, targets = NULL, silent = FALSE
 ########################################################
 SYSargsList <- function(args=NULL, 
                         targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".", inputvars=NULL,
-                        step_index="default",
+                        step_name="default",
                         silent = FALSE, restartProject = TRUE, 
                         rm_targets_col = NULL, dependency=NULL) {
   if(all(is.null(args) && is.null(wf_file) && is.null(input_file))){
@@ -162,13 +162,13 @@ SYSargsList <- function(args=NULL,
   } else if (!is.null(args)){
     if(any(length(cmdlist(args)[[1]])==0)) stop("Argument 'args' needs to be assigned an object of class 'SYSargs2'.") 
     sal <- SYScreate("SYSargsList"); sal <- sysargslist(sal)
-    if(step_index=="default"){
-      step_index <- "Step_1"
+    if(step_name=="default"){
+      step_name <- "Step_x"
     } else {
-      step_index <- step_index
+      step_name <- step_name
     }
     sal$stepsWF <- list(args)
-    names(sal$stepsWF) <- step_index
+    names(sal$stepsWF) <- step_name
   } else if(all(!is.null(wf_file) && !is.null(input_file))){
     ## targets
     if(is.null(targets)){
@@ -185,13 +185,13 @@ SYSargsList <- function(args=NULL,
                        input_file=input_file, dir_path=dir_path)
     WF <- renderWF(WF, inputvars=inputvars)
     sal <- SYScreate("SYSargsList"); sal <- sysargslist(sal)
-    if(step_index=="default"){
-      step_index <- "Step_1"
+    if(step_name=="default"){
+      step_name <- "Step_x"
     } else {
-      step_index <- step_index
+      step_name <- step_name
     }
     sal$stepsWF <- list(WF)
-    names(sal$stepsWF) <- step_index
+    names(sal$stepsWF) <- step_name
     if(exists("targets_step")){
       sal$targets_connection <- list(targets_step=targets_step)
       new_targets_col <- names(inputvars)

@@ -32,7 +32,7 @@ test_that("check_SYSargs2_test", {
     ## runCommandline() //check.output()
     args <- runCommandline(args=args)
     out <- check.output(args)
-    expect_type(out, "logical")
+    expect_setequal(out$Existing_Files, "1")
     ## symLink2bam()
     symLink2bam(sysargs=args, command="ln -s", htmldir=c(tempdir(), "/rnaseq/somedir/"), 
                 ext=c(".bam", ".bai"), urlbase="http://myserver.edu/~username/", 

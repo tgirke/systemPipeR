@@ -6,7 +6,6 @@ output:
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
-  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
@@ -438,7 +437,7 @@ software %>%
     background = factor(Category, id, colors)
   )) %>%
    dplyr::select(Tool, Description, Step) %>%
-  dplyr::arrange(Tool) %>% 
+   dplyr::arrange(Tool) %>%
   kableExtra::kable(escape = FALSE, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
   kableExtra::kable_styling(c("striped", "hover", "condensed"), full_width = TRUE) %>%
   kableExtra::scroll_box(width = "80%", height = "500px")

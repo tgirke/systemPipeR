@@ -1,0 +1,369 @@
+---
+title: "Workflows by systemPipeR" 
+author: "Author: Daniela Cassol, Le Zhang, and Thomas Girke"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  BiocStyle::html_document:
+    toc_float: true
+    code_folding: show
+package: systemPipeR
+vignette: |
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+fontsize: 14pt
+bibliography: bibtex.bib
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_library, eval=TRUE, include=FALSE}
+library(systemPipeR)
+```
+
+# Introduction
+
+A central concept for designing workflows within the `systemPipeR` environment is
+the use of workflow management containers. Workflow management containers allow 
+the automation of design, build, run and scale different steps and tools in data 
+analysis. 
+
+# Workflow design structure using `SYSargsList`
+
+The flexibility of `systemPipeR's` new interface workflow management class is the
+driving factor behind the use of as many steps necessary for the analysis, as well 
+as the connection between command-line- or R-based software. The connectivity among 
+all workflow steps is achieved by the `SYSargsList` workflow management class.
+
+This S4 class is a list-like container where each instance stores all the input/output 
+paths and parameter components required for a particular data analysis step. 
+
+A key aspect of the `SYSargsList` class is the coordination of the input/output paths 
+and command-line parameter when subsetting. 
+
+
+# How to design a Workflow?
+
+## Project Initialization 
+
+
+### Directory Structure
+
+## Class initialization 
+
+To create a Workflow within `systemPipeR`, we can start by defining an empty container:
+
+```{r sysargsList, eval=TRUE}
+sal <- SYSargsList() 
+```
+
+Internally, `SYSargsList` function will check and/or create the basic folder structure, 
+which means data, param, and results folder. Also, this function allows creating a hidden 
+folder called `.SPRproject` to store all the log files. 
+A yaml file, here called `SPRconfig.yml`, has been created, which initially contains
+the basic location of the project structure; however, can be used to pass all the 
+config information for the entire workflow.
+
+In this stage, the object `sal` is a empty container, except the project information, as
+the project, data, results and param folder paths, as can be access but the `projectWF` 
+accessory method:
+
+```{r}
+sal
+projectWF(sal)
+```
+
+Also, the length function will return how many steps this workflow contains and in this case 
+it is 0, as follow:
+
+```{r}
+length(sal)
+```
+
+## Adding a new step from template
+
+Next, we need to populate the object created with the first step in the workflow. 
+Here, an example of how to perform this task using param template files for 
+trimming FASTQ files with `Trimmomatic` software (citation). 
+
+The constructor functions create an `SYSargsList` S4 class object from three input files:
+
+    - CWL command-line specification file (`wf_file` argument);
+    - Input variables (`input_file` argument);
+    - Targets file (`targets` argument).
+    
+The latter is optional for workflow steps lacking input files. 
+The connection between input variables and the targets file are defined under the
+`inputvars` argument. It is required a named vector, where each element name needs 
+to match with column names in the targets file and the value must match the names of the *.yml* variables.
+
+In CWL, files with the extension `.cwl` define the parameters of a chosen command-line 
+step or workflow, while files with the extension `.yml` define the input variables of command-line steps. 
+Note, input variables provided by a targets file can be passed on to a instance via the `inputvars` argument of the `SYSargsList` function.
+
+For more information of each one of those files, please check here. 
+(##TODO: Link to the dedicate section explaining the dynamic between those 3 files).
+
+```{r}
+targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+appendStep(sal) <- SYSargsList(targets=targetspath, 
+                   step_name="Quality",
+                   wf_file = "trimmomatic-pe.cwl", input_file = "trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package = "systemPipeR"),
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+
+# targets=targetspath
+# step_name="Quality"
+# wf_file = "trimmomatic-pe.cwl"
+# input_file = "trimmomatic-pe.yml"
+# dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package = "systemPipeR")
+# inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_")
+```
+
+- Append Step in the specific order
+```{r}
+appendStep(sal, after=0) <- SYSargsList(targets=targetspath, 
+                                        step_name="Quality2",
+                                        wf_file = "trimmomatic-pe.cwl", input_file = "trimmomatic-pe.yml",
+                                        dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package = "systemPipeR"),
+                                        inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+```
+
+### Accessing the details 
+
+Let's explore our object:
+
+- Accessor Methods: 
+
+Several accessor methods are available that are named after the slot names of the `SYSargsList` object.
+
+```{r}
+names(sal)
+```
+
+- Check the length of the `sal` object:
+
+```{r}
+length(sal)
+```
+
+- The `SYSargsList` class and its subsetting operator `[`:
+
+```{r}
+sal[1]
+stepsWF(sal)[[1]] ## by position or name
+stepsWF(sal)$Quality ## or
+```
+
+- The `SYSargsList` class and its subsetting operator `[[`:
+
+```{r}
+sal_sub <- sal[[1:4]]
+stepsWF(sal_sub)
+
+sal_sub2 <- sal[1][[1:5]]
+stepsWF(sal_sub2)
+targetsWF(sal_sub2)
+outfiles(sal_sub2)
+```
+
+- The `SYSargsList` class and its operator `+`:
+
+```{r, eval=FALSE}
+sal[1] + sal[2]
+```
+
+- Checking the expected output files:
+
+The outfiles components of `SYSargsList` define the expected output files for 
+each step in the workflow; some of which are the input for the next workflow step.
+
+```{r}
+##outfiles slot
+outfiles(sal)
+```
+
+- Checking the input files by the `targetsWF()`:
+
+```{r}
+targetsWF(sal)
+```
+
+- Checking the command-line for each sample:
+
+`cmdlist()` method constructs the system commands for running command-line software
+as specified by a given `.cwl` file combined with the paths to the input samples
+(e.g. FASTQ files) provided by a `targets` file. The example below shows the `cmdlist()`
+output for running Trimmomatic on the first PE read sample. Evaluating the output 
+of `cmdlist()` can be very helpful for designing and debugging `.cwl` files of new 
+command-line software or changing the parameter settings of existing ones.
+
+```{r}
+sal[1][[1:5]]
+cmdlist(sal[1][[1:2]])
+```
+
+- Rename a Step
+
+```{r}
+renameStep(sal, 1) <- "newStep"
+sal
+```
+
+- Removing a Step
+
+```{r}
+sal <- sal[-1]
+```
+
+### Internal
+
+- out of bounds
+
+```{r, eval=FALSE}
+sal[3]
+```
+
+## Adding more Steps
+
+```{r}
+appendStep(sal) <- SYSargsList(targets=NULL, 
+                               wf_file = "hisat2-index.cwl", input_file="hisat2-index.yml",
+                               dir_path=system.file("extdata/cwl/hisat2/hisat2-idx", package = "systemPipeR"),
+                               dependency=NULL)
+cmdlist(sal[2])
+```
+
+## Adding more Steps
+
+### Use the output files for the next step
+
+Here, in this example, we would like to use the output from Quality Step, as input from 
+the next step, which is the Mapping. In this case, let's look the output from the first step:
+
+```{r}
+outfiles(sal[1])
+```
+
+The two-column you may want to use here are "trimmomatic_1_paired" and "trimmomatic_2_paired". 
+For the argument `targets` in the `SYSargsList` function, should provide the name 
+of the correspondent step in the Workflow and also which output you would like to 
+be incorporated on the next step. Here, the name of the columns we previously explore above.
+
+```{r, eval=FALSE}
+appendStep(sal) <- SYSargsList(targets="Quality",
+                               rm_targets_col = c("FileName1", "FileName2"),
+                               step_name="Mapping",
+                               wf_file = "workflow_hisat2-pe.cwl", input_file="workflow_hisat2-pe.yml",
+                               dir_path=system.file("extdata/cwl/workflow-hisat2/workflow-hisat2-pe", package = "systemPipeR"),
+                               inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_", 
+                                           trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"), 
+                               dependency = c("Quality", "Index"))
+cmdlist(sal[3])[1]
+```
+
+## Update a parameter the workflow 
+
+
+```{r, eval=FALSE}
+## check values
+yamlinput(sal[1])
+## check on command line
+cmdlist(sal[1][[1]])
+## Replace
+yamlinput(sal, "thread") <- 20
+sal
+## check NEW values
+yamlinput(sal[1])
+## Check on command line
+cmdlist(sal)[[1]][[1]]
+```
+
+## Running the workflow 
+
+```{r, eval=FALSE}
+sal <- runWF(sal[1])
+```
+
+# Create Workflow from RMarkdown
+
+```{r, eval=FALSE}
+sal <- importRmd("rna1.Rmd")
+sal
+stepsWF(sal)
+dependency(sal)
+sal$stepsWF[[6]]$codeLine
+```
+
+## Notes: 
+
+importRmd(file_path) --> df
+
+  df --> sysarg ID --> eval --> inject SYSargs2/SYSargsList object into SYSargsList
+  df --> R ID --> LineWise object --> inject LineWise object into SYSargsList
+  
+  output --> SYSargsList object
+
+
+## Running the workflow 
+
+```{r, eval=FALSE}
+sal <- runWF(sal[7])
+```
+
+
+# LineWise Class
+
+```{r, eval=FALSE}
+sal <- importRmd("rna1.Rmd")
+lw <- stepsWF(sal[10])
+lw
+## Coerce
+ll <- as(lw, "list")
+class(ll)
+lw <- as(ll, "LineWise")
+lw
+
+show(lw)
+length(lw)
+names(lw)
+codeLine(lw)
+rmdStart(lw)
+script(lw)
+l <- lw[2]
+l_sub <- lw[-2]
+codeLine(l)
+codeLine(l_sub)
+
+replaceCodeLine(lw, line=2) <- "5+5"
+codeLine(lw)
+appendCodeLine(lw) <- "6+7"
+codeLine(lw)
+
+codeLine(sal[7])
+codeLine(sal[5])
+
+replaceCodeLine(sal, step=10, line=2) <- "5+5"
+codeLine(sal[10])
+
+appendCodeLine(sal, step=10) <- "66+55"
+codeLine(sal[10])
+
+appendCodeLine(sal, step=10, after=1) <- "66+55"
+codeLine(sal[10])
+```
+
+
+# Version information
+
+```{r sessionInfo}
+sessionInfo()
+```
+
+# Funding
+
+This project is funded by NSF award [ABI-1661152](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1661152). 
+
+# References

@@ -2,7 +2,7 @@
 ## Class and Method Definitions for SYSargs2 ##
 ###############################################
 ## Define SYSargs2 class
-setClass("SYSargs2", representation(
+setClass("SYSargs2", slots = c(
   targets = "list",
   targetsheader = "list",
   modules = "list",
@@ -106,7 +106,7 @@ setAs(from = "SYSargs2", to = "list",  def = function(from) {
 setMethod(
   f = "show", signature = "SYSargs2",
   definition = function(object) {
-    cat(paste0("Instance of '", class(object), "':"),
+    cat(crayon::green$bold(paste0("Instance of '", class(object), "':")),
         paste0("   Slot names/accessors: "),
         paste0(
           "      targets: ", length(object@targets),
@@ -299,7 +299,12 @@ setMethod(f = "sprconfig", signature = "SYSargsList", definition = function(x) {
 })
 setGeneric(name = "stepsWF", def = function(x) standardGeneric("stepsWF"))
 setMethod(f = "stepsWF", signature = "SYSargsList", definition = function(x) {
-  return(x@stepsWF)
+  # if(length(x)==1){
+  #   return(x@stepsWF[[1]])
+  # } else {
+    return(x@stepsWF)
+  # }
+
 })
 setGeneric(name = "statusWF", def = function(x) standardGeneric("statusWF"))
 setMethod(f = "statusWF", signature = "SYSargsList", definition = function(x) {
@@ -416,11 +421,13 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
 ## Behavior of "[[" operator for SYSargsList
 setMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
   #setMethod(f = "[[", signature = c("SYSargsList","ANY", "missing"), definition = function(x, i, ..., drop) {
-  for(s in seq_along(length(x))){
-    stepsWF(x)[[s]] <- x@stepsWF[[s]][i]
-    
-    # return(as(x, "list")[[i]])
+  for(s in seq_along(x)){
+    x@stepsWF[[s]] <- x@stepsWF[[s]][i]
+    x@targetsWF[[s]] <- x@targetsWF[[s]][i,]
+    #x@SEobj[[s]] <- x@SEobj[[s]][i]
+    x@outfiles[[s]] <- x@outfiles[[s]][i,]
   }
+
   x
 })
 
@@ -443,14 +450,22 @@ setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x) {
 })
 
 setMethod(f = "yamlinput", signature = "SYSargsList", definition = function(x) {
+  if(length(x) > 1) stop("`x` needs to have length(x)==1")
+  if(inherits(stepsWF(x), "LineWise")) stop("Provide a stepWF with a 'SYSargs2' class")
   stepsWF(x)[[1]]$yamlinput
 })
 
+
+
+
 # setGeneric(name="yamlinput<-", def=function(x, ..., value) standardGeneric("yamlinput<-"))
 setReplaceMethod("yamlinput", c("SYSargsList"), function(x, paramName, value) {
-  args <- x$stepsWF[[1]]
+  x <- x
+  args <- x@stepsWF[[1]]
   yamlinput(args, paramName) <- value
-  stepsWF(x) <- args
+  x <- sysargslist(x)
+  x$stepsWF[[1]] <- args
+  x <- as(x, "SYSargsList")
   x
 })
 
@@ -484,23 +499,28 @@ setReplaceMethod("sprconfig", c("SYSargsList"), function(x,..., value) {
 setGeneric(name="appendStep<-", def=function(x, after=length(x), ..., value) standardGeneric("appendStep<-"))
 setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..., value) {
   if(!is(value, "SYSargsList")) stop("Argument 'value' needs to be assigned an object of class 'SYSargsList'.")
+  after <- after
   value <- .validationStepConn(x, value)
+  lengx <- length(x)
   x <- sysargslist(x)
-  lengx <- length(x$stepsWF)
+  if(names(value$stepsWF)=="Step_x"){
+    step_name <- paste0("Step_", after +1L)
+    renameStep(value, 1) <- step_name
+    }
   if (!after) {
-    x$stepsWF <- c(stepsWF(value), x$stepsWF)
+    x$stepsWF <- c(value$stepsWF, x$stepsWF)
     x$targetsWF <- c(targetsWF(value), x$targetsWF)
     x$statusWF <- c(statusWF(value), x$statusWF)
     x$dependency <- c(dependency(value), x$dependency)
     x$outfiles <- c(outfiles(value), x$outfiles)
   } else if (after >= lengx) {
-    x$stepsWF <- c(x$stepsWF, stepsWF(value))
+    x$stepsWF <- c(x$stepsWF, value$stepsWF)
     x$targetsWF <- c(x$targetsWF, targetsWF(value))
     x$statusWF <- c(x$statusWF, statusWF(value))
     x$dependency <- c(x$dependency, dependency(value))
     x$outfiles <- c(x$outfiles, outfiles(value))
   } else {
-    x$stepsWF <- c(x$stepsWF[1L:after], stepsWF(value), x$stepsWF[(after + 1L):lengx])
+    x$stepsWF <- c(x$stepsWF[1L:after], value$stepsWF, x$stepsWF[(after + 1L):lengx])
     x$targetsWF <- c(x$targetsWF[1L:after], targetsWF(value), x$targetsWF[(after + 1L):lengx])
     x$statusWF <- c(x$statusWF[1L:after], statusWF(value), x$statusWF[(after + 1L):lengx])
     x$dependency <- c(x$dependency[1L:after], dependency(value), x$dependency[(after + 1L):lengx])
@@ -526,7 +546,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(value$targets_connection[[3]], collapse="|"), colnames(x$targetsWF[[step]]))))]
     }
     new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
-    WF <- stepsWF(value)[[1]]
+    WF <- value$stepsWF[[1]]
     inputvars_v <- unlist(WF$inputvars)
     ## TODO: check inputvars...
     WF2 <- updateWF(WF, new_targets= targets.as.list(data.frame(new_targets)), inputvars=inputvars_v, write.yaml = FALSE)
@@ -536,7 +556,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     value$outfiles <- output(WF2)
     value <- as(value, "SYSargsList")
   }
-  if(!is.na(dependency(value))){
+  if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){
       if(all(!dep %in% names(stepsWF(x)))) stop(
@@ -578,14 +598,14 @@ setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_index="
                                                  paste(names(stepsWF(x)), collapse = " OR ")))
   }
   x <- sysargslist(x)
-  x$stepsWF[step] <- stepsWF(value)
+  x$stepsWF[step] <- value$stepsWF
   if(step_index=="default"){
-    name <- names(stepsWF(value))
+    name <- names(value$stepsWF)
     if(name %in% names(x$stepsWF)){
       names(x$stepsWF)[step] <- paste0("Step_", step)
       cat(paste0("Index name of x", "[", step, "]", " was rename to ", paste0("Step_", step), " to avoid duplications."))
     } else {
-      names(x$stepsWF)[step] <- names(stepsWF(value))
+      names(x$stepsWF)[step] <- names(value$stepsWF)
     }
   } else {
     names(x$stepsWF)[step] <- step_index
@@ -599,31 +619,23 @@ setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_index="
 # sal
 # replaceStep(sal, 3, step_index="test") <- sal[1]
 
-setGeneric(name="stepsWF<-", def=function(x, step_index, ..., value) standardGeneric("stepsWF<-"))
-setReplaceMethod("stepsWF", c("SYSargsList"), function(x, step_index, ..., value) {
-  if(is(value, "character")){
-    names(x@stepsWF)[step_index] <- value
-  } else if(is(value, "SYSargs2")){
-    x@stepsWF[step_index][[1]] <- value
-  } else if(is(value, "list")){
-    x@stepsWF <- value
-  } else {
-    stop("Replace value needs to be assigned an object of class 'SYSargs2' or
-             replacement name for the step.")
-  }
+setGeneric(name="stepsWF<-", def=function(x, step, ..., value) standardGeneric("stepsWF<-"))
+setReplaceMethod("stepsWF", c("SYSargsList"), function(x, step, ..., value) {
+    x@stepsWF[[step]] <- value
   x
 })
-setGeneric(name="renameStep<-", def=function(x, step_index, ..., value) standardGeneric("renameStep<-"))
-setReplaceMethod("renameStep", c("SYSargsList"), function(x, step_index, ..., value) {
-  if(length(step_index)!=length(value)) stop("value argument needs to be the same length of the step_index for rename")
+
+setGeneric(name="renameStep<-", def=function(x, step, ..., value) standardGeneric("renameStep<-"))
+setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
+  if(length(step)!=length(value)) stop("value argument needs to be the same length of the step_index for rename")
   if(is(value, "character")){
-    names(x@stepsWF)[step_index] <- value
-    names(x@statusWF)[step_index] <- value
-    names(x@dependency)[step_index] <- value
-    names(x@targetsWF)[step_index] <- value
-    names(x@outfiles)[step_index] <- value
-    #names(x@SEobj)[step_index] <- value
-    #names(x@targets_connection)[step_index] <- value
+    names(x@stepsWF)[step] <- value
+    names(x@statusWF)[step] <- value
+    names(x@dependency)[step] <- value
+    names(x@targetsWF)[step] <- value
+    names(x@outfiles)[step] <- value
+    #names(x@SEobj)[step] <- value
+    #names(x@targets_connection)[step] <- value
     
   }  else {
     stop("Replace value needs to be assigned an 'character' name for the workflow step.")
@@ -631,10 +643,10 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step_index, ..., va
   x
 })
 
-setGeneric(name="statusWF<-", def=function(x, step_index, ..., value) standardGeneric("statusWF<-"))
-setReplaceMethod("statusWF", c("SYSargsList"), function(x, step_index, ..., value) {
+setGeneric(name="statusWF<-", def=function(x, step, ..., value) standardGeneric("statusWF<-"))
+setReplaceMethod("statusWF", c("SYSargsList"), function(x, step, ..., value) {
   if(is(value, "character")){
-    x@statusWF[step_index] <- value
+    x@statusWF[step] <- value
   }
   x
 })
