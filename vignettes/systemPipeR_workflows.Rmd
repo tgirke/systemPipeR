@@ -6,7 +6,6 @@ output:
   BiocStyle::html_document:
     toc_float: true
     code_folding: show
-  BiocStyle::pdf_document: default
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
