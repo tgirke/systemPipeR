@@ -65,13 +65,17 @@ targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 ```
 
-# SYSargs2 example
+# SYSargsList example
 
 ```{r wf_test, eval=TRUE, spr='sysargs'}
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
-WF_test <- loadWorkflow(targets = targetspath, wf_file="example.cwl",
-                   input_file="example.yml", dir_path = system.file("extdata/cwl/example/", package="systemPipeR"))
-WF_test <- renderWF(WF_test, inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+HW_mul <- SYSargsList(step_name = "Example",
+                      targets=targetspath, 
+                      wf_file="example.cwl", input_file="example.yml",
+                      dir_path = system.file("extdata/cwl/example/", package="systemPipeR"), 
+                      inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+HW_mul
+cmdlist(HW_mul)
 ```
 
 # Version Information

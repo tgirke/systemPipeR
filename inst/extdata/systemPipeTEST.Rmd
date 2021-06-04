@@ -132,16 +132,11 @@ index <- SYSargsList(step_name = "Index",
                      dependency=NULL)
 ```
 
-```{r hisat_index2, eval=FALSE, spr='r'}
-## Run 
-#runCommandline(idx, make_bam = FALSE)
-```
-
 The parameter settings of the aligner are defined in the `hisat2-mapping-se.cwl` 
 and `hisat2-mapping-se.yml` files. The following shows how to construct the 
 corresponding *SYSargs2* object, here *args*.
 
-```{r hisat_SYSargs2_object, eval=TRUE, spr='sysargs'}
+```{r mapping, eval=TRUE, spr='sysargs'}
 mapping <- SYSargsList(step_name = "Mapping", 
                      targets=targetspath, 
                      wf_file = "hisat2-mapping-pe.cwl", input_file="hisat2-mapping-pe.yml",
@@ -165,16 +160,10 @@ defined in the *targets* file. This includes all the output and log files for ea
 step. When these options are used, the output location will be updated by default 
 and can be assigned to the same object.
 
-```{r hisat_SYSargs2_singleM, eval=FALSE, spr='r'}
-## Run single Machine
-#args <- runCommandline(args)
-```
-
-
 Check whether all BAM files have been created.
 
 ```{r check_files_exist, eval=FALSE, spr='r'}
-outpaths <- subsetWF(args , slot="output", subset=1, index=1)
+outpaths <- subsetWF(stepsWF(mapping)[[1]] , slot="output", subset=1, index=1)
 file.exists(outpaths)
 ```
 
@@ -184,7 +173,7 @@ The following provides an overview of the number of reads in each sample
 and how many of them aligned to the reference.
 
 ```{r align_stats, eval=FALSE, spr='r'}
-read_statsDF <- alignStats(args=args) 
+read_statsDF <- alignStats(args=stepsWF(mapping)[[1]]) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 ```
 
@@ -193,7 +182,6 @@ The following shows the alignment statistics for a sample file provided by the `
 ```{r align_stats_view, eval=TRUE, spr='r'}
 read.table(system.file("extdata", "alignStats.xls", package="systemPipeR"), header=TRUE)[1:4,]
 ```
-
 
 # Read quantification
 
@@ -207,13 +195,13 @@ count values are normalized by *reads per kp per million mapped reads*
 (RPKM). The raw read count table (`countDFeByg.xls`) and the corresponding 
 RPKM table (`rpkmDFeByg.xls`) are written to separate files in the directory of this project. Parallelization is achieved with the `BiocParallel` package, here using 8 CPU cores.
 
-```{r read_counting1, eval=FALSE, spr='r'}
+```{r read_counting, eval=FALSE, spr='r'}
 library("GenomicFeatures"); library(BiocParallel)
 txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="Arabidopsis thaliana")
 saveDb(txdb, file="./data/tair10.sqlite")
 txdb <- loadDb("./data/tair10.sqlite")
 
-outpaths <- subsetWF(args, slot="output", subset=1, index=1)
+outpaths <- subsetWF(stepsWF(mapping)[[1]], slot="output", subset=1, index=1)
 (align <- readGAlignments(outpaths[1])) # Demonstrates how to read bam file into R
 eByg <- exonsBy(txdb, by=c("gene"))
 bfl <- BamFileList(outpaths, yieldSize=50000, index=character())
@@ -258,7 +246,7 @@ the `hclust` function and the result is plotted as a dendrogram
 ```{r sample_tree, eval=FALSE, spr='r'}
 library(DESeq2, quietly=TRUE); library(ape,  warn.conflicts=FALSE)
 countDF <- as.matrix(read.table("./results/countDFeByg.xls"))
-colData <- data.frame(row.names=targets.as.df(targets(args))$SampleName, condition=targets.as.df(targets(args))$Factor)
+colData <- data.frame(row.names=targets.as.df(targets(stepsWF(mapping)[[1]]))$SampleName, condition=targets.as.df(targets(stepsWF(mapping)[[1]]))$Factor)
 dds <- DESeqDataSetFromMatrix(countData = countDF, colData = colData, design = ~ condition)
 d <- cor(assay(rlog(dds)), method="spearman")
 hc <- hclust(dist(1-d))

@@ -45,7 +45,7 @@ test_that("check_LineWise_test", {
    #  ## Class
     expect_s4_class(sal, "SYSargsList")
     expect_s4_class(lw, "LineWise")
-    expect_length(sal, 16)
+    expect_length(sal, 14)
     expect_length(lw, 4)
     expect_length(stepsWF(sal[1])[[1]], 3)
    #  ##runWF()

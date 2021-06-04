@@ -215,16 +215,17 @@ importRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE){
             sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal$statusWF[[df$step_name[i]]] <- list(status="Pending")
             } else if(df$spr[i]=="sysargs"){
-            args <- eval(parse(text =df$code[i]) )
+            args <- eval(parse(text =df$code[i]), envir = globalenv())
             # suppressMessages(
             # args <- eval(parse(text=df$code[i])))
-            sal$stepsWF[[df$step_name[i]]] <- args
+            sal$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
             sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal$statusWF[[df$step_name[i]]] <- list(status="Pending")
-    #         sal$outfiles[[df$step_name[i]]] <- args$output
-    #         sal$targetsWF[[df$step_name[i]]] <- args$targets
+            sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
+            sal$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
      }
     }
     return(as(sal, "SYSargsList"))
 }
-# sal <- importRmd("rna1.Rmd")
+# file_path <- "../systemPipeR/inst/extdata/systemPipeTEST.Rmd"
+# sal <- importRmd(file_path)

@@ -132,6 +132,7 @@ setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j
 
 setGeneric(name="replaceCodeLine<-", def=function(x, line, ..., value) standardGeneric("replaceCodeLine<-"))
 setReplaceMethod("replaceCodeLine", signature = c("LineWise"), function(x, line, ..., value) {
+  if(!inherits(x, "LineWise")) stop("Provide 'LineWise' class object")
       y <- as(x, "list")
       y$codeLine <- as.character(y$codeLine)
       y$codeLine[line] <- value
@@ -141,13 +142,16 @@ setReplaceMethod("replaceCodeLine", signature = c("LineWise"), function(x, line,
 })
 
 setReplaceMethod("replaceCodeLine", signature = c("SYSargsList"), function(x, step, line, value) {
-  y <- stepsWF(x)[step][[1]]
+  y <- x$stepsWF[step][[1]]
+  if(!inherits(y, "LineWise")) stop("Provide 'LineWise' class object")
   y <- as(y, "list")
   y$codeLine <- as.character(y$codeLine)
   y$codeLine[line] <- value
   y$codeLine <- parse(text = y$codeLine)
   y <- as(y, "LineWise")
-  stepsWF(x, step) <- y
+  x <- as(x, "list")
+  x$stepsWF[step][[1]] <- y
+  x <- as(x, "SYSargsList")
   x
 })
 
@@ -169,7 +173,8 @@ setReplaceMethod("appendCodeLine", signature = c("LineWise"), function(x, after=
 
 setReplaceMethod("appendCodeLine", signature = c("SYSargsList"), function(x, step, after=NULL, value) {
   if(is.null(after)) after <- length(stepsWF(x[step])[[1]])
-  y <- stepsWF(x)[step][[1]]
+  y <- x$stepsWF[step][[1]]
+  if(!inherits(y, "LineWise")) stop("Provide 'LineWise' class object")
   lengx <- length(y)
   y <- linewise(y)
   value <- parse(text=value)
@@ -181,7 +186,9 @@ setReplaceMethod("appendCodeLine", signature = c("SYSargsList"), function(x, ste
     y$codeLine <- c(y$codeLine[1L:after], value, y$codeLine[(after + 1L):lengx])
   }
   y <- as(y, "LineWise")
-  stepsWF(x, step) <- y
+  x <- as(x, "list")
+  x$stepsWF[step][[1]] <- y
+  x <- as(x, "SYSargsList")
   x
 })
 
@@ -189,7 +196,7 @@ setReplaceMethod("appendCodeLine", signature = c("SYSargsList"), function(x, ste
 setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x) {
   rcode <- sapply(names(x$stepsWF), function(x) list(NULL))
   for(i in seq_along(x)){
-    if(!inherits(stepsWF(x)[[i]], "LineWise")) stop("Provide a stepWF with a 'LineWise' class")
+    if(!inherits(stepsWF(x)[[i]], "LineWise")) stop("This step is 'SYSargs2'. Please provide an 'LineWise' class step")
     code_list <- x$stepsWF[[i]]$codeLine
     rcode[[i]] <- code_list
   }
