@@ -336,7 +336,7 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
   ## check dependency
   for(i in seq_along(dependency(args))){
     if(all(!is.na(dependency(args)[[i]]))){
-      dep_names <- dependency(args)[[i]]
+      dep_names <- names(dependency(args))
       if(any(!dep_names %in% names(stepsWF(args)))) stop(
         "'args' has dependency on the following steps:", "\n",
         paste0(dep_names, collapse = " AND "))

@@ -114,7 +114,6 @@ quality <- SYSargsList(targets=targetspath,
                    inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
-
 # Alignments
 
 ## Read mapping with `HISAT2`

@@ -124,12 +124,6 @@ setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j
 
 ## Replacement methods for codeLine 
 
-# setGeneric(name="codeLine<-", def=function(x, line, value) standardGeneric("codeLine<-"))
-# setReplaceMethod("codeLine", c("LineWise"), function(x, value) {
-#   x@codeLine <- value
-#   x
-# })
-
 setGeneric(name="replaceCodeLine<-", def=function(x, line, ..., value) standardGeneric("replaceCodeLine<-"))
 setReplaceMethod("replaceCodeLine", signature = c("LineWise"), function(x, line, ..., value) {
   if(!inherits(x, "LineWise")) stop("Provide 'LineWise' class object")

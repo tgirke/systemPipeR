@@ -74,8 +74,6 @@ HW_mul <- SYSargsList(step_name = "Example",
                       wf_file="example.cwl", input_file="example.yml",
                       dir_path = system.file("extdata/cwl/example/", package="systemPipeR"), 
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
-HW_mul
-cmdlist(HW_mul)
 ```
 
 # Version Information
