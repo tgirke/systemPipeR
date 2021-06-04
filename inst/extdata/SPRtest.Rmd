@@ -1,0 +1,87 @@
+---
+title: "TEST Workflow Template" 
+author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  BiocStyle::html_document:
+    toc_float: true
+    code_folding: show
+package: systemPipeR
+vignette: |
+  %\VignetteIndexEntry{WF: TEST Workflow Template}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+fontsize: 14pt
+bibliography: bibtex.bib
+---
+
+```{css, echo=FALSE}
+pre code {
+white-space: pre !important;
+overflow-x: scroll !important;
+word-break: keep-all !important;
+word-wrap: initial !important;
+}
+```
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+options(width=60, max.print=1000)
+knitr::opts_chunk$set(
+    eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+
+```{r setup_libraries, echo=FALSE, message=FALSE, warning=FALSE, spr='r'}
+suppressPackageStartupMessages({
+    library(systemPipeR)
+})
+```
+
+# Introduction
+
+This is a test template.
+
+# Samples and environment settings
+
+## Required packages and resources
+
+The `systemPipeR` package needs to be loaded to perform the analysis steps shown in
+this report [@H_Backman2016-bt].
+
+```{r load_systempiper, eval=TRUE, message=FALSE, spr='r'}
+library(systemPipeR)
+```
+
+## Experiment definition provided by `targets` file
+
+The `targets` file defines all FASTQ files and sample
+comparisons of the analysis workflow.
+
+```{r load_targets, eval=TRUE, spr='r'}
+targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+targets <- read.delim(targetspath, comment.char = "#")[,1:4]
+targets
+```
+
+# SYSargs2 example
+
+```{r wf_test, eval=TRUE, spr='sysargs'}
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+WF_test <- loadWorkflow(targets = targetspath, wf_file="example.cwl",
+                   input_file="example.yml", dir_path = system.file("extdata/cwl/example/", package="systemPipeR"))
+WF_test <- renderWF(WF_test, inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+```
+
+# Version Information
+
+```{r sessionInfo, spr='r'}
+sessionInfo()
+```
+
+# Funding
+
+This project was supported by funds from the National Institutes of Health (NIH).
+
+# References

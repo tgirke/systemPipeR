@@ -103,6 +103,18 @@ targets <- read.delim(targetspath, comment.char = "#")[,1:4]
 targets
 ```
 
+# Quality
+
+```{r quality, spr='sysargs'}
+targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+quality <- SYSargsList(targets=targetspath, 
+                   step_name="Quality",
+                   wf_file = "trimmomatic-pe.cwl", input_file = "trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package = "systemPipeR"),
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+```
+
+
 # Alignments
 
 ## Read mapping with `HISAT2`
@@ -114,10 +126,10 @@ queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line int
 Build `Hisat2` index.
 
 ```{r hisat_index, eval=FALSE, spr='sysargs'}
-targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package="systemPipeR")
-idx <- loadWorkflow(targets=NULL, wf_file="hisat2-index.cwl", input_file="hisat2-index.yml", dir_path=dir_path)
-idx <- renderWF(idx)
+index <- SYSargsList(step_name = "Index", 
+                     wf_file = "hisat2-index.cwl", input_file="hisat2-index.yml",
+                     dir_path=system.file("extdata/cwl/hisat2/hisat2-idx", package = "systemPipeR"),
+                     dependency=NULL)
 ```
 
 ```{r hisat_index2, eval=FALSE, spr='r'}
@@ -130,10 +142,13 @@ and `hisat2-mapping-se.yml` files. The following shows how to construct the
 corresponding *SYSargs2* object, here *args*.
 
 ```{r hisat_SYSargs2_object, eval=TRUE, spr='sysargs'}
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-pe", package="systemPipeR")
-args <- loadWorkflow(targets=targetspath, wf_file="hisat2-mapping-pe.cwl", 
-                     input_file="hisat2-mapping-pe.yml", dir_path=dir_path)
-args <- renderWF(args, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+mapping <- SYSargsList(step_name = "Mapping", 
+                     targets=targetspath, 
+                     wf_file = "hisat2-mapping-pe.cwl", input_file="hisat2-mapping-pe.yml",
+                     dir_path= system.file("extdata/cwl/hisat2/hisat2-pe", package="systemPipeR"), 
+                     inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
+                     dependency=c("Quality", "Index"))
+
 ```
 
 ### Interactive job submissions in a single machine
@@ -197,6 +212,7 @@ library("GenomicFeatures"); library(BiocParallel)
 txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", dataSource="TAIR", organism="Arabidopsis thaliana")
 saveDb(txdb, file="./data/tair10.sqlite")
 txdb <- loadDb("./data/tair10.sqlite")
+
 outpaths <- subsetWF(args, slot="output", subset=1, index=1)
 (align <- readGAlignments(outpaths[1])) # Demonstrates how to read bam file into R
 eByg <- exonsBy(txdb, by=c("gene"))

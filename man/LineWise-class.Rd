@@ -18,12 +18,15 @@
 \alias{show,LineWise-method}
 \alias{codeLine}
 \alias{codeLine,LineWise-method}
-\alias{rmdStart}
-\alias{rmdStart,LineWise-method}
+\alias{codeChunkStart}
+\alias{codeChunkStart,LineWise-method}
 \alias{linewise}
 \alias{linewise,LineWise-method}
-\alias{script}
-\alias{script,LineWise-method}
+\alias{rmdPath}
+\alias{rmdPath,LineWise-method}
+\alias{stepName}
+\alias{stepName,LineWise-method}
+\alias{dependency,LineWise-method}
 %Replacement
 \alias{appendCodeLine,LineWise-method}
 \alias{appendCodeLine<-}
@@ -45,8 +48,10 @@ Objects can be created by calls of the form \code{new("LineWise", ...)}.
 \section{Slots}{
   \describe{
     \item{\code{codeLine}:}{Object of class \code{"character"} storing data from Rc chunk. }
-    \item{\code{rmdStart}:}{Object of class \code{"interger"} storing Start line from the script file. }
-    \item{\code{script}:}{Object of class \code{"character"} storing path from the script file. }
+    \item{\code{codeChunkStart}:}{Object of class \code{"interger"} storing Start line from the rmdPath file. }
+    \item{\code{rmdPath}:}{Object of class \code{"character"} storing path from the rmdPath file. }
+    \item{\code{stepName}:}{Object of class \code{"character"} storing Step Name. }
+    \item{\code{dependency}:}{Object of class \code{"character"} storing dependency steps. }
   }
 }
 \section{Methods}{
@@ -62,7 +67,7 @@ Objects can be created by calls of the form \code{new("LineWise", ...)}.
     \item{length}{\code{signature(x = "LineWise")}: extracts number of R code lines }
     \item{linewise}{\code{signature(x = "LineWise")}: Coerce back to list \code{as(LineWise, "list")} }
     \item{names}{\code{signature(x = "LineWise")}: extracts slot names }
-    \item{script}{\code{signature(x = "LineWise")}: extracts path of the Rmarkdown files }
+    \item{rmdPath}{\code{signature(x = "LineWise")}: extracts path of the Rmarkdown files }
     \item{show}{\code{signature(object = "LineWise")}: summary view of \code{LineWise} objects }
     \item{appendCodeLine<-}{\code{signature(x = "LineWise")}: replacement method for append a code line }
     \item{replaceCodeLine<-}{\code{signature(x = "LineWise")}: replacement method for replace a code line }

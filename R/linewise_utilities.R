@@ -1,4 +1,4 @@
-library(magrittr)
+# library(magrittr)
 
 #' parseRmd
 #'
@@ -59,6 +59,7 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE){
     # get r chunks -----
     r_chunk <- lines[chunk_start] %>% stringr::str_detect("^```\\{r")
     # get chunk start and end
+    if (verbose) message(crayon::blue("---- Actions ----"))
     if (verbose && length(chunk_start[!r_chunk])) message("Ignore none-R chunks at line: ", paste0(chunk_start[!r_chunk], collapse = ", "))
     df <- df[r_chunk, ]
     if (nrow(df) == 0) stop("No valid R code chunk left")
@@ -145,7 +146,7 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE){
     
     lapply(seq_along(spr_dep), function(i){
         lapply(spr_dep[[i]], function(x){
-            print(x)
+            #print(x)
             if(!x %in% c(df$step_name, NA)) stop("Step '", df$step_name[i], "'s dependency '", x, "' not found.")
         })
     })
@@ -166,30 +167,38 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE){
         paste0(lines[(df$start[x] + 1): (df$end[x] -1)], collapse = "\n")
     }) %>% unlist()
     
-    if(verbose) message("Success, create output")
+    if(verbose) message(crayon::blue("---- Succes! Create output ----"))
     
     df$code <- code
     df
 }
 
+
 #
 
 ## Usage:
 # library(systemPipeRdata)
-# script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
+# rmdPath <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 # targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-# script <- "systemPipeRNAseq.Rmd"
-# parseRmd(script, ignore_eval = FALSE)
+# rmdPath <- "systemPipeRNAseq.Rmd"
+# parseRmd(rmdPath, ignore_eval = FALSE)
 # 
-# parseRmd("rna.Rmd")
-# a <- parseRmd("rna1.Rmd")
+# parseRmd("../../rnaseq/rna1.Rmd")
+# # a <- parseRmd("rna1.Rmd")
 # file_path <- "rna1.Rmd"
 
-LineWise <- function(code, rmdStart, rmd){
+LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=character()){
+    if(stepName=="default"){
+        stepName <- "Step_x"
+    } else {
+        stepName <- stepName
+    }
     line <- list(
         codeLine = parse(text=code),
-        rmdStart = rmdStart,
-        script = rmd
+        codeChunkStart = codeChunkStart,
+        rmdPath = rmdPath,
+        stepName=stepName,
+        dependency=dependency
     )
     return(as(line, "LineWise"))
 }
@@ -201,13 +210,12 @@ importRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE){
     sal <- sysargslist(sal)
     for(i in seq_along(df$spr)){
         if(df$spr[i]=="r"){
-            line_obj <- LineWise(df$code[i], rmdStart=df$start[i], file_path)
+            line_obj <- LineWise(df$code[i], codeChunkStart=df$start[i], file_path)
             sal$stepsWF[[df$step_name[i]]] <- line_obj
             sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal$statusWF[[df$step_name[i]]] <- list(status="Pending")
-            
             } else if(df$spr[i]=="sysargs"){
-            args <- eval(parse(text =df$code[i]))
+            args <- eval(parse(text =df$code[i]) )
             # suppressMessages(
             # args <- eval(parse(text=df$code[i])))
             sal$stepsWF[[df$step_name[i]]] <- args

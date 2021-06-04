@@ -4,8 +4,10 @@
 ## Define LineWise class
 setClass("LineWise", slots = c(
   codeLine = "expression",
-  rmdStart = "integer",
-  script = "character"
+  codeChunkStart = "integer",
+  rmdPath = "character", 
+  stepName="character", 
+  dependency = "character"
 ))
 ## Methods to return LineWise components
 setGeneric(name = "codeLine", def = function(x) standardGeneric("codeLine"))
@@ -13,15 +15,26 @@ setMethod(f = "codeLine", signature = "LineWise", definition = function(x) {
   return(cat(as.character(x@codeLine), sep = "\n"))
 })
 
-setGeneric(name = "script", def = function(x) standardGeneric("script"))
-setMethod(f = "script", signature = "LineWise", definition = function(x) {
-  return(x@script)
+setGeneric(name = "rmdPath", def = function(x) standardGeneric("rmdPath"))
+setMethod(f = "rmdPath", signature = "LineWise", definition = function(x) {
+  return(x@rmdPath)
 })
 
-setGeneric(name = "rmdStart", def = function(x) standardGeneric("rmdStart"))
-setMethod(f = "rmdStart", signature = "LineWise", definition = function(x) {
-  return(x@rmdStart)
+setGeneric(name = "codeChunkStart", def = function(x) standardGeneric("codeChunkStart"))
+setMethod(f = "codeChunkStart", signature = "LineWise", definition = function(x) {
+  return(x@codeChunkStart)
 })
+
+setGeneric(name = "stepName", def = function(x) standardGeneric("stepName"))
+setMethod(f = "stepName", signature = "LineWise", definition = function(x) {
+  return(x@stepName)
+})
+
+# setGeneric(name = "dependency", def = function(x) standardGeneric("dependency"))
+setMethod(f = "dependency", signature = "LineWise", definition = function(x) {
+  return(x@dependency)
+})
+
 
 ## Constructor methods
 ## List to LineWise with: as(mylist, "LineWise")
@@ -29,15 +42,18 @@ setAs(from = "list", to = "LineWise",
   def = function(from) {
     new("LineWise",
         codeLine = from$codeLine,
-        rmdStart = from$rmdStart,
-        script = from$script
+        codeChunkStart = from$codeChunkStart,
+        rmdPath = from$rmdPath, 
+        stepName = from$stepName,
+        dependency = from$dependency
     )
 })
 
 ## Coerce back to list: as(LineWise, "list")
 setGeneric(name = "linewise", def = function(x) standardGeneric("linewise"))
 setMethod(f = "linewise", signature = "LineWise", definition = function(x) {
-  linewise <- list(codeLine = x@codeLine, rmdStart= x@rmdStart, script = x@script)
+  linewise <- list(codeLine = x@codeLine, codeChunkStart= x@codeChunkStart, 
+                   rmdPath = x@rmdPath, stepName = x@stepName, dependency = x@dependency)
   return(linewise)
 })
 
@@ -73,7 +89,9 @@ setMethod(f = "[", signature = "LineWise", definition = function(x, i, ..., drop
     i <- which(i)
   }
   x@codeLine <- x@codeLine[i]
-  x@rmdStart <- x@rmdStart[i]
+  x@codeChunkStart <- x@codeChunkStart[i]
+  x@stepName <- x@stepName[i]
+  x@dependency <- x@dependency[i]
   return(x)
 })
 
@@ -92,11 +110,15 @@ setMethod("$", signature = "LineWise",
 ## Replacement method for LineWise using "[" operator
 setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j, value) {
   if (i == 1) x@codeLine <- value
-  if (i == 2) x@rmdStart <- value
-  if (i == 3) x@script <- value
+  if (i == 2) x@codeChunkStart <- value
+  if (i == 3) x@rmdPath <- value
+  if (i == 4) x@stepName <- value
+  if (i == 5) x@dependency <- value
   if (i == "codeLine") x@codeLine <- value
-  if (i == "rmdStart") x@rmdStart <- value
-  if (i == "script") x@script <- value
+  if (i == "codeChunkStart") x@codeChunkStart <- value
+  if (i == "rmdPath") x@rmdPath <- value
+  if (i == "stepName") x@stepName <- value
+  if (i == "dependency") x@stepName <- value
   return(x)
 })
 
@@ -129,7 +151,7 @@ setReplaceMethod("replaceCodeLine", signature = c("SYSargsList"), function(x, st
   x
 })
 
-setGeneric(name="appendCodeLine<-", def=function(x, ..., after=length(x), value) standardGeneric("appendCodeLine<-"))
+setGeneric(name="appendCodeLine<-", def=function(x, after=length(x),..., value) standardGeneric("appendCodeLine<-"))
 setReplaceMethod("appendCodeLine", signature = c("LineWise"), function(x, after=length(x), value) {
   lengx <- length(x)
   x <- linewise(x)
@@ -172,7 +194,7 @@ setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x) {
     rcode[[i]] <- code_list
   }
   for(i in seq_along(rcode)){
-    cat(names(rcode[i]), paste0("    ", as.character(rcode[[i]])), sep = "\n")
+    cat(crayon::blue(names(rcode[i])), paste0("    ", as.character(rcode[[i]])), sep = "\n")
   }
   #return(rcode)
 })

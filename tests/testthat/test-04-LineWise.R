@@ -5,15 +5,15 @@ setwd(file.path(tempdir(), "rnaseq"))
 
 test_that("check_LineWise_test", {
     ## build instance 
-    script <- system.file("extdata/", "systemPipeTEST.Rmd", package="systemPipeR")
-    sal <- importRmd(script)
+    rmdPath <- system.file("extdata/", "systemPipeTEST.Rmd", package="systemPipeR")
+    sal <- importRmd(rmdPath)
     lw <- stepsWF(sal[3])[[1]]
     show(lw)
     length(lw)
     names(lw)
     codeLine(lw)
-    rmdStart(lw)
-    script(lw)
+    codeChunkStart(lw)
+    rmdPath(lw)
     l <- lw[2]
     l_sub <- lw[-2]
     codeLine(l)
@@ -45,7 +45,7 @@ test_that("check_LineWise_test", {
    #  ## Class
     expect_s4_class(sal, "SYSargsList")
     expect_s4_class(lw, "LineWise")
-    expect_length(sal, 15)
+    expect_length(sal, 16)
     expect_length(lw, 4)
     expect_length(stepsWF(sal[1])[[1]], 3)
    #  ##runWF()

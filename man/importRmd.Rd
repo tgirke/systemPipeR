@@ -32,7 +32,7 @@ Le Zhang and Daniela Cassol
 }
 \examples{
 library(systemPipeRdata)
-script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-#importRmd(script)
+rmdpath <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
+#importRmd(rmdpath)
 }
 \keyword{ utilities }
