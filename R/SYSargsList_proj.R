@@ -59,7 +59,9 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
 # sys.file=".SPRproject/SYSargsList.yml"
 # silent = FALSE
 
-
+##########################
+## write_SYSargsList function ##
+##########################
 write_SYSargsList <- function(WF, sys.file=".SPRproject/SYSargsList.yml", silent=FALSE){
     if(!inherits(WF, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.") 
     WF2 <- sysargslist(WF)
