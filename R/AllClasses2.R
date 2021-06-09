@@ -40,7 +40,7 @@ setGeneric(name = "yamlinput", def = function(x) standardGeneric("yamlinput"))
 setMethod(f = "yamlinput", signature = "SYSargs2", definition = function(x) {
   return(x@yamlinput)
 })
-setGeneric(name = "cmdlist", def = function(x) standardGeneric("cmdlist"))
+setGeneric(name = "cmdlist", def = function(x, ...) standardGeneric("cmdlist"))
 setMethod(f = "cmdlist", signature = "SYSargs2", definition = function(x) {
   return(x@cmdlist)
 })
@@ -396,7 +396,10 @@ setMethod(f = "length", signature = "SYSargsList",
 
 # Behavior of "[" operator for SYSargsList
 setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
-  if (is.logical(i)) {
+  if(missing(i)){
+    i <- 1:length(x)
+  }
+    if (is.logical(i)) {
     i <- which(i)
   }
   for(s in seq_along(i)){
@@ -418,18 +421,41 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   return(x)
 })
 
-## Behavior of "[[" operator for SYSargsList
-setMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
-  #setMethod(f = "[[", signature = c("SYSargsList","ANY", "missing"), definition = function(x, i, ..., drop) {
-  for(s in seq_along(x)){
-    x@stepsWF[[s]] <- x@stepsWF[[s]][i]
-    x@targetsWF[[s]] <- x@targetsWF[[s]][i,]
-    #x@SEobj[[s]] <- x@SEobj[[s]][i]
-    x@outfiles[[s]] <- x@outfiles[[s]][i,]
+## Behavior of "subsetSamples" operator for SYSargsList
+setGeneric(name = "subsetSamples", def = function(x, samples) standardGeneric("subsetSamples"))
+setMethod(f = "subsetSamples", signature = "SYSargsList", definition = function(x, samples) {
+  if(missing(samples)){
+    samples <- 1:max(sapply(stepsWF(x), function(x) length(x)))
   }
-
+  for(s in seq_along(x)){
+    x@stepsWF[[s]] <- x@stepsWF[[s]][samples]
+    x@targetsWF[[s]] <- x@targetsWF[[s]][samples,]
+    #x@SEobj[[s]] <- x@SEobj[[s]][i]
+    x@outfiles[[s]] <- x@outfiles[[s]][samples,]
+  }
+  
   x
 })
+
+# ## Behavior of "[[" operator for SYSargsList
+# setMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
+#   #setMethod(f = "[[", signature = c("SYSargsList","ANY", "missing"), definition = function(x, i, ..., drop) {
+#   for(s in seq_along(x)){
+#     x@stepsWF[[s]] <- x@stepsWF[[s]][i]
+#     x@targetsWF[[s]] <- x@targetsWF[[s]][i,]
+#     #x@SEobj[[s]] <- x@SEobj[[s]][i]
+#     x@outfiles[[s]] <- x@outfiles[[s]][i,]
+#   }
+# 
+#   x
+# })
+
+## Behavior of "[[" operator for SYSargsList
+setMethod(f = "[[", signature = c("SYSargsList", "ANY", "missing"), definition = function(x, i, ..., drop) {
+            return(as(x, "list")[[i]])
+})
+
+
 
 ## Behavior of "$" operator for SYSargsList
 setMethod("$", signature = "SYSargsList",
@@ -438,11 +464,14 @@ setMethod("$", signature = "SYSargsList",
           })
 
 
-setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x) {
+setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, sample=NULL) {
   cmd <- sapply(names(x$stepsWF), function(x) list(NULL))
   for(i in seq_along(x)){
     if(nchar(cmdlist(x$stepsWF[[i]])[[1]][[1]])>0){
       cmd_list <- cmdlist(x$stepsWF[[i]])
+      if(!is.null(sample)){
+        cmd_list <- cmd_list[sample]
+      }
       cmd[[i]] <- cmd_list
     }
   }

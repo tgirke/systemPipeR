@@ -5,7 +5,7 @@ setwd(file.path(tempdir(), "rnaseq"))
 test_that("check_SYSargsList_test", {
     ## build instance 
     dir_path <- system.file("extdata/cwl/example/", package="systemPipeR")
-    sal <- SYSargsList()
+    sal <- SPRproject()
     targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
     ## appendStep <-  //SYSargsList() // cmdlist() // length(sal)
     appendStep(sal) <- SYSargsList(targets=targetspath, 
@@ -41,3 +41,4 @@ test_that("check_SYSargsList_test", {
    sal <- sal[1] + sal[2] 
    expect_length(sal, 2)
 })
+

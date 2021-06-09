@@ -206,8 +206,7 @@ LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath
 
 importRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE){
     df <- parseRmd(file_path, ignore_eval = ignore_eval, verbose = verbose)
-    sal <- SYSargsList(silent = TRUE)
-    sal <- sysargslist(sal)
+    sal <- as(SYScreate("SYSargsList"), "list")
     for(i in seq_along(df$spr)){
         if(df$spr[i]=="r"){
             line_obj <- LineWise(df$code[i], codeChunkStart=df$start[i], file_path)

@@ -216,7 +216,7 @@ renderWF <- function(WF, inputvars=NULL) {
 ###############################################################
 updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
                      inputvars=NULL, silent=FALSE){
-    if(!is(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
+    if(!inherits(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
     args <- sysargs2(args)
     if(is.null(inputvars)){
         args$inputvars <- inputvars <- args$inputvars

@@ -70,7 +70,7 @@ To create a Workflow within `systemPipeR`, we can start by defining an empty
 container:
 
 ```{r sysargsList, eval=TRUE}
-sal <- SYSargsList() 
+sal <- SPRproject(projPath = tempdir()) 
 ```
 
 Internally, `SYSargsList` function will check and/or create the basic folder
@@ -129,7 +129,8 @@ targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 appendStep(sal) <- SYSargsList(targets=targetspath, 
                    step_name="Quality",
                    wf_file = "trimmomatic-pe.cwl", input_file = "trimmomatic-pe.yml",
-                   dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package = "systemPipeR"),
+                   dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", 
+                                        package = "systemPipeR"),
                    inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
@@ -169,16 +170,13 @@ sal[1]
 stepsWF(sal)$Quality ## or
 ```
 
-- The `SYSargsList` class and its subsetting operator `[[`:
+- The `SYSargsList` class and its subsetting input samples: 
 
 ```{r}
-sal_sub <- sal[[1:4]]
+sal_sub <- subsetSamples(sal[1], samples = 1:3)
 stepsWF(sal_sub)
-
-sal_sub2 <- sal[1][[1:5]]
-stepsWF(sal_sub2)
-targetsWF(sal_sub2)
-outfiles(sal_sub2)
+targetsWF(sal_sub)
+outfiles(sal_sub)
 ```
 
 - The `SYSargsList` class and its operator `+`:
@@ -215,8 +213,8 @@ and debugging `.cwl` files of new command-line software or changing the
 parameter settings of existing ones.
 
 ```{r}
-sal[1][[1:5]]
-cmdlist(sal[1][[1:2]])
+sal[1]
+cmdlist(sal[1], 1:2)
 ```
 
 -   Rename a Step
@@ -266,7 +264,7 @@ cmdlist(sal[2])
 ```
 
 ```{r, eval=FALSE}
-sal[1:2][[1:5]]
+subsetSamples(sal[1:2], 1:5) ## TODO:error message
 ```
 
 Important: The number of the samples in which step subset needs to be equal, otherwise, 
@@ -298,28 +296,47 @@ connectivity between the new targets file. Here, the name of the previous
 appendStep(sal) <- SYSargsList(targets="Quality",
                                step_name="Mapping",
                                wf_file = "workflow_hisat2-pe.cwl", input_file="workflow_hisat2-pe.yml",
-                               dir_path=system.file("extdata/cwl/workflow-hisat2/workflow-hisat2-pe", package = "systemPipeR"),
+                               dir_path=system.file("extdata/cwl/workflow-hisat2/workflow-hisat2-pe", 
+                                                    package = "systemPipeR"),
                                inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_", 
                                            trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
                                rm_targets_col = c("FileName1", "FileName2"),
                                dependency = c("Quality", "Index"))
-cmdlist(sal[3])[[1]]
+```
+
+### Subset Command Lines
+
+```{r, eval=FALSE}
+sal[1]
+sal[]
+
+cmdlist(sal[1])
+cmdlist(sal[2])
+cmdlist(sal[3], 1) ##TODO input argument name
+cmdlist(sal[c(1,3)], 1:2)
+```
+
+### 
+
+```{r}
+sal_sub <- subsetSamples(sal[c(1,2)], 1)
+stepsWF(sal_sub)
 ```
 
 ## Update a parameter the workflow
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 ## check values
 yamlinput(sal[1])
 ## check on command line
-cmdlist(sal[1][[1]])
+cmdlist(sal[1], 1)
 ## Replace
-yamlinput(sal, "thread") <- 20
+yamlinput(sal, "thread") <- c(4, 5, 6, rep(20, 15)) ## TODO
 sal
 ## check NEW values
 yamlinput(sal[1])
 ## Check on command line
-cmdlist(sal)[[1]][[1]]
+cmdlist(sal[1], 1)
 ```
 
 ## Adding a R code as new Step

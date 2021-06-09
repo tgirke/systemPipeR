@@ -2,150 +2,150 @@
 ## Functions to construct SYSargsList objects and other utilities ##
 ####################################################################
 
-##########################
-## SPRproject function ##
-##########################
-## Detection and creation of the directory of the project
-SPRproject <- function(projPath = "./", overwrite = FALSE, silent = FALSE, 
-                       tempdir = FALSE) {
-  if (!class(projPath) == "character") stop("Provide valid 'projPath' PATH.")
-  if (tempdir == TRUE) {
-    projPath <- tempdir()
-    projPath <- file.path(projPath, ".SPRproject")
-  } else if (tempdir == FALSE) {
-    projPath <- file.path(projPath, ".SPRproject")
-  }
-  if (file.exists(projPath) == FALSE) {
-    dir.create(projPath, recursive = TRUE)
-    if (silent != TRUE) cat("Creating directory '", normalizePath(projPath), "'", sep = "")
-  } else if (file.exists(projPath) == TRUE) {
-    if (overwrite == FALSE) {
-      if (file.exists(projPath)) {
-        stop("/.SPRproject already exists. '/.SPRproject' can be overwritten OR restart the project where it was stopped.")
-      }
-    } else if (overwrite == TRUE) {
-      unlink(projPath, recursive = TRUE)
-      dir.create(projPath, recursive = TRUE)
-      if (silent != TRUE) cat("Directory '", normalizePath(projPath), "' was overwritten", sep = "", "\n")
-    }
-  }
-  return(normalizePath(projPath))
-}
-
-## Usage
-# projPath = "./"; overwrite = FALSE; silent = FALSE; tempdir = FALSE
-# SPRproj <- SPRproject()
-# SRPproj <- SPRproject(projPath="./", overwrite=FALSE, tempdir=TRUE)
-
-##########################
-## initProject function ##
-##########################
-## This function detects an existing project or creates a project structure on the path provide
-initProject <- function(projPath = "./", data = "data", param = "param", results = "results",
-                        script = NULL, targets = NULL, filename = "SPRconfig.yml",
-                        overwrite = FALSE, silent = FALSE, tempdir=FALSE) {
-  project <- list(
-    project = projPath, 
-    data = file.path(normalizePath(projPath), data),
-    param = file.path(normalizePath(projPath), param), 
-    results = file.path(normalizePath(projPath), results)
-  )
-  path <- sapply(project, function(x) suppressMessages(tryPath(x)))
-  create <- NULL
-  for (i in seq_along(path)) {
-    if (is.null(path[[i]])) create <- c(create, project[i])
-  }
-  ## Question
-  if (!is.null(create)) {
-    ## For an interactive() session
-    if (interactive()) {
-      dir_create <- readline(cat(
-        "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep="\n"), "\n",
-        "Would you like to create this directory now? Type a number: \n 1. Yes \n 2. No \n"
-      ))
-    } else {
-      ## For an non-interactive session
-      dir_create <- "1"
-    }
-    for (i in seq_along(create)) {
-      if (dir_create == "1") {
-        dir.create(create[[i]], recursive = TRUE)
-        print(paste("Creating directory:", create[[i]]))
-      } else if (dir_create == 2) {
-        stop("Aborting project creation.")
-      }
-    }
-  }
-  path <- sapply(project, function(x) suppressMessages(tryPath(x)))
-  project_path <- list(class = "Directory", path = normalizePath(path[1]))
-  data_path <- list(class = "Directory", path = normalizePath(path[2]))
-  param_path <- list(class = "Directory", path = normalizePath(path[3]))
-  results_path <- list(class = "Directory", path = normalizePath(path[4]))
-  targets <- list(class = "File", path = targets)
-  script <- list(class = "File", path = script)
-  initProj <- list(
-    project = project_path, data = data_path,
-    param = param_path, results = results_path, targets = targets,
-    script = script
-  )
-  SPRproj <- SPRproject(projPath = projPath, overwrite = overwrite, silent = silent, tempdir = tempdir)
-  if (all(file.exists(file.path(projPath, filename)) & overwrite == FALSE)) 
-    stop(paste("I am not allowed to overwrite files; please delete existing file:", filename, "or set 'overwrite=TRUE'"))
-  yaml::write_yaml(x = initProj, file = file.path(projPath, filename))
-  if (silent != TRUE) cat("\n", "Project started with success: ./SPRproject and", filename, "were created.")
-  initProj <- c(initProj, list(SPRproj = SPRproj, SPRconfig = normalizePath(file.path(projPath, filename))))
-  return(initProj)
-}
-
-## Usage
-# projPath = "./"; data = "data"; param = "param"; results = "results"; script = NULL; targets = NULL;
-# subProj = FALSE; filename = "SPRconfig.yml"; overwrite = FALSE; silent = FALSE
-# SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=TRUE, silent=FALSE)
-# SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=TRUE, silent=TRUE)
-# SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=FALSE, silent=FALSE)
-# SPRconfig <- initProject(projPath="./", data="./data2", param="./param2", results="./results")
-
-#####################
-## initWF function ##
-#####################
-initWF <- function(sprconfig = NULL, script=NULL, targets = NULL, silent = FALSE,
-                   overwrite = FALSE) {
-  ## Validations
-  if (all(!is.null(sprconfig) && !file.exists(sprconfig) == TRUE)) stop("Provide valid 'sprconfig' file. Check the file PATH.")
-  if (all(!is.null(script) && !file.exists(script) == TRUE)) stop("Provide valid 'script' file. Check the file PATH.")
-  if (all(!is.null(targets) && !file.exists(targets) == TRUE)) stop("Provide valid 'script' file. Check the file PATH.")
-  ## Building an 'SYSargsList' empty container
-  init <- as(SYScreate("SYSargsList"), "list")
-  ## detects an existing project or creates a project structure on getwd() OR it uses all the info from the sprconfig argument
-  if (is.null(sprconfig)) {
-    sprconfig <- initProject(projPath = "./", targets = targets, script = script, overwrite = overwrite, silent = silent)
-  } else if (!is.null(sprconfig)) {
-    tryCatch(.sprconfigCheck(sprconfig),
-             warning = function(w) {
-               w$message <- paste("Please check the", sprconfig, "file. Some file path is missing. For more details: 'help(initWF)'")
-               stop(w)
-             }
-    )
-    sprconfig <- yaml::read_yaml(sprconfig, eval.expr = TRUE)
-  }
-  ## TODO: subproject structure
-  init$projectWF <- list(
-    project = sprconfig$project$path, data = sprconfig$data$path, param = sprconfig$param$path,
-    results = sprconfig$results$path, logs=NA
-  )
-  init$sprconfig <- sprconfig
-  init <- as(init, "SYSargsList")
-  ## TODO: if init$sprconfig$script$path==TRUE, creates LINEwise object...
-  return(as(init, "SYSargsList"))
-}
-
-## Usage:
-# sprconfig = NULL; script=NULL; targets = NULL; silent = FALSE; overwrite = FALSE
-# sal <- initWF(script="systemPipeRNAseq.Rmd", targets = "targets.txt", overwrite = TRUE)
-# sal <- initWF(sprconfig = "SPRconfig.yml")
-# sal
-# sal <- initWF(sprconfig = NULL, overwrite = TRUE)
-# sal <- initWF()
+# ##########################
+# ## SPRproject function ##
+# ##########################
+# ## Detection and creation of the directory of the project
+# SPRproject <- function(projPath = "./", overwrite = FALSE, silent = FALSE, 
+#                        tempdir = FALSE) {
+#   if (!class(projPath) == "character") stop("Provide valid 'projPath' PATH.")
+#   if (tempdir == TRUE) {
+#     projPath <- tempdir()
+#     projPath <- file.path(projPath, ".SPRproject")
+#   } else if (tempdir == FALSE) {
+#     projPath <- file.path(projPath, ".SPRproject")
+#   }
+#   if (file.exists(projPath) == FALSE) {
+#     dir.create(projPath, recursive = TRUE)
+#     if (silent != TRUE) cat("Creating directory '", normalizePath(projPath), "'", sep = "")
+#   } else if (file.exists(projPath) == TRUE) {
+#     if (overwrite == FALSE) {
+#       if (file.exists(projPath)) {
+#         stop("/.SPRproject already exists. '/.SPRproject' can be overwritten OR restart the project where it was stopped.")
+#       }
+#     } else if (overwrite == TRUE) {
+#       unlink(projPath, recursive = TRUE)
+#       dir.create(projPath, recursive = TRUE)
+#       if (silent != TRUE) cat("Directory '", normalizePath(projPath), "' was overwritten", sep = "", "\n")
+#     }
+#   }
+#   return(normalizePath(projPath))
+# }
+# 
+# ## Usage
+# # projPath = "./"; overwrite = FALSE; silent = FALSE; tempdir = FALSE
+# # SPRproj <- SPRproject()
+# # SRPproj <- SPRproject(projPath="./", overwrite=FALSE, tempdir=TRUE)
+# 
+# ##########################
+# ## initProject function ##
+# ##########################
+# ## This function detects an existing project or creates a project structure on the path provide
+# initProject <- function(projPath = "./", data = "data", param = "param", results = "results",
+#                         script = NULL, targets = NULL, filename = "SPRconfig.yml",
+#                         overwrite = FALSE, silent = FALSE, tempdir=FALSE) {
+#   project <- list(
+#     project = projPath, 
+#     data = file.path(normalizePath(projPath), data),
+#     param = file.path(normalizePath(projPath), param), 
+#     results = file.path(normalizePath(projPath), results)
+#   )
+#   path <- sapply(project, function(x) suppressMessages(tryPath(x)))
+#   create <- NULL
+#   for (i in seq_along(path)) {
+#     if (is.null(path[[i]])) create <- c(create, project[i])
+#   }
+#   ## Question
+#   if (!is.null(create)) {
+#     ## For an interactive() session
+#     if (interactive()) {
+#       dir_create <- readline(cat(
+#         "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep="\n"), "\n",
+#         "Would you like to create this directory now? Type a number: \n 1. Yes \n 2. No \n"
+#       ))
+#     } else {
+#       ## For an non-interactive session
+#       dir_create <- "1"
+#     }
+#     for (i in seq_along(create)) {
+#       if (dir_create == "1") {
+#         dir.create(create[[i]], recursive = TRUE)
+#         print(paste("Creating directory:", create[[i]]))
+#       } else if (dir_create == 2) {
+#         stop("Aborting project creation.")
+#       }
+#     }
+#   }
+#   path <- sapply(project, function(x) suppressMessages(tryPath(x)))
+#   project_path <- list(class = "Directory", path = normalizePath(path[1]))
+#   data_path <- list(class = "Directory", path = normalizePath(path[2]))
+#   param_path <- list(class = "Directory", path = normalizePath(path[3]))
+#   results_path <- list(class = "Directory", path = normalizePath(path[4]))
+#   targets <- list(class = "File", path = targets)
+#   script <- list(class = "File", path = script)
+#   initProj <- list(
+#     project = project_path, data = data_path,
+#     param = param_path, results = results_path, targets = targets,
+#     script = script
+#   )
+#   SPRproj <- SPRproject(projPath = projPath, overwrite = overwrite, silent = silent, tempdir = tempdir)
+#   if (all(file.exists(file.path(projPath, filename)) & overwrite == FALSE)) 
+#     stop(paste("I am not allowed to overwrite files; please delete existing file:", filename, "or set 'overwrite=TRUE'"))
+#   yaml::write_yaml(x = initProj, file = file.path(projPath, filename))
+#   if (silent != TRUE) cat("\n", "Project started with success: ./SPRproject and", filename, "were created.")
+#   initProj <- c(initProj, list(SPRproj = SPRproj, SPRconfig = normalizePath(file.path(projPath, filename))))
+#   return(initProj)
+# }
+# 
+# ## Usage
+# # projPath = "./"; data = "data"; param = "param"; results = "results"; script = NULL; targets = NULL;
+# # subProj = FALSE; filename = "SPRconfig.yml"; overwrite = FALSE; silent = FALSE
+# # SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=TRUE, silent=FALSE)
+# # SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=TRUE, silent=TRUE)
+# # SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=FALSE, silent=FALSE)
+# # SPRconfig <- initProject(projPath="./", data="./data2", param="./param2", results="./results")
+# 
+# #####################
+# ## initWF function ##
+# #####################
+# initWF <- function(sprconfig = NULL, script=NULL, targets = NULL, silent = FALSE,
+#                    overwrite = FALSE) {
+#   ## Validations
+#   if (all(!is.null(sprconfig) && !file.exists(sprconfig) == TRUE)) stop("Provide valid 'sprconfig' file. Check the file PATH.")
+#   if (all(!is.null(script) && !file.exists(script) == TRUE)) stop("Provide valid 'script' file. Check the file PATH.")
+#   if (all(!is.null(targets) && !file.exists(targets) == TRUE)) stop("Provide valid 'script' file. Check the file PATH.")
+#   ## Building an 'SYSargsList' empty container
+#   init <- as(SYScreate("SYSargsList"), "list")
+#   ## detects an existing project or creates a project structure on getwd() OR it uses all the info from the sprconfig argument
+#   if (is.null(sprconfig)) {
+#     sprconfig <- initProject(projPath = "./", targets = targets, script = script, overwrite = overwrite, silent = silent)
+#   } else if (!is.null(sprconfig)) {
+#     tryCatch(.sprconfigCheck(sprconfig),
+#              warning = function(w) {
+#                w$message <- paste("Please check the", sprconfig, "file. Some file path is missing. For more details: 'help(initWF)'")
+#                stop(w)
+#              }
+#     )
+#     sprconfig <- yaml::read_yaml(sprconfig, eval.expr = TRUE)
+#   }
+#   ## TODO: subproject structure
+#   init$projectWF <- list(
+#     project = sprconfig$project$path, data = sprconfig$data$path, param = sprconfig$param$path,
+#     results = sprconfig$results$path, logs=NA
+#   )
+#   init$sprconfig <- sprconfig
+#   init <- as(init, "SYSargsList")
+#   ## TODO: if init$sprconfig$script$path==TRUE, creates LINEwise object...
+#   return(as(init, "SYSargsList"))
+# }
+# 
+# ## Usage:
+# # sprconfig = NULL; script=NULL; targets = NULL; silent = FALSE; overwrite = FALSE
+# # sal <- initWF(script="systemPipeRNAseq.Rmd", targets = "targets.txt", overwrite = TRUE)
+# # sal <- initWF(sprconfig = "SPRconfig.yml")
+# # sal
+# # sal <- initWF(sprconfig = NULL, overwrite = TRUE)
+# # sal <- initWF()
 
 ########################################################
 ## SYSargsList ##
@@ -153,15 +153,13 @@ initWF <- function(sprconfig = NULL, script=NULL, targets = NULL, silent = FALSE
 SYSargsList <- function(args=NULL, 
                         targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".", inputvars=NULL,
                         step_name="default",
-                        silent = FALSE, restartProject = TRUE, 
+                        silent = FALSE,
                         rm_targets_col = NULL, dependency=NULL) {
   if(all(is.null(args) && is.null(wf_file) && is.null(input_file))){
-    sal <- initWF(sprconfig = NULL, script=NULL, targets = NULL, silent = silent,
-                  overwrite = restartProject)
-    return(sal)
+    stop("please use 'SPRproject()' function")
   } else if (!is.null(args)){
     if(any(length(cmdlist(args)[[1]])==0)) stop("Argument 'args' needs to be assigned an object of class 'SYSargs2'.") 
-    sal <- SYScreate("SYSargsList"); sal <- sysargslist(sal)
+    sal <- as(SYScreate("SYSargsList"), "list")
     if(step_name=="default"){
       step_name <- "Step_x"
     } else {
