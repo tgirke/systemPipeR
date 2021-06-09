@@ -199,6 +199,10 @@ SYSargsList <- function(args=NULL,
       if(!is.null(rm_targets_col))
         sal$targets_connection["rm_targets_col"] <- list(rm_targets_col)
     }
+    if(length(sal$targets_connection)==0){
+      sal$targets_connection <- list(NULL)
+    }
+    names(sal$targets_connection) <- step_name
   }
   ## dependency
   if(is.null(dependency)){
@@ -222,6 +226,7 @@ SYSargsList <- function(args=NULL,
       names(sal$targetsWF) <- names(sal$stepsWF)
     }
   }
+  
   sal <- as(sal, "SYSargsList")
   return(sal)
 }

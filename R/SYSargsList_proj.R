@@ -5,16 +5,18 @@
 ## This function detects an existing project or creates a project structure on the path provide
 
 SPRproject <- function(projPath = getwd(), data = "data", param = "param", results = "results",
-                      logs.dir= "SPRproject",
-                       restart = FALSE, sys.file="SPRproject/SYSargsList.yml", silent = FALSE){
+                      logs.dir= ".SPRproject",
+                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml", silent = FALSE){
     if (!file.exists(projPath)) stop("Provide valid 'projPath' PATH.")
     ## Main folder structure
     dirProject <- .dirProject(projPath=projPath, data = data, param = param, results = results, silent = silent)
+    ## sys.file full path
+    sys.file <- file.path(projPath, sys.file)
     ## log Folder
     logs.dir <- file.path(projPath, logs.dir)
     if (file.exists(logs.dir) == FALSE) {
         dir.create(logs.dir, recursive = TRUE)
-        if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "")
+        if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
     } else if (file.exists(logs.dir) == TRUE) {
         if (restart == FALSE) {
             if (file.exists(logs.dir)) {
@@ -27,17 +29,23 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
         }
     }
     ## Return SYSargsList obj - empty
-    dirProject <- c(dirProject, logs=logs.dir)
+    yaml::write_yaml("", file= sys.file)
+    dirProject <- c(dirProject, logs=logs.dir, sysargslist=normalizePath(sys.file))
     project_path <- list(class = "Directory", path = normalizePath(dirProject$project))
     data_path <- list(class = "Directory", path = normalizePath(dirProject$data))
     param_path <- list(class = "Directory", path = normalizePath(dirProject$param))
     results_path <- list(class = "Directory", path = normalizePath(dirProject$results))
     logs_path <- list(class = "Directory", path = normalizePath(dirProject$logs))
+    sysargslist_path <- list(class = "File", path = normalizePath(sys.file))
     init <- as(SYScreate("SYSargsList"), "list")
     initProj <- list(project = project_path, data = data_path,
-                     param = param_path, results = results_path, logs_path = logs_path)
+                     param = param_path, results = results_path, logs_path = logs_path, 
+                     sysargslist=sysargslist_path)
     init$projectWF <- dirProject
-    return(as(init, "SYSargsList"))
+    init$sprconfig <- initProj
+    init <- as(init, "SYSargsList")
+    write_SYSargsList(init, sys.file, silent=silent)
+    return(init)
 }
 
 
@@ -46,12 +54,13 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
 # data = "data"
 # param = "param"
 # results = "results"
-# logs.dir= "SPRproject"
+# logs.dir= ".SPRproject"
 # restart = FALSE
+# sys.file=".SPRproject/SYSargsList.yml"
 # silent = FALSE
-# 
-# file <- "SYSargsList.yml"
-write_SYSargsList <- function(WF, sys.file="SPRproject/SYSargsList.yml", silent=FALSE){
+
+
+write_SYSargsList <- function(WF, sys.file=".SPRproject/SYSargsList.yml", silent=FALSE){
     if(!inherits(WF, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.") 
     WF2 <- sysargslist(WF)
     WF_comp <- sapply(WF2, function(x) list(NULL))
@@ -95,7 +104,7 @@ write_SYSargsList <- function(WF, sys.file="SPRproject/SYSargsList.yml", silent=
     WF_comp[["stepsWF"]] <- steps_comp
     ## Save file
     yaml::write_yaml(WF_comp, sys.file)
-    if (silent != TRUE) cat("Creating file '", normalizePath(sys.file), "'", sep = "")
+    if (silent != TRUE) cat("Creating file '", normalizePath(sys.file), "'", sep = "", "\n")
     return(normalizePath(sys.file))
 }
 # 
@@ -104,12 +113,10 @@ write_SYSargsList <- function(WF, sys.file="SPRproject/SYSargsList.yml", silent=
 read_SYSargsList <- function(sys.file){
     WF_comp_yml <- yaml::read_yaml(sys.file)
     WF_comp <- sapply(WF_comp_yml, function(x) list(NULL))
-    WF_comp
     steps <- names(WF_comp_yml$stepsWF)
     ## Simple yaml slots
     yaml_slots <- c("sprconfig", "projectWF", "SEobj")
     for(i in yaml_slots){
-        print(i)
         WF_comp[[i]] <- yaml::yaml.load(WF_comp_yml[i])
     }
     ## Yaml Slots + steps
@@ -131,25 +138,30 @@ read_SYSargsList <- function(sys.file){
         WF_comp[[i]] <- steps_comp
     }
     ## SYSargs2 and LineWise
-    steps_comp <- sapply(steps, function(x) list(NULL))
-    for(j in steps){
+    if(length(WF_comp_yml$stepsWF)>=1){
+      steps_comp <- sapply(steps, function(x) list(NULL))
+      for(j in steps){
         if("codeLine" %in% names(yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]]))){
-            args <- yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]])
-            if(length(args$codeLine)>=1) { args$codeLine <- parse(text=args$codeLine)}
-            if(length(args$codeChunkStart)==0) args$codeChunkStart <- integer()
-            if(length(args$rmdPath)==0) args$rmdPath <- character()
-            if(length(args$dependency)==0) args$dependency <- character()
-            args <- as(args, "LineWise")
-            steps_comp[[j]] <- args
+          args <- yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]])
+          if(length(args$codeLine)>=1) { args$codeLine <- parse(text=args$codeLine)}
+          if(length(args$codeChunkStart)==0) args$codeChunkStart <- integer()
+          if(length(args$rmdPath)==0) args$rmdPath <- character()
+          if(length(args$dependency)==0) args$dependency <- character()
+          args <- as(args, "LineWise")
+          steps_comp[[j]] <- args
         } else {
-            args <- as(yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]]), "SYSargs2")
-            steps_comp[[j]] <- args
+          args <- as(yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]]), "SYSargs2")
+          steps_comp[[j]] <- args
         }
         WF_comp[["stepsWF"]] <- steps_comp
+      }
+    } else if (length(WF_comp_yml$stepsWF)>=0){
+      WF_comp[["stepsWF"]] <- list()
     }
     return(as(WF_comp,"SYSargsList"))
 }
 
+# sys.file=".SPRproject/SYSargsList.yml"
 # sal3 <- read_SYSargsList(sys.file)
 
 
@@ -180,7 +192,7 @@ read_SYSargsList <- function(sys.file){
         for (i in seq_along(create)) {
             if (dir_create == "1") {
                 dir.create(create[[i]], recursive = TRUE)
-                if (silent != TRUE) cat(paste("Creating directory:", create[[i]]))
+                if (silent != TRUE) cat(paste("Creating directory:", create[[i]]), "\n")
             } else if (dir_create == 2) {
                 stop("Aborting project creation.")
             }

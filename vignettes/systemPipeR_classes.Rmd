@@ -67,18 +67,33 @@ provided by the parameter (*.cwl*) files described below.
 # Interactive Workflow
 
 To create a Workflow within `systemPipeR`, we can start by defining an empty
-container:
+container and checking the directory structure:
 
-```{r sysargsList, eval=TRUE}
+```{r SPRproject, eval=TRUE}
 sal <- SPRproject(projPath = tempdir()) 
+sal <- SPRproject() 
 ```
 
-Internally, `SYSargsList` function will check and/or create the basic folder
-structure, which means data, param, and results folder. Also, this function
-allows creating a hidden folder called `.SPRproject` to store all the log files.
-A yaml file, here called `SPRconfig.yml`, has been created, which initially
-contains the basic location of the project structure; however, can be used to
-pass all the config information for the entire workflow.
+Internally, `SPRproject` function will check and/or create the basic folder
+structure, which means `data`, `param`, and `results` folder. 
+If the user wants to use a different names for these directories, can be specified 
+as follows:
+
+```{r SPRproject_dir, eval=FALSE}
+sal <- SPRproject(projPath = getwd(), data = "data", param = "param", results = "results") 
+```
+
+Also, this function allows creating a hidden folder called `.SPRproject`, by default,
+to store all the log files.
+A yaml file, here called `SYSargsList.yml`, has been created, which initially
+contains the basic location of the project structure; however, everytime the object in R 
+is updated, the new information will also be store in this file, for easy recover.
+If you desire a different names for the logs folder and the yaml files, those can be 
+modify as follows:
+
+```{r SPRproject_dir, eval=FALSE}
+sal <- SPRproject(logs.dir= "SPRproject", sys.file="SPRproject/SYSargsList.yml") 
+```
 
 In this stage, the object `sal` is a empty container, except the project
 information, as the project, data, results and param folder paths, as can be
@@ -90,7 +105,7 @@ projectWF(sal)
 ```
 
 Also, the length function will return how many steps this workflow contains and
-in this case it is 0, as follow:
+in this case it is empty, as follow:
 
 ```{r}
 length(sal)
@@ -306,20 +321,20 @@ appendStep(sal) <- SYSargsList(targets="Quality",
 
 ### Subset Command Lines
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 sal[1]
 sal[]
 
 cmdlist(sal[1])
 cmdlist(sal[2])
-cmdlist(sal[3], 1) ##TODO input argument name
+cmdlist(sal[3], 1) 
 cmdlist(sal[c(1,3)], 1:2)
 ```
 
 ### 
 
 ```{r}
-sal_sub <- subsetSamples(sal[c(1,2)], 1)
+sal_sub <- subsetInput(sal[c(1,2)], 1)
 stepsWF(sal_sub)
 ```
 
@@ -350,11 +365,11 @@ stepsWF(sal)
 - Replacement and Append methods for R Code Steps
 
 ```{r, sal_lw_rep, eval=TRUE}
-appendCodeLine(sal, step=3, after=1) <- "66+55"
-codeLine(sal[3])
+appendCodeLine(sal, step=4, after=1) <- "66+55"
+codeLine(sal[4])
 
-replaceCodeLine(sal, step=3, line=1) <- "5+5"
-codeLine(sal[3])
+replaceCodeLine(sal, step=4, line=1) <- "5+5"
+codeLine(sal[4])
 ```
 
 For more details about the `LineWise` class, please check [below](#linewise).
