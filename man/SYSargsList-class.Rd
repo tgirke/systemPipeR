@@ -3,7 +3,7 @@
 \docType{class}
 \alias{SYSargsList-class}
 \alias{[,SYSargsList,ANY,ANY,ANY-method}
-\alias{[[,SYSargsList,ANY,ANY,missing-method}
+\alias{[[,SYSargsList,ANY,missing-method}
 \alias{[[,SYSargsList,ANY,ANY-method}
 \alias{[[<-,SYSargsList,ANY,ANY,ANY-method}
 \alias{$,SYSargsList-method}
