@@ -137,7 +137,7 @@ setReplaceMethod("replaceCodeLine", signature = c("LineWise"), function(x, line,
 
 setReplaceMethod("replaceCodeLine", signature = c("SYSargsList"), function(x, step, line, value) {
   y <- x$stepsWF[step][[1]]
-  if(!inherits(y, "LineWise")) stop("Provide 'LineWise' class object")
+  if(!inherits(y, "LineWise")) stop("The step argument needs to be assigned a 'LineWise' object")
   y <- as(y, "list")
   y$codeLine <- as.character(y$codeLine)
   y$codeLine[line] <- value
