@@ -6,7 +6,7 @@ setwd(file.path(tempdir(), "rnaseq"))
 test_that("check_LineWise_test", {
     ## build instance 
     rmdPath <- system.file("extdata/", "systemPipeTEST.Rmd", package="systemPipeR")
-    sal <- importRmd(rmdPath)
+    sal <- importWF(rmdPath, overwrite=TRUE)
     lw <- stepsWF(sal[3])[[1]]
     show(lw)
     length(lw)

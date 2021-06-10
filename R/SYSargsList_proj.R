@@ -6,7 +6,8 @@
 
 SPRproject <- function(projPath = getwd(), data = "data", param = "param", results = "results",
                       logs.dir= ".SPRproject",
-                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml", silent = FALSE){
+                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml",
+                      overwrite=FALSE, silent = FALSE){
     if (!file.exists(projPath)) stop("Provide valid 'projPath' PATH.")
     ## Main folder structure
     dirProject <- .dirProject(projPath=projPath, data = data, param = param, results = results, silent = silent)
@@ -20,7 +21,13 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
     } else if (file.exists(logs.dir) == TRUE) {
         if (restart == FALSE) {
             if (file.exists(logs.dir)) {
+              if(overwrite==FALSE){
                 stop(paste0(logs.dir, " already exists.", "\n", "The Workflow can be restart where it was stopped, using the argument 'restart=TRUE'."))
+              } else if(overwrite==TRUE){
+                unlink(logs.dir, recursive = TRUE)
+                dir.create(logs.dir, recursive = TRUE)
+                if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
+              }
             }
         } else if (restart == TRUE) {
             if(!file.exists(sys.file)) stop("Provide valid 'sys.file' PATH")
@@ -87,7 +94,7 @@ write_SYSargsList <- function(WF, sys.file=".SPRproject/SYSargsList.yml", silent
       #  WF_comp[[i]] <- yaml::as.yaml(as.data.frame(WF2[[i]]$Mapping))
         steps_comp <- sapply(steps, function(x) list(NULL))
         for(j in steps){
-            steps_comp[j] <- yaml::as.yaml(as.data.frame(WF2[[i]][[j]], check.names=FALSE))
+            steps_comp[j] <- yaml::as.yaml(data.frame(WF2[[i]][[j]], check.names=FALSE))
         }
         WF_comp[[i]] <- steps_comp
     }

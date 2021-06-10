@@ -379,7 +379,7 @@ For more details about the `LineWise` class, please check [below](#linewise).
 ```{r, eval=FALSE}
 file_path <- system.file("extdata/", "systemPipeTEST.Rmd", package="systemPipeR")
 # "../systemPipeR/inst/extdata/systemPipeTEST.Rmd"
-sal_rmd <- importRmd(file_path)
+sal_rmd <- importWF(file_path)
 sal_rmd
 stepsWF(sal_rmd)
 dependency(sal_rmd)
@@ -534,7 +534,7 @@ imported as a workflow.
 
 ```{r lw, eval=TRUE}
 rmd <- system.file("extdata/", "SPRtest.Rmd", package = "systemPipeR")
-sal_lw <- importRmd(rmd)
+sal_lw <- importWF(rmd, overwrite=TRUE)
 lw <- stepsWF(sal_lw[3])[[1]]
 codeLine(lw)
 codeLine(sal_lw[c(1, 3)])
@@ -580,7 +580,7 @@ codeLine(lw)
 
 - Replacement methods for `SYSargsList`
 
-```{r, sal_rep_append, eval=TRUE}
+```{r, sal_rep_append, eval=FALSE}
 replaceCodeLine(sal_lw, step=3, line=2) <- "5+5"
 codeLine(sal_lw[3])
 

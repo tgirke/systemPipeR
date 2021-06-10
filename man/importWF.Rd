@@ -7,7 +7,7 @@ Import RMarkdown file as workflow
 Import RMarkdown file as workflow
 }
 \usage{
-importWF(file_path, ignore_eval = TRUE, verbose = TRUE)
+importWF(file_path, ignore_eval = TRUE, verbose = TRUE, ...)
 }
 
 \arguments{
@@ -19,6 +19,9 @@ importWF(file_path, ignore_eval = TRUE, verbose = TRUE)
 }
   \item{verbose}{
   logical, print out verbose message while function running
+}
+  \item{...}{
+  Additional arguments to pass on to \code{SPRproject()}.
 }
 }
 \value{

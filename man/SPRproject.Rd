@@ -23,7 +23,8 @@ The default structure of the project directories can be modified here.
 \usage{
 SPRproject(projPath = getwd(), data = "data", param = "param", results = "results",
                       logs.dir= ".SPRproject",
-                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml", silent = FALSE)
+                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml", 
+                       overwrite = FALSE, silent = FALSE)
 }
 \arguments{
   \item{projPath}{
@@ -53,6 +54,9 @@ and image/plot files.
   \item{sys.file}{
   name and path of the SYSargsList file which will store all the project configuration 
   information. Default is \code{.SPRproject/SYSargsList.yml}.
+}
+  \item{overwrite}{
+  if set to TRUE, existing logs files or directory of same name will be overwritten.
 }
   \item{silent}{
 if set to TRUE, all messages returned by the function will be suppressed.

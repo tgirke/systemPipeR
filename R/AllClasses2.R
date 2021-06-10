@@ -421,6 +421,8 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   x@SEobj <- x@SEobj[i]
   x@outfiles <- x@outfiles[i]
   x@targets_connection <- x@targets_connection[i]
+  sys.file <- projectWF(x)$sysargslist
+  write_SYSargsList(x, sys.file, silent=TRUE)
   return(x)
 })
 
