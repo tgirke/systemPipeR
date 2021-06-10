@@ -5,50 +5,186 @@
 ##########################
 ## SPRproject function ##
 ##########################
-## Detection and creation of the directory of the project
-SPRproject <- function(projPath = "./", overwrite = FALSE, silent = FALSE, 
-                       tempdir = FALSE) {
-  if (!class(projPath) == "character") stop("Provide valid 'projPath' PATH.")
-  if (tempdir == TRUE) {
-    projPath <- tempdir()
-    projPath <- file.path(projPath, ".SPRproject")
-  } else if (tempdir == FALSE) {
-    projPath <- file.path(projPath, ".SPRproject")
-  }
-  if (file.exists(projPath) == FALSE) {
-    dir.create(projPath, recursive = TRUE)
-    if (silent != TRUE) cat("Creating directory '", normalizePath(projPath), "'", sep = "")
-  } else if (file.exists(projPath) == TRUE) {
-    if (overwrite == FALSE) {
-      if (file.exists(projPath)) {
-        stop("/.SPRproject already exists. '/.SPRproject' can be overwritten OR restart the project where it was stopped.")
+## Detection and creation of the logs directory of the project
+## This function detects an existing project or creates a project structure on the path provide
+SPRproject <- function(projPath = getwd(), data = "data", param = "param", results = "results",
+                       logs.dir= ".SPRproject",
+                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml",
+                       overwrite=FALSE, silent = FALSE){
+  if (!file.exists(projPath)) stop("Provide valid 'projPath' PATH.")
+  ## Main folder structure
+  dirProject <- .dirProject(projPath=projPath, data = data, param = param, results = results, silent = silent)
+  ## sys.file full path
+  sys.file <- file.path(projPath, sys.file)
+  ## log Folder
+  logs.dir <- file.path(projPath, logs.dir)
+  if (file.exists(logs.dir) == FALSE) {
+    dir.create(logs.dir, recursive = TRUE)
+    if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
+  } else if (file.exists(logs.dir) == TRUE) {
+    if (restart == FALSE) {
+      if (file.exists(logs.dir)) {
+        if(overwrite==FALSE){
+          stop(paste0(logs.dir, " already exists.", "\n", "The Workflow can be restart where it was stopped, using the argument 'restart=TRUE'."))
+        } else if(overwrite==TRUE){
+          unlink(logs.dir, recursive = TRUE)
+          dir.create(logs.dir, recursive = TRUE)
+          if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
+        }
       }
-    } else if (overwrite == TRUE) {
-      unlink(projPath, recursive = TRUE)
-      dir.create(projPath, recursive = TRUE)
-      if (silent != TRUE) cat("Directory '", normalizePath(projPath), "' was overwritten", sep = "", "\n")
+    } else if (restart == TRUE) {
+      if(!file.exists(sys.file)) stop("Provide valid 'sys.file' PATH")
+      sal <- read_SYSargsList(sys.file)
+      return(sal)
     }
   }
-  return(normalizePath(projPath))
+  ## Return SYSargsList obj - empty
+  yaml::write_yaml("", file= sys.file)
+  dirProject <- c(dirProject, logs=logs.dir, sysargslist=normalizePath(sys.file))
+  project_path <- list(class = "Directory", path = normalizePath(dirProject$project))
+  data_path <- list(class = "Directory", path = normalizePath(dirProject$data))
+  param_path <- list(class = "Directory", path = normalizePath(dirProject$param))
+  results_path <- list(class = "Directory", path = normalizePath(dirProject$results))
+  logs_path <- list(class = "Directory", path = normalizePath(dirProject$logs))
+  sysargslist_path <- list(class = "File", path = normalizePath(sys.file))
+  init <- as(SYScreate("SYSargsList"), "list")
+  initProj <- list(project = project_path, data = data_path,
+                   param = param_path, results = results_path, logs_path = logs_path, 
+                   sysargslist=sysargslist_path)
+  init$projectWF <- dirProject
+  init$sprconfig <- initProj
+  init <- as(init, "SYSargsList")
+  write_SYSargsList(init, sys.file, silent=silent)
+  return(init)
 }
 
-## Usage
-# projPath = "./"; overwrite = FALSE; silent = FALSE; tempdir = FALSE
-# SPRproj <- SPRproject()
-# SRPproj <- SPRproject(projPath="./", overwrite=FALSE, tempdir=TRUE)
+## Usage: 
+# sal <- SPRproject()
+# sal <- SPRproject(projPath = tempdir())
+# sal <- SPRproject(restart = TRUE)
+# sal <- SPRproject(overwrite = TRUE)
 
-##########################
-## initProject function ##
-##########################
-## This function detects an existing project or creates a project structure on the path provide
-initProject <- function(projPath = "./", data = "data", param = "param", results = "results",
-                        script = NULL, targets = NULL, filename = "SPRconfig.yml",
-                        overwrite = FALSE, silent = FALSE, tempdir=FALSE) {
+################################
+## write_SYSargsList function ##
+################################
+write_SYSargsList <- function(WF, sys.file=".SPRproject/SYSargsList.yml", silent=FALSE){
+  if(!inherits(WF, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.") 
+  WF2 <- sysargslist(WF)
+  WF_comp <- sapply(WF2, function(x) list(NULL))
+  steps <- names(stepsWF(WF))
+  ## Simple yaml slots
+  yaml_slots <- c("sprconfig", "projectWF", "SEobj")
+  for(i in yaml_slots){
+    WF_comp[[i]] <- yaml::as.yaml(WF2[[i]])
+  }
+  ## Yaml Slots + steps
+  yaml_slots_S <- c("statusWF", "dependency","targets_connection")
+  for(i in yaml_slots_S){
+    steps_comp <- sapply(steps, function(x) list(NULL))
+    for(j in steps){
+      steps_comp[j] <- yaml::as.yaml(WF2[[i]][j])
+    }
+    WF_comp[[i]] <- steps_comp
+  }
+  ## DataFrame Slots
+  df_slots <- c("targetsWF", "outfiles")
+  for(i in df_slots){
+    #  WF_comp[[i]] <- yaml::as.yaml(as.data.frame(WF2[[i]]$Mapping))
+    steps_comp <- sapply(steps, function(x) list(NULL))
+    for(j in steps){
+      steps_comp[j] <- yaml::as.yaml(data.frame(WF2[[i]][[j]], check.names=FALSE))
+    }
+    WF_comp[[i]] <- steps_comp
+  }
+  ## SYSargs2 and LineWise
+  steps_comp <- sapply(steps, function(x) list(NULL))
+  for(j in steps){
+    if(inherits(WF2[["stepsWF"]][[j]], "SYSargs2")){
+      step_obj <- sysargs2(WF2[["stepsWF"]][[j]])
+      steps_comp[[j]] <- yaml::as.yaml(step_obj)
+    } else if(inherits(WF2[["stepsWF"]][[j]], "LineWise")){
+      step_obj <- linewise(WF2[["stepsWF"]][[j]])
+      step_obj$codeLine <- as.character(step_obj$codeLine)
+      steps_comp[[j]] <- yaml::as.yaml(step_obj)
+    }
+  }
+  WF_comp[["stepsWF"]] <- steps_comp
+  ## Save file
+  yaml::write_yaml(WF_comp, sys.file)
+  if (silent != TRUE) cat("Creating file '", normalizePath(sys.file), "'", sep = "", "\n")
+  return(normalizePath(sys.file))
+}
+
+# ## Usage: 
+# write_SYSargsList(sal, sys.file, silent=FALSE)
+
+################################
+## read_SYSargsList function ##
+################################
+read_SYSargsList <- function(sys.file){
+  WF_comp_yml <- yaml::read_yaml(sys.file)
+  WF_comp <- sapply(WF_comp_yml, function(x) list(NULL))
+  steps <- names(WF_comp_yml$stepsWF)
+  ## Simple yaml slots
+  yaml_slots <- c("sprconfig", "projectWF", "SEobj")
+  for(i in yaml_slots){
+    WF_comp[[i]] <- yaml::yaml.load(WF_comp_yml[i])
+  }
+  ## Yaml Slots + steps
+  yaml_slots_S <- c("statusWF", "dependency","targets_connection")
+  for(i in yaml_slots_S){
+    steps_comp <- sapply(steps, function(x) list(NULL))
+    for(j in steps){
+      steps_comp[j] <- yaml::yaml.load(WF_comp_yml[[i]][j])
+    }
+    WF_comp[[i]] <- steps_comp
+  }
+  ## DataFrame Slots
+  df_slots <- c("targetsWF", "outfiles")
+  for(i in df_slots){
+    steps_comp <- sapply(steps, function(x) list(NULL))
+    for(j in steps){
+      steps_comp[[j]] <- DataFrame(yaml::yaml.load(WF_comp_yml[[i]][[j]]))
+    }
+    WF_comp[[i]] <- steps_comp
+  }
+  ## SYSargs2 and LineWise
+  if(length(WF_comp_yml$stepsWF)>=1){
+    steps_comp <- sapply(steps, function(x) list(NULL))
+    for(j in steps){
+      if("codeLine" %in% names(yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]]))){
+        args <- yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]])
+        if(length(args$codeLine)>=1) { args$codeLine <- parse(text=args$codeLine)}
+        if(length(args$codeChunkStart)==0) args$codeChunkStart <- integer()
+        if(length(args$rmdPath)==0) args$rmdPath <- character()
+        if(length(args$dependency)==0) args$dependency <- character()
+        args <- as(args, "LineWise")
+        steps_comp[[j]] <- args
+      } else {
+        args <- as(yaml::yaml.load(WF_comp_yml[["stepsWF"]][[j]]), "SYSargs2")
+        steps_comp[[j]] <- args
+      }
+      WF_comp[["stepsWF"]] <- steps_comp
+    }
+  } else if (length(WF_comp_yml$stepsWF)>=0){
+    WF_comp[["stepsWF"]] <- list()
+  }
+  return(as(WF_comp,"SYSargsList"))
+}
+
+# ## Usage: 
+# sys.file=".SPRproject/SYSargsList.yml"
+# sal3 <- read_SYSargsList(sys.file)
+
+################################
+## .dirProject function ##
+################################
+.dirProject <- function(projPath, data, param, results, silent){
   project <- list(
     project = projPath, 
-    data = file.path(normalizePath(projPath), data),
-    param = file.path(normalizePath(projPath), param), 
-    results = file.path(normalizePath(projPath), results)
+    data = file.path(projPath, data),
+    param = file.path(projPath, param), 
+    results = file.path(projPath, results)
   )
   path <- sapply(project, function(x) suppressMessages(tryPath(x)))
   create <- NULL
@@ -60,7 +196,7 @@ initProject <- function(projPath = "./", data = "data", param = "param", results
     ## For an interactive() session
     if (interactive()) {
       dir_create <- readline(cat(
-        "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep="\n"), "\n",
+        "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep="\n"), "\n", "\n",
         "Would you like to create this directory now? Type a number: \n 1. Yes \n 2. No \n"
       ))
     } else {
@@ -70,105 +206,35 @@ initProject <- function(projPath = "./", data = "data", param = "param", results
     for (i in seq_along(create)) {
       if (dir_create == "1") {
         dir.create(create[[i]], recursive = TRUE)
-        print(paste("Creating directory:", create[[i]]))
+        if (silent != TRUE) cat(paste("Creating directory:", create[[i]]), "\n")
       } else if (dir_create == 2) {
         stop("Aborting project creation.")
       }
     }
   }
-  path <- sapply(project, function(x) suppressMessages(tryPath(x)))
-  project_path <- list(class = "Directory", path = normalizePath(path[1]))
-  data_path <- list(class = "Directory", path = normalizePath(path[2]))
-  param_path <- list(class = "Directory", path = normalizePath(path[3]))
-  results_path <- list(class = "Directory", path = normalizePath(path[4]))
-  targets <- list(class = "File", path = targets)
-  script <- list(class = "File", path = script)
-  initProj <- list(
-    project = project_path, data = data_path,
-    param = param_path, results = results_path, targets = targets,
-    script = script
-  )
-  SPRproj <- SPRproject(projPath = projPath, overwrite = overwrite, silent = silent, tempdir = tempdir)
-  if (all(file.exists(file.path(projPath, filename)) & overwrite == FALSE)) 
-    stop(paste("I am not allowed to overwrite files; please delete existing file:", filename, "or set 'overwrite=TRUE'"))
-  yaml::write_yaml(x = initProj, file = file.path(projPath, filename))
-  if (silent != TRUE) cat("\n", "Project started with success: ./SPRproject and", filename, "were created.")
-  initProj <- c(initProj, list(SPRproj = SPRproj, SPRconfig = normalizePath(file.path(projPath, filename))))
-  return(initProj)
+  return(project)
 }
-
-## Usage
-# projPath = "./"; data = "data"; param = "param"; results = "results"; script = NULL; targets = NULL;
-# subProj = FALSE; filename = "SPRconfig.yml"; overwrite = FALSE; silent = FALSE
-# SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=TRUE, silent=FALSE)
-# SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=TRUE, silent=TRUE)
-# SPRconfig <- initProject(projPath="./", targets="targets.txt", script="systemPipeRNAseq.Rmd", overwrite=FALSE, silent=FALSE)
-# SPRconfig <- initProject(projPath="./", data="./data2", param="./param2", results="./results")
-
-#####################
-## initWF function ##
-#####################
-initWF <- function(sprconfig = NULL, script=NULL, targets = NULL, silent = FALSE,
-                   overwrite = FALSE) {
-  ## Validations
-  if (all(!is.null(sprconfig) && !file.exists(sprconfig) == TRUE)) stop("Provide valid 'sprconfig' file. Check the file PATH.")
-  if (all(!is.null(script) && !file.exists(script) == TRUE)) stop("Provide valid 'script' file. Check the file PATH.")
-  if (all(!is.null(targets) && !file.exists(targets) == TRUE)) stop("Provide valid 'script' file. Check the file PATH.")
-  ## Building an 'SYSargsList' empty container
-  init <- as(SYScreate("SYSargsList"), "list")
-  ## detects an existing project or creates a project structure on getwd() OR it uses all the info from the sprconfig argument
-  if (is.null(sprconfig)) {
-    sprconfig <- initProject(projPath = "./", targets = targets, script = script, overwrite = overwrite, silent = silent)
-  } else if (!is.null(sprconfig)) {
-    tryCatch(.sprconfigCheck(sprconfig),
-             warning = function(w) {
-               w$message <- paste("Please check the", sprconfig, "file. Some file path is missing. For more details: 'help(initWF)'")
-               stop(w)
-             }
-    )
-    sprconfig <- yaml::read_yaml(sprconfig, eval.expr = TRUE)
-  }
-  ## TODO: subproject structure
-  init$projectWF <- list(
-    project = sprconfig$project$path, data = sprconfig$data$path, param = sprconfig$param$path,
-    results = sprconfig$results$path, logs=NA
-  )
-  init$sprconfig <- sprconfig
-  init <- as(init, "SYSargsList")
-  ## TODO: if init$sprconfig$script$path==TRUE, creates LINEwise object...
-  return(as(init, "SYSargsList"))
-}
-
-## Usage:
-# sprconfig = NULL; script=NULL; targets = NULL; silent = FALSE; overwrite = FALSE
-# sal <- initWF(script="systemPipeRNAseq.Rmd", targets = "targets.txt", overwrite = TRUE)
-# sal <- initWF(sprconfig = "SPRconfig.yml")
-# sal
-# sal <- initWF(sprconfig = NULL, overwrite = TRUE)
-# sal <- initWF()
 
 ########################################################
 ## SYSargsList ##
 ########################################################
 SYSargsList <- function(args=NULL, 
                         targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".", inputvars=NULL,
-                        step_index="default",
-                        silent = FALSE, restartProject = TRUE, 
+                        step_name="default",
+                        silent = FALSE,
                         rm_targets_col = NULL, dependency=NULL) {
   if(all(is.null(args) && is.null(wf_file) && is.null(input_file))){
-    sal <- initWF(sprconfig = NULL, script=NULL, targets = NULL, silent = silent,
-                  overwrite = restartProject)
-    return(sal)
+    stop("please use 'SPRproject()' function")
   } else if (!is.null(args)){
     if(any(length(cmdlist(args)[[1]])==0)) stop("Argument 'args' needs to be assigned an object of class 'SYSargs2'.") 
-    sal <- SYScreate("SYSargsList"); sal <- sysargslist(sal)
-    if(step_index=="default"){
-      step_index <- "Step_1"
+    sal <- as(SYScreate("SYSargsList"), "list")
+    if(step_name=="default"){
+      step_name <- "Step_x"
     } else {
-      step_index <- step_index
+      step_name <- step_name
     }
     sal$stepsWF <- list(args)
-    names(sal$stepsWF) <- step_index
+    names(sal$stepsWF) <- step_name
   } else if(all(!is.null(wf_file) && !is.null(input_file))){
     ## targets
     if(is.null(targets)){
@@ -185,13 +251,13 @@ SYSargsList <- function(args=NULL,
                        input_file=input_file, dir_path=dir_path)
     WF <- renderWF(WF, inputvars=inputvars)
     sal <- SYScreate("SYSargsList"); sal <- sysargslist(sal)
-    if(step_index=="default"){
-      step_index <- "Step_1"
+    if(step_name=="default"){
+      step_name <- "Step_x"
     } else {
-      step_index <- step_index
+      step_name <- step_name
     }
     sal$stepsWF <- list(WF)
-    names(sal$stepsWF) <- step_index
+    names(sal$stepsWF) <- step_name
     if(exists("targets_step")){
       sal$targets_connection <- list(targets_step=targets_step)
       new_targets_col <- names(inputvars)
@@ -201,6 +267,10 @@ SYSargsList <- function(args=NULL,
       if(!is.null(rm_targets_col))
         sal$targets_connection["rm_targets_col"] <- list(rm_targets_col)
     }
+    if(length(sal$targets_connection)==0){
+      sal$targets_connection <- list(NULL)
+    }
+    names(sal$targets_connection) <- step_name
   }
   ## dependency
   if(is.null(dependency)){
@@ -217,13 +287,14 @@ SYSargsList <- function(args=NULL,
     sal$outfiles <- outList2DF(sal)
     ## targets
     if(length(targets(sal$stepsWF[[1]])) > 0 ) {
-      sal$targetsWF <- list(as(sal$stepsWF[[1]], "data.frame"))
+      sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
       names(sal$targetsWF) <- names(sal$stepsWF)
     } else {
-      sal$targetsWF <- list(NULL)
+      sal$targetsWF <- list(S4Vectors::DataFrame())
       names(sal$targetsWF) <- names(sal$stepsWF)
     }
   }
+  
   sal <- as(sal, "SYSargsList")
   return(sal)
 }
@@ -336,7 +407,7 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
   ## check dependency
   for(i in seq_along(dependency(args))){
     if(all(!is.na(dependency(args)[[i]]))){
-      dep_names <- dependency(args)[[i]]
+      dep_names <- names(dependency(args))
       if(any(!dep_names %in% names(stepsWF(args)))) stop(
         "'args' has dependency on the following steps:", "\n",
         paste0(dep_names, collapse = " AND "))
