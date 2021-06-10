@@ -8,7 +8,9 @@ changelog
      	- `+` method
      	- LineWise Class and Methods
      	- CWL templates path 
-     
+     	- New unit tests
+     	- Vignettes
+     	
      version 1.27.4
      	- R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
      version 1.27.3
