@@ -1,4 +1,10 @@
 changelog
+     version 1.27.5
+     - check.output for SYSargsList
+     - New Fct: cmdTool2wf
+     - New Methods: subsetTargets; 
+     - Improve SYSargsList Methods
+     
      version 1.27.4
      - R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
      version 1.27.3
