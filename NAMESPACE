@@ -50,7 +50,8 @@ importFrom("yaml", "yaml.load")
 
 ## S4 Classes
 exportClasses(
-    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargsList"
+    "SYSargs", "catDB", "VENNset", "INTERSECTset", "SYSargs2", "SYSargsList",
+    "LineWise"
 )
 
 ## Methods
@@ -63,10 +64,11 @@ exportMethods(
     "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
     "yamlinput<-",
     "sprconfig", "stepsWF", "statusWF", "dependency",
-    "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-",
-    "replaceStep<-", "renameStep<-"
+    "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "subsetTargets",
+    "appendStep<-", "replaceStep<-", "renameStep<-", 
+    "codeLine", "codeChunkStart", "rmdPath", "linewise", "replaceCodeLine<-", "appendCodeLine<-"
 )
-
+S3method("+", SYSargsList)
 ## Functions
 # exportPattern("^[[:alpha:]]+")
 export(
@@ -85,8 +87,8 @@ export(
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
     "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
     "targets.as.df", "olRanges", "evalCode", "tryPath",
-    "tryCL", "SPRproject", "initProject", "initWF", "configWF", "config.param", 
+    "tryCL", "SPRproject", "configWF", "config.param", 
     "plotWF", "runWF", "renderReport", "check.output", "createParamFiles", "writeParamFiles", 
     "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", 
-    "SYSargsList"
+    "SYSargsList", "importWF", "LineWise"
 )  

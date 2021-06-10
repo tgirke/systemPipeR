@@ -1,6 +1,18 @@
 changelog
+     version 1.27.5
+     	- check.output for SYSargsList
+     	- New Fct: cmdTool2wf
+     	- New Methods: subsetTargets; 
+     	- Improve SYSargsList Methods
+     	- SPRproject function (new internal design)
+     	- `+` method
+     	- LineWise Class and Methods
+     	- CWL templates path 
+     	- New unit tests
+     	- Vignettes
+     	
      version 1.27.4
-     - R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
+     	- R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
      version 1.27.3
      	- Adding createParamFiles, "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", "updateWF", "SYSargsList" functions
      	- Adding "cmdToCwl", "baseCommand", "sprconfig", "stepsWF", "statusWF", "dependency", "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-", "replaceStep<-", "renameStep<-" methods
