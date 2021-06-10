@@ -209,20 +209,6 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
 # WF <- runCommandline(WF, dir=TRUE) # creates the files in the ./results/workflowName/Samplename folder
 # WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE) ## For hisat2-mapping.cwl template
 
-###############################################################
-## Subsetting the input and output slots by name or position ##
-###############################################################
-check.output <- function(args, subset=1, index=1){
-  ## Check the class and slot
-  if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")  
-  check <- subsetWF(args, slot="output", subset=subset, index=index, delete=FALSE)
-  exists <- file.exists(check)
-  names(exists) <- names(check)
-  return(exists)
-}
-## Usage:
-# check.output(WF)
-
 ###########################################################################
 ## .makeBam function: internal function to convert *.sam to *.bam file ##
 ###########################################################################
