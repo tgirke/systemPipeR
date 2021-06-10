@@ -87,7 +87,7 @@ write_SYSargsList <- function(WF, sys.file=".SPRproject/SYSargsList.yml", silent
       #  WF_comp[[i]] <- yaml::as.yaml(as.data.frame(WF2[[i]]$Mapping))
         steps_comp <- sapply(steps, function(x) list(NULL))
         for(j in steps){
-            steps_comp[j] <- yaml::as.yaml(as.data.frame(WF2[[i]][[j]]))
+            steps_comp[j] <- yaml::as.yaml(as.data.frame(WF2[[i]][[j]], check.names=FALSE))
         }
         WF_comp[[i]] <- steps_comp
     }

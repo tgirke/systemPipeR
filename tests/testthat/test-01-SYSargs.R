@@ -40,8 +40,8 @@ test_that("check_SYSargs", {
     expect_true(file.exists(outpaths(args)))
     
     # requires Hisat2 installed... 
-    dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package = "systemPipeR")
-    idx <- loadWorkflow(targets = NULL, wf_file = "hisat2-index.cwl", input_file = "hisat2-index.yml",
+    dir_path <- system.file("extdata/cwl", package = "systemPipeR")
+    idx <- loadWorkflow(targets = NULL, wf_file = "hisat2/hisat2-index.cwl", input_file = "hisat2/hisat2-index.yml",
                         dir_path = dir_path)
     idx <- renderWF(idx)
     cmdlist(idx)

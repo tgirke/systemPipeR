@@ -109,8 +109,8 @@ targets
 targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 quality <- SYSargsList(targets=targetspath, 
                    step_name="Quality",
-                   wf_file = "trimmomatic-pe.cwl", input_file = "trimmomatic-pe.yml",
-                   dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package = "systemPipeR"),
+                   wf_file = "trimmomatic/trimmomatic-pe.cwl", input_file = "trimmomatic/trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl", package = "systemPipeR"),
                    inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
@@ -126,8 +126,8 @@ Build `Hisat2` index.
 
 ```{r hisat_index, eval=FALSE, spr='sysargs'}
 index <- SYSargsList(step_name = "Index", 
-                     wf_file = "hisat2-index.cwl", input_file="hisat2-index.yml",
-                     dir_path=system.file("extdata/cwl/hisat2/hisat2-idx", package = "systemPipeR"),
+                     wf_file = "hisat2/hisat2-index.cwl", input_file="hisat2/hisat2-index.yml",
+                     dir_path=system.file("extdata/cwl", package = "systemPipeR"),
                      dependency=NULL)
 ```
 
@@ -138,8 +138,8 @@ corresponding *SYSargs2* object, here *args*.
 ```{r mapping, eval=TRUE, spr='sysargs'}
 mapping <- SYSargsList(step_name = "Mapping", 
                      targets=targetspath, 
-                     wf_file = "hisat2-mapping-pe.cwl", input_file="hisat2-mapping-pe.yml",
-                     dir_path= system.file("extdata/cwl/hisat2/hisat2-pe", package="systemPipeR"), 
+                     wf_file = "hisat2/hisat2-mapping-pe.cwl", input_file="hisat2/hisat2-mapping-pe.yml",
+                     dir_path= system.file("extdata/cwl", package="systemPipeR"), 
                      inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
                      dependency=c("Quality", "Index"))
 

@@ -86,7 +86,7 @@ steps:
       SA: SA
       SAindex: SAindex
     out: [Aligned_out_sam, SJ_out_tab, Log_progress_out, Log_final_out, Log_out, Aligned_toTranscriptome_out_bam, ReadsPerGene_out_tab]
-    run: param/cwl/star/star-pe/star-mapping-pe.cwl 
+    run: star/star-pe/star-mapping-pe.cwl 
 
   samtools-view:
     in:
@@ -94,7 +94,7 @@ steps:
       samtools_sam: star/Aligned_out_sam
       results_path: results_path
     out: [samtools_bam]
-    run: param/cwl/samtools/samtools-view.cwl
+    run: samtools/samtools-view.cwl
 
   samtools-sort:
     in:
@@ -103,7 +103,7 @@ steps:
       thread: thread
       results_path: results_path
     out: [samtools_sort_bam]
-    run: param/cwl/samtools/samtools-sort.cwl
+    run: samtools/samtools-sort.cwl
 
   samtools-index:
     in:
@@ -111,4 +111,4 @@ steps:
       SampleName: SampleName
       results_path: results_path
     out: [samtools_index]
-    run: param/cwl/samtools/samtools-index.cwl  
+    run: samtools/samtools-index.cwl  

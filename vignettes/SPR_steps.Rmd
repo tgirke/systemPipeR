@@ -104,18 +104,20 @@ trimmed FASTQ files.
 
 Construct _`SYSargs2`_ object from _`cwl`_ and _`yml`_ param and _`targets`_ files.
 
-```{r construct_SYSargs2_trim-se, echo = FALSE, eval=FALSE}
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/preprocessReads/trim-se", package="systemPipeR")
-trim <- loadWorkflow(targets=targets, wf_file="trim-se.cwl", input_file="trim-se.yml", dir_path=dir_path)
+```{r construct_SYSargs2_trim-se, echo = FALSE, eval=TRUE}
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+trim <- loadWorkflow(targets=targetspath, wf_file="preprocessReads/trim-se.cwl", 
+                     input_file="preprocessReads/trim-se.yml", dir_path=dir_path)
 trim <- renderWF(trim, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 trim
 ```
 
-```{r construct_SYSargs2_trim-pe, eval=FALSE}
+```{r construct_SYSargs2_trim-pe, eval=TRUE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/preprocessReads/trim-pe", package="systemPipeR")
-trim <- loadWorkflow(targets=targetsPE, wf_file="trim-pe.cwl", input_file="trim-pe.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+trim <- loadWorkflow(targets=targetsPE, wf_file="preprocessReads/trim-pe.cwl", 
+                     input_file="preprocessReads/trim-pe.yml", dir_path=dir_path)
 trim <- renderWF(trim, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 trim
 output(trim)[1:2]
@@ -148,9 +150,10 @@ with some extra functionality for removing Reduced Representation Bisulfite-Seq
 (RRBS) libraries. 
 
 ```{r trimGalore, eval=FALSE}
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/trim_galore/trim_galore-se", package="systemPipeR")
-trimG <- loadWorkflow(targets=targets, wf_file="trim_galore-se.cwl", input_file="trim_galore-se.yml", dir_path=dir_path)
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+trimG <- loadWorkflow(targets=targetspath, wf_file="trim_galore/trim_galore-se.cwl", 
+                      input_file="trim_galore/trim_galore-se.yml", dir_path=dir_path)
 trimG <- renderWF(trimG, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 trimG
 cmdlist(trimG)[1:2]
@@ -163,8 +166,9 @@ trimG <- runCommandline(trimG[1], make_bam = FALSE)
 
 ```{r trimmomatic, eval=FALSE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package="systemPipeR")
-trimM <- loadWorkflow(targets=targetsPE, wf_file="trimmomatic-pe.cwl", input_file="trimmomatic-pe.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+trimM <- loadWorkflow(targets=targetsPE, wf_file="trimmomatic/trimmomatic-pe.cwl", 
+                      input_file="trimmomatic/trimmomatic-pe.yml", dir_path=dir_path)
 trimM <- renderWF(trimM, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 trimM
 cmdlist(trimM)[1:2]
@@ -211,8 +215,9 @@ library(BiocParallel); library(batchtools)
 f <- function(x) {
   library(systemPipeR)
   targetsPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-  dir_path <- system.file("extdata/cwl/preprocessReads/trim-pe", package="systemPipeR")
-  trim <- loadWorkflow(targets=targetsPE, wf_file="trim-pe.cwl", input_file="trim-pe.yml", dir_path=dir_path)
+  dir_path <- system.file("extdata/cwl", package="systemPipeR")
+  trim <- loadWorkflow(targets=targetsPE, wf_file="preprocessReads/trim-pe.cwl",
+                       input_file="preprocessReads/trim-pe.yml", dir_path=dir_path)
   trim <- renderWF(trim, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
   seeFastq(fastq=infile1(trim)[x], batchsize=100000, klength=8)
 }
@@ -244,9 +249,10 @@ and `hisat2-mapping-se.yml` files. The following shows how to construct the
 corresponding *SYSargs2* object, here *args*.
 
 ```{r hisat_SYSargs2_object, eval=TRUE}
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-args <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+args <- loadWorkflow(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl",
+                     input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
 args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 args
 cmdlist(args)[1:2]
@@ -265,8 +271,9 @@ subsetWF(args, slot="output", subset=1, index=1, delete=TRUE)[1] ## DELETING spe
 Build `Hisat2` index.
 
 ```{r hisat_index, eval=FALSE}
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-idx", package="systemPipeR")
-idx <- loadWorkflow(targets=NULL, wf_file="hisat2-index.cwl", input_file="hisat2-index.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+idx <- loadWorkflow(targets=NULL, wf_file="hisat2/hisat2-index.cwl", 
+                    input_file="hisat2/hisat2-index.yml", dir_path=dir_path)
 idx <- renderWF(idx)
 idx
 cmdlist(idx)
@@ -365,10 +372,11 @@ writeTargetsout(x=args, file="default", step = 1,
 
 Alternatively, it possible to build an workflow with `HISAT2` and `SAMtools`.
 
-```{r hisat_alignment, eval=FALSE}
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/workflow-hisat2/workflow-hisat2-se", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="workflow_hisat2-se.cwl", input_file="workflow_hisat2-se.yml", dir_path=dir_path)
+```{r hisat_alignment, eval=TRUE}
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targetspath, wf_file="workflow-hisat2/workflow_hisat2-se.cwl", 
+                   input_file="workflow-hisat2/workflow_hisat2-se.yml", dir_path=dir_path)
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
 cmdlist(WF)[1:2]
@@ -383,8 +391,9 @@ sequence using `Bowtie2/TopHat2` [@Kim2013-vg; @Langmead2012-bs].
 Build _`Bowtie2`_ index.
 
 ```{r bowtie_index, eval=FALSE}
-dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package="systemPipeR")
-idx <- loadWorkflow(targets=NULL, wf_file="bowtie2-index.cwl", input_file="bowtie2-index.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+idx <- loadWorkflow(targets=NULL, wf_file="bowtie2/bowtie2-index.cwl", 
+                    input_file="bowtie2/bowtie2-index.yml", dir_path=dir_path)
 idx <- renderWF(idx)
 idx
 cmdlist(idx)
@@ -399,9 +408,9 @@ corresponding *SYSargs2* object, here *tophat2PE*.
 
 ```{r tophat2-pe, eval=FALSE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-dir_path <- system.file("extdata/cwl/tophat2/tophat2-pe", package="systemPipeR")
-tophat2PE <- loadWorkflow(targets = targetsPE, wf_file = "tophat2-mapping-pe.cwl", 
-    input_file = "tophat2-mapping-pe.yml", dir_path = dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+tophat2PE <- loadWorkflow(targets = targetsPE, wf_file = "tophat2/tophat2-mapping-pe.cwl", 
+    input_file = "tophat2/tophat2-mapping-pe.yml", dir_path = dir_path)
 tophat2PE <- renderWF(tophat2PE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
     SampleName = "_SampleName_"))
 tophat2PE
@@ -436,8 +445,9 @@ The following example runs _`Bowtie2`_ as a single process without submitting it
 
 Building the index:
 ```{r bowtie2_index, eval=FALSE}
-dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package="systemPipeR")
-idx <- loadWorkflow(targets=NULL, wf_file="bowtie2-index.cwl", input_file="bowtie2-index.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+idx <- loadWorkflow(targets=NULL, wf_file="bowtie2/bowtie2-index.cwl", 
+                    input_file="bowtie2/bowtie2-index.yml", dir_path=dir_path)
 idx <- renderWF(idx)
 idx
 cmdlist(idx)
@@ -450,9 +460,9 @@ Building all the command-line:
 
 ```{r bowtie2_SYSargs2, eval=FALSE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-pe", package="systemPipeR")
-bowtiePE <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2-mapping-pe.cwl", 
-    input_file = "bowtie2-mapping-pe.yml", dir_path = dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+bowtiePE <- loadWorkflow(targets = targetsPE, wf_file = "bowtie2/bowtie2-mapping-pe.cwl", 
+    input_file = "bowtie2/bowtie2-mapping-pe.yml", dir_path = dir_path)
 bowtiePE <- renderWF(bowtiePE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
     SampleName = "_SampleName_"))
 bowtiePE
@@ -491,8 +501,9 @@ The following example runs BWA-MEM as a single process without submitting it to 
 Build the index:
 
 ```{r bwa_index, eval=FALSE}
-dir_path <- system.file("extdata/cwl/bwa/bwa-idx", package="systemPipeR")
-idx <- loadWorkflow(targets=NULL, wf_file="bwa-index.cwl", input_file="bwa-index.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+idx <- loadWorkflow(targets=NULL, wf_file="bwa/bwa-index.cwl", 
+                    input_file="bwa/bwa-index.yml", dir_path=dir_path)
 idx <- renderWF(idx)
 idx
 cmdlist(idx) # Indexes reference genome
@@ -503,11 +514,11 @@ runCommandline(idx, make_bam = FALSE)
 
 Running the alignment:
 
-```{r bwa-pe_alignment, eval=FALSE}    
+```{r bwa-pe_alignment, eval=FALSE}
 targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-dir_path <- system.file("extdata/cwl/bwa/bwa-pe", package="systemPipeR")
-bwaPE <- loadWorkflow(targets = targetsPE, wf_file = "bwa-pe.cwl", 
-    input_file = "bwa-pe.yml", dir_path = dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+bwaPE <- loadWorkflow(targets = targetsPE, wf_file = "bwa/bwa-pe.cwl", 
+    input_file = "bwa/bwa-pe.yml", dir_path = dir_path)
 bwaPE <- renderWF(bwaPE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
     SampleName = "_SampleName_"))
 bwaPE
@@ -539,19 +550,19 @@ The following example shows how one can use within the \Rpackage{systemPipeR} en
 
 ```{r rsubread, eval=FALSE}
 ## Build the index:
-dir_path <- system.file("extdata/cwl/rsubread/rsubread-idx", package="systemPipeR")
-idx <- loadWorkflow(targets = NULL, wf_file = "rsubread-index.cwl", 
-                     input_file = "rsubread-index.yml", dir_path = dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+idx <- loadWorkflow(targets = NULL, wf_file = "rsubread/rsubread-index.cwl", 
+                     input_file = "rsubread/rsubread-index.yml", dir_path = dir_path)
 idx <- renderWF(idx)
 idx
 cmdlist(idx)
 runCommandline(args= idx, make_bam = FALSE) 
 
 ## Running the alignment:
-targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
-dir_path <- system.file("extdata/cwl/rsubread/rsubread-se", package="systemPipeR")
-rsubread <- loadWorkflow(targets = targets, wf_file = "rsubread-mapping-se.cwl", 
-                     input_file = "rsubread-mapping-se.yml", dir_path = dir_path)
+targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+rsubread <- loadWorkflow(targets = targetspath, wf_file = "rsubread/rsubread-mapping-se.cwl", 
+                     input_file = "rsubread/rsubread-mapping-se.yml", dir_path = dir_path)
 rsubread <- renderWF(rsubread, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
 rsubread
 cmdlist(rsubread)[1]
@@ -575,9 +586,9 @@ The code sample below introduces how to run this aligner on multiple nodes of a 
 
 ```{r gsnap, eval=FALSE}
 ## Build the index:
-dir_path <- system.file("extdata/cwl/gsnap/gsnap-idx", package="systemPipeR")
-idx <- loadWorkflow(targets = NULL, wf_file = "gsnap-index.cwl", 
-                     input_file = "gsnap-index.yml", dir_path = dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+idx <- loadWorkflow(targets = NULL, wf_file = "gsnap/gsnap-index.cwl", 
+                     input_file = "gsnap/gsnap-index.yml", dir_path = dir_path)
 idx <- renderWF(idx)
 idx
 cmdlist(idx)
@@ -585,9 +596,9 @@ runCommandline(args= idx, make_bam = FALSE)
 
 ## Running the alignment:
 targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-dir_path <- system.file("extdata/cwl/gsnap/gsnap-pe", package="systemPipeR")
-gsnap <- loadWorkflow(targets = targetsPE, wf_file = "gsnap-mapping-pe.cwl", 
-                     input_file = "gsnap-mapping-pe.yml", dir_path = dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+gsnap <- loadWorkflow(targets = targetsPE, wf_file = "gsnap/gsnap-mapping-pe.cwl", 
+                     input_file = "gsnap/gsnap-mapping-pe.yml", dir_path = dir_path)
 gsnap <- renderWF(gsnap, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
 gsnap
 cmdlist(gsnap)[1]
@@ -716,9 +727,9 @@ Parallelization of read/alignment stats via scheduler (_e.g._ Slurm) across seve
 library(BiocParallel); library(batchtools)
 f <- function(x) {
     library(systemPipeR)
-    targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-    dir_path <- "param/cwl/hisat2/hisat2-se" ## TODO: replace path to system.file 
-    args <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+    targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+    dir_path <- "param/cwl" 
+    args <- loadWorkflow(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl", input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
     args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
     args <- output_update(args, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam")) 
     alignStats(args[x])

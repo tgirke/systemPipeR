@@ -64,7 +64,7 @@ exportMethods(
     "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
     "yamlinput<-",
     "sprconfig", "stepsWF", "statusWF", "dependency",
-    "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "subsetSamples",
+    "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "subsetTargets",
     "appendStep<-", "replaceStep<-", "renameStep<-", 
     "codeLine", "codeChunkStart", "rmdPath", "linewise", "replaceCodeLine<-", "appendCodeLine<-"
 )
@@ -90,5 +90,5 @@ export(
     "tryCL", "SPRproject", "configWF", "config.param", 
     "plotWF", "runWF", "renderReport", "check.output", "createParamFiles", "writeParamFiles", 
     "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", 
-    "SYSargsList", "importRmd", "LineWise"
+    "SYSargsList", "importWF", "LineWise"
 )  

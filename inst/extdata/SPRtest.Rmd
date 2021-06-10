@@ -71,8 +71,8 @@ targets
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
 HW_mul <- SYSargsList(step_name = "Example",
                       targets=targetspath, 
-                      wf_file="example.cwl", input_file="example.yml",
-                      dir_path = system.file("extdata/cwl/example/", package="systemPipeR"), 
+                      wf_file="example/example.cwl", input_file="example/example.yml",
+                      dir_path = system.file("extdata/cwl", package="systemPipeR"), 
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 ```
 

@@ -50,7 +50,7 @@ steps:
       l: l
       k: k
     out: [bwa_sai]
-    run: ./param/cwl/bwa/bwa-aln/bwa-aln.cwl
+    run: bwa/bwa-aln.cwl
   
   bwa_samse_sam:
     in:
@@ -62,7 +62,7 @@ steps:
       thread: thread
       results_path: results_path
     out: [bwa_sam]
-    run: ./param/cwl/bwa/bwa-samse/bwa-samse.cwl
+    run: bwa/bwa-samse.cwl
 
     
 ###########

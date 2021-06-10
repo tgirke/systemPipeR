@@ -219,10 +219,10 @@ SYSargsList <- function(args=NULL,
     sal$outfiles <- outList2DF(sal)
     ## targets
     if(length(targets(sal$stepsWF[[1]])) > 0 ) {
-      sal$targetsWF <- list(as(sal$stepsWF[[1]], "data.frame"))
+      sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
       names(sal$targetsWF) <- names(sal$stepsWF)
     } else {
-      sal$targetsWF <- list(NULL)
+      sal$targetsWF <- list(S4Vectors::DataFrame())
       names(sal$targetsWF) <- names(sal$stepsWF)
     }
   }

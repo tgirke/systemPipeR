@@ -45,7 +45,7 @@ steps:
       thread: thread
       results_path: results_path
     out: [hisat2_sam]
-    run: ./param/cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl
+    run: hisat2/hisat2-mapping-se.cwl
   
   samtools-view:
     in:
@@ -53,7 +53,7 @@ steps:
       SampleName: SampleName
       results_path: results_path
     out: [samtools_bam]
-    run: ./param/cwl/samtools/samtools-view.cwl
+    run: samtools/samtools-view.cwl
 
   samtools-sort:
     in:
@@ -62,7 +62,7 @@ steps:
       thread: thread
       results_path: results_path
     out: [samtools_sort_bam]
-    run: ./param/cwl/samtools/samtools-sort.cwl
+    run: samtools/samtools-sort.cwl
    
   samtools-index:
     in:
@@ -70,7 +70,7 @@ steps:
       SampleName: SampleName
       results_path: results_path
     out: [samtools_index]
-    run: ./param/cwl/samtools/samtools-index.cwl
+    run: samtools/samtools-index.cwl
     
 ###########
 ## Notes ##

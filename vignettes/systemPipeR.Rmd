@@ -353,12 +353,12 @@ by a *targets* file can be passed on to a _`SYSargs2`_ instance via the *inputva
 argument of the *renderWF* function. 
 
 ```{r CWL_structure, echo = FALSE, eval=FALSE}
-hisat2.cwl <- system.file("extdata", "cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl", package="systemPipeR")
+hisat2.cwl <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.cwl", package="systemPipeR")
 yaml::read_yaml(hisat2.cwl)
 ```
 
 ```{r yaml_structure, echo = FALSE, eval=FALSE}
-hisat2.yml <- system.file("extdata", "cwl/hisat2/hisat2-se/hisat2-mapping-se.yml", package="systemPipeR")
+hisat2.yml <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.yml", package="systemPipeR")
 yaml::read_yaml(hisat2.yml)
 ```
 
@@ -369,9 +369,9 @@ functions render the proper command-line strings for each sample and software to
 ```{r SYSargs2_structure, eval=TRUE}
 library(systemPipeR)
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWF(targets=targets, wf_file="hisat2-mapping-se.cwl",
-                   input_file="hisat2-mapping-se.yml",
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWF(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl",
+                   input_file="hisat2/hisat2-mapping-se.yml",
                    dir_path=dir_path)
 
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))

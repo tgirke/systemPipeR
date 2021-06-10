@@ -76,16 +76,14 @@ writeTargetsout(x=args, file="default")
 ##########################################
 ## Construct SYSargs2 object 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", 
-                  input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
-
-\dontrun{
 ## Write targets out file
 names(WF$clt)
 writeTargetsout(x=WF, file="default", step=1, new_col=c("sam_file"), new_col_output_index=c(1))
-}
+
 }
 \keyword{ utilities }

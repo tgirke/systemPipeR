@@ -116,7 +116,7 @@ setMethod(
         ),
         paste0("      modules: ", length(object@modules)),
         paste0(
-          "      wf: ", length(object@wf),
+          "      wf: ", length(object@wf$steps), 
           ", clt: ", length(object@clt),
           ", yamlinput: ", length(object@yamlinput), " (components)"
         ),
@@ -194,7 +194,7 @@ targets.as.df <- function(x) {
   targetsDF <- as.data.frame(do.call("rbind", targetstmp))
   rownames(targetsDF) <- NULL
   colnames(targetsDF) <- names(x[[1]])
-  return(S4Vectors::DataFrame(targetsDF))
+  return(targetsDF)
 }
 
 ## Usage:
@@ -202,7 +202,7 @@ targets.as.df <- function(x) {
 
 ## targets slot from a SYSargs2 obj to df with: as(SYSargs2, "data.frame")
 setAs(from = "SYSargs2", to = "DataFrame", def = function(from) {
-    targets.as.df(targets(from))
+  S4Vectors::DataFrame(targets.as.df(targets(from)))
 })
 
 # Behavior of "[" operator for SYSargs2
@@ -424,9 +424,9 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   return(x)
 })
 
-## Behavior of "subsetInput" operator for SYSargsList
-setGeneric(name = "subsetInput", def = function(x, input_sample) standardGeneric("subsetInput"))
-setMethod(f = "subsetInput", signature = "SYSargsList", definition = function(x, input_sample) {
+## Behavior of "subsetTargets" operator for SYSargsList
+setGeneric(name = "subsetTargets", def = function(x, input_sample) standardGeneric("subsetTargets"))
+setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(x, input_sample) {
   if(missing(input_sample)){
     input_sample <- 1:max(sapply(stepsWF(x), function(x) length(x)))
   }
@@ -438,7 +438,6 @@ setMethod(f = "subsetInput", signature = "SYSargsList", definition = function(x,
     #x@SEobj[[s]] <- x@SEobj[[s]][i]
     x@outfiles[[s]] <- x@outfiles[[s]][input_sample,]
   }
-  
   x
 })
 
@@ -627,7 +626,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     WF2 <- updateWF(WF, new_targets= targets.as.list(data.frame(new_targets)), inputvars=WF$inputvars, write.yaml = FALSE)
     value <- sysargslist(value)
     value$stepsWF[[1]] <- WF2
-    value$targetsWF[[1]] <- as(WF2, "data.frame")
+    value$targetsWF[[1]] <- as(WF2, "DataFrame")
     value$outfiles[[1]] <- output.as.df(WF2)
     value <- as(value, "SYSargsList")
   } else if (is.null(value$targets_connection[[1]])){
@@ -717,7 +716,6 @@ setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_name="d
 
 # replaceStep(sal, 1) <- sal[1]
 # sal
-# replaceStep(sal, 3, step_name="test") <- sal[1]
 
 setGeneric(name="stepsWF<-", def=function(x, step, ..., value) standardGeneric("stepsWF<-"))
 setReplaceMethod("stepsWF", c("SYSargsList"), function(x, step, ..., value) {
@@ -730,7 +728,7 @@ setReplaceMethod("stepsWF", c("SYSargsList"), function(x, step, ..., value) {
 setGeneric(name="renameStep<-", def=function(x, step, ..., value) standardGeneric("renameStep<-"))
 setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
   if(length(step)!=length(value)) stop("value argument needs to be the same length of the step for rename")
-  if(is(value, "character")){
+  if(inherits(value, "character")){
     names(x@stepsWF)[step] <- value
     names(x@statusWF)[step] <- value
     names(x@dependency)[step] <- value
@@ -738,12 +736,13 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
     names(x@outfiles)[step] <- value
     #names(x@SEobj)[step] <- value
     #names(x@targets_connection)[step] <- value
-    
   }  else {
     stop("Replace value needs to be assigned an 'character' name for the workflow step.")
   }
-  sys.file <- projectWF(x)$sysargslist
-  write_SYSargsList(x, sys.file, silent=TRUE)
+  if(!is.null(x$projectWF$sysargslist)){
+    sys.file <- x$projectWF$sysargslist
+    write_SYSargsList(x, sys.file, silent=TRUE)
+  }
   x
 })
 

@@ -91,7 +91,7 @@ is updated, the new information will also be store in this file, for easy recove
 If you desire a different names for the logs folder and the yaml files, those can be 
 modify as follows:
 
-```{r SPRproject_dir, eval=FALSE}
+```{r SPRproject_logs, eval=FALSE}
 sal <- SPRproject(logs.dir= "SPRproject", sys.file="SPRproject/SYSargsList.yml") 
 ```
 
@@ -143,8 +143,8 @@ Link to the dedicate section explaining the dynamic between those 3 files).
 targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 appendStep(sal) <- SYSargsList(targets=targetspath, 
                    step_name="Quality",
-                   wf_file = "trimmomatic-pe.cwl", input_file = "trimmomatic-pe.yml",
-                   dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", 
+                   wf_file = "trimmomatic/trimmomatic-pe.cwl", input_file = "trimmomatic/trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl", 
                                         package = "systemPipeR"),
                    inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
@@ -154,8 +154,8 @@ appendStep(sal) <- SYSargsList(targets=targetspath,
 ```{r}
 appendStep(sal, after=0) <- SYSargsList(targets=targetspath, 
                                         step_name="Quality2",
-                                        wf_file = "trimmomatic-pe.cwl", input_file = "trimmomatic-pe.yml",
-                                        dir_path=system.file("extdata/cwl/trimmomatic/trimmomatic-pe", package = "systemPipeR"),
+                                        wf_file = "trimmomatic/trimmomatic-pe.cwl", input_file = "trimmomatic/trimmomatic-pe.yml",
+                                        dir_path=system.file("extdata/cwl", package = "systemPipeR"),
                                         inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
@@ -188,7 +188,7 @@ stepsWF(sal)$Quality ## or
 - The `SYSargsList` class and its subsetting input samples: 
 
 ```{r}
-sal_sub <- subsetSamples(sal[1], samples = 1:3)
+sal_sub <- subsetTargets(sal[1], 1:3)
 stepsWF(sal_sub)
 targetsWF(sal_sub)
 outfiles(sal_sub)
@@ -272,8 +272,8 @@ The `appendStep()` method helps to add a new step in a interactive way.
 ```{r}
 appendStep(sal) <- SYSargsList(step_name = "Index", 
                                targets=NULL, 
-                               wf_file = "hisat2-index.cwl", input_file="hisat2-index.yml",
-                               dir_path=system.file("extdata/cwl/hisat2/hisat2-idx", package = "systemPipeR"),
+                               wf_file = "hisat2/hisat2-index.cwl", input_file="hisat2/hisat2-index.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"),
                                dependency=NULL)
 cmdlist(sal[2])
 ```
@@ -307,12 +307,12 @@ here, the new columns will be appended. The argument `inputvars` allow the
 connectivity between the new targets file. Here, the name of the previous
 `outfiles` should be provided it.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 appendStep(sal) <- SYSargsList(targets="Quality",
                                step_name="Mapping",
-                               wf_file = "workflow_hisat2-pe.cwl", input_file="workflow_hisat2-pe.yml",
-                               dir_path=system.file("extdata/cwl/workflow-hisat2/workflow-hisat2-pe", 
-                                                    package = "systemPipeR"),
+                               wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl", 
+                               input_file="workflow-hisat2/workflow_hisat2-pe.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"),
                                inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_", 
                                            trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
                                rm_targets_col = c("FileName1", "FileName2"),
@@ -321,7 +321,7 @@ appendStep(sal) <- SYSargsList(targets="Quality",
 
 ### Subset Command Lines
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 sal[1]
 sal[]
 
@@ -334,7 +334,7 @@ cmdlist(sal[c(1,3)], 1:2)
 ### 
 
 ```{r}
-sal_sub <- subsetInput(sal[c(1,2)], 1)
+sal_sub <- subsetTargets(sal[c(1,3)], input_sample = 1)
 stepsWF(sal_sub)
 ```
 
@@ -357,7 +357,7 @@ cmdlist(sal[1], 1)
 ## Adding a R code as new Step
 
 ```{r}
-appendStep(sal) <- LineWise("1+1", "R_code")
+appendStep(sal) <- LineWise("1+1", "R_code2")
 sal
 stepsWF(sal)
 ```
@@ -408,8 +408,8 @@ runWF(sal[1][[1:2]])
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
 HW_mul <- SYSargsList(step_name = "Example", 
                       targets=targetspath, 
-                      wf_file="example.cwl", input_file="example.yml", 
-                      dir_path = system.file("extdata/cwl/example", package="systemPipeR"), 
+                      wf_file="example/example.cwl", input_file="example/example.yml", 
+                      dir_path = system.file("extdata/cwl", package="systemPipeR"), 
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 ```
 
@@ -444,12 +444,12 @@ file structure and how to design or customize our own software tools, please
 check `systemPipeR and CWL` pipeline.
 
 ```{r sysargs2_cwl_structure, echo = FALSE, eval=FALSE}
-hisat2.cwl <- system.file("extdata", "cwl/hisat2/hisat2-se/hisat2-mapping-se.cwl", package="systemPipeR")
+hisat2.cwl <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.cwl", package="systemPipeR")
 yaml::read_yaml(hisat2.cwl)
 ```
 
 ```{r sysargs2_yaml_structure, echo = FALSE, eval=FALSE}
-hisat2.yml <- system.file("extdata", "cwl/hisat2/hisat2-se/hisat2-mapping-se.yml", package="systemPipeR")
+hisat2.yml <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.yml", package="systemPipeR")
 yaml::read_yaml(hisat2.yml)
 ```
 
@@ -458,10 +458,10 @@ each sample and software tool.
 
 ```{r SYSargs2_structure, eval=TRUE}
 library(systemPipeR)
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWF(targets=targets, wf_file="hisat2-mapping-se.cwl",
-                   input_file="hisat2-mapping-se.yml",
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWF(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl",
+                   input_file="hisat2/hisat2-mapping-se.yml",
                    dir_path=dir_path)
 
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
@@ -504,7 +504,7 @@ defined by:
 
 ```{r, targets_WF, eval=TRUE}
 targets(WF)[1]
-targets.as.df(targets(WF))
+as(WF, "DataFrame")
 ```
 
 PLease note, to work with custom data, users need to generate a *`targets`* file
@@ -533,7 +533,7 @@ inputvars(WF)
 imported as a workflow.
 
 ```{r lw, eval=TRUE}
-rmd <- system.file("extdata/", "SPRtest.Rmd", package="systemPipeR")
+rmd <- system.file("extdata/", "SPRtest.Rmd", package = "systemPipeR")
 sal_lw <- importRmd(rmd)
 lw <- stepsWF(sal_lw[3])[[1]]
 codeLine(lw)

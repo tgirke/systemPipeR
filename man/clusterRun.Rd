@@ -77,9 +77,9 @@ file.exists(outpaths(args))
 ##########################################
 ## Construct SYSargs2 object from CWl param, CWL input, and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", 
-                  input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
 names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)

@@ -22,8 +22,8 @@ The default structure of the project directories can be modified here.
 }
 \usage{
 SPRproject(projPath = getwd(), data = "data", param = "param", results = "results",
-                      logs.dir= "SPRproject",
-                       restart = FALSE, sys.file="SPRproject/SYSargsList.yml", silent = FALSE)
+                      logs.dir= ".SPRproject",
+                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml", silent = FALSE)
 }
 \arguments{
   \item{projPath}{
@@ -44,7 +44,7 @@ not limited: alignment, variant, and peak files (BAM, VCF, BED); tabular result 
 and image/plot files.
 }
   \item{logs.dir}{
-  a character vector of a \code{logs} directory name. Default is \code{SPRproject}.
+  a character vector of a \code{logs} directory name. Default is \code{.SPRproject}.
 }
   \item{restart}{
   if set to TRUE, existing SYSargsList save in the directory will be used to restart the 
@@ -52,7 +52,7 @@ and image/plot files.
 }
   \item{sys.file}{
   name and path of the SYSargsList file which will store all the project configuration 
-  information. Default is \code{SPRproject/SYSargsList.yml}.
+  information. Default is \code{.SPRproject/SYSargsList.yml}.
 }
   \item{silent}{
 if set to TRUE, all messages returned by the function will be suppressed.

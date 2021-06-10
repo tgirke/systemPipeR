@@ -132,6 +132,8 @@ setReplaceMethod("replaceCodeLine", signature = c("LineWise"), function(x, line,
       y$codeLine[line] <- value
       y$codeLine <- parse(text = y$codeLine)
       x <- as(y, "LineWise")
+      sys.file <- projectWF(x)$sysargslist
+      write_SYSargsList(x, sys.file, silent=TRUE)
       x
 })
 
@@ -146,6 +148,8 @@ setReplaceMethod("replaceCodeLine", signature = c("SYSargsList"), function(x, st
   x <- as(x, "list")
   x$stepsWF[step][[1]] <- y
   x <- as(x, "SYSargsList")
+  sys.file <- projectWF(x)$sysargslist
+  write_SYSargsList(x, sys.file, silent=TRUE)
   x
 })
 
@@ -162,6 +166,8 @@ setReplaceMethod("appendCodeLine", signature = c("LineWise"), function(x, after=
     x$codeLine <- c(x$codeLine[1L:after], value, x$codeLine[(after + 1L):lengx])
   }
   x <- as(x, "LineWise")
+  sys.file <- projectWF(x)$sysargslist
+  write_SYSargsList(x, sys.file, silent=TRUE)
   x
 })
 
@@ -183,6 +189,8 @@ setReplaceMethod("appendCodeLine", signature = c("SYSargsList"), function(x, ste
   x <- as(x, "list")
   x$stepsWF[step][[1]] <- y
   x <- as(x, "SYSargsList")
+  sys.file <- projectWF(x)$sysargslist
+  write_SYSargsList(x, sys.file, silent=TRUE)
   x
 })
 

@@ -33,8 +33,8 @@
 \alias{outfiles,SYSargsList-method}
 \alias{targets_connection}
 \alias{targets_connection,SYSargsList-method}
-\alias{subsetInput}
-\alias{subsetInput,SYSargsList-method}
+\alias{subsetTargets}
+\alias{subsetTargets,SYSargsList-method}
 \alias{cmdlist,SYSargsList-method}
 \alias{appendStep<-}
 \alias{appendStep<-,SYSargsList-method}

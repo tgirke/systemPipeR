@@ -29,7 +29,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   if(tolower(wf$class) == "workflow") { 
     steps <- names(wf$steps)
     cwlfiles$steps <- steps
-    cltpaths <- sapply(seq_along(steps), function(x) normalizePath(wf$steps[[steps[x]]]$run))
+    cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
     cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE) 
     names(cltlist) <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
@@ -1099,3 +1099,44 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, writeout
 
 ## Usage: 
 # yamlinput_yml <- write.yml(commandLine, file.yml, results_path, module_load) 
+
+###################
+##  cmdTool2wf   ##
+###################
+## CommandlineTool --> Workflow class
+cmdTool2wf <- function(cmdTool_path, file.cwl, writeout=TRUE, silent=FALSE){
+    cmdTools <- yaml::read_yaml(file.path(cmdTool_path))
+    cwlVersion <- cmdTools$cwlVersion 
+    class <- "Workflow"
+    ## Input
+    inputs <- names(cmdTools$inputs)
+    inputs <- sapply(inputs, function(x) list(cmdTools$inputs[[x]]$type))
+    ## output
+    outputs <- sapply(names(cmdTools$outputs), function(x) list(NULL)) 
+    for( i in seq_along(outputs)){
+        outputs[[i]][["outputSource"]] <- paste0(cmdTools$baseCommand, "/", names(outputs)[i])
+        outputs[[i]][["type"]] <- cmdTools$outputs[[i]]$type
+    }
+    ## Steps
+    step.in <- sapply(names(input), function(x) list(x)) 
+    step.out <- paste0("[", paste0(names(outputs), collapse = ", "), "]")
+    steps <- list(list(`in`=step.in, `out`=step.out, run=cmdTool_path))
+    names(steps) <- cmdTools$baseCommand
+    ## Combine
+    wf2 <- list(class= class, cwlVersion= cwlVersion, inputs=inputs, 
+                outputs=outputs, steps=steps)
+    ## write out the '.cwl' file
+    if (writeout == TRUE) {
+        yaml::write_yaml(x=wf2, file = file.cwl)
+        ## print message 
+        if (silent != TRUE) cat("\t", "Written content of 'Workflow' to file:", "\n", file.cwl, "\n")
+    }
+    ## Return
+    return(wf2)
+}
+
+# cmdTools_path <- "param/cwl/hisat2/hisat2-pe/hisat2-mapping-pe.cwl"
+# cmdTools_path <- "param/cwl/hisat2/hisat2-idx/hisat2-index.cwl"
+# 
+# ## Usage: 
+# wf <- cmdTool2wf(cmdTools_path, file.cwl = "test.cwl") 

@@ -1,5 +1,5 @@
-\name{importRmd}
-\alias{importRmd}
+\name{importWF}
+\alias{importWF}
 \title{
 Import RMarkdown file as workflow
 }
@@ -7,7 +7,7 @@ Import RMarkdown file as workflow
 Import RMarkdown file as workflow
 }
 \usage{
-importRmd(file_path, ignore_eval = TRUE, verbose = TRUE)
+importWF(file_path, ignore_eval = TRUE, verbose = TRUE)
 }
 
 \arguments{
@@ -33,6 +33,6 @@ Le Zhang and Daniela Cassol
 \examples{
 library(systemPipeRdata)
 rmdpath <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-#importRmd(rmdpath)
+#importWF(rmdpath)
 }
 \keyword{ utilities }
