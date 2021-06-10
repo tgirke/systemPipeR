@@ -48,7 +48,7 @@ steps:
       SampleName: SampleName
       results_path: results_path
     out: [marked_duplicates_bam]
-    run: ./param/cwl/workflow-bcftools/samtools_markduplicates.cwl
+    run: workflow-bcftools/samtools_markduplicates.cwl
   
   sort:
     in:
@@ -56,7 +56,7 @@ steps:
       SampleName: SampleName
       results_path: results_path
     out: [samtools_sort_bam ]
-    run: ./param/cwl/workflow-bcftools/samtools-sort.cwl
+    run: workflow-bcftools/samtools-sort.cwl
    
   index:
     in:
@@ -64,7 +64,7 @@ steps:
       SampleName: SampleName
       results_path: results_path
     out: [samtools_index]
-    run: ./param/cwl/workflow-bcftools/samtools-index.cwl
+    run: workflow-bcftools/samtools-index.cwl
 
   raw_call:
     in:
@@ -74,7 +74,7 @@ steps:
       data_path: data_path
       idx_basename: idx_basename
     out: [bcftools]
-    run: ./param/cwl/workflow-bcftools/bcftools.cwl  
+    run: workflow-bcftools/bcftools.cwl  
 
   vcf_call:
     in:
@@ -82,7 +82,7 @@ steps:
       SampleName: SampleName
       results_path: results_path
     out: [bcftools_call]
-    run: ./param/cwl/workflow-bcftools/bcftools-call.cwl
+    run: workflow-bcftools/bcftools-call.cwl
     
 ###########
 ## Notes ##

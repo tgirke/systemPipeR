@@ -1,5 +1,5 @@
 ################################################################
-##                Workflow_bwa-aln-Single_Read                 ##
+##                Workflow_Hisat2-Single_Read                 ##
 ################################################################
 
 class: Workflow
@@ -16,27 +16,27 @@ inputs:
   SampleName: string
   thread: int
   results_path: Directory
-  ndis: int
-  o: int
-  e: int
-  l: int
-  k: int
 
 outputs:
-  bwa_aln_sai:
-    outputSource: bwa_aln_sai/bwa_aln_sai
+  hisat2:
+    outputSource: hisat2/hisat2_sam
     type: File
-  bwa_samse_sam:
-    outputSource: bwa_samse_sam/bwa_samse_sam
+  samtools-view:
+    outputSource: samtools-view/samtools_bam
     type: File
-
+  samtools-sort:
+    outputSource: samtools-sort/samtools_sort_bam
+    type: File
+  samtools-index:
+    outputSource: samtools-index/samtools_index
+    type: File
 
 ################################################################
 ##                Workflow Steps Definitions                  ##
 ################################################################
 
 steps:
-  bwa_aln_sai:
+  hisat2:
     in:
       fq1: fq1
       idx_basedir: idx_basedir
@@ -44,26 +44,33 @@ steps:
       SampleName: SampleName
       thread: thread
       results_path: results_path
-      ndis: ndis
-      o: o
-      e: e
-      l: l
-      k: k
-    out: [bwa_sai]
-    run: bwa/bwa-aln.cwl
+    out: [hisat2_sam]
+    run: hisat2/hisat2-mapping-se.cwl
   
-  bwa_samse_sam:
+  samtools-view:
     in:
-      sai: bwa_aln_sai/bwa_aln_sai
-      fq1: fq1
-      idx_basedir: idx_basedir
-      idx_basename: idx_basename
+      samtools_sam: hisat2/hisat2_sam
+      SampleName: SampleName
+      results_path: results_path
+    out: [samtools_bam]
+    run: samtools/samtools-view.cwl
+
+  samtools-sort:
+    in:
+      samtools_bam: samtools-view/samtools_bam
       SampleName: SampleName
       thread: thread
       results_path: results_path
-    out: [bwa_sam]
-    run: bwa/bwa-samse.cwl
-
+    out: [samtools_sort_bam]
+    run: samtools/samtools-sort.cwl
+   
+  samtools-index:
+    in:
+      samtools_sort_bam: samtools-sort/samtools_sort_bam
+      SampleName: SampleName
+      results_path: results_path
+    out: [samtools_index]
+    run: samtools/samtools-index.cwl
     
 ###########
 ## Notes ##
@@ -71,4 +78,4 @@ steps:
 
 ## If the template it is used in BASH script with the "cwl-runner" or "cwltool", do: 
 ## Replace the relative PATH for each step for the full PATH, and run:
-## "cwltool --outdir <path> workflow_bwa-aln.cwl workflow_bwa-aln.yml"
+## "cwltool --outdir <path> workflow_hisat2-se.cwl workflow_hisat2-se.yml"

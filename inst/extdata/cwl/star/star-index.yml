@@ -1,0 +1,30 @@
+####################
+## star-index.yml ##
+####################
+
+idx_basedir:
+  class: Directory
+  path: ./data
+
+runMode: genomeGenerate
+outFileNamePrefix: data/
+genomeFastaFiles: 
+  class: File
+  path: data/tair10.fasta
+genomeSAindexNbases: 9
+sjdbGTFfile: 
+  class: File
+  path: data/tair10.gtf # recommend convert gff to gtf using ./gffread -T tair10.gff -o tair10.gtf
+sjdbGTFfeatureExon: exon
+sjdbGTFtagExonParentTranscript: transcript_id
+sjdbOverhang: 100
+
+results_path:
+  class: Directory
+  path: ./data
+
+thread: 1
+
+ModulesToLoad:
+  module1: STAR/2.5.3a
+
