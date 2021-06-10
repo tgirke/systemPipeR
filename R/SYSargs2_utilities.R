@@ -431,9 +431,9 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
     logdir <- normalizePath(args$yamlinput$results_path$path)
     ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
     if(is.null(dir.name)) {
-      cwl.wf <- normalizePath(paste0(logdir, "/", .getFileName(args$cwlfiles$cwl)))
+        cwl.wf <- file.path(logdir, .getFileName(args$cwlfiles$cwl))
     } else if(!is.null(dir.name)){
-      cwl.wf <- normalizePath(paste0(logdir, "/", dir.name)) 
+        cwl.wf <- file.path(logdir, dir.name)
     }
     ## New path
     for(i in seq_along(args$output)){
