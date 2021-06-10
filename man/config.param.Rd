@@ -32,7 +32,7 @@ Daniela Cassol
 }
 \examples{
 \dontrun{
-input_file <- system.file("extdata", "cwl/hisat2/hisat2-se/hisat2-mapping-se.yml", package="systemPipeR")
+input_file <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.yml", package="systemPipeR")
 param <- list(thread=10, fq=list(class="File", path="./results2"))
 input <- config.param(input_file=input_file, param, file="default")
  }

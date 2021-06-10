@@ -8,7 +8,9 @@ S4 class container for storing parameters of command-line- or R-based software.
 \code{SYSargsList} instances are constructed by the \code{SYSargsList} function.
 }
 \usage{
-SYSargsList(args = NULL, targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", inputvars = NULL, step_index = "default", silent = FALSE, restartProject = TRUE, rm_targets_col = NULL, dependency = NULL)
+SYSargsList(args = NULL, targets = NULL, wf_file = NULL, input_file = NULL, 
+dir_path = ".", inputvars = NULL, step_name = "default", silent = FALSE,  
+rm_targets_col = NULL, dependency = NULL)
 }
 \arguments{
   \item{args}{
@@ -29,14 +31,11 @@ SYSargsList(args = NULL, targets = NULL, wf_file = NULL, input_file = NULL, dir_
   \item{inputvars}{
   variables list defined in the \code{input} file that matches the column names defined in the \code{targets} file.
 }
-  \item{step_index}{
+  \item{step_name}{
   character with the step index name.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
-}
-  \item{restartProject}{
-  restart previous workflow run.
 }
   \item{rm_targets_col}{
   targets file colunms to be removed.

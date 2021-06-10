@@ -3,7 +3,7 @@
 \docType{class}
 \alias{SYSargsList-class}
 \alias{[,SYSargsList,ANY,ANY,ANY-method}
-\alias{[[,SYSargsList,ANY,ANY,missing-method}
+\alias{[[,SYSargsList,ANY,missing-method}
 \alias{[[,SYSargsList,ANY,ANY-method}
 \alias{[[<-,SYSargsList,ANY,ANY,ANY-method}
 \alias{$,SYSargsList-method}
@@ -33,6 +33,8 @@
 \alias{outfiles,SYSargsList-method}
 \alias{targets_connection}
 \alias{targets_connection,SYSargsList-method}
+\alias{subsetTargets}
+\alias{subsetTargets,SYSargsList-method}
 \alias{cmdlist,SYSargsList-method}
 \alias{appendStep<-}
 \alias{appendStep<-,SYSargsList-method}
@@ -43,6 +45,9 @@
 \alias{yamlinput,SYSargsList-method}
 \alias{yamlinput<-,SYSargsList-method}
 \alias{yamlinput<-,SYSargsList,ANY,ANY-method}
+\alias{appendCodeLine<-,SYSargsList-method}
+\alias{replaceCodeLine<-,SYSargsList-method}
+\alias{codeLine,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
@@ -83,7 +88,7 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
     \item{targetsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{targetsWF} slot }
     \item{sysargslist}{\code{signature(x = "SYSargsList")}: Coerce back to list \code{as(SYSargsList, "list")} }
     \item{SEobj}{\code{signature(x = "SYSargsList")}: extract data from \code{SEobj} slot }
-    \item{cmdlist}{\code{signature(x = "SYSargsList")}: extracts data from \code{cmdlist} slot for each step }
+    \item{cmdlist}{\code{signature(x = "SYSargsList", sample=NULL)}: extracts data from \code{cmdlist} slot for each step }
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}: replacement method for append a step }
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}: replacement method for append a step }
     \item{replaceStep<-}{\code{signature(x = "SYSargsList")}: replacement method for replace a step }

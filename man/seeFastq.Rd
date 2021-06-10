@@ -55,9 +55,9 @@ Thomas Girke
 \examples{
 \dontrun{
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl/hisat2/hisat2-se", package="systemPipeR")
-args <- loadWorkflow(targets=targets, wf_file="hisat2-mapping-se.cwl", 
-                  input_file="hisat2-mapping-se.yml", dir_path=dir_path)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+args <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
 args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 fqlist <- seeFastq(fastq=infile1(args), batchsize=10000, klength=8)
 pdf("fastqReport.pdf", height=18, width=4*length(fastq))
