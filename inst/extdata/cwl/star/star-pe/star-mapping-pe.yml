@@ -1,0 +1,60 @@
+#########################
+## STAR-Paired_end.yml ##
+## star-mapping-pe.yml ##
+#########################
+
+#################################
+## common alignment parameters ##
+#################################
+star_idx_basedir:
+  class: Directory
+  path: ./data
+
+Genome:
+  class: File
+  path: ./data/Genome
+SA:
+  class: File
+  path: ./data/SA
+SAindex:
+  class: File
+  path: ./data/SAindex
+
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+fq2:
+  class: File
+  path: _FASTQ_PATH2_
+
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+thread: 4
+
+ModulesToLoad: 
+  module1: STAR/2.5.3a
+  module2: samtools/1.9
+
+##############################
+## STAR required parameters ##
+##############################
+
+runMode: alignReads
+
+outSAMtype: [SAM] # [BAM, Unsorted, SortedByCoordinate]
+
+readFilesCommand: zcat
+
+##############################
+## STAR optional parameters ##
+##############################
+
+quantMode: [GeneCounts, TranscriptomeSAM]
+
+twopassMode: Basic # use None to disable twopassMode
+
+
