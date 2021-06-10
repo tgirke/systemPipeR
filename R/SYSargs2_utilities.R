@@ -29,7 +29,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   if(tolower(wf$class) == "workflow") { 
     steps <- names(wf$steps)
     cwlfiles$steps <- steps
-    cltpaths <- sapply(seq_along(steps), function(x) normalizePath(wf$steps[[steps[x]]]$run))
+    cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
     cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE) 
     names(cltlist) <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
@@ -216,12 +216,13 @@ renderWF <- function(WF, inputvars=NULL) {
 ###############################################################
 updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
                      inputvars=NULL, silent=FALSE){
-    if(!is(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
+    if(!inherits(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
     args <- sysargs2(args)
     if(is.null(inputvars)){
-        args$inputvars <- args$inputvars
+        args$inputvars <- inputvars <- args$inputvars
+    } else {
+        args$inputvars <- inputvars
     }
-    args$inputvars <- list()
     if(length(args$cmdToCwl)>1){
         cwlVersion <- args$clt[[1]]$cwlVersion
         class <- args$clt[[1]]$class
@@ -353,16 +354,35 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 ###############################################################
 ## Subsetting the input and output slots by name or position ##
 ###############################################################
-check.output <- function(args, subset=1, index=1){
+check.output <- function(args){
     ## Check the class and slot
-    if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")  
-    check <- subsetWF(args, slot="output", subset=subset, index=index, delete=FALSE)
-    exists <- file.exists(check)
-    names(exists) <- names(check)
-    return(exists)
+    if(inherits(args, c("SYSargs2"))){
+        return(.check.output.sysargs2(args))
+    } else if(inherits(args, c("SYSargsList"))){
+        steps <- sapply(names(stepsWF(args)), function(x) list(NULL))
+        for(i in seq_along(stepsWF(args))){
+            steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]])
+        }
+        return(steps)
+    } else {
+        stop("args needs to be object of class 'SYSargs2' or 'SYSargsList'.")   
+    }
 }
+
 ## Usage:
 # check.output(WF)
+
+## .check.output.sysargs2
+.check.output.sysargs2 <- function(args){
+    sample <- sapply(names(output(args)), function(x) list(NULL))
+    for(i in seq_along(output(args))){
+        sample[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[1]])))
+        sample[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - sum(file.exists(unlist(output(args)[[i]])))
+    }
+    sample <- data.frame(matrix(unlist(sample), nrow=length(sample), byrow=T))
+    sample <- as.data.frame(cbind(Samples=names(output(args)), Existing_Files = sample$X1, Missing_Files=sample$X2))
+    return(sample)
+}
 
 #########################################################
 ## Update the output location after run runCommandline ##
@@ -411,9 +431,9 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
     logdir <- normalizePath(args$yamlinput$results_path$path)
     ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
     if(is.null(dir.name)) {
-      cwl.wf <- normalizePath(paste0(logdir, "/", .getFileName(args$cwlfiles$cwl)))
+        cwl.wf <- file.path(logdir, .getFileName(args$cwlfiles$cwl))
     } else if(!is.null(dir.name)){
-      cwl.wf <- normalizePath(paste0(logdir, "/", dir.name)) 
+        cwl.wf <- file.path(logdir, dir.name)
     }
     ## New path
     for(i in seq_along(args$output)){
@@ -1079,3 +1099,44 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, writeout
 
 ## Usage: 
 # yamlinput_yml <- write.yml(commandLine, file.yml, results_path, module_load) 
+
+###################
+##  cmdTool2wf   ##
+###################
+## CommandlineTool --> Workflow class
+cmdTool2wf <- function(cmdTool_path, file.cwl, writeout=TRUE, silent=FALSE){
+    cmdTools <- yaml::read_yaml(file.path(cmdTool_path))
+    cwlVersion <- cmdTools$cwlVersion 
+    class <- "Workflow"
+    ## Input
+    inputs <- names(cmdTools$inputs)
+    inputs <- sapply(inputs, function(x) list(cmdTools$inputs[[x]]$type))
+    ## output
+    outputs <- sapply(names(cmdTools$outputs), function(x) list(NULL)) 
+    for( i in seq_along(outputs)){
+        outputs[[i]][["outputSource"]] <- paste0(cmdTools$baseCommand, "/", names(outputs)[i])
+        outputs[[i]][["type"]] <- cmdTools$outputs[[i]]$type
+    }
+    ## Steps
+    step.in <- sapply(names(input), function(x) list(x)) 
+    step.out <- paste0("[", paste0(names(outputs), collapse = ", "), "]")
+    steps <- list(list(`in`=step.in, `out`=step.out, run=cmdTool_path))
+    names(steps) <- cmdTools$baseCommand
+    ## Combine
+    wf2 <- list(class= class, cwlVersion= cwlVersion, inputs=inputs, 
+                outputs=outputs, steps=steps)
+    ## write out the '.cwl' file
+    if (writeout == TRUE) {
+        yaml::write_yaml(x=wf2, file = file.cwl)
+        ## print message 
+        if (silent != TRUE) cat("\t", "Written content of 'Workflow' to file:", "\n", file.cwl, "\n")
+    }
+    ## Return
+    return(wf2)
+}
+
+# cmdTools_path <- "param/cwl/hisat2/hisat2-pe/hisat2-mapping-pe.cwl"
+# cmdTools_path <- "param/cwl/hisat2/hisat2-idx/hisat2-index.cwl"
+# 
+# ## Usage: 
+# wf <- cmdTool2wf(cmdTools_path, file.cwl = "test.cwl") 
