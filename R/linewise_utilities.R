@@ -52,7 +52,8 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
 ########################
 ## parseRmd function ##
 ########################
-parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE) {
+########################
+parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
   # assertions
   stopifnot(is.character(file_path) && length(file_path) == 1)
   stopifnot(is.logical(ignore_eval) && length(ignore_eval) == 1)
@@ -82,9 +83,16 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE) {
     dep = NA,
     code = NA,
     spr = NA,
-    run = FALSE,
+    has_run = FALSE,
     success = FALSE,
-    # cols will be removed
+    sample_pass = 0,
+    sample_warn = 0,
+    sample_error = 0,
+    sample_total = 0,
+    log_path = "",
+    time_start = Sys.time(),
+    time_end = Sys.time() + 1,
+    # cols will be removed?
     opt_text = ""
   )
   # get r chunks -----
@@ -125,7 +133,7 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE) {
   if (verbose && any(is.na(opt_spr))) message("Ignore non-SPR chunks: ", paste0(df$start[is.na(opt_spr)], collapse = ", "))
   df <- df[!is.na(opt_spr), ]
   df$spr <- opt_spr[!is.na(opt_spr)]
-  ## enforce sysargs or r option only for spr
+  ## enforce sysarg or r option only for spr
   bad_spr <- !df$spr %in% c("sysargs", "r")
   if (any(bad_spr)) {
     stop(
@@ -173,9 +181,9 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE) {
   if (verbose && any(is.na(spr_dep))) message("Use the previous step as dependency for steps without 'spr.dep' options: ", paste0(df$start[is.na(spr_dep)], collapse = ", "))
   spr_dep <- stringr::str_split(spr_dep, ";")
   spr_dep <- lapply(spr_dep, function(x) stringr::str_remove_all(x, "^[ ]{0,}") %>% stringr::str_remove_all("[ ]{0,}$"))
+
   lapply(seq_along(spr_dep), function(i) {
     lapply(spr_dep[[i]], function(x) {
-      # print(x)
       if (!x %in% c(df$step_name, NA)) stop("Step '", df$step_name[i], "'s dependency '", x, "' not found.")
     })
   })
@@ -196,11 +204,12 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = TRUE) {
   code <- lapply(seq_along(df$start), function(x) {
     paste0(lines[(df$start[x] + 1):(df$end[x] - 1)], collapse = "\n")
   }) %>% unlist()
-  if (verbose) message(crayon::blue("---- Succes! Create output ----"))
   df$code <- code
+  # create log path
+  df$log_path <- paste0("#", tolower(stringr::str_replace_all(df$step_name, "[ ]", "-")))
+  if (verbose) message(crayon::blue("---- Succes! Create output ----"))
   df
 }
-
 ## Usage:
 # rmdpath <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
 # df <- parseRmd(rmdpath)

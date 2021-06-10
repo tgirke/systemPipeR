@@ -38,7 +38,6 @@ test_that("check_SYSargs", {
     for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], 
                                               destination=gsub(".sam", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
     expect_true(file.exists(outpaths(args)))
-    
     # requires Hisat2 installed... 
     dir_path <- system.file("extdata/cwl", package = "systemPipeR")
     idx <- loadWorkflow(targets = NULL, wf_file = "hisat2/hisat2-index.cwl", input_file = "hisat2/hisat2-index.yml",
@@ -54,4 +53,7 @@ test_that("check_SYSargs", {
     runCommandline(args[2])
     expect_s4_class(args, "SYSargs")
     expect_true(file.exists(outpaths(args[2])))
+    ## alignStats()
+    read_statsDF <- alignStats(args[2]) 
+    write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 })

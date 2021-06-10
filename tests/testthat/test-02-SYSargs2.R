@@ -29,6 +29,7 @@ test_that("check_SYSargs2_test", {
     expect_type(inputvars(args), "list")
     expect_type(cmdToCwl(args), "list")
     expect_s4_class(args, "SYSargs2")
+    expect_equal(baseCommand(args), "Rscript")
     ## runCommandline() //check.output()
     args <- runCommandline(args=args, force=TRUE)
     #args2 <- runCommandline(args=args, dir = TRUE, force=TRUE)
@@ -47,31 +48,32 @@ test_that("check_SYSargs2_test", {
 })
 
 
-
-# test_that("check_SYSargs2", {
-#     ## build instance
-#     ## loadWorkflow() // renderWF()
-#     targets <- system.file("extdata", "targets.txt", package = "systemPipeR")
-#     dir_path <- system.file("extdata/cwl/rsubread/rsubread-se", package = "systemPipeR")
-#     args <- loadWorkflow(targets = targets, wf_file = "rsubread-mapping-se.cwl",
-#                              input_file = "rsubread-mapping-se.yml", dir_path = dir_path)
-#     args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
-#     args <- args[1:2]
-#     expect_s4_class(args, "SYSargs2")
-#     ## build index
-#     dir_path <- system.file("extdata/cwl/rsubread/rsubread-idx", package = "systemPipeR")
-#     idx <- loadWorkflow(targets = NULL, wf_file = "rsubread-index.cwl", input_file = "rsubread-index.yml",
-#                         dir_path = dir_path)
-#     idx <- renderWF(idx)
-#     runCommandline(args = idx, make_bam = FALSE)
-#     ## Run alignment
-#     ## runCommandline() //check.output()
-#     args <- runCommandline(args=args)
-#     out <- check.output(args)
-#     expect_type(out, "logical")
-#     # symLink2bam()
-#     symLink2bam(sysargs=args, command="ln -s", htmldir=c(tempdir(), "/rnaseq/somedir/"),
-#                 ext=c(".bam", ".bai"), urlbase="http://myserver.edu/~username/",
-#                 urlfile="IGVurl.txt")
-#     expect_true(file.exists("somedir/M1A.bam"))
-# })
+# requires Hisat2 installed... 
+test_that("check_SYSargs2_hisat2", {
+    skip_on_bioc()
+    skip_on_ci()
+    ## build instance
+    ## loadWorkflow() // renderWF()
+    targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+    dir_path <- system.file("extdata/cwl", package="systemPipeR")
+    WF <- loadWF(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl",
+                 input_file="hisat2/hisat2-mapping-se.yml",
+                 dir_path=dir_path)
+    WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+    WF <- WF[1]
+    expect_s4_class(WF, "SYSargs2")
+    ## build index
+    idx <- loadWorkflow(targets = NULL, wf_file = "hisat2/hisat2-index.cwl", input_file = "hisat2/hisat2-index.yml",
+                        dir_path = dir_path)
+    idx <- renderWF(idx)
+    runCommandline(args = idx, make_bam = FALSE)
+    ## Run alignment
+    ## runCommandline() //check.output()
+    WF <- runCommandline(args=WF)
+    out <- check.output(WF)
+    expect_equal(out$Existing_Files, "2")
+    ## alignStats()
+    read_statsDF <- alignStats(WF, subset = "FileName") 
+    expect_equal(read_statsDF$FileName, "M1A")
+    write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+})

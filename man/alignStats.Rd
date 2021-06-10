@@ -32,26 +32,6 @@ alignStats(args, output_index = 1, subset="FileName1")
 Thomas Girke
 }
 \examples{
-#########################################
-## Examples with \code{SYSargs} object ##
-#########################################
-## Construct SYSargs object from param and targets files 
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-args <- systemArgs(sysma=param, mytargets=targets)
-args
-names(args); modules(args); cores(args); outpaths(args); sysargs(args)
-
-\dontrun{
-## Execute SYSargs on single machine
-runCommandline(args=args)
-
-## Alignment stats
-read_statsDF <- alignStats(args) 
-read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
-write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
-}
-
 ##########################################
 ## Examples with \code{SYSargs2} object ##
 ##########################################
@@ -72,7 +52,25 @@ WF <- runCommandline(args=WF)
 
 ## Alignment stats
 read_statsDF <- alignStats(WF) 
-read_statsDF <- cbind(read_statsDF[targets$FileName,], targets)
+write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
+}
+
+#########################################
+## Examples with \code{SYSargs} object ##
+#########################################
+## Construct SYSargs object from param and targets files 
+param <- system.file("extdata", "tophat.param", package="systemPipeR")
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+args <- systemArgs(sysma=param, mytargets=targets)
+args
+names(args); modules(args); cores(args); outpaths(args); sysargs(args)
+
+\dontrun{
+## Execute SYSargs on single machine
+runCommandline(args=args)
+
+## Alignment stats
+read_statsDF <- alignStats(args) 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 }
 }
