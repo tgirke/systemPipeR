@@ -173,7 +173,14 @@ and the second column is the `SampleName` id for each one of the messages.
 Any number of additional columns can be added as needed.
 
 Users should note here, the usage of `targets` files is optional when using 
-`systemPipeR's` new CWL interface. Since for organizing experimental variables targets files are extremely useful and user-friendly. Thus, we encourage users to keep using them.
+`systemPipeR's` new CWL interface. Since for organizing experimental variables targets 
+files are extremely useful and user-friendly. Thus, we encourage users to keep using them.
+
+> Important!
+
+When the target file is provided, the only column required is `SampleName.` 
+The reason for this is that, internally, `SampleName` is used to construct the object, 
+and hence mandatory.
 
 ### How to connect the parameter files and `targets` file information?
 
@@ -200,7 +207,8 @@ the `echo Hello World` example. However, now we are connecting the variable defi
 on the `.yml` file with the `targets` file inputs.
 
 ```{r fromFile_example, eval=TRUE}
-HW_mul <- SYSargsList(targets=targetspath, 
+HW_mul <- SYSargsList(step_name = "echo", 
+                      targets=targetspath, 
                       wf_file="example.cwl", input_file="example.yml", dir_path = dir_path, 
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 HW_mul
