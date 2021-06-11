@@ -279,7 +279,7 @@ cmdlist(sal[2])
 ```
 
 ```{r, eval=FALSE}
-subsetSamples(sal[1:2], 1:5) ## TODO:error message
+subsetTargets(sal[1:2], 1:5) ## TODO:error message
 ```
 
 Important: The number of the samples in which step subset needs to be equal, otherwise, 
