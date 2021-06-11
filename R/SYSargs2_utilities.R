@@ -1109,8 +1109,8 @@ cmdTool2wf <- function(cmdTool_path, file.cwl, writeout=TRUE, silent=FALSE){
     cwlVersion <- cmdTools$cwlVersion 
     class <- "Workflow"
     ## Input
-    inputs <- names(cmdTools$inputs)
-    inputs <- sapply(inputs, function(x) list(cmdTools$inputs[[x]]$type))
+    inputs_names <- names(cmdTools$inputs)
+    inputs <- sapply(inputs_names, function(x) list(cmdTools$inputs[[x]]$type))
     ## output
     outputs <- sapply(names(cmdTools$outputs), function(x) list(NULL)) 
     for( i in seq_along(outputs)){
@@ -1118,9 +1118,14 @@ cmdTool2wf <- function(cmdTool_path, file.cwl, writeout=TRUE, silent=FALSE){
         outputs[[i]][["type"]] <- cmdTools$outputs[[i]]$type
     }
     ## Steps
-    step.in <- sapply(names(input), function(x) list(x)) 
+    step.in <- sapply(names(inputs), function(x) list(x)) 
     step.out <- paste0("[", paste0(names(outputs), collapse = ", "), "]")
     steps <- list(list(`in`=step.in, `out`=step.out, run=cmdTool_path))
+    if(length( cmdTools$baseCommand) >1){
+        cmdTools$baseCommand <- paste0(cmdTools$baseCommand, collapse = "_")
+    } else if(is.null(cmdTools$baseCommand)){
+        cmdTools$baseCommand <-.getFileName(cmdTool_path)
+    }
     names(steps) <- cmdTools$baseCommand
     ## Combine
     wf2 <- list(class= class, cwlVersion= cwlVersion, inputs=inputs, 
