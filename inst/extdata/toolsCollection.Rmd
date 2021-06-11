@@ -1,0 +1,1627 @@
+---
+title: "Tools Collection" 
+author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  BiocStyle::html_document:
+    toc_float: true
+    code_folding: show
+package: systemPipeR
+vignette: |
+  %\VignetteIndexEntry{Tools Collection}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+fontsize: 14pt
+---
+
+```{css, echo=FALSE}
+pre code {
+white-space: pre !important;
+overflow-x: scroll !important;
+word-break: keep-all !important;
+word-wrap: initial !important;
+}
+```
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+options(width=60, max.print=1000)
+knitr::opts_chunk$set(
+    eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
+    cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
+    tidy.opts=list(width.cutoff=60), tidy=TRUE)
+```
+
+```{r setup_libraries, echo=FALSE, message=FALSE, warning=FALSE, spr='r'}
+suppressPackageStartupMessages({
+    library(systemPipeR)
+})
+```
+
+# Introduction
+
+```{r, eval=FALSE}
+dircwl <- list.files()
+dircwl <- dircwl[-c(30:32)]
+dircwl <- dircwl[4]
+for(i in seq_along(dircwl)){
+    print(dircwl[i])
+    files <- file.path(dircwl[i], dir(dircwl[i]))
+    files_path <- which(grepl(".cwl", files))
+    print(files)
+    for(j in files_path){
+        cmdTool_path <- files[j]
+        print(cmdTool_path)
+        file.cwl <- file.path(dircwl[i], paste0("workflow_", basename(cmdTool_path)))
+        unlink(file.cwl)
+        cmdTool2wf(cmdTool_path, file.cwl, silent = FALSE)
+    }
+}
+```
+
+# Targets Files
+
+```{r, spr='sysargs'}
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+targetspathPE <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+```
+
+# Annotate_peaks
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "annotate_peaks/annotate_peaks.cwl", 
+    input_file = "annotate_peaks/annotate_peaks.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "annotate_peaks/workflow_annotate_peaks.cwl", 
+    input_file = "annotate_peaks/annotate_peaks.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1]), cmdlist(WF[1]))
+```
+
+# BLAST
+ 
+## blastp
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "blast/blastp.cwl", 
+    input_file = "blast/blastp.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "blast/workflow_blastp.cwl", 
+    input_file = "blast/blastp.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1]), cmdlist(WF[1]))
+```
+
+## makeblastdb
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "blast/makeblastdb.cwl", 
+    input_file = "blast/makeblastdb.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "blast/workflow_makeblastdb.cwl", 
+    input_file = "blast/makeblastdb.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1]), cmdlist(WF[1]))
+```
+
+# Bowtie2
+ 
+## Bowtie2-index
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "bowtie2/bowtie2-index.cwl", 
+    input_file = "bowtie2/bowtie2-index.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "bowtie2/workflow_bowtie2-index.cwl", 
+    input_file = "bowtie2/bowtie2-index.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## Bowtie2-mi
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "bowtie2/bowtie2-mapping-mi.cwl", 
+    input_file = "bowtie2/bowtie2-mapping-mi.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "bowtie2/workflow_bowtie2-mapping-mi.cwl", 
+    input_file = "bowtie2/bowtie2-mapping-mi.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## Bowtie2-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "bowtie2/bowtie2-mapping-se.cwl", 
+    input_file = "bowtie2/bowtie2-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "bowtie2/workflow_bowtie2-mapping-se.cwl", 
+    input_file = "bowtie2/bowtie2-mapping-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## Bowtie2-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "bowtie2/bowtie2-mapping-pe.cwl", 
+    input_file = "bowtie2/bowtie2-mapping-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "bowtie2/workflow_bowtie2-mapping-pe.cwl", 
+    input_file = "bowtie2/bowtie2-mapping-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# BUSCO
+ 
+## BUSCO
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "BUSCO/BUSCO.cwl", 
+    input_file = "BUSCO/BUSCO.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "BUSCO/workflow_BUSCO.cwl", 
+    input_file = "BUSCO/BUSCO.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# BWA
+ 
+## bwa-index
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "bwa/bwa-index.cwl", 
+    input_file = "bwa/bwa-index.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "bwa/workflow_bwa-index.cwl", 
+    input_file = "bwa/bwa-index.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## bwa-aln
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "bwa/bwa-aln.cwl", 
+    input_file = "bwa/bwa-aln.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "bwa/workflow_bwa-aln.cwl", 
+    input_file = "bwa/bwa-aln.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## bwa-mem-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "bwa/bwa-mem-se.cwl", 
+    input_file = "bwa/bwa-mem-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "bwa/workflow_bwa-mem-se.cwl", 
+    input_file = "bwa/bwa-mem-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## bwa-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "bwa/bwa-se.cwl", 
+    input_file = "bwa/bwa-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "bwa/workflow_bwa-se.cwl", 
+    input_file = "bwa/bwa-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## bwa-samse
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "bwa/bwa-samse.cwl", 
+    input_file = "bwa/bwa-samse.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "bwa/workflow_bwa-samse.cwl", 
+    input_file = "bwa/bwa-samse.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## bwa-mem-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "bwa/bwa-mem-pe.cwl", 
+    input_file = "bwa/bwa-mem-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "bwa/workflow_bwa-mem-pe.cwl", 
+    input_file = "bwa/bwa-mem-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## bwa-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "bwa/bwa-pe.cwl", 
+    input_file = "bwa/bwa-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "bwa/workflow_bwa-pe.cwl", 
+    input_file = "bwa/bwa-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# count_rangesets
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "count_rangesets/count_rangesets.cwl", 
+    input_file = "count_rangesets/count_rangesets.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "count_rangesets/workflow_count_rangesets.cwl", 
+    input_file = "count_rangesets/count_rangesets.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(output(args), output(WF))
+```
+
+# cutadapt
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "cutadapt/cutadapt.cwl", 
+    input_file = "cutadapt/cutadapt.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "cutadapt/workflow_cutadapt.cwl", 
+    input_file = "cutadapt/cutadapt.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args), cmdlist(WF))
+identical(output(args), output(WF))
+```
+
+# example
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+targets_examples <- system.file("extdata", "cwl/example/targets_example.txt", package="systemPipeR")
+args <- loadWF(targets = targets_examples, wf_file = "example/example.cwl", 
+    input_file = "example/example.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targets_examples, wf_file = "example/workflow_example.cwl", 
+    input_file = "example/example.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# fastqc
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "fastqc/fastqc.cwl", 
+    input_file = "fastqc/fastqc.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "fastqc/workflow_fastqc.cwl", 
+    input_file = "fastqc/fastqc.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args), cmdlist(WF))
+identical(output(args), output(WF))
+```
+
+# fastq-dump
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "fastq-dump/fastq-dump.cwl", 
+    input_file = "fastq-dump/fastq-dump.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "fastq-dump/workflow_fastq-dump.cwl", 
+    input_file = "fastq-dump/fastq-dump.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args), cmdlist(WF))
+identical(output(args), output(WF))
+```
+
+# fastx_clipper
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "fastx_toolkit/fastx_clipper.cwl", 
+    input_file = "fastx_toolkit/fastx_clipper.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "fastx_toolkit/workflow_fastx_clipper.cwl", 
+    input_file = "fastx_toolkit/fastx_clipper.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args), cmdlist(WF))
+identical(output(args), output(WF))
+```
+
+# GATK
+
+# gsnap-index
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "gsnap/gsnap-index.cwl", 
+    input_file = "gsnap/gsnap-index.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "gsnap/workflow_gsnap-index.cwl", 
+    input_file = "gsnap/gsnap-index.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+## Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# gsnap-pe
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "gsnap/gsnap-mapping-pe.cwl", 
+    input_file = "gsnap/gsnap-mapping-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "gsnap/workflow_gsnap-mapping-pe.cwl", 
+    input_file = "gsnap/gsnap-mapping-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+## Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# gunzip
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "gunzip/gunzip.cwl", 
+    input_file = "gunzip/gunzip.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_",
+                                     SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "gunzip/workflow_gunzip.cwl", 
+    input_file = "gunzip/gunzip.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_",
+                                      SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+## Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# hisat2
+ 
+## hisat2-index
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "hisat2/hisat2-index.cwl", 
+    input_file = "hisat2/hisat2-index.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "hisat2/workflow_hisat2-index.cwl", 
+    input_file = "hisat2/hisat2-index.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## hisat2-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "hisat2/hisat2-mapping-se.cwl", 
+    input_file = "hisat2/hisat2-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "hisat2/workflow_hisat2-mapping-se.cwl", 
+    input_file = "hisat2/hisat2-mapping-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## hisat2-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "hisat2/hisat2-mapping-pe.cwl", 
+    input_file = "hisat2/hisat2-mapping-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "hisat2/workflow_hisat2-mapping-pe.cwl", 
+    input_file = "hisat2/hisat2-mapping-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# kallisto
+ 
+## kallisto-index
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "kallisto/kallisto-index.cwl", 
+    input_file = "kallisto/kallisto.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "kallisto/workflow_kallisto-index.cwl", 
+    input_file = "kallisto/kallisto.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## kallisto-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "kallisto/kallisto.cwl", 
+    input_file = "kallisto/kallisto.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "kallisto/workflow_kallisto.cwl", 
+    input_file = "kallisto/kallisto.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# MACS2
+
+## macs2-noinput
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "MACS2/macs2-noinput.cwl", 
+    input_file = "MACS2/macs2-noinput.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "MACS2/workflow_macs2-noinput.cwl", 
+    input_file = "MACS2/macs2-noinput.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## macs2-input
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "MACS2/macs2-input.cwl", 
+    input_file = "MACS2/macs2-input.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "MACS2/workflow_macs2-input.cwl", 
+    input_file = "MACS2/macs2-input.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# mergeBamByFactor
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "mergeBamByFactor/merge-bam.cwl", 
+    input_file = "mergeBamByFactor/merge-bam.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_BAM_PATH_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "mergeBamByFactor/workflow_merge-bam.cwl", 
+    input_file = "mergeBamByFactor/merge-bam.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_BAM_PATH_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# Picard
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "picard/picard_markduplicates.cwl", 
+    input_file = "picard/picard_markduplicates.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_BAM_SORT_PATH_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "picard/workflow_picard_markduplicates.cwl", 
+    input_file = "picard/picard_markduplicates.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_BAM_SORT_PATH_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# preprocessReads
+
+## preprocessReads-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "preprocessReads/trim-se.cwl", 
+    input_file = "preprocessReads/trim-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "preprocessReads/workflow_trim-se.cwl", 
+    input_file = "preprocessReads/trim-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(output(args), output(WF))
+```
+
+## preprocessReads-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "preprocessReads/trim-pe.cwl", 
+    input_file = "preprocessReads/trim-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "preprocessReads/workflow_trim-pe.cwl", 
+    input_file = "preprocessReads/trim-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(output(args), output(WF))
+```
+
+# rsubread
+
+## rsubread-index
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "rsubread/rsubread-index.cwl", 
+    input_file = "rsubread/rsubread-index.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "rsubread/workflow_rsubread-index.cwl", 
+    input_file = "rsubread/rsubread-index.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## rsubread-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "rsubread/rsubread-mapping-se.cwl", 
+    input_file = "rsubread/rsubread-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_",
+                                     SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "rsubread/workflow_rsubread-mapping-se.cwl", 
+    input_file = "rsubread/rsubread-mapping-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_",
+                                      SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# rundiff
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "rundiff/rundiff.cwl", 
+    input_file = "rundiff/rundiff.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_",
+                                     SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "rundiff/workflow_rundiff.cwl", 
+    input_file = "rundiff/rundiff.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_",
+                                      SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+## Check
+
+```{r, spr='sysargs'}
+identical(output(args), output(WF))
+```
+
+# samtools
+
+## samtools-index
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "samtools/samtools-index.cwl", 
+    input_file = "samtools/samtools-index.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_BAM_SORT_PATH_",
+                                     SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "samtools/workflow_samtools-index.cwl", 
+    input_file = "samtools/samtools-index.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_BAM_SORT_PATH_",
+                                      SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## samtools-sort
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "samtools/samtools-sort.cwl", 
+    input_file = "samtools/samtools-sort.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_BAM_PATH_",
+                                     SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "samtools/workflow_samtools-sort.cwl", 
+    input_file = "samtools/samtools-sort.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_BAM_PATH_",
+                                      SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## samtools-view
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "samtools/samtools-view.cwl", 
+    input_file = "samtools/samtools-view.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_SAM_PATH",
+                                     SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "samtools/workflow_samtools-view.cwl", 
+    input_file = "samtools/samtools-view.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_SAM_PATH",
+                                      SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# star
+
+## star-index
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "star/star-index.cwl", 
+    input_file = "star/star-index.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "star/workflow_star-index.cwl", 
+    input_file = "star/star-index.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## star-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "star/star-mapping-se.cwl", 
+    input_file = "star/star-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "star/workflow_star-mapping-se.cwl", 
+    input_file = "star/star-mapping-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## star-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "star/star-mapping-pe.cwl", 
+    input_file = "star/star-mapping-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "star/workflow_star-mapping-pe.cwl", 
+    input_file = "star/star-mapping-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# test
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = NULL, wf_file = "test/test.cwl", 
+    input_file = "test/test.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = NULL, wf_file = "test/workflow_test.cwl", 
+    input_file = "test/test.yml", dir_path = dir_path)
+WF <- renderWF(WF)
+cmdlist(WF[1])
+output(WF[1])
+```
+
+## Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# tophat2
+
+## tophat2-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "tophat2/tophat2-mapping-se.cwl", 
+    input_file = "tophat2/tophat2-mapping-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "tophat2/workflow_tophat2-mapping-se.cwl", 
+    input_file = "tophat2/tophat2-mapping-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## tophat2-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "tophat2/tophat2-mapping-pe.cwl", 
+    input_file = "tophat2/tophat2-mapping-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "tophat2/workflow_tophat2-mapping-pe.cwl", 
+    input_file = "tophat2/tophat2-mapping-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# trim_galore
+
+## trim_galore-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "trim_galore/trim_galore-se.cwl", 
+    input_file = "trim_galore/trim_galore-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "trim_galore/workflow_trim_galore-se.cwl", 
+    input_file = "trim_galore/trim_galore-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## trim_galore-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "trim_galore/trim_galore-pe.cwl", 
+    input_file = "trim_galore/trim_galore-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "trim_galore/workflow_trim_galore-pe.cwl", 
+    input_file = "trim_galore/trim_galore-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# Trimmomatic
+
+## trimmomatic-se
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspath, wf_file = "trimmomatic/trimmomatic-se.cwl", 
+    input_file = "trimmomatic/trimmomatic-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspath, wf_file = "trimmomatic/workflow_trimmomatic-se.cwl", 
+    input_file = "trimmomatic/trimmomatic-se.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## trimmomatic-pe
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "trimmomatic/trimmomatic-pe.cwl", 
+    input_file = "trimmomatic/trimmomatic-pe.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "trimmomatic/workflow_trimmomatic-pe.cwl", 
+    input_file = "trimmomatic/trimmomatic-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+# varseq
+
+## annotate
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "varseq/annotate.cwl", 
+    input_file = "varseq/varseq.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "varseq/workflow_annotate.cwl", 
+    input_file = "varseq/varseq.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## combine
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "varseq/combine.cwl", 
+    input_file = "varseq/varseq.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "varseq/workflow_combine.cwl", 
+    input_file = "varseq/varseq.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+## filter
+### CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "varseq/filter.cwl", 
+    input_file = "varseq/varseq.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(args[1])
+output(args[1])
+```
+
+### Workflow
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "varseq/workflow_filter.cwl", 
+    input_file = "varseq/varseq.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+### Check
+
+```{r, spr='sysargs'}
+identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+
+# Version Information
+
+```{r sessionInfo, spr='r'}
+sessionInfo()
+```
+
+# Funding
+
+This project was supported by funds from the National Institutes of Health (NIH).
+
+# References

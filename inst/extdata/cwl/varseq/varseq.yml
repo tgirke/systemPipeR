@@ -8,11 +8,11 @@ ref_name: "tair10.fasta"
 
 file1: 
   class: File
-  path: _FILE1_
+  path: _FASTQ_PATH1_
 
 file2:
   class: File
-  path: _FILE2_
+  path: _FASTQ_PATH2_
 
 data_path:
   class: Directory

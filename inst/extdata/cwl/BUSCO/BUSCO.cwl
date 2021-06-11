@@ -61,7 +61,7 @@ outputs:
     type: File
     outputBinding:
       glob: run_BUSCO/full_table_BUSCO.tsv
-   busco_hmmer: 
+  busco_hmmer: 
      type: File 
      outputBinding:
       glob: run_BUSCO/hmmer_output
