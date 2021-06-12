@@ -125,7 +125,7 @@ setMethod(
           ", output: ", length(object@output)
         ),
         paste0("      cmdlist: ", length(object@cmdlist)),
-        "   WF Steps:",
+        "   Sub Steps:",
         paste0(
           "      ", seq_along(object@clt), ". ", object@cwlfiles$steps,
           " (rendered: ", length(object@cmdlist[[1]]) != 0, ")"
