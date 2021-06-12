@@ -1640,13 +1640,25 @@ WF <- loadWorkflow(targets = targetspath, wf_file = "workflow-hisat2/workflow_hi
                    input_file = "workflow-hisat2/workflow_hisat2-se.yml",
                    dir_path = dir_path)
 WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+
+appendStep(sal) <- SYSargsList(targets = targetspath, wf_file = "workflow-hisat2/workflow_hisat2-se.cwl", 
+                   input_file = "workflow-hisat2/workflow_hisat2-se.yml",
+                   dir_path = dir_path, 
+                   inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"),
+                        step_name="test",
+                        silent = FALSE,
+                        rm_targets_col = NULL, dependency=NULL)
 ```
 
 ### Run
 
-```{r, eval=FALSE, spr='sysargs'}
+```{r , eval=FALSE, spr='sysargs'}
 WF1 <- runCommandline(WF, make_bam = FALSE, dir=TRUE) 
 WF2 <- runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "test") 
+```
+
+```{r step2, eval=FALSE, spr='r', spr.dep="step1"}
+parse(text="1=1")
 ```
 
 

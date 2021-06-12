@@ -50,17 +50,31 @@ Thomas Girke
 showClass("catDB")
 \dontrun{
 ## Obtain annotations from BioMart
-listMarts() # To choose BioMart database
-m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m) 
-m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
-listAttributes(m) # Choose data types you want to download
-go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
-go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
-write.table(go, "GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
+library("biomaRt")
+listMarts()  # To choose BioMart database
+listMarts(host = "plants.ensembl.org")
+m <- useMart("plants_mart", host = "plants.ensembl.org")
+listDatasets(m)
+m <- useMart("plants_mart", dataset = "athaliana_eg_gene", host = "plants.ensembl.org")
+listAttributes(m)  # Choose data types you want to download
+go <- getBM(attributes = c("go_id", "tair_locus", "namespace_1003"), mart = m)
+go <- go[go[, 3] != "", ]
+go[, 3] <- as.character(go[, 3])
+go[go[, 3] == "molecular_function", 3] <- "F"
+go[go[, 3] == "biological_process", 3] <- "P"
+go[go[, 3] == "cellular_component", 3] <- "C"
+go[1:4, ]
 
+dir.create("./data/GO", recursive = TRUE)
+write.table(go, "data/GO/GOannotationsBiomart_mod.txt", quote = FALSE, row.names = FALSE,
+            col.names = FALSE, sep = "\t")
+            
 ## Create catDB instance (takes a while but needs to be done only once)
-catdb <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=NULL)
+catdb <- makeCATdb(myfile = "data/GO/GOannotationsBiomart_mod.txt", lib = NULL, org = "",
+                   colno = c(1, 2, 3), idconv = NULL)
 catdb
+save(catdb, file = "data/GO/catdb.RData")
+load("data/GO/catdb.RData")
 }
 }
 \keyword{classes}
