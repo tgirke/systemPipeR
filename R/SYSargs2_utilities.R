@@ -354,14 +354,14 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 ###############################################################
 ## Subsetting the input and output slots by name or position ##
 ###############################################################
-check.output <- function(args){
+check.output <- function(args, type="data.frame"){
     ## Check the class and slot
     if(inherits(args, c("SYSargs2"))){
-        return(.check.output.sysargs2(args))
+        return(.check.output.sysargs2(args, type=type))
     } else if(inherits(args, c("SYSargsList"))){
         steps <- sapply(names(stepsWF(args)), function(x) list(NULL))
         for(i in seq_along(stepsWF(args))){
-            steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]])
+            steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]], type=type)
         }
         return(steps)
     } else {
@@ -373,15 +373,23 @@ check.output <- function(args){
 # check.output(WF)
 
 ## .check.output.sysargs2
-.check.output.sysargs2 <- function(args){
-    sample <- sapply(names(output(args)), function(x) list(NULL))
-    for(i in seq_along(output(args))){
-        sample[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[1]])))
-        sample[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - sum(file.exists(unlist(output(args)[[i]])))
+.check.output.sysargs2 <- function(args, type){
+    if(type=="data.frame"){
+        targets <- sapply(names(output(args)), function(x) list(NULL))
+        for(i in seq_along(output(args))){
+            targets[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])))
+            targets[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - sum(file.exists(unlist(output(args)[[i]])))
+        }
+        targets <- data.frame(matrix(unlist(targets), nrow=length(targets), byrow=T))
+        targets <- as.data.frame(cbind(Targets=names(output(args)), Existing_Files = targets$X1, Missing_Files=targets$X2))
+        return(targets)
+    } else if(type=="list"){
+        targets <- sapply(names(output(args)), function(x) list(NULL))
+        for(i in seq_along(output(args))){
+            targets[[i]] <- all(file.exists(unlist(output(args)[[i]])))
+        }
+        return(unlist(targets))
     }
-    sample <- data.frame(matrix(unlist(sample), nrow=length(sample), byrow=T))
-    sample <- as.data.frame(cbind(Samples=names(output(args)), Existing_Files = sample$X1, Missing_Files=sample$X2))
-    return(sample)
 }
 
 #########################################################
