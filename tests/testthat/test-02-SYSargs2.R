@@ -31,7 +31,7 @@ test_that("check_SYSargs2_test", {
     expect_s4_class(args, "SYSargs2")
     expect_equal(baseCommand(args), "Rscript")
     ## runCommandline() //check.output()
-    args <- runCommandline(args=args, force=TRUE)
+    args <- runCommandline(args=args, force=TRUE, make_bam = TRUE)
     #args2 <- runCommandline(args=args, dir = TRUE, force=TRUE)
     out <- check.output(args)
     expect_setequal(out$Existing_Files, "1")
@@ -66,10 +66,10 @@ test_that("check_SYSargs2_hisat2", {
     idx <- loadWorkflow(targets = NULL, wf_file = "hisat2/hisat2-index.cwl", input_file = "hisat2/hisat2-index.yml",
                         dir_path = dir_path)
     idx <- renderWF(idx)
-    runCommandline(args = idx, make_bam = FALSE)
+    runCommandline(args = idx, make_bam = FALSE, dir=FALSE)
     ## Run alignment
     ## runCommandline() //check.output()
-    WF <- runCommandline(args=WF)
+    WF <- runCommandline(args=WF, make_bam = TRUE, dir=FALSE)
     out <- check.output(WF)
     expect_equal(out$Existing_Files, "2")
     ## alignStats()

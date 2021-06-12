@@ -1,4 +1,4 @@
-## It will check the SYSargs2 class and methods
+## It will check the LineWise class and methods
 library(systemPipeR)
 # library(systemPipeRdata)
 setwd(file.path(tempdir(), "rnaseq"))
