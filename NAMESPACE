@@ -43,6 +43,8 @@ importFrom("utils", "combn")
 importFrom("utils", "packageVersion")
 importFrom("utils", "read.delim")
 importFrom("utils", "write.table")
+importFrom("utils", "setTxtProgressBar")
+importFrom("utils", "txtProgressBar")
 importFrom("yaml", "as.yaml")
 importFrom("yaml", "read_yaml")
 importFrom("yaml", "write_yaml")
@@ -56,19 +58,30 @@ exportClasses(
 
 ## Methods
 exportMethods(
+    ## common
+    "[[", "[[<-", "$", "show", "names", "length", "[",
+    ## SYSargs class
     "targetsin", "targetsout", "targetsheader", "modules", "software", "cores", 
     "other", "reference", "results", "infile1", "infile2", "outfile1", "SampleName", 
-    "sysargs", "outpaths", "show", "names", "length", "[", "catmap", "catlist", "idconv",
-    "setlist", "intersectmatrix", "complexitylevels", "vennlist", "intersectlist",
-    "as.list", "[[", "[[<-", "$", "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
+    "sysargs", "outpaths",
+    ## catDB
+    "catmap", "catlist", "idconv", 
+    ## VENNset
+    "setlist", "intersectmatrix", "complexitylevels","vennlist", 
+    "intersectlist", "as.list",  
+    ## SYSargs2
+    "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
     "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
     "yamlinput<-",
+    ## SYSargsList
     "sprconfig", "stepsWF", "statusWF", "dependency",
     "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "subsetTargets",
-    "appendStep<-", "replaceStep<-", "renameStep<-", 
+    "appendStep<-", "replaceStep<-", "renameStep<-",
+    ## LineWise
     "codeLine", "codeChunkStart", "rmdPath", "linewise", "replaceCodeLine<-", "appendCodeLine<-"
 )
 S3method("+", SYSargsList)
+
 ## Functions
 # exportPattern("^[[:alpha:]]+")
 export(
