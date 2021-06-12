@@ -55,21 +55,28 @@ be easily scalable with `systemPipeR.`
 
 # CWL command line specifications
 
+
+
 CWL command line specifications are written in [YAML](http://yaml.org/) format.
 
 In CWL, files with the extension `.cwl` define the parameters of a chosen 
 command line step or workflow, while files with the extension `.yml` define 
 the input variables of command line steps. 
 
+## CWL `CommandLineTool`
+
+`CommandLineTool` by CWL definition is a standalone process, with no interaction 
+if other programs, execute a program, and produce output. 
+
 Let's explore the `.cwl` file: 
 
 ```{r}
-dir_path <- system.file("extdata/cwl/example/", package="systemPipeR")
-cwl <- yaml::read_yaml(file.path(dir_path, "example.cwl"))
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+cwl <- yaml::read_yaml(file.path(dir_path, "example/example.cwl"))
 ```
 
 - The `cwlVersion` component shows the CWL specification version used by the document. 
-- The `class` component shows this document describes a command line tool.
+- The `class` component shows this document describes a `CommandLineTool.`
 Note that CWL has another `class`, called `Workflow` which represents a union of one 
 or more command line tools together. 
 
@@ -116,13 +123,49 @@ using results_path parameter and also the `SampleName` to construct the output `
 cwl[6]
 ```
 
-Next, let's explore the *.yml* file, which provide the parameter values for all
+## CWL `Workflow`
+
+`Workflow` class in CWL is defined by multiple process steps, where can have interdependencies between the steps, and the output for one step can be used as input in the further steps.  
+
+```{r}
+cwl.wf <- yaml::read_yaml(file.path(dir_path, "example/workflow_example.cwl"))
+```
+
+- The `cwlVersion` component shows the CWL specification version used by the document. 
+- The `class` component shows this document describes a `Workflow`.
+
+```{r}
+cwl.wf[1:2]
+```
+
+- The `inputs` section describes the inputs of the workflow.
+
+```{r}
+cwl.wf[3]
+```
+
+- The `outputs` section describes the outputs of the workflow.
+
+```{r}
+cwl.wf[4]
+```
+
+- The `steps` section describes the steps of the workflow. In this simple example, 
+we demonstrate one step.
+
+```{r}
+cwl.wf[5]
+```
+
+## CWL Input Parameter 
+
+Next, let's explore the *.yml* file, which provide the input parameter values for all
 the components we describe above. 
 
 For this simple example, we have three parameters defined:
 
 ```{r}
-yaml::read_yaml(file.path(dir_path, "example_single.yml"))
+yaml::read_yaml(file.path(dir_path, "example/example_single.yml"))
 ```
 
 Note that if we define an input component in the *.cwl* file, this value needs 
@@ -140,7 +183,8 @@ The following imports a `.cwl` file (here `example.cwl`) for running the `echo H
 example.
 
 ```{r fromFile, eval=TRUE}
-HW <- SYSargsList(wf_file="example.cwl", input_file="example_single.yml", dir_path = dir_path)
+HW <- SYSargsList(wf_file="example/workflow_example.cwl", 
+                  input_file="example/example_single.yml", dir_path = dir_path)
 HW
 cmdlist(HW)
 ```
@@ -152,7 +196,7 @@ is to provide a `variable` for each of the parameters that we want to run with m
 Let's explore the example:
 
 ```{r}
-yml <- yaml::read_yaml(file.path(dir_path, "example.yml"))
+yml <- yaml::read_yaml(file.path(dir_path, "example/example.yml"))
 yml
 ```
 
@@ -209,7 +253,8 @@ on the `.yml` file with the `targets` file inputs.
 ```{r fromFile_example, eval=TRUE}
 HW_mul <- SYSargsList(step_name = "echo", 
                       targets=targetspath, 
-                      wf_file="example.cwl", input_file="example.yml", dir_path = dir_path, 
+                      wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                      dir_path = dir_path, 
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 HW_mul
 cmdlist(HW_mul)
@@ -365,7 +410,7 @@ WF_test <- loadWorkflow(targets = targetspath, wf_file="hisat2.cwl",
                    input_file="hisat2.yml", dir_path = "param/cwl/hisat2/")
 WF_test <- renderWF(WF_test, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
 WF_test
-cmdlist(WF_test)
+cmdlist(WF_test)[1]
 ```
 
 # Version information
