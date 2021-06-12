@@ -8,12 +8,15 @@ This function returns a \code{data.frame} indicating the number of existing file
 and how many files are missing.
 }
 \usage{
-check.output(args)
+check.output(args, type="data.frame")
 }
 
 \arguments{
   \item{args}{
 	object of class \code{SYSargs2} or \code{SYSargsList}.
+}
+  \item{type}{
+	return object option. It can be \code{data.frame} or \code{list}.
 }
 }
 \author{
