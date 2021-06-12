@@ -294,7 +294,6 @@ SYSargsList <- function(args=NULL,
       names(sal$targetsWF) <- names(sal$stepsWF)
     }
   }
-  
   sal <- as(sal, "SYSargsList")
   return(sal)
 }
@@ -451,7 +450,9 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
       #     stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
       # }
       #
-      capture.output(capture.output(.tryCmd(x=system2(command, args=commandargs, stdout=TRUE, stderr=TRUE), file_log), file=file_log, append = TRUE),
+      capture.output(capture.output(.tryCmd(x=system2(command, args=commandargs, 
+                                                      stdout=TRUE, stderr=TRUE), file_log), 
+                                    file=file_log, append = TRUE),
                      file=file.path(sysproj, "err"), type = "message", append = FALSE)
       err <- readLines(file.path(sysproj, "err"))
       if(err=="WARNING"){
@@ -1050,6 +1051,7 @@ evalCode <- function(infile, eval = TRUE, output) {
     }
   }
   writeLines(file, output)
+  return(output)
 }
 
 ## Usage:
