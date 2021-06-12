@@ -85,7 +85,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FALSE, dir.name=NULL, force=FALSE, ...) {
+runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=TRUE, dir.name=NULL, force=FALSE, ...) {
   ## Validation for 'args'
   if(any(is(args)!="SYSargs" & is(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
   ## Environment Modules section
@@ -211,9 +211,9 @@ runCommandline <- function(args, runid="01", make_bam=TRUE, del_sam=TRUE, dir=FA
     cat("\n", crayon::blue("---- Summary ----"), "\n")
     #cat("\n", "--- Summary ---")
     print(check.output(args.return))
+    close(pb)
     return(args.return)
   }
-  close(pb)
 }
 
 ## Usage:
