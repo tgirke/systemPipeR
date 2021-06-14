@@ -33,9 +33,9 @@ test_that("check_SYSargs", {
     library(Rsubread)
     buildindex(basename = reference(args), reference = reference(args))
     args <- args[1]
-    align(index = reference(args), readfile1 = infile1(args), input_format = "FASTQ", 
+    align(index = reference(args), readfile1 = infile1(args), input_format = "FASTQ",
           output_file = outfile1(args), output_format = "SAM", nthreads = 8, indels = 1, TH1 = 2)
-    for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i], 
+    for(i in seq(along=outfile1(args))) asBam(file=outfile1(args)[i],
                                               destination=gsub(".sam", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
     expect_true(file.exists(outpaths(args)))
     # requires Hisat2 installed... 
@@ -45,7 +45,7 @@ test_that("check_SYSargs", {
     idx <- renderWF(idx)
     cmdlist(idx)
     ## runCommandline() 
-    runCommandline(idx, make_bam = FALSE, dir=FALSE)
+    runCommandline(idx, make_bam = FALSE, dir=FALSE, force = TRUE)
     ## Construct SYSargs object from param and targets files 
     param <- system.file("extdata", "hisat2.param", package="systemPipeR")
     targets <- system.file("extdata", "targets.txt", package="systemPipeR")

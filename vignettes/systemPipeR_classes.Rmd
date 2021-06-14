@@ -70,7 +70,7 @@ To create a Workflow within `systemPipeR`, we can start by defining an empty
 container and checking the directory structure:
 
 ```{r SPRproject, eval=TRUE}
-sal <- SPRproject(projPath = tempdir()) 
+#sal <- SPRproject(projPath = tempdir()) 
 sal <- SPRproject() 
 ```
 
@@ -182,7 +182,7 @@ length(sal)
 
 ```{r}
 sal[1]
-stepsWF(sal)$Quality ## or
+stepsWF(sal)$Quality
 ```
 
 - The `SYSargsList` class and its subsetting input samples: 
@@ -308,15 +308,23 @@ connectivity between the new targets file. Here, the name of the previous
 `outfiles` should be provided it.
 
 ```{r, eval=TRUE}
-appendStep(sal) <- SYSargsList(targets="Quality",
+appendStep(sal) <- SYSargsList(targets=targetspath,
                                step_name="Mapping",
-                               wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl", 
-                               input_file="workflow-hisat2/workflow_hisat2-pe.yml",
+                               wf_file = "hisat2/hisat2-mapping-pe.cwl", 
+                               input_file="hisat2/hisat2-mapping-pe.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                               inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_", 
-                                           trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
-                               rm_targets_col = c("FileName1", "FileName2"),
+                               inputvars=c(FileName1="_FASTQ_PATH1_", 
+                                           FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
                                dependency = c("Quality", "Index"))
+# appendStep(sal) <- SYSargsList(targets=targetspath,
+#                                step_name="Mapping",
+#                                wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl", 
+#                                input_file="workflow-hisat2/workflow_hisat2-pe.yml",
+#                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+#                                inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_", 
+#                                            trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
+#                                rm_targets_col = c("FileName1", "FileName2"),
+#                                dependency = c("Quality", "Index"))
 ```
 
 ### Subset Command Lines
@@ -389,7 +397,7 @@ codeLine(sal_rmd[3])
 # Running the workflow
 
 ```{r, eval=FALSE}
-runWF(sal[1][[1:2]])
+runWF(sal[1])
 ```
 
 ## Details
@@ -523,7 +531,7 @@ Additional information can be accessed, as the parameters files location and the
 `inputvars` provided to generate the object.
 
 ```{r, other_WF, eval=FALSE}
-cwlfiles(WF)
+files(WF)
 inputvars(WF)
 ```
 

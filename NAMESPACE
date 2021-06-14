@@ -70,7 +70,7 @@ exportMethods(
     "setlist", "intersectmatrix", "complexitylevels","vennlist", 
     "intersectlist", "as.list",  
     ## SYSargs2
-    "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
+    "clt", "cmdlist", "files", "input", "inputvars", "output",
     "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
     "yamlinput<-",
     ## SYSargsList

@@ -224,17 +224,20 @@ SYSargsList <- function(args=NULL,
                         silent = FALSE,
                         rm_targets_col = NULL, dependency=NULL) {
   if(all(is.null(args) && is.null(wf_file) && is.null(input_file))){
-    stop("please use 'SPRproject()' function")
+    sal <- as(SYScreate("SYSargsList"), "list")
+    #message("please use 'SPRproject()' function") 
   } else if (!is.null(args)){
     if(any(length(cmdlist(args)[[1]])==0)) stop("Argument 'args' needs to be assigned an object of class 'SYSargs2'.") 
-    sal <- as(SYScreate("SYSargsList"), "list")
-    if(step_name=="default"){
-      step_name <- "Step_x"
-    } else {
-      step_name <- step_name
-    }
-    sal$stepsWF <- list(args)
-    names(sal$stepsWF) <- step_name
+    if(inherits(args, "SYSargs2")){
+      sal <- as(SYScreate("SYSargsList"), "list")
+      if(step_name=="default"){
+        step_name <- "Step_x"
+      } else {
+        step_name <- step_name
+      }
+      sal$stepsWF <- list(args)
+      names(sal$stepsWF) <- step_name
+    } 
   } else if(all(!is.null(wf_file) && !is.null(input_file))){
     ## targets
     if(is.null(targets)){
@@ -401,111 +404,175 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
 runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
   # Validations
   if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
-  sysproj <- paste(projectWF(args)$project, ".SPRproject", sep = "/")
-  if (!file.exists(sysproj) == TRUE) stop("Project was not initialized with the 'initWF' function.")
+  if (is.null(projectWF(args)$project)) stop("Project was not initialized with the 'SPRproject' function.")
+  sysproj <- projectWF(args)$logs
   ## check dependency
   for(i in seq_along(dependency(args))){
     if(all(!is.na(dependency(args)[[i]]))){
-      dep_names <- names(dependency(args))
+      dep_names <- na.omit(unlist(dependency(args)))
       if(any(!dep_names %in% names(stepsWF(args)))) stop(
         "'args' has dependency on the following steps:", "\n",
-        paste0(dep_names, collapse = " AND "))
+        paste0("    ", dep_names, collapse = " AND "), "\n", 
+        "Please make sure that this step is present.")
     }
   }
-  ## Check status, rerun if warning or error...
+  ## Logs
   file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "%b%d%Y_%H%M")))
+  ## steps loop
   for (i in seq_along(stepsWF(args))){
-    step <- names(stepsWF(args)[i])
-    print(paste0("Running Step: ", step))
-    df.out <- outfiles(args)[[i]]
-    cat(c(paste0("# ", step), "\n",
-          paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S")))), file = file_log, sep = "\n", append = TRUE)
-    run_status <- as.character()
-    status_files_check <- sapply(names(cmdlist(args)[[i]]), function(x) list(NULL))
-    for (j in seq_along(cmdlist(args)[[i]])) {
-      cat(c(paste0("## ", names(cmdlist(args)[[i]][j])),
-            paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
-            "### Code: ",
-            "```{r, eval=FALSE} ",
-            cmdlist(args)[[i]][[j]][[1]],
-            "```",
-            "### Stdout: ",
-            "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
-
-      ## Create an object for executable
-      command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]][[1]]))
-      commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]][[1]]))
-      ## Check if the command is in the PATH
-      if(!command == c("bash")){
-        tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+    cat("# ", names(stepsWF(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
+    ## SYSargs2 STEP
+    if(inherits(stepsWF(args)[[i]], "SYSargs2")){
+      step <- names(stepsWF(args)[i])
+      print(paste0("Running Step: ", step))
+      args.run <- stepsWF(args)[[i]]
+      args.run <- runCommandline(args.run, dir = FALSE)## add ...
+      cat(readLines(args.run$files$log), file=file_log, sep = "\n", append=TRUE)
+      step.status.summary <- args.run$status
+      if("ERROR" %in% unique(unlist(step.status.summary))){
+        step.status <- "ERROR"
+        break()
+      } else  if("WARNING" %in% unique(unlist(step.status.summary))){
+        step.status <- "WARNING"
+        break()
+      } else if("DONE" %in% unique(unlist(step.status.summary))){
+        step.status <- "DONE"
       }
-      #             ## Run executable
-      # if(command %in% "bwa") {
-      #     stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
-      # } else if(command %in% c("bash")) {
-      #     stdout <- system(paste(command, commandargs))
-      # } else if(isTRUE(grep('\\$', command)==1)) {
-      #     stdout <- system(paste(command, commandargs))
-      # } else {
-      #     stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
-      # }
-      #
-      capture.output(capture.output(.tryCmd(x=system2(command, args=commandargs, 
-                                                      stdout=TRUE, stderr=TRUE), file_log), 
-                                    file=file_log, append = TRUE),
-                     file=file.path(sysproj, "err"), type = "message", append = FALSE)
-      err <- readLines(file.path(sysproj, "err"))
-      if(err=="WARNING"){
-        if(warning.stop==TRUE) {
-          message("Caught an warning!")
-          break() }
-      } else if(err=="ERROR"){
-        if(error.stop==TRUE) {
-          message("Caught an error!")
-          break()
-        }
-      }
-      ## Printing sample name
-      print(paste0("Sample ", names(cmdlist(args)[[i]][j]), ": ", err))
-      cat("```", file = file_log, sep = "\n", append = TRUE)
-      cat("\n", file = file_log, append = TRUE)
-      run_status <- c(run_status, err)
-      unlink(file.path(sysproj, "err"))
-      status_files <- outfiles(args)[[i]][j,]
-      if(length(status_files)==1){
-        status_files_check[[j]] <- file.exists(as.character(as.data.frame(status_files[1])))
-      } else{
-        status_files_check[[j]] <- file.exists(as.character(as.data.frame(status_files[1,])))
-      }
+      statusWF(args, i) <- step.status
+      statusWF(args, i) <- step.status.summary
+      if(is.element("WARNING", unlist(step.status.summary))){
+            if(warning.stop==TRUE) {
+              message("Caught an warning!")
+              break() }
+          } else if(is.element("ERROR", unlist(step.status.summary))){
+            if(error.stop==TRUE) {
+              message("Caught an error!")
+              break()
+            }
+          }
+      print(paste0("Step Status: ", step.status))
+    } else if(inherits(stepsWF(args)[[i]], "LineWise")){
+      ## LineWise STEP
+      print("LineWise")
     }
-    args <- as(args, "list")
-    df.status <- data.frame(matrix(unlist(status_files_check), nrow=length(status_files_check), byrow=T))
-    df.status1 <- rowSums(df.status)
-    df.status2 <- cbind(Running_Status=run_status, Existing_Files = df.status1, Missing_Files=length(df.status)-df.status1)
-    rownames(df.status2) <- names(args$stepsWF[[i]]$cmdlist)
-    args$statusWF[[i]] <- list(status=c(unique(run_status)))
-    args$statusWF[[i]]$Complete <- df.status2
-    args <- as(args, "SYSargsList")
   }
-
-  if(silent != TRUE) cat("\t", "Written content of 'stdout and stderr' to file:", file_log, "\n")
-  args <- as(args, "list")
-  args$projectWF[["logs"]] <- file_log
-  return(as(args, "SYSargsList"))
+  return(args)
+  
+  # for (i in seq_along(stepsWF(args))){
+  #   step <- names(stepsWF(args)[i])
+  #   print(paste0("Running Step: ", step))
+  #   df.out <- outfiles(args)[[i]]
+  #   cat(c(paste0("# ", step), "\n",
+  #         paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S")))), file = file_log, sep = "\n", append = TRUE)
+  #   run_status <- as.character()
+  #   
+  #   
+  #   if(inherits(stepsWF(args)[[i]], "SYSargs2")){
+  #     status_files_check <- sapply(names(cmdlist(args)[[i]]), function(x) list(NULL))
+  #     for (j in seq_along(cmdlist(args)[[i]])) {
+  #       cat(c(paste0("## ", names(cmdlist(args)[[i]][j])),
+  #             paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
+  #             "### Code: ",
+  #             "```{r, eval=FALSE} ",
+  #             cmdlist(args)[[i]][[j]][[1]],
+  #             "```",
+  #             "### Stdout: ",
+  #             "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
+  #       
+  #       ## Create an object for executable
+  #       command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]][[1]]))
+  #       commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]][[1]]))
+  #       ## Check if the command is in the PATH
+  #       # if(!comm and == c("bash")){
+  #       #   tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+  #       # }
+  #       #             ## Run executable
+  #       # if(command %in% "bwa") {
+  #       #     stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
+  #       # } else if(command %in% c("bash")) {
+  #       #     stdout <- system(paste(command, commandargs))
+  #       # } else if(isTRUE(grep('\\$', command)==1)) {
+  #       #     stdout <- system(paste(command, commandargs))
+  #       # } else {
+  #       #     stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+  #       # }
+  #       #
+  #       capture.output(capture.output(.tryCmd(x=system2(command, args=commandargs, 
+  #                                                       stdout=TRUE, stderr=TRUE), file_log), 
+  #                                     file=file_log, append = TRUE),
+  #                      file=file.path(sysproj, "err"), type = "message", append = FALSE)
+  #     }
+  #     } else if(inherits(stepsWF(args)[[i]], "LineWise")) {
+  #       status_files_check <- sapply(names(cmdlist(args)[[i]]), function(x) list(NULL))
+  #       capture.output(capture.output(.tryCmd(x=args$codeLine, file_log), 
+  #                                     file=file_log, append = TRUE),
+  #                      file=file.path(sysproj, "err"), type = "message", append = FALSE)
+  #   }
+  #   
+  #     err <- readLines(file.path(sysproj, "err"))
+  #     if(err=="WARNING"){
+  #       if(warning.stop==TRUE) {
+  #         message("Caught an warning!")
+  #         break() }
+  #     } else if(err=="ERROR"){
+  #       if(error.stop==TRUE) {
+  #         message("Caught an error!")
+  #         break()
+  #       }
+  #     }
+  #     ## Printing sample name
+  #     #print(paste0("Sample ", names(cmdlist(args)[[i]][j]), ": ", err))
+  #     cat("```", file = file_log, sep = "\n", append = TRUE)
+  #     cat("\n", file = file_log, append = TRUE)
+  #     run_status <- c(run_status, err)
+  #     unlink(file.path(sysproj, "err"))
+  #     status_files <- outfiles(args)[[i]][j,]
+  #     if(length(status_files)==1){
+  #       status_files_check[[j]] <- file.exists(as.character(as.data.frame(status_files[1])))
+  #     } else{
+  #       status_files_check[[j]] <- file.exists(as.character(as.data.frame(status_files[1,])))
+  #     }
+  #   #}
+  #   args <- as(args, "list")
+  #   df.status <- data.frame(matrix(unlist(status_files_check), nrow=length(status_files_check), byrow=TRUE))
+  #   df.status1 <- rowSums(df.status)
+  #   df.status2 <- cbind(Running_Status=run_status, Existing_Files = df.status1, Missing_Files=length(df.status)-df.status1)
+  #   rownames(df.status2) <- names(args$stepsWF[[i]]$cmdlist)
+  #   args$statusWF[[i]] <- list(status=c(unique(run_status)))
+  #   args$statusWF[[i]]$Complete <- df.status2
+  #   args <- as(args, "SYSargsList")
+  # }
+  # 
+  # if(silent != TRUE) cat("\t", "Written content of 'stdout and stderr' to file:", file_log, "\n")
+  # args <- as(args, "list")
+  # args$projectWF[["logs"]] <- file_log
+  # return(as(args, "SYSargsList"))
 }
 
 
 #############################
 ## .tryCatch function ##
 #############################
-.tryCmd <- function(x, file=NULL) {
+.tryCmd <- function(command, commandargs, file=NULL) {
   if(is.null(file)) file=tempfile()
+  status <- list()
   tryCatch(
     expr = {
       # cat("## Output", append = TRUE, file = file, "\n")
-      capture.output(out <- eval(x, envir = globalenv()), file = file, append = TRUE)
-      message("DONE")
-      return(out)
+      ## Run executable
+      if(command %in% "bwa") {
+        capture.output(stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE), file = file, append = TRUE)
+      } else if(command %in% c("bash")) {
+        capture.output(stdout <- system(paste(command, commandargs)), file = file, append = TRUE)
+      } else if(isTRUE(grep('\\$', command)==1)) {
+        capture.output(stdout <- system(paste(command, commandargs)), file = file, append = TRUE)
+      } else {
+        capture.output(stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE), file = file, append = TRUE)
+      }
+      #capture.output(out <- eval(x, envir = globalenv()), file = file, append = TRUE)
+      status[["stdout"]] <- stdout
+      status[["message"]] <- "DONE"
+      return(status)
     },
     error = function(e) {
       print(e)
@@ -521,6 +588,67 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
 }
 
 
+#############################
+## .tryCatch function ##
+#############################
+.tryCmd2 <- function(command, commandargs, file=NULL) {
+  if(is.null(file)) file=tempfile()
+  status <- list()
+  try(
+    expr = {
+      # cat("## Output", append = TRUE, file = file, "\n")
+      ## Run executable
+      if(command %in% "bwa") {
+        capture.output(stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE), file = file, append = TRUE)
+      } else if(command %in% c("bash")) {
+        capture.output(stdout <- system(paste(command, commandargs)), file = file, append = TRUE)
+      } else if(isTRUE(grep('\\$', command)==1)) {
+        capture.output(stdout <- system(paste(command, commandargs)), file = file, append = TRUE)
+      } else {
+        capture.output(stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE), file = file, append = TRUE)
+      }
+      #capture.output(out <- eval(x, envir = globalenv()), file = file, append = TRUE)
+      status[["stdout"]] <- stdout
+      status[["message"]] <- "DONE"
+      return(status)
+    }
+  )
+}
+
+
+.tryCmd3 <- function(command, commandargs, file=NULL) {
+  if(is.null(file)) file=tempfile()
+  status <- list()
+  tryCatch(
+    expr = {
+      # cat("## Output", append = TRUE, file = file, "\n")
+      ## Run executable
+      if(command %in% "bwa") {
+        capture.output(system2(command, args=commandargs, stdout=TRUE, stderr=FALSE), file = file, append = TRUE)
+      } else if(command %in% c("bash")) {
+        capture.output(system(paste(command, commandargs)), file = file, append = TRUE)
+      } else if(isTRUE(grep('\\$', command)==1)) {
+        capture.output(system(paste(command, commandargs)), file = file, append = TRUE)
+      } else {
+        capture.output(system2(command, args=commandargs, stdout=TRUE, stderr=TRUE), file = file, append = TRUE)
+      }
+      #capture.output(out <- eval(x, envir = globalenv()), file = file, append = TRUE)
+      status[["stdout"]] <- stdout
+      status[["message"]] <- "DONE"
+      return(status)
+    },
+    error = function(e) {
+      print(e)
+      message("ERROR")
+      return("Caught an error!")
+    },
+    warning = function(w) {
+      print(w)
+      message("WARNING")
+      return("Caught an warning!")
+    }
+  )
+}
 # runWF <- function(sysargslist, steps = "ALL", warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
 #   ## Validations
 #   if (class(sysargslist) != "SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
@@ -887,15 +1015,15 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
     out_msg <- c("input_file")
   } else if (class(input_file) == "SYSargs2") {
     input <- .replace(input = yamlinput(input_file), param = param)
-    dir_path <- .getPath(cwlfiles(input_file)[['yml']])
-    if(is.na(cwlfiles(input_file)[['targets']])) {
+    dir_path <- .getPath(files(input_file)[['yml']])
+    if(is.na(files(input_file)[['targets']])) {
       targets <- NULL
     } else {
       targets <- targets(input_file)
     }
     args1 <- loadWorkflow(
-      targets = targets, wf_file = basename(cwlfiles(input_file)[['cwl']]), 
-      input_file = basename(cwlfiles(input_file)[['yml']]), dir_path = dir_path
+      targets = targets, wf_file = basename(files(input_file)[['cwl']]), 
+      input_file = basename(files(input_file)[['yml']]), dir_path = dir_path
     )
     args1 <- as(args1, "list")
     args1$yamlinput <- input
@@ -905,7 +1033,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
       }
     args1 <- out_obj <- as(args1, "SYSargs2")
     out_msg <- c("yamlinput(args1)")
-    path_file <- cwlfiles(input_file)[['yml']]
+    path_file <- files(input_file)[['yml']]
   } else if (class(input_file) == "SYSargsList") { ##TODO
     input <- out_obj <- .replace(input = input_file$sysconfig, param = param)
     path_file <- input_file$projectWF$project
@@ -939,7 +1067,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
   if (silent != TRUE) cat("\t", "All the new param + ", out_msg, "were written to:", "\n", paste0(path), "\n")
   if (class(input_file) == "SYSargs2") {
     args1 <- as(args1, "list")
-    args1$cwlfiles$yml <- path
+    args1$files$yml <- path
     args1 <- as(args1, "SYSargs2")
     out_obj <- args1
   }
@@ -972,9 +1100,10 @@ SYScreate <- function(class) {
       cmdlist = list(NULL),
       input = list(),
       output = list(),
-      cwlfiles = list(),
+      files = list(),
       inputvars = list(), 
-      cmdToCwl = list()
+      cmdToCwl = list(),
+      status = data.frame()
     )
     return(as(SYS.empty, "SYSargs2"))
   } else if (class == "SYSargsList") {

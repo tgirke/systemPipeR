@@ -406,7 +406,7 @@ modules(WF)
 targets(WF)[1]
 targets.as.df(targets(WF))[1:4,1:4]
 output(WF)[1]
-cwlfiles(WF)
+files(WF)
 inputvars(WF)
 ```
 

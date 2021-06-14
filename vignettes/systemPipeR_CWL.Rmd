@@ -55,8 +55,6 @@ be easily scalable with `systemPipeR.`
 
 # CWL command line specifications
 
-
-
 CWL command line specifications are written in [YAML](http://yaml.org/) format.
 
 In CWL, files with the extension `.cwl` define the parameters of a chosen 

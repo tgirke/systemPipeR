@@ -41,12 +41,14 @@
 \alias{input,SYSargs2-method}
 \alias{output}
 \alias{output,SYSargs2-method}
-\alias{cwlfiles}
-\alias{cwlfiles,SYSargs2-method}
+\alias{files}
+\alias{files,SYSargs2-method}
 \alias{inputvars}
 \alias{inputvars,SYSargs2-method}
 \alias{cmdToCwl}
 \alias{cmdToCwl,SYSargs2-method}
+\alias{status}
+\alias{status,SYSargs2-method}
 \alias{baseCommand}
 \alias{baseCommand,SYSargs2-method}
 
@@ -68,9 +70,10 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{\code{cmdlist}:}{Object of class \code{"list"} storing all command-line used to execute external software }
     \item{\code{input}:}{Object of class \code{"list"} storing data from each target defined in \code{inputvars} }
     \item{\code{output}:}{Object of class \code{"list"} paths to final outputs files }
-    \item{\code{cwlfiles}:}{Object of class \code{"list"} paths to \code{input} and \code{CWL param} files }
+    \item{\code{files}:}{Object of class \code{"list"} paths to \code{input} and \code{CWL param} files }
     \item{\code{inputvars}:}{Object of class \code{"list"} storing data from each \code{inputvars} }
     \item{\code{cmdToCwl}:}{Object of class \code{"list"} storing data from each \code{cmdToCwl} }
+    \item{\code{status}:}{Object of class \code{"list"} storing data from each \code{status} }
   }
 }
 \section{Methods}{
@@ -82,7 +85,7 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{clt}{\code{signature(x = "SYSargs2")}: extracts data from \code{clt} slot }
     \item{cmdlist}{\code{signature(x = "SYSargs2")}: extracts data from \code{cmdlist} slot }
     \item{coerce}{\code{signature(from = "list", to = "SYSargs2")}: \code{as(list, "SYSargs2")} }
-    \item{cwlfiles}{\code{signature(x = "SYSargs2")}: extracts data from \code{cwlfiles} slot }
+    \item{files}{\code{signature(x = "SYSargs2")}: extracts data from \code{files} slot }
     \item{infile1}{\code{signature(x = "SYSargs2")}: extracting paths to first FASTQ file }
     \item{infile2}{\code{signature(x = "SYSargs2")}: extracting paths to second FASTQ file if data is PE }
     \item{input}{\code{signature(x = "SYSargs2")}: extracts data from \code{input} slot }
@@ -98,6 +101,7 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{wf}{\code{signature(x = "SYSargs2")}:  extracts data from \code{wf} slot }
     \item{yamlinput}{\code{signature(x = "SYSargs2")}:  extracts data from \code{yamlinput} slot }
     \item{cmdToCwl}{\code{signature(x = "SYSargs2")}:  extracts data from \code{cmdToCwl} slot }
+    \item{status}{\code{signature(x = "SYSargs2")}:  extracts data from \code{status} slot }
     \item{yamlinput<-}{\code{signature(x = "SYSargs2")}: replacement method for \code{yamlinput} slot }
 	 }
 }

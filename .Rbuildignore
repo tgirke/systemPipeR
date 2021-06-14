@@ -2,3 +2,4 @@
 ^\.github
 ^.*\.Rproj$
 ^\.Rproj\.user$
+rnaseq

@@ -779,8 +779,8 @@ identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ### Run
 
 ```{r, eval=FALSE, spr='sysargs'}
-runCommandline(args, make_bam = FALSE)
-runCommandline(WF, make_bam = FALSE)
+runCommandline(args, make_bam = FALSE, dir=FALSE)
+runCommandline(WF, make_bam = FALSE, dir=FALSE)
 runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "testing_folder")
 ```
 
@@ -814,7 +814,7 @@ identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ### Run
 
 ```{r, eval=FALSE, spr='sysargs'}
-args <- runCommandline(args, make_bam = FALSE)
+args <- runCommandline(args, make_bam = FALSE, dir=FALSE)
 WF <- runCommandline(WF, make_bam = FALSE)
 args <- runCommandline(args, make_bam = TRUE)
 WF <- runCommandline(WF, make_bam = TRUE, dir=TRUE)

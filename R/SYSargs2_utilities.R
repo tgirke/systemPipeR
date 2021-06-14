@@ -35,7 +35,9 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
-    WF <- list(modules=modules, wf=wf, clt=cltlist, yamlinput=input, cmdlist=cmdlist, input=myinput, output=myoutput, cwlfiles=cwlfiles, inputvars=inputvars, cmdToCwl=list())
+    WF <- list(modules=modules, wf=wf, clt=cltlist, yamlinput=input, cmdlist=cmdlist,
+               input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars,
+               cmdToCwl=list(), status=data.frame())
   } else if(tolower(wf$class) == "commandlinetool") {
     cltlist <- list(wf)
     names(cltlist) <- basename(wf_file)
@@ -43,7 +45,9 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
     cwlfiles$steps <- strsplit(basename(wf_file), ".cwl")[[1]]
-    WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist, input=myinput, output=myoutput, cwlfiles=cwlfiles, inputvars=inputvars, cmdToCwl=list())
+    WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist,
+               input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars, 
+               cmdToCwl=list(), status=data.frame())
   } else {
     stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
   }
@@ -67,11 +71,11 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
       }
       targetsheader <- readLines(normalizePath(file.path(targets)))
       targetsheader <- targetsheader[grepl("^#", targetsheader)] 
-      WF$cwlfiles["targets"] <- file.path(targets)
+      WF$files["targets"] <- file.path(targets)
       WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
     }
   } else {
-    WF$cwlfiles["targets"] <- NA
+    WF$files["targets"] <- NA
     WF <- c(list(targets=data.frame(), targetsheader=list()), WF)
   }
   return(as(WF, "SYSargs2"))
@@ -138,7 +142,7 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
   WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$output <- sapply(names(WF.temp$clt), function(x) list(NULL))
-  WF.temp$cwlfiles <- list(cwl=file.path(file.cwl), 
+  WF.temp$files <- list(cwl=file.path(file.cwl), 
                            yml=file.path(file.yml), 
                            steps=names(WF.temp$clt))
   WF.temp$cmdToCwl <- commandLine
@@ -148,10 +152,10 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
     mytargets <- targets.as.list(mytargets)
     targetsheader <- readLines(normalizePath(file.path(targets)))
     targetsheader <- targetsheader[grepl("^#", targetsheader)]
-    WF.temp$cwlfiles["targets"] <- normalizePath(file.path(targets))
+    WF.temp$files["targets"] <- normalizePath(file.path(targets))
     WF.temp <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF.temp)
   } else {
-    WF.temp$cwlfiles["targets"] <- NA
+    WF.temp$files["targets"] <- NA
     WF.temp <- c(list(targets=data.frame(), targetsheader=list()), WF.temp)
   }
   return(as(WF.temp, "SYSargs2"))
@@ -244,8 +248,8 @@ updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NU
     ## write the new yaml
     if(write.yaml==TRUE){
         if(name.yaml=="default"){
-            path <- .getPath(args$cwlfiles$yml)
-            name <- paste0(.getFileName(args$cwlfiles$yml), 
+            path <- .getPath(args$files$yml)
+            name <- paste0(.getFileName(args$files$yml), 
                            format(Sys.time(), "%b%d%Y_%H%M"), ".yml")
             name.yaml <- file.path(path, name)
         } else{
@@ -255,7 +259,7 @@ updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NU
         if (silent != TRUE) 
             cat("\t", "Written content of 'yamlinput(x)' to file:",  "\n",
                 name.yaml, "\n")
-        args$cwlfiles$yml <- name.yaml
+        args$files$yml <- name.yaml
     }
     args <- as(args, "SYSargs2")
     args <- renderWF(args, inputvars=inputvars)
@@ -439,7 +443,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
     logdir <- normalizePath(args$yamlinput$results_path$path)
     ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
     if(is.null(dir.name)) {
-        cwl.wf <- file.path(logdir, .getFileName(args$cwlfiles$cwl))
+        cwl.wf <- file.path(logdir, .getFileName(args$files$cwl))
     } else if(!is.null(dir.name)){
         cwl.wf <- file.path(logdir, dir.name)
     }
@@ -667,8 +671,8 @@ injectCommandlinelist <- function(WF) {
                 }
             }
         }
-        names(WF$cmdlist) <- WF$cwlfiles$steps
-        names(WF$clt) <- WF$cwlfiles$steps
+        names(WF$cmdlist) <- WF$files$steps
+        names(WF$clt) <- WF$files$steps
         return(WF)
     }
     WF <- .connectInout(WF)
@@ -710,7 +714,7 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
         return(cmd)
     }
     ## Check here for WF class instead of names once implemented
-    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "cwlfiles", "inputvars", "cmdToCwl"))) {
+    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "files", "inputvars", "cmdToCwl", "status"))) {
         cmdstring <- sapply(names(x$cmdlist), 
                             function(i) .renderCommandline(x=x$cmdlist[[i]], redirect=redirect),
                             simplify=FALSE)
