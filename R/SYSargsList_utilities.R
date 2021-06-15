@@ -454,6 +454,10 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
     } else if(inherits(stepsWF(args)[[i]], "LineWise")){
       ## LineWise STEP
       print("LineWise")
+      step <- names(stepsWF(args)[i])
+      print(paste0("Running Step: ", step))
+      args.run <- stepsWF(args)[[i]]
+      a <- capture.output(.tryRcode(args.run$codeLine), type = "message")
     }
   }
   return(args)
@@ -550,10 +554,32 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
 }
 
 
+.tryRcode <- function(x, file=NULL) {
+  if(is.null(file)) file=tempfile()
+  tryCatch(
+    expr = {
+      cat("## Output", append = TRUE, file = file, "\n")
+      capture.output(out <- eval(parse(text = x), envir = globalenv()), file = file, append = TRUE)
+      message("DONE")
+      return(out)
+    },
+    error = function(e) {
+      print(e)
+      message("ERROR")
+      return("Caught an error!")
+    },
+    warning = function(w) {
+      print(w)
+      message("WARNING")
+      return("Caught an warning!")
+    }
+  )
+}
+
 #############################
 ## .tryCatch function ##
 #############################
-.tryCmd <- function(command, commandargs, file=NULL) {
+.tryCmd <- function(command, commandargs, file=NULL, warning=FALSE) {
   if(is.null(file)) file=tempfile()
   status <- list()
   tryCatch(
@@ -572,18 +598,22 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
       #capture.output(out <- eval(x, envir = globalenv()), file = file, append = TRUE)
       status[["stdout"]] <- stdout
       status[["message"]] <- "DONE"
+      print(status)
       return(status)
     },
     error = function(e) {
       print(e)
-      message("ERROR")
+      status[["message"]] <- "ERROR"
       return("Caught an error!")
     },
-    warning = function(w) {
-      print(w)
-      message("WARNING")
-      return("Caught an warning!")
+    if(warning==TRUE){
+      warning = function(w) {
+        print(w)
+        status[["message"]] <- "WARNING"
+        return("Caught an warning!")
+      }
     }
+
   )
 }
 
@@ -594,45 +624,12 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
 .tryCmd2 <- function(command, commandargs, file=NULL) {
   if(is.null(file)) file=tempfile()
   status <- list()
-  try(
-    expr = {
-      # cat("## Output", append = TRUE, file = file, "\n")
-      ## Run executable
-      if(command %in% "bwa") {
-        capture.output(stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE), file = file, append = TRUE)
-      } else if(command %in% c("bash")) {
-        capture.output(stdout <- system(paste(command, commandargs)), file = file, append = TRUE)
-      } else if(isTRUE(grep('\\$', command)==1)) {
-        capture.output(stdout <- system(paste(command, commandargs)), file = file, append = TRUE)
-      } else {
-        capture.output(stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE), file = file, append = TRUE)
-      }
-      #capture.output(out <- eval(x, envir = globalenv()), file = file, append = TRUE)
-      status[["stdout"]] <- stdout
-      status[["message"]] <- "DONE"
-      return(status)
-    }
-  )
-}
-
-
-.tryCmd3 <- function(command, commandargs, file=NULL) {
-  if(is.null(file)) file=tempfile()
-  status <- list()
   tryCatch(
     expr = {
       # cat("## Output", append = TRUE, file = file, "\n")
       ## Run executable
-      if(command %in% "bwa") {
-        capture.output(system2(command, args=commandargs, stdout=TRUE, stderr=FALSE), file = file, append = TRUE)
-      } else if(command %in% c("bash")) {
-        capture.output(system(paste(command, commandargs)), file = file, append = TRUE)
-      } else if(isTRUE(grep('\\$', command)==1)) {
-        capture.output(system(paste(command, commandargs)), file = file, append = TRUE)
-      } else {
-        capture.output(system2(command, args=commandargs, stdout=TRUE, stderr=TRUE), file = file, append = TRUE)
-      }
-      #capture.output(out <- eval(x, envir = globalenv()), file = file, append = TRUE)
+       system2(command, args=commandargs, stdout=file, stderr=F)
+        print("4")
       status[["stdout"]] <- stdout
       status[["message"]] <- "DONE"
       return(status)
@@ -649,6 +646,61 @@ runWF <- function(args, warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
     }
   )
 }
+
+.tryCmd3 <- function(command, commandargs, file=NULL) {
+  if(is.null(file)) file=tempfile()
+  file_out <- paste0(file, "_out")
+  file_err <- paste0(file, "_err")
+  status <- list()
+      ## Run executable
+      if(command %in% "bwa") {
+        system2(command, args=commandargs, stdout=file_out,  stderr=file_err)
+      # } else if(command %in% c("bash")) {
+      #   capture.output(system(paste(command, commandargs), intern = TRUE), file = file, append = TRUE,  type = "message")
+      # } else if(isTRUE(grep('\\$', command)==1)) {
+      #   capture.output(system(paste(command, commandargs), intern = TRUE), file = file, append = TRUE, type = "message")
+      } else {
+        system2(command, args=commandargs, stdout=file_out, stderr=file_err)
+      }
+      status[["stdout"]] <- readLines(file_out)
+      status[["stderr"]] <- readLines(file_err)
+      if(length(status$stdout)>0){
+        status[["message"]] <- "DONE"
+      } else {
+        status[["message"]] <- "W or error"
+      }
+      print(status$message)
+      return(status)
+}
+
+# for(i in seq_along(sal$stepsWF$Quality$cmdlist)){
+#   j=1
+#   command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
+#   commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
+#   #.tryCmd3(command, commandargs, file="file")
+#   a <- robust.system(command, commandargs)
+# print(a)
+#   }
+
+out <- tryCatch(ex <- system2("ls","xx", stdout=TRUE, stderr=TRUE), warning=function(w){w})
+
+robust.system <- function (command, commandargs) {
+  stderrFile = tempfile(pattern="R_robust.system_stderr", fileext=as.character(Sys.getpid()))
+  stdoutFile = tempfile(pattern="R_robust.system_stdout", fileext=as.character(Sys.getpid()))
+  
+  retval = list()
+  system2(command, args=commandargs, stdout=stdoutFile, stderr=stderrFile)
+  # retval$exitStatus = system(paste0(cmd, " 2> ", shQuote(stderrFile), " > ", shQuote(stdoutFile)))
+  retval$stdout = readLines(stdoutFile)
+  retval$stderr = readLines(stderrFile)
+  
+  unlink(c(stdoutFile, stderrFile))
+  return(retval)
+}
+
+# robust.system("ls",  "-la")
+# robust.system("ll")
+
 # runWF <- function(sysargslist, steps = "ALL", warning.stop=FALSE, error.stop=TRUE, silent=FALSE) {
 #   ## Validations
 #   if (class(sysargslist) != "SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
