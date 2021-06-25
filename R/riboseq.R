@@ -412,12 +412,16 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
 }
 
 ## Usage: 
-# featureCounts <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
+# outpaths <- subsetWF(args , slot="output", subset=1, index=1)
+# file.exists(outpaths)
+# featureCounts <- featuretypeCounts(bfl=BamFileList(outpaths, yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
 # write.table(featureCounts, "results/featureCounts.xls", quote=FALSE, row.names=FALSE, sep="\t")
-# featureCounts2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NA, type="data.frame")
+# featureCounts2 <- featuretypeCounts(bfl=BamFileList(outpaths), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
 # write.table(featureCounts2, "results/featureCounts2.xls", quote=FALSE, row.names=FALSE, sep="\t")
 
-## Plot distribution of reads across feature types
+######################################################
+## Plot distribution of reads across feature types ##
+###################################################### 
 plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=NULL) { 
     ## Input validity checks
     if(class(x)!="data.frame") stop("x needs to be object of class 'data.frame'")
@@ -545,9 +549,9 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
 ## Usage: 
 # library(ggplot2); library(grid)
 # featureCounts <- read.delim("results/featureCounts.xls", check.names=FALSE)
-# myplots <- plotfeaturetypeCounts(x=featureCounts, graphicsfile="results/featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=10^3) 
+# myplots <- plotfeaturetypeCounts(x=featureCounts, graphicsfile="results/featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=10^3)
 # featureCounts2 <- read.delim("results/featureCounts2.xls", check.names=FALSE)
-# myplots <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=10^3) 
+# myplots <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="results/featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=10^3)
 
 ##############################################
 ## Compute and plot coverage along features ## 
@@ -753,7 +757,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
 }
 ## Usage:
 # grl <- cdsBy(txdb, "tx", use.names=TRUE)
-# fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
+# fcov <- featureCoverage(bfl=BamFileList(outpaths[1]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
 
 ## Helper function to extend single and multi component ranges
 ## Extends featureBy GRangeList objects containing component features 
@@ -920,7 +924,7 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
 
 ## Usage:
 # grl <- cdsBy(txdb, "tx", use.names=TRUE)
-# fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
+# fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
 # plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 
 ##################
@@ -1115,7 +1119,6 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 # dna <- readDNAStringSet(file)
 # orf <- predORF(dna[1:4], n=1, type="df", mode="orf", strand="antisense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"))
 
-
 ######################################################
 ## Scale feature level mappings to genome positions ##
 ######################################################
@@ -1203,7 +1206,7 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
     return(grl)
 }
 ## Usage for simple example
-# subject <- GRanges(seqnames="Chr1", IRanges(c(5,15,30),c(10,25,40)), strand="+") 
+# subject <- GRanges(seqnames="Chr1", IRanges(c(5,15,30),c(10,25,40)), strand="+")
 # query <- GRanges(seqnames="myseq", IRanges(1, 9), strand="+")
 # scaleRanges(GRangesList(myid1=subject), GRangesList(myid1=query), type="test")
 
@@ -1216,7 +1219,7 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
 # dna <- extractTranscriptSeqs(FaFile(genome), futr)
 # uorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="sense")
 # grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
-# export.gff3(unlist(grl_scaled), "uorf.gff")
+# rtracklayer::export.gff3(unlist(grl_scaled), "uorf.gff")
 
 #######################################
 ## Translational Efficiency Analysis ##
@@ -1229,5 +1232,4 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
 ##      https://support.bioconductor.org/p/67455/
 ## To-dos: add convenience function similar to run_DESeq2 (or extend it)
 ## to handle this analysis step for many experiment sets in a more convenient manner.
-
 
