@@ -70,8 +70,8 @@ To create a Workflow within `systemPipeR`, we can start by defining an empty
 container and checking the directory structure:
 
 ```{r SPRproject, eval=TRUE}
-sal <- SPRproject(projPath = tempdir()) 
-sal <- SPRproject() 
+#sal <- SPRproject(projPath = tempdir()) 
+sal <- SPRproject(overwrite=TRUE) 
 ```
 
 Internally, `SPRproject` function will check and/or create the basic folder
@@ -97,11 +97,11 @@ sal <- SPRproject(logs.dir= "SPRproject", sys.file="SPRproject/SYSargsList.yml")
 
 In this stage, the object `sal` is a empty container, except the project
 information, as the project, data, results and param folder paths, as can be
-access but the `projectWF` accessory method:
+access but the `projectInfo` accessory method:
 
 ```{r}
 sal
-projectWF(sal)
+projectInfo(sal)
 ```
 
 Also, the length function will return how many steps this workflow contains and
@@ -182,7 +182,7 @@ length(sal)
 
 ```{r}
 sal[1]
-stepsWF(sal)$Quality ## or
+stepsWF(sal)$Quality
 ```
 
 - The `SYSargsList` class and its subsetting input samples: 
@@ -270,7 +270,7 @@ sal[3]
 The `appendStep()` method helps to add a new step in a interactive way.
 
 ```{r}
-appendStep(sal) <- SYSargsList(step_name = "Index", 
+appendStep(sal, 1) <- SYSargsList(step_name = "Index", dir = FALSE,
                                targets=NULL, 
                                wf_file = "hisat2/hisat2-index.cwl", input_file="hisat2/hisat2-index.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
@@ -279,7 +279,7 @@ cmdlist(sal[2])
 ```
 
 ```{r, eval=FALSE}
-subsetTargets(sal[1:2], 1:5) ## TODO:error message
+subsetTargets(sal[1], 1:5) ## TODO:error message
 ```
 
 Important: The number of the samples in which step subset needs to be equal, otherwise, 
@@ -308,12 +308,20 @@ connectivity between the new targets file. Here, the name of the previous
 `outfiles` should be provided it.
 
 ```{r, eval=TRUE}
+# appendStep(sal) <- SYSargsList(targets=targetspath,
+#                                step_name="Mapping",
+#                                wf_file = "hisat2/hisat2-mapping-pe.cwl",
+#                                input_file="hisat2/hisat2-mapping-pe.yml",
+#                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+#                                inputvars=c(FileName1="_FASTQ_PATH1_",
+#                                            FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
+#                                dependency = c("Quality", "Index"))
 appendStep(sal) <- SYSargsList(targets="Quality",
                                step_name="Mapping",
-                               wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl", 
+                               wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
                                input_file="workflow-hisat2/workflow_hisat2-pe.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                               inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_", 
+                               inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_",
                                            trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
                                rm_targets_col = c("FileName1", "FileName2"),
                                dependency = c("Quality", "Index"))
@@ -357,7 +365,7 @@ cmdlist(sal[1], 1)
 ## Adding a R code as new Step
 
 ```{r}
-appendStep(sal) <- LineWise("1+1", "R_code2")
+appendStep(sal) <- LineWise("a <- 1+1", "R_code2")
 sal
 stepsWF(sal)
 ```
@@ -389,7 +397,7 @@ codeLine(sal_rmd[3])
 # Running the workflow
 
 ```{r, eval=FALSE}
-runWF(sal[1][[1:2]])
+runWF(sal[1])
 ```
 
 ## Details
@@ -523,7 +531,7 @@ Additional information can be accessed, as the parameters files location and the
 `inputvars` provided to generate the object.
 
 ```{r, other_WF, eval=FALSE}
-cwlfiles(WF)
+files(WF)
 inputvars(WF)
 ```
 
