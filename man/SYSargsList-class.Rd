@@ -15,16 +15,16 @@
 \alias{show,SYSargsList-method}
 \alias{sysargslist}
 \alias{sysargslist,SYSargsList-method}
-\alias{sprconfig}
-\alias{sprconfig,SYSargsList-method}
 \alias{stepsWF}
 \alias{stepsWF,SYSargsList-method}
 \alias{statusWF}
 \alias{statusWF,SYSargsList-method}
 \alias{dependency}
 \alias{dependency,SYSargsList-method}
-\alias{projectWF}
-\alias{projectWF,SYSargsList-method}
+\alias{projectInfo}
+\alias{projectInfo,SYSargsList-method}
+\alias{runInfo}
+\alias{runInfo,SYSargsList-method}
 \alias{targetsWF}
 \alias{targetsWF,SYSargsList-method}
 \alias{SEobj}
@@ -58,15 +58,15 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{sprconfig}:}{Object of class \code{"list"} storing all the config information for the project }
     \item{\code{stepsWF}:}{Object of class \code{"list"} storing all the \code{SYSargs2} objects of the workflow }
     \item{\code{statusWF}:}{Object of class \code{"list"} storing all the success and failure of each step in the workflow }
-    \item{\code{dependency}:}{Object of class \code{"list"} storing all the dependency steps in the workflow }
-    \item{\code{projectWF}:}{Object of class \code{"list"} storing all the \code{projectWF} information of the workflow }
     \item{\code{targetsWF}:}{Object of class \code{"list"} storing all the targets files for each step in the workflow}
-    \item{\code{SEobj}:}{Object of class \code{"list"} storing all the SummarizedExperiment objects in the workflow }
     \item{\code{outfiles}:}{Object of class \code{"list"} storing all the output files in the workflow }
+    \item{\code{SEobj}:}{Object of class \code{"list"} storing all the SummarizedExperiment objects in the workflow }
+    \item{\code{dependency}:}{Object of class \code{"list"} storing all the dependency steps in the workflow }
     \item{\code{targets_connection}:}{Object of class \code{"list"} storing all targets files connection in the workflow }
+    \item{\code{projectInfo}:}{Object of class \code{"list"} storing all the \code{projectInfo} information of the workflow }
+    \item{\code{runInfo}:}{Object of class \code{"list"} storing all the \code{runInfo} information of the workflow }
   }
 }
 \section{Methods}{
@@ -80,11 +80,11 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
     \item{length}{\code{signature(x = "SYSargsList")}: extracts number of \code{SYSargs2} objects }
     \item{names}{\code{signature(x = "SYSargsList")}: extracts slot names }
     \item{show}{\code{signature(object = "SYSargsList")}: summary view of \code{SYSargsList} steps }
-    \item{sprconfig}{\code{signature(x = "SYSargsList")}: extract data from \code{sprconfig} slot }
     \item{stepsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{stepsWF} slot }
     \item{statusWF}{\code{signature(x = "SYSargsList")}: extract data from \code{statusWF} slot }
     \item{dependency}{\code{signature(x = "SYSargsList")}: extract data from \code{dependency} slot }
-    \item{projectWF}{\code{signature(x = "SYSargsList")}: extract data from \code{projectWF} slot }
+    \item{projectInfo}{\code{signature(x = "SYSargsList")}: extract data from \code{projectInfo} slot }
+    \item{runInfo}{\code{signature(x = "SYSargsList")}: extract data from \code{runInfo} slot }
     \item{targetsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{targetsWF} slot }
     \item{sysargslist}{\code{signature(x = "SYSargsList")}: Coerce back to list \code{as(SYSargsList, "list")} }
     \item{SEobj}{\code{signature(x = "SYSargsList")}: extract data from \code{SEobj} slot }
@@ -104,15 +104,14 @@ Daniela Cassol and Thomas Girke
 }
 \examples{
 showClass("SYSargsList")
-\dontrun{
-## Construct SYSargsList object from Rmd file
-library(systemPipeRdata)
-script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- tempdir()
-SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
-sysargslist <- initWF(sysconfig ="SYSconfig.yml")
-  }
+sal <- SPRproject() 
+targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+appendStep(sal) <- SYSargsList(targets=targetspath, 
+                   step_name="Quality",
+                   wf_file = "trimmomatic/trimmomatic-pe.cwl", input_file = "trimmomatic/trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl", 
+                                        package = "systemPipeR"),
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 }
 \keyword{ classes }
 
