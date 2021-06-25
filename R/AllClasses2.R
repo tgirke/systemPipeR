@@ -392,34 +392,41 @@ setMethod(f = "show", signature = "SYSargsList",
 .showHelper <- function(object){
   status_1 <- as.character()
   for (i in seq_along(object@stepsWF)) {
-      if(inherits(object@stepsWF[[i]], "SYSargs2")){
-          status_1 <- c(
-              status_1,
-              c(
-                  paste0("      ", i, ". ", crayon::blue(names(object@stepsWF)[i], "--> Status:", object@statusWF[[i]]$status.summary), sep = ""), "\n",
-                  paste0(c("          Total Files: ", "Existing: ", "Missing: "), colSums(object@statusWF[[i]][[2]][2:4]), collapse = " | "), "\n",
-                  paste0(
-                      # "         Sub Steps:", "\n",
-                      paste0(
-                          "        ", i, ".", seq_along(object@stepsWF[[i]]@clt), ". ", crayon::green(object@stepsWF[[i]]$files$steps)
-                      ), "\n",
-                      paste0("             cmdlist: ", length(object@stepsWF[[i]]), " | "),
-                      sapply(as.list(object@stepsWF[[i]]$files$steps), function(x) {
-                          paste0(
-                              paste0(names(table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]$files$steps][x]))), ": ",
-                                     table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]$files$steps][x])),
-                                     collapse = " | "
-                              )
-                          )
-                      }),
-                      "\n"
-                  )
+    status_color <- switch(
+      tolower(object@statusWF[[i]]$status.summary),
+      "pending" = crayon::blue$bold,
+      "warning" = crayon::make_style("orange")$bold,
+      "error" = crayon::red$bold,
+      "success" = crayon::green$bold
+    )
+    if(inherits(object@stepsWF[[i]], "SYSargs2")){
+      status_1 <- c(
+        status_1,
+        c(
+          paste0("      ", i, ". ", crayon::blue(names(object@stepsWF)[i], "--> Status: "), status_color(object@statusWF[[i]]$status.summary), sep = ""), "\n",
+          paste0(c("          Total Files: ", "Existing: ", "Missing: "), colSums(object@statusWF[[i]][[2]][2:4]), collapse = " | "), "\n",
+          paste0(
+            # "         Sub Steps:", "\n",
+            paste0(
+              "        ", i, ".", seq_along(object@stepsWF[[i]]@clt), ". ", crayon::green(object@stepsWF[[i]]$files$steps)
+            ), "\n",
+            paste0("             cmdlist: ", length(object@stepsWF[[i]]), " | "),
+            sapply(as.list(object@stepsWF[[i]]$files$steps), function(x) {
+              paste0(
+                paste0(names(table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]$files$steps][x]))), ": ",
+                       table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]$files$steps][x])),
+                       collapse = " | "
+                )
               )
+            }),
+            "\n"
           )
-      } else if(inherits(object@stepsWF[[i]], "LineWise")){
-          status_1 <- c(status_1,
-                        paste0("      ", i, ". ", crayon::blue(names(object@stepsWF)[i], "--> Status:", object@statusWF[[i]]$status.summary), "\n"))
-  }
+        )
+      )
+    } else if(inherits(object@stepsWF[[i]], "LineWise")){
+      status_1 <- c(status_1,
+                    paste0("      ", i, ". ", crayon::blue(names(object@stepsWF)[i], "--> Status: "), status_color(object@statusWF[[i]]$status.summary), "\n"))
+    }
   }
   return(status_1)
 }
@@ -457,12 +464,13 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
     })
   }
   x@stepsWF <- x@stepsWF[i]
+  names_tc <- names(x@stepsWF)
   x@statusWF <- x@statusWF[i]
   x@targetsWF <- x@targetsWF[i]
   x@outfiles <- x@outfiles[i]
   x@SEobj <- x@SEobj[i]
   x@dependency <- x@dependency[i]
-  x@targets_connection <- x@targets_connection[i]
+  x@targets_connection <- x@targets_connection[names(x@targets_connection) %in% names_tc]
   x@projectInfo <- x@projectInfo
   x@runInfo$directory <- x@runInfo$directory[i]
   x <- .check_write_SYSargsList(x)
@@ -479,10 +487,17 @@ setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(
     if(!all(input_sample %in% 1:length(x@stepsWF[[s]]))) stop("Please select the number of Input accordingly, options are: ", 
                                                               paste0(1:length(x@stepsWF[[s]]), collapse=", "))
     x@stepsWF[[s]] <- x@stepsWF[[s]][input_sample]
+    x@statusWF[[s]]$status.completed <- x@statusWF[[s]]$status.completed[input_sample,]
+    x@statusWF[[s]]$status.time <- x@statusWF[[s]]$status.time[input_sample,]
     x@targetsWF[[s]] <- x@targetsWF[[s]][input_sample,]
-    #x@SEobj[[s]] <- x@SEobj[[s]][i]
     x@outfiles[[s]] <- x@outfiles[[s]][input_sample,]
+    #x@SEobj[[s]] <- x@SEobj[[s]][i]
+    x@dependency <- x@dependency
+    x@targets_connection <- x@targets_connection
+    x@projectInfo <- x@projectInfo
+    x@runInfo$directory <- x@runInfo$directory
   }
+  x <- .check_write_SYSargsList(x)
   x
 })
 
@@ -518,10 +533,11 @@ setMethod(f = "viewEnv", signature = "SYSargsList", definition = function(x) {
 })
 
 ## copyEnv() methods for SYSargslist
-setGeneric(name = "copyEnv", def = function(x, list="all") standardGeneric("copyEnv"))
+setGeneric(name = "copyEnv", def = function(x, list=character()) standardGeneric("copyEnv"))
 setMethod(f = "copyEnv", signature = "SYSargsList", definition = function(x, list="all") {
   envir <- x@runInfo$env
-  if(list=="all"){
+  cat(envir)
+  if(length(list)==0){
     list <- ls(envir, all.names=TRUE)
   } else {
     list <- list
@@ -617,12 +633,15 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$targets_connection <- c(x$targets_connection, value$targets_connection)
       x$runInfo$directory <- c(x$runInfo$directory, value$runInfo)
     } else {
+      after_tc <- names(x$stepsWF)[1L:after]
+      before_tc <- names(x$stepsWF)[(after + 1L):lengx]
+      x$targets_connection <- c(x$targets_connection[names(x$targets_connection) %in% after_tc], value$targets_connection, x$targets_connection[names(x$targets_connection) %in% before_tc])
       x$stepsWF <- c(x$stepsWF[1L:after], value$stepsWF, x$stepsWF[(after + 1L):lengx])
       x$targetsWF <- c(x$targetsWF[1L:after], targetsWF(value), x$targetsWF[(after + 1L):lengx])
       x$statusWF <- c(x$statusWF[1L:after], value$statusWF, x$statusWF[(after + 1L):lengx])
       x$dependency <- c(x$dependency[1L:after], dependency(value), x$dependency[(after + 1L):lengx])
       x$outfiles <- c(x$outfiles[1L:after], outfiles(value), x$outfiles[(after + 1L):lengx])
-      x$targets_connection <- c(x$targets_connection, value$targets_connection, x$targets_connection[(after + 1L):lengx])
+
       x$runInfo$directory <- c(x$runInfo$directory[1L:after], value$runInfo,  x$runInfo$directory[(after + 1L):lengx])
      }
     x <- as(x, "SYSargsList")
@@ -832,7 +851,8 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
     names(x@targetsWF)[step] <- value
     names(x@outfiles)[step] <- value
     #names(x@SEobj)[step] <- value
-    #names(x@targets_connection)[step] <- value
+    names(x@targets_connection)[step] <- value
+    names(x@runInfo$directory)[step] <- value
   }  else {
     stop("Replace value needs to be assigned an 'character' name for the workflow step.")
   }
