@@ -23,7 +23,7 @@ writeTargetsout(x, file = "default", silent = FALSE, overwrite = FALSE, step = N
 Object of class \code{SYSargs} or \code{SYSargs2}.
 }
   \item{file}{
-Name and path of the output file. If set to "default" then the name of the output file will have the pattern 'targets_<software>.txt', where <software> will be what \code{software(x)} returns, when \code{x} is an object of class \code{SYSargs}. For an object of class \code{SYSargs2}, the output file will have the pattern 'targets_<software>_<step>.txt', where <software> will be the workflow name (\code{files(x)$cwl}) and <step> will be the step chosen in the argument \code{step}.
+Name and path of the output file. If set to "default" then the name of the output file will have the pattern 'targets_<software>.txt', where <software> will be what \code{software(x)} returns, when \code{x} is an object of class \code{SYSargs}. For an object of class \code{SYSargs2}, the output file will have the pattern 'targets_<software>_<step>.txt', where <software> will be the workflow name (\code{cwlfiles(x)$cwl}) and <step> will be the step chosen in the argument \code{step}.
 }
   \item{silent}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.

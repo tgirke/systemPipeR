@@ -180,6 +180,16 @@ output(WF[1])
 identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ```
 
+### Run
+
+```{r, eval=FALSE, spr='sysargs'}
+args <- runCommandline(args, make_bam = FALSE, dir=FALSE)
+output(args)
+WF <- runCommandline(WF, make_bam = FALSE, dir=FALSE)
+WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "testing_folder")
+output(WF)
+```
+
 ## Bowtie2-mi
 ### CommandLineTool
 
@@ -205,6 +215,16 @@ output(WF[1])
 
 ```{r, spr='sysargs'}
 identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+### Run
+
+```{r, eval=FALSE, spr='sysargs'}
+args <- runCommandline(args, make_bam = FALSE, dir=FALSE)
+output(args)
+WF <- runCommandline(WF, make_bam = FALSE, dir=FALSE)
+WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "testing_folder")
+output(WF)
 ```
 
 ## Bowtie2-se
@@ -298,11 +318,13 @@ identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ### CommandLineTool
 
 ```{r, spr='sysargs'}
-args <- loadWF(targets = NULL, wf_file = "bwa/bwa-index.cwl", 
+idx <- loadWF(targets = NULL, wf_file = "bwa/bwa-index.cwl", 
     input_file = "bwa/bwa-index.yml", dir_path = dir_path)
-args <- renderWF(args)
-cmdlist(args[1])
-output(args[1])
+idx <- renderWF(idx)
+cmdlist(idx)
+output(idx[1])
+runCommandline(idx, dir=FALSE)
+check.output(idx)
 ```
 
 ### Workflow
@@ -318,7 +340,15 @@ output(WF[1])
 ### Check
 
 ```{r, spr='sysargs'}
-identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+identical(cmdlist(idx[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+```
+
+### Run
+
+```{r, eval=FALSE, spr='sysargs'}
+WF <- runCommandline(WF, make_bam = FALSE, dir=FALSE)
+WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "testing_folder")
+output(WF)
 ```
 
 ## bwa-aln
@@ -347,6 +377,17 @@ output(WF[1])
 ```{r, spr='sysargs'}
 identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ```
+
+### Run
+
+```{r, eval=FALSE, spr='sysargs'}
+args <- runCommandline(args, make_bam = FALSE, dir=FALSE)
+output(args)
+WF <- runCommandline(WF, make_bam = FALSE, dir=FALSE)
+WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "testing_folder")
+output(WF)
+```
+
 
 ## bwa-mem-se
 ### CommandLineTool
@@ -779,8 +820,8 @@ identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ### Run
 
 ```{r, eval=FALSE, spr='sysargs'}
-runCommandline(args, make_bam = FALSE)
-runCommandline(WF, make_bam = FALSE)
+runCommandline(args, make_bam = FALSE, dir=FALSE)
+runCommandline(WF, make_bam = FALSE, dir=FALSE)
 runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "testing_folder")
 ```
 
@@ -788,11 +829,12 @@ runCommandline(WF, make_bam = FALSE, dir=TRUE, dir.name = "testing_folder")
 ### CommandLineTool
 
 ```{r, spr='sysargs'}
-args <- loadWF(targets = targetspath, wf_file = "hisat2/hisat2-mapping-se.cwl", 
+hisat2 <- loadWF(targets = targetspath, wf_file = "hisat2/hisat2-mapping-se.cwl", 
     input_file = "hisat2/hisat2-mapping-se.yml", dir_path = dir_path)
-args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
-cmdlist(args[1])
-output(args[1])
+hisat2 <- renderWF(hisat2, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+cmdlist(hisat2[1])
+output(hisat2[1])
+a <- runCommandline(hisat2, make_bam = FALSE, dir=FALSE)
 ```
 
 ### Workflow
@@ -808,13 +850,13 @@ output(WF[1])
 ### Check
 
 ```{r, spr='sysargs'}
-identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
+identical(cmdlist(hisat2[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ```
 
 ### Run
 
 ```{r, eval=FALSE, spr='sysargs'}
-args <- runCommandline(args, make_bam = FALSE)
+args <- runCommandline(args, make_bam = FALSE, dir=FALSE)
 WF <- runCommandline(WF, make_bam = FALSE)
 args <- runCommandline(args, make_bam = TRUE)
 WF <- runCommandline(WF, make_bam = TRUE, dir=TRUE)

@@ -41,7 +41,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
       cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
       for (i in seq_len(length(output(x)[[1]][[step]]))){
         pout <- sapply(names(output(x)), function(y) output(x)[[y]][[step]][[i]], simplify = FALSE)
-        targets[[paste0(cwlfiles(x)$steps, "_", i)]] = as.character(pout)
+        targets[[paste0(files(x)$steps, "_", i)]] = as.character(pout)
       }
     } else if(!is.null(new_col) & !is.null(new_col_output_index)){
       if(any(length(output(x)[[1]][[step]]) < new_col_output_index) | any(new_col_output_index < 1)) {
@@ -56,7 +56,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
       }
     }
     ## Workflow and Step Name
-    software <- strsplit(basename(cwlfiles(x)$cwl), split = "\\.")[[1]][1]
+    software <- strsplit(basename(files(x)$cwl), split = "\\.")[[1]][1]
     if(is.character(step)) {
       step <- strsplit(step, split = "\\.")[[1]][1]
     } else {
@@ -87,8 +87,8 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=TRUE, dir.name=NULL, force=FALSE, ...) {
   ## Validation for 'args'
-  if(any(is(args)!="SYSargs" & is(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
-  ## Environment Modules section
+  if(any(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
+    ## Environment Modules section
   .moduleload(args)
   ## SYSargs class ##
   if(class(args)=="SYSargs") {
@@ -99,10 +99,12 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     if(length(wf(args)$steps)==0){
       cwl.wf <- gsub( "[[:space:]]", "_", paste(baseCommand(args), collapse = "_"), perl=TRUE)
     } else {
-      cwl.wf <- strsplit(basename(cwlfiles(args)$cwl), split="\\.")[[1]][1]
+      cwl.wf <- strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
     }
     ## Check if "results" folders exists...
-    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) stop("Results PATH defined at `yamlinput(args)` is required.")
+    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) 
+      stop("Please check our current directory ('getwd()').
+           The PATH defined at `yamlinput(args)` was not found and it is required.")
     if(is.null(dir.name)) {
       logdir <- normalizePath(yamlinput(args)$results_path$path)
       dir.name <- cwl.wf
@@ -119,45 +121,100 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     outputList <- unlist((output(args)))
     names(outputList) <- rep(names(output(args)), each=sum(lengths(output(args)[[1]])))
     ## Create log files
-    file_cmdlist <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_cmd_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
+    #file_cmdlist <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_cmd_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
     file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
+   # file_err <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_err_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
+    sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
+    time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
     ## Progress bar
-    cat("\n", crayon::blue("---- Running `cmdlist` ----"), "\n")
+    #cat("\n", crayon::blue("---- Running `cmdlist` ----"), "\n")
     pb <- txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
+    ## Check input
+    if(length(args$inputvars) >= 1){
+      inpVar <- args$inputvars
+      check.inp <- colSums(sapply(inpVar, function(y) sapply(yamlinput(args), function(x) x["path"] %in% y)))
+      check.inp[check.inp > 0]
+      df.targets <- targets.as.df(args$targets)[check.inp[check.inp > 0]]
+      inp_targets2 <- FALSE
+    } else {
+      inp_targets2 <- TRUE
+    }
+    ## LOOP
     for(i in seq_along(cmdlist(args))){
-        setTxtProgressBar(pb, i)
+      setTxtProgressBar(pb, i)
+      cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
+      ## Time
+      time_status$time_start[i] <- Sys.time()
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
-        if(all(force==FALSE & all(as.logical(completed[[i]][[j]])))) {
+        if(all(force==FALSE && all(as.logical(completed[[i]][[j]])))) {
+          cat("The expected output file(s) already exist", file=file_log, fill=TRUE, append=TRUE)
+          sample_status[[i]][[args$files$steps[j]]] <- "Success"
           next()
         } else {
           # Create soubmitargsID_command file
-          cat(cmdlist(args)[[i]][[j]], file=file_cmdlist, fill=TRUE, labels=paste0(names(cmdlist(args))[[i]], ":"), append=TRUE)
+          #cat(cmdlist(args)[[i]][[j]], file=file_cmdlist, fill=TRUE, labels=paste0(names(cmdlist(args))[[i]], ":"), append=TRUE)
+          cat(c(
+                paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
+                "### Code: ",
+                "```{r, eval=FALSE} ",
+                cmdlist(args)[[i]][[j]][[1]],
+                "```", "\n",
+                "### Stdout: ",
+                "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
+          #cat(cmdlist(args)[[i]][[j]], file=file_log, fill=TRUE, append=TRUE)
           ## Create an object for executable
           command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
           commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
           ## Check if the command is in the PATH
           if(!command == c("bash")){ 
-            tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+            tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
           }
-          ## Run executable
-          if(command %in% "bwa") {
-            stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
-          } else if(command %in% c("bash")) {
-            stdout <- system(paste(command, commandargs))
-          } else if(isTRUE(grep('\\$', command)==1)) {
-            stdout <- system(paste(command, commandargs))
+          if(all(inp_targets2) || all(inp_targets <- file.exists(as.character(df.targets[i,])))){
+            stdout <- .tryRunC(command, commandargs)
           } else {
-            stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+            stdout <- list(stdout = paste(paste0(as.character(df.targets[i,])[!inp_targets], collapse = ", "), "\n are missing"),
+                           warning= "", error= "We have an error" )
           }
-          ## Create submitargsID_stdout file
-          cat(unlist(stdout), file=file_log, sep = "\n", append=TRUE)
+          cat(stdout$stdout, file=file_log, sep = "\n", append=TRUE)
+          if(!is.null(stdout$error)) {
+            cat("## Error", file=file_log, sep = "\n", append=TRUE)
+            cat(stdout$error, file=file_log, sep = "\n", append=TRUE)
+            sample_status[[i]][[args$files$steps[j]]] <- "Error"
+          } else if(!is.null(stdout$warning)) {
+            cat("## Warning", file=file_log, sep = "\n", append=TRUE)
+            cat(stdout$warning, file=file_log, sep = "\n", append=TRUE)
+            sample_status[[i]][[args$files$steps[j]]] <- "Warning"
+          } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
+            sample_status[[i]][[args$files$steps[j]]] <- "Success"
+          }
+        #  cat("## stderr", file=file_log, sep = "\n", append=TRUE)
+          #if(length(stdout$stderr) >0) cat("## stderr \n", as.character(stdout$stderr), file=file_log, sep = "\n", append=TRUE)
+          #cat(unlist(stdout$stdout, use.names = FALSE), file=file_log, sep = "\n", append=TRUE)
+          cat("```", file=file_log, sep = "\n", append=TRUE)
+         # sample_status[[i]][[args$files$steps[j]]] <- stdout$message
+         # print(stdout$message)
         }
-        cat("################", file=file_log, sep = "\n", append=TRUE)
+        #cat("################", file=file_log, sep = "\n", append=TRUE)
         ## converting sam to bam using Rsamtools package
         .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
+      time_status$time_end[i] <- Sys.time()
     }
+    ## Status and log.files
+    df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
+    colnames(df.status) <- files(args.return)$steps
+    check <- check.output(args.return)
+    df.status.f <- cbind(check, df.status)
+    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
+    ## time
+    time_status$time_start <- as.POSIXct(time_status$time_end, origin="1970-01-01")
+    time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
+    ##
+    args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
+    args.return[["status"]]$status.completed <- df.status.f
+    args.return[["status"]]$status.time <- time_status
+    args.return[["files"]][["log"]] <- file_log
     ## Create recursive the subfolders
     if(dir==TRUE){
       for(i in seq_along(names(cmdlist(args)))){
@@ -170,10 +227,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       if(dir.exists(file.path(logdir, dir.name, "_logs"))==FALSE){
         dir.create(file.path(logdir, dir.name, "_logs"), recursive = TRUE)
       }
-      log <- c(file_cmdlist, file_log)
-      for(i in seq_along(log)){
-        file.rename(from=log[i], to=file.path(logdir, dir.name, "_logs", basename(log[i])))
-      }
+      file.rename(from=file_log, to=file.path(logdir, dir.name, "_logs", basename(file_log)))
+      args.return[["files"]][["log"]] <- file.path(logdir, dir.name, "_logs", basename(file_log))
+      ## output FILES
       if(make_bam==TRUE) args.return <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, dir.name=dir.name)$args
       outputList_new <- as.character()
       for(i in seq_along(output(args.return))){
@@ -191,7 +247,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
             }
             
           }
-        } else  if(length(output(args.return)[[i]]) ==1){
+        } else if(length(output(args.return)[[i]]) == 1){
           for(j in seq_along(output(args.return)[[i]][[1]])){
             if(file.exists(output(args.return)[[i]][[1]][[j]])){
               name <- strsplit(output(args.return)[[i]][[1]][[j]], split="\\/")[[1]]
@@ -206,15 +262,55 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       }
       args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
-   # cat("Missing expected outputs files:", sum(!as.logical(check.output(args.return, type="list"))), "\n"); cat("Existing expected outputs files:", 
-    #                                                                                               sum(as.logical(check.output(args.return, type="list"))), "\n")
-    cat("\n", crayon::blue("---- Summary ----"), "\n")
-    #cat("\n", "--- Summary ---")
-    print(check.output(args.return))
-    close(pb)
+    ## double check output file
+    
+    
+    cat("\n")
+    cat(crayon::blue("---- Summary ----"), "\n")
+    print(df.status.f)
+    #print(S4Vectors::DataFrame(df.status.f))
+    close(pb) 
     return(args.return)
   }
 }
+
+
+.tryRunC <- function(command, commandargs){
+  warning <- error <- NULL
+  value <- withCallingHandlers(
+    tryCatch(
+      if(command %in% "bwa") {
+        bwa_err <- tempfile()
+        system2(command, args=commandargs, stdout = T, stderr = bwa_err)
+        readLines(bwa_err)
+      } else if(command %in% c("bash")) {
+        system(paste(command, commandargs))
+      } else if(isTRUE(grep('\\$', command)==1)) {
+        system(paste(command, commandargs))
+      } else {
+        system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+      }, 
+      error = function(e) {
+        error <<- conditionMessage(e)
+        NULL
+        }), 
+    warning = function(w) {
+      warning <<- append(warning, conditionMessage(w))
+      invokeRestart("muffleWarning")
+      })
+  list(stdout = value, warning = warning, error = error)
+}
+#, stdout = bwa_out, stderr = bwa_err
+# .tryRunC(command, commandargs)
+
+# .tryRunC("ls", "la")
+
+# runid="01"
+# make_bam=FALSE
+# del_sam=TRUE
+# dir=TRUE
+# dir.name=NULL
+# force=FALSE
 
 ## Usage:
 # WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder
@@ -284,7 +380,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     if(dir==TRUE){
       if(!is.null(dir.name)){
         if(!file.exists(normalizePath(file.path(yamlinput(args)$results_path$path, dir.name)))) {
-          dir.create(normalizePath(file.path(yamlinput(args)$results_path$path, dir.name)), recursive = TRUE)
+         # dir.create(normalizePath(file.path(yamlinput(args)$results_path$path, dir.name)), recursive = TRUE)
         }
         
       } 
@@ -551,7 +647,7 @@ alignStats <- function(args, output_index = 1, subset="FileName1") {
     for (i in seq_along(output.all)) {
       for (j in seq_along(output.all[[i]])) {
         if (grepl(".sam$", output.all[[i]][[j]]) == TRUE & grepl(".bam$", output.all[[i]][[j]]) == FALSE) {
-          stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.")
+          stop("Please provide files in BAM format; it can be checked as 'output(args)'. Also, check 'output_update' function, if the BAM files were previously generated.")
         }
         else if (grepl(".bam$", output.all[[i]][[j]]) == TRUE & grepl("sorted.bam$", output.all[[i]][[j]]) == FALSE) {
           bampaths <- c(bampaths, output.all[[i]][[j]])
@@ -652,152 +748,6 @@ readComp <- function(file, format = "vector", delim = "-") {
 # targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 # cmp <- readComp(targetspath, format="vector", delim="-")
 # cmp <- readComp(WF, format="vector", delim="-")
-
-#################################
-## Access module system from R ##
-#################################
-
-## S3 class converted to S4 class, please check R/modules.R file
-
-# # S3 Class for handling function calls
-# myEnvModules <- structure(list(), class="EnvModules")
-#
-# ## Main function to allow avail, list and list
-# myEnvModules$init <- function(){
-#   # Module function assumes MODULEPATH and MODULEDIR are set in login profile
-#   # Get base environment from login profile
-#   base_env <- strsplit(system('bash -l -c "env"',intern = TRUE),'\n')
-#   base_env <- strsplit(as.character(base_env),'=')
-#   # Iterate through base environment
-#   for (x in seq(1,length(base_env))) {
-#     # Set environment based on login profile
-#     if (base_env[[x]][1]=="LOADEDMODULES" || base_env[[x]][1]=="MODULESHOME" || base_env[[x]][1]=="MODULEPATH" || base_env[[x]][1]=="MODULES_DIR" || base_env[[x]][1]=="HPCC_MODULES"){
-#       if (base_env[[x]][1]=="LOADEDMODULES"){
-#         default_modules <- strsplit(base_env[[x]][2],":")
-#       }
-#       else{
-#         l <- list(base_env[[x]][2])
-#         names(l) <- base_env[[x]][1]
-#         do.call(Sys.setenv, l)
-#       }
-#     }
-#   }
-#   # Make sure to process default modules after the environment is set with the above loop
-#   for (x in seq(1,length(default_modules[[1]]))){
-#     module_name <- default_modules[[1]][x]
-#     print(paste("Loading module",module_name))
-#     try(myEnvModules$load_unload("load",module_name))
-#   }
-# }
-#
-# # Print available modules or currently loaded modules on stderr
-# myEnvModules$avail_list <- function(action_type){
-#   try(module_vars <- system(paste('modulecmd bash',action_type),intern = TRUE))
-# }
-#
-# # Unload all currently loaded modules
-# myEnvModules$clear <- function(action_type){
-#   loaded_modules <-  strsplit(Sys.getenv("LOADEDMODULES"),":")
-#   if (length(loaded_modules[[1]]) > 0) {
-#     for (x in seq(1,length(loaded_modules[[1]]))){
-#       module_name <- loaded_modules[[1]][x]
-#       print(paste("Unloading module",module_name))
-#       try(myEnvModules$load_unload("unload",module_name))
-#     }
-#   }
-# }
-#
-# # Load and unload actions are basically the same, set environment variables given by modulecmd
-# myEnvModules$load_unload <- function(action_type, module_name=""){
-#   module_name <- paste(module_name, collapse=' ')
-#   # Use the low level C binary for generating module environment variables
-#   try(module_vars <- system(paste('modulecmd bash',action_type, module_name),intern = TRUE))
-#   if (length(module_vars) > 0){
-#     for (y in seq(1,length(module_vars))) {
-#       # Separate environment variables
-#       module_var <- strsplit(module_vars,";")
-#       # Iterate through all environment variables
-#       for (x in seq(1,length(module_var[[y]]))) {
-#         # Isolate key, value pair
-#         evar <- module_var[[y]][x]
-#         # Filter export commands
-#         if (length(grep('^ *export',evar)) == 0 && length(evar) > 0) {
-#           # Seprate key and value
-#           evar <- strsplit(as.character(evar),'=')
-#           # Stip spaces at the end of the value
-#           evar_val <- gsub('[[:space:]]','',evar[[1]][2])
-#           # Remove extra backslashes
-#           l <- list(gsub('\\$','',evar_val))
-#           # Load dependant modules
-#           if (length(grep('^ *module',evar[[1]][1])) > 0){
-#             inner_module <- strsplit(evar[[1]][1]," ")
-#             #myEnvModules$load_unload(inner_module[1][[1]][2],inner_module[1][[1]][3])
-#           }
-#           # Source environment
-#           else if (length(grep('^ *source',evar[[1]][1])) > 0){
-#             warning(paste0("Module uses a bash script to initialize, some software may not function as expected:\n\t",evar[[1]][1]))
-#           }
-#           # Unset variables that need to be unset
-#           else if(length(grep("^ *unset ",evar[[1]][1])) > 0){
-#             evar <- gsub("^unset (.*)$","\\1",evar[[1]][1])
-#             Sys.unsetenv(evar)
-#           } else {
-#             # Assign names to each value in list
-#             names(l) <- evar[[1]][1]
-#             # Set environment variable in current environment
-#             do.call(Sys.setenv, l)
-#           }
-#         }
-#       }
-#     }
-#   }
-# }
-#
-# #Define what happens bases on action
-# module <- function(action_type,module_name=""){
-#   # Check to see if modulecmd is in current PATH
-#   try(suppressWarnings(modulecmd_path <- system("which modulecmd",intern=TRUE,ignore.stderr=TRUE)),
-#     silent=TRUE
-#   )
-#   # Only initialize module system if it has not yet been initialized and the modulecmd exisits
-#   if ( Sys.getenv('MODULEPATH') == "" && length(modulecmd_path) > 0) {
-#     myEnvModules$init()
-#   } else if (Sys.getenv('MODULEPATH') == "" && length(modulecmd_path) == 0) {
-#     stop("Could not find the installation of Environment Modules: \"modulecmd\". Please make sure to configure your PATH environment variable according to the software in use.")
-#   }
-#   switch(action_type,
-#     "load"   = myEnvModules$load_unload(action_type, module_name),
-#     "unload" = myEnvModules$load_unload(action_type, module_name),
-#     "list"   = myEnvModules$avail_list(action_type),
-#     "avail"  = myEnvModules$avail_list(action_type),
-#     "clear"  = myEnvModules$clear(action_type),
-#     "init"   = myEnvModules$init(),
-#     stop("That action is not supported.")
-#   )
-# }
-## Usage:
-# module("load","tophat")
-# module("load","tophat/2.1.1")
-# module("list")
-# module("avail")
-# module("init")
-# module("unload", "tophat")
-# module("unload", "tophat/2.1.1")
-
-#####################
-## Legacy Wrappers ##
-#####################
-# ## List software available in module system
-# modulelist <- function() {
-#   module("avail")
-#   # warning("The function modulelist will be deprecated in future releases, please refer to the documentation for proper useage.")
-# }
-#
-# ## Load software from module system
-# moduleload <- function(module,envir="PATH") {
-#   module("load", module)
-#   # warning("The function moduleload will be deprecated in future releases, please refer to the documentation for proper useage.")
-# }
 
 #######################################################################
 ## Run edgeR GLM with entire count matrix or subsetted by comparison ##

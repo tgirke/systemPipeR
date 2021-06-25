@@ -28,8 +28,10 @@ It will be easy to toggle between run all the R chunk codes or not.
 Daniela Cassol
 }
 \examples{
+\dontrun{
 library(systemPipeRdata)
 file <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-evalCode(infile=file, eval=FALSE, output=file.path(tempdir(), "test.Rmd"))
+evalCode(infile=file, eval=FALSE, output="test.Rmd")
+ }
 }
 \keyword{ utilities }
