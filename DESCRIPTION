@@ -1,15 +1,15 @@
 Package: systemPipeR
 Type: Package
 Title: systemPipeR: NGS workflow and report generation environment
-Version: 1.27.5
-Date: 2020-06-10
+Version: 1.27.6
+Date: 2020-06-11
 Author: Thomas Girke
 Maintainer: Thomas Girke <thomas.girke@ucr.edu>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, RiboSeq, ChIPSeq, MethylSeq, SNP, GeneExpression, Coverage, GeneSetEnrichment, Alignment, QualityControl, ImmunoOncology, ReportWriting, Workflow
 Description: R package for building and running automated end-to-end analysis workflows for a wide range of next generation sequence (NGS) applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Important features include a uniform workflow interface across different NGS applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters. Efficient handling of complex sample sets and experimental designs is facilitated by a consistently implemented sample annotation infrastructure. Instructions for using systemPipeR are given in the Overview Vignette (HTML). The remaining Vignettes, linked below, are workflow templates for common NGS use cases.
 Depends: Rsamtools (>= 1.31.2), Biostrings, ShortRead (>= 1.37.1), methods
-Imports: GenomicRanges, GenomicFeatures (>= 1.31.3), SummarizedExperiment, VariantAnnotation (>= 1.25.11), rjson, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap, batchtools, yaml, stringr, assertthat, magrittr, DOT, rsvg, IRanges, testthat, S4Vectors, crayon
-Suggests: BiocGenerics, ape, BiocStyle, knitr, rmarkdown, biomaRt, BiocParallel, BiocManager, systemPipeRdata, GenomicAlignments, grid, DT, dplyr
+Imports: GenomicRanges, GenomicFeatures (>= 1.31.3), SummarizedExperiment, VariantAnnotation (>= 1.25.11), rjson, ggplot2, limma, edgeR, DESeq2, GOstats, GO.db, annotate, pheatmap, batchtools, yaml, stringr, assertthat, magrittr, DOT, rsvg, IRanges, testthat, S4Vectors, crayon, BiocGenerics, GenomeInfoDb
+Suggests: ape, BiocStyle, knitr, rmarkdown, biomaRt, BiocParallel, BiocManager, systemPipeRdata, GenomicAlignments, grid, DT, dplyr
 VignetteBuilder: knitr
 SystemRequirements: systemPipeR can be used to run external 
         command-line software (e.g. short read aligners), but the 

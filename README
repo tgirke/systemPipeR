@@ -13,6 +13,7 @@ changelog
      	- LineWise Upadates:
      	    - New slot/methods: status()
         - Update SPRproject, write_SYSargsList, read_SYSargsList, SYSargsList, runWF, renderReport, renderLogs, SYScreate functions
+        - Major improvement in RunCommandline function
 
      version 1.27.5
      	- check.output for SYSargsList
