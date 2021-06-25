@@ -73,9 +73,9 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
   } else if (class(args) == "SYSargs2"){
     out <- sapply(names(outfile_names), function(x) list(outfile_names[[x]]), simplify = F)
     for(i in seq_along(out)){
-      names(out[[i]]) <- cwlfiles(args)$step
+      names(out[[i]]) <- files(args)$step
     }
-    # out <- sapply(names(out), function(x) names(out[[x]]) <- cwlfiles(args)$step, simplify = F)
+    # out <- sapply(names(out), function(x) names(out[[x]]) <- files(args)$step, simplify = F)
     sys2list <- list(targets=targets(args_sub),  
                      targetsheader=targetsheader(args_sub),
                      modules=as.list(modules(args_sub)),
@@ -85,7 +85,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                      cmdlist=cmdlist(args_sub),
                      input=input(args_sub),
                      output=out,
-                     cwlfiles=cwlfiles(args_sub), 
+                     files=files(args_sub), 
                      inputvars=inputvars(args_sub), 
                      cmdToCwl=list()) 
     args_sub_out <- as(sys2list, "SYSargs2")
