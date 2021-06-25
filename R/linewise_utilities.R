@@ -1,18 +1,22 @@
 #######################
 ## LineWise function ##
 #######################
-LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=character()){
+LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=character(), status=list()){
     if(stepName=="default"){
         stepName <- "Step_x"
     } else {
         stepName <- stepName
     }
-    line <- list(
+  dependency <- list(NA)
+  step_status <- list(list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame()))
+  names(dependency) <- names(step_status) <- stepName
+      line <- list(
         codeLine = parse(text=code),
         codeChunkStart = codeChunkStart,
         rmdPath = rmdPath,
         stepName=stepName,
-        dependency=dependency
+        dependency=dependency, 
+        status=step_status
     )
     return(as(line, "LineWise"))
 }
@@ -24,6 +28,7 @@ LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath
 ########################
 importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
     df <- parseRmd(file_path, ignore_eval = ignore_eval, verbose = verbose)
+    df$dep <- lapply(df$dep, function(x) ifelse(x=="", NA, x))
     sal <- SPRproject(...)
     sal <- as(sal, "list")
     for(i in seq_along(df$spr)){
@@ -31,14 +36,16 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
             line_obj <- LineWise(df$code[i], codeChunkStart=df$start[i], file_path)
             sal$stepsWF[[df$step_name[i]]] <- line_obj
             sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
-            sal$statusWF[[df$step_name[i]]] <- list(status="Pending")
+            sal$statusWF[[df$step_name[i]]] <- list(status.summary="Pending",
+                                                         status.completed = data.frame(Step=df$step_name[i], status.summary="Pending") , 
+                                                         status.time=data.frame())
         } else if(df$spr[i]=="sysargs"){
             args <- eval(parse(text =df$code[i]), envir = globalenv())
             # suppressMessages(
             # args <- eval(parse(text=df$code[i])))
             sal$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
             sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
-            sal$statusWF[[df$step_name[i]]] <- list(status="Pending")
+            sal$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
             sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
             sal$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
         }

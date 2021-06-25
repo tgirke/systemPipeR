@@ -7,7 +7,8 @@ setClass("LineWise", slots = c(
   codeChunkStart = "integer",
   rmdPath = "character", 
   stepName="character", 
-  dependency = "character"
+  dependency = "list", 
+  status = "list"
 ))
 ## Methods to return LineWise components
 setGeneric(name = "codeLine", def = function(x) standardGeneric("codeLine"))
@@ -30,9 +31,14 @@ setMethod(f = "stepName", signature = "LineWise", definition = function(x) {
   return(x@stepName)
 })
 
-# setGeneric(name = "dependency", def = function(x) standardGeneric("dependency"))
+#setGeneric(name = "dependency", def = function(x) standardGeneric("dependency"))
 setMethod(f = "dependency", signature = "LineWise", definition = function(x) {
   return(x@dependency)
+})
+
+# setGeneric(name = "status", def = function(x) standardGeneric("status"))
+setMethod(f = "status", signature = "LineWise", definition = function(x) {
+  return(x@status)
 })
 
 
@@ -45,7 +51,8 @@ setAs(from = "list", to = "LineWise",
         codeChunkStart = from$codeChunkStart,
         rmdPath = from$rmdPath, 
         stepName = from$stepName,
-        dependency = from$dependency
+        dependency = from$dependency, 
+        status = from$status
     )
 })
 
@@ -53,7 +60,8 @@ setAs(from = "list", to = "LineWise",
 setGeneric(name = "linewise", def = function(x) standardGeneric("linewise"))
 setMethod(f = "linewise", signature = "LineWise", definition = function(x) {
   linewise <- list(codeLine = x@codeLine, codeChunkStart= x@codeChunkStart, 
-                   rmdPath = x@rmdPath, stepName = x@stepName, dependency = x@dependency)
+                   rmdPath = x@rmdPath, stepName = x@stepName, dependency = x@dependency,
+                   status = x@status)
   return(linewise)
 })
 
@@ -89,9 +97,10 @@ setMethod(f = "[", signature = "LineWise", definition = function(x, i, ..., drop
     i <- which(i)
   }
   x@codeLine <- x@codeLine[i]
-  x@codeChunkStart <- x@codeChunkStart[i]
-  x@stepName <- x@stepName[i]
-  x@dependency <- x@dependency[i]
+  # x@codeChunkStart <- x@codeChunkStart[i]
+  # x@stepName <- x@stepName[i]
+  # x@dependency <- x@dependency[i]
+  # x@status <- x@status[i]
   return(x)
 })
 
@@ -114,11 +123,13 @@ setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j
   if (i == 3) x@rmdPath <- value
   if (i == 4) x@stepName <- value
   if (i == 5) x@dependency <- value
+  if (i == 6) x@status <- value
   if (i == "codeLine") x@codeLine <- value
   if (i == "codeChunkStart") x@codeChunkStart <- value
   if (i == "rmdPath") x@rmdPath <- value
   if (i == "stepName") x@stepName <- value
-  if (i == "dependency") x@stepName <- value
+  if (i == "dependency") x@dependency <- value
+  if (i == "status") x@status <- value
   return(x)
 })
 
@@ -146,7 +157,7 @@ setReplaceMethod("replaceCodeLine", signature = c("SYSargsList"), function(x, st
   x <- as(x, "list")
   x$stepsWF[step][[1]] <- y
   x <- as(x, "SYSargsList")
-  sys.file <- projectWF(x)$sysargslist
+  sys.file <- projectInfo(x)$sysargslist
   write_SYSargsList(x, sys.file, silent=TRUE)
   x
 })
@@ -185,7 +196,7 @@ setReplaceMethod("appendCodeLine", signature = c("SYSargsList"), function(x, ste
   x <- as(x, "list")
   x$stepsWF[step][[1]] <- y
   x <- as(x, "SYSargsList")
-  sys.file <- projectWF(x)$sysargslist
+  sys.file <- projectInfo(x)$sysargslist
   write_SYSargsList(x, sys.file, silent=TRUE)
   x
 })

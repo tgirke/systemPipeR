@@ -10,6 +10,9 @@ changelog
      	    - Update statusWF() printing and replacement methods
      	    - show() method: more details
      	    - New methods: viewEnv and copyEnv
+     	- LineWise Upadates:
+     	    - New slot/methods: status()
+        - Update SPRproject, write_SYSargsList, read_SYSargsList, SYSargsList, runWF, renderReport, renderLogs, SYScreate functions
 
      version 1.27.5
      	- check.output for SYSargsList
