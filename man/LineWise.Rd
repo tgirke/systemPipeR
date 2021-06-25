@@ -7,8 +7,7 @@ LineWise
 S4 class container for storing parameters of R-based software.
 }
 \usage{
-LineWise(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), 
-        dependency=character(), status = list())
+LineWise(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=character())
 }
 \arguments{
   \item{code}{
@@ -25,9 +24,6 @@ Step Name
 }
   \item{dependency}{
 dependency
-}
-  \item{status}{
-status
 }
 }
 \value{

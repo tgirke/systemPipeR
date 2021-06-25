@@ -22,9 +22,9 @@ The default structure of the project directories can be modified here.
 }
 \usage{
 SPRproject(projPath = getwd(), data = "data", param = "param", results = "results",
-                      logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml", 
-                      envir = new.env(), restart = FALSE, load.envir = FALSE,
-                      overwrite = FALSE, silent = FALSE)
+                      logs.dir= ".SPRproject",
+                       restart = FALSE, sys.file=".SPRproject/SYSargsList.yml", 
+                       overwrite = FALSE, silent = FALSE)
 }
 \arguments{
   \item{projPath}{
@@ -47,22 +47,13 @@ and image/plot files.
   \item{logs.dir}{
   a character vector of a \code{logs} directory name. Default is \code{.SPRproject}.
 }
-  \item{sys.file}{
-  name and path of the SYSargsList file which will store all the project configuration 
-  information. Default is \code{.SPRproject/SYSargsList.yml}.
-}
-  \item{envir}{
-  the environment in which expr is to be evaluated. Default will create a \code{new.env()}.
-  Another option is to use \code{globalenv()}.
-}
   \item{restart}{
   if set to TRUE, existing SYSargsList save in the directory will be used to restart the 
   workflow.
 }
-  \item{load.envir}{
-  after running the workflow, the environment can be saved on disk. This argument 
-  allows to load the environment and recover all the objects. This argument can be set
-  as \code{TRUE} when \code{restart = TRUE}.
+  \item{sys.file}{
+  name and path of the SYSargsList file which will store all the project configuration 
+  information. Default is \code{.SPRproject/SYSargsList.yml}.
 }
   \item{overwrite}{
   if set to TRUE, existing logs files or directory of same name will be overwritten.

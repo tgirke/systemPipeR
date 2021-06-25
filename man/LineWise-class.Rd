@@ -27,7 +27,6 @@
 \alias{stepName}
 \alias{stepName,LineWise-method}
 \alias{dependency,LineWise-method}
-\alias{status,LineWise-method}
 %Replacement
 \alias{appendCodeLine,LineWise-method}
 \alias{appendCodeLine<-}
@@ -53,7 +52,6 @@ Objects can be created by calls of the form \code{new("LineWise", ...)}.
     \item{\code{rmdPath}:}{Object of class \code{"character"} storing path from the rmdPath file. }
     \item{\code{stepName}:}{Object of class \code{"character"} storing Step Name. }
     \item{\code{dependency}:}{Object of class \code{"character"} storing dependency steps. }
-    \item{\code{status}:}{Object of class \code{"list"} storing status steps. }
   }
 }
 \section{Methods}{
@@ -63,11 +61,11 @@ Objects can be created by calls of the form \code{new("LineWise", ...)}.
     \item{[[<-}{\code{signature(x = "LineWise")}: replacement method for LineWise class }
     \item{$}{\code{signature(x = "LineWise")}: extracting slots elements by name }
     \item{codeLine}{\code{signature(x = "LineWise")}: ... }
+    
     \item{coerce}{\code{signature(from = "LineWise", to = "list")}: \code{as(LineWise, "list")} }
     \item{coerce}{\code{signature(from = "list", to = "LineWise")}: \code{as(list, "LineWise")} }
     \item{length}{\code{signature(x = "LineWise")}: extracts number of R code lines }
     \item{linewise}{\code{signature(x = "LineWise")}: Coerce back to list \code{as(LineWise, "list")} }
-    \item{status}{\code{signature(x = "LineWise")}: extracts status of the step }
     \item{names}{\code{signature(x = "LineWise")}: extracts slot names }
     \item{rmdPath}{\code{signature(x = "LineWise")}: extracts path of the Rmarkdown files }
     \item{show}{\code{signature(object = "LineWise")}: summary view of \code{LineWise} objects }
