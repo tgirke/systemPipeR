@@ -88,7 +88,8 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=TRUE, dir.name=NULL, force=FALSE, ...) {
   ## Validation for 'args'
   if(any(is(args)!="SYSargs" & is(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
-  ## Environment Modules section
+  if(any(inherits(args, "SYSargs") & is(args)!="SYSargs2"))
+    ## Environment Modules section
   .moduleload(args)
   ## SYSargs class ##
   if(class(args)=="SYSargs") {
@@ -102,7 +103,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       cwl.wf <- strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
     }
     ## Check if "results" folders exists...
-    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) stop("Results PATH defined at `yamlinput(args)` is required.")
+    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) 
+      stop("Please check our current directory ('getwd()').
+           The PATH defined at `yamlinput(args)` was not found and it is required.")
     if(is.null(dir.name)) {
       logdir <- normalizePath(yamlinput(args)$results_path$path)
       dir.name <- cwl.wf
@@ -123,17 +126,31 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
    # file_err <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_err_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
     sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
+    time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
     ## Progress bar
     #cat("\n", crayon::blue("---- Running `cmdlist` ----"), "\n")
     pb <- txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
+    ## Check input
+    if(length(args$inputvars) >= 1){
+      inpVar <- args$inputvars
+      check.inp <- colSums(sapply(inpVar, function(y) sapply(yamlinput(args), function(x) x["path"] %in% y)))
+      check.inp[check.inp > 0]
+      df.targets <- targets.as.df(args$targets)[check.inp[check.inp > 0]]
+      inp_targets2 <- FALSE
+    } else {
+      inp_targets2 <- TRUE
+    }
+    ## LOOP
     for(i in seq_along(cmdlist(args))){
       setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
+      ## Time
+      time_status$time_start[i] <- Sys.time()
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
         if(all(force==FALSE & all(as.logical(completed[[i]][[j]])))) {
           cat("The expected output file(s) already exist", file=file_log, fill=TRUE, append=TRUE)
-          sample_status[[i]][[args$files$steps[j]]] <- "DONE"
+          sample_status[[i]][[args$files$steps[j]]] <- "Success"
           next()
         } else {
           # Create soubmitargsID_command file
@@ -152,36 +169,52 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
           commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
           ## Check if the command is in the PATH
           if(!command == c("bash")){ 
-            tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) cat(paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+            tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
           }
-          # ## Run executable
-          # if(command %in% "bwa") {
-          #   stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
-          # } else if(command %in% c("bash")) {
-          #   stdout <- system(paste(command, commandargs))
-          # } else if(isTRUE(grep('\\$', command)==1)) {
-          #   stdout <- system(paste(command, commandargs))
-          # } else {
-          #   stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
-          # }
-          stdout <-.tryCmd(command, commandargs, file=file_log)
-          # print(stdout)
-           if(length(stdout$stdout) >0) cat(stdout$stdout, file=file_log, sep = "\n", append=TRUE)
-          cat(unlist(stdout$stdout, use.names = FALSE), file=file_log, sep = "\n", append=TRUE)
+          if(all(inp_targets2) || all(inp_targets <- file.exists(as.character(df.targets[i,])))){
+            stdout <- .tryRunC(command, commandargs)
+          } else {
+            stdout <- list(stdout = paste(paste0(as.character(df.targets[i,])[!inp_targets], collapse = ", "), "\n are missing"),
+                           warning= "", error= "We have an error" )
+          }
+          cat(stdout$stdout, file=file_log, sep = "\n", append=TRUE)
+          if(!is.null(stdout$error)) {
+            cat("## Error", file=file_log, sep = "\n", append=TRUE)
+            cat(stdout$error, file=file_log, sep = "\n", append=TRUE)
+            sample_status[[i]][[args$files$steps[j]]] <- "Error"
+          } else if(!is.null(stdout$warning)) {
+            cat("## Warning", file=file_log, sep = "\n", append=TRUE)
+            cat(stdout$warning, file=file_log, sep = "\n", append=TRUE)
+            sample_status[[i]][[args$files$steps[j]]] <- "Warning"
+          } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
+            sample_status[[i]][[args$files$steps[j]]] <- "Success"
+          }
+        #  cat("## stderr", file=file_log, sep = "\n", append=TRUE)
+          #if(length(stdout$stderr) >0) cat("## stderr \n", as.character(stdout$stderr), file=file_log, sep = "\n", append=TRUE)
+          #cat(unlist(stdout$stdout, use.names = FALSE), file=file_log, sep = "\n", append=TRUE)
           cat("```", file=file_log, sep = "\n", append=TRUE)
-          sample_status[[i]][[args$files$steps[j]]] <- "stdout$message"
+         # sample_status[[i]][[args$files$steps[j]]] <- stdout$message
+         # print(stdout$message)
         }
         #cat("################", file=file_log, sep = "\n", append=TRUE)
         ## converting sam to bam using Rsamtools package
         .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
+      time_status$time_end[i] <- Sys.time()
     }
     ## Status and log.files
-    df.status <- data.frame(matrix(unlist(sample_status), nrow=length(sample_status), byrow=TRUE))
+    df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
     colnames(df.status) <- files(args.return)$steps
     check <- check.output(args.return)
     df.status.f <- cbind(check, df.status)
-    args.return[["status"]] <- df.status.f
+    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
+    ## time
+    time_status$time_start <- as.POSIXct(time_status$time_end, origin="1970-01-01")
+    time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
+    ##
+    args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
+    args.return[["status"]]$status.completed <- df.status.f
+    args.return[["status"]]$status.time <- time_status
     args.return[["files"]][["log"]] <- file_log
     ## Create recursive the subfolders
     if(dir==TRUE){
@@ -230,15 +263,52 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       }
       args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
-   # cat("Missing expected outputs files:", sum(!as.logical(check.output(args.return, type="list"))), "\n"); cat("Existing expected outputs files:", 
-    #                                                                                               sum(as.logical(check.output(args.return, type="list"))), "\n")
-    cat("\n", crayon::blue("---- Summary ----"), "\n")
-    #cat("\n", "--- Summary ---")
-    print(check.output(args.return))
-    close(pb)
+    cat("\n")
+    cat(crayon::blue("---- Summary ----"), "\n")
+    print(df.status.f)
+    #print(S4Vectors::DataFrame(df.status.f))
+    close(pb) 
     return(args.return)
   }
 }
+
+
+.tryRunC <- function(command, commandargs){
+  warning <- error <- NULL
+  value <- withCallingHandlers(
+    tryCatch(
+      if(command %in% "bwa") {
+        bwa_err <- tempfile()
+        system2(command, args=commandargs, stdout = T, stderr = bwa_err)
+        readLines(bwa_err)
+      } else if(command %in% c("bash")) {
+        system(paste(command, commandargs))
+      } else if(isTRUE(grep('\\$', command)==1)) {
+        system(paste(command, commandargs))
+      } else {
+        system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
+      }, 
+      error = function(e) {
+        error <<- conditionMessage(e)
+        NULL
+        }), 
+    warning = function(w) {
+      warning <<- append(warning, conditionMessage(w))
+      invokeRestart("muffleWarning")
+      })
+  list(stdout = value, warning = warning, error = error)
+}
+#, stdout = bwa_out, stderr = bwa_err
+# .tryRunC(command, commandargs)
+
+# .tryRunC("ls", "la")
+
+runid="01"
+make_bam=FALSE
+del_sam=TRUE
+dir=TRUE
+dir.name=NULL
+force=FALSE
 
 ## Usage:
 # WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder
@@ -575,7 +645,7 @@ alignStats <- function(args, output_index = 1, subset="FileName1") {
     for (i in seq_along(output.all)) {
       for (j in seq_along(output.all[[i]])) {
         if (grepl(".sam$", output.all[[i]][[j]]) == TRUE & grepl(".bam$", output.all[[i]][[j]]) == FALSE) {
-          stop("Please provide files in BAM format. Also, check 'output_update' function, if the BAM files were previously generated.")
+          stop("Please provide files in BAM format; it can be checked as 'output(args)'. Also, check 'output_update' function, if the BAM files were previously generated.")
         }
         else if (grepl(".bam$", output.all[[i]][[j]]) == TRUE & grepl("sorted.bam$", output.all[[i]][[j]]) == FALSE) {
           bampaths <- c(bampaths, output.all[[i]][[j]])
