@@ -8,8 +8,8 @@ LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath
         stepName <- stepName
     }
   dependency <- list(NA)
-  step_status <- list(list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame()))
-  names(dependency) <- names(step_status) <- stepName
+  step_status <- list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame())
+  names(dependency) <- stepName
       line <- list(
         codeLine = parse(text=code),
         codeChunkStart = codeChunkStart,

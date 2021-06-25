@@ -401,13 +401,13 @@ setMethod(f = "show", signature = "SYSargsList",
                   paste0(
                       # "         Sub Steps:", "\n",
                       paste0(
-                          "        ", i, ".", seq_along(object@stepsWF[[i]]@clt), ". ", crayon::green(object@stepsWF[[i]]@files$steps)
+                          "        ", i, ".", seq_along(object@stepsWF[[i]]@clt), ". ", crayon::green(object@stepsWF[[i]]$files$steps)
                       ), "\n",
                       paste0("             cmdlist: ", length(object@stepsWF[[i]]), " | "),
-                      sapply(as.list(object@stepsWF[[i]]@files$steps), function(x) {
+                      sapply(as.list(object@stepsWF[[i]]$files$steps), function(x) {
                           paste0(
-                              paste0(names(table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]@files$steps][x]))), ": ",
-                                     table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]@files$steps][x])),
+                              paste0(names(table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]$files$steps][x]))), ": ",
+                                     table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]$files$steps][x])),
                                      collapse = " | "
                               )
                           )
@@ -464,7 +464,7 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   x@dependency <- x@dependency[i]
   x@targets_connection <- x@targets_connection[i]
   x@projectInfo <- x@projectInfo
-  x@runInfo <- x@runInfo[i]
+  x@runInfo <- x@runInfo$directory[i]
   x <- .check_write_SYSargsList(x)
   return(x)
 })
@@ -513,7 +513,8 @@ setMethod("$", signature = "SYSargsList",
 ## viewEnv() methods for SYSargslist
 setGeneric(name = "viewEnv", def = function(x) standardGeneric("viewEnv"))
 setMethod(f = "viewEnv", signature = "SYSargsList", definition = function(x) {
-    return(ls(x@runInfo$env))
+  print(x@runInfo$env)
+  print(ls(x@runInfo$env, all.names = TRUE))
 })
 
 ## copyEnv() methods for SYSargslist
@@ -606,6 +607,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$dependency <- c(dependency(value), x$dependency)
       x$outfiles <- c(outfiles(value), x$outfiles)
       x$targets_connection <- c(value$targets_connection, x$targets_connection)
+      x$runInfo$directory <- c(value$runInfo, x$runInfo$directory)
     } else if (after >= lengx) {
       x$stepsWF <- c(x$stepsWF, value$stepsWF)
       x$targetsWF <- c(x$targetsWF, targetsWF(value))
@@ -613,13 +615,15 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$dependency <- c(x$dependency, dependency(value))
       x$outfiles <- c(x$outfiles, outfiles(value))
       x$targets_connection <- c(x$targets_connection, value$targets_connection)
+      x$runInfo$directory <- c(x$runInfo$directory, value$runInfo)
     } else {
       x$stepsWF <- c(x$stepsWF[1L:after], value$stepsWF, x$stepsWF[(after + 1L):lengx])
       x$targetsWF <- c(x$targetsWF[1L:after], targetsWF(value), x$targetsWF[(after + 1L):lengx])
       x$statusWF <- c(x$statusWF[1L:after], value$statusWF, x$statusWF[(after + 1L):lengx])
       x$dependency <- c(x$dependency[1L:after], dependency(value), x$dependency[(after + 1L):lengx])
       x$outfiles <- c(x$outfiles[1L:after], outfiles(value), x$outfiles[(after + 1L):lengx])
-      x$targets_connection <- c(x$targets_connection[1L:after], value$targets_connection, x$targets_connection[(after + 1L):lengx])
+      x$targets_connection <- c(x$targets_connection, value$targets_connection, x$targets_connection[(after + 1L):lengx])
+      x$runInfo$directory <- c(x$runInfo$directory[1L:after], value$runInfo,  x$runInfo$directory[(after + 1L):lengx])
      }
     x <- as(x, "SYSargsList")
   } else if(inherits(value, "LineWise")){
@@ -631,28 +635,32 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     x <- sysargslist(x)
     if (!after) {
       x$stepsWF <- c(value, x$stepsWF)
-      x$targetsWF <- c(DataFrame(), x$targetsWF)
-      x$statusWF <- c(list(list(status="Pending")), x$statusWF)
-      x$dependency <- c(NA, x$dependency)
-      x$outfiles <- c(DataFrame(), x$outfiles)
+      x$targetsWF <- c(list(DataFrame()), x$targetsWF)
+      x$statusWF <- c(list(value$status), x$statusWF)
+      x$dependency <- c(value$dependency, x$dependency)
+      x$outfiles <- c(list(DataFrame()), x$outfiles)
+      x$runInfo$directory <- c(list(NULL), x$runInfo$directory)
     } else if (after >= lengx) {
       x$stepsWF <- c(x$stepsWF, value)
-      x$targetsWF <- c(x$targetsWF, DataFrame())
-      x$statusWF <- c(x$statusWF, list(list(status="Pending")))
-      x$dependency <- c(x$dependency, NA)
-      x$outfiles <- c(x$outfiles, DataFrame())
+      x$targetsWF <- c(x$targetsWF, list(DataFrame()))
+      x$statusWF <- c(x$statusWF, list(value$status))
+      x$dependency <- c(x$dependency, value$dependency)
+      x$outfiles <- c(x$outfiles, list(DataFrame()))
+      x$runInfo$directory <- c(x$runInfo$directory, list(NULL))
     } else {
       x$stepsWF <- c(x$stepsWF[1L:after], value, x$stepsWF[(after + 1L):lengx])
-      x$targetsWF <- c(x$targetsWF[1L:after], DataFrame() , x$targetsWF[(after + 1L):lengx])
-      x$statusWF <- c(x$statusWF[1L:after], list(list(status="Pending")), x$statusWF[(after + 1L):lengx])
-      x$dependency <- c(x$dependency[1L:after], NA, x$dependency[(after + 1L):lengx])
-      x$outfiles <- c(x$outfiles[1L:after], DataFrame(), x$outfiles[(after + 1L):lengx])
+      x$targetsWF <- c(x$targetsWF[1L:after], list(DataFrame()) , x$targetsWF[(after + 1L):lengx])
+      x$statusWF <- c(x$statusWF[1L:after], list(value$status), x$statusWF[(after + 1L):lengx])
+      x$dependency <- c(x$dependency[1L:after], value$dependency, x$dependency[(after + 1L):lengx])
+      x$outfiles <- c(x$outfiles[1L:after], list(DataFrame()), x$outfiles[(after + 1L):lengx])
+      x$runInfo$directory <- c(x$runInfo$directory[1L:after], list(NULL), x$runInfo$directory[(after + 1L):lengx])
     }
     names(x$stepsWF)[after+1L] <- step_name
     names(x$statusWF)[after+1L] <- step_name
     names(x$dependency)[after+1L] <- step_name
     names(x$targetsWF)[after+1L] <- step_name
     names(x$outfiles)[after+1L] <- step_name
+    names(x$runInfo$directory[after+1L]) <- step_name
     x <- as(x, "SYSargsList")
   } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
   if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")

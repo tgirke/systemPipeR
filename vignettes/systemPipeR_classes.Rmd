@@ -270,7 +270,7 @@ sal[3]
 The `appendStep()` method helps to add a new step in a interactive way.
 
 ```{r}
-appendStep(sal) <- SYSargsList(step_name = "Index", 
+appendStep(sal) <- SYSargsList(step_name = "Index", dir = FALSE,
                                targets=NULL, 
                                wf_file = "hisat2/hisat2-index.cwl", input_file="hisat2/hisat2-index.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
@@ -323,7 +323,7 @@ appendStep(sal) <- SYSargsList(targets="Quality",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
                                inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_",
                                            trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
-                               #rm_targets_col = c("FileName1", "FileName2"),
+                               rm_targets_col = c("FileName1", "FileName2"),
                                dependency = c("Quality", "Index"))
 ```
 
@@ -365,7 +365,7 @@ cmdlist(sal[1], 1)
 ## Adding a R code as new Step
 
 ```{r}
-appendStep(sal) <- LineWise("1+1", "R_code2")
+appendStep(sal) <- LineWise("a <- 1+1", "R_code2")
 sal
 stepsWF(sal)
 ```
