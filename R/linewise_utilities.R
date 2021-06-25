@@ -39,6 +39,10 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
             sal$statusWF[[df$step_name[i]]] <- list(status.summary="Pending",
                                                          status.completed = data.frame(Step=df$step_name[i], status.summary="Pending") , 
                                                          status.time=data.frame())
+            sal$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
+            sal$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
+            sal$targets_connection[[df$step_name[i]]] <- list()
+            sal$runInfo[["directory"]][[df$step_name[i]]] <- list()
         } else if(df$spr[i]=="sysargs"){
             args <- eval(parse(text =df$code[i]), envir = globalenv())
             # suppressMessages(

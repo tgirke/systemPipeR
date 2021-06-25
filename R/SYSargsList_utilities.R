@@ -636,6 +636,8 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
       new_targets <- cbind(args$outfiles[[step]][new_targets_col], old_targets)
       WF2 <- stepsWF(WF)[[1]]
       WF2 <- updateWF(WF2, new_targets= targets.as.list(data.frame(new_targets)), inputvars=WF2$inputvars, write.yaml = FALSE)
+      ## Preserve outfiles
+      WF2[["output"]] <- WF$stepsWF[[s]]$output
       args <- sysargslist(args)
       args$stepsWF[[WFstep]] <- WF2
       args$targetsWF[[WFstep]] <- as(WF2, "DataFrame")

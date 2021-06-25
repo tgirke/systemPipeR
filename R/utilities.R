@@ -147,7 +147,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       time_status$time_start[i] <- Sys.time()
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
-        if(all(force==FALSE & all(as.logical(completed[[i]][[j]])))) {
+        if(all(force==FALSE && all(as.logical(completed[[i]][[j]])))) {
           cat("The expected output file(s) already exist", file=file_log, fill=TRUE, append=TRUE)
           sample_status[[i]][[args$files$steps[j]]] <- "Success"
           next()
@@ -247,7 +247,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
             }
             
           }
-        } else if(length(output(args.return)[[i]]) ==1){
+        } else if(length(output(args.return)[[i]]) == 1){
           for(j in seq_along(output(args.return)[[i]][[1]])){
             if(file.exists(output(args.return)[[i]][[1]][[j]])){
               name <- strsplit(output(args.return)[[i]][[1]][[j]], split="\\/")[[1]]
@@ -262,6 +262,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       }
       args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
+    ## double check output file
+    
+    
     cat("\n")
     cat(crayon::blue("---- Summary ----"), "\n")
     print(df.status.f)
@@ -302,12 +305,12 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 
 # .tryRunC("ls", "la")
 
-runid="01"
-make_bam=FALSE
-del_sam=TRUE
-dir=TRUE
-dir.name=NULL
-force=FALSE
+# runid="01"
+# make_bam=FALSE
+# del_sam=TRUE
+# dir=TRUE
+# dir.name=NULL
+# force=FALSE
 
 ## Usage:
 # WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder

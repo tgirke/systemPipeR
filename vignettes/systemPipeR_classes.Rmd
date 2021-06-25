@@ -270,7 +270,7 @@ sal[3]
 The `appendStep()` method helps to add a new step in a interactive way.
 
 ```{r}
-appendStep(sal) <- SYSargsList(step_name = "Index", dir = FALSE,
+appendStep(sal, 1) <- SYSargsList(step_name = "Index", dir = FALSE,
                                targets=NULL, 
                                wf_file = "hisat2/hisat2-index.cwl", input_file="hisat2/hisat2-index.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
