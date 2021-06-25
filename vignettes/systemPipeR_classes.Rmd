@@ -71,7 +71,7 @@ container and checking the directory structure:
 
 ```{r SPRproject, eval=TRUE}
 #sal <- SPRproject(projPath = tempdir()) 
-sal <- SPRproject() 
+sal <- SPRproject(overwrite=TRUE) 
 ```
 
 Internally, `SPRproject` function will check and/or create the basic folder
@@ -97,11 +97,11 @@ sal <- SPRproject(logs.dir= "SPRproject", sys.file="SPRproject/SYSargsList.yml")
 
 In this stage, the object `sal` is a empty container, except the project
 information, as the project, data, results and param folder paths, as can be
-access but the `projectWF` accessory method:
+access but the `projectInfo` accessory method:
 
 ```{r}
 sal
-projectWF(sal)
+projectInfo(sal)
 ```
 
 Also, the length function will return how many steps this workflow contains and
@@ -308,23 +308,23 @@ connectivity between the new targets file. Here, the name of the previous
 `outfiles` should be provided it.
 
 ```{r, eval=TRUE}
-appendStep(sal) <- SYSargsList(targets=targetspath,
-                               step_name="Mapping",
-                               wf_file = "hisat2/hisat2-mapping-pe.cwl", 
-                               input_file="hisat2/hisat2-mapping-pe.yml",
-                               dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                               inputvars=c(FileName1="_FASTQ_PATH1_", 
-                                           FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
-                               dependency = c("Quality", "Index"))
 # appendStep(sal) <- SYSargsList(targets=targetspath,
 #                                step_name="Mapping",
-#                                wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl", 
-#                                input_file="workflow-hisat2/workflow_hisat2-pe.yml",
+#                                wf_file = "hisat2/hisat2-mapping-pe.cwl",
+#                                input_file="hisat2/hisat2-mapping-pe.yml",
 #                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-#                                inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_", 
-#                                            trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
-#                                rm_targets_col = c("FileName1", "FileName2"),
+#                                inputvars=c(FileName1="_FASTQ_PATH1_",
+#                                            FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
 #                                dependency = c("Quality", "Index"))
+appendStep(sal) <- SYSargsList(targets="Quality",
+                               step_name="Mapping",
+                               wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
+                               input_file="workflow-hisat2/workflow_hisat2-pe.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+                               inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_",
+                                           trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
+                               #rm_targets_col = c("FileName1", "FileName2"),
+                               dependency = c("Quality", "Index"))
 ```
 
 ### Subset Command Lines
