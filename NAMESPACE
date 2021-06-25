@@ -1,13 +1,51 @@
 ## IMPORTS
-import(rjson, GenomicRanges, GenomicFeatures, SummarizedExperiment, Rsamtools, 
-       Biostrings, ShortRead, ggplot2, limma, edgeR, GOstats, GO.db, annotate,
-       pheatmap, batchtools, methods, VariantAnnotation)
+import(GenomicRanges, GenomicFeatures, Rsamtools, 
+       Biostrings, ShortRead, GOstats, GO.db, VariantAnnotation)
+importFrom("annotate", "Ontology")
+importFrom("annotate", "Term")
 importFrom("assertthat", "assert_that")
 importFrom("assertthat", "is.count")
 importFrom("assertthat", "is.writeable")
 importFrom("assertthat", "not_empty")
-importFrom("crayon", "bgBlue", "bgMagenta")
+importFrom("batchtools", "batchMap")
+importFrom("batchtools", "chunk")
+importFrom("batchtools", "makeRegistry")
+importFrom("batchtools", "submitJobs")
+importFrom("BiocGenerics", "end<-") 
+importFrom("BiocGenerics", "start<-") 
+importFrom("BiocGenerics", "strand<-") 
+importFrom("BiocGenerics", "width") 
+importFrom("BiocGenerics", "width<-") 
+importFrom("crayon", "bgBlue")
+importFrom("crayon", "bgMagenta")
 importFrom("DOT", "dot")
+importFrom("edgeR", "calcNormFactors")
+importFrom("edgeR", "DGEList")
+importFrom("edgeR", "estimateGLMCommonDisp")
+importFrom("edgeR", "estimateGLMTagwiseDisp")
+importFrom("edgeR", "estimateGLMTrendedDisp")
+importFrom("edgeR", "glmFit")
+importFrom("edgeR", "glmLRT")
+importFrom("edgeR", "topTags")
+importFrom("GenomeInfoDb", "seqinfo<-")
+importFrom("GenomeInfoDb", "seqlengths<-")
+importFrom("ggplot2", "aes")
+importFrom("ggplot2", "coord_flip")
+importFrom("ggplot2", "element_text")
+importFrom("ggplot2", "facet_wrap")
+importFrom("ggplot2", "geom_bar")
+importFrom("ggplot2", "geom_boxplot")
+importFrom("ggplot2", "geom_line")
+importFrom("ggplot2", "ggplot")
+importFrom("ggplot2", "ggtitle")
+importFrom("ggplot2", "labs")
+importFrom("ggplot2", "scale_x_discrete")
+importFrom("ggplot2", "scale_y_continuous")
+importFrom("ggplot2", "theme")
+importFrom("ggplot2", "unit")
+importFrom("ggplot2", "xlab")
+importFrom("ggplot2", "ylab")
+importFrom("ggplot2", "ylim")
 importFrom("graphics", "boxplot")
 importFrom("graphics", "close.screen")
 importFrom("graphics", "screen")
@@ -22,9 +60,25 @@ importFrom("grid", "pushViewport")
 importFrom("grid", "viewport")
 importFrom("IRanges", "IRanges")
 importFrom("IRanges", "subsetByOverlaps")
+importFrom("limma", "makeContrasts")
+importFrom("limma", "plotMDS")
 importFrom("magrittr", "%>%")
+importFrom("methods", "as")
+importFrom("methods", "is")
+importFrom("methods", "new")
+importFrom("methods", "show")
+importFrom("methods", "slot")
+importFrom("methods", "slotNames")
+importFrom("pheatmap", "pheatmap")
+importFrom("rjson", "toJSON")
 importFrom("rsvg", "rsvg_png")
 importFrom("rsvg", "rsvg_svg")
+importFrom("S4Vectors", "DataFrame")
+importFrom("S4Vectors", "elementMetadata<-")
+importFrom("S4Vectors", "first")
+importFrom("S4Vectors", "mcols<-")
+importFrom("S4Vectors", "Rle")
+importFrom("S4Vectors", "SimpleList")
 importFrom("stats", "aggregate")
 importFrom("stats", "model.matrix")
 importFrom("stats", "na.omit")
@@ -37,7 +91,13 @@ importFrom("stringr", "str_replace_all")
 importFrom("stringr", "str_replace")
 importFrom("stringr", "str_split")
 importFrom("stringr", "str_which")
-importFrom("S4Vectors", "DataFrame")
+importFrom("SummarizedExperiment", "assay")
+importFrom("SummarizedExperiment", "assayNames")
+importFrom("SummarizedExperiment", "assays")
+importFrom("SummarizedExperiment", "assays<-")
+importFrom("SummarizedExperiment", "metadata<-")
+importFrom("SummarizedExperiment", "rowRanges")
+importFrom("SummarizedExperiment", "SummarizedExperiment")
 importFrom("utils", "capture.output")
 importFrom("utils", "combn")
 importFrom("utils", "packageVersion")
@@ -49,6 +109,7 @@ importFrom("yaml", "as.yaml")
 importFrom("yaml", "read_yaml")
 importFrom("yaml", "write_yaml")
 importFrom("yaml", "yaml.load")
+
 
 ## S4 Classes
 exportClasses(
@@ -70,15 +131,17 @@ exportMethods(
     "setlist", "intersectmatrix", "complexitylevels","vennlist", 
     "intersectlist", "as.list",  
     ## SYSargs2
-    "clt", "cmdlist", "cwlfiles", "input", "inputvars", "output",
+    "clt", "cmdlist", "files", "input", "inputvars", "output",
     "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
-    "yamlinput<-",
+    "status", "yamlinput<-",
     ## SYSargsList
-    "sprconfig", "stepsWF", "statusWF", "dependency",
-    "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "subsetTargets",
+    "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
+    "dependency", "projectInfo", "runInfo", 
+    "sysargslist", "subsetTargets",
     "appendStep<-", "replaceStep<-", "renameStep<-",
     ## LineWise
-    "codeLine", "codeChunkStart", "rmdPath", "linewise", "replaceCodeLine<-", "appendCodeLine<-"
+    "codeLine", "codeChunkStart", "rmdPath", "linewise", 
+    "replaceCodeLine<-", "appendCodeLine<-"
 )
 S3method("+", SYSargsList)
 
