@@ -37,7 +37,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
     WF <- list(modules=modules, wf=wf, clt=cltlist, yamlinput=input, cmdlist=cmdlist,
                input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars,
-               cmdToCwl=list(), status=data.frame())
+               cmdToCwl=list(), status=list())
   } else if(tolower(wf$class) == "commandlinetool") {
     cltlist <- list(wf)
     names(cltlist) <- basename(wf_file)
@@ -47,7 +47,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     cwlfiles$steps <- strsplit(basename(wf_file), ".cwl")[[1]]
     WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist,
                input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars, 
-               cmdToCwl=list(), status=data.frame())
+               cmdToCwl=list(), status=list())
   } else {
     stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
   }
@@ -158,7 +158,9 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
     WF.temp$files["targets"] <- NA
     WF.temp <- c(list(targets=data.frame(), targetsheader=list()), WF.temp)
   }
-  return(as(WF.temp, "SYSargs2"))
+  WF.temp <- as(WF.temp, "SYSargs2")
+ # WF.temp[["status"]] <- .statusPending(WF.temp)
+  return(WF.temp)
 }
 
 ## Usage: 
@@ -209,7 +211,9 @@ renderWF <- function(WF, inputvars=NULL) {
   WF$input <- bucketlist$input
   WF$output <- bucketlist$output
   WF$inputvars <- tmplist$inputvars
-  return(as(WF, "SYSargs2"))
+  WF <- as(WF, "SYSargs2")
+  WF[["status"]] <- .statusPending(WF)
+  return(WF)
 }
 
 ## Usage:
@@ -263,6 +267,8 @@ updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NU
     }
     args <- as(args, "SYSargs2")
     args <- renderWF(args, inputvars=inputvars)
+    ## Update status slot
+    args[["status"]] <- .statusPending(args)
     return(args)
 }
 
@@ -381,11 +387,16 @@ check.output <- function(args, type="data.frame"){
     if(type=="data.frame"){
         targets <- sapply(names(output(args)), function(x) list(NULL))
         for(i in seq_along(output(args))){
+            targets[[i]][['Total']] <- length(unlist(output(args)[[i]]))
             targets[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])))
             targets[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - sum(file.exists(unlist(output(args)[[i]])))
+            #targets[[i]][['Status']] <- ifelse(targets[[i]]$Missing > 0, "Missing", "Completed")
         }
         targets <- data.frame(matrix(unlist(targets), nrow=length(targets), byrow=T))
-        targets <- as.data.frame(cbind(Targets=names(output(args)), Existing_Files = targets$X1, Missing_Files=targets$X2))
+        targets <- as.data.frame(cbind(Targets=names(output(args)),  Total_Files = targets$X1,
+                                       Existing_Files = targets$X2, Missing_Files=targets$X3 #, status=targets$X4
+                                       ))
+        
         return(targets)
     } else if(type=="list"){
         targets <- sapply(names(output(args)), function(x) list(NULL))
