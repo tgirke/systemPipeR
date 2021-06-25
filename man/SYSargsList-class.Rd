@@ -104,7 +104,7 @@ Daniela Cassol and Thomas Girke
 }
 \examples{
 showClass("SYSargsList")
-sal <- SPRproject() 
+sal <- SPRproject(projPath = tempdir())
 targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 appendStep(sal) <- SYSargsList(targets=targetspath, 
                    step_name="Quality",
