@@ -13,12 +13,11 @@ test_that("check_SYSargsList_test", {
                                    inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
     ## Methods
     expect_type(names(sal), "character")
-    expect_type(sprconfig(sal), "list")
     expect_type(length(sal), "integer")
     expect_type(stepsWF(sal), "list")
     expect_type(statusWF(sal), "list")
     expect_type(dependency(sal), "list")
-    expect_type(projectWF(sal), "list")
+    expect_type(projectInfo(sal), "list")
     expect_type(targetsWF(sal), "list")
     expect_type(SEobj(sal), "list")
     expect_type(outfiles(sal), "list")
