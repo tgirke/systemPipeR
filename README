@@ -1,4 +1,16 @@
 changelog
+     version 1.27.6
+     	- SYSargs2 updates:
+     	    - status(): New Method and slot
+     	    - Update show Method
+     	- SYSargsList updates: 
+     	    - Rename slot projectInfo
+     	    - runInfo(): New slot and Method
+     	    - Removed sprconfig method/slot
+     	    - Update statusWF() printing and replacement methods
+     	    - show() method: more details
+     	    - New methods: viewEnv and copyEnv
+
      version 1.27.5
      	- check.output for SYSargsList
      	- New Fct: cmdTool2wf
@@ -15,7 +27,7 @@ changelog
      	- R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
      version 1.27.3
      	- Adding createParamFiles, "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", "updateWF", "SYSargsList" functions
-     	- Adding "cmdToCwl", "baseCommand", "sprconfig", "stepsWF", "statusWF", "dependency", "projectWF", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-", "replaceStep<-", "renameStep<-" methods
+     	- Adding "cmdToCwl", "baseCommand", "sprconfig", "stepsWF", "statusWF", "dependency", "projectInfo", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-", "replaceStep<-", "renameStep<-" methods
      	- Updating SYSargs2 and SYSargsList class
     	- Updating "loadWorkflow", "createWF", "output_update", "write.clt", "write.yml", "SYScreate", "runWF", "initWF"  functions
     	- Adding systemPipeR_CWL.Rmd vignette
@@ -148,7 +160,7 @@ changelog
         
      version 1.21.10
         - Adding new CLASS: "SYSargsList"
-        - Adding new Methods: "codeSteps", "projectWF", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
+        - Adding new Methods: "codeSteps", "projectInfo", "statusWF", "stepsWF", "SYSargs2_steps", "sysargslist", "sysconfig"
         - Adding New functions:[config.param, configWF, initProject, initWF, subsetRmd, SYSprojec]
         - Updating: "SYScreate"
         - Adding new internal functions: ".getPath ", ".getExt ", ".getFileName", ".nest", ".replace", ".sysconfigCheck", ".parse_step"

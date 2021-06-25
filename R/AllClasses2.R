@@ -15,7 +15,7 @@ setClass("SYSargs2", slots = c(
   files = "list",
   inputvars = "list", 
   cmdToCwl = "list", 
-  status = "data.frame"
+  status = "list"
 ))
 ## Methods to return SYSargs2 components
 setGeneric(name = "targets", def = function(x) standardGeneric("targets"))
@@ -125,7 +125,7 @@ setMethod(
         paste0(
           "      wf: ", length(object@wf$steps), 
           ", clt: ", length(object@clt),
-          ", yamlinput: ", length(object@yamlinput), " (components)"
+          ", yamlinput: ", length(object@yamlinput), " (inputs)"
         ),
         paste0(
           "      input: ", length(object@input),
@@ -181,7 +181,7 @@ setMethod(f = "infile2", signature = "SYSargs2", definition = function(x) {
 ## Extend length() method
 setMethod(
   f = "length", signature = "SYSargs2", definition = function(x) {
-    return(length(x@targets))
+    return(length(x@cmdlist))
 })
 
 ## Convert targets data.frame to list
@@ -290,60 +290,65 @@ setReplaceMethod("cmdToCwl", c("SYSargs2"), function(x,..., value) {
 ###################################################
 ## Define SYSargsList class
 setClass("SYSargsList", slots = c(
-  sprconfig = "list",
   stepsWF = "list",
   statusWF = "list",
-  dependency = "list",
-  projectWF = "list",
   targetsWF = "list",
-  SEobj = "list",
   outfiles = "list",
-  targets_connection="list"
+  SEobj = "list",
+  dependency = "list",
+  targets_connection="list",
+  projectInfo = "list",
+  runInfo = "list"
 ))
 
 ## Methods to return SYSargsList components
-setGeneric(name = "sprconfig", def = function(x) standardGeneric("sprconfig"))
-setMethod(f = "sprconfig", signature = "SYSargsList", definition = function(x) {
-  return(x@sprconfig)
-})
 setGeneric(name = "stepsWF", def = function(x) standardGeneric("stepsWF"))
 setMethod(f = "stepsWF", signature = "SYSargsList", definition = function(x) {
     return(x@stepsWF)
 })
 setGeneric(name = "statusWF", def = function(x) standardGeneric("statusWF"))
 setMethod(f = "statusWF", signature = "SYSargsList", definition = function(x) {
-  return(x@statusWF)
-})
-setGeneric(name = "dependency", def = function(x) standardGeneric("dependency"))
-setMethod(f = "dependency", signature = "SYSargsList", definition = function(x) {
-  return(x@dependency)
-})
-setGeneric(name = "projectWF", def = function(x) standardGeneric("projectWF"))
-setMethod(f = "projectWF", signature = "SYSargsList", definition = function(x) {
-  return(x@projectWF)
+  return(lapply(lapply(x@statusWF, "[[", 2), function(y) S4Vectors::DataFrame(y, check.names=FALSE)))
+  #return(x@statusWF)
 })
 setGeneric(name = "targetsWF", def = function(x) standardGeneric("targetsWF"))
 setMethod(f = "targetsWF", signature = "SYSargsList", definition = function(x) {
   return(x@targetsWF)
 })
-setGeneric(name = "SEobj", def = function(x) standardGeneric("SEobj"))
-setMethod(f = "SEobj", signature = "SYSargsList", definition = function(x) {
-  return(x@SEobj)
-})
 setGeneric(name = "outfiles", def = function(x) standardGeneric("outfiles"))
 setMethod(f = "outfiles", signature = "SYSargsList", definition = function(x) {
   return(x@outfiles)
 })
-
+setGeneric(name = "SEobj", def = function(x) standardGeneric("SEobj"))
+setMethod(f = "SEobj", signature = "SYSargsList", definition = function(x) {
+  return(x@SEobj)
+})
+setGeneric(name = "dependency", def = function(x) standardGeneric("dependency"))
+setMethod(f = "dependency", signature = "SYSargsList", definition = function(x) {
+  return(x@dependency)
+})
+setGeneric(name = "projectInfo", def = function(x) standardGeneric("projectInfo"))
+setMethod(f = "projectInfo", signature = "SYSargsList", definition = function(x) {
+  return(x@projectInfo)
+})
+setGeneric(name = "runInfo", def = function(x) standardGeneric("runInfo"))
+setMethod(f = "runInfo", signature = "SYSargsList", definition = function(x) {
+  return(x@runInfo)
+})
 
 ## Coerce back to list: as(SYSargsList, "list")
 setGeneric(name = "sysargslist", def = function(x) standardGeneric("sysargslist"))
 setMethod(f = "sysargslist", signature = "SYSargsList", definition = function(x) {
-  sysargslist <- list(sprconfig = x@sprconfig, stepsWF = x@stepsWF,
-                      statusWF = x@statusWF, dependency = x@dependency,
-                      projectWF = x@projectWF, targetsWF = x@targetsWF, SEobj = x@SEobj,
-                      outfiles = x@outfiles, targets_connection = x@targets_connection
-  )
+  sysargslist <- list(stepsWF = x@stepsWF,
+                      statusWF = x@statusWF, 
+                      targetsWF = x@targetsWF,
+                      outfiles = x@outfiles,
+                      SEobj = x@SEobj,
+                      dependency = x@dependency,
+                      targets_connection = x@targets_connection,
+                      projectInfo = x@projectInfo,
+                      runInfo = x@runInfo
+                      )
   return(sysargslist)
 })
 
@@ -352,12 +357,17 @@ setMethod(f = "sysargslist", signature = "SYSargsList", definition = function(x)
 setAs(from = "list", to = "SYSargsList",
       def = function(from) {
         new("SYSargsList",
-            sprconfig = from$sprconfig, stepsWF = from$stepsWF,
-            statusWF = from$statusWF, dependency = from$dependency, projectWF = from$projectWF,
-            targetsWF = from$targetsWF, SEobj = from$SEobj, outfiles = from$outfiles,
-            targets_connection = from$targets_connection
+            stepsWF = from$stepsWF,
+            statusWF = from$statusWF, 
+            targetsWF = from$targetsWF,
+            outfiles = from$outfiles,
+            SEobj = from$SEobj,
+            dependency = from$dependency, 
+            targets_connection = from$targets_connection,
+            projectInfo = from$projectInfo,
+            runInfo = from$runInfo
         )
-      })
+})
 
 ## SYSargsList to list with: as("SYSargsList", list)
 setAs(from = "SYSargsList", to = "list",
@@ -370,12 +380,7 @@ setAs(from = "SYSargsList", to = "list",
 setMethod(f = "show", signature = "SYSargsList",
           definition = function(object) {
             if(length(object)>0){
-              status_1 <- as.character()
-              for(i in seq_along(object@stepsWF)){
-                status_1 <- c(status_1, paste0(
-                  "      ", i, ". ", names(object@stepsWF)[i],
-                  " (Status: ", object@statusWF[[i]]$status, ")", sep="\n"))
-              }
+              status_1 <- .showHelper(object)
               status <- append("   WF Steps:\n", status_1)
             } else {
               status <- "No workflow steps added"
@@ -383,6 +388,41 @@ setMethod(f = "show", signature = "SYSargsList",
             cat(crayon::blue$bold(paste0("Instance of '", class(object), "':")), "\n",
                 status, "\n")
           })
+
+.showHelper <- function(object){
+  status_1 <- as.character()
+  for (i in seq_along(object@stepsWF)) {
+      if(inherits(object@stepsWF[[i]], "SYSargs2")){
+          status_1 <- c(
+              status_1,
+              c(
+                  paste0("      ", i, ". ", crayon::blue(names(object@stepsWF)[i], "--> Status:", object@statusWF[[i]]$status.summary), sep = ""), "\n",
+                  paste0(c("          Total Files: ", "Existing: ", "Missing: "), colSums(object@statusWF[[i]][[2]][2:4]), collapse = " | "), "\n",
+                  paste0(
+                      # "         Sub Steps:", "\n",
+                      paste0(
+                          "        ", i, ".", seq_along(object@stepsWF[[i]]@clt), ". ", crayon::green(object@stepsWF[[i]]@files$steps)
+                      ), "\n",
+                      paste0("             cmdlist: ", length(object@stepsWF[[i]]), " | "),
+                      sapply(as.list(object@stepsWF[[i]]@files$steps), function(x) {
+                          paste0(
+                              paste0(names(table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]@files$steps][x]))), ": ",
+                                     table(unlist(object@statusWF[[i]][[2]][object@stepsWF[[i]]@files$steps][x])),
+                                     collapse = " | "
+                              )
+                          )
+                      }),
+                      "\n"
+                  )
+              )
+          )
+      } else if(inherits(object@stepsWF[[i]], "LineWise")){
+          status_1 <- c(status_1,
+                        paste0("      ", i, ". ", crayon::blue(names(object@stepsWF)[i], "--> Status:", object@statusWF[[i]]$status.summary), "\n"))
+  }
+  }
+  return(status_1)
+}
 
 ## Extend names() method
 setMethod(f = "names", signature = "SYSargsList",
@@ -418,16 +458,18 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   }
   x@stepsWF <- x@stepsWF[i]
   x@statusWF <- x@statusWF[i]
-  x@dependency <- x@dependency[i]
   x@targetsWF <- x@targetsWF[i]
-  x@SEobj <- x@SEobj[i]
   x@outfiles <- x@outfiles[i]
+  x@SEobj <- x@SEobj[i]
+  x@dependency <- x@dependency[i]
   x@targets_connection <- x@targets_connection[i]
+  x@projectInfo <- x@projectInfo
+  x@runInfo <- x@runInfo[i]
   x <- .check_write_SYSargsList(x)
   return(x)
 })
 
-## Behavior of "subsetTargets" operator for SYSargsList
+## Behavior of "subsetTargets" method for SYSargsList
 setGeneric(name = "subsetTargets", def = function(x, input_sample) standardGeneric("subsetTargets"))
 setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(x, input_sample) {
   if(missing(input_sample)){
@@ -462,15 +504,34 @@ setMethod(f = "[[", signature = c("SYSargsList", "ANY", "missing"), definition =
             return(as(x, "list")[[i]])
 })
 
-
-
 ## Behavior of "$" operator for SYSargsList
 setMethod("$", signature = "SYSargsList",
           definition = function(x, name) {
             slot(x, name)
           })
 
+## viewEnv() methods for SYSargslist
+setGeneric(name = "viewEnv", def = function(x) standardGeneric("viewEnv"))
+setMethod(f = "viewEnv", signature = "SYSargsList", definition = function(x) {
+    return(ls(x@runInfo$env))
+})
 
+## copyEnv() methods for SYSargslist
+setGeneric(name = "copyEnv", def = function(x, list="all") standardGeneric("copyEnv"))
+setMethod(f = "copyEnv", signature = "SYSargsList", definition = function(x, list="all") {
+  envir <- x@runInfo$env
+  if(list=="all"){
+    list <- ls(envir, all.names=TRUE)
+  } else {
+    list <- list
+  }
+  for(l in list) {
+    assign(l, get(l, envir), globalenv())
+  }
+  cat(paste0("Copying to 'globalenv()': ", "\n", paste0(list, collapse = ", ")))
+})
+
+## cmdlist method for SYSargslist
 setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, input=NULL) {
   cmd <- sapply(names(x$stepsWF), function(x) list(NULL))
   for(i in seq_along(x)){
@@ -504,31 +565,28 @@ setReplaceMethod("yamlinput", c("SYSargsList"), function(x, paramName, value) {
 
 ## Replacement method for SYSargsList using "[[" operator
 setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, j, value) {
-  if (i == 1) x@sprconfig <- value
-  if (i == 2) x@stepsWF <- value
-  if (i == 3) x@statusWF <- value
-  if (i == 4) x@dependency <- value
-  if (i == 5) x@projectWF <- value
-  if (i == 6) x@targetsWF <- value
-  if (i == 7) x@SEobj <- value
-  if (i == "sprconfig") x@sprconfig <- value
+  if (i == 1) x@stepsWF <- value
+  if (i == 2) x@statusWF <- value
+  if (i == 3) x@targetsWF <- value
+  if (i == 4) x@outfiles <- value
+  if (i == 5) x@SEobj <- value
+  if (i == 6) x@dependency <- value
+  if (i == 7) x@targets_connection <- value
+  if (i == 8) x@projectInfo <- value
+  if (i == 9) x@runInfo <- value
   if (i == "stepsWF") x@stepsWF <- value
   if (i == "statusWF") x@statusWF <- value  
-  if (i == "dependency") x@dependency <- value 
-  if (i == "projectWF") x@projectWF <- value
   if (i == "targetsWF") x@targetsWF <- value
+  if (i == "outfiles") x@outfiles <- value
   if (i == "SEobj") x@SEobj <- value
+  if (i == "dependency") x@dependency <- value 
+  if (i == "targets_connection") x@targets_connection <- value
+  if (i == "projectInfo") x@projectInfo <- value
+  if (i == "runInfo") x@runInfo <- value
   return(x)
 })
 
 ## Replacement method
-
-setGeneric(name="sprconfig<-", def=function(x, ..., value) standardGeneric("sprconfig<-"))
-setReplaceMethod("sprconfig", c("SYSargsList"), function(x,..., value) {
-  x@sprconfig <- value
-  x <- .check_write_SYSargsList(x)
-  x
-})
 
 setGeneric(name="appendStep<-", def=function(x, after=length(x), ..., value) standardGeneric("appendStep<-"))
 setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..., value) {
@@ -544,21 +602,21 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     if (!after) {
       x$stepsWF <- c(value$stepsWF, x$stepsWF)
       x$targetsWF <- c(targetsWF(value), x$targetsWF)
-      x$statusWF <- c(statusWF(value), x$statusWF)
+      x$statusWF <- c(value$statusWF, x$statusWF)
       x$dependency <- c(dependency(value), x$dependency)
       x$outfiles <- c(outfiles(value), x$outfiles)
       x$targets_connection <- c(value$targets_connection, x$targets_connection)
     } else if (after >= lengx) {
       x$stepsWF <- c(x$stepsWF, value$stepsWF)
       x$targetsWF <- c(x$targetsWF, targetsWF(value))
-      x$statusWF <- c(x$statusWF, statusWF(value))
+      x$statusWF <- c(x$statusWF, value$statusWF)
       x$dependency <- c(x$dependency, dependency(value))
       x$outfiles <- c(x$outfiles, outfiles(value))
       x$targets_connection <- c(x$targets_connection, value$targets_connection)
     } else {
       x$stepsWF <- c(x$stepsWF[1L:after], value$stepsWF, x$stepsWF[(after + 1L):lengx])
       x$targetsWF <- c(x$targetsWF[1L:after], targetsWF(value), x$targetsWF[(after + 1L):lengx])
-      x$statusWF <- c(x$statusWF[1L:after], statusWF(value), x$statusWF[(after + 1L):lengx])
+      x$statusWF <- c(x$statusWF[1L:after], value$statusWF, x$statusWF[(after + 1L):lengx])
       x$dependency <- c(x$dependency[1L:after], dependency(value), x$dependency[(after + 1L):lengx])
       x$outfiles <- c(x$outfiles[1L:after], outfiles(value), x$outfiles[(after + 1L):lengx])
       x$targets_connection <- c(x$targets_connection[1L:after], value$targets_connection, x$targets_connection[(after + 1L):lengx])
@@ -604,7 +662,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 
 .check_write_SYSargsList <- function(x){
   if(!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'.")
-  sys.file <- projectWF(x)$sysargslist
+  sys.file <- projectInfo(x)$sysargslist
   if(is.null(sys.file)){
     if (interactive()) {
       init <- readline(cat(
@@ -618,19 +676,18 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     }
     if (init == "1") {
       init <- SPRproject()
-      x[["projectWF"]] <- init$projectWF
-      x[["sprconfig"]] <- init$sprconfig
-      sys.file <- projectWF(x)$sysargslist
-      write_SYSargsList(x, sys.file, silent=FALSE)
+      x[["projectInfo"]] <- init$projectInfo
+      sys.file <- projectInfo(x)$sysargslist
+      write_SYSargsList(x, sys.file, silent=TRUE)
       return(x)
     } else if (init == "2") {
-     #message("Please, for more details, check help(SRRproject)")
+     print("For more details, check help(SRRproject)")
       return(x)
     } else if (init == "3") {
       stop("Quiting...")
     }
   } else if(!is.null(sys.file)){
-    sys.file <- projectWF(x)$sysargslist
+    sys.file <- projectInfo(x)$sysargslist
     write_SYSargsList(x, sys.file, silent=TRUE)
     return(x)
   }
@@ -639,18 +696,19 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 
 .validationStepConn <- function(x, value){
   if(length(value)>1) stop("One step can be appended in each operation.")
-  if (!is.null(value$targets_connection[[1]])){
-    step <- value$targets_connection[[1]]
-    targets_name <- paste(colnames(targetsWF(x)[step][[1]]),collapse="|")
-    new_targets_col <- value$targets_connection[[2]][-c(which(grepl(targets_name, value$targets_connection[[2]])))]
+  targesCon <- sapply(value$targets_connection, "[", 1)
+  if (!is.null(targesCon[[1]])){
+    step <- targesCon[1][[1]]
+    targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
+    new_targets_col <- targesCon[2][[1]][-c(which(grepl(targets_name, targesCon[2][[1]])))]
     if(!step %in% names(stepsWF(x))) stop(paste0("'targets' argument needs to be assigned as valid targets file OR the names of a previous step, for example: ", "\n",
                                                  paste0(names(stepsWF(x)), collapse = " OR ")))
     if(all(!new_targets_col %in% colnames(x$outfiles[[1]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                          paste0(colnames(x$outfiles[[1]]), collapse = " OR \n")))
-    if(is.null(value$targets_connection$rm_targets_col)){
+    if(is.null(targesCon[3][[1]])){
       old_targets <- x$targetsWF[[step]]
     } else {
-      old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(value$targets_connection[[3]], collapse="|"), colnames(x$targetsWF[[step]]))))]
+      old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[3][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
     }
     new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
     WF <- value$stepsWF[[1]]
@@ -661,14 +719,14 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     value$stepsWF[[1]] <- WF2
     value$targetsWF[[1]] <- as(WF2, "DataFrame")
     value$outfiles[[1]] <- output.as.df(WF2)
+    value$statusWF[[1]] <- WF2$status
     value <- as(value, "SYSargsList")
-  } else if (is.null(value$targets_connection[[1]])){
-    value <- sysargslist(value)
-    value$targets_connection <- list(NULL)
-    names(value$targets_connection) <- names(value$stepsWF)
-    value <- as(value, "SYSargsList")
-  }
-  
+  } #else if (is.null(targesCon[[1]])){
+  #   value <- sysargslist(value)
+  #   value$targets_connection <- list(NULL)
+  #   names(value$targets_connection) <- names(value$stepsWF)
+  #   value <- as(value, "SYSargsList")
+  # }
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){
@@ -753,7 +811,7 @@ setGeneric(name="stepsWF<-", def=function(x, step, ..., value) standardGeneric("
 setReplaceMethod("stepsWF", c("SYSargsList"), function(x, step, ..., value) {
     x@stepsWF[[step]] <- value
     x <- .check_write_SYSargsList(x)
-  x
+    x
 })
 
 setGeneric(name="renameStep<-", def=function(x, step, ..., value) standardGeneric("renameStep<-"))
@@ -770,7 +828,7 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
   }  else {
     stop("Replace value needs to be assigned an 'character' name for the workflow step.")
   }
-  if(!is.null(x$projectWF$sysargslist)){
+  if(!is.null(x$projectInfo$sysargslist)){
     x <- .check_write_SYSargsList(x)
   }
   x
@@ -778,11 +836,7 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
 
 setGeneric(name="statusWF<-", def=function(x, step, ..., value) standardGeneric("statusWF<-"))
 setReplaceMethod("statusWF", c("SYSargsList"), function(x, step, ..., value) {
-  if(inherits(value, "character")){
-    x@statusWF[[step]][["status"]] <- value
-  } else if(inherits(value, "data.frame")){
-    x@statusWF[[step]][["Details"]] <- value
-  }
-  x <- .check_write_SYSargsList(x)
-  x
+    x@statusWF[[step]] <- value
+    x <- .check_write_SYSargsList(x)
+    x
 })
