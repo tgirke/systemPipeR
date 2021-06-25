@@ -2,6 +2,7 @@ changelog
      version 1.27.7
      	- Added option to dir=T/F for each step
      	- Fixed bugs to save and restart SYSargsList object
+     	- Added colors to status show method
         
      version 1.27.6
      	- SYSargs2 updates:

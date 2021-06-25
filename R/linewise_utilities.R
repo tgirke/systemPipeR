@@ -52,6 +52,8 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
             sal$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
             sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
             sal$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
+            sal$targets_connection[[df$step_name[i]]] <- list()
+            sal$runInfo[["directory"]][[df$step_name[i]]] <- list()
         }
     }
     return(as(sal, "SYSargsList"))
