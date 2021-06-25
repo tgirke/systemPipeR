@@ -464,7 +464,7 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   x@dependency <- x@dependency[i]
   x@targets_connection <- x@targets_connection[i]
   x@projectInfo <- x@projectInfo
-  x@runInfo <- x@runInfo$directory[i]
+  x@runInfo$directory <- x@runInfo$directory[i]
   x <- .check_write_SYSargsList(x)
   return(x)
 })

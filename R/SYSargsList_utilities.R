@@ -57,7 +57,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
   dirProject <- c(dirProject, logsDir=logs.dir, sysargslist=normalizePath(sys.file))
   init <- as(SYScreate("SYSargsList"), "list")
   init$projectInfo <- dirProject
-  init$runInfo <- list(env=envir, directory=list(NA))
+  init$runInfo <- list(env=envir)
   init <- as(init, "SYSargsList")
   write_SYSargsList(init, sys.file, silent=silent)
   return(init)
@@ -81,7 +81,7 @@ write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", sile
   yaml_slots <- c("runInfo")
   for(i in yaml_slots){
     for(j in steps){
-    args_comp[[i]] <- yaml::as.yaml(args2[[i]][[j]]$directory)
+    args_comp[[i]] <- yaml::as.yaml(args2[[i]]$directory[[j]])
     }
   }
  ## Simple yaml slots
