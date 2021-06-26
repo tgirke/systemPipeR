@@ -35,25 +35,25 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
         if(df$spr[i]=="r"){
             line_obj <- LineWise(df$code[i], codeChunkStart=df$start[i], file_path)
             sal$stepsWF[[df$step_name[i]]] <- line_obj
-            sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal$statusWF[[df$step_name[i]]] <- list(status.summary="Pending",
-                                                         status.completed = data.frame(Step=df$step_name[i], status.summary="Pending") , 
-                                                         status.time=data.frame())
+                                                    status.completed = data.frame(Step=df$step_name[i], status.summary="Pending") , 
+                                                    status.time=data.frame())
             sal$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
             sal$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
-            sal$targets_connection[[df$step_name[i]]] <- list()
-            sal$runInfo[["directory"]][[df$step_name[i]]] <- list()
+            sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
+            sal$targets_connection[df$step_name[i]] <- list(NULL)
+            sal$runInfo[["directory"]][df$step_name[i]] <- list(NULL)
         } else if(df$spr[i]=="sysargs"){
             args <- eval(parse(text =df$code[i]), envir = globalenv())
             # suppressMessages(
             # args <- eval(parse(text=df$code[i])))
             sal$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
-            sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
-            sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
             sal$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
-            sal$targets_connection[[df$step_name[i]]] <- list()
-            sal$runInfo[["directory"]][[df$step_name[i]]] <- list()
+            sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
+            sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
+            sal$targets_connection[df$step_name[i]] <- args$targets_connection
+            sal$runInfo[["directory"]][df$step_name[i]] <- args$runInfo
         }
     }
     return(as(sal, "SYSargsList"))

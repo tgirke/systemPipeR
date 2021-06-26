@@ -375,7 +375,8 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 ## .checkOutArgs2 function: internal function to check 
 ## if the expectedoutput has been created  ##
 ########################################################
-.checkOutArgs2 <- function(args, make_bam, dir, dir.name){
+.checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name){
+  print(dir)
   suppressWarnings({
     if(dir==TRUE){
       if(!is.null(dir.name)){

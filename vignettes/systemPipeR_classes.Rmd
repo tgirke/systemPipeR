@@ -317,7 +317,7 @@ connectivity between the new targets file. Here, the name of the previous
 #                                            FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
 #                                dependency = c("Quality", "Index"))
 appendStep(sal) <- SYSargsList(targets="Quality",
-                               step_name="Mapping",
+                               step_name="Mapping", dir=TRUE, 
                                wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
                                input_file="workflow-hisat2/workflow_hisat2-pe.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
