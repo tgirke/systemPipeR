@@ -48,17 +48,6 @@ bfl <- BamFileList(outpaths(args_bam), yieldSize=50000, index=character())
 
 \dontrun{
 ##########################################
-## Examples with \code{SYSargs} object ##
-##########################################
-## Construct SYSargs object 
-## SYSargs with paths to range data and count files
-args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.txt")
-
-## Iterative read counting
-countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
-writeTargetsout(x=args, file="targets_countDF.txt", overwrite=TRUE)
-
-##########################################
 ## Examples with \code{SYSargs2} object ##
 ##########################################
 ## Construct SYSargs2 object 
@@ -70,6 +59,17 @@ args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_
 
 ## Iterative read counting
 countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
+
+##########################################
+## Examples with \code{SYSargs} object ##
+##########################################
+## Construct SYSargs object 
+## SYSargs with paths to range data and count files
+args <- systemArgs(sysma="param/count_rangesets.param", mytargets="targets_macs.txt")
+
+## Iterative read counting
+countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
+writeTargetsout(x=args, file="targets_countDF.txt", overwrite=TRUE)
 }
 }
 \keyword{ utilities }

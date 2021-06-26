@@ -1,7 +1,6 @@
 ## It will check the VENNset class and methods
 library(systemPipeR)
 skip_on_bioc()
-skip_on_ci()
 setwd(file.path(tempdir(), "rnaseq"))
 
 test_that("check_features", {

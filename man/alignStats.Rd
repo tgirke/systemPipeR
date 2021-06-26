@@ -36,22 +36,21 @@ Thomas Girke
 ## Examples with \code{SYSargs2} object ##
 ##########################################
 ## Construct SYSargs2 object from CWl param, CWL input, and targets files 
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 dir_path <- system.file("extdata/cwl", package="systemPipeR")
-WF <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+WF <- loadWorkflow(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl", 
                   input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
 WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 WF
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 
 names(WF); modules(WF); targets(WF)[1]; cmdlist(WF)[1:2]; output(WF)
 
 \dontrun{
 ## Execute SYSargs2 on single machine
-WF <- runCommandline(args=WF)
+WF <- runCommandline(args=WF, make_bam=TRUE)
 
 ## Alignment stats
-read_statsDF <- alignStats(WF) 
+read_statsDF <- alignStats(WF, subset="FileName") 
 write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 }
 
@@ -59,7 +58,7 @@ write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE
 ## Examples with \code{SYSargs} object ##
 #########################################
 ## Construct SYSargs object from param and targets files 
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
+param <- system.file("extdata", "hisat2.param", package="systemPipeR")
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 args <- systemArgs(sysma=param, mytargets=targets)
 args
