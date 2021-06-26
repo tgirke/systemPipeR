@@ -852,7 +852,9 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
     names(x@outfiles)[step] <- value
     #names(x@SEobj)[step] <- value
     names(x@targets_connection)[step] <- value
-    names(x@runInfo$directory)[step] <- value
+    if(!is.null(x$runInfo$directory)){
+      names(x@runInfo$directory)[step] <- value
+    }
   }  else {
     stop("Replace value needs to be assigned an 'character' name for the workflow step.")
   }
