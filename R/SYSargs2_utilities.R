@@ -223,7 +223,7 @@ renderWF <- function(WF, inputvars=NULL) {
 ## Update  WF container for all samples in targets slot  ##
 ###############################################################
 updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
-                     inputvars=NULL, silent=FALSE){
+                     new_targetsheader=list(), inputvars=NULL, silent=FALSE){
     if(!inherits(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
     args <- sysargs2(args)
     if(is.null(inputvars)){
@@ -241,8 +241,10 @@ updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NU
     } else if (length(args$cmdToCwl)==0){
         if(!is.null(new_targets)){
             args$targets <- new_targets
+            args$targetsheader <- new_targetsheader
         } else{
             args$targets <- args$targets
+            args$targetsheader <- args$new_targetsheader
         }
         args$yamlinput <- args$yamlinput
         args$clt <- args$clt

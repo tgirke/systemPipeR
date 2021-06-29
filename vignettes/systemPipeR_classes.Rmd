@@ -60,11 +60,14 @@ provided by the parameter (*.cwl*) files described below.
 
 # How to design a Workflow?
 
-## Project Initialization
+- Interactive design
+- Using R Markdown
 
-### Directory Structure
+## Directory Structure
 
 # Interactive Workflow
+
+## Project Initialization
 
 To create a Workflow within `systemPipeR`, we can start by defining an empty
 container and checking the directory structure:
@@ -149,125 +152,7 @@ appendStep(sal) <- SYSargsList(targets=targetspath,
                    inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
--   Append Step in the specific order
-
-```{r}
-appendStep(sal, after=0) <- SYSargsList(targets=targetspath, 
-                                        step_name="Quality2",
-                                        wf_file = "trimmomatic/trimmomatic-pe.cwl", input_file = "trimmomatic/trimmomatic-pe.yml",
-                                        dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                                        inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
-```
-
-### Accessing the details
-
-Let's explore our object:
-
--   Accessor Methods:
-
-Several accessor methods are available that are named after the slot names of
-the `SYSargsList` object.
-
-```{r}
-names(sal)
-```
-
--   Check the length of the `sal` object:
-
-```{r}
-length(sal)
-```
-
--   The `SYSargsList` class and its subsetting operator `[`:
-
-```{r}
-sal[1]
-stepsWF(sal)$Quality
-```
-
-- The `SYSargsList` class and its subsetting input samples: 
-
-```{r}
-sal_sub <- subsetTargets(sal[1], 1:3)
-stepsWF(sal_sub)
-targetsWF(sal_sub)
-outfiles(sal_sub)
-```
-
-- The `SYSargsList` class and its operator `+`:
-
-```{r, eval=FALSE}
-sal[1] + sal[2]
-```
-
-- Checking the expected output files:
-
-The `outfiles` components of `SYSargsList` define the expected output files for
-each step in the workflow; some of which are the input for the next workflow
-step.
-
-```{r}
-##outfiles slot
-outfiles(sal)
-```
-
-- Checking the input files by the `targetsWF()`:
-
-```{r}
-targetsWF(sal)
-```
-
-- Checking the command-line for each sample:
-
-`cmdlist()` method constructs the system commands for running command-line
-software as specified by a given `.cwl` file combined with the paths to the
-input samples (e.g. FASTQ files) provided by a `targets` file. The example below
-shows the `cmdlist()` output for running Trimmomatic on the first PE read
-sample. Evaluating the output of `cmdlist()` can be very helpful for designing
-and debugging `.cwl` files of new command-line software or changing the
-parameter settings of existing ones.
-
-```{r}
-sal[1]
-cmdlist(sal[1], 1:2)
-```
-
--   Rename a Step
-
-```{r}
-renameStep(sal, 1) <- "newStep"
-renameStep(sal, c(1, 2)) <- c("newStep", "new")
-sal
-names(outfiles(sal[1:2]))
-names(targetsWF(sal[1:2]))
-```
-
--   Replace a Step
-
-```{r}
-replaceStep(sal, 1) <- sal[2]
-replaceStep(sal, 1, step_name="Quality") <- sal[2]
-sal
-```
-
-- Removing a Step
-
-```{r}
-sal <- sal[-2]
-sal
-```
-
-### Internal
-
-- out of bounds
-
-```{r, eval=FALSE}
-sal[3]
-```
-
-## Adding more Steps
-
-The `appendStep()` method helps to add a new step in a interactive way.
+- Adding a second step:
 
 ```{r}
 appendStep(sal, 1) <- SYSargsList(step_name = "Index", dir = FALSE,
@@ -277,13 +162,6 @@ appendStep(sal, 1) <- SYSargsList(step_name = "Index", dir = FALSE,
                                dependency=NULL)
 cmdlist(sal[2])
 ```
-
-```{r, eval=FALSE}
-subsetTargets(sal[1], 1:5) ## TODO:error message
-```
-
-Important: The number of the samples in which step subset needs to be equal, otherwise, 
-we will have an error. 
 
 ### Use the output files for the next step
 
@@ -308,16 +186,8 @@ connectivity between the new targets file. Here, the name of the previous
 `outfiles` should be provided it.
 
 ```{r, eval=TRUE}
-# appendStep(sal) <- SYSargsList(targets=targetspath,
-#                                step_name="Mapping",
-#                                wf_file = "hisat2/hisat2-mapping-pe.cwl",
-#                                input_file="hisat2/hisat2-mapping-pe.yml",
-#                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-#                                inputvars=c(FileName1="_FASTQ_PATH1_",
-#                                            FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"),
-#                                dependency = c("Quality", "Index"))
 appendStep(sal) <- SYSargsList(targets="Quality",
-                               step_name="Mapping", dir=TRUE, 
+                               step_name="Mapping", dir=FALSE, 
                                wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
                                input_file="workflow-hisat2/workflow_hisat2-pe.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
@@ -326,6 +196,133 @@ appendStep(sal) <- SYSargsList(targets="Quality",
                                rm_targets_col = c("FileName1", "FileName2"),
                                dependency = c("Quality", "Index"))
 ```
+
+## Accessing the details
+
+Let's explore our object:
+
+- Accessor Methods:
+
+Several accessor methods are available that are named after the slot names of
+the `SYSargsList` object.
+
+```{r}
+names(sal)
+```
+
+- Check the length of the `sal` object:
+
+```{r}
+length(sal)
+```
+
+- Check the steps of the `sal` object:
+
+```{r}
+stepsWF(sal)
+```
+
+- Checking the command-line for each sample:
+
+`cmdlist()` method constructs the system commands for running command-line
+software as specified by a given `.cwl` file combined with the paths to the
+input samples (e.g. FASTQ files) provided by a `targets` file. The example below
+shows the `cmdlist()` output for running Trimmomatic on the first PE read
+sample. Evaluating the output of `cmdlist()` can be very helpful for designing
+and debugging `.cwl` files of new command-line software or changing the
+parameter settings of existing ones.
+
+```{r}
+sal[1]
+cmdlist(sal[1], 1:2)
+```
+
+- Check the status of the `sal` object:
+
+```{r}
+statusWF(sal)
+```
+
+- Check the targets of the `sal` object:
+
+```{r}
+targetsWF(sal)
+```
+
+- Checking the expected output files:
+
+The `outfiles` components of `SYSargsList` define the expected output files for
+each step in the workflow; some of which are the input for the next workflow
+step.
+
+```{r}
+##outfiles slot
+outfiles(sal)
+```
+
+- The `SYSargsList` class and its subsetting operator `[`:
+
+```{r}
+sal[1]
+sal[1:3]
+sal[c(1,3)]
+```
+
+- The `SYSargsList` class and its subsetting input samples: 
+
+```{r}
+sal_sub <- subsetTargets(sal[1], 1:3)
+stepsWF(sal_sub)
+targetsWF(sal_sub)
+outfiles(sal_sub)
+```
+
+- The `SYSargsList` class and its operator `+`:
+
+```{r, eval=FALSE}
+sal[1] + sal[2] + sal[3]
+```
+
+- Rename a Step
+
+```{r}
+renameStep(sal, 1) <- "newStep"
+renameStep(sal, c(1, 2)) <- c("newStep", "new")
+sal
+names(outfiles(sal[1:2]))
+names(targetsWF(sal[1:2]))
+```
+
+- Replace a Step
+
+```{r}
+sal_test <- sal
+replaceStep(sal_test, 1) <- sal[2]
+replaceStep(sal_test, 1, step_name="Quality") <- sal[2]
+# sal_test
+```
+
+- Removing a Step
+
+```{r}
+sal <- sal[-2]
+sal
+```
+
+### Internal
+
+- out of bounds
+
+```{r, eval=FALSE}
+sal[3]
+```
+
+```{r, eval=FALSE}
+subsetTargets(sal[1], 1:5) ## TODO:error message
+```
+
+Important: The number of the samples in which step subset needs to be equal, otherwise, 
+we will have an error. 
 
 ### Subset Command Lines
 

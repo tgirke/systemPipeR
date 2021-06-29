@@ -501,6 +501,55 @@ setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(
   x
 })
 
+setMethod("SampleName", signature = "SYSargsList", definition = function(x, step) {
+  ## Check steps
+  if(inherits(step, "numeric")){
+    if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
+  } else if(inherits(step, "character")){
+    if(!step %in% stepsNames(x)) stop("We can not find this step in the Workflow")
+  }
+  if(!is.null(targetsWF(x)[[step]]$SampleName)){
+    return(targetsWF(x)[[step]]$SampleName)
+  } else if(is.null(targetsWF(x)[[step]]$SampleName)){
+    message("This step doesn't contain multiple samples.")
+  }
+})
+
+setGeneric(name = "stepsNames", def = function(x) standardGeneric("stepsNames"))
+setMethod("stepsNames", signature = "SYSargsList", definition = function(x) {
+    return(names(stepsWF(x)))
+})
+
+setGeneric(name = "subsetOutfiles", def = function(x, step, column=1, names=SampleName(x, step)) standardGeneric("subsetOutfiles"))
+setMethod("subsetOutfiles", signature = "SYSargsList", definition = function(x, step, column=1, names=SampleName(x, step)) {
+  ## Check steps
+  if(inherits(step, "numeric")){
+    if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
+  } else if(inherits(step, "character")){
+    if(!step %in% stepsNames(x)) stop("We can not find this step in the Workflow")
+  }
+  ## Check column
+  if(inherits(column, "numeric")){
+    if(!column %in% 1:ncol(outfiles(x)[[step]])) stop("We can not find this step in the Workflow")
+  } else if(inherits(column, "character")){
+    if(!column %in% colnames(outfiles(x)[[step]])) stop("We can not find this step in the Workflow")
+  }
+  ## Check names
+  if(!length(names) ==  length(outfiles(x)[[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+  ## 
+  if(!is.null(outfiles(x)[[step]][[column]])){
+    subset <- outfiles(x)[[step]][[column]]
+    names(subset) <- names
+  } else {
+    message("This step doesn't contain expected outfiles.")
+  }
+  return(subset)
+})
+
+setMethod(f = "targetsheader", signature = "SYSargsList", definition = function(x, step=1) {
+  return(stepsWF(sal)[[step]]$targetsheader)
+})
+
 # ## Behavior of "[[" operator for SYSargsList
 # setMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
 #   #setMethod(f = "[[", signature = c("SYSargsList","ANY", "missing"), definition = function(x, i, ..., drop) {
@@ -610,7 +659,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   lengx <- length(x)
   after <- after
   if(inherits(value, "SYSargsList")){
-    value <- .validationStepConn(x, value)
+    value <- .validationStepConn(x, value, step)
     x <- sysargslist(x)
     if(names(value$stepsWF)=="Step_x"){
       step_name <- paste0("Step_", after +1L)
@@ -726,7 +775,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 
 }
 
-.validationStepConn <- function(x, value){
+.validationStepConn <- function(x, value, step){
   if(length(value)>1) stop("One step can be appended in each operation.")
   targesCon <- sapply(value$targets_connection, "[", 1)
   if (!is.null(targesCon[[1]])){
@@ -743,10 +792,11 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[3][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
     }
     new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
+    new_targetsheader <- targetsheader(x, step)
     WF <- value$stepsWF[[1]]
     #inputvars_v <- unlist(WF$inputvars)
     ## TODO: check inputvars...
-    WF2 <- updateWF(WF, new_targets= targets.as.list(data.frame(new_targets)), inputvars=WF$inputvars, write.yaml = FALSE)
+    WF2 <- updateWF(WF, new_targets= targets.as.list(data.frame(new_targets)), new_targetsheader=new_targetsheader, inputvars=WF$inputvars, write.yaml = FALSE)
     value <- sysargslist(value)
     value$stepsWF[[1]] <- WF2
     value$targetsWF[[1]] <- as(WF2, "DataFrame")
