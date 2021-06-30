@@ -52,6 +52,9 @@
 \alias{baseCommand}
 \alias{baseCommand,SYSargs2-method}
 
+\alias{SampleName,SYSargs2-method}
+
+
 \title{Class \code{"SYSargs2"}}
 \description{
 \code{SYSargs2 class} stores all the information and instructions needed for processing a set of input files with a specific command-line or a series of command-line within a workflow. The \code{SYSargs2} S4 class object is created from the \code{loadWorkflow} and \code{renderWF} function, which populates all the command-line for each sample in each step of the particular workflow. Each sample level input/outfile operation uses its own \code{SYSargs2} instance. The output of \code{SYSargs2} define all the expected output files for each step in the workflow, which usually it is the sample input for the next step in an \code{SYSargs2} instance. Between different instances, this connectivity is established by writing the subsetting output with the \code{writeTargetsout} function to a new targets file that serves as input to the next \code{loadWorkflow} and \code{renderWF} call. By chaining several \code{SYSargs2} steps together one can construct complex workflows involving many sample-level input/output file operations with any combination of command-line or R-based software. 
