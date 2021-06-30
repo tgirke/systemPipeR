@@ -37,7 +37,7 @@ setGeneric(name = "clt", def = function(x) standardGeneric("clt"))
 setMethod(f = "clt", signature = "SYSargs2", definition = function(x) {
   return(x@clt)
 })
-setGeneric(name = "yamlinput", def = function(x) standardGeneric("yamlinput"))
+setGeneric(name = "yamlinput", def = function(x, ...) standardGeneric("yamlinput"))
 setMethod(f = "yamlinput", signature = "SYSargs2", definition = function(x) {
   return(x@yamlinput)
 })
@@ -280,10 +280,14 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
 })
 
 ## Replacement method
-setGeneric(name="yamlinput<-", def=function(x, ..., value) standardGeneric("yamlinput<-"))
-setReplaceMethod("yamlinput", c("SYSargs2"), function(x, ..., value) {
+setGeneric(name="yamlinput<-", def=function(x, paramName, ..., value) standardGeneric("yamlinput<-"))
+setReplaceMethod("yamlinput", c("SYSargs2"), function(x, paramName, value) {
   x <- as(x, "list")
-  x$yamlinput[[...]] <- value
+  ## Check paramName
+  if(!paramName %in% names(x$yamlinput)) stop ("'paramName' argument need to be one of following")
+  ## Check class of value
+  if(!identical(class(x$yamlinput[[paramName]]), class(value))) stop("message")
+  x$yamlinput[[paramName]] <- value
   x <- as(x, "SYSargs2")
   x <- updateWF(x)
   x
@@ -636,13 +640,13 @@ setMethod(f = "copyEnv", signature = "SYSargsList", definition = function(x, lis
 })
 
 ## cmdlist method for SYSargslist
-setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, input=NULL) {
+setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, targets=NULL) {
   cmd <- sapply(names(x$stepsWF), function(x) list(NULL))
   for(i in seq_along(x)){
     if(nchar(cmdlist(x$stepsWF[[i]])[[1]][[1]])>0){
       cmd_list <- cmdlist(x$stepsWF[[i]])
-      if(!is.null(input)){
-        cmd_list <- cmd_list[input]
+      if(!is.null(targets)){
+        cmd_list <- cmd_list[targets]
       }
       cmd[[i]] <- cmd_list
     }
@@ -650,20 +654,20 @@ setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, inp
   return(cmd)
 })
 
-setMethod(f = "yamlinput", signature = "SYSargsList", definition = function(x) {
-  if(length(x) > 1) stop("`x` needs to have length(x)==1")
-  if(inherits(stepsWF(x), "LineWise")) stop("Provide a stepWF with a 'SYSargs2' class")
-  stepsWF(x)[[1]]$yamlinput
+setMethod(f = "yamlinput", signature = "SYSargsList", definition = function(x, step) {
+  if(inherits(stepsWF(x)[[step]], "LineWise")) stop("Provide a stepWF with a 'SYSargs2' class")
+  stepsWF(x)[[step]]$yamlinput
 })
 
-# setGeneric(name="yamlinput<-", def=function(x, ..., value) standardGeneric("yamlinput<-"))
-setReplaceMethod("yamlinput", c("SYSargsList"), function(x, paramName, value) {
-  x <- x
-  args <- x@stepsWF[[1]]
+# setGeneric(name="yamlinput<-", def=function(x, paramName, value, ...) standardGeneric("yamlinput<-"))
+setReplaceMethod("yamlinput", c("SYSargsList"), function(x, step, paramName, value) {
+  x_sub <- x[step]
+  args <- x_sub@stepsWF[[1]]
   yamlinput(args, paramName) <- value
   x <- sysargslist(x)
   x$stepsWF[[1]] <- args
   x <- as(x, "SYSargsList")
+  x <- .check_write_SYSargsList(x)
   x
 })
 
@@ -879,12 +883,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 output.as.df <- function(x) {
   out_x <- output(x)
   out_x <- S4Vectors::DataFrame(matrix(unlist(out_x), nrow=length(out_x), byrow=TRUE))
-  if(length(x$clt) > 1){
-    colnames <- names(x$output[[1]])
-  } else{
-    colnames <- names(x$clt[[1]]$outputs)
-  }
-  colnames(out_x) <- colnames
+  colnames(out_x) <- x$files$output_names
   return(out_x)
 }
 

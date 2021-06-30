@@ -256,7 +256,7 @@ SYSargsList <- function(args=NULL, step_name="default",
   } else if (!is.null(args)){
     if(inherits(args, "SYSargs2")){
       if(length(cmdlist(args))==0) stop ("Argument 'args' needs to be assigned an object of class 'SYSargs2' after 'renderWF()'.")
-      sal <- as(SYScreate("SYSargsList"), "list")
+      # sal <- as(SYScreate("SYSargsList"), "list")
       if(step_name=="default"){
         step_name <- "Step_x"
       } else {
@@ -276,11 +276,11 @@ SYSargsList <- function(args=NULL, step_name="default",
         sal$statusWF <- list(status(args))
       }
       sal$dependency <- list(dependency)
-      sal$outfiles <- list(S4Vectors::DataFrame(matrix(unlist(output(args)), nrow=length(output(args)), byrow=TRUE)))
+      sal$outfiles <- list(.outList2DF(args))
       sal$targets_connection <- list(NULL)
       sal$runInfo <- list(directory=dir)
       names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo) <- step_name
-    } else stop ("Argument 'args' needs to be assigned an object of class 'SYSargs2'.")
+    } else stop("Argument 'args' needs to be assigned an object of class 'SYSargs2'.")
   } else if(all(!is.null(wf_file) && !is.null(input_file))){
     ## targets
     if(is.null(targets)){
@@ -335,7 +335,7 @@ SYSargsList <- function(args=NULL, step_name="default",
     ## names
     names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo) <- step_name
     ## outfiles
-    if(length(sal$stepsWF) >0) {
+    if(length(sal$stepsWF) > 0) {
       sal$outfiles <- .outList2DF(sal)
       ## targets
       if(length(targets(sal$stepsWF[[1]])) > 0 ) {
@@ -381,26 +381,12 @@ SYSargsList <- function(args=NULL, step_name="default",
     for (i in seq_along(stepsWF(args))) {
       l_out <- output(stepsWF(args)[[i]])
       out[[i]] <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
-      if (length(stepsWF(args)[[i]]$clt) > 1) {
-        colnames <- sapply(1:length(stepsWF(args)[[i]]$clt), function(x) {
-          names(stepsWF(args)[[i]]$clt[[x]]$outputs)
-        }, simplify = TRUE)
-      } else {
-        colnames <- names(stepsWF(args)[[i]]$clt[[1]]$outputs)
-      }
-      colnames(out[[i]]) <- colnames
+      colnames(out[[i]]) <- stepsWF(args)[[i]]$files$output_names
     }
   } else if (inherits(args, "SYSargs2")) {
     l_out <- output(args)
     out <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
-    if (length(args$clt) > 1) {
-      colnames <- sapply(1:length(args$clt), function(x) {
-        names(args$clt[[x]]$outputs)
-      }, simplify = TRUE)
-    } else {
-      colnames <- names(args$clt[[1]]$outputs)
-    }
-    colnames(out) <- colnames
+    colnames(out) <- args$files$output_names
   }
   return(out)
 }
@@ -541,6 +527,18 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
       args.run <- runRcode(args.run, step, file_log, envir, force=force)
       stepsWF(args, i) <- args.run
       statusWF(args, i) <- args.run$status
+      ## Stop workflow
+      if(is.element("Warning", unlist(args.run$status$status.summary))){
+        if(warning.stop==TRUE) {
+          on.exit(return(args))
+          stop("Caught an warning, stop workflow!")
+        }
+      } else if(is.element("Error", unlist(args.run$status$status.summary))){
+        if(error.stop==TRUE) {
+          on.exit(return(args))
+          stop("Caught an error, stop workflow!")
+        }
+      }
       cat(crayon::blue(paste0("Step Status: ", args.run$status$status.summary), "\n"))
     }
     if(saveEnv==TRUE){
@@ -553,9 +551,11 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
   return(args)
 }
 
+
 runRcode <- function(args.run, step, file_log, envir, force=FALSE){
   ## Validation for 'args.run'
-  if(!inherits(args.run, "LineWise"))stop("Argument 'args.run' needs to be assigned an object of class 'LineWise'")
+  if(!inherits(args.run, "LineWise")) stop("Argument 'args.run' needs to be assigned an object of class 'LineWise'")
+  pb <- txtProgressBar(min = 0, max = length(args.run), style = 3)
   ## log_file
   cat(c(
     paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
@@ -595,8 +595,10 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
     step_status[["status.time"]] <- time_status
     args.run[["status"]] <- step_status
   }
+  setTxtProgressBar(pb, length(args.run))
   # close R chunk
   cat("```", file=file_log, sep = "\n", append=TRUE)
+  close(pb) 
   return(args.run)
 }
 
@@ -617,15 +619,16 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
 }
 
 .updateAfterRunC <- function(args, step){
-  conList <- lapply(args$targets_connection, function(x) if(!is.null(x)){
-       x$targets_step })
-  conList <- unlist(conList[lengths(conList) != 0])
-  if(step %in% conList){
+  # conList <- lapply(args$targets_connection, function(x) if(!is.null(x)){
+  #   x$targets_step })
+  conList <- args$targets_connection[lengths(args$targets_connection) != 0]
+  conList_step <- sapply(conList, "[[", 1)
+  if(step %in% conList_step){
     requiredUP <- names(conList)[grepl(step, conList)]
     for(s in requiredUP){
       WF <- args[s]
       WFstep <- names(stepsWF(WF))
-      targesCon <- args$targets_connection[names(args$targets_connection)==WFstep]
+      targesCon <- args$targets_connection[names(args$targets_connection)==WFstep][[1]]
       targets_name <- paste(colnames(targetsWF(args)[step][[1]]), collapse="|")
       new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
       if(is.null(targesCon[[3]][[1]])){

@@ -30,11 +30,15 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     steps <- names(wf$steps)
     cwlfiles$steps <- steps
     cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
+    names(cltpaths) <- strsplit(basename(cltpaths), ".cwl")
+    cwlfiles$cltpaths <- cltpaths
     cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE) 
     names(cltlist) <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
+    #names(cltlist) <- steps
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
+    cwlfiles$output_names <- sapply(names(cltlist), function(x) names(cltlist[[x]]$outputs))
     WF <- list(modules=modules, wf=wf, clt=cltlist, yamlinput=input, cmdlist=cmdlist,
                input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars,
                cmdToCwl=list(), status=list())
@@ -45,6 +49,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     myinput <- sapply(names(cltlist), function(x) list(NULL))
     myoutput <- sapply(names(cltlist), function(x) list(NULL))
     cwlfiles$steps <- strsplit(basename(wf_file), ".cwl")[[1]]
+    cwlfiles$output_names <-  names(cltlist[[1]]$outputs)
     WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist,
                input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars, 
                cmdToCwl=list(), status=list())
@@ -223,7 +228,7 @@ renderWF <- function(WF, inputvars=NULL) {
 ## Update  WF container for all samples in targets slot  ##
 ###############################################################
 updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
-                     new_targetsheader=list(), inputvars=NULL, silent=FALSE){
+                     new_targetsheader=NULL, inputvars=NULL, silent=FALSE){
     if(!inherits(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
     args <- sysargs2(args)
     if(is.null(inputvars)){
@@ -239,13 +244,19 @@ updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NU
         args$clt <- write.clt(args$cmdToCwl, cwlVersion=cwlVersion, class=class, writeout= FALSE, silent = silent) 
         args$yamlinput <- write.yml(args$cmdToCwl, results_path=results_path, module_load=module_load, writeout=FALSE, silent = silent) 
     } else if (length(args$cmdToCwl)==0){
+        ## targets
         if(!is.null(new_targets)){
             args$targets <- new_targets
-            args$targetsheader <- new_targetsheader
         } else{
             args$targets <- args$targets
-            args$targetsheader <- args$new_targetsheader
         }
+        ## targetsheader
+        if(!is.null(new_targetsheader)){
+            args$targetsheader <- new_targetsheader
+        } else{
+            args$targetsheader <- args$targetsheader
+        }
+        
         args$yamlinput <- args$yamlinput
         args$clt <- args$clt
         results_path <- args$yamlinput$results_path$path
