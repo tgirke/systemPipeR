@@ -241,6 +241,16 @@ setMethod("baseCommand", signature = "SYSargs2", definition = function(x) {
   return(x@clt[[1]]$baseCommand)
 })
 
+setMethod("SampleName", signature = "SYSargs2", definition = function(x) {
+  targets_x <- targets(x)
+  if(length(targets_x) > 0){
+    sample_name_x <- as(x, "DataFrame")
+    return(sample_name_x$SampleName)
+  } else if(length(targets_x)==0){
+    message("This step doesn't contain multiple samples.")
+  }
+})
+
 ## Replacement method for SYSargs2 using "[" operator
 setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j, value) {
   if (i == 1) x@targets <- value
@@ -478,20 +488,48 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
 })
 
 ## Behavior of "subsetTargets" method for SYSargsList
-setGeneric(name = "subsetTargets", def = function(x, input_sample) standardGeneric("subsetTargets"))
-setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(x, input_sample) {
-  if(missing(input_sample)){
-    input_sample <- 1:max(sapply(stepsWF(x), function(x) length(x)))
+setGeneric(name = "subsetTargets", def = function(x, subset_steps, input_targets, keep_steps=TRUE) standardGeneric("subsetTargets"))
+setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(x, subset_steps, input_targets,  keep_steps=TRUE) {
+  x_sub <- x[subset_steps]
+  ## check subset_steps length
+  if(length(unique(sapply(stepsWF(x_sub), function(x) length(x)))) > 1) stop("All 'subset_steps' should contain the same length.")
+  if(missing(input_targets)){
+    input_targets <- 1:max(sapply(stepsWF(x_sub), function(x) length(x)))
+  } 
+  # Check targets index, names
+  if(inherits(input_targets, "numeric")){
+    if(!all(input_targets %in% sapply(stepsWF(x_sub), function(x) 1:length(x)))) stop("Please select the number of 'input_targets' accordingly, options are: ",
+                                                                          paste0(1:length(x_sub@stepsWF[[1]]), collapse=", "))
+  } else if(inherits(input_targets, "character")){
+    if(!all(input_targets %in% sapply(stepsWF(x_sub), function(x) SampleName(x)))) stop("Please select the number of 'input_targets' accordingly, options are: ",
+                                                                                        paste0(SampleName(x_sub@stepsWF[[1]]), collapse=", "))
+    input_targets <- which(SampleName(x_sub$stepsWF[[1]]) %in% input_targets)
   }
-  for(s in seq_along(x)){
-    if(!all(input_sample %in% 1:length(x@stepsWF[[s]]))) stop("Please select the number of Input accordingly, options are: ", 
-                                                              paste0(1:length(x@stepsWF[[s]]), collapse=", "))
-    x@stepsWF[[s]] <- x@stepsWF[[s]][input_sample]
-    x@statusWF[[s]]$status.completed <- x@statusWF[[s]]$status.completed[input_sample,]
-    x@statusWF[[s]]$status.time <- x@statusWF[[s]]$status.time[input_sample,]
-    x@targetsWF[[s]] <- x@targetsWF[[s]][input_sample,]
-    x@outfiles[[s]] <- x@outfiles[[s]][input_sample,]
-    #x@SEobj[[s]] <- x@SEobj[[s]][i]
+  
+  if(keep_steps==FALSE){
+    x <- x_sub
+    subset_steps <- 1:length(x_sub)
+  }
+  for(s in subset_steps){
+    # 
+    # # Check targets index, names
+    # if(inherits(input_targets, "numeric")){
+    #   if(!any(sapply(stepsWF(x_sub), function(x) 1:length(x)) %in% input_targets)) stop("Please select the number of 'input_targets' accordingly, options are: ",
+    #                                                                                     paste0(1:length(x_sub@stepsWF[[1]]), collapse=", "))
+    # } else if(inherits(input_targets, "character")){
+    #   if(!any(sapply(stepsWF(x_sub), function(x) SampleName(x)) %in% input_targets)) stop("Please select the number of 'input_targets' accordingly, options are: ",
+    #                                                                                       paste0(SampleName(x_sub@stepsWF[[1]]), collapse=", "))
+    #   input_targets <- which(SampleName(x_sub$stepsWF[[1]]) %in% input_targets)
+    # }
+    # 
+    
+    
+    x@stepsWF[[s]] <- x@stepsWF[[s]][input_targets]
+    x@statusWF[[s]]$status.completed <- x@statusWF[[s]]$status.completed[input_targets,]
+    x@statusWF[[s]]$status.time <- x@statusWF[[s]]$status.time[input_targets,]
+    x@targetsWF[[s]] <- x@targetsWF[[s]][input_targets,]
+    x@outfiles[[s]] <- x@outfiles[[s]][input_targets,]
+    #x_sub@SEobj[[s]] <- x_sub@SEobj[[s]][i]
     x@dependency <- x@dependency
     x@targets_connection <- x@targets_connection
     x@projectInfo <- x@projectInfo
@@ -506,7 +544,7 @@ setMethod("SampleName", signature = "SYSargsList", definition = function(x, step
   if(inherits(step, "numeric")){
     if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
   } else if(inherits(step, "character")){
-    if(!step %in% stepsNames(x)) stop("We can not find this step in the Workflow")
+    if(!step %in% stepName(x)) stop("We can not find this step in the Workflow")
   }
   if(!is.null(targetsWF(x)[[step]]$SampleName)){
     return(targetsWF(x)[[step]]$SampleName)
@@ -515,8 +553,8 @@ setMethod("SampleName", signature = "SYSargsList", definition = function(x, step
   }
 })
 
-setGeneric(name = "stepsNames", def = function(x) standardGeneric("stepsNames"))
-setMethod("stepsNames", signature = "SYSargsList", definition = function(x) {
+setGeneric(name = "stepName", def = function(x) standardGeneric("stepName"))
+setMethod("stepName", signature = "SYSargsList", definition = function(x) {
     return(names(stepsWF(x)))
 })
 
@@ -526,7 +564,7 @@ setMethod("subsetOutfiles", signature = "SYSargsList", definition = function(x, 
   if(inherits(step, "numeric")){
     if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
   } else if(inherits(step, "character")){
-    if(!step %in% stepsNames(x)) stop("We can not find this step in the Workflow")
+    if(!step %in% stepName(x)) stop("We can not find this step in the Workflow")
   }
   ## Check column
   if(inherits(column, "numeric")){
@@ -658,8 +696,9 @@ setGeneric(name="appendStep<-", def=function(x, after=length(x), ..., value) sta
 setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..., value) {
   lengx <- length(x)
   after <- after
+  if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
   if(inherits(value, "SYSargsList")){
-    value <- .validationStepConn(x, value, step)
+    value <- .validationStepConn(x, value)
     x <- sysargslist(x)
     if(names(value$stepsWF)=="Step_x"){
       step_name <- paste0("Step_", after +1L)
@@ -736,7 +775,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     names(x$runInfo$directory)[after+1L] <- step_name
     x <- as(x, "SYSargsList")
   } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
-  if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
+ # if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
   x <- .check_write_SYSargsList(x)
   x
 })
@@ -775,21 +814,21 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 
 }
 
-.validationStepConn <- function(x, value, step){
-  if(length(value)>1) stop("One step can be appended in each operation.")
-  targesCon <- sapply(value$targets_connection, "[", 1)
+.validationStepConn <- function(x, value){
+  if(length(value) > 1) stop("One step can be appended in each operation.")
+  targesCon <- value$targets_connection[[1]]
   if (!is.null(targesCon[[1]])){
-    step <- targesCon[1][[1]]
+    step <- targesCon[[1]][[1]]
     targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
-    new_targets_col <- targesCon[2][[1]][-c(which(grepl(targets_name, targesCon[2][[1]])))]
+    new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
     if(!step %in% names(stepsWF(x))) stop(paste0("'targets' argument needs to be assigned as valid targets file OR the names of a previous step, for example: ", "\n",
                                                  paste0(names(stepsWF(x)), collapse = " OR ")))
     if(all(!new_targets_col %in% colnames(x$outfiles[[1]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                          paste0(colnames(x$outfiles[[1]]), collapse = " OR \n")))
-    if(is.null(targesCon[3][[1]])){
+    if(is.null(targesCon[[3]][[1]])){
       old_targets <- x$targetsWF[[step]]
     } else {
-      old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[3][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
+      old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
     }
     new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
     new_targetsheader <- targetsheader(x, step)

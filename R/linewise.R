@@ -26,7 +26,6 @@ setMethod(f = "codeChunkStart", signature = "LineWise", definition = function(x)
   return(x@codeChunkStart)
 })
 
-setGeneric(name = "stepName", def = function(x) standardGeneric("stepName"))
 setMethod(f = "stepName", signature = "LineWise", definition = function(x) {
   return(x@stepName)
 })

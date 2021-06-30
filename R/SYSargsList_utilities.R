@@ -315,8 +315,8 @@ SYSargsList <- function(args=NULL, step_name="default",
       } else {
         rm_col <- list(rm_targets_col=NULL)
       }
-      sal$targets_connection <- list(targets_step_list, new_col, rm_col)
-      names(sal$targets_connection) <- rep(step_name, 3)
+      sal$targets_connection <- list(list(targets_step=targets_step_list, new_targets_col=new_col, rm_targets_col=rm_col))
+      names(sal$targets_connection) <- step_name
     }
     if(length(sal$targets_connection)==0){
     sal$targets_connection <- list(NULL)
@@ -1180,7 +1180,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 #############################################
 ## [x] A character vector or an object containing file File name without extension, simmilar with 'basename'
 .getFileName <- function(x) {
-  if (!file.exists(x)) warning("No such file or directory. Check the file PATH.")
+#  if (!file.exists(x)) warning("No such file or directory. Check the file PATH.")
   filename <- strsplit(basename(x), split = "\\.")[[1]]
   filename <- filename[[-2]]
   return(filename)

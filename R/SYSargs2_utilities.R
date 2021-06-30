@@ -420,7 +420,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
   #     stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
   #   }}
   ## Validation for 'args'
-  if(any(class(args)!="SYSargs" & class(args)!="SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
+  if(any(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
   ## If the argument 'replace' is TRUE, it is required to specify the 'extension' argument
   if(replace!=FALSE){
     if(is.null(extension)) {
@@ -435,7 +435,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
           dirRep <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
           if(grepl(extension[1], name)){
             sam <- .getExt(name)
-            args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dirRep, "/", .getFileName(name), extension[2])))
+            args$output[[i]][[j]][k] <- file.path(dirRep, paste0(.getFileName(name), extension[2]))
           } else {
             # message if the extension are not matching, return the same object
             args$output[[i]][[j]][k] <- args$output[[i]][[j]][k]
@@ -465,7 +465,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
       for(j in seq_along(args$output[[i]])){
         for(k in seq_along(args$output[[i]][[j]])){
           name <- basename(args$output[[i]][[j]][k])
-          args$output[[i]][[j]][k] <- paste0(cwl.wf, "/", names(args$output[i]), "/", name)
+          args$output[[i]][[j]][k] <- file.path(cwl.wf, name)
         }
       }
     }

@@ -218,8 +218,8 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     ## Create recursive the subfolders
     if(dir==TRUE){
       for(i in seq_along(names(cmdlist(args)))){
-        # full_path <- paste0(logdir, "/", cwl.wf, "/", names(cmdlist(args)[i]))
-        full_path <- file.path(logdir, dir.name,  names(cmdlist(args)[i]))
+        # full_path <- file.path(logdir, dir.name,  names(cmdlist(args)[i]))
+        full_path <- file.path(logdir, dir.name)
         if(dir.exists(full_path)==FALSE){
           dir.create(full_path, recursive = TRUE) }
       }
@@ -239,21 +239,24 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
               if(file.exists(output(args.return)[[i]][[j]])){
                 name <- strsplit(output(args.return)[[i]][[j]][[k]], split="\\/")[[1]]
                 name <- name[length(name)]
-                file.rename(from=output(args.return)[[i]][[j]][[k]], to=file.path(logdir, dir.name, names(output(args.return)[i]), name))
-                outputList_new <- c(outputList_new, file.path(logdir, dir.name, names(output(args.return)[i]), name))
+                file.rename(from=output(args.return)[[i]][[j]][[k]], to=file.path(logdir, dir.name, name))
+                outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
+                # file.rename(from=output(args.return)[[i]][[j]][[k]], to=file.path(logdir, dir.name, names(output(args.return)[i]), name))
+                # outputList_new <- c(outputList_new, file.path(logdir, dir.name, names(output(args.return)[i]), name))
               } else if(!file.exists(output(args.return)[[i]][[j]][[k]])){
                 dump <- "No such file or directory"
               }
             }
-            
           }
         } else if(length(output(args.return)[[i]]) == 1){
           for(j in seq_along(output(args.return)[[i]][[1]])){
             if(file.exists(output(args.return)[[i]][[1]][[j]])){
               name <- strsplit(output(args.return)[[i]][[1]][[j]], split="\\/")[[1]]
               name <- name[length(name)]
-              file.rename(from=output(args.return)[[i]][[1]][[j]], to=file.path(logdir, dir.name, names(output(args.return)[i]), name))
-              outputList_new <- c(outputList_new, file.path(logdir, dir.name, names(output(args.return)[i]), name))
+              file.rename(from=output(args.return)[[i]][[1]][[j]], to=file.path(logdir, dir.name, name))
+              outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
+              #file.rename(from=output(args.return)[[i]][[1]][[j]], to=file.path(logdir, dir.name, names(output(args.return)[i]), name))
+              # outputList_new <- c(outputList_new, file.path(logdir, dir.name, names(output(args.return)[i]), name))
             } else if(!file.exists(output(args.return)[[i]][[1]][[j]])){
               dump <- "No such file or directory"
             }
@@ -263,8 +266,6 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
     ## double check output file
-    
-    
     cat("\n")
     cat(crayon::blue("---- Summary ----"), "\n")
     print(df.status.f)
