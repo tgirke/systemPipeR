@@ -8,7 +8,7 @@ setwd(file.path(tempdir(), "rnaseq"))
 test_that("check_features", {
     ## Create paths
     file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
-    txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
+    expect_warning(txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis"))
     
     targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
     dir_path <- system.file("extdata/cwl", package="systemPipeR")
@@ -16,7 +16,7 @@ test_that("check_features", {
                          input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
     args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
     expect_s4_class(args, "SYSargs2")
-    args <- runCommandline(args, make_bam = TRUE, dir = TRUE)
+    args <- runCommandline(args, make_bam = TRUE, dir = FALSE)
     outpaths <- subsetWF(args , slot="output", subset=1, index=1)
     file.exists(outpaths)
     

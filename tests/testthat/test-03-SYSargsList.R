@@ -35,7 +35,8 @@ test_that("check_SYSargsList_test", {
    # 
    ## replacement methods
     renameStep(sal, 1) <- "newStep"
-   expect_warning(appendStep(sal) <- sal)
+   expect_error(appendStep(sal) <- sal)
+   appendStep(sal) <- LineWise("a <- log(-1)", "R_code")
 
    ## `+` method
    sal <- sal[1] + sal[2] 
