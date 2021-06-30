@@ -1,10 +1,13 @@
 changelog
      version 1.27.8
-     	- Added viewEnv() and copyEnv(), stepName(), subsetOutfiles() methods
-     	- targetsheader(), SampleName() methods for SYSargsList 
-	- SampleName() methods for SYSargs2
-	- Improved subsetTargets() methods
-	- Steps names needs to be unique.
+        - Added viewEnv() and copyEnv(), stepName(), subsetOutfiles() methods
+        - targetsheader(), SampleName() methods for SYSargsList 
+        - SampleName() methods for SYSargs2
+        - Improved subsetTargets() methods
+        - Steps names needs to be unique.
+        - Added output names at files slot at SYSargs2 obj
+        - outfiles(sal) --> colnames from cwl file
+        - progress bar for LineWise
         
      version 1.27.7
      	- Added option to dir=T/F for each step
