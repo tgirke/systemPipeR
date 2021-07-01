@@ -623,30 +623,43 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
   #   x$targets_step })
   conList <- args$targets_connection[lengths(args$targets_connection) != 0]
   conList_step <- sapply(conList, "[[", 1)
-  if(step %in% conList_step){
-    requiredUP <- names(conList)[grepl(step, conList)]
-    for(s in requiredUP){
-      WF <- args[s]
-      WFstep <- names(stepsWF(WF))
-      targesCon <- args$targets_connection[names(args$targets_connection)==WFstep][[1]]
-      targets_name <- paste(colnames(targetsWF(args)[step][[1]]), collapse="|")
-      new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
-      if(is.null(targesCon[[3]][[1]])){
-        old_targets <- args$targetsWF[[step]]
-      } else {
-        old_targets <- args$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(args$targetsWF[[step]]))))]
+  for(l in seq_along(conList_step)){
+    if(step %in% conList_step[[l]]){
+      requiredUP <- names(conList)[[l]]
+      for(s in requiredUP){
+        WF <- args[s]
+        WFstep <- names(stepsWF(WF))
+        
+        new_targets <- WF$targetsWF[[1]]
+        #targets_name <- paste(colnames(targets_WF), collapse="|")
+        col_out <- lapply(outfiles(args), function(x) colnames(x))
+        col_out <- col_out[col_out %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
+        col_out_df <- lapply(names(col_out), function(x) getColumn(args, step=x, df = "outfiles", column = col_out[[x]]))
+        names(col_out_df) <- col_out
+        new_targets[as.character(col_out)] <- col_out_df
+# 
+#         WF$targets_connection[[WFstep]]$new_targets_col[[1]]
+#         
+#         targesCon <- args$targets_connection[names(args$targets_connection)==WFstep][[1]]
+#         targets_name <- paste(colnames(targetsWF(args)[step][[1]]), collapse="|")
+#         new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+#         if(is.null(targesCon[[3]][[1]])){
+#           old_targets <- args$targetsWF[[step]]
+#         } else {
+#           old_targets <- args$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(args$targetsWF[[step]]))))]
+#         }
+#         new_targets <- cbind(args$outfiles[[step]][new_targets_col], old_targets)
+        WF2 <- stepsWF(WF)[[1]]
+        WF2 <- updateWF(WF2, new_targets= targets.as.list(data.frame(new_targets)), inputvars=WF2$inputvars, write.yaml = FALSE)
+        ## Preserve outfiles
+        WF2[["output"]] <- WF$stepsWF[[s]]$output
+        args <- sysargslist(args)
+        args$stepsWF[[WFstep]] <- WF2
+        args$targetsWF[[WFstep]] <- as(WF2, "DataFrame")
+        args$outfiles[[WFstep]] <- output.as.df(WF2)
+        args$statusWF[[WFstep]] <- WF2$status
+        args <- as(args, "SYSargsList")
       }
-      new_targets <- cbind(args$outfiles[[step]][new_targets_col], old_targets)
-      WF2 <- stepsWF(WF)[[1]]
-      WF2 <- updateWF(WF2, new_targets= targets.as.list(data.frame(new_targets)), inputvars=WF2$inputvars, write.yaml = FALSE)
-      ## Preserve outfiles
-      WF2[["output"]] <- WF$stepsWF[[s]]$output
-      args <- sysargslist(args)
-      args$stepsWF[[WFstep]] <- WF2
-      args$targetsWF[[WFstep]] <- as(WF2, "DataFrame")
-      args$outfiles[[WFstep]] <- output.as.df(WF2)
-      args$statusWF[[WFstep]] <- WF2$status
-      args <- as(args, "SYSargsList")
     }
   }
   return(args)

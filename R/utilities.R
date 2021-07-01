@@ -147,7 +147,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
         if(all(force==FALSE && all(as.logical(completed[[i]][[j]])))) {
-          cat("The expected output file(s) already exist", file=file_log, fill=TRUE, append=TRUE)
+          cat("The expected output file(s) already exist", file=file_log, fill=TRUE, append=TRUE, "/n")
           sample_status[[i]][[args$files$steps[j]]] <- "Success"
           next()
         } else {
