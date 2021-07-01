@@ -562,6 +562,11 @@ setMethod("stepName", signature = "SYSargsList", definition = function(x) {
     return(names(stepsWF(x)))
 })
 
+
+setMethod("targetsheader", signature = "SYSargsList", definition = function(x, step) {
+  return(stepsWF(x)[[step]]$targetsheader)
+})
+
 setGeneric(name = "getColumn", def = function(x, step, df, column=1, names=SampleName(x, step)) standardGeneric("getColumn"))
 setMethod("getColumn", signature = "SYSargsList", definition = function(x, step, df=c("targetsWF", "outfiles"), column=1, names=SampleName(x, step)) {
   ## assertions 
