@@ -833,14 +833,14 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     if(length(step)==1){
       targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
       new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
-      if(all(!new_targets_col %in% colnames(x$outfiles[[1]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
-                                                                           paste0(colnames(x$outfiles[[1]]), collapse = " OR \n")))
+      if(all(!new_targets_col %in% colnames(x$outfiles[[step]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
+                                                                           paste0(colnames(x$outfiles[[step]]), collapse = " OR \n")))
       if(is.null(targesCon[[3]][[1]])){
         old_targets <- x$targetsWF[[step]]
       } else {
         old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
       }
-      new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
+      new_targets <- cbind(x$outfiles[[step]][new_targets_col], old_targets)
       new_targetsheader <- targetsheader(x, step)
       ## DOUBLE CONNECTION
     } else if(length(step) > 1){

@@ -214,7 +214,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     args.return[["status"]]$status.completed <- df.status.f
     args.return[["status"]]$status.time <- time_status
     args.return[["files"]][["log"]] <- file_log
-    print(dir)
+    #print(dir)
     ## Create recursive the subfolders
     if(dir==TRUE){
       for(i in seq_along(names(cmdlist(args)))){

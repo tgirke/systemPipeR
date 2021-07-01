@@ -295,14 +295,14 @@ updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NU
 ###############################################################
 subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
   ## Check the class and slot
-  if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")  
+  if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")
   if(all(!c("input", "output", "step") %in% slot)) stop("Argument slot can only be assigned one of: 'input' or 'output' or 'step'.")
-  
+
   ## slot input
   if(slot %in% "input"){
     ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(inputvars(args)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(inputvars(args)), collapse=", "), "OR the corresponding position OR NULL")) 
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(args))) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(inputvars(args))), collapse=", "), "OR the names OR NULL")) 
+    if(all(!is.null(subset) & is.character(subset) & !any(names(inputvars(args)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(inputvars(args)), collapse=", "), "OR the corresponding position OR NULL"))
+    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(args))) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(inputvars(args))), collapse=", "), "OR the names OR NULL"))
     subset_input <- input(args)
     subset_sample <- sapply(names(subset_input), function(x) list(NULL))
     if(!is.null(subset)) {
@@ -311,16 +311,16 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
     } else {
       subset_sample <- subset_input
     }
-  } 
+  }
   ## slot output
   if(slot %in% "output"){
     ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL")) 
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL")) 
+    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL"))
+    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL"))
     if(!is.null(subset)){
       if(!any(seq_along(output(args)[[1]][[subset]]) %in% index)) stop(paste("For the 'index' argument, can only be assigned one of the following position:", paste(seq_along(output(args)[[1]][[subset]]), collapse=", ")))
     }
-    
+
     subset_output <- output(args)
     subset_sample <- as.character()
     if(all(!is.null(subset) & !is.null(index))) {
@@ -335,8 +335,8 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
   ## slot step
   if(slot %in% "step"){
     ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL")) 
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL")) 
+    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL"))
+    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL"))
     subset_step <- cmdlist(args)
     subset_sample <- sapply(names(subset_step), function(x) list(NULL))
     if(!is.null(subset)) {
@@ -346,17 +346,17 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
       subset_sample <- subset_step
     }
   }
-  ## IF subset=NULL returns a list 
+  ## IF subset=NULL returns a list
   if(!is.null(subset)){
     names <- names(subset_sample)
     subset_sample <- as.character(subset_sample)
-    names(subset_sample) <- names 
+    names(subset_sample) <- names
   }
   ## delete == TRUE
   if(delete==TRUE){
     ## delete option only works if the subset is define
-    if(!is.character(subset_sample)) { 
-      stop(paste("Please define the 'subset' to be deleted in the subset argument")) 
+    if(!is.character(subset_sample)) {
+      stop(paste("Please define the 'subset' to be deleted in the subset argument"))
     }
     if(all(file.exists(subset_sample))){
       del <- file.remove(subset_sample)

@@ -539,6 +539,7 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
           stop("Caught an error, stop workflow!")
         }
       }
+
       cat(crayon::blue(paste0("Step Status: ", args.run$status$status.summary), "\n"))
     }
     if(saveEnv==TRUE){
