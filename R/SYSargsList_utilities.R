@@ -486,70 +486,71 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
   file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "%b%d%Y_%H%M")))
   args[["projectInfo"]]$logsFile <- file_log
   ## steps loop
-  for (i in seq_along(stepsWF(args))){
-    cat("# ", names(stepsWF(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
+  args2 <- args
+  for (i in seq_along(stepsWF(args2))){
+    print(i)
+    cat("# ", names(stepsWF(args2)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
     ## SYSargs2 STEP
-    if(inherits(stepsWF(args)[[i]], "SYSargs2")){
-      step <- names(stepsWF(args)[i])
+    if(inherits(stepsWF(args2)[[i]], "SYSargs2")){
+      step <- names(stepsWF(args2)[i])
       cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
-      args.run <- stepsWF(args)[[i]]
+      args.run <- stepsWF(args2)[[i]]
       ## runC arguments
-      dir <- args$runInfo$directory[[i]]
+      dir <- args2$runInfo$directory[[i]]
       dir.name <- step
-      args.run <- runCommandline(args.run, dir = dir, dir.name = dir.name, force=force, ...)
+      args.run <- runCommandline(args.run, dir = dir, dir.name = dir.name, force=force)
       cat(readLines(args.run$files$log), file=file_log, sep = "\n", append=TRUE)
       ## update object
       step.status.summary <- status(args.run)$status.summary
-      statusWF(args, i) <- args.run$status
-      stepsWF(args, i) <- args.run
-      args[["outfiles"]][[i]] <- .outList2DF(args.run)
-      args <- .updateAfterRunC(args, step)
+      statusWF(args2, i) <- args.run$status
+      stepsWF(args2, i) <- args.run
+      args2[["outfiles"]][[i]] <- .outList2DF(args.run)
+      args2 <- .updateAfterRunC(args2, step)
+      assign(x=as.character(as.list(match.call())$args), args2, envir = args2$runInfo$env)
       ## Stop workflow
       if(is.element("Warning", unlist(step.status.summary))){
         if(warning.stop==TRUE) {
-          on.exit(return(args))
+          on.exit(return(args2))
           stop("Caught an warning, stop workflow!")
            }
       } else if(is.element("Error", unlist(step.status.summary))){
         if(error.stop==TRUE) {
-          on.exit(return(args))
+          on.exit(return(args2))
           stop("Caught an error, stop workflow!")
         }
       }
       cat(crayon::blue(paste0("Step Status: ", step.status.summary), "\n"))
-    } else if(inherits(stepsWF(args)[[i]], "LineWise")){
-      ## LineWise STEP
-      #print("LineWise")
-      step <- names(stepsWF(args)[i])
+    } else if(inherits(stepsWF(args2)[[i]], "LineWise")){
+      step <- names(stepsWF(args2)[i])
       cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
-      args.run <- stepsWF(args)[[i]]
-      envir <- args$runInfo$env
+      args.run <- stepsWF(args2)[[i]]
+      envir <- args2$runInfo$env
       args.run <- runRcode(args.run, step, file_log, envir, force=force)
-      stepsWF(args, i) <- args.run
-      statusWF(args, i) <- args.run$status
+      stepsWF(args2, i) <- args.run
+      statusWF(args2, i) <- args.run$status
       ## Stop workflow
       if(is.element("Warning", unlist(args.run$status$status.summary))){
         if(warning.stop==TRUE) {
-          on.exit(return(args))
+          on.exit(return(args2))
           stop("Caught an warning, stop workflow!")
         }
       } else if(is.element("Error", unlist(args.run$status$status.summary))){
         if(error.stop==TRUE) {
-          on.exit(return(args))
+          on.exit(return(args2))
           stop("Caught an error, stop workflow!")
         }
       }
-
       cat(crayon::blue(paste0("Step Status: ", args.run$status$status.summary), "\n"))
     }
-    if(saveEnv==TRUE){
-      envPath <- file.path(sysproj, "sysargsEnv.rds")
-      saveRDS(args$runInfo$env, envPath)
-      args[["projectInfo"]][["envir"]] <- envPath
-    }
   }
-  args <- .check_write_SYSargsList(args)
-  return(args)
+  
+  if(saveEnv==TRUE){
+    envPath <- file.path(sysproj, "sysargsEnv.rds")
+    saveRDS(args2$runInfo$env, envPath)
+    args2[["projectInfo"]][["envir"]] <- envPath
+  }
+  args2 <- .check_write_SYSargsList(args2)
+  return(args2)
 }
 
 

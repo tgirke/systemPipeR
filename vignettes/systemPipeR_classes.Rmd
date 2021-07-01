@@ -26,8 +26,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(systemPipeR)
 ```
 
-# Quick start
-
 
 # Introduction
 
@@ -36,9 +34,8 @@ is the use of workflow management containers. Workflow management containers
 allow the automation of design, build, run and scale different steps and tools
 in data analysis.
 
-The flexibility of *`systemPipeR's`* new interface workflow control class is the
-driving factor behind the use of as many steps necessary for the analysis, as
-well as the connection between command-line- or R-based software.
+This tutorial will walk through diverse examples, and demonstrating all the new 
+features and utilities on how to develop a new workflow from scratch.
 
 # Workflow design structure using `SYSargsList`
 
@@ -52,14 +49,77 @@ This S4 class is a list-like container where each instance stores all the
 input/output paths and parameter components required for a particular data
 analysis step.
 
-A key aspect of the `SYSargsList` class is the coordination of the input/output
-paths and command-line parameter when subsetting.
+`systemPipeR` includes support for both command line and R/Bioconductor software 
+as well as resources for containerization, parallel evaluations on computer 
+clusters along with the automated generation of interactive analysis reports.
 
-When running preconfigured workflows, the only input the user needs to provide
-is the initial *targets* file containing the paths to the input files (*e.g.*
-FASTQ) along with unique sample labels. Subsequent targets instances are created
-automatically. The parameters required for running command-line software is
-provided by the parameter (*.cwl*) files described below.
+## New parameter files from command-line utilities
+
+`systemPipeR` adopted the widely used community standard [Common Workflow Language](https://www.commonwl.org/) (CWL) 
+[@Amstutz2016-ka] for describing analysis workflows in a generic and reproducible 
+manner.
+Using this community standard in `systemPipeR` has many advantages. For instance, 
+the integration of CWL allows running `systemPipeR` workflows from a single 
+specification instance either entirely from within R, from various command line 
+wrappers (e.g., cwl-runner) or from other languages (, e.g., Bash or Python). 
+
+For each software used, the parameters specifications are described with help of 
+two files (*.cwl* and *.yml*). The parameters are used but rendered and executed
+entirely with R functions defined by `systemPipeR`, and thus use CWL mainly as a 
+command line and workflow definition format rather 
+than software to run workflows. In this regard `systemPipeR` also provides several 
+convenience functions that are useful for designing and debugging workflows, 
+such as a command line rendering function to retrieve the exact command line 
+strings for each data set and processing step prior to running a command line.
+
+## Directory Structure
+
+
+# Quick Example
+
+- Load sample data and directory structure
+
+```{r genNew_wf, eval=FALSE}
+systemPipeRdata::genWorkenvir(workflow="new", mydirname = "spr_project")
+setwd("spr_project")
+```
+
+- Create a project
+
+```{r SPRproject, eval=TRUE}
+sal <- SPRproject(overwrite=TRUE) 
+```
+
+- Add first step
+
+```{r firstStep, eval=TRUE}
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+appendStep(sal) <- SYSargsList(step_name = "echo", 
+                      targets=targetspath, dir=T,
+                      wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                      dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                      inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+```
+
+```{r sal, eval=TRUE}
+sal
+cmdlist(sal)
+outfiles(sal)
+```
+
+- Add a R step
+
+```{r, eval=TRUE}
+appendStep(sal) <- LineWise(stepName = "R_read", 
+                       code = "print(outfiles(sal)[[1]][1,1]); hello <-read.delim(outfiles(sal)[[1]][1,1])")
+```
+
+- Run workflow
+
+```{r, eval=TRUE}
+sal <- runWF(sal)
+```
+
 
 # How to design a Workflow?
 
@@ -194,7 +254,7 @@ connectivity between the new targets file. Here, the name of the previous
 
 ```{r, eval=TRUE}
 appendStep(sal) <- SYSargsList(targets="Quality",
-                               step_name="Mapping", dir=FALSE, 
+                               step_name="Mapping", dir=TRUE, 
                                wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
                                input_file="workflow-hisat2/workflow_hisat2-pe.yml",
                                dir_path=system.file("extdata/cwl", package = "systemPipeR"),
@@ -375,14 +435,14 @@ stepsWF(sal_sub)
 
 ```{r, eval=TRUE}
 ## check values
-yamlinput(sal[1])
+yamlinput(sal, step=1)
 ## check on command line
 cmdlist(sal[1], 1)
 ## Replace
-yamlinput(sal, "thread") <- c(20) 
+yamlinput(sal, step=1, paramName = "thread") <- c(20L) 
 sal
 ## check NEW values
-yamlinput(sal[1])
+yamlinput(sal, step=1)
 ## Check on command line
 cmdlist(sal[1], 1)
 ```
@@ -390,7 +450,7 @@ cmdlist(sal[1], 1)
 ## Adding a R code as new Step
 
 ```{r}
-appendStep(sal) <- LineWise("a <- 1+1", "R_code")
+appendStep(sal) <- LineWise("a <- log(-1)", "R_code")
 sal
 stepsWF(sal)
 ```
@@ -398,7 +458,7 @@ stepsWF(sal)
 - Replacement and Append methods for R Code Steps
 
 ```{r, sal_lw_rep, eval=TRUE}
-appendCodeLine(sal, step="R_code", after=1) <- "66+55"
+appendCodeLine(sal, step="R_code", after=1) <- "66+55; Sys.sleep(5)"
 codeLine(sal["R_code"])
 
 replaceCodeLine(sal, step="R_code", line=1) <- "5+5"
