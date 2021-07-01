@@ -625,7 +625,7 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
   conList_step <- sapply(conList, "[[", 1)
   for(l in seq_along(conList_step)){
     if(step %in% conList_step[[l]]){
-      print(conList_step[[l]])
+     # print(conList_step[[l]])
       requiredUP <- names(conList)[[l]]
       for(s in requiredUP){
         WF <- args[s]
