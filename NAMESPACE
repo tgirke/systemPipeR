@@ -137,7 +137,7 @@ exportMethods(
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
     "dependency", "projectInfo", "runInfo", 
-    "sysargslist", "subsetTargets", "stepName", "subsetOutfiles",
+    "sysargslist", "subsetTargets", "stepName", "getColumn",
     "SampleName", "viewEnv", "copyEnv",  
     "appendStep<-", "replaceStep<-", "renameStep<-",
     ## LineWise

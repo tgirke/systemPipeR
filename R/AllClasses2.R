@@ -562,8 +562,12 @@ setMethod("stepName", signature = "SYSargsList", definition = function(x) {
     return(names(stepsWF(x)))
 })
 
-setGeneric(name = "subsetOutfiles", def = function(x, step, column=1, names=SampleName(x, step)) standardGeneric("subsetOutfiles"))
-setMethod("subsetOutfiles", signature = "SYSargsList", definition = function(x, step, column=1, names=SampleName(x, step)) {
+setGeneric(name = "getColumn", def = function(x, step, df, column=1, names=SampleName(x, step)) standardGeneric("getColumn"))
+setMethod("getColumn", signature = "SYSargsList", definition = function(x, step, df=c("targetsWF", "outfiles"), column=1, names=SampleName(x, step)) {
+  ## assertions 
+  stopifnot(inherits(x, "SYSargsList"))
+  stopifnot(length(step) == 1)
+  stopifnot(length(column) == 1)
   ## Check steps
   if(inherits(step, "numeric")){
     if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
@@ -572,24 +576,20 @@ setMethod("subsetOutfiles", signature = "SYSargsList", definition = function(x, 
   }
   ## Check column
   if(inherits(column, "numeric")){
-    if(!column %in% 1:ncol(outfiles(x)[[step]])) stop("We can not find this step in the Workflow")
+    if(!column %in% 1:ncol(x[[df]][[step]])) stop("We can not find this column in the Workflow")
   } else if(inherits(column, "character")){
-    if(!column %in% colnames(outfiles(x)[[step]])) stop("We can not find this step in the Workflow")
+    if(!column %in% colnames(x[[df]][[step]])) stop("We can not find this column in the Workflow")
   }
   ## Check names
-  if(!length(names) ==  length(outfiles(x)[[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+  if(!length(names) ==  length(x[[df]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
   ## 
-  if(!is.null(outfiles(x)[[step]][[column]])){
-    subset <- outfiles(x)[[step]][[column]]
+  if(!is.null(x[[df]][[step]][[column]])){
+    subset <- x[[df]][[step]][[column]]
     names(subset) <- names
   } else {
     message("This step doesn't contain expected outfiles.")
   }
   return(subset)
-})
-
-setMethod(f = "targetsheader", signature = "SYSargsList", definition = function(x, step=1) {
-  return(stepsWF(sal)[[step]]$targetsheader)
 })
 
 # ## Behavior of "[[" operator for SYSargsList
