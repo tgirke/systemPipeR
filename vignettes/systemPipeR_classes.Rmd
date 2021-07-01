@@ -74,7 +74,6 @@ strings for each data set and processing step prior to running a command line.
 
 ## Directory Structure
 
-
 # Quick Example
 
 - Load sample data and directory structure
@@ -86,7 +85,7 @@ setwd("spr_project")
 
 - Create a project
 
-```{r SPRproject, eval=TRUE}
+```{r SPRproject_ex, eval=TRUE}
 sal <- SPRproject(envir = globalenv(), overwrite=TRUE) 
 ```
 
@@ -151,15 +150,17 @@ sal <- SPRproject(projPath = getwd(), data = "data", param = "param", results = 
 
 Also, this function allows creating a hidden folder called `.SPRproject`, by default,
 to store all the log files.
-A yaml file, here called `SYSargsList.yml`, has been created, which initially
-contains the basic location of the project structure; however, everytime the object in R 
+A `yaml` file, here called `SYSargsList.yml`, has been created, which initially
+contains the basic location of the project structure; however, every time the object in R 
 is updated, the new information will also be store in this file, for easy recover.
-If you desire a different names for the logs folder and the yaml files, those can be 
+If you desire a different names for the logs folder and the `yaml` file, these can be 
 modify as follows:
 
 ```{r SPRproject_logs, eval=FALSE}
-sal <- SPRproject(logs.dir= "SPRproject", sys.file="SPRproject/SYSargsList.yml") 
+sal <- SPRproject(logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
 ```
+
+
 
 In this stage, the object `sal` is a empty container, except the project
 information, as the project, data, results and param folder paths, as can be
@@ -412,14 +413,14 @@ SampleName(sal, step="Quality")
 ## Steps Names Method
 stepName(sal)
 
-subsetOutfiles(sal, step=1, column = 1)
+getColumn(sal, step=1, "outfiles", column = 1)
 
-subsetOutfiles(sal, step="Quality", column = "trimmomatic_1_unpaired")
+getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired")
 
-subsetOutfiles(sal, step="Quality", column = "trimmomatic_1_unpaired", names=SampleName(sal, step=1))
+getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired", names=SampleName(sal, step=1))
 
 
-subsetOutfiles(sal, step="Quality", column = "trimmomatic_1_unpaired", names=rep("a", 18)) # we may need another method for factor...
+getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired", names=rep("a", 18)) # we may need another method for factor...
 
 
 ### 

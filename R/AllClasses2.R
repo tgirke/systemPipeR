@@ -515,24 +515,13 @@ setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(
     subset_steps <- 1:length(x_sub)
   }
   for(s in subset_steps){
-    # 
-    # # Check targets index, names
-    # if(inherits(input_targets, "numeric")){
-    #   if(!any(sapply(stepsWF(x_sub), function(x) 1:length(x)) %in% input_targets)) stop("Please select the number of 'input_targets' accordingly, options are: ",
-    #                                                                                     paste0(1:length(x_sub@stepsWF[[1]]), collapse=", "))
-    # } else if(inherits(input_targets, "character")){
-    #   if(!any(sapply(stepsWF(x_sub), function(x) SampleName(x)) %in% input_targets)) stop("Please select the number of 'input_targets' accordingly, options are: ",
-    #                                                                                       paste0(SampleName(x_sub@stepsWF[[1]]), collapse=", "))
-    #   input_targets <- which(SampleName(x_sub$stepsWF[[1]]) %in% input_targets)
-    # }
-    # 
-    
-    
     x@stepsWF[[s]] <- x@stepsWF[[s]][input_targets]
     x@statusWF[[s]]$status.completed <- x@statusWF[[s]]$status.completed[input_targets,]
     x@statusWF[[s]]$status.time <- x@statusWF[[s]]$status.time[input_targets,]
     x@targetsWF[[s]] <- x@targetsWF[[s]][input_targets,]
-    x@outfiles[[s]] <- x@outfiles[[s]][input_targets,]
+    out <- DataFrame(x@outfiles[[s]][input_targets,])
+    colnames(out) <- colnames(x@outfiles[[s]])
+    x@outfiles[[s]] <- out
     #x_sub@SEobj[[s]] <- x_sub@SEobj[[s]][i]
     x@dependency <- x@dependency
     x@targets_connection <- x@targets_connection
@@ -820,7 +809,6 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     write_SYSargsList(x, sys.file, silent=TRUE)
     return(x)
   }
-
 }
 
 .validationStepConn <- function(x, value){
