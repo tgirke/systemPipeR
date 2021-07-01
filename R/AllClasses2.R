@@ -821,6 +821,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     if(length(step)==1){
       targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
       new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+      ## addd skip
       if(all(!new_targets_col %in% colnames(x$outfiles[[step]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                            paste0(colnames(x$outfiles[[step]]), collapse = " OR \n")))
       if(is.null(targesCon[[3]][[1]])){

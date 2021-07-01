@@ -567,7 +567,7 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
     "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
   ## Check status of step
   if(all("Success" %in% status(args.run)[[step]]$status.summary && force==FALSE)){
-    cat("The step status is 'Success' and it was skipped.", file=file_log, fill=TRUE, append=TRUE)
+    cat("The step status is 'Success' and it was skipped.", file=file_log, fill=TRUE, append=TRUE, sep = "\n")
   } else {
     ## Status and time register
     step_status <- list()
