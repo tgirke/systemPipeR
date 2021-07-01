@@ -1,0 +1,159 @@
+stepsWF:
+  Index: |
+    targets: {}
+    targetsheader: []
+    modules:
+      module1: hisat2/2.1.0
+    wf: []
+    clt:
+      hisat2-index.cwl:
+        cwlVersion: v1.0
+        class: CommandLineTool
+        doc: '[HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml): graph-based alignment
+          of next generation sequencing reads to a population of genomes'
+        label: Last updated 08/2019
+        hints:
+          SoftwareRequirement:
+            packages:
+            - package: hisat2
+              version: 2.1.0
+        baseCommand: hisat2-build
+        requirements:
+          InitialWorkDirRequirement:
+            listing: $(inputs.idx_basedir)
+        arguments:
+        - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
+        - valueFrom: $(inputs.idx_basedir.path)/$(inputs.idx_basename)
+        inputs:
+          idx_basedir:
+            label: Path to the directory containing the reference genome
+            type: Directory
+          idx_basename:
+            label: Reference genome basename
+            type: string
+        outputs:
+          hisat2_index1:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).1.ht2
+          hisat2_index2:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).2.ht2
+          hisat2_index3:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).3.ht2
+          hisat2_index4:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).4.ht2
+          hisat2_index5:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).5.ht2
+          hisat2_index6:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).6.ht2
+          hisat2_index7:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).7.ht2
+          hisat2_index8:
+            type: File
+            outputBinding:
+              glob: $(inputs.idx_basedir.path)/$(inputs.idx_basename).8.ht2
+    yamlinput:
+      idx_basedir:
+        class: Directory
+        path: ./data
+      idx_basename: tair10.fasta
+      results_path:
+        class: Directory
+        path: ./data
+      thread: 4
+      ModulesToLoad:
+        module1: hisat2/2.1.0
+    cmdlist:
+      defaultid:
+        hisat2-index: 'hisat2-build ./data/tair10.fasta  ./data/tair10.fasta '
+    input:
+      defaultid: []
+    output:
+      defaultid:
+        hisat2-index:
+        - ./data/tair10.fasta.1.ht2
+        - ./data/tair10.fasta.2.ht2
+        - ./data/tair10.fasta.3.ht2
+        - ./data/tair10.fasta.4.ht2
+        - ./data/tair10.fasta.5.ht2
+        - ./data/tair10.fasta.6.ht2
+        - ./data/tair10.fasta.7.ht2
+        - ./data/tair10.fasta.8.ht2
+    files:
+      cwl: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/inst/extdata/cwl/hisat2/hisat2-index.cwl
+      yml: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/inst/extdata/cwl/hisat2/hisat2-index.yml
+      steps: hisat2-index
+      output_names:
+      - hisat2_index1
+      - hisat2_index2
+      - hisat2_index3
+      - hisat2_index4
+      - hisat2_index5
+      - hisat2_index6
+      - hisat2_index7
+      - hisat2_index8
+      targets: .na
+    inputvars: []
+    cmdToCwl: []
+    status:
+      status.summary: Pending
+      status.completed:
+        Targets: defaultid
+        Total_Files: 8.0
+        Existing_Files: 0.0
+        Missing_Files: 8.0
+        hisat2-index: Pending
+      status.time: {}
+statusWF:
+  Index: |
+    Index:
+      status.summary: Pending
+      status.completed:
+        Targets: defaultid
+        Total_Files: 8.0
+        Existing_Files: 0.0
+        Missing_Files: 8.0
+        hisat2-index: Pending
+      status.time: {}
+targetsWF:
+  Index: |
+    {}
+outfiles:
+  Index: |
+    hisat2_index1: ./data/tair10.fasta.1.ht2
+    hisat2_index2: ./data/tair10.fasta.2.ht2
+    hisat2_index3: ./data/tair10.fasta.3.ht2
+    hisat2_index4: ./data/tair10.fasta.4.ht2
+    hisat2_index5: ./data/tair10.fasta.5.ht2
+    hisat2_index6: ./data/tair10.fasta.6.ht2
+    hisat2_index7: ./data/tair10.fasta.7.ht2
+    hisat2_index8: ./data/tair10.fasta.8.ht2
+SEobj: |
+  []
+dependency:
+  Index: |
+    Index: .na
+targets_connection:
+  Index: |
+    Index: ~
+projectInfo: |
+  project: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR
+  data: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/data
+  param: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/param
+  results: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/results
+  logsDir: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/.SPRproject
+  sysargslist: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/.SPRproject/SYSargsList.yml
+runInfo: |
+  no

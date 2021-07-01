@@ -1,0 +1,45 @@
+##  M1 
+
+Time: Jul012021_1024s41
+
+
+### Code: 
+```{r, eval=FALSE} 
+echo Hello World! > results/M1.txt
+```
+
+
+### Stdout: 
+```{r, eval=FALSE}
+
+```
+##  M2 
+
+Time: Jul012021_1024s41
+
+
+### Code: 
+```{r, eval=FALSE} 
+echo Hello USA! > results/M2.txt
+```
+
+
+### Stdout: 
+```{r, eval=FALSE}
+
+```
+##  M3 
+
+Time: Jul012021_1024s41
+
+
+### Code: 
+```{r, eval=FALSE} 
+echo Hello Bioconcudctor! > results/M3.txt
+```
+
+
+### Stdout: 
+```{r, eval=FALSE}
+
+```

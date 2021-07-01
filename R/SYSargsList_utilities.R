@@ -488,7 +488,6 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
   ## steps loop
   args2 <- args
   for (i in seq_along(stepsWF(args2))){
-    print(i)
     cat("# ", names(stepsWF(args2)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
     ## SYSargs2 STEP
     if(inherits(stepsWF(args2)[[i]], "SYSargs2")){
@@ -543,7 +542,6 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
       cat(crayon::blue(paste0("Step Status: ", args.run$status$status.summary), "\n"))
     }
   }
-  
   if(saveEnv==TRUE){
     envPath <- file.path(sysproj, "sysargsEnv.rds")
     saveRDS(args2$runInfo$env, envPath)

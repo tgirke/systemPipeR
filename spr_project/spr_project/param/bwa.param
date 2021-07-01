@@ -1,0 +1,25 @@
+## Parameter file for bwa mem
+## Uses new BWA-MEM: http://arxiv.org/abs/1303.3997
+## Works for SE and PE:
+##         bwa mem ref.fa reads.fq > aln-se.sam
+##         bwa mem ref.fa read1.fq read2.fq > aln-pe.sam
+## Values in <...> reference column titles in targets file
+PairSet	Name	Value
+modules	NA	bwa/0.7.12
+software	NA	bwa mem
+cores	-t	4
+other	NA	-M -R '@RG\tID:group1\tSM:sample1\tPL:illumina\tLB:lib1\tPU:unit1'
+reference	NA	./data/tair10.fasta
+infile1	NA	<FileName1>
+infile1	path	NA
+infile2	NA	<FileName2>
+infile2	path	NA
+outfile1	>	<FileName1>
+outfile1	path	./results/
+outfile1	remove	NA
+outfile1	append	.sam
+outfile1	outextension	.bam
+
+
+
+

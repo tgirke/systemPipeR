@@ -1,0 +1,36 @@
+#############################
+## Kallisto-Paired_end.yml ##
+#############################
+
+idx_basedir:
+  class: Directory
+  path: ./data
+
+idx_basename: tair10.fasta
+
+kallisto_idx: kallisto.fasta
+
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+
+fq2:
+  class: File
+  path: _FASTQ_PATH2_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+thread: 4
+
+bootstrap_samples: 10
+
+fragment_length: 200
+
+std_dev: 20
+
+ModulesToLoad: 
+  module1: kallisto/0.46.0

@@ -1,0 +1,30 @@
+### Alignment with _`STAR`_ 
+
+TODO: Description
+
+```{r star_alignment, eval=FALSE}
+## Build the index:
+dir_path <- system.file("extdata/cwl/star/star-idx", package="systemPipeR")
+idx <- loadWorkflow(targets = NULL, wf_file = "star-index.cwl", 
+    input_file = "star-index.yml", dir_path = dir_path)
+idx <- renderWF(idx)
+idx
+cmdlist(idx)
+output(idx)
+runCommandline(idx, make_bam = FALSE) 
+
+## Running the alignment:
+targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+dir_path <- system.file("extdata/cwl/star/star-pe", package="systemPipeR")
+starPE <- loadWorkflow(targets = targetsPE, wf_file = "star-mapping-pe.cwl", 
+    input_file = "star-mapping-pe.yml", dir_path = dir_path)
+starPE <- renderWF(starPE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
+    SampleName = "_SampleName_"))
+starPE
+cmdlist(starPE)[1]
+output(starPE)[1]
+
+## Single Machine
+runCommandline(starPE[1:2], make_bam = TRUE)
+```
+

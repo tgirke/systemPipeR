@@ -1,0 +1,25 @@
+#############################
+##        var-seq.yml      ##
+#############################
+
+SampleName: _SampleName_
+
+ref_name: "tair10.fasta"
+
+file1: 
+  class: File
+  path: _FILE1_
+
+file2:
+  class: File
+  path: _FILE2_
+
+data_path:
+  class: Directory
+  path: ./data
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 

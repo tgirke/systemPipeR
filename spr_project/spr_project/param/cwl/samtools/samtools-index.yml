@@ -1,0 +1,17 @@
+########################
+## samtools-index.yml ##
+########################
+
+samtools_sort_bam:
+  class: File
+  path: _BAM_SORT_PATH_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+  module2: samtools/1.9
+

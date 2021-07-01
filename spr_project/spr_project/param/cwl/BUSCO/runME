@@ -1,0 +1,10 @@
+```{r BUSCO, eval=FALSE}
+download.file(url = "https://busco.ezlab.org/datasets/prerelease/liliopsida_odb10.tar.gz", destfile = "results/BUSCO")
+
+library(systemPipeR)
+args <- loadWorkflow(targets = NULL, wf_file = "BUSCO.cwl", 
+    input_file = "BUSCO.yml", dir_path = "param/cwl/BUSCO")
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH_"))
+cmdlist(args)
+
+```

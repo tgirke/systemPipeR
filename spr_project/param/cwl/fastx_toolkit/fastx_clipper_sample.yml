@@ -1,0 +1,18 @@
+#############################
+## fastx_clipper.yml       ##
+#############################
+
+gunzip:
+  class: File
+  path: /Users/mathramasamy/CWLtest/workflow-bwa-pe-test/cwl_testing/rnaseq/data/SRR446027_1.fastq #_FASTQ_PATH_
+  
+SampleName: aaaa #_SampleName_
+
+results_path:
+  class: Directory
+  path: /Users/mathramasamy/CWLtest/workflow-bwa-pe-test/cwl_testing/rnaseq/results
+
+ModulesToLoad: 
+  module1: fastx_toolkit/0.0.13 
+
+adaptor: AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC

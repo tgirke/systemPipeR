@@ -87,7 +87,7 @@ setwd("spr_project")
 - Create a project
 
 ```{r SPRproject, eval=TRUE}
-sal <- SPRproject(overwrite=TRUE) 
+sal <- SPRproject(envir = globalenv(), overwrite=TRUE) 
 ```
 
 - Add first step
@@ -111,24 +111,25 @@ outfiles(sal)
 
 ```{r, eval=TRUE}
 appendStep(sal) <- LineWise(stepName = "R_read", 
-                       code = "print(outfiles(sal)[[1]][1,1]); hello <-read.delim(outfiles(sal)[[1]][1,1])")
+                       code = "hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))")
 ```
 
 - Run workflow
 
 ```{r, eval=TRUE}
 sal <- runWF(sal)
+sal
 ```
 
+- Check workflow status
+
+```{r, eval=TRUE}
+statusWF(sal)
+```
 
 # How to design a Workflow?
 
-- Interactive design
-- Using R Markdown
-
-## Directory Structure
-
-# Interactive Workflow
+## Interactive Workflow
 
 ## Project Initialization
 
@@ -136,7 +137,6 @@ To create a Workflow within `systemPipeR`, we can start by defining an empty
 container and checking the directory structure:
 
 ```{r SPRproject, eval=TRUE}
-#sal <- SPRproject(projPath = tempdir()) 
 sal <- SPRproject(overwrite=TRUE) 
 ```
 

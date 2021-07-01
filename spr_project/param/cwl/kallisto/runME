@@ -1,0 +1,10 @@
+targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+dir_path <- system.file("extdata/cwl/kallisto/", package="systemPipeR")
+kallisto <- loadWorkflow(targets = targetsPE, wf_file = "kallisto.cwl", 
+    input_file = "kallisto.yml", dir_path = dir_path)
+kallisto <- renderWF(kallisto, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+kallisto
+cmdlist(kallisto)[1:2]
+output(kallisto)[1:2]
+## Single Machine
+kallisto <- runCommandline(args= kallisto, make_bam=FALSE) 

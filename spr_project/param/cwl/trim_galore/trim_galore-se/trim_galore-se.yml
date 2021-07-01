@@ -1,0 +1,22 @@
+#############################
+##    trim_galore.yml      ##
+#############################
+
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+  module1: trim_galore/0.6.4
+  
+length: 25
+
+quality: 20
+
+adapter_trim_galore: AGATCGGAAGAGC
