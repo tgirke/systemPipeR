@@ -8,6 +8,7 @@ changelog
         - Added output names at files slot at SYSargs2 obj
         - outfiles(sal) --> colnames from cwl file
         - progress bar for LineWise
+        - runCommandline --> removed sample subfolder structure
         
      version 1.27.7
      	- Added option to dir=T/F for each step

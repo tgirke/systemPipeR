@@ -286,12 +286,12 @@ SYSargsList <- function(args=NULL, step_name="default",
     if(is.null(targets)){
       targets <- targets
     } else if(inherits(targets, "character")){
-      if(file.exists(targets)){
-        targets <- targets
-      } else {
-        targets_step <- targets
-        targets <- NULL
-      }
+        if(all(all(file.exists(targets)) && length(targets)==1)){
+          targets <- targets
+        } else {
+          targets_step <- targets
+          targets <- NULL
+        }
     }
     WF <- loadWorkflow(targets=targets, wf_file=wf_file, 
                        input_file=input_file, dir_path=dir_path)

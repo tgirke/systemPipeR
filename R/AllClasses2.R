@@ -823,19 +823,40 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   targesCon <- value$targets_connection[[1]]
   if (!is.null(targesCon[[1]])){
     step <- targesCon[[1]][[1]]
-    targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
-    new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
-    if(!step %in% names(stepsWF(x))) stop(paste0("'targets' argument needs to be assigned as valid targets file OR the names of a previous step, for example: ", "\n",
-                                                 paste0(names(stepsWF(x)), collapse = " OR ")))
-    if(all(!new_targets_col %in% colnames(x$outfiles[[1]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
-                                                                         paste0(colnames(x$outfiles[[1]]), collapse = " OR \n")))
-    if(is.null(targesCon[[3]][[1]])){
-      old_targets <- x$targetsWF[[step]]
-    } else {
-      old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
+    if(any(!step %in% names(stepsWF(x)))) stop(paste0("'targets' argument needs to be assigned as valid targets file OR the names of a previous step, for example: ", "\n",
+                                                      paste0(names(stepsWF(x)), collapse = " OR ")))
+    if(length(step)==1){
+      targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
+      new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+      if(all(!new_targets_col %in% colnames(x$outfiles[[1]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
+                                                                           paste0(colnames(x$outfiles[[1]]), collapse = " OR \n")))
+      if(is.null(targesCon[[3]][[1]])){
+        old_targets <- x$targetsWF[[step]]
+      } else {
+        old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
+      }
+      new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
+      new_targetsheader <- targetsheader(x, step)
+      ## DOUBLE CONNECTION
+    } else if(length(step) > 1){
+      targets_list <- sapply(step, function(y) targetsWF(x)[[y]])
+      targets_list_name <- unique(unlist(lapply(targets_list, function(y) names(y))))
+      old_targets <- Reduce(function(x, y) merge(x, y, by=targets_list_name, all=TRUE), targets_list)
+      targets_name <- paste(targets_list_name, collapse="|")
+      new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+      colnames_outfiles <- sapply(outfiles(x), function(y) names(y))
+      if(!all(new_targets_col %in% colnames_outfiles)) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
+                                                                   paste0(colnames_outfiles, collapse = " OR \n")))
+      if(is.null(targesCon[[3]][[1]])){
+        old_targets <- old_targets
+      } else {
+        old_targets <- old_targets[-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(old_targets))))]
+      }
+      new_col_list <- lapply(step, function(y) outfiles(x)[[y]])
+      new_targets <- cbind(new_col_list, old_targets)
+      new_targetsheader <- sapply(step, function(y) targetsheader(x, y))[1]
+      names(new_targetsheader) <- "targetsheader"
     }
-    new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
-    new_targetsheader <- targetsheader(x, step)
     WF <- value$stepsWF[[1]]
     #inputvars_v <- unlist(WF$inputvars)
     ## TODO: check inputvars...
