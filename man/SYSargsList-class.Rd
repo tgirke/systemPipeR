@@ -35,8 +35,8 @@
 \alias{targets_connection,SYSargsList-method}
 \alias{subsetTargets}
 \alias{subsetTargets,SYSargsList-method}
-\alias{subsetOutfiles}
-\alias{subsetOutfiles,SYSargsList-method}
+\alias{getColumn}
+\alias{getColumn,SYSargsList-method}
 \alias{copyEnv}
 \alias{copyEnv,SYSargsList-method}
 \alias{viewEnv}
