@@ -75,7 +75,7 @@ strings for each data set and processing step prior to running a command line.
 ## Directory Structure
 
 `systemPipeR` provides pre-configured workflows, reporting templates and sample 
-data loaded as demonstrated below. Directory names are indicated in  <span style="color:grey">***green***</span>.
+data loaded as demonstrated below. Directory names are indicated in <span style="color:grey">***green***</span>.
 Users can change this structure as needed, but need to adjust the code in their 
 workflows accordingly. 
 
@@ -164,6 +164,10 @@ container and checking the directory structure:
 sal <- SPRproject(overwrite=TRUE) 
 ```
 
+<span style="color:green">***NOTE_DC:***</span>
+We are using overwrite option here just for convenience; once the 
+documentation is published, we want to remove this option in this section of the vignette. 
+
 Internally, `SPRproject` function will check and/or create the basic folder
 structure, which means `data`, `param`, and `results` folder. 
 If the user wants to use a different names for these directories, can be specified 
@@ -186,10 +190,17 @@ be modified as follows:
 sal <- SPRproject(logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
 ```
 
+It is possible to separate all the objects created within the workflow analysis 
+from the current environment. `SPRproject` function provides the option to create 
+a new environment, and in this way, it is not overwriting any object you may want
+to have at your current section. 
 
+```{r SPRproject_env, eval=FALSE}
+sal <- SPRproject(envir = new.env()) 
+```
 
 In this stage, the object `sal` is a empty container, except the project
-information, as the project, data, results and param folder paths, as can be
+information, as the project, `data`, `results` and `param` folder paths, as can be
 access but the `projectInfo` accessory method:
 
 ```{r}
@@ -207,8 +218,8 @@ length(sal)
 ## Adding a new step from template
 
 Next, we need to populate the object created with the first step in the
-workflow. Here, an example of how to perform this task using param template
-files for trimming FASTQ files with `Trimmomatic` software (citation).
+workflow. Here, an example of how to perform this task using parametrs template
+files for trimming FASTQ files with [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) software [@Bolger2014-yr].
 
 The constructor functions create an `SYSargsList` S4 class object from three
 input files:
@@ -225,28 +236,55 @@ with column names in the targets file and the value must match the names of the
 
 In CWL, files with the extension `.cwl` define the parameters of a chosen
 command-line step or workflow, while files with the extension `.yml` define the
-input variables of command-line steps. Note, input variables provided by a
-targets file can be passed on to a instance via the `inputvars` argument of the
-`SYSargsList` function.
+input variables of command-line steps. 
 
-For more information of each one of those files, please check here. (\#\#TODO:
-Link to the dedicate section explaining the dynamic between those 3 files).
+For more information of each one of those files, please check [here]().
+<span style="color:green">***NOTE_DC:***</span> ##TODO: add link to dedicate section or 
+supplementary file (vignettes/systemPipeR_CWL.Rmd) explaining the dynamic between those 3 files.
+
+`SYSargsList` function requires the initial *targets* path, a unique *name* for the step, all the *cwl files path*, and the `inputvar` information connecting the information 
+between *targets* files and cwl parameters, as specified above. 
+`appendStep` is required to append a step to the previous empty container created. 
+
+```{r, trim_step, eval=TRUE}
+targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+appendStep(sal) <- SYSargsList(targets=targetspath, 
+                   step_name="Quality",
+                   wf_file = "trimmomatic/workflow_trimmomatic-pe.cwl", 
+                   input_file = "trimmomatic/trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+```
+
+When running preconfigured workflows, the only input the user needs to provide is
+the initial *targets* file containing the paths to the input files (*e.g.*
+FASTQ) along with unique sample labels. Subsequent targets instances are
+created automatically, building the connection between the steps. 
+
+For a brief overview of the workflow, we can check the object as follows:
+
+```{r}
+sal
+```
+
+Note that we have one step, and it is expected 72 files. Also, the workflow status 
+is *Pending*, which means the workflow object is rendered in R; however, we did 
+not run the step yet. 
+In addition to this summary, it can be observed this step has 18 command lines. 
+
+For more details about the command line rendered for each target file, it can be checked as follows: 
+
+```{r}
+cmdlist(sal, targets=1:2)
+```
+
+This is a powerful utility since we can visualize all the command lines before running and facilities to find any issues and debugging. 
+
+- Adding a second step:
 
 ### Rules
  - names
  needs to be different
-
-```{r}
-targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-appendStep(sal) <- SYSargsList(targets=targetspath, 
-                   step_name="Quality",
-                   wf_file = "trimmomatic/trimmomatic-pe.cwl", input_file = "trimmomatic/trimmomatic-pe.yml",
-                   dir_path=system.file("extdata/cwl", 
-                                        package = "systemPipeR"),
-                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
-```
-
-- Adding a second step:
 
 ```{r}
 appendStep(sal) <- SYSargsList(step_name = "Index", dir = FALSE,
