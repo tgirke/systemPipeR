@@ -1,4 +1,11 @@
 changelog
+     version 1.27.9
+        - Renamed subsetOutfiles() to getColumn()
+        - Added internal slot for SYSargs2 'internal_outfiles' -> This allows to keep the original output paths, important for the internal updates within runCommandline()
+        - Internal validation for adding a new step improved 
+        - importWF() improved
+        - Force option for runCommandline() improved
+        
      version 1.27.8
         - Added viewEnvir() and copyEnvir(), stepName(), subsetOutfiles() methods
         - targetsheader(), SampleName() methods for SYSargsList 
