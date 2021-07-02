@@ -632,17 +632,18 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
         WFstep <- names(stepsWF(WF))
         new_targets <- WF$targetsWF[[1]]
         col_out <- lapply(outfiles(args), function(x) colnames(x))
-        if(all(sapply(col_out, function(x) length(x)==1))){
-          col_out <- col_out[col_out %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
-          col_out_df <- lapply(names(col_out), function(x) getColumn(args, step=x, df = "outfiles", column = col_out[[x]]))
-          names(col_out_df) <- col_out
-          new_targets[as.character(col_out)] <- col_out_df
+        col_out_l <- sapply(names(col_out), function(x) list(NULL))
+        for(i in names(col_out)){
+          col_out_l[[i]] <- col_out[[i]][col_out[[i]] %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
+        }
+        col_out_l <- col_out_l[lapply(col_out_l,length)>0]
+        
+        if(all(sapply(col_out_l, function(x) length(x)==1))){
+          # col_out <- col_out[col_out %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
+          col_out_df <- lapply(names(col_out_l), function(x) getColumn(args, step=x, df = "outfiles", column = col_out_l[[x]]))
+          names(col_out_df) <- col_out_l
+          new_targets[as.character(col_out_l)] <- col_out_df
         } else {
-          col_out_l <- sapply(names(col_out), function(x) list(NULL))
-          for(i in names(col_out)){
-            col_out_l[[i]] <- col_out[[i]][col_out[[i]] %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
-          }
-          col_out_l <- col_out_l[lapply(col_out_l,length)>0]
           col_out_df <- data.frame(args[step]$outfiles[[step]][, col_out_l[[1]]])
           names(col_out_df) <- col_out_l[[1]]
           new_targets[as.character(col_out_l[[1]])] <- col_out_df
