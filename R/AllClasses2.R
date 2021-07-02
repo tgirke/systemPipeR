@@ -624,19 +624,19 @@ setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x) {
 })
 
 ## copyEnvir() methods for SYSargslist
-setGeneric(name = "copyEnvir", def = function(x, list=character()) standardGeneric("copyEnvir"))
-setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list="all") {
-  envir <- x@runInfo$env
-  cat(envir)
+setGeneric(name = "copyEnvir", def = function(x, list=character(), new.env=globalenv()) standardGeneric("copyEnvir"))
+setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list=character(), new.env) {
+  envir <- x@runInfo$envir
+  print(envir)
   if(length(list)==0){
     list <- ls(envir, all.names=TRUE)
   } else {
     list <- list
   }
   for(l in list) {
-    assign(l, get(l, envir), globalenv())
+    assign(l, get(l, envir), new.env)
   }
-  cat(paste0("Copying to 'globalenv()': ", "\n", paste0(list, collapse = ", ")))
+  cat(paste0("Copying to 'new.env': ", "\n", paste0(list, collapse = ", ")))
 })
 
 ## cmdlist method for SYSargslist

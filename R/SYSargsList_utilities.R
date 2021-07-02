@@ -23,6 +23,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
     if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
   } else if (file.exists(logs.dir) == TRUE) {
     if (restart == FALSE) {
+      print("a")
       if (file.exists(logs.dir)) {
         if(overwrite==FALSE){
           stop(paste0(logs.dir, " already exists.", "\n", "The Workflow can be restart where it was stopped, using the argument 'restart=TRUE'."))
@@ -80,9 +81,7 @@ write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", sile
   ## special case for "runInfo" slot
   yaml_slots <- c("runInfo")
   for(i in yaml_slots){
-    for(j in steps){
-    args_comp[[i]] <- yaml::as.yaml(args2[[i]]$directory[[j]])
-    }
+    args_comp[[i]] <- yaml::as.yaml(args2[[i]]$directory)
   }
  ## Simple yaml slots
   yaml_slots <- c("projectInfo", "SEobj")
@@ -544,6 +543,9 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
   }
   if(saveEnv==TRUE){
     envPath <- file.path(sysproj, "sysargsEnv.rds")
+    if(as.character(as.list(match.call())$args) %in% ls(args@runInfo$env, all.names = TRUE)){
+      rm(list=as.character(as.list(match.call())$args), envir = args@runInfo$env )
+    }
     saveRDS(args2$runInfo$env, envPath)
     args2[["projectInfo"]][["envir"]] <- envPath
   }

@@ -74,6 +74,31 @@ strings for each data set and processing step prior to running a command line.
 
 ## Directory Structure
 
+`systemPipeR` provides pre-configured workflows, reporting templates and sample 
+data loaded as demonstrated below. Directory names are indicated in  <span style="color:grey">***green***</span>.
+Users can change this structure as needed, but need to adjust the code in their 
+workflows accordingly. 
+
+* <span style="color:green">_**workflow/**_</span> (*e.g.* *myproject/*) 
+    + This is the root directory of the R session running the workflow.
+    + Run script ( *\*.Rmd*) and sample annotation (*targets.txt*) files are located here.
+    + Note, this directory can have any name (*e.g.* <span style="color:green">_**myproject**_</span>). Changing its name does not require any modifications in the run script(s).
+  + **Important subdirectories**: 
+    + <span style="color:green">_**param/**_</span> 
+        + <span style="color:green">_**param/cwl/**_</span>: This subdirectory stores all the CWL parameter files. To organize workflows, each can have its own subdirectory, where all `CWL param` and `input.yml` files need to be in the same subdirectory. 
+    + <span style="color:green">_**data/**_ </span>
+        + FASTQ files
+        + FASTA file of reference (*e.g.* reference genome)
+        + Annotation files
+        + etc.
+    + <span style="color:green">_**results/**_</span>
+        + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
+        + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
+
+<center><img src="SYSdir.png"></center>
+
+**Figure 1:** *systemPipeR's* preconfigured directory structure.
+
 # Quick Example
 
 - Load sample data and directory structure
@@ -86,7 +111,7 @@ setwd("spr_project")
 - Create a project
 
 ```{r SPRproject_ex, eval=TRUE}
-sal <- SPRproject(envir = globalenv(), overwrite=TRUE) 
+sal <- SPRproject(overwrite=TRUE) 
 ```
 
 - Add first step
@@ -130,7 +155,7 @@ statusWF(sal)
 
 ## Interactive Workflow
 
-## Project Initialization
+### Project Initialization
 
 To create a Workflow within `systemPipeR`, we can start by defining an empty
 container and checking the directory structure:
@@ -150,11 +175,12 @@ sal <- SPRproject(projPath = getwd(), data = "data", param = "param", results = 
 
 Also, this function allows creating a hidden folder called `.SPRproject`, by default,
 to store all the log files.
-A `yaml` file, here called `SYSargsList.yml`, has been created, which initially
-contains the basic location of the project structure; however, every time the object in R 
-is updated, the new information will also be store in this file, for easy recover.
-If you desire a different names for the logs folder and the `yaml` file, these can be 
-modify as follows:
+A `YAML` file, here called `SYSargsList.yml`, has been created, which initially
+contains the basic location of the project structure; however, every time the 
+workflow object is updated in R, the new information will also be store in this 
+file for easy recovery.
+If you desire different names for the logs folder and the `YAML` file, these can 
+be modified as follows:
 
 ```{r SPRproject_logs, eval=FALSE}
 sal <- SPRproject(logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
@@ -485,6 +511,45 @@ renameStep(sal_rmd, 3) <- "New_load"
 
 ```{r, eval=FALSE}
 runWF(sal[1])
+```
+
+### Project Recovery
+
+If you desire to restart a project that has been initialized in the past, 
+`SPRproject` function allows this operation.
+With the restart option, it is possible to load the `SYSargsList` object in R and 
+restart the analysis. Please, make sure to provide the logs.dir location and the 
+corresponded `YAML` file name.
+The current working directory needs to be in the project root directory.
+
+
+```{r SPR_restart, eval=FALSE}
+sal <- SPRproject(restart=TRUE, logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
+```
+
+If you choose to save the environment in the last analysis, you can recover all the files created in that particular section. `SPRproject` function allows this with `load.envir` argument. Please note that the environment was saved only with you run the workflow 
+in the last section (`runWF()`).
+
+```{r restart_load, eval=FALSE}
+sal <- SPRproject(restart=TRUE, load.envir = TRUE) 
+```
+
+After loading the workflow at your current section, you can check the objects 
+created in the old environment and decide if it is necessary to copy them to the
+current environment.
+
+```{r envir, eval=FALSE}
+viewEnvir(sal)
+copyEnvir(sal, list="hello", new.env = globalenv())
+```
+
+The last and more drastic option from `SYSproject` function is to overwrite the
+logs and the workflow. This option will just delete the hidden folder and the 
+information on the `SYSargsList.yml` files. This will not delete any parameter 
+file nor any results it was created in previous runs.
+
+```{r SPR_overwrite, eval=FALSE}
+sal <- SPRproject(overwrite = TRUE) 
 ```
 
 ## Details
