@@ -45,17 +45,23 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
             sal$runInfo[["directory"]][df$step_name[i]] <- list(NULL)
         } else if(df$spr[i]=="sysargs"){
             args <- eval(parse(text =df$code[i]), envir = globalenv())
+            args[["dependency"]] <- df$dep[i]
+            renameStep(args, 1) <- df$step_name[i]
             # suppressMessages(
             # args <- eval(parse(text=df$code[i])))
-            sal$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
-            sal$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
-            sal$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
-            sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
-            sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
-            sal$targets_connection[df$step_name[i]] <- args$targets_connection
-            sal$runInfo[["directory"]][df$step_name[i]] <- args$runInfo
+            # sal$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
+            # sal$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
+            # sal$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
+            # sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
+            # sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
+            # sal$targets_connection[df$step_name[i]] <- args$targets_connection
+            # sal$runInfo[["directory"]][df$step_name[i]] <- args$runInfo
+            sal <- as(sal, "SYSargsList")
+            appendStep(sal) <- args
+            sal <- as(sal, "list")
         }
     }
+    sal[["projectInfo"]]$rmd_file <- file_path
     return(as(sal, "SYSargsList"))
 }
 

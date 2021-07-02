@@ -35,12 +35,12 @@
 \alias{targets_connection,SYSargsList-method}
 \alias{subsetTargets}
 \alias{subsetTargets,SYSargsList-method}
-\alias{subsetOutfiles}
-\alias{subsetOutfiles,SYSargsList-method}
-\alias{copyEnv}
-\alias{copyEnv,SYSargsList-method}
-\alias{viewEnv}
-\alias{viewEnv,SYSargsList-method}
+\alias{getColumn}
+\alias{getColumn,SYSargsList-method}
+\alias{copyEnvir}
+\alias{copyEnvir,SYSargsList-method}
+\alias{viewEnvir}
+\alias{viewEnvir,SYSargsList-method}
 \alias{cmdlist,SYSargsList-method}
 
 \alias{SampleName,SYSargsList-method}

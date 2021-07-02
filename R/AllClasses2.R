@@ -15,7 +15,8 @@ setClass("SYSargs2", slots = c(
   files = "list",
   inputvars = "list", 
   cmdToCwl = "list", 
-  status = "list"
+  status = "list", 
+  internal_outfiles = "list" 
 ))
 ## Methods to return SYSargs2 components
 setGeneric(name = "targets", def = function(x) standardGeneric("targets"))
@@ -90,7 +91,8 @@ setAs(
         files = from$files,
         inputvars = from$inputvars, 
         cmdToCwl = from$cmdToCwl, 
-        status = from$status
+        status = from$status, 
+        internal_outfiles = from$internal_outfiles
         
     )
 })
@@ -100,7 +102,8 @@ setGeneric(name = "sysargs2", def = function(x) standardGeneric("sysargs2"))
 setMethod(f = "sysargs2", signature = "SYSargs2", definition = function(x) {
   sysargs2 <- list(targets = x@targets, targetsheader = x@targetsheader, modules = x@modules, wf = x@wf,
                    clt = x@clt, yamlinput = x@yamlinput, cmdlist = x@cmdlist, input = x@input, output = x@output, 
-                   files = x@files, inputvars = x@inputvars, cmdToCwl = x@cmdToCwl, status = x@status)
+                   files = x@files, inputvars = x@inputvars, cmdToCwl = x@cmdToCwl,
+                   status = x@status, internal_outfiles = x@internal_outfiles)
   return(sysargs2)
 })
 
@@ -220,6 +223,7 @@ setMethod(f = "[", signature = "SYSargs2", definition = function(x, i, ..., drop
   x@targets <- x@targets[i]
   x@input <- x@input[i]
   x@output <- x@output[i]
+  x@internal_outfiles <- x@internal_outfiles[i]
   x@cmdlist <- x@cmdlist[i]
   return(x)
 })
@@ -238,7 +242,7 @@ setMethod("$", signature = "SYSargs2",
 
 setGeneric(name = "baseCommand", def = function(x) standardGeneric("baseCommand"))
 setMethod("baseCommand", signature = "SYSargs2", definition = function(x) {
-  return(x@clt[[1]]$baseCommand)
+  return(x@clt[[1]]$baseCommand[[1]])
 })
 
 setMethod("SampleName", signature = "SYSargs2", definition = function(x) {
@@ -264,6 +268,7 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
   if (i == 9) x@output <- value
   if (i == 10) x@files <- value
   if (i == 11) x@status <- value
+  if (i == 12) x@internal_outfiles <- value
   if (i == "targets") x@targets <- value
   if (i == "targetsheader") x@targetsheader <- value
   if (i == "modules") x@modules <- value
@@ -276,7 +281,8 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
   if (i == "files") x@files <- value
   if (i == "cmdToCwl") x@cmdToCwl <- value
   if (i == "status") x@status <- value
-  return(x)
+  if (i == "internal_outfiles") x@internal_outfiles <- value 
+    return(x)
 })
 
 ## Replacement method
@@ -515,24 +521,13 @@ setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(
     subset_steps <- 1:length(x_sub)
   }
   for(s in subset_steps){
-    # 
-    # # Check targets index, names
-    # if(inherits(input_targets, "numeric")){
-    #   if(!any(sapply(stepsWF(x_sub), function(x) 1:length(x)) %in% input_targets)) stop("Please select the number of 'input_targets' accordingly, options are: ",
-    #                                                                                     paste0(1:length(x_sub@stepsWF[[1]]), collapse=", "))
-    # } else if(inherits(input_targets, "character")){
-    #   if(!any(sapply(stepsWF(x_sub), function(x) SampleName(x)) %in% input_targets)) stop("Please select the number of 'input_targets' accordingly, options are: ",
-    #                                                                                       paste0(SampleName(x_sub@stepsWF[[1]]), collapse=", "))
-    #   input_targets <- which(SampleName(x_sub$stepsWF[[1]]) %in% input_targets)
-    # }
-    # 
-    
-    
     x@stepsWF[[s]] <- x@stepsWF[[s]][input_targets]
     x@statusWF[[s]]$status.completed <- x@statusWF[[s]]$status.completed[input_targets,]
     x@statusWF[[s]]$status.time <- x@statusWF[[s]]$status.time[input_targets,]
     x@targetsWF[[s]] <- x@targetsWF[[s]][input_targets,]
-    x@outfiles[[s]] <- x@outfiles[[s]][input_targets,]
+    out <- DataFrame(x@outfiles[[s]][input_targets,])
+    colnames(out) <- colnames(x@outfiles[[s]])
+    x@outfiles[[s]] <- out
     #x_sub@SEobj[[s]] <- x_sub@SEobj[[s]][i]
     x@dependency <- x@dependency
     x@targets_connection <- x@targets_connection
@@ -562,8 +557,17 @@ setMethod("stepName", signature = "SYSargsList", definition = function(x) {
     return(names(stepsWF(x)))
 })
 
-setGeneric(name = "subsetOutfiles", def = function(x, step, column=1, names=SampleName(x, step)) standardGeneric("subsetOutfiles"))
-setMethod("subsetOutfiles", signature = "SYSargsList", definition = function(x, step, column=1, names=SampleName(x, step)) {
+
+setMethod("targetsheader", signature = "SYSargsList", definition = function(x, step) {
+  return(stepsWF(x)[[step]]$targetsheader)
+})
+
+setGeneric(name = "getColumn", def = function(x, step, df, column=1, names=SampleName(x, step)) standardGeneric("getColumn"))
+setMethod("getColumn", signature = "SYSargsList", definition = function(x, step, df=c("targetsWF", "outfiles"), column=1, names=SampleName(x, step)) {
+  ## assertions 
+  stopifnot(inherits(x, "SYSargsList"))
+  stopifnot(length(step) == 1)
+  stopifnot(length(column) == 1)
   ## Check steps
   if(inherits(step, "numeric")){
     if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
@@ -572,24 +576,20 @@ setMethod("subsetOutfiles", signature = "SYSargsList", definition = function(x, 
   }
   ## Check column
   if(inherits(column, "numeric")){
-    if(!column %in% 1:ncol(outfiles(x)[[step]])) stop("We can not find this step in the Workflow")
+    if(!column %in% 1:ncol(x[[df]][[step]])) stop("We can not find this column in the Workflow")
   } else if(inherits(column, "character")){
-    if(!column %in% colnames(outfiles(x)[[step]])) stop("We can not find this step in the Workflow")
+    if(!column %in% colnames(x[[df]][[step]])) stop("We can not find this column in the Workflow")
   }
   ## Check names
-  if(!length(names) ==  length(outfiles(x)[[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+  if(!length(names) ==  length(x[[df]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
   ## 
-  if(!is.null(outfiles(x)[[step]][[column]])){
-    subset <- outfiles(x)[[step]][[column]]
+  if(!is.null(x[[df]][[step]][[column]])){
+    subset <- x[[df]][[step]][[column]]
     names(subset) <- names
   } else {
     message("This step doesn't contain expected outfiles.")
   }
   return(subset)
-})
-
-setMethod(f = "targetsheader", signature = "SYSargsList", definition = function(x, step=1) {
-  return(stepsWF(sal)[[step]]$targetsheader)
 })
 
 # ## Behavior of "[[" operator for SYSargsList
@@ -616,27 +616,27 @@ setMethod("$", signature = "SYSargsList",
             slot(x, name)
           })
 
-## viewEnv() methods for SYSargslist
-setGeneric(name = "viewEnv", def = function(x) standardGeneric("viewEnv"))
-setMethod(f = "viewEnv", signature = "SYSargsList", definition = function(x) {
+## viewEnvir() methods for SYSargslist
+setGeneric(name = "viewEnvir", def = function(x) standardGeneric("viewEnvir"))
+setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x) {
   print(x@runInfo$env)
   print(ls(x@runInfo$env, all.names = TRUE))
 })
 
-## copyEnv() methods for SYSargslist
-setGeneric(name = "copyEnv", def = function(x, list=character()) standardGeneric("copyEnv"))
-setMethod(f = "copyEnv", signature = "SYSargsList", definition = function(x, list="all") {
-  envir <- x@runInfo$env
-  cat(envir)
+## copyEnvir() methods for SYSargslist
+setGeneric(name = "copyEnvir", def = function(x, list=character(), new.env=globalenv()) standardGeneric("copyEnvir"))
+setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list=character(), new.env) {
+  envir <- x@runInfo$envir
+  print(envir)
   if(length(list)==0){
     list <- ls(envir, all.names=TRUE)
   } else {
     list <- list
   }
   for(l in list) {
-    assign(l, get(l, envir), globalenv())
+    assign(l, get(l, envir), new.env)
   }
-  cat(paste0("Copying to 'globalenv()': ", "\n", paste0(list, collapse = ", ")))
+  cat(paste0("Copying to 'new.env': ", "\n", paste0(list, collapse = ", ")))
 })
 
 ## cmdlist method for SYSargslist
@@ -815,27 +815,53 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     write_SYSargsList(x, sys.file, silent=TRUE)
     return(x)
   }
-
 }
 
 .validationStepConn <- function(x, value){
+  ## Check outfiles names
+  if(any(
+    duplicated(unlist(append(sapply(outfiles(x), function(y) names(y)), sapply(outfiles(value), function(y) names(y)))))))
+    stop("'outfiles' columns names needs to be unique")
+  ## Check value length
   if(length(value) > 1) stop("One step can be appended in each operation.")
   targesCon <- value$targets_connection[[1]]
   if (!is.null(targesCon[[1]])){
     step <- targesCon[[1]][[1]]
-    targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
-    new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
-    if(!step %in% names(stepsWF(x))) stop(paste0("'targets' argument needs to be assigned as valid targets file OR the names of a previous step, for example: ", "\n",
-                                                 paste0(names(stepsWF(x)), collapse = " OR ")))
-    if(all(!new_targets_col %in% colnames(x$outfiles[[1]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
-                                                                         paste0(colnames(x$outfiles[[1]]), collapse = " OR \n")))
-    if(is.null(targesCon[[3]][[1]])){
-      old_targets <- x$targetsWF[[step]]
-    } else {
-      old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
+    if(any(!step %in% names(stepsWF(x)))) stop(paste0("'targets' argument needs to be assigned as valid targets file OR the names of a previous step, for example: ", "\n",
+                                                      paste0(names(stepsWF(x)), collapse = " OR ")))
+    if(length(step)==1){
+      targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
+      new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+      ## addd skip
+      if(all(!new_targets_col %in% colnames(x$outfiles[[step]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
+                                                                           paste0(colnames(x$outfiles[[step]]), collapse = " OR \n")))
+      if(is.null(targesCon[[3]][[1]])){
+        old_targets <- x$targetsWF[[step]]
+      } else {
+        old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(x$targetsWF[[step]]))))]
+      }
+      new_targets <- cbind(x$outfiles[[step]][new_targets_col], old_targets)
+      new_targetsheader <- targetsheader(x, step)
+      ## DOUBLE CONNECTION
+    } else if(length(step) > 1){
+      targets_list <- sapply(step, function(y) targetsWF(x)[[y]])
+      targets_list_name <- unique(unlist(lapply(targets_list, function(y) names(y))))
+      old_targets <- Reduce(function(x, y) merge(x, y, by=targets_list_name, all=TRUE), targets_list)
+      targets_name <- paste(targets_list_name, collapse="|")
+      new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+      colnames_outfiles <- sapply(outfiles(x), function(y) names(y))
+      if(!all(new_targets_col %in% colnames_outfiles)) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
+                                                                   paste0(colnames_outfiles, collapse = " OR \n")))
+      if(is.null(targesCon[[3]][[1]])){
+        old_targets <- old_targets
+      } else {
+        old_targets <- old_targets[-c(which(grepl(paste(targesCon[[3]][[1]], collapse="|"), colnames(old_targets))))]
+      }
+      new_col_list <- lapply(step, function(y) outfiles(x)[[y]])
+      new_targets <- cbind(new_col_list, old_targets)
+      new_targetsheader <- sapply(step, function(y) targetsheader(x, y))[1]
+      names(new_targetsheader) <- "targetsheader"
     }
-    new_targets <- cbind(x$outfiles[[1]][new_targets_col], old_targets)
-    new_targetsheader <- targetsheader(x, step)
     WF <- value$stepsWF[[1]]
     #inputvars_v <- unlist(WF$inputvars)
     ## TODO: check inputvars...
