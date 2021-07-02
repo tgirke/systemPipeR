@@ -269,7 +269,7 @@ command <- "
 hisat2 \
     -S <F, out: ./results/M1A.sam> \
     -x <F: ./data/tair10.fasta> \
-    -k <int: 1> \
+     -k <int: 1> \
     -min-intronlen <int: 30> \
     -max-intronlen <int: 3000> \
     -threads <int: 4> \

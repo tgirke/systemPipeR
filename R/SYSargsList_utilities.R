@@ -907,46 +907,46 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
 ######################
 ## plotWF function ##
 ######################
-plotWF <- function(sysargslist, plot_style = "detect", out_type = "html", out_path = "default", height = NULL, width = NULL) {
-  ## Validation for 'sysargslist'
-  if (class(sysargslist) != "SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
-  df_wf <- sysargslist$dataWF
-  # pre checks
-  assert_that(out_type %in% c("html", "png", "svg", "shiny"), msg = "out_type needs to be one of 'html', 'png', 'svg'")
-  assert_that(plot_style %in% c("detect", "none", "linear"), msg = "out_type needs to be one of 'detect', 'none', 'linear'")
-  assert_that(is.data.frame(df_wf))
-  all(c("t_lvl", "t_number", "t_text", "selected", "no_run", "no_success", "link_to") %in% names(df_wf)) %>%
-    assert_that(msg = 'One of following columns is missing: "t_lvl" "t_number" "t_text" "selected" "no_run" "no_success" "link_to"')
-  if (out_path == "default" & !out_type %in% c("html", "shiny")) {
-    assert_that(is.writeable(out_path))
-    assert_that(is.count(height) | is.null(height))
-    assert_that(is.count(width) | is.null(width))
-    out_path <- switch(out_type,
-      "svg" = paste0("wfplot", format(Sys.time(), "%Y%m%d%H%M%S"), ".svg"),
-      "png" = paste0("wfplot", format(Sys.time(), "%Y%m%d%H%M%S"), ".png")
-    )
-  }
-  df_wf <- df_wf[df_wf$selected == TRUE, ]
-  if (nrow(df_wf) == 0) {
-    return(cat("no step is selected"))
-  }
-
-  wf <- .make_plot(df_wf, plot_style, is_main_branch = FALSE)
-  wf <- append(wf, .make_plot(df_wf, plot_style, is_main_branch = TRUE), after = length(wf) - 1)
-  # special case for detection style plotting, need to move unneeded nodes out of main branch
-  if (plot_style == "detect") wf <- .change_branch(df_wf, wf)
-  # collapse entire graph
-  # return(wf)
-  wf <- paste0(wf, collapse = "")
-  # plot
-  plot <- switch(out_type,
-    "shiny" = dot(wf, return = "verbatim"),
-    "html" = dot(wf),
-    "svg" = dot(wf, return = "verbatim") %>% rsvg_svg(file = out_path, height = height, width = width),
-    "png" = dot(wf, return = "verbatim") %>% charToRaw() %>% rsvg_png(file = out_path, height = height, width = width)
-  )
-  return(plot)
-}
+# plotWF <- function(sysargslist, plot_style = "detect", out_type = "html", out_path = "default", height = NULL, width = NULL) {
+#   ## Validation for 'sysargslist'
+#   if (class(sysargslist) != "SYSargsList") stop("Argument 'sysargslist' needs to be assigned an object of class 'SYSargsList'")
+#   df_wf <- sysargslist$dataWF
+#   # pre checks
+#   assert_that(out_type %in% c("html", "png", "svg", "shiny"), msg = "out_type needs to be one of 'html', 'png', 'svg'")
+#   assert_that(plot_style %in% c("detect", "none", "linear"), msg = "out_type needs to be one of 'detect', 'none', 'linear'")
+#   assert_that(is.data.frame(df_wf))
+#   all(c("t_lvl", "t_number", "t_text", "selected", "no_run", "no_success", "link_to") %in% names(df_wf)) %>%
+#     assert_that(msg = 'One of following columns is missing: "t_lvl" "t_number" "t_text" "selected" "no_run" "no_success" "link_to"')
+#   if (out_path == "default" & !out_type %in% c("html", "shiny")) {
+#     assert_that(is.writeable(out_path))
+#     assert_that(is.count(height) | is.null(height))
+#     assert_that(is.count(width) | is.null(width))
+#     out_path <- switch(out_type,
+#       "svg" = paste0("wfplot", format(Sys.time(), "%Y%m%d%H%M%S"), ".svg"),
+#       "png" = paste0("wfplot", format(Sys.time(), "%Y%m%d%H%M%S"), ".png")
+#     )
+#   }
+#   df_wf <- df_wf[df_wf$selected == TRUE, ]
+#   if (nrow(df_wf) == 0) {
+#     return(cat("no step is selected"))
+#   }
+# 
+#   wf <- .make_plot(df_wf, plot_style, is_main_branch = FALSE)
+#   wf <- append(wf, .make_plot(df_wf, plot_style, is_main_branch = TRUE), after = length(wf) - 1)
+#   # special case for detection style plotting, need to move unneeded nodes out of main branch
+#   if (plot_style == "detect") wf <- .change_branch(df_wf, wf)
+#   # collapse entire graph
+#   # return(wf)
+#   wf <- paste0(wf, collapse = "")
+#   # plot
+#   plot <- switch(out_type,
+#     "shiny" = dot(wf, return = "verbatim"),
+#     "html" = dot(wf),
+#     "svg" = dot(wf, return = "verbatim") %>% rsvg_svg(file = out_path, height = height, width = width),
+#     "png" = dot(wf, return = "verbatim") %>% charToRaw() %>% rsvg_png(file = out_path, height = height, width = width)
+#   )
+#   return(plot)
+# }
 
 ## Usage:
 # df_wf <- dataWF(sysargslist)
