@@ -5,7 +5,7 @@ changelog
         - Internal validation for adding a new step improved 
         - importWF() improved
         - Force option for runCommandline() improved
-	- Documentation
+        - Documentation
         
      version 1.27.8
         - Added viewEnvir() and copyEnvir(), stepName(), subsetOutfiles() methods

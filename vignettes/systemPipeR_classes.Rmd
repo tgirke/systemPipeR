@@ -103,9 +103,13 @@ workflows accordingly.
 
 - Load sample data and directory structure
 
-```{r genNew_wf, eval=FALSE}
+```{r genNew_wf, eval=TRUE, }
 systemPipeRdata::genWorkenvir(workflow="new", mydirname = "spr_project")
 setwd("spr_project")
+```
+
+```{r, include=FALSE}
+knitr::opts_knit$set(root.dir = 'spr_project')
 ```
 
 - Create a project
@@ -119,7 +123,7 @@ sal <- SPRproject(overwrite=TRUE)
 ```{r firstStep, eval=TRUE}
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "echo", 
-                      targets=targetspath, dir=T,
+                      targets=targetspath, dir=TRUE,
                       wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
                       dir_path = system.file("extdata/cwl", package="systemPipeR"),
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
@@ -282,24 +286,39 @@ This is a powerful utility since we can visualize all the command lines before r
 
 - Adding a second step:
 
-### Rules
- - names
- needs to be different
+Next, to add new steps to the workflow, we use the same functions, `appendStep<-` and `SYSargsList`. 
+For this particular example, we want to add the build index for Hisat2 [@Kim2015-ve]. 
+In this example, it is required one command line, and a targets argument is not 
+necessary. 
+
+For the workflow, all the steps required a unique name, and this can be added to 
+the `step_name` argument. If no value is provided, the step will be named as 
+*step_X*, where *X* reflects the workflow position. 
+
+For the outputs files, in this step, it is required to be added on the *data/*
+directory, and not in a specif subdirectory, as default. In this case, the function
+allows setting `dir=FALSE`.
 
 ```{r}
 appendStep(sal) <- SYSargsList(step_name = "Index", dir = FALSE,
                                targets=NULL, 
-                               wf_file = "hisat2/hisat2-index.cwl", input_file="hisat2/hisat2-index.yml",
-                               dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                               dependency=NULL)
-cmdlist(sal[2])
+                               wf_file = "hisat2/workflow_hisat2-index.cwl",
+                               input_file="hisat2/hisat2-index.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"))
 ```
 
-### Use the output files for the next step
+We can check all the expected `outfiles` for this particular step, as follows:
 
-Here, in this example, we would like to use the output from Quality Step, as
-input from the next step, which is the Mapping. In this case, let's look the
-output from the first step:
+```{r outfiles_2, eval=TRUE}
+outfiles(sal[2])
+# outfiles(sal["Index"])
+```
+
+## Using the outfiles for the next step
+
+Here, in this example, we would like to use the outfiles from *Quality* Step, as
+input from the next step, which is the *Mapping*. In this case, let's look at the 
+outfiles from the first step:
 
 ```{r}
 outfiles(sal[1])
@@ -307,15 +326,19 @@ outfiles(sal[1])
 
 The two-column you may want to use here are "trimmomatic_1\_paired" and
 "trimmomatic_2\_paired". For the argument `targets` in the `SYSargsList` function,
-should provide the name of the correspondent step in the Workflow and also which
-output you would like to be incorporated on the next step. Here, the name of the
-columns we previously explore above. It is possible to keep all the original
-columns from the `targets` files or remove some columns for a clean `targets` file.
+should provide the name of the correspondent step in the Workflow and which outfiles 
+you would like to be incorporated in the next step. Here, the name of the columns 
+we previously explore above.
+The argument `inputvars` allows the connectivity between the new targets file. 
+Here, the name of the previous `outfiles` should be provided it.
+It is possible to keep all the original columns from the `targets` files or remove
+some columns for a clean `targets` file.
 The argument `rm_targets_col` provides this flexibility, where it is possible to
 specify the names of the columns that should be removed. If no names are passing
-here, the new columns will be appended. The argument `inputvars` allow the
-connectivity between the new targets file. Here, the name of the previous
-`outfiles` should be provided it.
+here, the new columns will be appended. 
+
+In addition, a useful utility establishes a dependency among the steps in the workflow,
+and this is possible with the `dependency` argument, where the names of steps are specified.
 
 ```{r, eval=TRUE}
 appendStep(sal) <- SYSargsList(targets="Quality",
@@ -329,32 +352,89 @@ appendStep(sal) <- SYSargsList(targets="Quality",
                                dependency = c("Quality", "Index"))
 ```
 
-## Accessing the details
+Now, we can observe that the third step contains four substeps.
 
-Let's explore our object:
+```{r}
+sal
+```
+
+In addition, we can access all the command lines for each one of the substeps. 
+
+```{r, eval=TRUE}
+cmdlist(sal["Mapping"], targets=1)
+```
+
+## Update a parameter the workflow
+
+```{r, eval=TRUE}
+## check values
+yamlinput(sal, step=1)
+## check on command line
+cmdlist(sal[1], 1)
+## Replace
+yamlinput(sal, step=1, paramName = "thread") <- c(8L) 
+sal
+## check NEW values
+yamlinput(sal, step=1)
+## Check on command line
+cmdlist(sal[1], 1)
+```
+
+## Adding a R code as new Step
+
+```{r}
+appendStep(sal) <- LineWise("log_cal <- log(1)", "R_code")
+sal
+stepsWF(sal)
+```
+
+- Replacement and Append methods for R Code Steps
+
+```{r, sal_lw_rep, eval=TRUE}
+appendCodeLine(sal, step="R_code", after=1) <- "log_cal_100 <- log(100)"
+codeLine(sal["R_code"])
+
+replaceCodeLine(sal, step="R_code", line=1) <- "log_cal_100 <- log(50)"
+codeLine(sal["R_code"])
+```
+
+For more details about the `LineWise` class, please check [below](#linewise).
+
+## Running the workflow
+
+For running the workflow, `runWF` function will execute all the command lines store in the workflow container:
+
+```{r, eval=TRUE}
+sal <- runWF(sal)
+sal
+```
+
+# Accessing the workflow details
+
+Let's explore our workflow:
 
 - Accessor Methods:
 
 Several accessor methods are available that are named after the slot names of
-the `SYSargsList` object.
+the `SYSargsList` workflow object.
 
 ```{r}
 names(sal)
 ```
 
-- Check the length of the `sal` object:
+- Check the length of the workflow:
 
 ```{r}
 length(sal)
 ```
 
-- Check the steps of the `sal` object:
+- Check the steps of the workflow:
 
 ```{r}
 stepsWF(sal)
 ```
 
-- Checking the command-line for each sample:
+- Checking the command-line for each target sample:
 
 `cmdlist()` method constructs the system commands for running command-line
 software as specified by a given `.cwl` file combined with the paths to the
@@ -365,32 +445,68 @@ and debugging `.cwl` files of new command-line software or changing the
 parameter settings of existing ones.
 
 ```{r}
-sal[1]
-cmdlist(sal[1], 1:2)
+cmdlist(sal[1:3], targets=1)
 ```
 
-- Check the status of the `sal` object:
+- Check the workflow status:
 
 ```{r}
 statusWF(sal)
 ```
 
-- Check the targets of the `sal` object:
+- Check the workflow targets files:
 
 ```{r}
-targetsWF(sal)
+targetsWF(sal[1])
 ```
 
-- Checking the expected output files:
+- Checking the expected outfiles files:
 
-The `outfiles` components of `SYSargsList` define the expected output files for
+The `outfiles` components of `SYSargsList` define the expected outfiles files for
 each step in the workflow; some of which are the input for the next workflow
 step.
 
 ```{r}
 ##outfiles slot
-outfiles(sal)
+outfiles(sal[3])
 ```
+
+- Check the workflow dependencies:
+
+```{r}
+dependency(sal)
+```
+
+- Check the sample comparisons:
+
+Sample comparisons are defined in the header lines of the *targets* file 
+starting with '``# <CMP>``'. This information can be accessed as follows:
+
+```{r}
+targetsheader(sal, step="Quality")
+```
+
+- Get the Sample Id for on particular step
+
+```{r}
+SampleName(sal, step="Quality")
+SampleName(sal, step="Index")
+```
+
+- Get the workflow steps names 
+
+```{r}
+stepName(sal)
+```
+
+- Get the outfiles or targets column files 
+
+```{r}
+getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired")
+getColumn(sal, "targetsWF", step="Quality", column = "FileName1")
+```
+
+# Subsetting the workflow details
 
 - The `SYSargsList` class and its subsetting operator `[`:
 
@@ -403,7 +519,7 @@ sal[c(1,3)]
 - The `SYSargsList` class and its subsetting input samples: 
 
 ```{r}
-sal_sub <- subsetTargets(sal, subset_steps = c(1,3), input_targets = ("M1A"), keep_steps = T)
+sal_sub <- subsetTargets(sal, subset_steps = c(1,3), input_targets = ("M1A"), keep_steps = TRUE)
 stepsWF(sal_sub)
 targetsWF(sal_sub)
 outfiles(sal_sub)
@@ -418,27 +534,26 @@ sal[1] + sal[2] + sal[3]
 - Rename a Step
 
 ```{r}
-renameStep(sal_sub, 1) <- "newStep"
-renameStep(sal_sub, c(1, 2)) <- c("newStep", "new")
+renameStep(sal_sub, step=1) <- "newStep"
+renameStep(sal_sub, c(1, 2)) <- c("newStep", "newIndex")
 sal_sub
 names(outfiles(sal_sub))
-names(targetsWF(sal_sub[1:2]))
+names(targetsWF(sal_sub))
 ```
 
 - Replace a Step
 
 ```{r}
-sal_test <- sal
-replaceStep(sal_test, 1) <- sal[2]
-replaceStep(sal_test, 1, step_name="Quality") <- sal[2]
-# sal_test
+sal_test <- sal[c(1,3)]
+replaceStep(sal_test, step=1, step_name="Index" ) <- sal[2]
+sal_test
 ```
 
 - Removing a Step
 
 ```{r}
-sal_sub <- sal[-2]
-sal_sub
+sal_test <- sal_test[-2]
+sal_test
 ```
 
 ### Internal
@@ -446,109 +561,19 @@ sal_sub
 - out of bounds
 
 ```{r, eval=FALSE}
-sal[3]
+sal[10]
 ```
-
-Important: The number of the samples in which step subset needs to be equal, otherwise, 
-we will have an error. 
-
-### Subset Command Lines
-
-```{r, eval=FALSE}
-sal[1]
-sal[]
-
-cmdlist(sal[1])
-cmdlist(sal[2])
-cmdlist(sal[3], 1) 
-cmdlist(sal[c(1,3)], 1:2)
-```
-
-
-
-```{r}
-## access the targetsheader
-targetsheader(sal, step=1)
-targetsheader(sal, step="Quality")
-## access the SampleName
-SampleName(sal, step=1)
-SampleName(sal, step="Quality")
-
-## Steps Names Method
-stepName(sal)
-
-getColumn(sal, step=1, "outfiles", column = 1)
-
-getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired")
-
-getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired", names=SampleName(sal, step=1))
-
-
-getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired", names=rep("a", 18)) # we may need another method for factor...
-
-
-### 
-```
-
-
-```{r}
-sal_sub <- subsetTargets(sal, subset_steps = c(1), input_targets = ("A6B"), keep_steps = TRUE)
-stepsWF(sal_sub)
-```
-
-## Update a parameter the workflow
-
-```{r, eval=TRUE}
-## check values
-yamlinput(sal, step=1)
-## check on command line
-cmdlist(sal[1], 1)
-## Replace
-yamlinput(sal, step=1, paramName = "thread") <- c(20L) 
-sal
-## check NEW values
-yamlinput(sal, step=1)
-## Check on command line
-cmdlist(sal[1], 1)
-```
-
-## Adding a R code as new Step
-
-```{r}
-appendStep(sal) <- LineWise("a <- log(-1)", "R_code")
-sal
-stepsWF(sal)
-```
-
-- Replacement and Append methods for R Code Steps
-
-```{r, sal_lw_rep, eval=TRUE}
-appendCodeLine(sal, step="R_code", after=1) <- "66+55; Sys.sleep(5)"
-codeLine(sal["R_code"])
-
-replaceCodeLine(sal, step="R_code", line=1) <- "5+5"
-codeLine(sal["R_code"])
-```
-
-For more details about the `LineWise` class, please check [below](#linewise).
 
 # Create Workflow from R Markdown
 
 ```{r, eval=TRUE}
 file_path <- system.file("extdata/", "systemPipeTEST.Rmd", package="systemPipeR")
-# "../systemPipeR/inst/extdata/systemPipeTEST.Rmd"
 sal_rmd <- importWF(file_path, overwrite=TRUE)
 sal_rmd
 stepsWF(sal_rmd)
 dependency(sal_rmd)
 codeLine(sal_rmd[3])
 renameStep(sal_rmd, 3) <- "New_load"
-```
-
-# Running the workflow
-
-```{r, eval=FALSE}
-runWF(sal[1])
 ```
 
 ### Project Recovery

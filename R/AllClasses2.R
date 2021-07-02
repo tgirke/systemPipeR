@@ -926,6 +926,7 @@ setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_name="d
   }
   x <- sysargslist(x)
   x$stepsWF[step] <- value$stepsWF
+  x$statusWF[step] <- value$statusWF
   if(step_name=="default"){
     name <- names(value$stepsWF)
     if(name %in% names(x$stepsWF)){
