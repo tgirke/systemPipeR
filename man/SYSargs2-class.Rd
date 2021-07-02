@@ -49,6 +49,8 @@
 \alias{cmdToCwl,SYSargs2-method}
 \alias{status}
 \alias{status,SYSargs2-method}
+\alias{internal_outfiles}
+\alias{internal_outfiles,SYSargs2-method}
 \alias{baseCommand}
 \alias{baseCommand,SYSargs2-method}
 
@@ -77,6 +79,7 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{\code{inputvars}:}{Object of class \code{"list"} storing data from each \code{inputvars} }
     \item{\code{cmdToCwl}:}{Object of class \code{"list"} storing data from each \code{cmdToCwl} }
     \item{\code{status}:}{Object of class \code{"list"} storing data from each \code{status} }
+    \item{\code{internal_outfiles}:}{Object of class \code{"list"} storing raw data from each \code{output} }
   }
 }
 \section{Methods}{

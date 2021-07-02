@@ -87,7 +87,8 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                      output=out,
                      files=files(args_sub), 
                      inputvars=inputvars(args_sub), 
-                     cmdToCwl=list()) 
+                     cmdToCwl=list(), 
+                     internal_outfiles=list()) 
     args_sub_out <- as(sys2list, "SYSargs2")
   }
   return(args_sub_out)

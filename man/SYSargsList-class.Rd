@@ -37,10 +37,10 @@
 \alias{subsetTargets,SYSargsList-method}
 \alias{getColumn}
 \alias{getColumn,SYSargsList-method}
-\alias{copyEnv}
-\alias{copyEnv,SYSargsList-method}
-\alias{viewEnv}
-\alias{viewEnv,SYSargsList-method}
+\alias{copyEnvir}
+\alias{copyEnvir,SYSargsList-method}
+\alias{viewEnvir}
+\alias{viewEnvir,SYSargsList-method}
 \alias{cmdlist,SYSargsList-method}
 
 \alias{SampleName,SYSargsList-method}

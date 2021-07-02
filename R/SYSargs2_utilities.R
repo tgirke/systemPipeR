@@ -41,7 +41,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     cwlfiles$output_names <- sapply(names(cltlist), function(x) names(cltlist[[x]]$outputs))
     WF <- list(modules=modules, wf=wf, clt=cltlist, yamlinput=input, cmdlist=cmdlist,
                input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars,
-               cmdToCwl=list(), status=list())
+               cmdToCwl=list(), status=list(), internal_outfiles=list())
   } else if(tolower(wf$class) == "commandlinetool") {
     cltlist <- list(wf)
     names(cltlist) <- basename(wf_file)
@@ -52,7 +52,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     cwlfiles$output_names <-  names(cltlist[[1]]$outputs)
     WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist,
                input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars, 
-               cmdToCwl=list(), status=list())
+               cmdToCwl=list(), status=list(), internal_outfiles=list())
   } else {
     stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
   }
@@ -147,6 +147,7 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
   WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$output <- sapply(names(WF.temp$clt), function(x) list(NULL))
+  WF.temp$internal_outfiles <- sapply(names(WF.temp$clt), function(x) list(NULL))
   WF.temp$files <- list(cwl=file.path(file.cwl), 
                            yml=file.path(file.yml), 
                            steps=names(WF.temp$clt))
@@ -215,6 +216,7 @@ renderWF <- function(WF, inputvars=NULL) {
   WF$cmdlist <- bucketlist$cmd
   WF$input <- bucketlist$input
   WF$output <- bucketlist$output
+  WF$internal_outfiles <- bucketlist$output
   WF$inputvars <- tmplist$inputvars
   WF <- as(WF, "SYSargs2")
   WF[["status"]] <- .statusPending(WF)
@@ -738,7 +740,7 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
         return(cmd)
     }
     ## Check here for WF class instead of names once implemented
-    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "files", "inputvars", "cmdToCwl", "status"))) {
+    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "files", "inputvars", "cmdToCwl", "status", "internal_outfiles"))) { 
         cmdstring <- sapply(names(x$cmdlist), 
                             function(i) .renderCommandline(x=x$cmdlist[[i]], redirect=redirect),
                             simplify=FALSE)

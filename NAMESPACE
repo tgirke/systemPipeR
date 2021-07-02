@@ -138,7 +138,7 @@ exportMethods(
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
     "dependency", "projectInfo", "runInfo", 
     "sysargslist", "subsetTargets", "stepName", "getColumn",
-    "SampleName", "viewEnv", "copyEnv",  
+    "SampleName", "viewEnvir", "copyEnvir",  
     "appendStep<-", "replaceStep<-", "renameStep<-",
     ## LineWise
     "codeLine", "codeChunkStart", "rmdPath", "linewise", 

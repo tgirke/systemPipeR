@@ -15,7 +15,8 @@ setClass("SYSargs2", slots = c(
   files = "list",
   inputvars = "list", 
   cmdToCwl = "list", 
-  status = "list"
+  status = "list", 
+  internal_outfiles = "list" 
 ))
 ## Methods to return SYSargs2 components
 setGeneric(name = "targets", def = function(x) standardGeneric("targets"))
@@ -90,7 +91,8 @@ setAs(
         files = from$files,
         inputvars = from$inputvars, 
         cmdToCwl = from$cmdToCwl, 
-        status = from$status
+        status = from$status, 
+        internal_outfiles = from$internal_outfiles
         
     )
 })
@@ -100,7 +102,8 @@ setGeneric(name = "sysargs2", def = function(x) standardGeneric("sysargs2"))
 setMethod(f = "sysargs2", signature = "SYSargs2", definition = function(x) {
   sysargs2 <- list(targets = x@targets, targetsheader = x@targetsheader, modules = x@modules, wf = x@wf,
                    clt = x@clt, yamlinput = x@yamlinput, cmdlist = x@cmdlist, input = x@input, output = x@output, 
-                   files = x@files, inputvars = x@inputvars, cmdToCwl = x@cmdToCwl, status = x@status)
+                   files = x@files, inputvars = x@inputvars, cmdToCwl = x@cmdToCwl,
+                   status = x@status, internal_outfiles = x@internal_outfiles)
   return(sysargs2)
 })
 
@@ -220,6 +223,7 @@ setMethod(f = "[", signature = "SYSargs2", definition = function(x, i, ..., drop
   x@targets <- x@targets[i]
   x@input <- x@input[i]
   x@output <- x@output[i]
+  x@internal_outfiles <- x@internal_outfiles[i]
   x@cmdlist <- x@cmdlist[i]
   return(x)
 })
@@ -238,7 +242,7 @@ setMethod("$", signature = "SYSargs2",
 
 setGeneric(name = "baseCommand", def = function(x) standardGeneric("baseCommand"))
 setMethod("baseCommand", signature = "SYSargs2", definition = function(x) {
-  return(x@clt[[1]]$baseCommand)
+  return(x@clt[[1]]$baseCommand[[1]])
 })
 
 setMethod("SampleName", signature = "SYSargs2", definition = function(x) {
@@ -264,6 +268,7 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
   if (i == 9) x@output <- value
   if (i == 10) x@files <- value
   if (i == 11) x@status <- value
+  if (i == 12) x@internal_outfiles <- value
   if (i == "targets") x@targets <- value
   if (i == "targetsheader") x@targetsheader <- value
   if (i == "modules") x@modules <- value
@@ -276,7 +281,8 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
   if (i == "files") x@files <- value
   if (i == "cmdToCwl") x@cmdToCwl <- value
   if (i == "status") x@status <- value
-  return(x)
+  if (i == "internal_outfiles") x@internal_outfiles <- value 
+    return(x)
 })
 
 ## Replacement method
@@ -610,16 +616,16 @@ setMethod("$", signature = "SYSargsList",
             slot(x, name)
           })
 
-## viewEnv() methods for SYSargslist
-setGeneric(name = "viewEnv", def = function(x) standardGeneric("viewEnv"))
-setMethod(f = "viewEnv", signature = "SYSargsList", definition = function(x) {
+## viewEnvir() methods for SYSargslist
+setGeneric(name = "viewEnvir", def = function(x) standardGeneric("viewEnvir"))
+setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x) {
   print(x@runInfo$env)
   print(ls(x@runInfo$env, all.names = TRUE))
 })
 
-## copyEnv() methods for SYSargslist
-setGeneric(name = "copyEnv", def = function(x, list=character()) standardGeneric("copyEnv"))
-setMethod(f = "copyEnv", signature = "SYSargsList", definition = function(x, list="all") {
+## copyEnvir() methods for SYSargslist
+setGeneric(name = "copyEnvir", def = function(x, list=character()) standardGeneric("copyEnvir"))
+setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list="all") {
   envir <- x@runInfo$env
   cat(envir)
   if(length(list)==0){
@@ -812,6 +818,11 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 }
 
 .validationStepConn <- function(x, value){
+  ## Check outfiles names
+  if(any(
+    duplicated(unlist(append(sapply(outfiles(x), function(y) names(y)), sapply(outfiles(value), function(y) names(y)))))))
+    stop("'outfiles' columns names needs to be unique")
+  ## Check value length
   if(length(value) > 1) stop("One step can be appended in each operation.")
   targesCon <- value$targets_connection[[1]]
   if (!is.null(targesCon[[1]])){

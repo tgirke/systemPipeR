@@ -1072,7 +1072,8 @@ SYScreate <- function(class) {
       files = list(),
       inputvars = list(), 
       cmdToCwl = list(),
-      status = data.frame()
+      status = data.frame(), 
+      internal_outfiles=list()
     )
     return(as(SYS.empty, "SYSargs2"))
   } else if (class == "SYSargsList") {

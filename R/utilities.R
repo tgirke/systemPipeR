@@ -95,6 +95,10 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     .sysargsrunCommandline(args=args, runid=runid, make_bam=make_bam, del_sam=del_sam)
   } else if(class(args)=="SYSargs2") {
     ## SYSargs2 class ##
+    ## Check if the command is in the PATH
+    if(!baseCommand(args) == c("bash")){ 
+      tryCatch(system(baseCommand(args), ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", baseCommand(args), ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+    }
     ## Workflow Name (Workflow OR CommandLineTool class)
     if(length(wf(args)$steps)==0){
       cwl.wf <- gsub( "[[:space:]]", "_", paste(baseCommand(args), collapse = "_"), perl=TRUE)
@@ -109,18 +113,15 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       logdir <- normalizePath(yamlinput(args)$results_path$path)
       dir.name <- cwl.wf
     } else {
-      # logdir <- paste(getwd(), "/results/", sep="")
       logdir <- normalizePath(yamlinput(args)$results_path$path)
       dir.name <- dir.name
     }
     ## Check if expected files exists or not 
     ## Important, this happen in the new location in the case of dir=TRUE
-    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name)
-    args.return <- return$args
+    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, force=force)
+    args.return <- return$args_complete
     completed <- return$completed
-    # ## Check if one sample/commandline expects one or more output files
-    # outputList <- unlist((output(args)))
-    # names(outputList) <- rep(names(output(args)), each=sum(lengths(output(args)[[1]])))
+    args <- return$args
     ## Create log files
     file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
     ## Sample status and Time 
@@ -151,8 +152,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
           sample_status[[i]][[args$files$steps[j]]] <- "Success"
           next()
         } else {
-          # Create soubmitargsID_command file
-          #cat(cmdlist(args)[[i]][[j]], file=file_cmdlist, fill=TRUE, labels=paste0(names(cmdlist(args))[[i]], ":"), append=TRUE)
+          ## Add_command file at log file
           cat(c(
                 paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
                 "### Code: ",
@@ -161,19 +161,15 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
                 "```", "\n",
                 "### Stdout: ",
                 "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
-          #cat(cmdlist(args)[[i]][[j]], file=file_log, fill=TRUE, append=TRUE)
           ## Create an object for executable
           command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
           commandargs <- gsub("^.*? ", "",as.character(cmdlist(args)[[i]][[j]]))
-          ## Check if the command is in the PATH
-          if(!command == c("bash")){ 
-            tryCatch(system(command, ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", command, ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
-          }
+          ## Return an error if input file doesn't exist
           if(all(inp_targets2) || all(inp_targets <- file.exists(as.character(df.targets[i,])))){
             stdout <- .tryRunC(command, commandargs)
           } else {
             stdout <- list(stdout = paste(paste0(as.character(df.targets[i,])[!inp_targets], collapse = ", "), "\n are missing"),
-                           warning= "", error= "We have an error" )
+                           warning= "", error= "We have an error because target(s) file doesn't exit" )
           }
           cat(stdout$stdout, file=file_log, sep = "\n", append=TRUE)
           if(!is.null(stdout$error)) {
@@ -187,14 +183,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
           } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
             sample_status[[i]][[args$files$steps[j]]] <- "Success"
           }
-        #  cat("## stderr", file=file_log, sep = "\n", append=TRUE)
-          #if(length(stdout$stderr) >0) cat("## stderr \n", as.character(stdout$stderr), file=file_log, sep = "\n", append=TRUE)
-          #cat(unlist(stdout$stdout, use.names = FALSE), file=file_log, sep = "\n", append=TRUE)
+          ## close R chunk
           cat("```", file=file_log, sep = "\n", append=TRUE)
-         # sample_status[[i]][[args$files$steps[j]]] <- stdout$message
-         # print(stdout$message)
         }
-        #cat("################", file=file_log, sep = "\n", append=TRUE)
         ## converting sam to bam using Rsamtools package
         .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
@@ -209,16 +200,14 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     ## time
     time_status$time_start <- as.POSIXct(time_status$time_end, origin="1970-01-01")
     time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
-    ##
+    ## updating object
     args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
     args.return[["status"]]$status.completed <- df.status.f
     args.return[["status"]]$status.time <- time_status
     args.return[["files"]][["log"]] <- file_log
-    #print(dir)
     ## Create recursive the subfolders
     if(dir==TRUE){
       for(i in seq_along(names(cmdlist(args)))){
-        # full_path <- file.path(logdir, dir.name,  names(cmdlist(args)[i]))
         full_path <- file.path(logdir, dir.name)
         if(dir.exists(full_path)==FALSE){
           dir.create(full_path, recursive = TRUE) }
@@ -231,7 +220,6 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       args.return[["files"]][["log"]] <- file.path(logdir, dir.name, "_logs", basename(file_log))
       ## output FILES
       if(make_bam==TRUE) args.return <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, dir.name=dir.name)$args
-      #outputList_new <- as.character()
       for(i in seq_along(output(args))){
         if(length(output(args)[[i]]) > 1){
             for(j in seq_along(output(args)[[i]])){
@@ -275,6 +263,13 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
   }
 }
 
+## Usage:
+# WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder
+# WF <- runCommandline(WF, dir=TRUE) # creates the files in the ./results/workflowName/Samplename folder
+# WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE) ## For hisat2-mapping.cwl template
+runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=FALSE
+runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
+runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 
 .tryRunC <- function(command, commandargs){
   warning <- error <- NULL
@@ -301,23 +296,10 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       })
   list(stdout = value, warning = warning, error = error)
 }
-#, stdout = bwa_out, stderr = bwa_err
-# .tryRunC(command, commandargs)
-
-# .tryRunC("ls", "la")
-
-# runid="01"
-# make_bam=TRUE
-# del_sam=TRUE
-# dir=TRUE
-# dir.name=NULL
-# force=FALSE
 
 ## Usage:
-# WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder
-# WF <- runCommandline(WF, dir=TRUE) # creates the files in the ./results/workflowName/Samplename folder
-# WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE) ## For hisat2-mapping.cwl template
-# runid="01"; make_bam=TRUE; del_sam=TRUE; dir=FALSE; dir.name=NULL; force=TRUE
+# .tryRunC("ls", "la")
+
 
 ###########################################################################
 ## .moduleload function: internal function to module load <modules> ##
@@ -376,36 +358,33 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 
 ########################################################
 ## .checkOutArgs2 function: internal function to check 
-## if the expectedoutput has been created  ##
+## if the expected output has been created  ##
 ########################################################
-.checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name){
-  # print(dir)
-  # suppressWarnings({
-  #   if(dir==TRUE){
-  #     if(!is.null(dir.name)){
-  #       if(!file.exists(normalizePath(file.path(yamlinput(args)$results_path$path, dir.name)))) {
-  #        # dir.create(normalizePath(file.path(yamlinput(args)$results_path$path, dir.name)), recursive = TRUE)
-  #       }
-  #       
-  #     } 
-  #   }
-  # })
+.checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name, force){
+  args_complete <- args
   if(make_bam==TRUE) {
     ## Validation for Hisat2
-    if(any(grepl("samtools", names(clt(args))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'")}
-    args <- output_update(args, dir=dir, dir.name=dir.name, replace=TRUE, extension=c(".sam", ".bam"), make_bam=make_bam)
+    if(any(grepl("samtools", names(clt(args_complete))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'")}
+    args_complete <- output_update(args_complete, dir=dir, dir.name=dir.name, replace=TRUE, extension=c(".sam", ".bam"), make_bam=make_bam)
   }
   if(dir==TRUE) {
-    args <- output_update(args, dir=dir, dir.name=dir.name)
+    args_complete <- output_update(args_complete, dir=dir, dir.name=dir.name)
   }
-  completed <- output(args)
-  for(i in seq_along(output(args))){
-    for(j in seq_along(output(args)[[i]])){
-      completed[[i]][[j]] <- file.exists(output(args)[[i]][[j]])
-      names(completed[[i]][[j]]) <- output(args)[[i]][[j]]
+  completed <- output(args_complete)
+  for(i in seq_along(output(args_complete))){
+    for(j in seq_along(output(args_complete)[[i]])){
+      completed[[i]][[j]] <- file.exists(output(args_complete)[[i]][[j]])
+      names(completed[[i]][[j]]) <- output(args_complete)[[i]][[j]]
     }
   }
-  return <- list(args=args, completed=completed)
+  check <- check.output(args_complete, "list")
+  if(force) check <- replace(check, check==TRUE, FALSE)
+  for(i in seq_along(check)){
+    if(check[i]==FALSE){
+      args[["output"]][[i]] <- args$internal_outfiles[[i]]
+    }
+  }
+  return <- list(args= args, args_complete=args_complete, completed=completed)
   return(return)
 }
 ## Usage:

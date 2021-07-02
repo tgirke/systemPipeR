@@ -1,6 +1,6 @@
 changelog
      version 1.27.8
-        - Added viewEnv() and copyEnv(), stepName(), subsetOutfiles() methods
+        - Added viewEnvir() and copyEnvir(), stepName(), subsetOutfiles() methods
         - targetsheader(), SampleName() methods for SYSargsList 
         - SampleName() methods for SYSargs2
         - Improved subsetTargets() methods
@@ -25,7 +25,7 @@ changelog
      	    - Removed sprconfig method/slot
      	    - Update statusWF() printing and replacement methods
      	    - show() method: more details
-     	    - New methods: viewEnv and copyEnv
+     	    - New methods: viewEnvir and copyEnvir
      	- LineWise Upadates:
      	    - New slot/methods: status()
         - Update SPRproject, write_SYSargsList, read_SYSargsList, SYSargsList, runWF, renderReport, renderLogs, SYScreate functions
