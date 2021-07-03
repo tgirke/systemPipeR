@@ -40,7 +40,7 @@ and change all key words `systemPipeR1` to `systemPipeR`.
 library(systemPipeR)
 ```
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 wf_demo <- system.file("extdata", "wf_demo.Rmd", package = "systemPipeR")
 file.exists(wf_demo)
 df <-  systemPipeR:::parseRmd(wf_demo) # you can load from Rmd
@@ -61,7 +61,7 @@ plotWF
 If no argument is provided, the basic plot will automatically detect width, height, 
 layout, plot method, branches, _etc_. 
 ```{r}
-plotWF(df, verbose = TRUE)
+plotWF(df, verbose = FALSE)
 ```
 ### Color and text
 On the plot, different colors and numbers indicate different status. This information 
@@ -209,6 +209,8 @@ layout to demo. Remember, the main branch is marked in blue.
 plotWF(df, layout = "vertical", branch_method = "choose", branch_no = 1, verbose = TRUE)
 ```
 
+Home of UCR's HPCC
+￼
 
 ```{r}
 plotWF(df, layout = "vertical", branch_method = "choose", branch_no = 4)
