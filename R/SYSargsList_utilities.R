@@ -23,7 +23,6 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
     if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
   } else if (file.exists(logs.dir) == TRUE) {
     if (restart == FALSE) {
-      print("a")
       if (file.exists(logs.dir)) {
         if(overwrite==FALSE){
           stop(paste0(logs.dir, " already exists.", "\n", "The Workflow can be restart where it was stopped, using the argument 'restart=TRUE'."))
