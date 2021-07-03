@@ -624,9 +624,9 @@ setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x) {
 })
 
 ## copyEnvir() methods for SYSargslist
-setGeneric(name = "copyEnvir", def = function(x, list=character(), new.env=globalenv()) standardGeneric("copyEnvir"))
-setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list=character(), new.env) {
-  envir <- x@runInfo$envir
+setGeneric(name = "copyEnvir", def = function(x, list, new.env) standardGeneric("copyEnvir"))
+setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list=character(), new.env=globalenv()) {
+  envir <- x@runInfo$env
   print(envir)
   if(length(list)==0){
     list <- ls(envir, all.names=TRUE)
