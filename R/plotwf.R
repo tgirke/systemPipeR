@@ -63,92 +63,105 @@
 #' rendered outside Rmd but cannot within Rmd, try to turn this option on. Some additional
 #' javascript processing will be performed to avoid the conflict but may cause unknown
 #' issues.
-plotWF <- function(
-  df,
-  width = NULL, height = NULL,
-  elementId = NULL,
-  responsive = TRUE,
-  branch_method = "auto",
-  branch_no = NULL,
-  layout = "compact",
-  no_plot = FALSE,
-  plot_method = "svg",
-  out_format = "plot",
-  out_path = NULL,
-  show_legend = TRUE,
-  mark_main_branch = TRUE,
-  rstudio = FALSE,
-  in_log = FALSE,
-  rmarkdown = "detect",
-  verbose = FALSE,
-  exit_point = 0
-  ) {
-  if(!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
-  if(!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
-  stopifnot(is.logical(responsive) && length(responsive) == 1)
-  stopifnot(is.logical(rstudio) && length(rstudio) == 1)
-  stopifnot(is.character(rmarkdown) || is.logical(rmarkdown) && length(rmarkdown) == 1)
-  out_format <- match.arg(out_format, c("plot", "html", "dot", "dot_print"))
-  if(!out_format %in% c("plot", "dot_print")) stopifnot(is.character(out_path) && length(out_path) == 1)
-  plot_method <- match.arg(plot_method, c("svg", "png"))
-  plot_method <- switch (plot_method,
-    "svg" = "renderSVGElement",
-    "png" = "renderImageElement"
-  )
-  if (verbose) message("Translating to DOT format...")
-  dot <- makeDot(df, branch_method, branch_no, layout, show_legend,
-                 mark_main_branch, in_log, verbose, exit_point)
+plotWF <- function(df,
+                   width = NULL, height = NULL,
+                   elementId = NULL,
+                   responsive = TRUE,
+                   branch_method = "auto",
+                   branch_no = NULL,
+                   layout = "compact",
+                   no_plot = FALSE,
+                   plot_method = "svg",
+                   out_format = "plot",
+                   out_path = NULL,
+                   show_legend = TRUE,
+                   mark_main_branch = TRUE,
+                   rstudio = FALSE,
+                   in_log = FALSE,
+                   rmarkdown = "detect",
+                   verbose = FALSE,
+                   exit_point = 0) {
+    if (!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
+    if (!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
+    stopifnot(is.logical(responsive) && length(responsive) == 1)
+    stopifnot(is.logical(rstudio) && length(rstudio) == 1)
+    stopifnot(is.character(rmarkdown) || is.logical(rmarkdown) && length(rmarkdown) == 1)
+    out_format <- match.arg(out_format, c("plot", "html", "dot", "dot_print"))
+    if (!out_format %in% c("plot", "dot_print")) stopifnot(is.character(out_path) && length(out_path) == 1)
+    plot_method <- match.arg(plot_method, c("svg", "png"))
+    plot_method <- switch(plot_method,
+        "svg" = "renderSVGElement",
+        "png" = "renderImageElement"
+    )
+    if (verbose) message("Translating to DOT format...")
+    dot <- makeDot(
+        df, branch_method, branch_no, layout, show_legend,
+        mark_main_branch, in_log, verbose, exit_point
+    )
 
-  dot <- gsub(x = dot, "'", "\"")
-  # if exit point
-  if (exit_point > 0) return(dot)
+    dot <- gsub(x = dot, "'", "\"")
+    # if exit point
+    if (exit_point > 0) {
+        return(dot)
+    }
 
-  # if dot or dot_print
-  if (out_format == "dot") return(writeLines(dot, out_path))
-  if (out_format == "dot_print") return(cat(dot))
+    # if dot or dot_print
+    if (out_format == "dot") {
+        return(writeLines(dot, out_path))
+    }
+    if (out_format == "dot_print") {
+        return(cat(dot))
+    }
 
 
-  # Decide if in Rmarkdown rendering
-  if (is.character(rmarkdown) && rmarkdown != "detect") stop("rmarkdown can only be 'detect', TRUE or FALSE")
-  if (rmarkdown == "detect") rmarkdown <- isTRUE(getOption('knitr.in.progress'))
+    # Decide if in Rmarkdown rendering
+    if (is.character(rmarkdown) && rmarkdown != "detect") stop("rmarkdown can only be 'detect', TRUE or FALSE")
+    if (rmarkdown == "detect") rmarkdown <- isTRUE(getOption("knitr.in.progress"))
 
-  # forward options using x
-  if (verbose) message("Making the plot...")
-  x = list(
-    dot = dot,
-    plotid = paste0("sprwf-", paste0(sample(8), collapse="")),
-    responsive = responsive,
-    width = width,
-    height = height,
-    plot_method = plot_method,
-    rmd = rmarkdown
-  )
+    # forward options using x
+    if (verbose) message("Making the plot...")
+    x <- list(
+        dot = dot,
+        plotid = paste0("sprwf-", paste0(sample(8), collapse = "")),
+        responsive = responsive,
+        width = width,
+        height = height,
+        plot_method = plot_method,
+        rmd = rmarkdown
+    )
 
-  # create widget
-  grviz <- htmlwidgets::createWidget(
-    name = 'plotwf',
-    x,
-    width = width,
-    height = height,
-    package = 'systemPipeR',
-    elementId = elementId
-  )
+    # create widget
+    grviz <- htmlwidgets::createWidget(
+        name = "plotwf",
+        x,
+        width = width,
+        height = height,
+        package = "systemPipeR",
+        elementId = elementId
+    )
 
-  # if html out
-  if (out_format == "html") return(htmlwidgets::saveWidget(widget = grviz, file = out_path, selfcontained = TRUE))
+    # if html out
+    if (out_format == "html") {
+        return(htmlwidgets::saveWidget(widget = grviz, file = out_path, selfcontained = TRUE))
+    }
 
-  if(no_plot) return(invisible(grviz))
-  # force to open browser tab instead of viewer in Rstudio
-  if ((!rstudio || Sys.getenv("RSTUDIO") != "1") && !rmarkdown) {
-    viewer <- getOption("viewer")
-    on.exit({
-      options(viewer = viewer)
-    }, add = TRUE)
-    options(viewer = NULL)
-    return(print(grviz))
-  } else {
-    return(grviz)
-  }
+    if (no_plot) {
+        return(invisible(grviz))
+    }
+    # force to open browser tab instead of viewer in Rstudio
+    if ((!rstudio || Sys.getenv("RSTUDIO") != "1") && !rmarkdown) {
+        viewer <- getOption("viewer")
+        on.exit(
+            {
+                options(viewer = viewer)
+            },
+            add = TRUE
+        )
+        options(viewer = NULL)
+        return(print(grviz))
+    } else {
+        return(grviz)
+    }
 }
 
 # Shiny binding's may not be needed at this moment, uncomment @export if we want to export
@@ -174,7 +187,7 @@ plotWF <- function(
 #' plotwfOutput <- function(outputId, width = '100%', height = '400px'){
 #'   htmlwidgets::shinyWidgetOutput(outputId, 'plotwf', width, height, package = 'systemPipeR')
 #' }
-#' 
+#'
 #' #' @rdname plotwf-shiny
 #' # #' @export
 #' renderPlotwf <- function(expr, env = parent.frame(), quoted = FALSE) {
@@ -185,17 +198,15 @@ plotWF <- function(
 
 
 #' Translate a workflow structure and status into a dot language string----
-makeDot <- function(
-    df,
-    branch_method="auto",
-    branch_no = NULL,
-    layout = "compact",
-    show_legend = TRUE,
-    mark_main_branch = TRUE,
-    in_log = FALSE,
-    verbose = FALSE,
-    exit_point = 0
-) {
+makeDot <- function(df,
+                    branch_method = "auto",
+                    branch_no = NULL,
+                    layout = "compact",
+                    show_legend = TRUE,
+                    mark_main_branch = TRUE,
+                    in_log = FALSE,
+                    verbose = FALSE,
+                    exit_point = 0) {
     # check
     stopifnot(is.logical(verbose) && length(verbose) == 1)
     stopifnot(is.logical(show_legend) && length(show_legend) == 1)
@@ -204,23 +215,40 @@ makeDot <- function(
     stopifnot(is.logical(in_log) && length(in_log) == 1)
     # early exit for linear method
     layout <- match.arg(layout, c("compact", "vertical", "horizontal", "execution"))
-    if (layout == "execution") return(.WFlinear(df, show_legend, in_log))
+    if (layout == "execution") {
+        return(.WFlinear(df, show_legend, in_log))
+    }
     stopifnot(is.list(df$dep))
-    lapply(seq_along(df$dep), function(i){
-        if(!is.character(df$dep[[i]])) stop("No.", i, " item in dep is not a character vector")
+    lapply(seq_along(df$dep), function(i) {
+        if (!is.character(df$dep[[i]])) stop("No.", i, " item in dep is not a character vector")
     })
     branch_method <- match.arg(branch_method, c("auto", "choose"))
-    
+
     stopifnot(is.numeric(exit_point) && length(exit_point) == 1)
-    
-    
-    
-    
+
+
+
+
     # find all possible branches
     if (verbose) message("Looking for possible branches ...")
-    tree <- .findBranch(df$step_name, df$dep)
-    if (exit_point == 1) return(tree)
-    if (branch_method == "choose" && interactive()  && is.null(branch_no) || verbose) {
+    step_names <- df$step_name
+    deps <- df$dep
+    if (sum(starting_root <- df$dep == "") > 1) {
+        message(
+            "More than 1 step has no dependency. They all will be treated as starting point:\n",
+            paste0(names(df$dep)[starting_root], collapse = ", ")
+        )
+        step_names <- c("root_step0", step_names)
+        deps <- df$dep
+        deps[starting_root] <- "root_step0"
+        deps <- append(deps, list(root_step0 = ""), after = 0)
+    }
+    tree <- .findBranch(step_names, deps)
+    if (sum(starting_root) > 1) tree <- lapply(tree, function(x) x[!x == "root_step0"])
+    if (exit_point == 1) {
+        return(tree)
+    }
+    if (branch_method == "choose" && interactive() && is.null(branch_no) || verbose) {
         # list all branches
         invisible(lapply(seq_along(tree), function(i) {
             cat(crayon::blue$bold("Possible branch"), i, ":\n")
@@ -228,43 +256,48 @@ makeDot <- function(
         }))
     }
     # choose branch
-    if(!is.null(branch_no)) {
+    if (!is.null(branch_no)) {
         stopifnot(is.numeric(branch_no) && length(branch_no) == 1)
-        if(branch_no > length(tree)) stop("Branch number is larger than possible branches:", length(tree))
+        if (branch_no > length(tree)) stop("Branch number is larger than possible branches:", length(tree))
     } else if (branch_method == "choose" && interactive()) {
         branch_no <- as.numeric(menu(paste("Branch", seq_along(tree)), title = "Choose a main branch to plot workflow"))
     } else {
         branch_no <- .recommendBranch(tree, df$step_name, verbose)
     }
-    
+
     if (verbose) message("Build the workflow tree ...")
     nodes <- .buildTree(tree, branch_no)
-    if (exit_point == 2) return(nodes)
-    
+    if (exit_point == 2) {
+        return(nodes)
+    }
+
     # organize all node attach point
     node_attach <- unique(unlist(lapply(nodes, `[[`, "attach_point")))
     # organize all side branch
     node_side <- unique(unlist(lapply(nodes, `[[`, "branch_side")))
     # connecting the main branch
     branch_trans <- paste(tree[[branch_no]], collapse = " -> ")
-    
+
     # translation
     trans_func <- switch(layout,
-                         "compact" = .WFcompact,
-                         "vertical" = .WFvert,
-                         "horizontal"= .WFhori
+        "compact" = .WFcompact,
+        "vertical" = .WFvert,
+        "horizontal" = .WFhori
     )
     if (verbose) message("Translate tree  to DOT language...")
     # build the skeleton
     p_main <- trans_func(branch_trans, node_attach, node_side, mark_main_branch)
-    if (exit_point == 3) return(paste0(p_main, "\n}\n"))
+    if (exit_point == 3) {
+        return(paste0(p_main, "\n}\n"))
+    }
     # add node decoration
     p_main <- paste0(p_main, .addNodeDecor(
-        df$step_name, df$has_run, df$success, df$spr,df$sample_pass,
+        df$step_name, df$has_run, df$success, df$spr, df$sample_pass,
         df$sample_warn, df$sample_error, df$sample_total, df$log_path,
-        df$time_start, df$time_end, in_log))
+        df$time_start, df$time_end, in_log
+    ))
     # add legend
-    if(show_legend) p_main <- paste0(p_main, .addDotLegend(mark_main_branch), collapse = "\n")
+    if (show_legend) p_main <- paste0(p_main, .addDotLegend(mark_main_branch), collapse = "\n")
     # close the plot
     paste0(p_main, "\n}\n")
 }
@@ -277,26 +310,28 @@ makeDot <- function(
 #' @param deps a list of string vector, deps of steps
 #' @param dep_chain a list to store all branches
 #' @param chain_num current branch number, starting from 1
-.findBranch <- function(
-    steps, deps, step_n = 1,
-    dep_chain = list(
-        root = steps[1]
-    ),
-    branch_name = "root"
-){
-    if(step_n > length(steps)) return(dep_chain)
+.findBranch <- function(steps, deps, step_n = 1,
+                        dep_chain = list(
+                            root = steps[1]
+                        ),
+                        branch_name = "root") {
+    if (step_n > length(steps)) {
+        return(dep_chain)
+    }
     current_step <- steps[step_n]
     # find steps depend on this step
     new_step_n <- lapply(deps, function(x) {
         current_step %in% x
-    }) %>% unlist() %>% which()
+    }) %>%
+        unlist() %>%
+        which()
     # cat(current_step, new_step_n, "\n")
     # make a backup if new branch need to be created
-    if(length(new_step_n) > 1) deps_backup <- dep_chain[[branch_name]]
+    if (length(new_step_n) > 1) deps_backup <- dep_chain[[branch_name]]
     # loop through these new steps to append dep chain
     for (i in seq_along(new_step_n)) {
         # if more than 1 dependent step, create a new branch
-        if(i != 1) {
+        if (i != 1) {
             # cat("branch step is: ", new_step_n[i], "\n")
             branch_name <- paste0(step_n, "_", new_step_n[i])
             dep_chain[[branch_name]] <- deps_backup
@@ -319,34 +354,39 @@ makeDot <- function(
 .recommendBranch <- function(tree, steps, verbose) {
     branch_complete <- lapply(tree, function(x) {
         all(c(steps[1], steps[length(steps)]) %in% x)
-    }) %>% unlist() %>% which()
-    
-    if(length(branch_complete) == 0) {
+    }) %>%
+        unlist() %>%
+        which()
+
+    if (length(branch_complete) == 0) {
         warning("Workflow's first step is not connected to the last step, something wrong?")
         tree_complete <- tree
     } else {
         if (verbose) cat("**********\n")
-        if (verbose) cat("Find", length(branch_complete), "branch(es) connecting first and last step:",
-                         paste0(branch_complete, collapse = ", "),
-                         ".\n"
-        )
+        if (verbose) {
+            cat(
+                "Find", length(branch_complete), "branch(es) connecting first and last step:",
+                paste0(branch_complete, collapse = ", "),
+                ".\n"
+            )
+        }
         tree_complete <- tree[branch_complete]
     }
-    
+
     branch_len <- unlist(lapply(tree, length))
-    branch_long <- which(branch_len ==max(branch_len))
+    branch_long <- which(branch_len == max(branch_len))
     if (verbose) cat("Find branch(es)", paste0(branch_long, collapse = ", "), ": with the largest number of steps", max(branch_len), "\n")
-    
+
     branch_recommand <- intersect(branch_long, branch_complete)
     # use first complete branch if no intersection
-    if(length(branch_recommand) == 0) {
+    if (length(branch_recommand) == 0) {
         branch_recommand <- branch_complete[1]
         # if still empty, use longest branch
-        if(length(branch_recommand) == 0) {
+        if (length(branch_recommand) == 0) {
             branch_recommand <- branch_long[1]
         }
     }
-    
+
     if (verbose) cat("**********\n")
     if (verbose) cat("Based on the detection, branch(es):", paste0(branch_recommand, collapse = ", "), "is (are) recommended\n")
     if (verbose) cat("Branch", crayon::yellow$bold(branch_recommand[1]), "will be used as the main branch\n")
@@ -358,7 +398,7 @@ makeDot <- function(
 #'
 #' @param tree list of branches
 #' @param branch_no numeric, which bracnh
-.buildTree <- function(tree, branch_no){
+.buildTree <- function(tree, branch_no) {
     branch <- tree[[branch_no]]
     # reconstruct side branches based on the selected main branch
     lapply(tree[-branch_no], function(x) {
@@ -367,9 +407,9 @@ makeDot <- function(
         # find where these node need to attach to mian branch
         current_state <- in_main[1]
         attach_point <- c()
-        for(i in seq_along(in_main)){
+        for (i in seq_along(in_main)) {
             if (current_state != in_main[i]) {
-                attach_point <- c(attach_point, paste(x[i -1], "->", x[i]))
+                attach_point <- c(attach_point, paste(x[i - 1], "->", x[i]))
                 current_state <- in_main[i]
             }
         }
@@ -377,25 +417,25 @@ makeDot <- function(
         in_branch <- which(!in_main)
         branch_side <- list(x[in_branch[1]])
         list_pos <- 1
-        for (i in seq_along(in_branch)){
-            if(i == 1) next
-            if (in_branch[i] - in_branch[i-1] == 1) {
+        for (i in seq_along(in_branch)) {
+            if (i == 1) next
+            if (in_branch[i] - in_branch[i - 1] == 1) {
                 branch_side[[list_pos]] <- c(branch_side[[list_pos]], x[in_branch[i]])
             } else {
                 list_pos <- list_pos + 1
                 branch_side[[list_pos]] <- x[in_branch[i]]
             }
         }
-        
-        branch_side <- lapply(branch_side, function(branches){
+
+        branch_side <- lapply(branch_side, function(branches) {
             nodes <- c()
-            for(n in seq_along(branches)) {
-                if(n >= length(branches)) next
+            for (n in seq_along(branches)) {
+                if (n >= length(branches)) next
                 nodes <- c(nodes, paste(branches[n], branches[n + 1], sep = " -> "))
             }
             nodes
         })
-        
+
         list(attach_point = attach_point, branch_side = branch_side)
     })
 }
@@ -404,16 +444,16 @@ makeDot <- function(
 
 .WFcompact <- function(branch_trans, node_attach, node_side, mark_main_branch) {
     paste0(
-        'digraph {
+        "digraph {
     node[fontsize=20];
-    subgraph {\n    ',
-    if (mark_main_branch) '    node[color="dodgerblue"];\n        ' else '    ',
-    paste0(branch_trans, if (mark_main_branch) '[color="dodgerblue"]' else '', collapse = ""),
-    '\n   }\n    ',
-    paste0(node_attach, collapse = "\n    "),
-    "\n    ",
-    paste0(node_side, collapse = "\n    "),
-    "\n"
+    subgraph {\n    ",
+        if (mark_main_branch) '    node[color="dodgerblue"];\n        ' else "    ",
+        paste0(branch_trans, if (mark_main_branch) '[color="dodgerblue"]' else "", collapse = ""),
+        "\n   }\n    ",
+        paste0(node_attach, collapse = "\n    "),
+        "\n    ",
+        paste0(node_side, collapse = "\n    "),
+        "\n"
     )
 }
 
@@ -425,20 +465,20 @@ makeDot <- function(
     node[fontsize=20];
     subgraph {
         rankdir="TB";\n        ',
-    if (mark_main_branch) '    node[color="dodgerblue"];\n        ' else '    ',
-    paste0(branch_trans, if (mark_main_branch) '[color="dodgerblue"]' else '', collapse = ""),
-    '\n   }\n    ',
-    paste0(
-        "subgraph {\n",
-        '        rank="same";\n',
-        "        ",
-        node_attach,
-        "\n    }\n"
-    ) %>%
-        paste0(collapse = "\n    "),
-    "\n    ",
-    paste0(node_side, collapse = "\n    "),
-    "\n"
+        if (mark_main_branch) '    node[color="dodgerblue"];\n        ' else "    ",
+        paste0(branch_trans, if (mark_main_branch) '[color="dodgerblue"]' else "", collapse = ""),
+        "\n   }\n    ",
+        paste0(
+            "subgraph {\n",
+            '        rank="same";\n',
+            "        ",
+            node_attach,
+            "\n    }\n"
+        ) %>%
+            paste0(collapse = "\n    "),
+        "\n    ",
+        paste0(node_side, collapse = "\n    "),
+        "\n"
     )
 }
 
@@ -450,20 +490,20 @@ makeDot <- function(
     node[fontsize=20];
     subgraph {
         rank="same";\n                ',
-    if (mark_main_branch) '    node[color="dodgerblue"];\n        ' else '    ',
-    paste0(branch_trans, if (mark_main_branch) '[color="dodgerblue"]' else '', collapse = ""),
-    '\n   }\n    ',
-    paste0(
-        "subgraph {\n",
-        '        rankdir="TB";\n',
-        "        ",
-        node_attach,
-        "\n    }\n"
-    ) %>%
-        paste0(collapse = "\n    "),
-    "\n    ",
-    paste0(node_side, collapse = "\n    "),
-    "\n"
+        if (mark_main_branch) '    node[color="dodgerblue"];\n        ' else "    ",
+        paste0(branch_trans, if (mark_main_branch) '[color="dodgerblue"]' else "", collapse = ""),
+        "\n   }\n    ",
+        paste0(
+            "subgraph {\n",
+            '        rankdir="TB";\n',
+            "        ",
+            node_attach,
+            "\n    }\n"
+        ) %>%
+            paste0(collapse = "\n    "),
+        "\n    ",
+        paste0(node_side, collapse = "\n    "),
+        "\n"
     )
 }
 
@@ -476,13 +516,15 @@ makeDot <- function(
     node[fontsize=20];
     subgraph {
         rank="TB";\n        ',
-    steps_trans,
-    '\n   }\n',
-    .addNodeDecor(df$step_name, df$has_run, df$success, df$spr, df$sample_pass,
-                  df$sample_warn, df$sample_error, df$sample_total, df$log_path,
-                  df$time_start, df$time_end, in_log),
-    if (show_legend) .addDotLegend(FALSE),
-    "\n}\n"
+        steps_trans,
+        "\n   }\n",
+        .addNodeDecor(
+            df$step_name, df$has_run, df$success, df$spr, df$sample_pass,
+            df$sample_warn, df$sample_error, df$sample_total, df$log_path,
+            df$time_start, df$time_end, in_log
+        ),
+        if (show_legend) .addDotLegend(FALSE),
+        "\n}\n"
     )
 }
 
@@ -490,19 +532,22 @@ makeDot <- function(
 
 # add legend -----------
 #' @param show_main show main steps legend?
-.addDotLegend <- function(show_main=TRUE){
+.addDotLegend <- function(show_main = TRUE) {
     paste0(
         '    subgraph cluster_legend {
         rankdir=TB;
         color="#EEEEEE";
         style=filled;
         node [style=filled];',
-        if (show_main) {'
+        if (show_main) {
+            '
         {rank=same; R_step; Sysargs_step; Main_branch}
         Main_branch -> Sysargs_step -> R_step[color="#EEEEEE"]
         Main_branch[label="Main branch" color="dodgerblue", style="filled", fillcolor=white];'
-        } else {'
-        {rank=same; R_step; Sysargs_step}'},
+        } else {
+            "
+        {rank=same; R_step; Sysargs_step}"
+        },
         '   Sysargs_step ->step_state[color="#EEEEEE"];
         step_state[style="filled", shape="box" color=white, label =<
             <table>
@@ -528,35 +573,35 @@ makeDot <- function(
 #' @param sample_warn umeric, no. of samples have warnings each step
 #' @param sample_error umeric, no. of samples have errors each step
 #' @param sample_total numeric, no. of samples total each step
-.addNodeDecor <- function(steps, has_run, success, spr, sample_pass, sample_warn, sample_error, sample_total, log_path, time_start, time_end, in_log=FALSE) {
+.addNodeDecor <- function(steps, has_run, success, spr, sample_pass, sample_warn, sample_error, sample_total, log_path, time_start, time_end, in_log = FALSE) {
     node_text <- c()
-    for(i in seq_along(steps)) {
-        step_color <- if(has_run[i] && success[i]) "#5cb85c" else if(has_run[i] && !success[i]) "#d9534f" else "black"
+    for (i in seq_along(steps)) {
+        step_color <- if (has_run[i] && success[i]) "#5cb85c" else if (has_run[i] && !success[i]) "#d9534f" else "black"
         duration <- .stepDuration(time_start[i], time_end[i])
         node_text <- c(node_text, paste0(
-            '    ', steps[i], '[label=<<b>',
+            "    ", steps[i], "[label=<<b>",
             '<font color="', step_color, '">', steps[i], "</font><br></br>",
             '<font color="#5cb85c">', sample_pass[i], "</font>/",
             '<font color="#f0ad4e">', sample_warn[i], "</font>/",
             '<font color="#d9534f">', sample_error[i], "</font>/",
             '<font color="blue">', sample_total[i], "</font></b>; ",
             '<font color="black">', duration$short, "</font>",
-            '> ',
-            if (spr[i] =="sys") ', style="rounded", shape="box" ' else '',
-            if (in_log) paste0('href="', log_path[i], '" ') else ' ',
-            'tooltip="step ', steps[i], ': ',
-            sample_pass[i], ' samples passed; ',
-            sample_warn[i], ' samples have warnings; ',
-            sample_error[i], ' samples have errors; ',
-            sample_total[i], ' samples in total; ',
+            "> ",
+            if (spr[i] == "sysargs") ', style="rounded", shape="box" ' else "",
+            if (in_log) paste0('href="', log_path[i], '" ') else " ",
+            'tooltip="step ', steps[i], ": ",
+            sample_pass[i], " samples passed; ",
+            sample_warn[i], " samples have warnings; ",
+            sample_error[i], " samples have errors; ",
+            sample_total[i], " samples in total; ",
             "Start time: ", time_start[i], "; ",
             "End time: ", time_end[i], "; ",
             "Duration: ", duration$long,
             '"',
-            ']\n'
+            "]\n"
         ))
     }
-    paste0(node_text, collapse = '')
+    paste0(node_text, collapse = "")
 }
 
 
@@ -567,70 +612,68 @@ makeDot <- function(
 #' @return a list of duration in short format and long format
 .stepDuration <- function(start, end) {
     duration <- round(as.numeric(difftime(end, start, units = "sec")), 1)
-    if(duration < 0) stop("Ending time is smaller than starting time, something wrong?")
+    if (duration < 0) stop("Ending time is smaller than starting time, something wrong?")
     secs <- duration %% 60
     mins_raw <- duration %/% 60
     mins <- mins_raw %% 60
     hrs <- mins_raw %/% 60
     return(list(
         long = paste(stringr::str_pad(hrs, 2, pad = "0"), stringr::str_pad(mins, 2, pad = "0"), stringr::str_pad(secs, 2, pad = "0"), sep = ":"),
-        short = if(hrs > 0) paste0(hrs, "h") else if (mins > 0) paste0(mins, "m") else paste0(secs, "s")
+        short = if (hrs > 0) paste0(hrs, "h") else if (mins > 0) paste0(mins, "m") else paste0(secs, "s")
     ))
 }
 
 # build df from sal object
 
-.buildDF <- function(sal){
-  df <- data.frame(step_name=stepName(sal))
-  dep <- dependency(sal)
-  for(i in seq_along(dep)){
-    if(any(is.na(dep[i]))){
-      dep[[i]] <- ""
+.buildDF <- function(sal) {
+    df <- data.frame(step_name = stepName(sal))
+    dep <- dependency(sal)
+    for (i in seq_along(dep)) {
+        if (any(is.na(dep[i]))) {
+            dep[[i]] <- ""
+        }
     }
-  }
-  df$dep <- dep
-  df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal)[[x]], "SYSargs2")), "sysargs", "r")
-  df$has_run <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary)=="Pending", FALSE, TRUE)
-  df$success <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary)=="Success", TRUE, FALSE)
-  df <- cbind(df, data.frame(sample_pass = 0, 
-                             sample_warn = 0,
-                             sample_error = 0,
-                             sample_total = 0, 
-                             time_start = Sys.time(),
-                             time_end = Sys.time()))
-  for(i in seq_along(df$step_name)){
-    if(inherits(stepsWF(sal)[[i]], "SYSargs2")){
-      sample_df <- as.list(colSums(sal$statusWF[[i]][[2]][2:4]))
-      df$sample_pass[i] <- sample_df$Existing_Files
-      df$sample_total[i] <- sample_df$Total_Files
-      if(all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Warning")){
-        df$sample_warn[i] <- sample_df$Missing_Files
-      } else if(all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Error")){
-        df$sample_error[i] <- sample_df$Missing_Files
-      }
-      if(length(sal$statusWF[[i]]$status.time) > 0){
-        df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start[1]
-        df$time_end[i] <- sal$statusWF[[i]]$status.time$time_end[length(sal$statusWF[[i]]$status.time$time_end)]
-      }
-    } else if(inherits(stepsWF(sal)[[i]], "LineWise")){
-      df$sample_total[i] <- 1
-      if(sal$statusWF[[i]]$status.summary == "Success"){
-        df$sample_pass[i] <- 1
-      } else if(sal$statusWF[[i]]$status.summary == "Warning"){
-        df$sample_warn[i] <- 1
-      } else if(sal$statusWF[[i]]$status.summary == "Error"){
-        df$sample_error[i] <- 1
-      }
-      if(length(sal$statusWF[[i]]$status.time) > 0){
-        df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start
-        df$time_end[i] <- sal$statusWF[[i]]$status.time$time_start
-      }
+    df$dep <- dep
+    df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal)[[x]], "SYSargs2")), "sysargs", "r")
+    df$has_run <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary) == "Pending", FALSE, TRUE)
+    df$success <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary) == "Success", TRUE, FALSE)
+    df <- cbind(df, data.frame(
+        sample_pass = 0,
+        sample_warn = 0,
+        sample_error = 0,
+        sample_total = 0,
+        time_start = Sys.time(),
+        time_end = Sys.time()
+    ))
+    for (i in seq_along(df$step_name)) {
+        if (inherits(stepsWF(sal)[[i]], "SYSargs2")) {
+            sample_df <- as.list(colSums(sal$statusWF[[i]][[2]][2:4]))
+            df$sample_pass[i] <- sample_df$Existing_Files
+            df$sample_total[i] <- sample_df$Total_Files
+            if (all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Warning")) {
+                df$sample_warn[i] <- sample_df$Missing_Files
+            } else if (all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Error")) {
+                df$sample_error[i] <- sample_df$Missing_Files
+            }
+            if (length(sal$statusWF[[i]]$status.time) > 0) {
+                df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start[1]
+                df$time_end[i] <- sal$statusWF[[i]]$status.time$time_end[length(sal$statusWF[[i]]$status.time$time_end)]
+            }
+        } else if (inherits(stepsWF(sal)[[i]], "LineWise")) {
+            df$sample_total[i] <- 1
+            if (sal$statusWF[[i]]$status.summary == "Success") {
+                df$sample_pass[i] <- 1
+            } else if (sal$statusWF[[i]]$status.summary == "Warning") {
+                df$sample_warn[i] <- 1
+            } else if (sal$statusWF[[i]]$status.summary == "Error") {
+                df$sample_error[i] <- 1
+            }
+            if (length(sal$statusWF[[i]]$status.time) > 0) {
+                df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start
+                df$time_end[i] <- sal$statusWF[[i]]$status.time$time_start
+            }
+        }
     }
-  }
-  df$log_path <- paste0("#", tolower(df$step_name))
-  return(df)
+    df$log_path <- paste0("#", tolower(df$step_name))
+    return(df)
 }
-
-
-
-

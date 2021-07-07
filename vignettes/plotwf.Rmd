@@ -43,6 +43,7 @@ library(systemPipeR)
 ```{r eval=TRUE}
 wf_demo <- system.file("extdata", "wf_demo.Rmd", package = "systemPipeR")
 file.exists(wf_demo)
+# wf_demo <- "../inst/extdata/wf_demo.Rmd"
 df <-  systemPipeR:::parseRmd(wf_demo) # you can load from Rmd
 ```
 
