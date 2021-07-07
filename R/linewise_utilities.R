@@ -7,7 +7,7 @@ LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath
     } else {
         stepName <- stepName
     }
-  dependency <- list(NA)
+  dependency <- list(dependency)
   step_status <- list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame())
   names(dependency) <- stepName
       line <- list(
