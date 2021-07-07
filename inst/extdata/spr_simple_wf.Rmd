@@ -1,0 +1,53 @@
+---
+title: "Simple Workflow by systemPipeR" 
+author: "Author: Daniela Cassol, Le Zhang, and Thomas Girke"
+date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
+output:
+  BiocStyle::html_document:
+    toc_float: true
+    code_folding: show
+package: systemPipeR
+vignette: |
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+fontsize: 14pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Build the Workflow 
+
+- Create a project
+
+```{r SPRproject_ex, eval=TRUE}
+sal <- SPRproject(overwrite=TRUE) 
+```
+
+- Add first step
+
+```{r firstStep, eval=TRUE, spr='r'}
+LineWise(code="
+mapply(function(x, y) write.csv(x, y), 
+       split(iris, factor(iris$Species)), 
+       paste0(names(split(iris, factor(iris$Species))), ".csv"))
+1+1
+
+..
+..
+
+..
+")
+
+a <- LineWise(
+ mapply(function(x, y) write.csv(x, y), 
+       split(iris, factor(iris$Species)), 
+       paste0(names(split(iris, factor(iris$Species))), ".csv"))
+1+1
+
+, stepName = "steps")
+
+```
+)

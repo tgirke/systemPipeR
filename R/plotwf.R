@@ -508,7 +508,7 @@ makeDot <- function(
             <table>
             <tr><td><b>Step Colors</b></td></tr>
             <tr><td><font color="black">Pending steps</font>; <font color="#5cb85c">Successful steps</font>; <font color="#d9534f">Failed steps</font></td></tr>
-            <tr><td><b>Sample Numbers</b></td></tr><tr><td><font color="#5cb85c">0 (pass)</font>/<font color="#f0ad4e">0 (warning)</font>/<font color="#d9534f">0 (error)</font>/<font color="blue">0 (total)</font>; Duration</td></tr></table>
+            <tr><td><b>Targets Files / Code Chunk </b></td></tr><tr><td><font color="#5cb85c">0 (pass) </font> | <font color="#f0ad4e">0 (warning) </font> | <font color="#d9534f">0 (error) </font> | <font color="blue">0 (total)</font>; Duration</td></tr></table>
             >];
         label="Legends";
         fontsize = 30;
@@ -578,7 +578,58 @@ makeDot <- function(
     ))
 }
 
+# build df from sal object
 
+.buildDF <- function(sal){
+  df <- data.frame(step_name=stepName(sal))
+  dep <- dependency(sal)
+  for(i in seq_along(dep)){
+    if(any(is.na(dep[i]))){
+      dep[[i]] <- ""
+    }
+  }
+  df$dep <- dep
+  df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal)[[x]], "SYSargs2")), "sysargs", "r")
+  df$has_run <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary)=="Pending", FALSE, TRUE)
+  df$success <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary)=="Success", TRUE, FALSE)
+  df <- cbind(df, data.frame(sample_pass = 0, 
+                             sample_warn = 0,
+                             sample_error = 0,
+                             sample_total = 0, 
+                             time_start = Sys.time(),
+                             time_end = Sys.time()))
+  for(i in seq_along(df$step_name)){
+    if(inherits(stepsWF(sal)[[i]], "SYSargs2")){
+      sample_df <- as.list(colSums(sal$statusWF[[i]][[2]][2:4]))
+      df$sample_pass[i] <- sample_df$Existing_Files
+      df$sample_total[i] <- sample_df$Total_Files
+      if(all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Warning")){
+        df$sample_warn[i] <- sample_df$Missing_Files
+      } else if(all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Error")){
+        df$sample_error[i] <- sample_df$Missing_Files
+      }
+      if(length(sal$statusWF[[i]]$status.time) > 0){
+        df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start[1]
+        df$time_end[i] <- sal$statusWF[[i]]$status.time$time_end[length(sal$statusWF[[i]]$status.time$time_end)]
+      }
+    } else if(inherits(stepsWF(sal)[[i]], "LineWise")){
+      df$sample_total[i] <- 1
+      if(sal$statusWF[[i]]$status.summary == "Success"){
+        df$sample_pass[i] <- 1
+      } else if(sal$statusWF[[i]]$status.summary == "Warning"){
+        df$sample_warn[i] <- 1
+      } else if(sal$statusWF[[i]]$status.summary == "Error"){
+        df$sample_error[i] <- 1
+      }
+      if(length(sal$statusWF[[i]]$status.time) > 0){
+        df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start
+        df$time_end[i] <- sal$statusWF[[i]]$status.time$time_start
+      }
+    }
+  }
+  df$log_path <- paste0("#", tolower(df$step_name))
+  return(df)
+}
 
 
 

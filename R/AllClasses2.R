@@ -970,6 +970,8 @@ setGeneric(name="renameStep<-", def=function(x, step, ..., value) standardGeneri
 setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
   if(length(step)!=length(value)) stop("value argument needs to be the same length of the step for rename")
   if(inherits(value, "character")){
+    if(grepl("[[:space:]]", value)) message("Spaces found in the Step Name has been replaced by `_`")
+    value <- gsub("[[:space:]]", "_", value)
     names(x@stepsWF)[step] <- value
     names(x@statusWF)[step] <- value
     names(x@dependency)[step] <- value
