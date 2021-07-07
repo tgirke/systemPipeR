@@ -36,6 +36,7 @@ The plotting function is built on `htmlwidgets` skeleton, so it requires the dat
 javascripts and other resources to be stored inside a package. I created this 
 `systemPipeR1` package to test. Later, you want to copy all files in `inst` to SPR
 and change all key words `systemPipeR1` to `systemPipeR`. 
+
 ```{r}
 library(systemPipeR)
 ```
