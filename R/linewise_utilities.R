@@ -1,15 +1,15 @@
 #######################
 ## LineWise function ##
 #######################
-LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=character(), status=list()){
+LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=NA, status=list()){
     if(stepName=="default"){
         stepName <- "Step_x"
     } else {
         stepName <- stepName
     }
   dependency <- list(dependency)
-  step_status <- list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame())
   names(dependency) <- stepName
+  step_status <- list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame())
       line <- list(
         codeLine = parse(text=code),
         codeChunkStart = codeChunkStart,

@@ -554,6 +554,9 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
 }
 
 
+#######################
+## runRcode function ##
+#######################
 runRcode <- function(args.run, step, file_log, envir, force=FALSE){
   ## Validation for 'args.run'
   if(!inherits(args.run, "LineWise")) stop("Argument 'args.run' needs to be assigned an object of class 'LineWise'")

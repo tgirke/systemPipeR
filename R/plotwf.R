@@ -557,8 +557,8 @@ makeDot <- function(df,
             >];
         label="Legends";
         fontsize = 30;
-        Sysargs_step[label="Sysargs step" style="rounded,filled", shape="box", fillcolor=white];
-        R_step[label="R step" style="rounded,filled", fillcolor=white];
+        Sysargs_step[label="Sysargs step" style="rounded, filled", shape="box", fillcolor=white];
+        R_step[label="R step" style="rounded, filled", fillcolor=white];
     }\n'
     )
 }
@@ -675,5 +675,6 @@ makeDot <- function(df,
         }
     }
     df$log_path <- paste0("#", tolower(df$step_name))
+    df <- rbind(df[which(df$dep == ""), ], df[which(!df$dep == ""), ])
     return(df)
 }
