@@ -13,10 +13,10 @@ setClass("SYSargs2", slots = c(
   input = "list",
   output = "list",
   files = "list",
-  inputvars = "list", 
-  cmdToCwl = "list", 
-  status = "list", 
-  internal_outfiles = "list" 
+  inputvars = "list",
+  cmdToCwl = "list",
+  status = "list",
+  internal_outfiles = "list"
 ))
 ## Methods to return SYSargs2 components
 setGeneric(name = "targets", def = function(x) standardGeneric("targets"))
@@ -89,11 +89,11 @@ setAs(
         input = from$input,
         output = from$output,
         files = from$files,
-        inputvars = from$inputvars, 
-        cmdToCwl = from$cmdToCwl, 
-        status = from$status, 
+        inputvars = from$inputvars,
+        cmdToCwl = from$cmdToCwl,
+        status = from$status,
         internal_outfiles = from$internal_outfiles
-        
+
     )
 })
 
@@ -101,7 +101,7 @@ setAs(
 setGeneric(name = "sysargs2", def = function(x) standardGeneric("sysargs2"))
 setMethod(f = "sysargs2", signature = "SYSargs2", definition = function(x) {
   sysargs2 <- list(targets = x@targets, targetsheader = x@targetsheader, modules = x@modules, wf = x@wf,
-                   clt = x@clt, yamlinput = x@yamlinput, cmdlist = x@cmdlist, input = x@input, output = x@output, 
+                   clt = x@clt, yamlinput = x@yamlinput, cmdlist = x@cmdlist, input = x@input, output = x@output,
                    files = x@files, inputvars = x@inputvars, cmdToCwl = x@cmdToCwl,
                    status = x@status, internal_outfiles = x@internal_outfiles)
   return(sysargs2)
@@ -126,7 +126,7 @@ setMethod(
         ),
         paste0("      modules: ", length(object@modules)),
         paste0(
-          "      wf: ", length(object@wf$steps), 
+          "      wf: ", length(object@wf$steps),
           ", clt: ", length(object@clt),
           ", yamlinput: ", length(object@yamlinput), " (inputs)"
         ),
@@ -281,7 +281,7 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
   if (i == "files") x@files <- value
   if (i == "cmdToCwl") x@cmdToCwl <- value
   if (i == "status") x@status <- value
-  if (i == "internal_outfiles") x@internal_outfiles <- value 
+  if (i == "internal_outfiles") x@internal_outfiles <- value
     return(x)
 })
 
@@ -360,7 +360,7 @@ setMethod(f = "runInfo", signature = "SYSargsList", definition = function(x) {
 setGeneric(name = "sysargslist", def = function(x) standardGeneric("sysargslist"))
 setMethod(f = "sysargslist", signature = "SYSargsList", definition = function(x) {
   sysargslist <- list(stepsWF = x@stepsWF,
-                      statusWF = x@statusWF, 
+                      statusWF = x@statusWF,
                       targetsWF = x@targetsWF,
                       outfiles = x@outfiles,
                       SEobj = x@SEobj,
@@ -378,11 +378,11 @@ setAs(from = "list", to = "SYSargsList",
       def = function(from) {
         new("SYSargsList",
             stepsWF = from$stepsWF,
-            statusWF = from$statusWF, 
+            statusWF = from$statusWF,
             targetsWF = from$targetsWF,
             outfiles = from$outfiles,
             SEobj = from$SEobj,
-            dependency = from$dependency, 
+            dependency = from$dependency,
             targets_connection = from$targets_connection,
             projectInfo = from$projectInfo,
             runInfo = from$runInfo
@@ -477,7 +477,7 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
       x@stepsWF[[ii]]
     }, error=function(e) {
       e$message <- paste0('\n',
-                          "Step number is out of range. Please subset accordingly with the 'length(x)'", 
+                          "Step number is out of range. Please subset accordingly with the 'length(x)'",
                           '\n',
                           paste0(1:length(x), collapse = ", "))
       stop(e)
@@ -505,7 +505,7 @@ setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(
   if(length(unique(sapply(stepsWF(x_sub), function(x) length(x)))) > 1) stop("All 'subset_steps' should contain the same length.")
   if(missing(input_targets)){
     input_targets <- 1:max(sapply(stepsWF(x_sub), function(x) length(x)))
-  } 
+  }
   # Check targets index, names
   if(inherits(input_targets, "numeric")){
     if(!all(input_targets %in% sapply(stepsWF(x_sub), function(x) 1:length(x)))) stop("Please select the number of 'input_targets' accordingly, options are: ",
@@ -515,7 +515,7 @@ setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(
                                                                                         paste0(SampleName(x_sub@stepsWF[[1]]), collapse=", "))
     input_targets <- which(SampleName(x_sub$stepsWF[[1]]) %in% input_targets)
   }
-  
+
   if(keep_steps==FALSE){
     x <- x_sub
     subset_steps <- 1:length(x_sub)
@@ -562,12 +562,13 @@ setMethod("targetsheader", signature = "SYSargsList", definition = function(x, s
   return(stepsWF(x)[[step]]$targetsheader)
 })
 
-setGeneric(name = "getColumn", def = function(x, step, df, column=1, names=SampleName(x, step)) standardGeneric("getColumn"))
-setMethod("getColumn", signature = "SYSargsList", definition = function(x, step, df=c("targetsWF", "outfiles"), column=1, names=SampleName(x, step)) {
-  ## assertions 
+setGeneric(name = "getColumn", def = function(x, step, position=c("outfiles", "targetsWF"), column=1, names=SampleName(x, step)) standardGeneric("getColumn"))
+setMethod("getColumn", signature = "SYSargsList", definition = function(x, step, position=c("outfiles", "targetsWF"), column=1, names=SampleName(x, step)) {
+  ## assertions
   stopifnot(inherits(x, "SYSargsList"))
   stopifnot(length(step) == 1)
   stopifnot(length(column) == 1)
+  position <- match.arg(position, c("outfiles", "targetsWF"))
   ## Check steps
   if(inherits(step, "numeric")){
     if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
@@ -576,21 +577,71 @@ setMethod("getColumn", signature = "SYSargsList", definition = function(x, step,
   }
   ## Check column
   if(inherits(column, "numeric")){
-    if(!column %in% 1:ncol(x[[df]][[step]])) stop("We can not find this column in the Workflow")
+    if(!column %in% 1:ncol(x[[position]][[step]])) stop("We can not find this column in the Workflow")
   } else if(inherits(column, "character")){
-    if(!column %in% colnames(x[[df]][[step]])) stop("We can not find this column in the Workflow")
+    if(!column %in% colnames(x[[position]][[step]])) stop("We can not find this column in the Workflow")
   }
   ## Check names
-  if(!length(names) ==  length(x[[df]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
-  ## 
-  if(!is.null(x[[df]][[step]][[column]])){
-    subset <- x[[df]][[step]][[column]]
-    names(subset) <- names
+  if(!length(names) ==  length(x[[position]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+  ##
+  if(!is.null(x[[position]][[step]][[column]])){
+    subset <- x[[position]][[step]][[column]]
+    names(subset) <- if (is.null(names)) names <- rep("", length(subset)) else names
   } else {
     message("This step doesn't contain expected outfiles.")
   }
   return(subset)
 })
+
+
+#' modify values of outfiles or input targets df columns
+#' @param x SAL object
+#' @param step
+#' @param df a dataframe that must have the same rows as the modifying dataframe.
+#' However, if there is no column in the original dataframe. This new df will replace the empty one.
+#' If there is a non-empty dataframe, any existing columns with the same name as this new df
+#' will be replaced. Any columns that do not exist in the original column but this new df will
+#' be added to the original df.
+#' @param position which slot in SAL to modify, one of "outfiles", "targetsWF"
+#'
+#' @return returns a SAL object
+#' @export
+#'
+#' @examples
+setGeneric(name = "updateColumn", def = function(x, step, df, position=c("outfiles", "targetsWF")) standardGeneric("updateColumn"))
+setMethod("updateColumn", signature = "SYSargsList", definition = function(x, step, df, position=c("outfiles", "targetsWF")) {
+  ## assertions
+  stopifnot(inherits(x, "SYSargsList"))
+  stopifnot(length(step) == 1)
+  stopifnot(inherits(df, c("DFrame", "data.frame")))
+  position <- match.arg(position, c("outfiles", "targetsWF"))
+  ## Check steps
+  if(inherits(step, "numeric")){
+    if(!step %in% 1:length(x)) stop("We can not find this step in the Workflow")
+  } else if(inherits(step, "character")){
+    if(!step %in% stepName(x)) stop("We can not find this step in the Workflow")
+  }
+  ## get some info
+  df_names <- names(df)
+  df_rows <- nrow(df)
+  sal_name <- as.character(match.call()$x)
+  ## if empty original df
+  # if(nrow(x[[position]][[step]]) == 0) {x[[position]][[step]] <- as(df, "DataFrame"); return(.updateSAL(x, sal_name))}
+  if(nrow(x[[position]][[step]]) == 0) {x[[position]][[step]] <- as(df, "DataFrame"); return(x)}
+  ## if not empty
+  if(nrow(x[[position]][[step]]) != df_rows) stop("updateColumn: Original dataframe has different rows than the new dataframe.")
+
+  x[[position]][[step]][, df_names] <- df
+
+  x
+  # .updateSAL(x, sal_name)
+})
+
+# .updateSAL <- function(x, sal_name){
+#   assign(sal_name, x, globalenv())
+# }
+
+
 
 # ## Behavior of "[[" operator for SYSargsList
 # setMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
@@ -601,7 +652,7 @@ setMethod("getColumn", signature = "SYSargsList", definition = function(x, step,
 #     #x@SEobj[[s]] <- x@SEobj[[s]][i]
 #     x@outfiles[[s]] <- x@outfiles[[s]][i,]
 #   }
-# 
+#
 #   x
 # })
 
@@ -683,11 +734,11 @@ setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i
   if (i == 8) x@projectInfo <- value
   if (i == 9) x@runInfo <- value
   if (i == "stepsWF") x@stepsWF <- value
-  if (i == "statusWF") x@statusWF <- value  
+  if (i == "statusWF") x@statusWF <- value
   if (i == "targetsWF") x@targetsWF <- value
   if (i == "outfiles") x@outfiles <- value
   if (i == "SEobj") x@SEobj <- value
-  if (i == "dependency") x@dependency <- value 
+  if (i == "dependency") x@dependency <- value
   if (i == "targets_connection") x@targets_connection <- value
   if (i == "projectInfo") x@projectInfo <- value
   if (i == "runInfo") x@runInfo <- value
@@ -701,10 +752,6 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   lengx <- length(x)
   after <- after
   if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
-  ## Dependency 
-  if(all(is.na(dependency(value)) && length(x)>0)) stop("'dependency' argument is required to append a step in the workflow.")
-  if(dependency(value)=="") value[["dependency"]][[1]] <- NA
-  ## Append
   if(inherits(value, "SYSargsList")){
     value <- .validationStepConn(x, value)
     x <- sysargslist(x)
@@ -782,7 +829,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     names(x$targets_connection)[after+1L] <- step_name
     names(x$runInfo$directory)[after+1L] <- step_name
     x <- as(x, "SYSargsList")
-    } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
+  } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
  # if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
   x <- .check_write_SYSargsList(x)
   x
@@ -824,12 +871,8 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 .validationStepConn <- function(x, value){
   ## Check outfiles names
   if(any(
-    duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(outfiles(value), function(y) names(y)))))))
-    stop("'outfiles' columns names need to be unique")
-  ## Check outfiles names X targets names
-  if(any(
-    duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(targetsWF(x), function(y) names(y)))))))
-    stop("'targetsWF' and 'outfiles' columns names need to be unique")
+    duplicated(unlist(append(sapply(outfiles(x), function(y) names(y)), sapply(outfiles(value), function(y) names(y)))))))
+    stop("'outfiles' columns names needs to be unique")
   ## Check value length
   if(length(value) > 1) stop("One step can be appended in each operation.")
   targesCon <- value$targets_connection[[1]]
@@ -840,7 +883,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     if(length(step)==1){
       targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
       new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
-      ## add skip
+      ## addd skip
       if(all(!new_targets_col %in% colnames(x$outfiles[[step]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                            paste0(colnames(x$outfiles[[step]]), collapse = " OR \n")))
       if(is.null(targesCon[[3]][[1]])){
@@ -886,8 +929,6 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   #   names(value$targets_connection) <- names(value$stepsWF)
   #   value <- as(value, "SYSargsList")
   # }
-  ## outfiles... if dir=TRUE
-  value[["statusWF"]][[1]]$status.completed <- check.output(value)
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){
@@ -906,6 +947,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   if("env" %in% names(value$runInfo)){
     value[["runInfo"]] <- value$runInfo$directory
   }
+
   return(value)
 }
 
@@ -979,7 +1021,7 @@ setGeneric(name="renameStep<-", def=function(x, step, ..., value) standardGeneri
 setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
   if(length(step)!=length(value)) stop("value argument needs to be the same length of the step for rename")
   if(inherits(value, "character")){
-    if(any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
+    if(grepl("[[:space:]]", value)) message("Spaces found in the Step Name has been replaced by `_`")
     value <- gsub("[[:space:]]", "_", value)
     names(x@stepsWF)[step] <- value
     names(x@statusWF)[step] <- value
