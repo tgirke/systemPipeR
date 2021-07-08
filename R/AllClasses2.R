@@ -752,6 +752,10 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   lengx <- length(x)
   after <- after
   if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
+  ## Dependency
+  if(all(is.na(dependency(value)) && length(x)>0)) stop("'dependency' argument is required to append a step in the workflow.")
+  if(dependency(value)=="") value[["dependency"]][[1]] <- NA
+  ## Append
   if(inherits(value, "SYSargsList")){
     value <- .validationStepConn(x, value)
     x <- sysargslist(x)
@@ -829,7 +833,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     names(x$targets_connection)[after+1L] <- step_name
     names(x$runInfo$directory)[after+1L] <- step_name
     x <- as(x, "SYSargsList")
-  } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
+    } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
  # if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
   x <- .check_write_SYSargsList(x)
   x
@@ -871,8 +875,12 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 .validationStepConn <- function(x, value){
   ## Check outfiles names
   if(any(
-    duplicated(unlist(append(sapply(outfiles(x), function(y) names(y)), sapply(outfiles(value), function(y) names(y)))))))
-    stop("'outfiles' columns names needs to be unique")
+    duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(outfiles(value), function(y) names(y)))))))
+    stop("'outfiles' columns names need to be unique")
+  ## Check outfiles names X targets names
+  if(any(
+    duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(targetsWF(x), function(y) names(y)))))))
+    stop("'targetsWF' and 'outfiles' columns names need to be unique")
   ## Check value length
   if(length(value) > 1) stop("One step can be appended in each operation.")
   targesCon <- value$targets_connection[[1]]
@@ -883,7 +891,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     if(length(step)==1){
       targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
       new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
-      ## addd skip
+      ## add skip
       if(all(!new_targets_col %in% colnames(x$outfiles[[step]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                            paste0(colnames(x$outfiles[[step]]), collapse = " OR \n")))
       if(is.null(targesCon[[3]][[1]])){
@@ -929,6 +937,8 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   #   names(value$targets_connection) <- names(value$stepsWF)
   #   value <- as(value, "SYSargsList")
   # }
+  ## outfiles... if dir=TRUE
+  value[["statusWF"]][[1]]$status.completed <- check.output(value)
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){
@@ -947,7 +957,6 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   if("env" %in% names(value$runInfo)){
     value[["runInfo"]] <- value$runInfo$directory
   }
-
   return(value)
 }
 
@@ -1021,7 +1030,7 @@ setGeneric(name="renameStep<-", def=function(x, step, ..., value) standardGeneri
 setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
   if(length(step)!=length(value)) stop("value argument needs to be the same length of the step for rename")
   if(inherits(value, "character")){
-    if(grepl("[[:space:]]", value)) message("Spaces found in the Step Name has been replaced by `_`")
+    if(any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
     value <- gsub("[[:space:]]", "_", value)
     names(x@stepsWF)[step] <- value
     names(x@statusWF)[step] <- value
