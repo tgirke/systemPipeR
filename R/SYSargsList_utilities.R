@@ -246,7 +246,7 @@ SYSargsList <- function(args=NULL, step_name="default",
                         targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".", inputvars=NULL,
                         rm_targets_col = NULL, 
                         dir=TRUE,
-                        dependency=NULL, silent = FALSE) {
+                        dependency=NA, silent = FALSE) {
   sal <- as(SYScreate("SYSargsList"), "list")
   if(all(is.null(args) && is.null(wf_file) && is.null(input_file))){
     sal <- sal ## This will not create a SPRproject. 
@@ -254,7 +254,6 @@ SYSargsList <- function(args=NULL, step_name="default",
   } else if (!is.null(args)){
     if(inherits(args, "SYSargs2")){
       if(length(cmdlist(args))==0) stop ("Argument 'args' needs to be assigned an object of class 'SYSargs2' after 'renderWF()'.")
-      # sal <- as(SYScreate("SYSargsList"), "list")
       if(step_name=="default"){
         step_name <- "Step_x"
       } else {
@@ -273,7 +272,12 @@ SYSargsList <- function(args=NULL, step_name="default",
       } else {
         sal$statusWF <- list(status(args))
       }
-      sal$dependency <- list(dependency)
+      ## dependency
+      if (all(is.na(dependency))){
+        sal$dependency <- list(NA)
+      } else {
+        sal$dependency <- list(dependency)
+      }
       sal$outfiles <- list(.outList2DF(args))
       sal$targets_connection <- list(NULL)
       sal$runInfo <- list(directory=dir)
@@ -321,7 +325,7 @@ SYSargsList <- function(args=NULL, step_name="default",
     names(sal$targets_connection) <- step_name
     } 
     ## dependency
-    if(is.null(dependency)){
+    if (all(is.na(dependency))){
       sal$dependency <- list(NA)
     } else {
       sal$dependency <- list(dependency)
@@ -469,7 +473,8 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
   # Validations
   if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
   if (is.null(projectInfo(args)$project)) stop("Project was not initialized with the 'SPRproject' function.")
-  if (!dir.exists(projectInfo(sal)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...")
+  if (!dir.exists(projectInfo(sal)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong... 
+        If you d")
   sysproj <- projectInfo(args)$logsDir
   ## check dependency
   for(i in seq_along(dependency(args))){

@@ -1,0 +1,374 @@
+##########################################
+##  runMe_star_picard.Rmd
+##########################################
+
+# Getting Started
+
+## Installation
+
+The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) command. The associated data package [_`systemPipeRdata`_](http://www.bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
+
+```{r install, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
+BiocManager::install("systemPipeR")
+BiocManager::install("dcassol/systemPipeR") ## use this for development
+n
+BiocManager::install("systemPipeRdata")
+```
+
+## Loading package and documentation
+
+```{r documentation, eval=FALSE}
+library("systemPipeR") # Loads the package
+library(help="systemPipeR") # Lists package info
+packageDescription("systemPipeR")$Version
+vignette("systemPipeR") # Opens vignette
+```
+
+Now check whether your R session is running on a computer node of the cluster and not on a head node.
+
+```{r r_environment, eval=FALSE}
+system("hostname") # should return name of a compute node starting with i or c 
+getwd() # checks current working directory of R session
+dir() # returns content of current working directory
+```
+
+
+## Read mapping with `STAR`
+
+```{r star_alignment2, eval=FALSE}
+## star-index
+dir_path <- "param/cwl/star/star-idx/"
+star.index <- loadWorkflow(targets = NULL, wf_file = "star-index.cwl", 
+    input_file = "star-index.yml", dir_path = dir_path)
+star.index <- renderWF(star.index)
+star.index
+output(star.index)
+cmdlist(star.index)
+runCommandline(star.index, dir = FALSE, make_bam = FALSE) 
+
+## workflow_star-index
+dir_path <- "param/cwl/star/star-idx/"
+star.index <- loadWorkflow(targets = NULL, wf_file = "workflow_star-index.cwl", 
+    input_file = "star-index.yml", dir_path = dir_path)
+star.index <- renderWF(star.index)
+star.index
+output(star.index)
+cmdlist(star.index)
+runCommandline(star.index, dir = FALSE, make_bam = FALSE) 
+
+## star-mapping-se-sam
+targetsSE <- "targets.txt"
+dir_path <- "param/cwl/star/star-se/"
+starSE <- loadWorkflow(targets = targetsSE, wf_file = "star-mapping-se.cwl", 
+    input_file = "star-mapping-se.yml", dir_path = dir_path)
+starSE <- renderWF(starSE, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    SampleName = "_SampleName_"))
+starSE
+output(starSE)
+cmdlist(starSE)
+runCommandline(starSE[1], dir = TRUE, make_bam = TRUE)
+
+## star-mapping-pe-sam
+#targetsPE <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+#dir <- path <- system.file("extdata/cwl/star/star-pe", package="systemPipeR")
+source("../../../systemPipeR/R/utilities.R")
+source("../../../systemPipeR/R/AllClasses2.R")
+targetsPE <- "targetsPE.txt"
+dir_path <- "param/cwl/star/star-pe/"
+dir_path <- "./" # use runjobdef* folder
+starPE <- loadWorkflow(targets = targetsPE, wf_file = "star-mapping-pe.cwl", 
+    input_file = "star-mapping-pe.yml", dir_path = dir_path)
+starPE <- renderWF(starPE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
+    SampleName = "_SampleName_"))
+starPE <- renderWF(starPE, inputvars = c(FileName1 = "fq1", FileName2 = "fq2", 
+    SampleName = "SampleName"))
+Q
+c
+n
+getwd()
+starPE
+output(starPE)
+cmdlist(starPE)
+unlink("results/*", recursive = T)
+runCommandline(starPE[1], dir = TRUE, make_bam = TRUE)
+runCommandline(starPE, dir = TRUE, make_bam = TRUE)
+
+# the following cwltool calls will only work if the "replace by name" method is set up and enabled properly above
+#   or you can make an *_sample.yml file
+system2("cwltool", c("clt_star-index.cwl", "star-index.yml"))
+system2("cwltool", c("clt_star-mapping-pe.cwl", "star-mapping-pe.yml"))
+========================================================
+  .renderWFsingle <- function(WF, id) { 
+    inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
+    if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
+    input <- yamlinput(WF)
+    print("Gordon render0")
+    #print(input)
+    for(i in seq_along(inputvars)) {
+      print(names(inputvars)[i])
+      # push this statement
+      if ( !(inputvars[[i]] %in% input) && !(inputvars[[i]] %in% names(input)) ) {
+          cat(paste("Can't match inputvars", inputvars[[i]] , "in renderWF()")) 
+      } 
+      subvalue <- targets(WF)[[id]][[names(inputvars)[i]]]
+      print(subvalue)
+      if(length(subvalue)!=0) {
+        #browser()
+	# next statement replaces by value of input, e.g. _FASTQ_PATH1 or _SampleName_
+        if ( inputvars[[i]] %in% input) {
+          cat(paste("Ready to replace", inputvars[[i]] , "in renderWF()")) 
+        }
+        input <- rapply(input, function(x) gsub(inputvars[[i]], subvalue, x), how = "replace")
+	# next statement replaces by name of input, e.g. fq1, fq2 or SampleName
+        print(i)
+	print(inputvars[i])
+	print(names(inputvars[i]))
+	print(input[names(inputvars[i])])
+        # push this statement
+        if (inputvars[[i]] %in% names(input)) {
+          cat(paste("Ready to replace", inputvars[[i]] , "in renderWF()")) 
+          if ( is.null(names(input[inputvars[i]][[1]])) ) {
+            input[inputvars[i]][[1]] = subvalue
+          } else if (    all(c("class","path") %in% names(input[inputvars[i]][[1]]) )
+                      && (    (input[inputvars[i]][[1]]["class"] == "File")
+                           || (input[inputvars[i]][[1]]["class"] == "Directory")  )) {
+            input[inputvars[i]][[1]]["path"] = subvalue
+          } else {
+            cat(paste("Trouble with class or path for", names(input[inputvars[i]]) , "in renderWF()")) 
+          }
+	}
+        inputvarslist[[i]] <- subvalue
+      }
+    }
+    print("Gordon render1")
+========================================================
+          if(grepl(extension[1], name)){
+            sam <- strsplit(name, split="\\.")[[1]]
+            useRealNameForSTAR <- ((length(sam)==4) && (sam[2]=="Aligned"))
+            if (useRealNameForSTAR) {
+              realname <- gsub("\\.sam$", "", name)
+              args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", realname, extension[2])))
+            } else {
+              sam <- sam[length(sam)]
+              if(sam=="sam"){
+                args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", names(args$output[i]), extension[2])))
+              } else {
+                args$output[[i]][[j]][k] <- suppressWarnings(normalizePath(paste0(dir, "/", name)))
+              }
+            }
+          } else {
+            args$output[[i]][[j]][k] <- args$output[[i]][[j]][k]
+          }
+=======================================================
+## star-mapping-pe-bam
+## best test for string[]
+## best test for dir=TRUE and make_bam=TRUE with bam already made
+source("../../../systemPipeR/R/utilities.R")
+source("../../../systemPipeR/R/AllClasses2.R")
+targetsPE <- "targetsPE.txt"
+dir_path <- "param/cwl/star/star-pe/"
+dir_path <- "./" # use runjobdef* folder
+starPEbam <- loadWorkflow(targets = targetsPE, wf_file = "star-mapping-pe-bam.cwl", 
+    input_file = "star-mapping-pe-bam.yml", dir_path = dir_path)
+starPEbam <- renderWF(starPEbam, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
+    SampleName = "_SampleName_"))
+Q
+c
+n
+getwd()
+starPEbam
+output(starPEbam)
+cmdlist(starPEbam)
+source("../../../systemPipeR/R/utilities.R")
+unlink("results/*", recursive = T)
+runCommandline(starPEbam[1], dir = TRUE, make_bam = TRUE)
+runCommandline(starPEbam, dir = TRUE, make_bam = TRUE)
+
+=======================================================
+=======================================================
+## workflow_star-mapping-pe-sam_samtools
+## best test for samtools, best test for multi-step workflow
+## dir=TRUE is MESSED up by utilities.R line =177 FIXED 2019-1021
+## make_bam always FALSE on workflows
+source("../../../systemPipeR/R/utilities.R")
+source("../../../systemPipeR/R/AllClasses2.R")
+targetsPE <- "targetsPE.txt"
+dir_path <- "param/cwl/workflow-star/workflow-star-pe/"
+dir_path <- "./" # use runjobdef* folder
+WF_starPE <- loadWorkflow(targets = targetsPE, wf_file = "workflow_star-pe-sam_samtools.cwl", 
+    input_file = "workflow_star-pe-sam_samtools.yml", dir_path = dir_path)
+#WF_starPE <- renderWF(WF_starPE, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
+#    SampleName = "_SampleName_"))
+WF_starPE <- renderWF(WF_starPE, inputvars = c(FileName1 = "fq1", FileName2 = "fq2", 
+    SampleName = "SampleName"))
+Q
+c
+n
+getwd()
+WF_starPE
+output(WF_starPE)
+cmdlist(WF_starPE)
+source("../../../systemPipeR/R/utilities.R")
+unlink("results/*", recursive = T)
+runCommandline(WF_starPE[18], dir = TRUE, make_bam = FALSE)  # make_bam false for workflows
+runCommandline(WF_starPE, dir = TRUE, make_bam = FALSE)  # make_bam false for workflows
+
+sink("draw_yml_tree-WF_starPE_wf.txt") 
+ymlthis::draw_yml_tree(WF_starPE$wf)
+sink()
+sink("draw_yml_tree-WF_starPE_clt.txt") 
+ymlthis::draw_yml_tree(WF_starPE$clt)
+sink()
+# https://ymlthis.r-lib.org/reference/draw_yml_tree.html
+
+    # Gordon # nice test code from loadWorkflow()
+    # shows how printable wf is as it is stored in WF$wf
+    # looks perfect, but not yet tested, watch for missing [] on listing and version!!!
+    # this code works here, just need to set browser() at the WF to be analyzed
+    #browser()
+    wf.textstring <- yaml::as.yaml(WF$wf["steps"], indent.mapping.sequence=TRUE)
+    wf.textstring <- yaml::as.yaml(WF$wf, indent.mapping.sequence=TRUE)
+    wf.textvec <- unlist(strsplit(wf.textstring, split="\\n"))
+    writeLines(wf.textvec, "wf_Gordon.asyaml.cwl") # was wf_Gordon.cwl
+
+    .fixup_wf_write_yaml(wf, "wf_Gordon.fixup.cwl")
+
+    wf.textstring <- yaml::as.yaml(WF$yamlinput, indent.mapping.sequence=TRUE)
+    wf.textvec <- unlist(strsplit(wf.textstring, split="\\n"))
+    writeLines(wf.textvec, "wf_Gordon.yml")
+
+    .fixup_yml_write_yaml(input, "wf_Gordon.fixup.yml")
+
+
+    # end Gordon
+
+system2("cwltool", c("wf_Gordon.fixup.cwl", "wf_Gordon.fixup.yml"))
+system2("cwltool", c("workflow_star-pe-sam_samtools.cwl", "workflow_star-pe-sam_samtools.yml"))
+
+```
+
+
+## Picard Markduplicates
+```{r picard_markduplicates, eval=FALSE}
+
+## picard_markduplicates
+targetsSE <- "targets.txt"
+dir_path <- "param/cwl/picard/markduplicates/"
+WF <- loadWorkflow(targets = targetsSE, wf_file = "picard_markduplicates.cwl", 
+    input_file = "picard_markduplicates.yml", dir_path = dir_path)
+WF <- renderWF(WF, inputvars = c(SampleName = "_SampleName_"))
+WF
+output(WF)
+cmdlist(WF)
+runCommandline(WF[1], dir = FALSE, make_bam = FALSE) 
+
+## workflow_star-mapping-pe-sam_samtools_picard-markduplicates
+targetsPE <- "targetsPE.txt"
+dir_path <- "param/cwl/workflow-star-picard/workflow-star-pe_picard-markduplicates/"
+# dir_path <- ""
+WF_starPE_picard <- loadWorkflow(targets = targetsPE, wf_file = "workflow_star-pe_picard-markduplicates.cwl", 
+    input_file = "workflow_star-pe_picard-markduplicates.yml", dir_path = dir_path)
+WF_starPE_picard <- renderWF(WF_starPE_picard, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
+    SampleName = "_SampleName_"))
+WF_starPE_picard
+output(WF_starPE_picard)
+cmdlist(WF_starPE_picard)
+runCommandline(WF_starPE_picard[18], dir = FALSE, make_bam = FALSE)  # make_bam false for workflows
+dir.create("results/newfolder")
+dir("results/")
+unlink("results/*", recursive = T)
+
+
+## workflow _forDani
+targetsPE <- "targetsPE.txt"
+dir_path <- "param/cwl/workflow-star-picard/workflow-star-pe_picard-markduplicates/"
+# dir_path <- ""
+WF_starPE_picard <- loadWorkflow(targets = targetsPE, wf_file = "workflow_star-pe_picard-markduplicates_forDani.cwl", 
+    input_file = "workflow_star-pe_picard-markduplicates.yml", dir_path = dir_path)
+WF_starPE_picard <- renderWF(WF_starPE_picard, inputvars = c(FileName1 = "_FASTQ_PATH1_", FileName2 = "_FASTQ_PATH2_", 
+    SampleName = "_SampleName_"))
+WF_starPE_picard
+output(WF_starPE_picard)
+cmdlist(WF_starPE_picard)
+runCommandline(WF_starPE_picard[1], dir = FALSE, make_bam = FALSE)  # make_bam false for workflows
+```
+
+========================================================
+
+## STAR counts
+# first make gtf from gff (doesn't work)
+```{r make_gtf, eval=F}
+library(rtracklayer)
+annotation_gff <- file.path("./data", "tair10.gff")
+test <- import.gff1(annotation_gff)
+head(test)
+export.gff(test,"annotation.gff2","gff2")
+test2 <- import.gff2("annotation.gff2")
+export(test,"annotation.gtf","gtf")
+
+```
+
+# This is my function to generate STARcounts
+# some code from biostars 241602
+# some code from stackoverflow 13762224
+```{r STAR_counts, eval=FALSE}
+write.table_STARcounts <- function(results_path="./results", table_name="STARcountDFeByg.xls", dbg=0) {
+  #ff <- list.files( path = results_path, pattern = "*ReadsPerGene.out.tab$", full.names = TRUE, recursive = TRUE ) # alpha sort is not ideal
+  details <- file.info(list.files( path = results_path, pattern = "*ReadsPerGene.out.tab$", full.names = TRUE, recursive = TRUE ))
+  details <-  details[with(details, order(as.POSIXct(ctime))), ]
+  if (dbg>0) details
+  if (dbg>0) names(details)
+  ff <- rownames(details) # from stackoverflow 13762224, filenames sorted by created time
+  if (dbg>0) ff
+  if (dbg>0) read.table(ff[1],skip=0)
+  counts.files <- lapply( ff, read.table, skip = 4 )
+  if (dbg>0) head(counts.files[[1]])
+# column 1: gene ID
+# column 2: counts for unstranded RNA-seq
+# column 3: counts for the 1st read strand aligned with RNA (htseq-count option -s yes)
+# column 4: counts for the 2nd read strand aligned with RNA (htseq-count option -s reverse)
+  counts <- as.data.frame( sapply( counts.files, function(x) x[ , 'V2' ] ) ) # V2 is column 2: counts for unstranded RNA-seq 
+  if (dbg>0) head(counts)
+  # prepare colnames for xls file
+  ff <- gsub( "[.]ReadsPerGene[.]out[.]tab", "", ff ) # get rid of all of the filename except the SampleName
+  if (dbg>0) ff[1]
+  ff <- gsub( "[.]/results/", "", ff )
+  if (dbg>0) ff[1]
+
+  if (dbg>0) typeof(ff)
+  if (dbg>0) length(ff)
+  .last <- function(x) { return( x[length(x)] ) } # or use tail(x,1) since ns slower is ok
+  xxx <- lapply( ff, function(x) { .last(strsplit(x, split="\\/")[[1]]) } ) # keep all that follows last slash, the SampleName
+  ff <- unlist(xxx)
+  if (dbg>0) ff
+  colnames(counts) <- ff
+  row.names(counts) <- counts.files[[1]]$V1 # V1 are the gene ID's, see STAR Manual --quantMode
+  if (dbg>0) head(counts)
+  write.table(counts, paste0(results_path, "/", table_name), col.names=NA, quote=FALSE, sep="\t")
+}
+write.table_STARcounts(results_path="./results", table_name="STARcountDFeByg.xls")
+```
+
+## Run `edgeR`
+
+```{r run_edger, eval=T}
+library(edgeR)
+countDF <- read.delim("results/STARcountDFeByg.xls", row.names=1, check.names=FALSE)
+head(countDF) # best way to see counts!
+targets <- utils::read.delim("targets.txt", comment="#")
+targets
+cmp <- systemPipeR::readComp(file="targets.txt", format="matrix", delim="-")
+cmp
+#debug(run_edgeR)
+edgeDF <- systemPipeR::run_edgeR(countDF=countDF, targets=targets, cmp=cmp[[1]], independent=FALSE, mdsplot="")
+str(edgeDF)
+edgeDF
+```
+```{r}
+setwd("/bigdata/girkelab/gdmosher/code/systemPipeRstudy/rnaseq")
+getwd()
+setwd("/bigdata/girkelab/gdmosher/code/systemPipeR_testing/cwl_testing/runjobdef_STAR_picard_20190923_v1")
+getwd()
+```
+

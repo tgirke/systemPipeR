@@ -363,7 +363,6 @@ makeDot <- function(df,
     }) %>%
         unlist() %>%
         which()
-
     if (length(branch_complete) == 0) {
         warning("Workflow's first step is not connected to the last step, something wrong?")
         tree_complete <- tree

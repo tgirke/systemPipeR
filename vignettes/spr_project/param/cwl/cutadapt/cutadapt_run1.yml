@@ -1,0 +1,19 @@
+adapter: TGGAATTCTCGGGTGCCAAGG
+outfile:
+  class: File
+  path: ./results/cutadapt/_SampleName_.fastq.gz
+minimum-length: 18
+maximum-length: 30
+cores: 4
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+cutadapt:
+  class: Directory
+  path: cutadapt
+results_path:
+  class: Directory
+  path: ./results/
+SampleName: _SampleName_
+ModulesToLoad:
+  module1: cutadapt

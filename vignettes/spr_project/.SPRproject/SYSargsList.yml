@@ -1,0 +1,82 @@
+stepsWF:
+  setup_libraries: |
+    codeLine: |-
+      suppressPackageStartupMessages({
+          library(systemPipeR)
+      })
+    codeChunkStart: 36
+    rmdPath: []
+    stepName: /home/dcassol/src/R-4.1.0/library/systemPipeR/extdata//SPRtest.Rmd
+    dependency:
+      /home/dcassol/src/R-4.1.0/library/systemPipeR/extdata//SPRtest.Rmd: .na
+    status:
+      status.summary: Pending
+      status.completed:
+        Step: /home/dcassol/src/R-4.1.0/library/systemPipeR/extdata//SPRtest.Rmd
+        status.summary: Pending
+      status.time: {}
+  load_targets: |
+    codeLine:
+    - targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+    - targets <- read.delim(targetspath, comment.char = "#")[, 1:4]
+    - targets
+    codeChunkStart: 62
+    rmdPath: []
+    stepName: /home/dcassol/src/R-4.1.0/library/systemPipeR/extdata//SPRtest.Rmd
+    dependency:
+      /home/dcassol/src/R-4.1.0/library/systemPipeR/extdata//SPRtest.Rmd: .na
+    status:
+      status.summary: Pending
+      status.completed:
+        Step: /home/dcassol/src/R-4.1.0/library/systemPipeR/extdata//SPRtest.Rmd
+        status.summary: Pending
+      status.time: {}
+statusWF:
+  setup_libraries: |
+    setup_libraries:
+      status.summary: Pending
+      status.completed:
+        Step: setup_libraries
+        status.summary: Pending
+      status.time: {}
+  load_targets: |
+    load_targets:
+      status.summary: Pending
+      status.completed:
+        Step: load_targets
+        status.summary: Pending
+      status.time: {}
+targetsWF:
+  setup_libraries: |
+    {}
+  load_targets: |
+    {}
+outfiles:
+  setup_libraries: |
+    {}
+  load_targets: |
+    {}
+SEobj: |
+  - ~
+  - ~
+dependency:
+  setup_libraries: |
+    setup_libraries: .na
+  load_targets: |
+    load_targets: load_systempiper
+targets_connection:
+  setup_libraries: |
+    setup_libraries: ~
+  load_targets: |
+    load_targets: ~
+projectInfo: |
+  project: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/vignettes/spr_project
+  data: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/vignettes/spr_project/data
+  param: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/vignettes/spr_project/param
+  results: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/vignettes/spr_project/results
+  logsDir: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/vignettes/spr_project/.SPRproject
+  sysargslist: /home/dcassol/danielac@ucr.edu/projects/Dani_SPR/systemPipeR/vignettes/spr_project/.SPRproject/SYSargsList.yml
+  rmd_file: /home/dcassol/src/R-4.1.0/library/systemPipeR/extdata//SPRtest.Rmd
+runInfo: |
+  setup_libraries: ~
+  load_targets: ~

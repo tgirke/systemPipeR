@@ -1,0 +1,19 @@
+#!/bin/bash -l
+
+#PBS -N <%= job.name %>
+#PBS -o <%= log.file %>
+#PBS -l walltime=<%= resources$walltime %>,nodes=1:ppn=<%=resources$ncpus %>,mem=<%= resources$memory %>
+#PBS -j oe
+
+module load R/3.5.0
+
+<%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
+<%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>
+<%= sprintf("export MKL_NUM_THREADS=%i", resources$blas.threads) -%>
+
+## export value of DEBUGME environemnt var to slave
+export DEBUGME=<%= Sys.getenv("DEBUGME") %>
+
+## run R
+Rscript -e 'batchtools::doJobCollection("<%= uri %>")'
+

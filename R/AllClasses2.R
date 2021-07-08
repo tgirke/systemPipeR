@@ -701,6 +701,10 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   lengx <- length(x)
   after <- after
   if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
+  ## Dependency 
+  if(all(is.na(dependency(value)) && length(x)>0)) stop("'dependency' argument is required to append a step in the workflow.")
+  if(dependency(value)=="") value[["dependency"]][[1]] <- NA
+  ## Append
   if(inherits(value, "SYSargsList")){
     value <- .validationStepConn(x, value)
     x <- sysargslist(x)
@@ -778,7 +782,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     names(x$targets_connection)[after+1L] <- step_name
     names(x$runInfo$directory)[after+1L] <- step_name
     x <- as(x, "SYSargsList")
-  } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
+    } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
  # if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
   x <- .check_write_SYSargsList(x)
   x
@@ -970,7 +974,7 @@ setGeneric(name="renameStep<-", def=function(x, step, ..., value) standardGeneri
 setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
   if(length(step)!=length(value)) stop("value argument needs to be the same length of the step for rename")
   if(inherits(value, "character")){
-    if(grepl("[[:space:]]", value)) message("Spaces found in the Step Name has been replaced by `_`")
+    if(any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
     value <- gsub("[[:space:]]", "_", value)
     names(x@stepsWF)[step] <- value
     names(x@statusWF)[step] <- value

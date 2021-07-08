@@ -139,7 +139,8 @@ outfiles(sal)
 
 ```{r, eval=TRUE}
 appendStep(sal) <- LineWise(stepName = "R_read", 
-                       code = "hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))")
+                       code = "hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))", 
+                       dependency = "echo")
 ```
 
 - Run workflow
@@ -147,6 +148,12 @@ appendStep(sal) <- LineWise(stepName = "R_read",
 ```{r, eval=TRUE}
 sal <- runWF(sal)
 sal
+```
+
+- Visualize workflow
+
+```{r, eval=TRUE}
+plotWF(sal, show_legend = FALSE, width = "80%", height="250px")
 ```
 
 - Check workflow status
@@ -304,7 +311,8 @@ appendStep(sal) <- SYSargsList(step_name = "Index", dir = FALSE,
                                targets=NULL, 
                                wf_file = "hisat2/workflow_hisat2-index.cwl",
                                input_file="hisat2/hisat2-index.yml",
-                               dir_path=system.file("extdata/cwl", package = "systemPipeR"))
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"), 
+                               dependency = "Quality")
 ```
 
 We can check all the expected `outfiles` for this particular step, as follows:
@@ -364,6 +372,12 @@ In addition, we can access all the command lines for each one of the substeps.
 cmdlist(sal["Mapping"], targets=1)
 ```
 
+- Visualize workflow
+
+```{r, eval=TRUE}
+plotWF(sal)
+```
+
 ## Update a parameter the workflow
 
 ```{r, eval=TRUE}
@@ -405,8 +419,9 @@ For more details about the `LineWise` class, please check [below](#linewise).
 For running the workflow, `runWF` function will execute all the command lines store in the workflow container:
 
 ```{r, eval=TRUE}
-sal <- runWF(sal)
-sal
+sal_sub <- subsetTargets(sal, subset_steps = c(1,3), input_targets = ("M1A"), keep_steps = TRUE)
+sal_sub <- runWF(sal_sub)
+sal_sub
 ```
 
 # Accessing the workflow details
@@ -640,6 +655,15 @@ Also, note that all the required files to generate this particular object needed
 to be defined in the code chunk. The motivation for this is that when R Markdown
 files will be imported, and this code chunk will be evaluated and stored in the
 workflow control class as the `SYSargsList` object.
+
+# Special cases
+
+If accidentally the log files are deleted:
+```{r, eval=FALSE}
+unlink(".SPRproject/", recursive = TRUE)
+write_SYSargsList(sal, sys.file = "sysargslist.yml", silent = TRUE)
+```
+
 
 # Internal Classes
 

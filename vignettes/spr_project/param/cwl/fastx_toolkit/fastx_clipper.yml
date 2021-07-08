@@ -1,0 +1,18 @@
+#############################
+## fastx_clipper.yml ##
+#############################
+
+gunzip:
+  class: File
+  path: _FASTQ_PATH1_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+  module1: fastx_toolkit/0.0.13 
+
+adaptor_fastx_toolkit: AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC

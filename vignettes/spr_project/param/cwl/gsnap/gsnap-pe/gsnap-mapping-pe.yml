@@ -1,0 +1,29 @@
+###############################
+##   gsnap-Paired_end.yml    ##
+###############################
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+ 
+fq2:
+  class: File
+  path: _FASTQ_PATH2_
+  
+SampleName: _SampleName_
+
+results_path:
+  class: Directory
+  path: ./results
+
+thread: 4
+
+ModulesToLoad: 
+
+rscript_gsnap_mapping:
+  class: File
+  path: ./param/docopt.R/gsnap/gsnap.doc.R
+
+molecule: "DNA"
+
+max_mismatches: "3"
+
