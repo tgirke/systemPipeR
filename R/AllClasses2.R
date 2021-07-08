@@ -824,8 +824,12 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
 .validationStepConn <- function(x, value){
   ## Check outfiles names
   if(any(
-    duplicated(unlist(append(sapply(outfiles(x), function(y) names(y)), sapply(outfiles(value), function(y) names(y)))))))
-    stop("'outfiles' columns names needs to be unique")
+    duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(outfiles(value), function(y) names(y)))))))
+    stop("'outfiles' columns names need to be unique")
+  ## Check outfiles names X targets names
+  if(any(
+    duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(targetsWF(x), function(y) names(y)))))))
+    stop("'targetsWF' and 'outfiles' columns names need to be unique")
   ## Check value length
   if(length(value) > 1) stop("One step can be appended in each operation.")
   targesCon <- value$targets_connection[[1]]
@@ -836,7 +840,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     if(length(step)==1){
       targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse="|")
       new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
-      ## addd skip
+      ## add skip
       if(all(!new_targets_col %in% colnames(x$outfiles[[step]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                            paste0(colnames(x$outfiles[[step]]), collapse = " OR \n")))
       if(is.null(targesCon[[3]][[1]])){
