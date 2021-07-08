@@ -474,7 +474,7 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
   if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
   if (is.null(projectInfo(args)$project)) stop("Project was not initialized with the 'SPRproject' function.")
   if (!dir.exists(projectInfo(sal)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong... 
-        If you d")
+        It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
   sysproj <- projectInfo(args)$logsDir
   ## check dependency
   for(i in seq_along(dependency(args))){
