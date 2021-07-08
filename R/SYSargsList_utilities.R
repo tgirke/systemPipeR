@@ -1175,13 +1175,19 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## Return the path of the file  ##
 ##################################
 ## [x] A character vector or an object containing file PATH.
-.getPath <- function(x) {
-  if(!file.exists(x)) warning("No such file or directory. Check the file PATH.")
-  x <- normalizePath(x) 
-  path_un <- unlist(strsplit(x, "/"))
-  path <- path_un[path_un != basename(x)]
-  path <- paste0(path, collapse = "/")
-  return(path)
+.getPath <- function(x, full_path=TRUE, warning=TRUE) {
+  if(warning){
+    if(!any(file.exists(x))) warning("No such file or directory. Check the file PATH.")
+  } 
+  if(full_path){
+    x <- normalizePath(x)
+  }
+  for(i in seq_along(x)){
+    path_un <- unlist(strsplit(x[i], "/"))
+    path <- path_un[path_un != basename(x[i])]
+    x[i] <- paste0(path, collapse = "/")
+  }
+  return(x)
 }
 
 ## Usage:

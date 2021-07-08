@@ -882,6 +882,8 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   #   names(value$targets_connection) <- names(value$stepsWF)
   #   value <- as(value, "SYSargsList")
   # }
+  ## outfiles... if dir=TRUE
+  value[["statusWF"]][[1]]$status.completed <- check.output(value)
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){
@@ -900,7 +902,6 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   if("env" %in% names(value$runInfo)){
     value[["runInfo"]] <- value$runInfo$directory
   }
-  
   return(value)
 }
 
