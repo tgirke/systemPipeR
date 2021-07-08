@@ -77,7 +77,7 @@ inputs:
     type: File
 
 outputs:
-  vcf:
+  vcf_raw:
     type: File
     outputBinding:
       glob: $(inputs.results_path.path)/$(inputs.SampleName)_gatk.vcf
