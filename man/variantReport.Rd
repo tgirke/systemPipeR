@@ -19,11 +19,11 @@ combineVarReports(files, args=files, filtercol, ncol = 15)
 varSummary(files, args=files)
 }
 \arguments{
-  \item{args}{
-	Deprecated. Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
-}
   \item{files}{
 	Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
+}
+  \item{args}{
+	Deprecated. Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
 }
   \item{txdb}{
 	Annotation data stored as \code{TranscriptDb} object, which can be obtained from GFF/GTF files, BioMart, Bioc Annotation packages, UCSC, etc. For details see the vignette of the \code{GenomicFeatures} package. It is important to use here matching versions of the \code{txdb} and \code{fa} objects. The latter is the genome sequence used for read mapping and variant calling.  
