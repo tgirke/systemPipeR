@@ -11,7 +11,7 @@ S4 class container for storing parameters of command-line- or R-based software.
 SYSargsList(args = NULL, step_name = "default", 
             targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", 
             inputvars = NULL, rm_targets_col = NULL, 
-            dir = TRUE, dependency = NULL, silent = FALSE)
+            dir = TRUE, dependency = NA, silent = FALSE)
 }
 \arguments{
   \item{args}{

@@ -8,7 +8,7 @@ test_that("check_SYSargsList_test", {
     sal <- SPRproject(overwrite = TRUE)
     targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
     ## appendStep <-  //SYSargsList() // cmdlist() // length(sal)
-    appendStep(sal) <- SYSargsList(targets=targetspath, 
+    appendStep(sal) <- SYSargsList(targets=targetspath, step_name="example", 
                                    wf_file="example.cwl", input_file="example.yml", dir_path = dir_path, 
                                    inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
     ## Methods
@@ -36,7 +36,10 @@ test_that("check_SYSargsList_test", {
    ## replacement methods
     renameStep(sal, 1) <- "newStep"
    expect_error(appendStep(sal) <- sal)
-   appendStep(sal) <- LineWise("a <- log(-1)", "R_code")
+   appendStep(sal) <- LineWise({
+                                a <- log(-1)
+                                }, step_name = "R_code", 
+                               dependency= "newStep")
 
    ## `+` method
    sal <- sal[1] + sal[2] 

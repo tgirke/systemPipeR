@@ -7,10 +7,13 @@ Import RMarkdown file as workflow
 Import RMarkdown file as workflow
 }
 \usage{
-importWF(file_path, ignore_eval = TRUE, verbose = TRUE, ...)
+importWF(sal, file_path, ignore_eval = TRUE, verbose = TRUE, ...)
 }
 
 \arguments{
+  \item{sal}{
+  SYSargsList empty object
+}
   \item{file_path}{
   string, file path of the workflow file
 }

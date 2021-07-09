@@ -5,7 +5,7 @@
 \title{Visualize SPR workflow and status}
 \usage{
 plotWF(
-  df,
+  sal,
   width = NULL,
   height = NULL,
   elementId = NULL,
@@ -27,7 +27,7 @@ plotWF(
 )
 }
 \arguments{
-\item{df}{The workflow structure dataframe}
+\item{sal}{The workflow structure dataframe}
 
 \item{width}{string, a valid CSS string for width, like "500px", "100\%"}
 

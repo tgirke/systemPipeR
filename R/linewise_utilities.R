@@ -1,29 +1,35 @@
 #######################
 ## LineWise function ##
 #######################
-LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=NA, status=list()){
-  #print(class(code))
-    if(stepName=="default"){
-        stepName <- "Step_x"
+LineWise <- function(code, step_name = "default", codeChunkStart = integer(), rmdPath = character(), dependency = NA, status = list()) {
+  ## used in `importWF`
+  on.exit(options(linewise_importing = FALSE))
+    # print(class(code))
+    if (step_name == "default") {
+        step_name <- "Step_x"
     } else {
-        stepName <- stepName
+        step_name <- step_name
     }
-  ## dependency
-  if (all(is.na(dependency))){
-    dependency <- list(NA)
-  } else {
-    dependency <- list(dependency)
-  }
-  names(dependency) <- stepName
-  step_status <- list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame())
-    codeLine = parse(text=gsub('^\\{|\\}$', "", deparse(substitute(code))))
-       line <- list(
-         codeLine=codeLine,
+    ## dependency
+    if (all(is.na(dependency))) {
+        dependency <- list(NA)
+    } else {
+        dependency <- list(dependency)
+    }
+    names(dependency) <- step_name
+    step_status <- list(status.summary = "Pending", status.completed = data.frame(Step = step_name, status.summary = "Pending"), status.time = data.frame())
+    if(getOption("linewise_importing", TRUE)){
+      codeLine <- parse(text = code)
+    } else {
+      codeLine <- parse(text = gsub("^\\{|\\}$", "", deparse(substitute(code))))
+    }
+    line <- list(
+        codeLine = codeLine,
         codeChunkStart = codeChunkStart,
         rmdPath = rmdPath,
-        stepName=stepName,
-        dependency=dependency,
-        status=step_status
+        stepName = step_name,
+        dependency = dependency,
+        status = step_status
     )
     return(as(line, "LineWise"))
 }
@@ -39,7 +45,7 @@ LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath
 ########################
 ## importRmd function ##
 ########################
-importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
+importWF <- function(sal, file_path, ignore_eval = TRUE, verbose = TRUE, ...){
   stopifnot(is.character(file_path) && length(file_path) == 1)
   if(!stringr::str_detect(file_path, "\\.[Rr]md$")) stop("File must be .Rmd, or .rmd ending.")
   stopifnot(is.logical(verbose) && length(verbose) == 1)
@@ -48,7 +54,8 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
   if(verbose) cat(crayon::blue$bold("Reading Rmd file"))
   df <- parseRmd(file_path, ignore_eval = ignore_eval, verbose = verbose)
   df$dep <- lapply(df$dep, function(x) ifelse(x=="", NA, x))
-  sal_imp <- SPRproject(overwrite = TRUE)
+  #sal_imp <- SPRproject(...)
+  sal_imp <- sal
   sal_imp <- as(sal_imp, "list")
   ## create a new env for sysarges to eval
   sysargs_env <- new.env()
@@ -56,6 +63,7 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
   for(i in seq_along(df$spr)){
     if(verbose) cat(crayon::blue$bold("Now importing step '", df$step_name[i], "' \n", sep=""))
     if(df$spr[i]=="r"){
+      options(linewise_importing = TRUE)
       line_obj <- LineWise(df$code[i], codeChunkStart=df$start[i], file_path)
       sal_imp$stepsWF[[df$step_name[i]]] <- line_obj
       sal_imp$statusWF[[df$step_name[i]]] <- list(status.summary="Pending",
@@ -94,9 +102,9 @@ importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
 }
 
 # # file_path <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
-# sal <- SPRproject(overwrite = T)
+# sal <- SPRproject(overwrite = TRUE)
 # file_path <- "../inst/extdata/systemPipeTEST.Rmd"
-# sal <- importWF(file_path, overwrite=T)
+# sal <- importWF(sal, file_path)
 
 ########################
 ## parseRmd function ##

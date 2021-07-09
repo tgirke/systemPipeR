@@ -401,6 +401,10 @@ check.output <- function(args, type="data.frame"){
 ## Usage:
 # check.output(WF)
 
+## check.outfiles alias
+
+check.outfiles <- check.output 
+
 ## .check.output.sysargs2
 .check.output.sysargs2 <- function(args, type, step.name, step.dir=FALSE){
     if(type=="data.frame"){

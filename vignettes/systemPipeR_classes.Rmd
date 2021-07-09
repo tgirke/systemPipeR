@@ -141,7 +141,8 @@ outfiles(sal)
 appendStep(sal) <- LineWise(code = {
                             hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
                             }, 
-                            stepName = "R_read")
+                            step_name = "R_read", 
+                            dependency = "echo")
 ```
 
 - Run workflow
@@ -392,7 +393,10 @@ cmdlist(sal[1], 1)
 ## Adding a R code as new Step
 
 ```{r}
-appendStep(sal) <- LineWise("log_cal <- log(1)", "R_code")
+appendStep(sal) <- LineWise({
+                            log_cal <- log(1)
+                            }, step_name = "R_code",
+                            dependency = "")
 sal
 stepsWF(sal)
 ```
@@ -414,7 +418,7 @@ For more details about the `LineWise` class, please check [below](#linewise).
 For running the workflow, `runWF` function will execute all the command lines store in the workflow container:
 
 ```{r, eval=TRUE}
-sal_sub <- subsetTargets(sal, subset_steps = c(1,3), input_targets = 1:4, keep_steps = TRUE)
+sal_sub <- subset(sal, subset_steps = c(1,3), input_targets = 1:4, keep_steps = TRUE)
 sal_sub <- runWF(sal_sub)
 sal_sub
 ```
@@ -529,7 +533,7 @@ sal[c(1,3)]
 - The `SYSargsList` class and its subsetting input samples: 
 
 ```{r}
-sal_sub <- subsetTargets(sal, subset_steps = c(1,3), input_targets = ("M1A"), keep_steps = TRUE)
+sal_sub <- subset(sal, subset_steps = c(1,3), input_targets = ("M1A"), keep_steps = TRUE)
 stepsWF(sal_sub)
 targetsWF(sal_sub)
 outfiles(sal_sub)
@@ -577,13 +581,14 @@ sal[10]
 # Create Workflow from R Markdown
 
 ```{r, eval=TRUE}
-file_path <- system.file("extdata/", "systemPipeTEST.Rmd", package="systemPipeR")
-sal_rmd <- importWF(file_path, overwrite=TRUE)
-sal_rmd
-stepsWF(sal_rmd)
-dependency(sal_rmd)
-codeLine(sal_rmd[3])
-renameStep(sal_rmd, 3) <- "New_load"
+file_path <- system.file("extdata", "systemPipeTEST.Rmd", package="systemPipeR")
+sal <- SPRproject(overwrite=TRUE)
+sal <- importWF(sal, file_path, overwrite=TRUE)
+sal
+stepsWF(sal)
+dependency(sal)
+codeLine(sal[3])
+renameStep(sal, 3) <- "New_load"
 ```
 
 ### Project Recovery
@@ -776,7 +781,8 @@ imported as a workflow.
 
 ```{r lw, eval=TRUE}
 rmd <- system.file("extdata/", "SPRtest.Rmd", package = "systemPipeR")
-sal_lw <- importWF(rmd, overwrite=TRUE)
+sal_lw <- SPRproject(overwrite = TRUE)
+sal_lw <- importWF(sal_lw, rmd, overwrite=TRUE)
 lw <- stepsWF(sal_lw[3])[[1]]
 codeLine(lw)
 codeLine(sal_lw[c(1, 3)])
