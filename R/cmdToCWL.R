@@ -137,7 +137,7 @@ subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FAL
     } else {
         if (inherits(sysargs, "cwlParse")) {
           sysargs <- .modifyCwlParse(
-                commandline = commandline, position = position,
+                commandline = sysargs, position = position,
                 index = index, trim = trim, mute = mute
             )
             return(invisible(sysargs))
@@ -166,8 +166,8 @@ replaceParam <- function(sysargs, position, index = NULL, replace, mute = FALSE)
     } else {
         if (inherits(sysargs, "cwlParse")) {
           sysargs <- .modifyCwlParse(
-                commandline = commandline, position = position,
-                index = index, replacing = replacing, mute = mute
+                commandline = sysargs, position = position,
+                index = index, replacing = replace, mute = mute
             )
             return(invisible(sysargs))
         }
@@ -238,14 +238,13 @@ appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mut
     } else {
         if (inherits(sysargs, "cwlParse")) {
           sysargs <- .modifyCwlParse(
-                commandline = commandline, position = position,
+                commandline = sysargs, position = position,
                 index = index, appending = append, after = after, mute = mute
             )
             return(invisible(sysargs))
         }
     }
 }
-
 
 # newIn <- new_inputs <- list(
 #     "new_input1" = list(type = "File", preF="-b1", yml ="myfile1"),

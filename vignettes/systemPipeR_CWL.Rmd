@@ -345,7 +345,6 @@ cmdlist(cmd2)
 
 cmd2 <- subsetParam(cmd, position = "inputs", index = c("S", "x"), trim = TRUE)
 cmdlist(cmd2)
-
 ```
 
 ### Replacing a existing argument in the command line

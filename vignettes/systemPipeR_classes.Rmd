@@ -155,13 +155,21 @@ sal
 - Visualize workflow
 
 ```{r, eval=TRUE}
-plotWF(sal, show_legend = FALSE, width = "80%", height="250px")
+plotWF(sal, show_legend = FALSE, width = "80%", height="250px", rstudio = TRUE)
 ```
 
 - Check workflow status
 
 ```{r, eval=TRUE}
 statusWF(sal)
+```
+
+- Append steps from R Markdown
+
+```{r}
+file_path <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
+sal <- importWF(sal, file_path)
+sal
 ```
 
 # How to design a Workflow?

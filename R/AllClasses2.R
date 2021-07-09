@@ -1066,3 +1066,10 @@ setReplaceMethod("statusWF", c("SYSargsList"), function(x, step, ..., value) {
     x <- .check_write_SYSargsList(x)
     x
 })
+
+setGeneric(name="dependency<-", def=function(x, step, ..., value) standardGeneric("dependency<-"))
+setReplaceMethod("dependency", c("SYSargsList"), function(x, step, ..., value) {
+  x@dependency[[step]] <- value
+  x <- .check_write_SYSargsList(x)
+  x
+})
