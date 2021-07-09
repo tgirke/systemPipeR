@@ -7,6 +7,7 @@ changelog
         - New method: updateColumn()
         - Updated varseq functions
         - importWF() and LineWise() improved
+        - alignStats() improved
         - Documentation
         
      version 1.27.9
