@@ -2,6 +2,10 @@
 ## Filter VCF files ##
 ######################
 filterVars <- function (files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
+  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
+    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+                   'Use `getColumn` to get a vector of paths instead.'))
+  }
   stopifnot(is.character(files))
   stopifnot(is.character(filter) && length(filter) == 1)
   stopifnot(is.character(organism) && length(organism) == 1)
@@ -10,10 +14,6 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
   ## global functions or variables
   totalDepth<- refDepth <- altDepth <- totalDepth <- refDepth <- altDepth <- NULL
-  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
-                   'Use `getColumn` to get a vector of paths instead.'))
-  }
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
   if(!all(check_ext <- stringr::str_detect(files, "\\.vcf$"))) stop("filterVars: All files need to end with .vcf\n", paste0(files[!check_ext], collapse = ",\n"))
   outfiles <- file.path(out_dir, basename(gsub("\\.vcf", "_filter.vcf", files)))
@@ -111,7 +111,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 ####################
 variantReport <- function (files, args=files, txdb, fa, organism, out_dir="results") {
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+    retrun(warning('variantReport: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
   }
   stopifnot(is.character(files))
@@ -121,7 +121,7 @@ variantReport <- function (files, args=files, txdb, fa, organism, out_dir="resul
   if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
 
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
-  if(!all(check_ext <- stringr::str_detect(files, "(\\.vcf|\\.bgz)$"))) stop("filterVars: All files need to end with .vcf or .bgz\n", paste0(files[!check_ext], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "(\\.vcf|\\.bgz)$"))) stop("variantReport: All files need to end with .vcf or .bgz\n", paste0(files[!check_ext], collapse = ",\n"))
   outfiles <- file.path(out_dir, basename(gsub("(\\.vcf$|\\.vcf.bgz$|\\.bgz$)", "_anno.tsv", files)))
 
   for (i in seq(along = files)) {
@@ -156,13 +156,13 @@ variantReport <- function (files, args=files, txdb, fa, organism, out_dir="resul
 #############################
 combineVarReports <- function(files, args=files, filtercol, ncol=15) {
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+    retrun(warning('combineVarReports: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
   }
 
   stopifnot(is.character(files))
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
-  if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("filterVars: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("combineVarReports: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
 
   samples <- names(files)
   for(i in seq(along=samples)) {
@@ -190,13 +190,13 @@ combineVarReports <- function(files, args=files, filtercol, ncol=15) {
 ###########################################
 varSummary <- function(files, args=files) {
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+    retrun(warning('varSummary: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
   }
 
   stopifnot(is.character(files))
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
-  if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("filterVars: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("varSummary: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
 
   for(i in seq(along=files)) {
     annotDF <- read.delim(files[i])
