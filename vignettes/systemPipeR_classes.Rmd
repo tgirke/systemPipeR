@@ -138,8 +138,10 @@ outfiles(sal)
 - Add a R step
 
 ```{r, eval=TRUE}
-appendStep(sal) <- LineWise(stepName = "R_read", 
-                       code = "hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))", dependency = "")
+appendStep(sal) <- LineWise(code = {
+                            hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
+                            }, 
+                            stepName = "R_read")
 ```
 
 - Run workflow
