@@ -427,9 +427,7 @@ setMethod(f = "show", signature = "SYSargsList",
           paste0(c("          Total Files: ", "Existing: ", "Missing: "), colSums(object@statusWF[[i]][[2]][2:4]), collapse = " | "), "\n",
           paste0(
             # "         Sub Steps:", "\n",
-            paste0(
-              "        ", i, ".", seq_along(object@stepsWF[[i]]@clt), ". ", crayon::green(object@stepsWF[[i]]$files$steps)
-            ), "\n",
+            paste0("        ", i, ".", seq_along(object@stepsWF[[i]]@clt), ". ", crayon::green(object@stepsWF[[i]]$files$steps)), "\n",
             paste0("             cmdlist: ", length(object@stepsWF[[i]]), " | "),
             sapply(as.list(object@stepsWF[[i]]$files$steps), function(x) {
               paste0(
@@ -468,6 +466,13 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   if(missing(i)){
     i <- 1:length(x)
   }
+  if(inherits(i, "character")){
+    if(!all(i %in% stepName(x))) stop(paste0('\n',
+                                            "Step name doesn't exist. Please subset accordingly with the 'stepName(x)'", 
+                                            '\n',
+                                            paste0(stepName(x), collapse = ", ")))
+    i <- which(stepName(x) %in% i)
+    }
     if (is.logical(i)) {
     i <- which(i)
   }
@@ -493,7 +498,7 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   x@targets_connection <- x@targets_connection[names(x@targets_connection) %in% names_tc]
   x@projectInfo <- x@projectInfo
   x@runInfo$directory <- x@runInfo$directory[i]
-  x <- .check_write_SYSargsList(x)
+  #x <- .check_write_SYSargsList(x)
   return(x)
 })
 
@@ -702,7 +707,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   after <- after
   if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
   ## Dependency 
-  if(all(is.na(dependency(value)) && length(x)>0)) stop("'dependency' argument is required to append a step in the workflow.")
+  #if(all(is.na(dependency(value)) && length(x)>0)) stop("'dependency' argument is required to append a step in the workflow.")
   if(dependency(value)=="") value[["dependency"]][[1]] <- NA
   ## Append
   if(inherits(value, "SYSargsList")){
@@ -719,7 +724,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$dependency <- c(dependency(value), x$dependency)
       x$outfiles <- c(outfiles(value), x$outfiles)
       x$targets_connection <- c(value$targets_connection, x$targets_connection)
-      x$runInfo$directory <- c(value$runInfo, x$runInfo$directory)
+      x$runInfo$directory <- c(value$runInfo$directory, x$runInfo$directory)
     } else if (after >= lengx) {
       x$stepsWF <- c(x$stepsWF, value$stepsWF)
       x$targetsWF <- c(x$targetsWF, targetsWF(value))
@@ -727,7 +732,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$dependency <- c(x$dependency, dependency(value))
       x$outfiles <- c(x$outfiles, outfiles(value))
       x$targets_connection <- c(x$targets_connection, value$targets_connection)
-      x$runInfo$directory <- c(x$runInfo$directory, value$runInfo)
+      x$runInfo$directory <- c(x$runInfo$directory, value$runInfo$directory)
     } else {
       after_tc <- names(x$stepsWF)[1L:after]
       before_tc <- names(x$stepsWF)[(after + 1L):lengx]
@@ -737,7 +742,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$statusWF <- c(x$statusWF[1L:after], value$statusWF, x$statusWF[(after + 1L):lengx])
       x$dependency <- c(x$dependency[1L:after], dependency(value), x$dependency[(after + 1L):lengx])
       x$outfiles <- c(x$outfiles[1L:after], outfiles(value), x$outfiles[(after + 1L):lengx])
-      x$runInfo$directory <- c(x$runInfo$directory[1L:after], value$runInfo, x$runInfo$directory[(after + 1L):lengx])
+      x$runInfo$directory <- c(x$runInfo$directory[1L:after], value$runInfo$directory, x$runInfo$directory[(after + 1L):lengx])
      }
     x <- as(x, "SYSargsList")
   } else if(inherits(value, "LineWise")){
@@ -754,7 +759,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$dependency <- c(value$dependency, x$dependency)
       x$outfiles <- c(list(DataFrame()), x$outfiles)
       x$targets_connection <- c(list(NULL), x$targets_connection)
-      x$runInfo$directory <- c(list(NULL), x$runInfo$directory)
+      x$runInfo$directory <- c(list(FALSE), x$runInfo$directory)
     } else if (after >= lengx) {
       x$stepsWF <- c(x$stepsWF, value)
       x$targetsWF <- c(x$targetsWF, list(DataFrame()))
@@ -762,7 +767,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$dependency <- c(x$dependency, value$dependency)
       x$outfiles <- c(x$outfiles, list(DataFrame()))
       x$targets_connection <- c(x$targets_connection, list(NULL))
-      x$runInfo$directory <- c(x$runInfo$directory, list(NULL))
+      x$runInfo$directory <- c(x$runInfo$directory, list(FALSE))
     } else {
       after_tc <- names(x$stepsWF)[1L:after]
       before_tc <- names(x$stepsWF)[(after + 1L):lengx]
@@ -772,7 +777,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       x$statusWF <- c(x$statusWF[1L:after], list(value$status), x$statusWF[(after + 1L):lengx])
       x$dependency <- c(x$dependency[1L:after], value$dependency, x$dependency[(after + 1L):lengx])
       x$outfiles <- c(x$outfiles[1L:after], list(DataFrame()), x$outfiles[(after + 1L):lengx])
-      x$runInfo$directory <- c(x$runInfo$directory[1L:after], list(NULL), x$runInfo$directory[(after + 1L):lengx])
+      x$runInfo$directory <- c(x$runInfo$directory[1L:after], list(FALSE), x$runInfo$directory[(after + 1L):lengx])
     }
     names(x$stepsWF)[after+1L] <- step_name
     names(x$statusWF)[after+1L] <- step_name
@@ -887,7 +892,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   #   value <- as(value, "SYSargsList")
   # }
   ## outfiles... if dir=TRUE
-  value[["statusWF"]][[1]]$status.completed <- check.output(value)
+  value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){

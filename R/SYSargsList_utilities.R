@@ -41,10 +41,12 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
           message("We could not find any environment saved...")
         } else {
           envir <- readRDS(sal$projectInfo$envir)
-          sal$runInfo$envir <- envir
+          sal$runInfo <- append(sal$runInfo, envir, after=0)
+          names(sal$runInfo)[[1]] <- c("env")
         }
       } else {
-        sal$runInfo$envir <- envir
+        sal$runInfo <- append(sal$runInfo, envir, after=0)
+        names(sal$runInfo)[[1]] <- "env"
         sal$projectInfo$envir <- NULL
       }
       sal <- as(sal, "SYSargsList")
@@ -136,9 +138,14 @@ read_SYSargsList <- function(sys.file){
   args_comp <- sapply(args_comp_yml, function(x) list(NULL))
   steps <- names(args_comp_yml$stepsWF)
   ## Simple yaml slots
-  yaml_slots <- c("projectInfo", "runInfo", "SEobj")
+  yaml_slots <- c("projectInfo", "SEobj")
   for(i in yaml_slots){
     args_comp[[i]] <- yaml::yaml.load(args_comp_yml[i])
+  }
+  ## runInfo yaml slots
+  yaml_slots <- c("runInfo")
+  for(i in yaml_slots){
+    args_comp[[i]] <- list(directory=yaml::yaml.load(args_comp_yml[i]))
   }
   ## Yaml Slots + steps
   yaml_slots_S <- c("dependency","targets_connection")
@@ -192,7 +199,6 @@ read_SYSargsList <- function(sys.file){
     }
     args_comp[[i]] <- steps_comp
   }
-  
   return(as(args_comp,"SYSargsList"))
 }
 
@@ -333,9 +339,9 @@ SYSargsList <- function(args=NULL, step_name="default",
     ## statusWF
     sal$statusWF <- list(.statusPending(WF))
     # directory structure
-    sal$runInfo <- list(directory=dir)
+    sal$runInfo <- list(directory=list(dir))
     ## names
-    names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo) <- step_name
+    names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo[[1]]) <- step_name
     ## outfiles
     if(length(sal$stepsWF) > 0) {
       sal$outfiles <- .outList2DF(sal)

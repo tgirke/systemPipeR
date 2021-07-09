@@ -385,14 +385,16 @@ check.output <- function(args, type="data.frame"){
         return(.check.output.sysargs2(args, type=type))
     } else if(inherits(args, c("SYSargsList"))){
         steps <- sapply(names(stepsWF(args)), function(x) list(NULL))
+        sysargs <- unlist(lapply(stepsWF(args), function(x) which(inherits(x, c("SYSargs2")))))
+        args <- args[names(sysargs)]
         for(i in seq_along(stepsWF(args))){
-            step.dir <- sal$runInfo$directory[names(steps)[i]]
+            step.dir <- args$runInfo$directory[names(steps)[i]]
             steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]], type=type, 
                                                  step.name = names(steps)[i], step.dir=step.dir)
         }
         return(steps)
     } else {
-        stop("args needs to be object of class 'SYSargs2' or 'SYSargsList'.")   
+        stop("args needs to be object of class 'SYSargs2' or 'SYSargsList'.")
     }
 }
 
@@ -411,13 +413,13 @@ check.output <- function(args, type="data.frame"){
             } else if(step.dir==FALSE){
                 checkfile[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])))
             }
-
             checkfile[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - checkfile[[i]][['Existing']]
         }
         checkfile <- data.frame(matrix(unlist(checkfile), nrow=length(checkfile), byrow=TRUE))
-        checkfile <- as.data.frame(cbind(Targets=names(output(args)),  Total_Files = checkfile$X1,
-                                       Existing_Files = checkfile$X2, Missing_Files=checkfile$X3 #, status=targets$X4
-                                       ))
+        checkfile <- data.frame(cbind(Targets=names(output(args)), Total_Files = as.numeric(checkfile$X1),
+                                       Existing_Files = checkfile$X2, Missing_Files=checkfile$X3
+                                       ), stringsAsFactors = FALSE)
+        checkfile[, 2:4] <- sapply(checkfile[, 2:4], as.numeric)
         return(checkfile)
     } else if(type=="list"){
         checkfile <- sapply(names(output(args)), function(x) list(NULL))
