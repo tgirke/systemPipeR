@@ -2,6 +2,7 @@
 ## LineWise function ##
 #######################
 LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=NA, status=list()){
+  #print(class(code))
     if(stepName=="default"){
         stepName <- "Step_x"
     } else {
@@ -15,11 +16,7 @@ LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath
   }
   names(dependency) <- stepName
   step_status <- list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame())
-  if(inherits(code, "character")){
-    codeLine = parse(text=code)
-  } else{
-    codeLine = parse(text=gsub("\\{|\\}", "", deparse(substitute(code))))
-  }
+    codeLine = parse(text=gsub('^\\{|\\}$', "", deparse(substitute(code))))
        line <- list(
          codeLine=codeLine,
         codeChunkStart = codeChunkStart,
@@ -31,13 +28,13 @@ LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath
     return(as(line, "LineWise"))
 }
 ## Usage:
-# LineWise("1+1")
-# LineWise({
+# xx <- LineWise({
 #   x <- 1+1
 #   y <- 100
 # })
-# LineWise("x <- 100; y <- 20")
-# LineWise(c("x <- 100", "y <- 20"))
+# plot <- LineWise({
+#   plot(iris)
+# })
 
 ########################
 ## importRmd function ##
