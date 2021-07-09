@@ -1,72 +1,110 @@
 #######################
 ## LineWise function ##
 #######################
-LineWise <- function(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), dependency=character(), status=list()){
-    if(stepName=="default"){
-        stepName <- "Step_x"
+LineWise <- function(code, step_name = "default", codeChunkStart = integer(), rmdPath = character(), dependency = NA, status = list()) {
+  ## used in `importWF`
+  on.exit(options(linewise_importing = FALSE))
+    # print(class(code))
+    if (step_name == "default") {
+        step_name <- "Step_x"
     } else {
-        stepName <- stepName
+        step_name <- step_name
     }
-  dependency <- list(NA)
-  step_status <- list(status.summary="Pending",status.completed = data.frame(Step=stepName, status.summary="Pending") , status.time=data.frame())
-  names(dependency) <- stepName
-      line <- list(
-        codeLine = parse(text=code),
+    ## dependency
+    if (all(is.na(dependency))) {
+        dependency <- list(NA)
+    } else {
+        dependency <- list(dependency)
+    }
+    names(dependency) <- step_name
+    step_status <- list(status.summary = "Pending", status.completed = data.frame(Step = step_name, status.summary = "Pending"), status.time = data.frame())
+    if(getOption("linewise_importing", TRUE)){
+      codeLine <- parse(text = code)
+    } else {
+      codeLine <- parse(text = gsub("^\\{|\\}$", "", deparse(substitute(code))))
+    }
+    line <- list(
+        codeLine = codeLine,
         codeChunkStart = codeChunkStart,
         rmdPath = rmdPath,
-        stepName=stepName,
-        dependency=dependency, 
-        status=step_status
+        stepName = step_name,
+        dependency = dependency,
+        status = step_status
     )
     return(as(line, "LineWise"))
 }
 ## Usage:
-# LineWise("1+1")
+# xx <- LineWise({
+#   x <- 1+1
+#   y <- 100
+# })
+# plot <- LineWise({
+#   plot(iris)
+# })
 
 ########################
 ## importRmd function ##
 ########################
-importWF <- function(file_path, ignore_eval = TRUE, verbose = TRUE, ...){
-    df <- parseRmd(file_path, ignore_eval = ignore_eval, verbose = verbose)
-    df$dep <- lapply(df$dep, function(x) ifelse(x=="", NA, x))
-    sal <- SPRproject(...)
-    sal <- as(sal, "list")
-    for(i in seq_along(df$spr)){
-        if(df$spr[i]=="r"){
-            line_obj <- LineWise(df$code[i], codeChunkStart=df$start[i], file_path)
-            sal$stepsWF[[df$step_name[i]]] <- line_obj
-            sal$statusWF[[df$step_name[i]]] <- list(status.summary="Pending",
-                                                    status.completed = data.frame(Step=df$step_name[i], status.summary="Pending") , 
-                                                    status.time=data.frame())
-            sal$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
-            sal$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
-            sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
-            sal$targets_connection[df$step_name[i]] <- list(NULL)
-            sal$runInfo[["directory"]][df$step_name[i]] <- list(NULL)
-        } else if(df$spr[i]=="sysargs"){
-            args <- eval(parse(text =df$code[i]), envir = globalenv())
-            args[["dependency"]] <- df$dep[i]
-            renameStep(args, 1) <- df$step_name[i]
-            # suppressMessages(
-            # args <- eval(parse(text=df$code[i])))
-            # sal$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
-            # sal$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
-            # sal$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
-            # sal$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
-            # sal$dependency[[df$step_name[i]]] <- df$dep[[i]]
-            # sal$targets_connection[df$step_name[i]] <- args$targets_connection
-            # sal$runInfo[["directory"]][df$step_name[i]] <- args$runInfo
-            sal <- as(sal, "SYSargsList")
-            appendStep(sal) <- args
-            sal <- as(sal, "list")
-        }
+importWF <- function(sal, file_path, ignore_eval = TRUE, verbose = TRUE, ...){
+  stopifnot(is.character(file_path) && length(file_path) == 1)
+  if(!stringr::str_detect(file_path, "\\.[Rr]md$")) stop("File must be .Rmd, or .rmd ending.")
+  stopifnot(is.logical(verbose) && length(verbose) == 1)
+  stopifnot(is.logical(ignore_eval) && length(ignore_eval) == 1)
+  ## start
+  if(verbose) cat(crayon::blue$bold("Reading Rmd file"))
+  df <- parseRmd(file_path, ignore_eval = ignore_eval, verbose = verbose)
+  df$dep <- lapply(df$dep, function(x) ifelse(x=="", NA, x))
+  #sal_imp <- SPRproject(...)
+  sal_imp <- sal
+  sal_imp <- as(sal_imp, "list")
+  ## create a new env for sysarges to eval
+  sysargs_env <- new.env()
+  ## adding steps
+  for(i in seq_along(df$spr)){
+    if(verbose) cat(crayon::blue$bold("Now importing step '", df$step_name[i], "' \n", sep=""))
+    if(df$spr[i]=="r"){
+      options(linewise_importing = TRUE)
+      line_obj <- LineWise(df$code[i], codeChunkStart=df$start[i], file_path)
+      sal_imp$stepsWF[[df$step_name[i]]] <- line_obj
+      sal_imp$statusWF[[df$step_name[i]]] <- list(status.summary="Pending",
+                                              status.completed = data.frame(Step=df$step_name[i], status.summary="Pending") ,
+                                              status.time=data.frame())
+      sal_imp$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
+      sal_imp$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
+      sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
+      sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
+      sal_imp$runInfo[["directory"]][df$step_name[i]] <- list(FALSE)
+    } else if(df$spr[i]=="sysargs"){
+      options(spr_importing = TRUE)
+      args <- eval(parse(text = df$code[i]), envir = sysargs_env)
+      # args <- eval(parse(text = df$code[i]), envir = globalenv())
+      if(!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
+      args[["dependency"]] <- df$dep[i]
+      renameStep(args, 1) <- df$step_name[i]
+      # suppressMessages(
+      # args <- eval(parse(text=df$code[i])))
+      # sal_imp$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
+      # sal_imp$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
+      # sal_imp$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
+      # sal_imp$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
+      # sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
+      # sal_imp$targets_connection[df$step_name[i]] <- args$targets_connection
+      # sal_imp$runInfo[["directory"]][df$step_name[i]] <- args$runInfo
+      sal_imp <- as(sal_imp, "SYSargsList")
+      appendStep(sal_imp) <- args
+      sal_imp <- as(sal_imp, "list")
     }
-    sal[["projectInfo"]]$rmd_file <- file_path
-    return(as(sal, "SYSargsList"))
+  }
+  sal_imp[["projectInfo"]]$rmd_file <- file_path
+  sal_imp <- as(sal_imp, "SYSargsList")
+  write_SYSargsList(sal_imp, sal_imp$projectInfo$sysargslist, silent=TRUE)
+  return(sal_imp)
 }
 
-# rmdpath <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
-# sal <- importWF(rmdpath)
+# # file_path <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
+# sal <- SPRproject(overwrite = TRUE)
+# file_path <- "../inst/extdata/systemPipeTEST.Rmd"
+# sal <- importWF(sal, file_path)
 
 ########################
 ## parseRmd function ##

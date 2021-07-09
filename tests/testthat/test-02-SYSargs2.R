@@ -71,7 +71,7 @@ test_that("check_SYSargs2_hisat2", {
     ## runCommandline() //check.output()
     WF <- runCommandline(args=WF, make_bam = TRUE, dir=FALSE)
     out <- check.output(WF)
-    expect_equal(out$Existing_Files, "2")
+    expect_equal(out$Existing_Files, 2)
     ## alignStats()
     read_statsDF <- alignStats(WF, subset = "FileName") 
     expect_equal(read_statsDF$FileName, "M1A")

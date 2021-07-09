@@ -58,6 +58,8 @@ importFrom("grid", "grid.layout")
 importFrom("grid", "grid.newpage")
 importFrom("grid", "pushViewport")
 importFrom("grid", "viewport")
+importFrom("htmlwidgets", "createWidget")
+importFrom("htmlwidgets", "saveWidget")
 importFrom("IRanges", "IRanges")
 importFrom("IRanges", "subsetByOverlaps")
 importFrom("limma", "makeContrasts")
@@ -100,6 +102,7 @@ importFrom("SummarizedExperiment", "rowRanges")
 importFrom("SummarizedExperiment", "SummarizedExperiment")
 importFrom("utils", "capture.output")
 importFrom("utils", "combn")
+importFrom("utils", "menu")
 importFrom("utils", "packageVersion")
 importFrom("utils", "read.delim")
 importFrom("utils", "write.table")
@@ -109,7 +112,6 @@ importFrom("yaml", "as.yaml")
 importFrom("yaml", "read_yaml")
 importFrom("yaml", "write_yaml")
 importFrom("yaml", "yaml.load")
-
 
 ## S4 Classes
 exportClasses(
@@ -137,7 +139,7 @@ exportMethods(
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
     "dependency", "projectInfo", "runInfo", 
-    "sysargslist", "subsetTargets", "stepName", "getColumn",
+    "sysargslist", "subset", "stepName", "getColumn",
     "SampleName", "viewEnvir", "copyEnvir",  
     "appendStep<-", "replaceStep<-", "renameStep<-",
     ## LineWise
@@ -165,7 +167,7 @@ export(
     "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
     "targets.as.df", "olRanges", "evalCode", "tryPath",
     "tryCL", "SPRproject", "configWF", "config.param", 
-    "plotWF", "runWF", "renderReport", "check.output", "createParamFiles", "writeParamFiles", 
+    "runWF", "renderReport", "check.output", "createParamFiles", "writeParamFiles", 
     "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", 
-    "SYSargsList", "importWF", "LineWise"
+    "SYSargsList", "importWF", "LineWise", "plotWF"
 )  

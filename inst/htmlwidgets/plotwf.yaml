@@ -1,0 +1,9 @@
+dependencies:
+- name: plotwf
+  version: 2.1.2
+  src: htmlwidgets/lib/plotwf
+# fullrender.js must come after viz.js
+  script: 
+    - viz.js
+    - full.render.js
+  stylesheet: plotwf.css

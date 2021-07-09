@@ -385,40 +385,52 @@ check.output <- function(args, type="data.frame"){
         return(.check.output.sysargs2(args, type=type))
     } else if(inherits(args, c("SYSargsList"))){
         steps <- sapply(names(stepsWF(args)), function(x) list(NULL))
+        sysargs <- unlist(lapply(stepsWF(args), function(x) which(inherits(x, c("SYSargs2")))))
+        args <- args[names(sysargs)]
         for(i in seq_along(stepsWF(args))){
-            steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]], type=type)
+            step.dir <- args$runInfo$directory[names(steps)[i]]
+            steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]], type=type, 
+                                                 step.name = names(steps)[i], step.dir=step.dir)
         }
         return(steps)
     } else {
-        stop("args needs to be object of class 'SYSargs2' or 'SYSargsList'.")   
+        stop("args needs to be object of class 'SYSargs2' or 'SYSargsList'.")
     }
 }
 
 ## Usage:
 # check.output(WF)
 
+## check.outfiles alias
+
+check.outfiles <- check.output 
+
 ## .check.output.sysargs2
-.check.output.sysargs2 <- function(args, type){
+.check.output.sysargs2 <- function(args, type, step.name, step.dir=FALSE){
     if(type=="data.frame"){
-        targets <- sapply(names(output(args)), function(x) list(NULL))
+        checkfile <- sapply(names(output(args)), function(x) list(NULL))
         for(i in seq_along(output(args))){
-            targets[[i]][['Total']] <- length(unlist(output(args)[[i]]))
-            targets[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])))
-            targets[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - sum(file.exists(unlist(output(args)[[i]])))
-            #targets[[i]][['Status']] <- ifelse(targets[[i]]$Missing > 0, "Missing", "Completed")
+            checkfile[[i]][['Total']] <- length(unlist(output(args)[[i]]))
+            if(step.dir==TRUE){
+                newfile <- sum(file.exists(file.path(.getPath(unlist(output(args)[[i]]), full_path = FALSE, warning = FALSE), step.name, basename(unlist(output(args)[[i]])))))
+                checkfile[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])), newfile)
+            } else if(step.dir==FALSE){
+                checkfile[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])))
+            }
+            checkfile[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - checkfile[[i]][['Existing']]
         }
-        targets <- data.frame(matrix(unlist(targets), nrow=length(targets), byrow=T))
-        targets <- as.data.frame(cbind(Targets=names(output(args)),  Total_Files = targets$X1,
-                                       Existing_Files = targets$X2, Missing_Files=targets$X3 #, status=targets$X4
-                                       ))
-        
-        return(targets)
+        checkfile <- data.frame(matrix(unlist(checkfile), nrow=length(checkfile), byrow=TRUE))
+        checkfile <- data.frame(cbind(Targets=names(output(args)), Total_Files = as.numeric(checkfile$X1),
+                                       Existing_Files = checkfile$X2, Missing_Files=checkfile$X3
+                                       ), stringsAsFactors = FALSE)
+        checkfile[, 2:4] <- sapply(checkfile[, 2:4], as.numeric)
+        return(checkfile)
     } else if(type=="list"){
-        targets <- sapply(names(output(args)), function(x) list(NULL))
+        checkfile <- sapply(names(output(args)), function(x) list(NULL))
         for(i in seq_along(output(args))){
-            targets[[i]] <- all(file.exists(unlist(output(args)[[i]])))
+            checkfile[[i]] <- all(file.exists(unlist(output(args)[[i]])))
         }
-        return(unlist(targets))
+        return(unlist(checkfile))
     }
 }
 

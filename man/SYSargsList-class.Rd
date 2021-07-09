@@ -33,8 +33,8 @@
 \alias{outfiles,SYSargsList-method}
 \alias{targets_connection}
 \alias{targets_connection,SYSargsList-method}
-\alias{subsetTargets}
-\alias{subsetTargets,SYSargsList-method}
+%\alias{subsetTargets}
+\alias{subset,SYSargsList-method}
 \alias{getColumn}
 \alias{getColumn,SYSargsList-method}
 \alias{copyEnvir}

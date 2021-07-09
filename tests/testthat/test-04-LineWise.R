@@ -1,12 +1,15 @@
 ## It will check the LineWise class and methods
 library(systemPipeR)
-# library(systemPipeRdata)
-setwd(file.path(tempdir(), "rnaseq"))
+library(systemPipeRdata)
+
+genWorkenvir("new", mydirname = file.path(tempdir(), "newtest"))
+setwd(file.path(tempdir(), "newtest"))
 
 test_that("check_LineWise_test", {
     ## build instance 
-    rmdPath <- system.file("extdata/", "systemPipeTEST.Rmd", package="systemPipeR")
-    sal <- importWF(rmdPath, overwrite=TRUE)
+    rmdPath <- system.file("extdata", "systemPipeTEST.Rmd", package="systemPipeR")
+    sal <- SPRproject(overwrite = TRUE)
+    sal <- importWF(sal, rmdPath, overwrite=TRUE)
     lw <- stepsWF(sal[3])[[1]]
     show(lw)
     ## Class
@@ -26,7 +29,7 @@ test_that("check_LineWise_test", {
      lw2 <- linewise(lw)
      expect_type(lw2, "list")
      ## Constructor
-     expect_s4_class(LineWise("1+1"), "LineWise")
+     expect_s4_class(LineWise({1+1}), "LineWise")
      ## Subset 
      expect_length(lw[2], 1)
      expect_length(lw[-2], 2)

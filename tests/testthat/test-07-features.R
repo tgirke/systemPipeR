@@ -6,6 +6,7 @@ skip_on_ci()
 setwd(file.path(tempdir(), "rnaseq"))
 
 test_that("check_features", {
+    library(GenomicFeatures)
     ## Create paths
     file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
     expect_warning(txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis"))
@@ -17,12 +18,12 @@ test_that("check_features", {
     args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
     expect_s4_class(args, "SYSargs2")
     args <- runCommandline(args, make_bam = TRUE, dir = FALSE)
-    outpaths <- subsetWF(args , slot="output", subset=1, index=1)
-    file.exists(outpaths)
+    outpaths <- subsetWF(args , slot="output", subset=1, index=1)[1:4]
+    expect_true(all(file.exists(outpaths)))
     
     ## genFeatures
     file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
-    txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
+    #txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
     feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, verbose=TRUE)
     
     ## featuretypeCounts
@@ -48,8 +49,6 @@ test_that("check_features", {
     dna <- readDNAStringSet(file)
     orf <- predORF(dna[1:4], n=1, type="df", mode="orf", strand="antisense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"))
     ## scaleRanges
-    gff <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
-    txdb <- makeTxDbFromGFF(file=gff, format="gff3", organism="Arabidopsis")
     futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)
     genome <- system.file("extdata/annotation", "tair10.fasta", package="systemPipeRdata")
     dna <- extractTranscriptSeqs(FaFile(genome), futr)

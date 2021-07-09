@@ -107,11 +107,11 @@ targets
 
 ```{r quality, spr='sysargs'}
 targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-quality <- SYSargsList(targets=targetspath, 
+appendStep(sal) <- SYSargsList(targets=targetspath, 
                    step_name="Quality",
                    wf_file = "trimmomatic/trimmomatic-pe.cwl", input_file = "trimmomatic/trimmomatic-pe.yml",
                    dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"), dependency = "")
 ```
 
 # Alignments
@@ -125,10 +125,10 @@ queuing systems of clusters using the _`systemPipeR's`_ new CWL command-line int
 Build `Hisat2` index.
 
 ```{r hisat_index, eval=FALSE, spr='sysargs'}
-index <- SYSargsList(step_name = "Index", 
+appendStep(sal) <- SYSargsList(step_name = "Index", 
                      wf_file = "hisat2/hisat2-index.cwl", input_file="hisat2/hisat2-index.yml",
                      dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                     dependency=NULL)
+                     dependency="")
 ```
 
 The parameter settings of the aligner are defined in the `hisat2-mapping-se.cwl` 
@@ -136,7 +136,7 @@ and `hisat2-mapping-se.yml` files. The following shows how to construct the
 corresponding *SYSargs2* object, here *args*.
 
 ```{r mapping, eval=TRUE, spr='sysargs'}
-mapping <- SYSargsList(step_name = "Mapping", 
+appendStep(sal) <- SYSargsList(step_name = "Mapping", 
                      targets=targetspath, 
                      wf_file = "hisat2/hisat2-mapping-pe.cwl", input_file="hisat2/hisat2-mapping-pe.yml",
                      dir_path= system.file("extdata/cwl", package="systemPipeR"), 
