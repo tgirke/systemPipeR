@@ -7,10 +7,13 @@ Filter VCF files
 Convenience function for filtering VCF files based on user definable quality parameters. The function imports each VCF file into R, applies the filtering on an internally generated \code{VRanges} object and then writes the results to a new VCF file.
 }
 \usage{
-filterVars(args, filter, varcaller, organism)
+filterVars(files, filter, varcaller="gatk", organism, out_dir="results")
 }
 \arguments{
   \item{args}{
+	Deprecated. Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
+}
+  \item{files}{
 	Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
 }
   \item{filter}{
@@ -21,6 +24,9 @@ filterVars(args, filter, varcaller, organism)
 }
   \item{organism}{
 	Character vector specifying the organism name of the reference genome.
+}
+  \item{out_dir}{
+	Character vector of a \code{results} directory name. Default is \code{results}. 
 }
 }
 \value{

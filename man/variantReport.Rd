@@ -10,16 +10,19 @@ Functions for generating tabular variant reports including genomic context annot
 }
 \usage{
 ## Variant report
-variantReport(args, txdb, fa, organism)
+variantReport(files, args=files, txdb, fa, organism, out_dir = "results")
 
 ## Combine variant reports
-combineVarReports(args, filtercol, ncol = 15)
+combineVarReports(files, args=files, filtercol, ncol = 15)
 
 ## Create summary statistics of variants
-varSummary(args)
+varSummary(files, args=files)
 }
 \arguments{
   \item{args}{
+	Deprecated. Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
+}
+  \item{files}{
 	Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
 }
   \item{txdb}{
@@ -36,6 +39,9 @@ varSummary(args)
 }
   \item{ncol}{
 	Integer specifying the number of columns in the tabular input files. Default is set to 15.
+}
+  \item{out_dir}{
+	Character vector of a \code{results} directory name. Default is \code{results}. 
 }
 }
 \value{

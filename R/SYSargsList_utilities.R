@@ -62,6 +62,8 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
   init$runInfo <- list(env=envir)
   init <- as(init, "SYSargsList")
   write_SYSargsList(init, sys.file, silent=silent)
+  ## used in `importWF`
+  options(linewise_importing = FALSE)
   return(init)
 }
 

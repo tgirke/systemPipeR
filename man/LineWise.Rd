@@ -7,8 +7,8 @@ LineWise
 S4 class container for storing parameters of R-based software.
 }
 \usage{
-LineWise(code, stepName="default", codeChunkStart=integer(), rmdPath=character(), 
-        dependency=character(), status = list())
+LineWise(code, step_name="default", codeChunkStart=integer(), rmdPath=character(), 
+        dependency=NA, status = list())
 }
 \arguments{
   \item{code}{
@@ -20,7 +20,7 @@ R Markdown line start
   \item{rmdPath}{
 path of R Markdown file
 }
-  \item{stepName}{
+  \item{step_name}{
 Step Name
 }
   \item{dependency}{
@@ -40,6 +40,9 @@ Daniela Cassol
 \code{showClass("LineWise")}
 }
 \examples{
-LineWise("1+1", stepName="NewStep")
+LineWise({
+          1+1
+          },
+          step_name="NewStep")
 }
 \keyword{ utilities }

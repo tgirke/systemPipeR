@@ -502,9 +502,9 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   return(x)
 })
 
-## Behavior of "subsetTargets" method for SYSargsList
-setGeneric(name = "subsetTargets", def = function(x, subset_steps, input_targets, keep_steps=TRUE) standardGeneric("subsetTargets"))
-setMethod(f = "subsetTargets", signature = "SYSargsList", definition = function(x, subset_steps, input_targets,  keep_steps=TRUE) {
+## Behavior of "subset" method for SYSargsList
+#setGeneric(name = "subsetTargets", def = function(x, subset_steps, input_targets, keep_steps=TRUE) standardGeneric("subsetTargets"))
+setMethod(f = "subset", signature = "SYSargsList", definition = function(x, subset_steps, input_targets,  keep_steps=TRUE) {
   x_sub <- x[subset_steps]
   ## check subset_steps length
   if(length(unique(sapply(stepsWF(x_sub), function(x) length(x)))) > 1) stop("All 'subset_steps' should contain the same length.")
@@ -754,6 +754,9 @@ setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i
 
 setGeneric(name="appendStep<-", def=function(x, after=length(x), ..., value) standardGeneric("appendStep<-"))
 setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..., value) {
+  ## used in `importWF`
+  on.exit(options(spr_importing = FALSE))
+  ## append position
   lengx <- length(x)
   after <- after
   if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
@@ -841,8 +844,6 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
  # if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
   x <- .check_write_SYSargsList(x)
-  ## used in `importWF`
-  options(spr_importing = FALSE)
   x
 })
 
@@ -884,11 +885,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   if(any(
     duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(outfiles(value), function(y) names(y)))))))
     stop("'outfiles' columns names need to be unique")
-  ## Check outfiles names X targets names
-  print(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(targetsWF(x), function(y) names(y)))))
-  if(any(
-    duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(targetsWF(x), function(y) names(y)))))))
-    stop("'targetsWF' and 'outfiles' columns names need to be unique")
+
   ## Check value length
   if(length(value) > 1) stop("One step can be appended in each operation.")
   targesCon <- value$targets_connection[[1]]
@@ -902,6 +899,8 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       ## add skip
       if(all(!new_targets_col %in% colnames(x$outfiles[[step]]))) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                            paste0(colnames(x$outfiles[[step]]), collapse = " OR \n")))
+      ## Check outfiles names X targets names
+      if(any(new_targets_col %in% targets_name)) warning("We found duplication on 'outfiles' colnames and targetsWF colnames... Would you please make sure you are connecting the right steps? ")
       if(is.null(targesCon[[3]][[1]])){
         old_targets <- x$targetsWF[[step]]
       } else {
@@ -916,6 +915,8 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
       old_targets <- Reduce(function(x, y) merge(x, y, by=targets_list_name, all=TRUE), targets_list)
       targets_name <- paste(targets_list_name, collapse="|")
       new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+      ## Check outfiles names X targets names
+      if(any(new_targets_col %in% targets_name)) warning("We found duplication on 'outfiles' colnames and targetsWF colnames... Would you please make sure you are connecting the right steps? ")
       colnames_outfiles <- sapply(outfiles(x), function(y) names(y))
       if(!all(new_targets_col %in% colnames_outfiles)) stop(paste0("'targets_column' argument needs to be assigned as valid column names of a previous step, for example: ", "\n",
                                                                    paste0(colnames_outfiles, collapse = " OR \n")))
@@ -946,7 +947,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   #   value <- as(value, "SYSargsList")
   # }
   ## outfiles... if dir=TRUE
-  value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
+  #value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){

@@ -1,7 +1,7 @@
 ######################
 ## Filter VCF files ##
 ######################
-filterVars <- function (files, filter, varcaller="gatk", organism, out_dir="results") {
+filterVars <- function (files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
   stopifnot(is.character(files))
   stopifnot(is.character(filter) && length(filter) == 1)
   stopifnot(is.character(organism) && length(organism) == 1)
@@ -109,12 +109,11 @@ filterVars <- function (files, filter, varcaller="gatk", organism, out_dir="resu
 ####################
 ## Variant Report ##
 ####################
-variantReport <- function (files, txdb, fa, organism, out_dir="results") {
+variantReport <- function (files, args=files, txdb, fa, organism, out_dir="results") {
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
     retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
   }
-
   stopifnot(is.character(files))
   stopifnot(is.character(organism) && length(organism) == 1)
   stopifnot(is.character(out_dir) && length(out_dir) == 1)
@@ -155,7 +154,7 @@ variantReport <- function (files, txdb, fa, organism, out_dir="results") {
 #############################
 ## Combine Variant Reports ##
 #############################
-combineVarReports <- function(files, filtercol, ncol=15) {
+combineVarReports <- function(files, args=files, filtercol, ncol=15) {
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
     retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
@@ -189,7 +188,7 @@ combineVarReports <- function(files, filtercol, ncol=15) {
 ###########################################
 ## Create summary statistics of variants ##
 ###########################################
-varSummary <- function(files) {
+varSummary <- function(files, args=files) {
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
     retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))

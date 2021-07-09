@@ -47,7 +47,7 @@ a <- LineWise(
        paste0(names(split(iris, factor(iris$Species))), ".csv"))
 1+1
 
-, stepName = "steps")
+, step_name = "steps")
 
 ```
 )
