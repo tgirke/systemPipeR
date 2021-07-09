@@ -65,7 +65,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
   return(init)
 }
 
-## Usage: 
+## Usage:
 # sal <- SPRproject()
 # sal <- SPRproject(projPath = tempdir())
 # sal <- SPRproject(restart = TRUE)
@@ -75,7 +75,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
 ## write_SYSargsList function ##
 ################################
 write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", silent=FALSE){
-  if(!inherits(args, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.") 
+  if(!inherits(args, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.")
   args2 <- sysargslist(args)
   args_comp <- sapply(args2, function(x) list(NULL))
   steps <- names(stepsWF(args))
@@ -127,7 +127,7 @@ write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", sile
   return(normalizePath(sys.file))
 }
 
-# ## Usage: 
+# ## Usage:
 # write_SYSargsList(sal, sys.file, silent=FALSE)
 
 ################################
@@ -202,7 +202,7 @@ read_SYSargsList <- function(sys.file){
   return(as(args_comp,"SYSargsList"))
 }
 
-# ## Usage: 
+# ## Usage:
 # sys.file=".SPRproject/SYSargsList.yml"
 # sal3 <- read_SYSargsList(sys.file)
 
@@ -211,9 +211,9 @@ read_SYSargsList <- function(sys.file){
 ################################
 .dirProject <- function(projPath, data, param, results, silent){
   project <- list(
-    project = projPath, 
+    project = projPath,
     data = file.path(projPath, data),
-    param = file.path(projPath, param), 
+    param = file.path(projPath, param),
     results = file.path(projPath, results)
   )
   path <- sapply(project, function(x) suppressMessages(tryPath(x)))
@@ -250,13 +250,13 @@ read_SYSargsList <- function(sys.file){
 ########################################################
 SYSargsList <- function(args=NULL, step_name="default",
                         targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".", inputvars=NULL,
-                        rm_targets_col = NULL, 
+                        rm_targets_col = NULL,
                         dir=TRUE,
                         dependency=NA, silent = FALSE) {
   sal <- as(SYScreate("SYSargsList"), "list")
   if(all(is.null(args) && is.null(wf_file) && is.null(input_file))){
-    sal <- sal ## This will not create a SPRproject. 
-    #message("please use 'SPRproject()' function") 
+    sal <- sal ## This will not create a SPRproject.
+    #message("please use 'SPRproject()' function")
   } else if (!is.null(args)){
     if(inherits(args, "SYSargs2")){
       if(length(cmdlist(args))==0) stop ("Argument 'args' needs to be assigned an object of class 'SYSargs2' after 'renderWF()'.")
@@ -301,7 +301,7 @@ SYSargsList <- function(args=NULL, step_name="default",
           targets <- NULL
         }
     }
-    WF <- loadWorkflow(targets=targets, wf_file=wf_file, 
+    WF <- loadWorkflow(targets=targets, wf_file=wf_file,
                        input_file=input_file, dir_path=dir_path)
     WF <- renderWF(WF, inputvars=inputvars)
     if(step_name=="default"){
@@ -315,7 +315,7 @@ SYSargsList <- function(args=NULL, step_name="default",
     if(exists("targets_step")){
       targets_step_list <- list(targets_step=targets_step)
       new_targets_col <- names(inputvars)
-      if(is.null(new_targets_col)) 
+      if(is.null(new_targets_col))
         stop("inputvars argument need to be assigned to the output column names from the previous step specified on the targets argument")
       new_col <- list(new_targets_col=new_targets_col)
       if(!is.null(rm_targets_col)){
@@ -329,7 +329,7 @@ SYSargsList <- function(args=NULL, step_name="default",
     if(length(sal$targets_connection)==0){
     sal$targets_connection <- list(NULL)
     names(sal$targets_connection) <- step_name
-    } 
+    }
     ## dependency
     if (all(is.na(dependency))){
       sal$dependency <- list(NA)
@@ -377,7 +377,7 @@ SYSargsList <- function(args=NULL, step_name="default",
     status.pending <- cbind(status.pending, pending)
   }
   status.pending[c(2:4)] <- sapply(status.pending[c(2:4)], as.numeric)
-  pendingList <- list(status.summary= .statusSummary(status.pending), 
+  pendingList <- list(status.summary= .statusSummary(status.pending),
                       status.completed=status.pending, status.time=data.frame())
   return(pendingList)
 }
@@ -474,12 +474,12 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
 #####################
 ## runWF function ##
 #####################
-runWF <- function(args, force=FALSE, saveEnv=TRUE, 
+runWF <- function(args, force=FALSE, saveEnv=TRUE,
                   warning.stop=FALSE, error.stop=TRUE, silent=FALSE, ...) {
   # Validations
   if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
   if (is.null(projectInfo(args)$project)) stop("Project was not initialized with the 'SPRproject' function.")
-  if (!dir.exists(projectInfo(sal)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong... 
+  if (!dir.exists(projectInfo(sal)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
   sysproj <- projectInfo(args)$logsDir
   ## check dependency
@@ -488,7 +488,7 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
       dep_names <- unlist(dependency(args)[[i]])
       if(any(!dep_names %in% names(stepsWF(args))))
         stop("'args' has dependency on the following steps:", "\n",
-             paste0("      ", paste0(dep_names, collapse = " AND ")), "\n", 
+             paste0("      ", paste0(dep_names, collapse = " AND ")), "\n",
              "Please make sure that this step is present.")
     }
   }
@@ -614,7 +614,7 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
   setTxtProgressBar(pb, length(args.run))
   # close R chunk
   cat("```", file=file_log, sep = "\n", append=TRUE)
-  close(pb) 
+  close(pb)
   return(args.run)
 }
 
@@ -622,11 +622,11 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
   warning <- error <- NULL
   value <- withCallingHandlers(
     tryCatch(
-      eval(command, envir = envir), 
+      eval(command, envir = envir),
       error = function(e) {
         error <<- conditionMessage(e)
         NULL
-      }), 
+      }),
     warning = function(w) {
       warning <<- append(warning, conditionMessage(w))
       invokeRestart("muffleWarning")
@@ -653,10 +653,10 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
           col_out_l[[i]] <- col_out[[i]][col_out[[i]] %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
         }
         col_out_l <- col_out_l[lapply(col_out_l,length)>0]
-        
+
         if(all(sapply(col_out_l, function(x) length(x)==1))){
           # col_out <- col_out[col_out %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
-          col_out_df <- lapply(names(col_out_l), function(x) getColumn(args, step=x, df = "outfiles", column = col_out_l[[x]]))
+          col_out_df <- lapply(names(col_out_l), function(x) getColumn(args, step=x, position = "outfiles", column = col_out_l[[x]]))
           names(col_out_df) <- col_out_l
           new_targets[as.character(col_out_l)] <- col_out_df
         } else {
@@ -747,8 +747,8 @@ renderLogs <- function(sysargslist, type = "html_document", fileName="default", 
     "    code_folding: show",
     "package: systemPipeR",
     "fontsize: 14pt",
-    "---", 
-    log), 
+    "---",
+    log),
     con = fileName)
   #rmarkdown::render(input = fileName, c(paste0("BiocStyle::", type)), quiet = TRUE, envir = new.env())
   rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
@@ -944,7 +944,7 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
 #   if (nrow(df_wf) == 0) {
 #     return(cat("no step is selected"))
 #   }
-# 
+#
 #   wf <- .make_plot(df_wf, plot_style, is_main_branch = FALSE)
 #   wf <- append(wf, .make_plot(df_wf, plot_style, is_main_branch = TRUE), after = length(wf) - 1)
 #   # special case for detection style plotting, need to move unneeded nodes out of main branch
@@ -1007,7 +1007,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
       targets <- targets(input_file)
     }
     args1 <- loadWorkflow(
-      targets = targets, wf_file = basename(files(input_file)[['cwl']]), 
+      targets = targets, wf_file = basename(files(input_file)[['cwl']]),
       input_file = basename(files(input_file)[['yml']]), dir_path = dir_path
     )
     args1 <- as(args1, "list")
@@ -1086,9 +1086,9 @@ SYScreate <- function(class) {
       input = list(),
       output = list(),
       files = list(),
-      inputvars = list(), 
+      inputvars = list(),
       cmdToCwl = list(),
-      status = data.frame(), 
+      status = data.frame(),
       internal_outfiles=list()
     )
     return(as(SYS.empty, "SYSargs2"))
@@ -1096,16 +1096,16 @@ SYScreate <- function(class) {
     SYS.empty <- list(
       stepsWF = list(),
       statusWF = list(),
-      targetsWF = list(), 
+      targetsWF = list(),
       outfiles = list(),
-      SEobj = list(), 
+      SEobj = list(),
       dependency = list(),
       targets_connection=list(),
       projectInfo = list(),
       runInfo = list()
     )
     return(as(SYS.empty, "SYSargsList"))
-  } else if (!class %in% c("SYSargs2", "SYSargsList")) 
+  } else if (!class %in% c("SYSargs2", "SYSargsList"))
     stop("Argument 'args' needs to be assigned an character 'SYSargs2' OR 'SYSargsList'")
 }
 ## Usage:
@@ -1184,7 +1184,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 .getPath <- function(x, full_path=TRUE, warning=TRUE) {
   if(warning){
     if(!any(file.exists(x))) warning("No such file or directory. Check the file PATH.")
-  } 
+  }
   if(full_path){
     x <- normalizePath(x)
   }
@@ -1293,7 +1293,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 #   if (is.null(sysconfig$script)) warning("Workflow is missing...")
 #   if (!is.null(sysconfig$script$path)) tryPath(path = sysconfig$script$path)
 # }
-# 
+#
 # ## Usage:
 # # .sysconfigCheck(sysconfig="SYSconfig.yml")
 

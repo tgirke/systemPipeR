@@ -1,23 +1,24 @@
 ######################
 ## Filter VCF files ##
 ######################
-filterVars <- function (args, filter, varcaller, organism) {
+filterVars <- function (files, filter, varcaller="gatk", organism, out_dir="results") {
+  stopifnot(is.character(files))
+  stopifnot(is.character(filter) && length(filter) == 1)
+  stopifnot(is.character(organism) && length(organism) == 1)
+  stopifnot(is.character(out_dir) && length(out_dir) == 1)
+  if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+  if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
   ## global functions or variables
   totalDepth<- refDepth <- altDepth <- totalDepth <- refDepth <- altDepth <- NULL
-  if (!class(args) %in% c("SYSargs", "SYSargs2")) 
-    stop("Argument 'args' needs to be of class SYSargs or SYSargs2")
-  if (all(!c("gatk", "bcftools") %in% varcaller)) 
-    stop("Argument 'varcaller' needs to be assigned 'gatk' or 'bcftools'")
-  if (length(filter) != 1 | !is.character(filter)) 
-    stop("Argument 'filter' needs to character vector of length 1")
-  if (class(args) == "SYSargs"){
-    outfile <- outfile1(args)
+  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
+    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+                   'Use `getColumn` to get a vector of paths instead.'))
   }
-  if (class(args) == "SYSargs2"){
-    outfile <- gsub("\\.bgz", "", subsetWF(args, slot='output', subset = 1, index=1))
-  }
-  for (i in seq(along = args)) {
-    vcf <- readVcf(infile1(args)[i], organism)
+  if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "\\.vcf$"))) stop("filterVars: All files need to end with .vcf\n", paste0(files[!check_ext], collapse = ",\n"))
+  outfiles <- file.path(out_dir, basename(gsub("\\.vcf", "_filter.vcf", files)))
+  for (i in seq(along = files)) {
+    vcf <- readVcf(files[i], organism)
     vr <- as(vcf, "VRanges")
     if (varcaller == "gatk") {
       vrfilt <- vr[eval(parse(text = filter)), ]
@@ -32,9 +33,12 @@ filterVars <- function (args, filter, varcaller, organism) {
       vrfilt <- vrsambcf[eval(parse(text = filter)), ]
     }
     vcffilt <- asVCF(vrfilt)
-    writeVcf(vcffilt, outfile[i], index = TRUE)
-    print(paste("Generated file", i, gsub(".*/", "", outfile[i])))
+    writeVcf(vcffilt, outfiles[i], index = TRUE)
+    print(paste("Generated file", i, gsub(".*/", "", paste0(outfiles[i], ".bgz"))))
   }
+  out_paths <- paste0(outfiles, ".bgz")
+  names(out_paths) <- names(files)
+  out_paths
 }
 ## Usage for GATK:
 # filter <- "totalDepth(vr) >= 20 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==6"
@@ -54,17 +58,17 @@ filterVars <- function (args, filter, varcaller, organism) {
   REF <- tapply(as.character(values(rd)$REF), factor(names(rd)), function(i) paste(unique(i), collapse=" "))
   ALT <- tapply(as.character(unlist(values(rd)$ALT)), factor(names(rd)), function(i) paste(unique(i), collapse=" "))
   QUAL <- tapply(values(rd)$QUAL, factor(names(rd)), function(i) paste(unique(i), collapse=" "))
-  
+
   ## fix names field in x if incomplete
   if(any(names(x)=="")) {
     index <- unique(names(rd)); names(index) <- gsub("_.*", "", index)
     names(x) <- index[paste(as.character(seqnames(x)), ":", start(x), sep="")]
   }
-  
+
   ## Make annotated variant calls in x unique by collapsing duplicated ones
   LOCATION <- tapply(as.character(values(x)$LOCATION), as.factor(names(x)), function(i) paste(i, collapse=" "))
   GENEID <- tapply(values(x)$GENEID, factor(names(x)), function(i) paste(unique(i), collapse=" "))
-  
+
   ## Assemble results in data.frame
   df <- data.frame(VARID=VARID,
                    REF=REF[VARID],
@@ -86,17 +90,17 @@ filterVars <- function (args, filter, varcaller, organism) {
   #myf <- as.factor(names(values(x)$CDSLOC))
   myf <- as.factor(names(x))
   if(length(myf)>0) {
-    df <- data.frame(VARID=tapply(as.character(myf), myf, unique), 
+    df <- data.frame(VARID=tapply(as.character(myf), myf, unique),
                      Strand=tapply(as.character(strand(x)), myf, unique),
                      Consequence=tapply(as.character(values(x)$CONSEQUENCE), myf, function(i) paste(unique(i), collapse=" ")),
-                     Codon=tapply(paste(start(values(x)$CDSLOC), "_", as.character(values(x)$REFCODON), "/", as.character(values(x)$VARCODON), sep=""), myf, paste, collapse=" "), 
-                     AA=tapply(paste(sapply(values(x)$PROTEINLOC, paste, collapse="_"), "_", as.character(values(x)$REFAA), "/", as.character(values(x)$VARAA), sep=""), myf, paste, collapse=" "), 
-                     TXIDs=tapply(txids[values(x)$TXID], myf, paste, collapse=" "), 
+                     Codon=tapply(paste(start(values(x)$CDSLOC), "_", as.character(values(x)$REFCODON), "/", as.character(values(x)$VARCODON), sep=""), myf, paste, collapse=" "),
+                     AA=tapply(paste(sapply(values(x)$PROTEINLOC, paste, collapse="_"), "_", as.character(values(x)$REFAA), "/", as.character(values(x)$VARAA), sep=""), myf, paste, collapse=" "),
+                     TXIDs=tapply(txids[values(x)$TXID], myf, paste, collapse=" "),
                      GENEIDcode=tapply(values(x)$GENEID, myf, function(i) paste(unique(i), collapse=" ")))
   } else {
     df <- data.frame(VARID=NA, Strand=NA, Consequence=NA, Codon=NA, AA=NA, TXIDs=NA, GENEIDcode=NA)[FALSE,,drop=FALSE]
   }
-  return(df)	      
+  return(df)
 }
 ## Usage:
 # codereport <- predictCoding(vcf, txdb, seqSource=fa)
@@ -105,37 +109,45 @@ filterVars <- function (args, filter, varcaller, organism) {
 ####################
 ## Variant Report ##
 ####################
-variantReport <- function (args, txdb, fa, organism) {
-  if (!class(args) %in% c("SYSargs", "SYSargs2")) 
-    stop("Argument 'args' needs to be of class SYSargs or SYSargs2")
-  if (class(args) == "SYSargs"){
-    outfile <- outfile1(args)
+variantReport <- function (files, txdb, fa, organism, out_dir="results") {
+  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
+    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+                   'Use `getColumn` to get a vector of paths instead.'))
   }
-  if (class(args) == "SYSargs2"){
-    outfile <- subsetWF(args, slot='output', subset = 1, index=1)
-  }
-  for (i in seq(along = args)) {
-    vcf <- readVcf(infile1(args)[i], organism)
+
+  stopifnot(is.character(files))
+  stopifnot(is.character(organism) && length(organism) == 1)
+  stopifnot(is.character(out_dir) && length(out_dir) == 1)
+  if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+  if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
+
+  if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "(\\.vcf|\\.bgz)$"))) stop("filterVars: All files need to end with .vcf or .bgz\n", paste0(files[!check_ext], collapse = ",\n"))
+  outfiles <- file.path(out_dir, basename(gsub("(\\.vcf$|\\.vcf.bgz$|\\.bgz$)", "_anno.tsv", files)))
+
+  for (i in seq(along = files)) {
+    vcf <- readVcf(files[i], organism)
     allvar <- locateVariants(vcf, txdb, AllVariants())
     varreport <- .allAnnot(allvar, vcf)
     coding <- predictCoding(vcf, txdb, seqSource = fa)
     codereport <- .codingReport(coding, txdb)
     vr <- as(vcf, "VRanges")
-    varid <- paste(as.character(seqnames(vr)), ":", start(vr), 
+    varid <- paste(as.character(seqnames(vr)), ":", start(vr),
                    "_", ref(vr), "/", alt(vr), sep = "")
     vrdf <- data.frame(row.names = varid, as.data.frame(vr))
     vrdf <- vrdf[, c("totalDepth", "refDepth", "altDepth")]
-    fullreport <- cbind(varreport, codereport[rownames(varreport), 
-                                              -1])
-    fullreport <- cbind(VARID = as.character(fullreport[, 1]), 
-                        vrdf[as.character(rownames(fullreport)), ], 
+    fullreport <- cbind(varreport, codereport[rownames(varreport), -1])
+    fullreport <- cbind(VARID = as.character(fullreport[, 1]),
+                        vrdf[as.character(rownames(fullreport)), ],
                         fullreport[, -1])
-    fullreport <- data.frame(lapply(fullreport, as.character), 
+    fullreport <- data.frame(lapply(fullreport, as.character),
                              stringsAsFactors = FALSE)
-    write.table(fullreport, file = outfile[i], row.names = FALSE, 
+    write.table(fullreport, file = outfiles[i], row.names = FALSE,
                 quote = FALSE, sep = "\t", na = "")
-    print(paste("Generated file", i, gsub(".*/", "", outfile[i])))
+    print(paste("Generated file", i, gsub(".*/", "", outfiles[i])))
   }
+  names(outfiles) <- names(files)
+  outfiles
 }
 ## Usage:
 # variantReport(args=args, txdb=txdb, fa=fa, organism="Pinfest")
@@ -143,25 +155,26 @@ variantReport <- function (args, txdb, fa, organism) {
 #############################
 ## Combine Variant Reports ##
 #############################
-combineVarReports <- function(args, filtercol, ncol=15) {
-  if (!class(args) %in% c("SYSargs", "SYSargs2")) 
-    stop("Argument 'args' needs to be of class SYSargs or SYSargs2")
-  if (class(args) == "SYSargs"){
-    outpaths <- outpaths(args)
+combineVarReports <- function(files, filtercol, ncol=15) {
+  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
+    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+                   'Use `getColumn` to get a vector of paths instead.'))
   }
-  if (class(args) == "SYSargs2"){
-    outpaths <- subsetWF(args, slot='output', subset = 1, index=1)
-  }
-  samples <- names(outpaths)
+
+  stopifnot(is.character(files))
+  if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("filterVars: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
+
+  samples <- names(files)
   for(i in seq(along=samples)) {
     if(i==1) {
-      varDF <- read.delim(outpaths[i], colClasses=rep("character", ncol))
-      varDF <- cbind(Sample=samples[i], varDF) 
+      varDF <- read.delim(files[i], colClasses=rep("character", ncol))
+      varDF <- cbind(Sample=samples[i], varDF)
       if(filtercol[1]!="All") varDF <- varDF[varDF[,names(filtercol)]==filtercol,]
     } else {
-      tmpDF <- read.delim(outpaths[i])
-      tmpDF <- read.delim(outpaths[i], colClasses=rep("character", ncol))
-      tmpDF <- cbind(Sample=samples[i], tmpDF) 
+      tmpDF <- read.delim(files[i])
+      tmpDF <- read.delim(files[i], colClasses=rep("character", ncol))
+      tmpDF <- cbind(Sample=samples[i], tmpDF)
       if(filtercol[1]!="All") tmpDF <- tmpDF[tmpDF[,names(filtercol)]==filtercol,]
       varDF <- rbind(as.data.frame(as.matrix(varDF)), as.data.frame(as.matrix(tmpDF)))
     }
@@ -176,17 +189,18 @@ combineVarReports <- function(args, filtercol, ncol=15) {
 ###########################################
 ## Create summary statistics of variants ##
 ###########################################
-varSummary <- function(args) {
-  if (!class(args) %in% c("SYSargs", "SYSargs2")) 
-    stop("Argument 'args' needs to be of class SYSargs or SYSargs2")
-  if (class(args) == "SYSargs"){
-    outpaths <- outpaths(args)
+varSummary <- function(files) {
+  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
+    retrun(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
+                   'Use `getColumn` to get a vector of paths instead.'))
   }
-  if (class(args) == "SYSargs2"){
-    outpaths <- subsetWF(args, slot='output', subset = 1, index=1)
-  }
-  for(i in seq(along=args)) {
-    annotDF <- read.delim(outpaths[i])
+
+  stopifnot(is.character(files))
+  if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("filterVars: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
+
+  for(i in seq(along=files)) {
+    annotDF <- read.delim(files[i])
     count <- c(all=length(annotDF[,1]),
                table(unlist(strsplit(as.character(annotDF$LOCATION), " "))),
                table(unlist(strsplit(as.character(annotDF$Consequence), " "))))
@@ -197,7 +211,7 @@ varSummary <- function(args) {
     }
   }
   countDF[is.na(countDF)] <- 0
-  colnames(countDF) <- names(outpaths)
+  colnames(countDF) <- names(files)
   return(countDF)
 }
 ## Usage:
