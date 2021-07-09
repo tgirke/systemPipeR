@@ -21,21 +21,21 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
     headerlines <- targetsheader(x)
     ## SYSargs2 class
   } else if(class(x) == "SYSargs2") {
-    if(is.null(step)) 
-      stop(paste("Argument 'step' needs to be assigned one of the following values:", 
+    if(is.null(step))
+      stop(paste("Argument 'step' needs to be assigned one of the following values:",
                  paste(names(x$clt), collapse = ", "), "OR the corresponding position"))
-    if(all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step))) 
-      stop(paste("Argument 'step' can only be assigned one of the following values:", 
+    if(all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step)))
+      stop(paste("Argument 'step' can only be assigned one of the following values:",
                  paste(names(x$clt), collapse = ", "), "OR the corresponding position"))
-    if(all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step))) 
-      stop(paste("Argument 'step' can only be assigned one of the following position:", 
+    if(all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step)))
+      stop(paste("Argument 'step' can only be assigned one of the following position:",
                  paste(seq_along(names(x$clt)), collapse = ", "), "OR the corresponding names"))
     targets <- targets.as.df(targets(x))
     if(remove==TRUE){
       targets <- targets[,-c(which(grepl("FileName", colnames(targets))))]
     }
     ## Adding the columns
-    if ((!is.null(new_col) & is.null(new_col_output_index)) | 
+    if ((!is.null(new_col) & is.null(new_col_output_index)) |
         (is.null(new_col) & !is.null(new_col_output_index)) |
         (is.null(new_col) & is.null(new_col_output_index))){
       cat("One of 'new_col' and 'new_col_output_index' is null. It is using default column naming and adding all the output files expected, and each one will be written in a different column. \n")
@@ -96,7 +96,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
   } else if(class(args)=="SYSargs2") {
     ## SYSargs2 class ##
     ## Check if the command is in the PATH
-    if(!baseCommand(args) == c("bash")){ 
+    if(!baseCommand(args) == c("bash")){
       tryCatch(system(baseCommand(args), ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", baseCommand(args), ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
     }
     ## Workflow Name (Workflow OR CommandLineTool class)
@@ -106,7 +106,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       cwl.wf <- strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
     }
     ## Check if "results" folders exists...
-    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path)))) 
+    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path))))
       stop("Please check our current directory ('getwd()').
            The PATH defined at `yamlinput(args)` was not found and it is required.")
     if(is.null(dir.name)) {
@@ -116,7 +116,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       logdir <- normalizePath(yamlinput(args)$results_path$path)
       dir.name <- dir.name
     }
-    ## Check if expected files exists or not 
+    ## Check if expected files exists or not
     ## Important, this happen in the new location in the case of dir=TRUE
     return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, force=force)
     args.return <- return$args_complete
@@ -124,7 +124,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     args <- return$args
     ## Create log files
     file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
-    ## Sample status and Time 
+    ## Sample status and Time
     sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
     ## Progress bar
@@ -258,7 +258,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     cat(crayon::blue("---- Summary ----"), "\n")
     print(df.status.f)
     #print(S4Vectors::DataFrame(df.status.f))
-    close(pb) 
+    close(pb)
     return(args.return)
   }
 }
@@ -285,11 +285,11 @@ runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
         system(paste(command, commandargs))
       } else {
         system2(command, args=commandargs, stdout=TRUE, stderr=TRUE)
-      }, 
+      },
       error = function(e) {
         error <<- conditionMessage(e)
         NULL
-        }), 
+        }),
     warning = function(w) {
       warning <<- append(warning, conditionMessage(w))
       invokeRestart("muffleWarning")
@@ -346,7 +346,7 @@ runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
     if(any(completed.bam)){ # If output is unindexed *.bam file (e.g. Tophat2)
       for(k in which(completed.bam)){
         Rsamtools::sortBam(file=output_args[k], destination=gsub("\\.bam$", "", output_args[k]))
-        Rsamtools::indexBam(output_args[k]) 
+        Rsamtools::indexBam(output_args[k])
       }
     }
   } else if(make_bam==FALSE){
@@ -357,7 +357,7 @@ runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 # .makeBam(output(args)[[1]][[1]], make_bam=TRUE, del_sam=FALSE)
 
 ########################################################
-## .checkOutArgs2 function: internal function to check 
+## .checkOutArgs2 function: internal function to check
 ## if the expected output has been created  ##
 ########################################################
 .checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name, force){
@@ -409,10 +409,10 @@ runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
     } else {
       ## Create soubmitargsID_command file
       cat(commands[i], file=paste(logdir, "submitargs", runid, sep=""), sep = "\n", append=TRUE)
-      ## Run executable 
+      ## Run executable
       command <- gsub(" .*", "", as.character(commands[i]))
       commandargs <- gsub("^.*? ", "",as.character(commands[i]))
-      ## Execute system command; note: BWA needs special treatment in stderr handling since it writes 
+      ## Execute system command; note: BWA needs special treatment in stderr handling since it writes
       ## some stderr messages to sam file if used with system2()
       if(software(args) %in% c("bwa aln", "bwa mem")) {
         stdout <- system2(command, args=commandargs, stdout=TRUE, stderr=FALSE)
@@ -445,7 +445,7 @@ runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
   bamcompleted <- gsub("sam$", "bam$", file.exists(outpaths(args)))
   names(bamcompleted) <- SampleName(args)
   cat("Missing alignment results (bam files):", sum(!as.logical(bamcompleted)), "\n"); cat("Existing alignment results (bam files):", sum(as.logical(bamcompleted)), "\n")
-  return(bamcompleted) 
+  return(bamcompleted)
 }
 ## Usage:
 # args <- systemArgs(sysma="param/hisat2.param", mytargets="targets.txt")
@@ -619,57 +619,38 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
 #####################
 ## Alignment Stats ##
 #####################
-alignStats <- function(args, output_index = 1, subset="FileName1") {
-  #fqpaths <- infile1(args)
-  ## SYSargs class
-  if (class(args) == "SYSargs") {
-    fqpaths <- infile1(args)
-    bampaths <- outpaths(args)
-    # SYSargs2 class
-  } else if (class(args) == "SYSargs2") {
-    fqpaths <- subsetWF(args, slot = "input", subset=subset)
-    output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
-    bampaths <- as.character()
-    for (i in seq_along(output.all)) {
-      for (j in seq_along(output.all[[i]])) {
-        if (grepl(".sam$", output.all[[i]][[j]]) == TRUE & grepl(".bam$", output.all[[i]][[j]]) == FALSE) {
-          stop("Please provide files in BAM format; it can be checked as 'output(args)'. Also, check 'output_update' function, if the BAM files were previously generated.")
-        }
-        else if (grepl(".bam$", output.all[[i]][[j]]) == TRUE & grepl("sorted.bam$", output.all[[i]][[j]]) == FALSE) {
-          bampaths <- c(bampaths, output.all[[i]][[j]])
-        }
-      }
-    }
-    names(bampaths) <- names(output.all)
+#' @param files named character vector of indexed bam files. Names of this vector will
+#' be used as sample names
+#' @param out_dir character, directory path to store individual sample stats files
+alignStats <- function(files, out_dir="results") {
+  if (class(files) %in% c("SYSargs", "SYSargs2")) {
+    retrun(warning('alignStats: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
+                   'Use `getColumn` to get a vector of paths instead.'))
   }
-  bamexists <- file.exists(bampaths)
-  fqpaths <- fqpaths[bamexists]
-  bampaths <- bampaths[bamexists]
-  ## Obtain total read number from FASTQ files
-  Nreads <- countLines(fqpaths) / 4
-  names(Nreads) <- names(fqpaths)
-  ## If reads are PE multiply by 2 as a rough approximation
-  if (nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2
-  ## Obtain total number of alignments from BAM files
-  bfl <- BamFileList(bampaths, yieldSize = 50000, index = character())
-  param <- ScanBamParam(flag = scanBamFlag(isUnmappedQuery = FALSE))
-  Nalign <- countBam(bfl, param = param)
-  ## Obtain number of primary alignments from BAM files
-  param <- ScanBamParam(flag = scanBamFlag(isSecondaryAlignment = FALSE, isUnmappedQuery = FALSE))
-  Nalignprim <- countBam(bfl, param = param)
-  statsDF <- data.frame(
-    FileName = names(Nreads),
-    Nreads = Nreads,
-    Nalign = Nalign$records,
-    Perc_Aligned = Nalign$records / Nreads * 100,
-    Nalign_Primary = Nalignprim$records,
-    Perc_Aligned_Primary = Nalignprim$records / Nreads * 100
-  )
-  if (nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF) == "Nreads")] <- "Nreads2x"
-  return(statsDF)
+  stopifnot(is.character(files))
+  stopifnot(is.character(out_dir) && length(out_dir) == 1)
+  if(is.null(names(files))) stop("Files must be a named vector, names will be used as sample names")
+  if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+  if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
+  if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
+  if(!all(check_ext <- stringr::str_detect(files, "\\.bam$"))) stop("alignStats: All files need to end with .bam\n", paste0(files[!check_ext], collapse = ",\n"))
+
+  file_base <- basename(files)
+  out_files <- file.path(out_dir, gsub("\\.bam$", "_bam_stats.csv", file_base))
+  samplenames <- names(files)
+  bam_df <- data.frame(sample= samplenames, files= file_base, mapped = NA, unmapped = NA)
+  for (i in seq_along(files)) {
+    bam_stats <- Rsamtools::idxstatsBam(files[i])
+    message("Write bam stats for ", samplenames[i], " to ", basename(out_files[i]))
+    write.csv(bam_stats, out_files[i], row.names = FALSE)
+    map_info <- colSums(bam_stats[, c(3, 4)])
+    bam_df[i, c(3, 4)] <- map_info
+  }
+  bam_df$map_rate <- round(bam_df$mapped/(bam_df$mapped + bam_df$unmapped), 3)
+  bam_df
 }
 ## Usage:
-# read_statsDF <- alignStats(args=args)
+# read_statsDF <- alignStats(files=files)
 
 ########################
 ## RPKM Normalization ##
@@ -845,7 +826,7 @@ run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE, lfcShrink=FAL
     for (i in seq(along = mycmp[, 1])) {
       ## Extracts DEG results for specific contrasts from DESeqDataSet object
       res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
-      
+
       ## lfcShrink
       if (lfcShrink == FALSE) {
         res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
