@@ -468,7 +468,7 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
   }
   if(inherits(i, "character")){
     if(!all(i %in% stepName(x))) stop(paste0('\n',
-                                            "Step name doesn't exist. Please subset accordingly with the 'stepName(x)'", 
+                                            "Step name doesn't exist. Please subset accordingly with the 'stepName(x)'",
                                             '\n',
                                             paste0(stepName(x), collapse = ", ")))
     i <- which(stepName(x) %in% i)
@@ -757,8 +757,8 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   lengx <- length(x)
   after <- after
   if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
-  ## Dependency 
-  #if(all(is.na(dependency(value)) && length(x)>0)) stop("'dependency' argument is required to append a step in the workflow.")
+  ## Dependency
+  if(all(is.na(dependency(value)) && length(x)>0) && !getOption("spr_importing", FALSE)) stop("'dependency' argument is required to append a step in the workflow.")
   if(dependency(value)=="") value[["dependency"]][[1]] <- NA
   ## Append
   if(inherits(value, "SYSargsList")){
@@ -841,6 +841,8 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     } else stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
  # if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
   x <- .check_write_SYSargsList(x)
+  ## used in `importWF`
+  options(spr_importing = FALSE)
   x
 })
 
@@ -883,6 +885,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
     duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(outfiles(value), function(y) names(y)))))))
     stop("'outfiles' columns names need to be unique")
   ## Check outfiles names X targets names
+  print(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(targetsWF(x), function(y) names(y)))))
   if(any(
     duplicated(unlist(append(lapply(outfiles(x), function(y) names(y)), lapply(targetsWF(x), function(y) names(y)))))))
     stop("'targetsWF' and 'outfiles' columns names need to be unique")
