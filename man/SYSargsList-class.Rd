@@ -47,6 +47,8 @@
 \alias{stepName,SYSargsList-method}
 \alias{targetsheader,SYSargsList-method}
 
+\alias{dependency<-}
+\alias{dependency<-,SYSargsList-method}
 \alias{appendStep<-}
 \alias{appendStep<-,SYSargsList-method}
 \alias{replaceStep<-}
@@ -104,7 +106,8 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}: replacement method for append a step }
     \item{replaceStep<-}{\code{signature(x = "SYSargsList")}: replacement method for replace a step }
     \item{renameStep<-}{\code{signature(x = "SYSargsList")}: replacement method for rename a step}
-    \item{yamlinput<-}{\code{signature(x = "SYSargs2")}: replacement method for \code{yamlinput} slot for each step }
+    \item{yamlinput<-}{\code{signature(x = "SYSargsList")}: replacement method for \code{yamlinput} slot for each step }
+    \item{dependency<-}{\code{signature(x = "SYSargsList")}: replacement method for \code{dependency} slot for each step }
   }
 }
 \author{
