@@ -32,3 +32,15 @@ sal2bash <- function(sal, out_path, bash_path="/bin/bash") {
     }
     step_list
 }
+
+.bashSysStep <- function(sal, step_no, parallel=FALSE) {
+    unlist(cmdlist(sal[step_no]))
+}
+
+# .bashSysStep(sal, 2)
+
+.bashRStep <- function(sal, step_no) {
+    unlist(lapply(step_no, function(x) as.character(sal[[1]][[x]]$codeLine)))
+}
+# .bashRStep(sal, 10:12)
+
