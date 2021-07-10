@@ -9,17 +9,17 @@ total number of reads in the FASTQ files, the number of total alignments, as
 well as the number of primary alignments in the corresponding BAM files. 
 }
 \usage{
-alignStats(args, output_index = 1, subset="FileName1")
+alignStats(files, args = files, out_dir = "results")
 }
 \arguments{
+  \item{files}{
+	Object of class \code{SYSargs} or \code{SYSargs2}. 
+}
   \item{args}{
 	Object of class \code{SYSargs} or \code{SYSargs2}. 
 }
-  \item{output_index}{
-  A numeric index positions of the file in \code{SYSargs2} object, slot \code{output}. Default is \code{output_index=1}.
-}
-  \item{subset}{
-  \code{subset} are the variables defined in the \code{param.yml} file, for example "FileName1".
+  \item{out_dir}{
+  Directory path to write generate data frame. 
 }
 }
 \value{

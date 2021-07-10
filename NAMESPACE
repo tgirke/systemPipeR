@@ -78,6 +78,7 @@ importFrom("rsvg", "rsvg_svg")
 importFrom("S4Vectors", "DataFrame")
 importFrom("S4Vectors", "elementMetadata<-")
 importFrom("S4Vectors", "first")
+importFrom("S4Vectors", "metadata")
 importFrom("S4Vectors", "mcols<-")
 importFrom("S4Vectors", "Rle")
 importFrom("S4Vectors", "SimpleList")
@@ -97,6 +98,7 @@ importFrom("SummarizedExperiment", "assay")
 importFrom("SummarizedExperiment", "assayNames")
 importFrom("SummarizedExperiment", "assays")
 importFrom("SummarizedExperiment", "assays<-")
+importFrom("SummarizedExperiment", "colData")
 importFrom("SummarizedExperiment", "metadata<-")
 importFrom("SummarizedExperiment", "rowRanges")
 importFrom("SummarizedExperiment", "SummarizedExperiment")
@@ -105,6 +107,7 @@ importFrom("utils", "combn")
 importFrom("utils", "menu")
 importFrom("utils", "packageVersion")
 importFrom("utils", "read.delim")
+importFrom("utils", "write.csv")
 importFrom("utils", "write.table")
 importFrom("utils", "setTxtProgressBar")
 importFrom("utils", "txtProgressBar")
@@ -141,7 +144,7 @@ exportMethods(
     "dependency", "projectInfo", "runInfo", 
     "sysargslist", "subset", "stepName", "getColumn",
     "SampleName", "viewEnvir", "copyEnvir",  
-    "appendStep<-", "replaceStep<-", "renameStep<-",
+    "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
     ## LineWise
     "codeLine", "codeChunkStart", "rmdPath", "linewise", 
     "replaceCodeLine<-", "appendCodeLine<-"

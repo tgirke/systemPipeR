@@ -267,9 +267,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 # WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder
 # WF <- runCommandline(WF, dir=TRUE) # creates the files in the ./results/workflowName/Samplename folder
 # WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE) ## For hisat2-mapping.cwl template
-runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=FALSE
-runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
-runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
+# runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=FALSE
+# runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
+# runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 
 .tryRunC <- function(command, commandargs){
   warning <- error <- NULL
@@ -624,7 +624,7 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
 #' @param out_dir character, directory path to store individual sample stats files
 alignStats <- function(files, out_dir="results") {
   if (class(files) %in% c("SYSargs", "SYSargs2")) {
-    retrun(warning('alignStats: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
+    return(warning('alignStats: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
   }
   stopifnot(is.character(files))
@@ -634,7 +634,6 @@ alignStats <- function(files, out_dir="results") {
   if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
   if(!all(check_ext <- stringr::str_detect(files, "\\.bam$"))) stop("alignStats: All files need to end with .bam\n", paste0(files[!check_ext], collapse = ",\n"))
-
   file_base <- basename(files)
   out_files <- file.path(out_dir, gsub("\\.bam$", "_bam_stats.csv", file_base))
   samplenames <- names(files)

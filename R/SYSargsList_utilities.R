@@ -481,7 +481,7 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
   # Validations
   if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
   if (is.null(projectInfo(args)$project)) stop("Project was not initialized with the 'SPRproject' function.")
-  if (!dir.exists(projectInfo(sal)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
+  if (!dir.exists(projectInfo(args)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
   sysproj <- projectInfo(args)$logsDir
   ## check dependency
@@ -536,6 +536,12 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
       cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
       args.run <- stepsWF(args2)[[i]]
       envir <- args2$runInfo$env
+      # if(all(args.run$status$status.summary=="Success" && force == FALSE)){
+      #   args.run <- args.run
+      #   print("skip")
+      # } else {
+      #   args.run <- runRcode(args.run, step, file_log, envir, force=force)
+      # }
       args.run <- runRcode(args.run, step, file_log, envir, force=force)
       stepsWF(args2, i) <- args.run
       statusWF(args2, i) <- args.run$status
@@ -584,8 +590,10 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
     "## Stdout: ",
     "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
   ## Check status of step
-  if(all("Success" %in% status(args.run)[[step]]$status.summary && force==FALSE)){
+  if(all(args.run$status$status.summary=="Success" && force == FALSE)){
+    args.run[["status"]]$status.time$time_start <- Sys.time()
     cat("The step status is 'Success' and it was skipped.", file=file_log, fill=TRUE, append=TRUE, sep = "\n")
+    args.run[["status"]]$status.time$time_end <- Sys.time()
   } else {
     ## Status and time register
     step_status <- list()

@@ -947,7 +947,7 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   #   value <- as(value, "SYSargsList")
   # }
   ## outfiles... if dir=TRUE
-  #value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
+  value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){
@@ -1065,4 +1065,11 @@ setReplaceMethod("statusWF", c("SYSargsList"), function(x, step, ..., value) {
     x@statusWF[[step]] <- value
     x <- .check_write_SYSargsList(x)
     x
+})
+
+setGeneric(name="dependency<-", def=function(x, step, ..., value) standardGeneric("dependency<-"))
+setReplaceMethod("dependency", c("SYSargsList"), function(x, step, ..., value) {
+  x@dependency[[step]] <- value
+  x <- .check_write_SYSargsList(x)
+  x
 })
