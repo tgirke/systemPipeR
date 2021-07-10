@@ -536,6 +536,12 @@ runWF <- function(args, force=FALSE, saveEnv=TRUE,
       cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
       args.run <- stepsWF(args2)[[i]]
       envir <- args2$runInfo$env
+      # if(all(args.run$status$status.summary=="Success" && force == FALSE)){
+      #   args.run <- args.run
+      #   print("skip")
+      # } else {
+      #   args.run <- runRcode(args.run, step, file_log, envir, force=force)
+      # }
       args.run <- runRcode(args.run, step, file_log, envir, force=force)
       stepsWF(args2, i) <- args.run
       statusWF(args2, i) <- args.run$status
@@ -584,8 +590,10 @@ runRcode <- function(args.run, step, file_log, envir, force=FALSE){
     "## Stdout: ",
     "```{r, eval=FALSE}" ), file = file_log, sep = "\n", append = TRUE)
   ## Check status of step
-  if(all("Success" %in% status(args.run)[[step]]$status.summary && force==FALSE)){
+  if(all(args.run$status$status.summary=="Success" && force == FALSE)){
+    args.run[["status"]]$status.time$time_start <- Sys.time()
     cat("The step status is 'Success' and it was skipped.", file=file_log, fill=TRUE, append=TRUE, sep = "\n")
+    args.run[["status"]]$status.time$time_end <- Sys.time()
   } else {
     ## Status and time register
     step_status <- list()

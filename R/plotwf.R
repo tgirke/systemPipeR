@@ -631,17 +631,18 @@ makeDot <- function(df,
 # build df from sal object
 
 .buildDF <- function(sal) {
-    df <- data.frame(step_name = stepName(sal))
-    dep <- dependency(sal)
+    sal_temp <- sal
+    df <- data.frame(step_name = stepName(sal_temp))
+    dep <- dependency(sal_temp)
     for (i in seq_along(dep)) {
         if (any(is.na(dep[i]))) {
             dep[[i]] <- ""
         }
     }
     df$dep <- dep
-    df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal)[[x]], "SYSargs2")), "sysargs", "r")
-    df$has_run <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary) == "Pending", FALSE, TRUE)
-    df$success <- ifelse(sapply(df$step_name, function(x) sal$statusWF[[i]]$status.summary) == "Success", TRUE, FALSE)
+    df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal_temp)[[x]], "SYSargs2")), "sysargs", "r")
+    df$has_run <- ifelse(!sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Pending", TRUE, FALSE)
+    df$success <- ifelse(sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Success", TRUE, FALSE)
     df <- cbind(df, data.frame(
         sample_pass = 0,
         sample_warn = 0,
@@ -651,31 +652,31 @@ makeDot <- function(df,
         time_end = Sys.time()
     ))
     for (i in seq_along(df$step_name)) {
-        if (inherits(stepsWF(sal)[[i]], "SYSargs2")) {
-            sample_df <- as.list(colSums(sal$statusWF[[i]][[2]][2:4]))
+        if (inherits(stepsWF(sal_temp)[[i]], "SYSargs2")) {
+            sample_df <- as.list(colSums(sal_temp$statusWF[[i]][[2]][2:4]))
             df$sample_pass[i] <- sample_df$Existing_Files
             df$sample_total[i] <- sample_df$Total_Files
-            if (all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Warning")) {
+            if (all(sample_df$Missing_Files > 0 && sal_temp$statusWF[[i]]$status.summary == "Warning")) {
                 df$sample_warn[i] <- sample_df$Missing_Files
-            } else if (all(sample_df$Missing_Files > 0 && sal$statusWF[[i]]$status.summary == "Error")) {
+            } else if (all(sample_df$Missing_Files > 0 && sal_temp$statusWF[[i]]$status.summary == "Error")) {
                 df$sample_error[i] <- sample_df$Missing_Files
             }
-            if (length(sal$statusWF[[i]]$status.time) > 0) {
-                df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start[1]
-                df$time_end[i] <- sal$statusWF[[i]]$status.time$time_end[length(sal$statusWF[[i]]$status.time$time_end)]
+            if (length(sal_temp$statusWF[[i]]$status.time) > 0) {
+                df$time_start[i] <- sal_temp$statusWF[[i]]$status.time$time_start[1]
+                df$time_end[i] <- sal_temp$statusWF[[i]]$status.time$time_end[length(sal_temp$statusWF[[i]]$status.time$time_end)]
             }
-        } else if (inherits(stepsWF(sal)[[i]], "LineWise")) {
+        } else if (inherits(stepsWF(sal_temp)[[i]], "LineWise")) {
             df$sample_total[i] <- 1
-            if (sal$statusWF[[i]]$status.summary == "Success") {
+            if (sal_temp$statusWF[[i]]$status.summary == "Success") {
                 df$sample_pass[i] <- 1
-            } else if (sal$statusWF[[i]]$status.summary == "Warning") {
+            } else if (sal_temp$statusWF[[i]]$status.summary == "Warning") {
                 df$sample_warn[i] <- 1
-            } else if (sal$statusWF[[i]]$status.summary == "Error") {
+            } else if (sal_temp$statusWF[[i]]$status.summary == "Error") {
                 df$sample_error[i] <- 1
             }
-            if (length(sal$statusWF[[i]]$status.time) > 0) {
-                df$time_start[i] <- sal$statusWF[[i]]$status.time$time_start
-                df$time_end[i] <- sal$statusWF[[i]]$status.time$time_start
+            if (length(sal_temp$statusWF[[i]]$status.time) > 0) {
+                df$time_start[i] <- sal_temp$statusWF[[i]]$status.time$time_start
+                df$time_end[i] <- sal_temp$statusWF[[i]]$status.time$time_end
             }
         }
     }

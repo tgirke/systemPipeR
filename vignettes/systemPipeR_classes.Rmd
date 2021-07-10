@@ -145,6 +145,22 @@ appendStep(sal) <- LineWise(code = {
                             dependency = "echo")
 ```
 
+```{r, eval=TRUE}
+appendStep(sal) <- LineWise(code = {
+                            Sys.sleep(60)
+                            }, 
+                            step_name = "R_read2", 
+                            dependency = "R_read")
+```
+
+```{r, eval=TRUE}
+appendStep(sal) <- LineWise(code = {
+                           Sys.sleep(70)
+                            }, 
+                            step_name = "R_read3", 
+                            dependency = "R_read2")
+```
+
 - Run workflow
 
 ```{r, eval=TRUE}
@@ -155,7 +171,7 @@ sal
 - Visualize workflow
 
 ```{r, eval=TRUE}
-plotWF(sal, show_legend = FALSE, width = "80%", height="250px", rstudio = TRUE)
+plotWF(sal, show_legend = TRUE, width = "80%", height="250px", rstudio = TRUE)
 ```
 
 - Check workflow status
