@@ -8,6 +8,7 @@ changelog
         - Updated varseq functions
         - importWF() and LineWise() improved
         - alignStats() improved
+	- LineWise status Success --> skip
         - Documentation
         
      version 1.27.9
