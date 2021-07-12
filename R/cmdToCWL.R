@@ -213,7 +213,7 @@ renameParam <- function(sysargs, position, index = FALSE, rename, mute = FALSE) 
     } else {
         if (inherits(sysargs, "cwlParse")) {
           sysargs <- .modifyCwlParse(
-                commandline = commandline, position = position,
+                commandline = sysargs, position = position,
                 index = index, rename = rename, mute = mute
             )
             return(invisible(sysargs))
