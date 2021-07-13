@@ -158,7 +158,7 @@ export(
     ## Import/exports
     "readComp", "writeTargetsout", "writeTargetsRef", "mergeBamByFactor",
     ## Utilities
-    "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
+    "alignStats", "clusterRun", "returnRPKM", 
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
     "modulelist", "moduleAvail", "moduleClear", "moduleInit", "moduleUnload", 
     "module", "run_edgeR", "run_DESeq2", "filterDEGs", "seeFastq", "seeFastqPlot",
