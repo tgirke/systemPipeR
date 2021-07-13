@@ -2,6 +2,7 @@ changelog
      version 1.27.11
         - Deprecated: getQsubargs and qsubRun functions
         - LineWise: help files and files organization
+        - AllClasses and AllGenerics exclusive files
         
      version 1.27.10
         - plotWF() --> New design 
