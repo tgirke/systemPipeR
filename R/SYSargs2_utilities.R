@@ -58,8 +58,8 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   }
   if(!is.null(targets)) {
       if(inherits(targets, "SummarizedExperiment")){
-          mytargets <- as.data.frame(colData(targets))
-          targetsheader <- metadata(targets)
+          mytargets <- as.data.frame(SummarizedExperiment::colData(targets))
+          targetsheader <- S4Vectors::metadata(targets)
           WF <- c(list(targets=mytargets, targetsheader=targetsheader), WF)
       } else if(class(targets)=="SYSargs2"){
       mytargets <- targets(targets)

@@ -756,12 +756,14 @@ setGeneric(name="appendStep<-", def=function(x, after=length(x), ..., value) sta
 setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..., value) {
   ## used in `importWF`
   on.exit(options(spr_importing = FALSE))
+  ## used in `+.SYSargsList`
+  on.exit(options(appendPlus = FALSE))
   ## append position
   lengx <- length(x)
   after <- after
   if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
   ## Dependency
-  if(all(is.na(dependency(value)) && length(x)>0) && !getOption("spr_importing", FALSE)) stop("'dependency' argument is required to append a step in the workflow.")
+  if(all(is.na(dependency(value)) && length(x)>0) && !getOption("spr_importing", FALSE) && !getOption("appendPlus", FALSE)) stop("'dependency' argument is required to append a step in the workflow.")
   if(dependency(value)=="") value[["dependency"]][[1]] <- NA
   ## Append
   if(inherits(value, "SYSargsList")){
@@ -946,8 +948,11 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after=length(x), ..
   #   names(value$targets_connection) <- names(value$stepsWF)
   #   value <- as(value, "SYSargsList")
   # }
+  ## for SYSargs2... 
   ## outfiles... if dir=TRUE
-  #value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
+  if(inherits(value, "SYSargs2")){
+    value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
+  }
   if(all(!is.na(dependency(value)))){
     dep <- dependency(value)[[1]]
     if(inherits(dep, "character")){
@@ -1065,4 +1070,11 @@ setReplaceMethod("statusWF", c("SYSargsList"), function(x, step, ..., value) {
     x@statusWF[[step]] <- value
     x <- .check_write_SYSargsList(x)
     x
+})
+
+setGeneric(name="dependency<-", def=function(x, step, ..., value) standardGeneric("dependency<-"))
+setReplaceMethod("dependency", c("SYSargsList"), function(x, step, ..., value) {
+  x@dependency[[step]] <- value
+  x <- .check_write_SYSargsList(x)
+  x
 })

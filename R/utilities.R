@@ -267,9 +267,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 # WF <- runCommandline(WF, make_bam=TRUE) # creates the files in the ./results folder
 # WF <- runCommandline(WF, dir=TRUE) # creates the files in the ./results/workflowName/Samplename folder
 # WF <- runCommandline(WF, make_bam = FALSE, dir=TRUE) ## For hisat2-mapping.cwl template
-runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=FALSE
-runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
-runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
+# runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=FALSE
+# runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
+# runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 
 .tryRunC <- function(command, commandargs){
   warning <- error <- NULL
@@ -619,38 +619,58 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
 #####################
 ## Alignment Stats ##
 #####################
-#' @param files named character vector of indexed bam files. Names of this vector will
-#' be used as sample names
-#' @param out_dir character, directory path to store individual sample stats files
-alignStats <- function(files, out_dir="results") {
-  if (class(files) %in% c("SYSargs", "SYSargs2")) {
-    retrun(warning('alignStats: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
-                   'Use `getColumn` to get a vector of paths instead.'))
+alignStats <- function(args, output_index = 1, subset="FileName1") {
+  #fqpaths <- infile1(args)
+  ## SYSargs class
+  if (class(args) == "SYSargs") {
+    fqpaths <- infile1(args)
+    bampaths <- outpaths(args)
+    # SYSargs2 class
+  } else if (class(args) == "SYSargs2") {
+    fqpaths <- subsetWF(args, slot = "input", subset=subset)
+    output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
+    bampaths <- as.character()
+    for (i in seq_along(output.all)) {
+      for (j in seq_along(output.all[[i]])) {
+        if (grepl(".sam$", output.all[[i]][[j]]) == TRUE & grepl(".bam$", output.all[[i]][[j]]) == FALSE) {
+          stop("Please provide files in BAM format; it can be checked as 'output(args)'. Also, check 'output_update' function, if the BAM files were previously generated.")
+        }
+        else if (grepl(".bam$", output.all[[i]][[j]]) == TRUE & grepl("sorted.bam$", output.all[[i]][[j]]) == FALSE) {
+          bampaths <- c(bampaths, output.all[[i]][[j]])
+        }
+      }
+    }
+    names(bampaths) <- names(output.all)
   }
-  stopifnot(is.character(files))
-  stopifnot(is.character(out_dir) && length(out_dir) == 1)
-  if(is.null(names(files))) stop("Files must be a named vector, names will be used as sample names")
-  if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-  if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
-  if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
-  if(!all(check_ext <- stringr::str_detect(files, "\\.bam$"))) stop("alignStats: All files need to end with .bam\n", paste0(files[!check_ext], collapse = ",\n"))
-
-  file_base <- basename(files)
-  out_files <- file.path(out_dir, gsub("\\.bam$", "_bam_stats.csv", file_base))
-  samplenames <- names(files)
-  bam_df <- data.frame(sample= samplenames, files= file_base, mapped = NA, unmapped = NA)
-  for (i in seq_along(files)) {
-    bam_stats <- Rsamtools::idxstatsBam(files[i])
-    message("Write bam stats for ", samplenames[i], " to ", basename(out_files[i]))
-    write.csv(bam_stats, out_files[i], row.names = FALSE)
-    map_info <- colSums(bam_stats[, c(3, 4)])
-    bam_df[i, c(3, 4)] <- map_info
-  }
-  bam_df$map_rate <- round(bam_df$mapped/(bam_df$mapped + bam_df$unmapped), 3)
-  bam_df
+  
+  bamexists <- file.exists(bampaths)
+  fqpaths <- fqpaths[bamexists]
+  bampaths <- bampaths[bamexists]
+  ## Obtain total read number from FASTQ files
+  Nreads <- countLines(fqpaths) / 4
+  names(Nreads) <- names(fqpaths)
+  ## If reads are PE multiply by 2 as a rough approximation
+  if (nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2
+  ## Obtain total number of alignments from BAM files
+  bfl <- BamFileList(bampaths, yieldSize = 50000, index = character())
+  param <- ScanBamParam(flag = scanBamFlag(isUnmappedQuery = FALSE))
+  Nalign <- countBam(bfl, param = param)
+  ## Obtain number of primary alignments from BAM files
+  param <- ScanBamParam(flag = scanBamFlag(isSecondaryAlignment = FALSE, isUnmappedQuery = FALSE))
+  Nalignprim <- countBam(bfl, param = param)
+  statsDF <- data.frame(
+    FileName = names(Nreads),
+    Nreads = Nreads,
+    Nalign = Nalign$records,
+    Perc_Aligned = Nalign$records / Nreads * 100,
+    Nalign_Primary = Nalignprim$records,
+    Perc_Aligned_Primary = Nalignprim$records / Nreads * 100
+  )
+  if (nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF) == "Nreads")] <- "Nreads2x"
+  return(statsDF)
 }
 ## Usage:
-# read_statsDF <- alignStats(files=files)
+# read_statsDF <- alignStats(args=args)
 
 ########################
 ## RPKM Normalization ##

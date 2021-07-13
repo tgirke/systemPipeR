@@ -81,15 +81,6 @@ importWF <- function(sal, file_path, ignore_eval = TRUE, verbose = TRUE, ...){
       if(!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
       args[["dependency"]] <- df$dep[i]
       renameStep(args, 1) <- df$step_name[i]
-      # suppressMessages(
-      # args <- eval(parse(text=df$code[i])))
-      # sal_imp$stepsWF[[df$step_name[i]]] <- args$stepsWF[[1]]
-      # sal_imp$statusWF[[df$step_name[i]]] <- .statusPending(args$stepsWF[[1]])
-      # sal_imp$targetsWF[[df$step_name[i]]] <- args$targetsWF[[1]]
-      # sal_imp$outfiles[[df$step_name[i]]] <- args$outfiles[[1]]
-      # sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
-      # sal_imp$targets_connection[df$step_name[i]] <- args$targets_connection
-      # sal_imp$runInfo[["directory"]][df$step_name[i]] <- args$runInfo
       sal_imp <- as(sal_imp, "SYSargsList")
       appendStep(sal_imp) <- args
       sal_imp <- as(sal_imp, "list")
@@ -101,7 +92,7 @@ importWF <- function(sal, file_path, ignore_eval = TRUE, verbose = TRUE, ...){
   return(sal_imp)
 }
 
-# # file_path <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
+# file_path <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
 # sal <- SPRproject(overwrite = TRUE)
 # file_path <- "../inst/extdata/systemPipeTEST.Rmd"
 # sal <- importWF(sal, file_path)
