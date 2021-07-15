@@ -83,8 +83,7 @@ See also as \code{SYSargsList-class}.
 \examples{
 ## Construct SYSargsList object from Rmd file
 library(systemPipeRdata)
-sal <- SPRproject()
+sal <- SPRproject(overwrite=TRUE)
 sal
-
 }
 \keyword{ utilities }

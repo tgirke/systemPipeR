@@ -7,11 +7,11 @@ Execute SYSargsList
 Function to execute all the code list specified in SYSargsList object.
 }
 \usage{
-runWF(args, force = FALSE, saveEnv = TRUE, warning.stop =
+runWF(sysargs, force = FALSE, saveEnv = TRUE, warning.stop =
                  FALSE, error.stop = TRUE, silent = FALSE, ...)
 }
 \arguments{
-  \item{args}{
+  \item{sysargs}{
   object of class \code{SYSargsList}.
 }
   \item{force}{

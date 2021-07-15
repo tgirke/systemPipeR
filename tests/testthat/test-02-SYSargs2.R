@@ -30,6 +30,7 @@ test_that("check_SYSargs2_test", {
     expect_type(cmdToCwl(args), "list")
     expect_s4_class(args, "SYSargs2")
     expect_equal(baseCommand(args), "Rscript")
+    expect_message(SampleName(args))
     ## runCommandline() //check.output()
     args <- runCommandline(args=args, force=TRUE, make_bam = FALSE)
     #args2 <- runCommandline(args=args, dir = TRUE, force=TRUE)
@@ -62,6 +63,9 @@ test_that("check_SYSargs2_hisat2", {
     WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
     WF <- WF[1]
     expect_s4_class(WF, "SYSargs2")
+    ## Replacement Methods
+    yamlinput(WF, "thread") <- 5L
+    expect_equal(yamlinput(WF)$thread, 5)
     ## build index
     idx <- loadWorkflow(targets = NULL, wf_file = "hisat2/hisat2-index.cwl", input_file = "hisat2/hisat2-index.yml",
                         dir_path = dir_path)

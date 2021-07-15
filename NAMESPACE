@@ -136,13 +136,13 @@ exportMethods(
     "setlist", "intersectmatrix", "complexitylevels","vennlist", 
     "intersectlist", "as.list",  
     ## SYSargs2
-    "clt", "cmdlist", "files", "input", "inputvars", "output",
-    "sysargs2", "targets", "wf", "yamlinput", "cmdToCwl", "baseCommand", 
-    "status", "yamlinput<-",
+    "targets", "wf", "clt", "yamlinput", "cmdlist", "input",  "output", "files",
+    "inputvars", "cmdToCwl", "status",
+    "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-",
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
     "dependency", "projectInfo", "runInfo", 
-    "sysargslist", "subset", "stepName", "getColumn",
+    "sysargslist", "subset", "stepName", "getColumn", "updateColumn",
     "SampleName", "viewEnvir", "copyEnvir",  
     "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
     ## LineWise
@@ -158,7 +158,7 @@ export(
     ## Import/exports
     "readComp", "writeTargetsout", "writeTargetsRef", "mergeBamByFactor",
     ## Utilities
-    "alignStats", "getQsubargs", "qsubRun", "clusterRun", "returnRPKM", 
+    "alignStats", "clusterRun", "returnRPKM", 
     "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
     "modulelist", "moduleAvail", "moduleClear", "moduleInit", "moduleUnload", 
     "module", "run_edgeR", "run_DESeq2", "filterDEGs", "seeFastq", "seeFastqPlot",
@@ -167,10 +167,16 @@ export(
     "preprocessReads", "filterVars", "variantReport", "combineVarReports", 
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
-    "scaleRanges", "loadWorkflow", "loadWF", "renderWF", "subsetWF", "output_update", 
-    "targets.as.df", "olRanges", "evalCode", "tryPath",
-    "tryCL", "SPRproject", "configWF", "config.param", 
-    "runWF", "renderReport", "check.output", "createParamFiles", "writeParamFiles", 
-    "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", 
-    "SYSargsList", "importWF", "LineWise", "plotWF"
+    "scaleRanges", "olRanges",
+    ## SYSargs2
+    "loadWorkflow", "loadWF", "renderWF", "updateWF", "check.output",
+    "subsetWF", "output_update", 
+    "targets.as.df", "targets.as.list", "evalCode", "tryPath", "tryCL", "tryCMD",
+    "configWF", "config.param", 
+    # SYSargsList
+    "SPRproject", "SYSargsList", "runWF", "renderReport", "check.outfiles", "createParamFiles", 
+    "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", 
+    "appendParam",  "plotWF", 
+    ## LineWise
+    "importWF", "LineWise"
 )  

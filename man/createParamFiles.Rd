@@ -11,9 +11,11 @@ The latest storages all the parameters required for running command-line softwar
 following the standard and specification defined on Common Workflow Language (CWL).
 }
 \usage{
-createParamFiles(commandline, cwlVersion = "v1.1", class = "CommandLineTool", 
-results_path = "./results", module_load = "baseCommand", file = "default", 
-writeParamFiles = FALSE, overwrite = FALSE, silent = FALSE)
+createParamFiles(commandline, cwlVersion = "v1.1", class = "CommandLineTool",
+                  results_path = "./results", module_load = "baseCommand", 
+                  file = "default", writeParamFiles = FALSE, overwrite = FALSE, 
+                  silent = FALSE)
+                  
 writeParamFiles(sysargs, file = "default", overwrite = TRUE, silent = FALSE)
 }
 

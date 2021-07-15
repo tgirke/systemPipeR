@@ -3,9 +3,8 @@
 \alias{targetsin-methods}
 \alias{targetsout}
 \alias{targetsout-methods}
-\alias{targetsheader}
+%\alias{targetsheader}
 \alias{targetsheader-methods}
-\alias{modules}
 \alias{modules-methods}
 \alias{software}
 \alias{software-methods}
@@ -23,7 +22,7 @@
 \alias{infile2-methods}
 \alias{outfile1}
 \alias{outfile1-methods}
-\alias{SampleName}
+%\alias{SampleName}
 \alias{SampleName-methods}
 \alias{sysargs}
 \alias{sysargs-methods}

@@ -6,10 +6,14 @@ genWorkenvir("new", mydirname = file.path(tempdir(), "newtest"))
 setwd(file.path(tempdir(), "newtest"))
 
 test_that("check_LineWise_test", {
-    ## build instance 
+    ## build simple example
+     xx <- LineWise({
+      x <- 1+1; y <- 100
+    })
+    ## build instance from Rmd
     rmdPath <- system.file("extdata", "systemPipeTEST.Rmd", package="systemPipeR")
     sal <- SPRproject(overwrite = TRUE)
-    sal <- importWF(sal, rmdPath, overwrite=TRUE)
+    sal <- importWF(sal, rmdPath)
     lw <- stepsWF(sal[3])[[1]]
     show(lw)
     ## Class
@@ -24,7 +28,8 @@ test_that("check_LineWise_test", {
      expect_type(lw$codeLine, "expression")
      expect_length(codeLine(lw), 0)
      expect_type(codeChunkStart(lw), "integer")
-     #expect_type(rmdPath(lw), "character")
+     expect_type(rmdPath(lw), "character")
+     expect_type(dependency(lw), "list")
      ## Coerce
      lw2 <- linewise(lw)
      expect_type(lw2, "list")
@@ -47,16 +52,16 @@ test_that("check_LineWise_test", {
     appendCodeLine(sal, step=1) <- "66+55"
     codeLine(sal[1])
     expect_equal(as.character(stepsWF(sal[1])[[1]]$codeLine[2]), "66 + 55")
-   #  ##runWF()
-   # # sal <- runWF(sal)
-   # # expect_setequal(statusWF(sal)[[1]][[1]], "DONE")
-   # # check <- check.output(sal)
-   # # expect_setequal(check$Step_1$Existing_Files, "1")
-   # # 
-   # ## replacement methods
-   # expect_warning(appendStep(sal) <- sal)
-   # renameStep(sal, 2) <- "newStep"
-   # ## `+` method
-   # sal <- sal[1] + sal[2] 
-   # expect_length(sal, 2)
+   #runWF()
+   sal <- runWF(sal[1:3])
+   expect_setequal(sal$statusWF[[1]]$status.summary, "Success")
+   ## Methods
+   expect_setequal(status(stepsWF(sal)[[1]])$status.summary, "Success")
+   expect_type(files(stepsWF(sal)[[1]])[[1]], "character")
+   ## replacement methods
+   expect_error(appendStep(sal) <- sal[1])
+   renameStep(sal, 2) <- "newStep"
+   ## `+` method
+   sal <- sal[1] + sal[2]
+   expect_length(sal, 2)
 })

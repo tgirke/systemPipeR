@@ -63,7 +63,7 @@
 #' rendered outside Rmd but cannot within Rmd, try to turn this option on. Some additional
 #' javascript processing will be performed to avoid the conflict but may cause unknown
 #' issues.
-plotWF <- function(sal,
+plotWF <- function(sysargs,
                    width = NULL, height = NULL,
                    elementId = NULL,
                    responsive = TRUE,
@@ -94,10 +94,10 @@ plotWF <- function(sal,
         "png" = "renderImageElement"
     )
     if (verbose) message("Converting SYSargsList to df...")
-    if(inherits(sal, "data.frame")){
-        df <- sal
-    } else if(inherits(sal, "SYSargsList")){
-        df <- .buildDF(sal)
+    if(inherits(sysargs, "data.frame")){
+        df <- sysargs
+    } else if(inherits(sysargs, "SYSargsList")){
+        df <- .buildDF(sysargs)
     }
     if (verbose) message("Translating to DOT format...")
     dot <- makeDot(
