@@ -220,12 +220,14 @@ runWF <- function(sysargs, force=FALSE, saveEnv=TRUE,
   ## steps loop
   args2 <- sysargs
   for (i in seq_along(stepsWF(args2))){
+    ## Printing step name
+    step <- names(stepsWF(args2)[i])
+    cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
+    ## Printing step name at log files
     cat("# ", names(stepsWF(args2)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
+    args.run <- stepsWF(args2)[[i]]
     ## SYSargs2 STEP
-    if(inherits(stepsWF(args2)[[i]], "SYSargs2")){
-      step <- names(stepsWF(args2)[i])
-      cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
-      args.run <- stepsWF(args2)[[i]]
+    if(inherits(args.run, "SYSargs2")){
       ## runC arguments
       dir <- args2$runInfo$directory[[i]]
       dir.name <- step
@@ -251,10 +253,7 @@ runWF <- function(sysargs, force=FALSE, saveEnv=TRUE,
         }
       }
       cat(crayon::blue(paste0("Step Status: ", step.status.summary), "\n"))
-    } else if(inherits(stepsWF(args2)[[i]], "LineWise")){
-      step <- names(stepsWF(args2)[i])
-      cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
-      args.run <- stepsWF(args2)[[i]]
+    } else if(inherits(args.run, "LineWise")){
       envir <- args2$runInfo$env
       args.run <- runRcode(args.run, step=step, file_log=file_log, envir=envir, force=force)
       stepsWF(args2, i) <- args.run

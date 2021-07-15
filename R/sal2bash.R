@@ -36,6 +36,7 @@ sal2bash <- function(sal, out_dir=".", bash_path="/bin/bash", stop_on_error=TRUE
   message(crayon::green$bold("Success: Make sure the script 'spr_wf.sh' and directory", supp_dir, "is there before executing."))
 }
 
+## Internal functions
 
 .collapseSteps <- function(sal){
   steps <- unlist(lapply(seq_along(sal), function(x){

@@ -99,8 +99,6 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
             assign(salname, sal_imp, sysargs_env)
             args <- eval(parse(text = df$code[i]), envir = sysargs_env)
             if (!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
-
-
             appendStep(sal_imp) <- args
             sal_imp <- as(sal_imp, "list")
         }

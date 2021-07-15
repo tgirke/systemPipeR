@@ -5,7 +5,17 @@
 ###################
 ## Load Workflow ##
 ###################
-loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
+loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path="param/cwl") {
+    if(is.null(dir_path)) {
+        dir_path <- ""
+        cwlfiles <- list(cwl=wf_file,
+                         yml=input_file,
+                         dir_path=NA)
+    } else if(!is.null(dir_path)){
+        cwlfiles <- list(cwl= wf_file,
+                         yml=input_file,
+                         dir_path=normalizePath(dir_path))
+    } else stopifnot(is.character(dir_path))
     if(any(is(wf_file)=="list")) {
         wf <- wf_file
     } else {
@@ -20,19 +30,6 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     }
   modules <- input$ModulesToLoad
   if(is.null(modules)) modules <- list()
-  if(is.null(dir_path)){
-      cwlfiles <- list(cwl=NA,
-                       cwl_string=wf_file,
-                       yml=NA,
-                       yml_string=input_file,
-                       dir_path=NA)
-  } else {
-      cwlfiles <- list(cwl=normalizePath(file.path(dir_path, wf_file)),
-                       cwl_string=wf_file,
-                       yml=normalizePath(file.path(dir_path, input_file)),
-                       yml_string=input_file,
-                       dir_path=normalizePath(dir_path))
-  }
   inputvars <- list()
   if(tolower(wf$class) == "workflow") {
     steps <- names(wf$steps)

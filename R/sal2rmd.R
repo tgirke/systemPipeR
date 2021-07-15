@@ -112,9 +112,10 @@ sal2rmd <- function(
     paste('c("', paste(t_con[['rm_targets_col']][[1]], collapse = '", "'), '"),')
   } else NULL
 
-  dir_path <- paste0('    dir_path="', sal$stepsWF[[i]]$files$dir_path[1], '",')
-  wf_file <- paste0('    wf_file="', sal$stepsWF[[i]]$files$cwl_string[1], '",')
-  input_file <- paste0('    input_file="', sal$stepsWF[[i]]$files$yml_string[1], '",')
+  dir_path <- if(is.na(sal$stepsWF[[i]]$files$dir_path[1])) NULL 
+  else paste0('    dir_path="', sal$stepsWF[[i]]$files$dir_path[1], '",')
+  wf_file <- paste0('    wf_file="', sal$stepsWF[[i]]$files$cwl[1], '",')
+  input_file <- paste0('    input_file="', sal$stepsWF[[i]]$files$yml[1], '",')
   writeLines(
     con = con,
     c(
