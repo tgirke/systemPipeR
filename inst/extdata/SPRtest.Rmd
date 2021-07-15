@@ -67,13 +67,34 @@ targets
 
 # SYSargsList example
 
-```{r wf_test, eval=TRUE, spr='sysargs'}
-targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
-HW_mul <- SYSargsList(step_name = "Example",
-                      targets=targetspath, 
-                      wf_file="example/example.cwl", input_file="example/example.yml",
-                      dir_path = system.file("extdata/cwl", package="systemPipeR"), 
-                      inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+```{r quality, eval=TRUE, spr='sysargs'}
+targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+appendStep(sal) <- SYSargsList(targets=targetspath, 
+                   wf_file = "trimmomatic/workflow_trimmomatic-pe.cwl", 
+                   input_file = "trimmomatic/trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"), )
+```
+
+```{r index, eval=TRUE, spr='sysargs'}
+appendStep(sal) <- SYSargsList(dir = FALSE,
+                               targets=NULL, 
+                               wf_file = "hisat2/workflow_hisat2-index.cwl",
+                               input_file="hisat2/hisat2-index.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"), 
+                               dependency = "quality")
+```
+
+```{r Mapping, spr='sysargs', eval=TRUE}
+appendStep(sal) <- SYSargsList(targets="quality",
+                               dir=TRUE, 
+                               wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
+                               input_file="workflow-hisat2/workflow_hisat2-pe.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+                               inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_",
+                                           trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
+                               rm_targets_col = c("FileName1", "FileName2"),
+                               dependency = c("quality", "index"))
 ```
 
 # Version Information
