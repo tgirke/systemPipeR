@@ -59,16 +59,14 @@ setAs(
             projectInfo = from$projectInfo,
             runInfo = from$runInfo
         )
-    }
-)
+})
 
 ## SYSargsList to list with: as("SYSargsList", list)
 setAs(
     from = "SYSargsList", to = "list",
     def = function(from) {
         sysargslist(from)
-    }
-)
+})
 
 ## Define print behavior for SYSargsList
 setMethod(
@@ -84,8 +82,7 @@ setMethod(
             crayon::blue$bold(paste0("Instance of '", class(object), "':")), "\n",
             status, "\n"
         )
-    }
-)
+})
 
 .showHelper <- function(object) {
     status_1 <- as.character()
@@ -133,16 +130,14 @@ setMethod(
     f = "names", signature = "SYSargsList",
     definition = function(x) {
         return(slotNames(x))
-    }
-)
+})
 
 ## Extend length() method
 setMethod(
     f = "length", signature = "SYSargsList",
     definition = function(x) {
         return(length(x@stepsWF))
-    }
-)
+})
 
 # Behavior of "[" operator for SYSargsList
 setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., drop) {
@@ -172,7 +167,8 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
                     ii <- i[s]
                 }
                 x@stepsWF[[ii]]
-            }, error = function(e) {
+            },
+            error = function(e) {
                 e$message <- paste0(
                     "\n",
                     "Step number is out of range. Please subset accordingly with the 'length(x)'",
@@ -204,11 +200,10 @@ setMethod(f = "[[", signature = c("SYSargsList", "ANY", "missing"), definition =
 
 ## Behavior of "$" operator for SYSargsList
 setMethod("$",
-          signature = "SYSargsList",
-          definition = function(x, name) {
-              slot(x, name)
-          }
-)
+    signature = "SYSargsList",
+    definition = function(x, name) {
+        slot(x, name)
+})
 
 setMethod("SampleName", signature = "SYSargsList", definition = function(x, step) {
     ## Check steps
@@ -241,8 +236,8 @@ setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, ste
     if (missing(step)) {
         step <- 1:length(x)
     }
-    step <- .StepClass(x, class="SYSargs2", step)
-    if(length(step)==0) stop("No selected step is a 'SYSargs2' object.")
+    step <- .StepClass(x, class = "SYSargs2", step)
+    if (length(step) == 0) stop("No selected step is a 'SYSargs2' object.")
     x <- x[step]
     cmd <- sapply(names(x$stepsWF), function(x) list(NULL))
     for (i in seq_along(x)) {
@@ -340,7 +335,6 @@ setMethod("getColumn", signature = "SYSargsList", definition = function(x, step,
     return(subset)
 })
 
-
 #' modify values of outfiles or input targets df columns
 #' @param x SAL object
 #' @param step
@@ -393,8 +387,8 @@ setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x, st
     if (missing(step)) {
         step <- 1:length(x)
     }
-    step <- .StepClass(x, class="LineWise", step)
-    if(length(step)==0) stop("No selected step is a 'LineWise' object.")
+    step <- .StepClass(x, class = "LineWise", step)
+    if (length(step) == 0) stop("No selected step is a 'LineWise' object.")
     x <- x[step]
     rcode <- sapply(names(x$stepsWF), function(x) list(NULL))
     for (i in seq_along(x)) {
@@ -405,21 +399,20 @@ setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x, st
     for (i in seq_along(rcode)) {
         cat(crayon::blue(names(rcode[i])), paste0("    ", as.character(rcode[[i]])), sep = "\n")
     }
-    # return(rcode)
 })
 
-.StepClass <- function(x, class=c("SYSargs2", "LineWise"), step){
+.StepClass <- function(x, class = c("SYSargs2", "LineWise"), step) {
     x_class <- sapply(stepsWF(x), function(y) class(y))
-    if(any(class(step)==c("numeric", "integer"))){
+    if (any(class(step) == c("numeric", "integer"))) {
         step <- stepName(x)[step]
     }
     select <- x_class[names(x_class) %in% step]
-    if(all(select %in% class)){
-       return(names(select)) 
-    } else if(!all(select %in% class)){
+    if (all(select %in% class)) {
+        return(names(select))
+    } else if (!all(select %in% class)) {
         message(paste0(paste0(names(select[!select %in% class]), collapse = " AND "), " step have been dropped because it is not a ", class, " object."), "\n")
         return(names(select[select %in% class]))
-        }
+    }
 }
 
 ## viewEnvir() methods for SYSargslist
@@ -561,12 +554,11 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after = length(x), 
     } else {
         stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
     }
-    # if(any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
     x <- .check_write_SYSargsList(x)
     x
 })
 
-## Internal functions ## 
+## Internal functions ##
 .check_write_SYSargsList <- function(x) {
     if (!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'.")
     sys.file <- projectInfo(x)$sysargslist
@@ -601,10 +593,14 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after = length(x), 
 }
 
 .validationStepConn <- function(x, value) {
+    ## used in `importWF`
+    on.exit(options(spr_importing = FALSE))
     ## Check outfiles names
     if (any(duplicated(unlist(append(
-            lapply(outfiles(x), function(y) names(y)), lapply(outfiles(value), function(y) names(y))))
-            ))) stop("'outfiles' columns names need to be unique")
+        lapply(outfiles(x), function(y) names(y)), lapply(outfiles(value), function(y) names(y))
+    ))))) {
+        stop("'outfiles' columns names need to be unique")
+    }
     ## Check value length
     if (length(value) > 1) stop("One step can be appended in each operation.")
     targesCon <- value$targets_connection[[1]]
@@ -671,19 +667,11 @@ setReplaceMethod("appendStep", c("SYSargsList"), function(x, after = length(x), 
         value$outfiles[[1]] <- output.as.df(WF2)
         value$statusWF[[1]] <- WF2$status
         value <- as(value, "SYSargsList")
-    } # else if (is.null(targesCon[[1]])){
-    #   value <- sysargslist(value)
-    #   value$targets_connection <- list(NULL)
-    #   names(value$targets_connection) <- names(value$stepsWF)
-    #   value <- as(value, "SYSargsList")
-    # }
-    ## for SYSargs2...
-    ## outfiles... if dir=TRUE
+    }
     if (inherits(value, "SYSargs2")) {
         value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
     }
     if (all(!is.na(dependency(value)) && !getOption("spr_importing"))) {
-        print("a")
         dep <- dependency(value)[[1]]
         if (inherits(dep, "character")) {
             if (all(!dep %in% names(stepsWF(x)))) {
@@ -727,8 +715,9 @@ setReplaceMethod("yamlinput", c("SYSargsList"), function(x, step, paramName, val
 })
 
 setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_name = "default", value) {
-    if (any(!inherits(value, "SYSargsList") && !inherits(value, "LineWise"))) 
-        stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' or 'LineWise'.")
+    if (any(!inherits(value, "SYSargsList") && !inherits(value, "LineWise"))) {
+          stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' or 'LineWise'.")
+      }
     if (all(inherits(value, "SYSargsList") && length(value) > 1)) stop("Argument 'value' cannot have 'length(value) > 1")
     if (inherits(step, "numeric")) {
         if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
@@ -741,10 +730,10 @@ setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_name = 
         }
     }
     x <- sysargslist(x)
-    if (inherits(value, "SYSargsList")){
+    if (inherits(value, "SYSargsList")) {
         x$stepsWF[step] <- value$stepsWF
         x$statusWF[step] <- value$statusWF
-    } else if(inherits(value, "LineWise")){
+    } else if (inherits(value, "LineWise")) {
         x$stepsWF[[step]] <- value
         x$statusWF[[step]] <- value$status
     }
