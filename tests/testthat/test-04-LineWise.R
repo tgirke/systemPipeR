@@ -13,7 +13,7 @@ test_that("check_LineWise_test", {
     ## build instance from Rmd
     rmdPath <- system.file("extdata", "systemPipeTEST.Rmd", package="systemPipeR")
     sal <- SPRproject(overwrite = TRUE)
-    sal <- importWF(sal, rmdPath, overwrite=TRUE)
+    sal <- importWF(sal, rmdPath)
     lw <- stepsWF(sal[3])[[1]]
     show(lw)
     ## Class
