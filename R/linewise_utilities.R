@@ -88,9 +88,13 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
         } else if (df$spr[i] == "sysargs") {
             options(spr_importing = TRUE)
             options(importwf_options = c(df$step_name[i], df$dep[i]))
+            sal_imp <- as(sal_imp, "SYSargsList")
+            salname <- sub("[\\)].*", "", sub(".*(appendStep\\()", "", df$code[i]))
+            assign(salname, sal_imp, sysargs_env)
             args <- eval(parse(text = df$code[i]), envir = sysargs_env)
             if (!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
-            sal_imp <- as(sal_imp, "SYSargsList")
+
+            
             appendStep(sal_imp) <- args
             sal_imp <- as(sal_imp, "list")
         }
