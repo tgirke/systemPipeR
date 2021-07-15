@@ -20,23 +20,23 @@
 \alias{linewise}
 \alias{linewise,LineWise-method}
 %Accessors
-\alias{codeLine}
+%\alias{codeLine}
 \alias{codeLine,LineWise-method}
 \alias{codeChunkStart}
 \alias{codeChunkStart,LineWise-method}
 \alias{rmdPath}
 \alias{rmdPath,LineWise-method}
-\alias{stepName}
+%\alias{stepName}
 \alias{stepName,LineWise-method}
 \alias{dependency,LineWise-method}
 \alias{status,LineWise-method}
 \alias{files,LineWise-method}
 %Replacement
 \alias{appendCodeLine,LineWise-method}
-\alias{appendCodeLine<-}
+%\alias{appendCodeLine<-}
 \alias{appendCodeLine<-,LineWise-method}
 %\alias{appendCodeLine<-,LineWise,ANY,ANY,ANY-method}
-\alias{replaceCodeLine<-}
+%\alias{replaceCodeLine<-}
 \alias{replaceCodeLine,LineWise-method}
 \alias{replaceCodeLine<-,LineWise-method}
 %\alias{replaceCodeLine<-,LineWise,ANY,ANY,ANY-method}
@@ -56,19 +56,6 @@ will store the R Markdown file path.
 
 LineWise(code, step_name="default", codeChunkStart=integer(), rmdPath=character(), 
         dependency=NA)
-
-## Accessors
-
-codeLine(x)
-codeChunkStart(x)
-rmdPath(x)
-stepName(x)
-
-## Replacement
-
-appendCodeLine(x, after = length(x), ...) <- value
-replaceCodeLine(x, line, ...) <- value
-
 }
 \arguments{
   \item{code}{
@@ -90,21 +77,6 @@ replaceCodeLine(x, line, ...) <- value
   logical or character. Dependency tree, required when appending this step to 
   the workflow. Character name of a previous step in the workflow. 
   Default is \code{NA}.
-}
-  \item{x}{
-  An instance of class \code{LineWise}.
-}
-  \item{after}{
-  A subscript, after which the values are to be appended.
-}
-  \item{line}{
-  An instance of class \code{LineWise}.
-}
-  \item{value}{
-  character vector object containing the R code to be appended or replaced to x.
-}
-  \item{...}{
-  Options from \code{\link{SYSargsList}} object.
 }
 }
 \section{Objects from the Class}{
@@ -136,32 +108,32 @@ replaceCodeLine(x, line, ...) <- value
   Accessors:  
   \describe{
     % Accessors
-    \item{codeLine}{Printing method for the \code{CodeLine} slot.}
-    \item{codeChunkStart}{Extract start line of the R Markdown R chunk.}
-    \item{rmdPath}{Extract Rmarkdown file path.}
-    \item{stepName}{Extract the step name.}
-    \item{dependency}{Extract the dependency tree.}
-    \item{status}{Extract status of the step.}
-    \item{files}{Extract log file path storing stdout and stderr after running step.}
+    \item{codeLine}{ Printing method for the \code{CodeLine} slot.}
+    \item{codeChunkStart}{ Extract start line of the R Markdown R chunk.}
+    \item{rmdPath}{ Extract Rmarkdown file path.}
+    \item{stepName}{ Extract the step name.}
+    \item{dependency}{ Extract the dependency tree.}
+    \item{status}{ Extract status of the step.}
+    \item{files}{ Extract log file path storing stdout and stderr after running step.}
     % Replacement
-    \item{appendCodeLine<-}{Replacement method for append a R code line.}
-    \item{replaceCodeLine<-}{Replacement method for replace a R code line.}
+    \item{appendCodeLine<-}{ Replacement method for append a R code line.}
+    \item{replaceCodeLine<-}{ Replacement method for replace a R code line.}
  }
  
    Methods:  
   \describe{
     % General
-    \item{[}{Return a new \code{LineWise} object made of the selected R code lines.}
-    \item{[[}{Extract the slot information from \code{LineWine} object.}
-    \item{[[<-}{Replacement method for \code{LineWine} slots.}
-    \item{$}{Extract slots elements by name.}
-    \item{length}{Extract number of R-based code lines.}
-    \item{names}{Extract slot names }
-    \item{show}{summary view of \code{LineWise} elements.}
+    \item{[}{ Return a new \code{LineWise} object made of the selected R code lines.}
+    \item{[[}{ Extract the slot information from \code{LineWine} object.}
+    \item{[[<-}{ Replacement method for \code{LineWine} slots.}
+    \item{$}{ Extract slots elements by name. }
+    \item{length}{ Extract number of R-based code lines. }
+    \item{names}{ Extract slot names. }
+    \item{show}{ Summary view of \code{LineWise} elements.}
     % Coerce
-    \item{coerce}{\code{signature(from = "LineWise", to = "list")}\code{as(LineWise, "list")} }
-    \item{coerce}{\code{signature(from = "list", to = "LineWise")}\code{as(list, "LineWise")} }
-    \item{linewise}{Coerce back to list \code{as(LineWise, "list")}.}
+    \item{coerce}{ \code{signature(from = "LineWise", to = "list")}\code{as(LineWise, "list")} }
+    \item{coerce}{ \code{signature(from = "list", to = "LineWise")}\code{as(list, "LineWise")} }
+    \item{linewise}{ Coerce back to list \code{as(LineWise, "list")} }
  }
 }
 \author{

@@ -10,10 +10,10 @@ options, to include a particular code chunk in the workflow analysis. Please che
 \code{Details}.
 }
 \usage{
-importWF(sal, file_path, ignore_eval = TRUE, verbose = TRUE)
+importWF(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE)
 }
 \arguments{
-  \item{sal}{
+  \item{sysargs}{
   \code{\link{SYSargsList}} empty object. More information on \code{Details}.
 }
   \item{file_path}{

@@ -1,4 +1,5 @@
-\name{tryCL}
+\name{tryCMD}
+\alias{tryCMD}
 \alias{tryCL}
 \title{
 Collect information about the third-party software
@@ -7,7 +8,7 @@ Collect information about the third-party software
 Function to check if third-party software or utility is installed and set in the PATH.
 }
 \usage{
-tryCL(command)
+tryCMD(command)
 }
 \arguments{
   \item{command}{
@@ -25,10 +26,10 @@ Please note that not necessary the software is not installed if the message indi
 Danela Cassol
 }
 \examples{
+tryCMD(command="R") 
 \dontrun{
-tryCL(command="R") 
-tryCL(command="blastp") 
-tryCL(command="hisat2") 
+tryCMD(command="blastp") 
+tryCMD(command="hisat2") 
   }
 }
 \keyword{ utilities }
