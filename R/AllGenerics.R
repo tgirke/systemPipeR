@@ -73,7 +73,7 @@ setGeneric(name = "dependency<-", def = function(x, step, ..., value) standardGe
 ## Generic Definitions for LineWise ##
 ######################################
 ## Methods to return LineWise components
-setGeneric(name = "codeLine", def = function(x) standardGeneric("codeLine"))
+setGeneric(name = "codeLine", def = function(x, ...) standardGeneric("codeLine"))
 setGeneric(name = "rmdPath", def = function(x) standardGeneric("rmdPath"))
 setGeneric(name = "codeChunkStart", def = function(x) standardGeneric("codeChunkStart"))
 ## Coerce back to list: as(LineWise, "list")
