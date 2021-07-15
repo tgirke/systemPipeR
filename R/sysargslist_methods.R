@@ -220,7 +220,16 @@ setMethod("SampleName", signature = "SYSargsList", definition = function(x, step
 })
 
 setMethod("baseCommand", signature = "SYSargsList", definition = function(x, step) {
-    return(baseCommand(x[step]$stepsWF[[1]]))
+    if (missing(step)) {
+        step <- 1:length(x)
+    }
+    step <- .StepClass(x, class = "SYSargs2", step)
+    x <- x[step]
+    cmd <- sapply(names(x$stepsWF), function(x) list(NULL))
+    for (i in seq_along(x)) {
+            cmd[[i]] <- baseCommand(x[step]$stepsWF[[i]])
+    }
+    return(cmd)
 })
 
 setMethod("stepName", signature = "SYSargsList", definition = function(x) {
