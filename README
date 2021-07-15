@@ -3,6 +3,7 @@ changelog
         - Deprecated: getQsubargs and qsubRun functions
         - LineWise: help files and files organization
         - SYSargs2: help files and files organization
+        - SYSargsList: help files and files organization
         - AllClasses and AllGenerics exclusive files
         
      version 1.27.10
