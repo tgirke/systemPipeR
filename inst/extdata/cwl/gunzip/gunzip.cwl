@@ -22,7 +22,7 @@ requirements:
 ################################################################
 
 inputs:
-  fq1:
+  file:
     type: File
     inputBinding:
       position: 1
