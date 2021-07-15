@@ -53,6 +53,12 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
 ## importRmd function ##
 ########################
 importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
+    # also make sure in importing func these options are turned off in the end.
+    on.exit({
+        options(linewise_importing = FALSE)
+        options(spr_importing = FALSE)
+        options(importwf_options = NULL)
+    })
     stopifnot(is.character(file_path) && length(file_path) == 1)
     if (!stringr::str_detect(file_path, "\\.[Rr]md$")) stop("File must be .Rmd, or .rmd ending.")
     stopifnot(is.logical(verbose) && length(verbose) == 1)
@@ -71,8 +77,8 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
         if (verbose) cat(crayon::blue$bold("Now importing step '", df$step_name[i], "' \n", sep = ""))
         if (df$spr[i] == "r") {
             options(linewise_importing = TRUE)
-            line_obj <- LineWise(code = df$code[i], step_name = df$step_name[i], 
-                                 codeChunkStart = df$start[i], rmdPath = file_path, 
+            line_obj <- LineWise(code = df$code[i], step_name = df$step_name[i],
+                                 codeChunkStart = df$start[i], rmdPath = file_path,
                                  dependency = df$dep[[i]])
             sal_imp$stepsWF[[df$step_name[i]]] <- line_obj
             sal_imp$statusWF[[df$step_name[i]]] <- list(
@@ -94,7 +100,7 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
             args <- eval(parse(text = df$code[i]), envir = sysargs_env)
             if (!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
 
-            
+
             appendStep(sal_imp) <- args
             sal_imp <- as(sal_imp, "list")
         }
