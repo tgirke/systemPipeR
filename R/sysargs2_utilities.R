@@ -21,9 +21,11 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
   modules <- input$ModulesToLoad
   if(is.null(modules)) modules <- list()
   if(is.null(dir_path)){
-      cwlfiles <- list(cwl=NA, yml=NA)
+      cwlfiles <- list(cwl=NA, yml=NA, dir_path=NA)
   } else {
-      cwlfiles <- list(cwl=normalizePath(file.path(dir_path, wf_file)), yml=normalizePath(file.path(dir_path, input_file)))
+      cwlfiles <- list(cwl=normalizePath(file.path(dir_path, wf_file)), 
+                       yml=normalizePath(file.path(dir_path, input_file)), 
+                       dir_path=normalizePath(dir_path))
   }
   inputvars <- list()
   if(tolower(wf$class) == "workflow") { 
@@ -61,10 +63,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
           mytargets <- as.data.frame(SummarizedExperiment::colData(targets))
           targetsheader <- S4Vectors::metadata(targets)
           WF <- c(list(targets=mytargets, targetsheader=targetsheader), WF)
-      } else if(class(targets)=="SYSargs2"){
-      mytargets <- targets(targets)
-      targetsheader <- targetsheader(targets)[[1]]
-    } else {
+      } else {
       if(!file.exists(file.path(targets))==TRUE) stop("Provide valid 'targets' file. Check the file PATH.")
       ext <- strsplit(basename(targets), split="\\.")[[1]]
       ext <- ext[[-1]]
@@ -94,103 +93,6 @@ loadWF <- loadWorkflow
 # dir_path <- system.file("extdata/cwl/hisat2", package="systemPipeR")
 # WF <- loadWF(targets=targetspath, wf_file="hisat2-se/hisat2-mapping-se.cwl",
 #              input_file="hisat2-se/hisat2-mapping-se.yml", dir_path=dir_path)
-
-###################################################
-##   Create CommandLineTools from Command-line   ##
-###################################################
-createWF <- function(targets=NULL, commandLine, results_path="./results", module_load="baseCommand", file = "default", 
-                     overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", writeout=FALSE, silent=FALSE){
-  ## TODO if is not default, module load and file
-  if(all(!is(commandLine)=="list")) stop("'commandLine' needs to be object of class 'list'.")  
-  if(any(!c("baseCommand", "inputs", "outputs") %in% names(commandLine))) stop("Argument 'commandLine' needs to be assigned at least to: 'baseCommand', 'input' or 'output'.")
-  if(all(!c("Workflow", "CommandLineTool") %in% class)) stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
-  if(dir.exists(results_path)==FALSE) dir.create(path=results_path)
-  ## module_load 
-  ## 1.  module_load="baseCommand" will use the name of the software 
-  ## 2.  module_load=c("ncbi-blast/2.2.30+", "hisat2/2.1.0") will use the specific version and names
-  if(module_load == "baseCommand"){
-    module_load <- commandLine$baseCommand[[1]]
-  } else {
-    module_load <- module_load
-  }
-  ## File Path
-  ## 1. file="default"
-  ## 2. file = c("test.cwl", "test.yml")
-  if("default" %in% file){
-    if(dir.exists(paste("param/cwl/", commandLine$baseCommand, sep=""))==FALSE) dir.create(path=paste("param/cwl/", commandLine$baseCommand, sep=""), recursive = TRUE)
-    file.cwl <- paste("param/cwl/", commandLine$baseCommand, "/", commandLine$baseCommand, ".cwl", sep="")
-    file.yml <- paste("param/cwl/", commandLine$baseCommand, "/", commandLine$baseCommand, ".yml", sep="")
-  } else {
-    for(i in seq_along(file)){
-      extension <- sub('.*\\.', '', file[[i]])
-      if(!c("cwl") %in% extension & !c("yml") %in% extension) stop ("Argument 'file' needs to be assigned as a character vector with the names of the two param file. For example, 'test.cwl' and 'test.yml'.")
-      if(c("yml") %in% extension){
-        file.yml <- file[[i]]
-      } else if(c("cwl") %in% extension){
-        file.cwl <- file[[i]]
-      }
-    }
-  }
-  if(file.exists(file.cwl) & overwrite == FALSE) 
-    stop(paste("I am not allowed to overwrite files; please delete existing file:", 
-               file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
-  if(file.exists(file.yml) & overwrite == FALSE) 
-    stop(paste("I am not allowed to overwrite files; please delete existing file:", 
-               file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
-  ## class("CommandLineTool", "Workflow")
-  # WF.temp <- SYScreate("SYSargs2")
-  WF.temp <- as(SYScreate("SYSargs2"), "list")
-  WF.temp$wf <- list()
-  WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, writeout= writeout, silent = silent) 
-  WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, writeout=writeout, silent = silent) 
-  WF.temp$modules <- WF.temp$yamlinput$ModulesToLoad
-  WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
-  WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
-  WF.temp$output <- sapply(names(WF.temp$clt), function(x) list(NULL))
-  WF.temp$internal_outfiles <- sapply(names(WF.temp$clt), function(x) list(NULL))
-  WF.temp$files <- list(cwl=file.path(file.cwl), 
-                           yml=file.path(file.yml), 
-                           steps=names(WF.temp$clt))
-  WF.temp$cmdToCwl <- commandLine
-  ## targets
-  if(!is.null(targets)) {
-    mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
-    mytargets <- targets.as.list(mytargets)
-    targetsheader <- readLines(normalizePath(file.path(targets)))
-    targetsheader <- targetsheader[grepl("^#", targetsheader)]
-    WF.temp$files["targets"] <- normalizePath(file.path(targets))
-    WF.temp <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF.temp)
-  } else {
-    WF.temp$files["targets"] <- NA
-    WF.temp <- c(list(targets=data.frame(), targetsheader=list()), WF.temp)
-  }
-  WF.temp <- as(WF.temp, "SYSargs2")
- # WF.temp[["status"]] <- .statusPending(WF.temp)
-  return(WF.temp)
-}
-
-## Usage: 
-## Example commandLine
-# "hisat2 -S ./results/_SampleName_.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000 --threads 4 -U _FASTQ_PATH1_"
-## Provide a list 
-# baseCommand <- list(baseCommand="hisat2")
-# inputs <- list(
-#   "S"=list(type="File", preF="-S", yml="./results/_SampleName_.sam"),
-#   "x"=list(type="File", preF="-x", yml="./data/tair10.fasta"),
-#   "k"= list(type="int", preF="-k", yml= 1L),
-#   "threads"= list(type="int", preF="-threads", yml=4L),
-#   "min-intronlen"= list(type="int", preF="--min-intronlen", yml= 30L),
-#   "max-intronlen"= list(type="int", preF="--max-intronlen", yml=3000L),
-#   "U"=list(type="File", preF="-U", yml="./data/_FASTQ_PATH1_") )
-# outputs <- list("hisat2_sam"=list(type="File", "./results/_SampleName_.sam"))
-# commandLine <- list(baseCommand=baseCommand, inputs=inputs, outputs=outputs)
-# 
-## Creates a SYSargs2 object, populate all the command-line, and creates *.cwl and *.yml files
-# targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-# WF <- createWF(targets=targets, commandLine, results_path="./results", module_load="baseCommand",
-#                file = "default", overwrite = FALSE, cwlVersion = "v1.0",
-#                class = "CommandLineTool")
-# WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 
 ###############################################
 ## Render WF for all samples in targets slot ##
@@ -229,172 +131,90 @@ renderWF <- function(WF, inputvars=NULL) {
 ###############################################################
 ## Update  WF container for all samples in targets slot  ##
 ###############################################################
-updateWF <- function(args, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
+updateWF <- function(WF, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
                      new_targetsheader=NULL, inputvars=NULL, silent=FALSE){
-    if(!inherits(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")  
-    args <- sysargs2(args)
+    if(!inherits(WF, "SYSargs2")) stop("WF needs to be object of class 'SYSargs2'.")  
+    WF <- sysargs2(WF)
     if(is.null(inputvars)){
-        args$inputvars <- inputvars <- args$inputvars
+        WF$inputvars <- inputvars <- WF$inputvars
     } else {
-        args$inputvars <- inputvars
+        WF$inputvars <- inputvars
     }
-    if(length(args$cmdToCwl)>1){
-        cwlVersion <- args$clt[[1]]$cwlVersion
-        class <- args$clt[[1]]$class
-        module_load <- args$yamlinput$ModulesToLoad[[1]]
-        results_path <- args$yamlinput$results_path$path
-        args$clt <- write.clt(args$cmdToCwl, cwlVersion=cwlVersion, class=class, writeout= FALSE, silent = silent) 
-        args$yamlinput <- write.yml(args$cmdToCwl, results_path=results_path, module_load=module_load, writeout=FALSE, silent = silent) 
-    } else if (length(args$cmdToCwl)==0){
+    if(length(WF$cmdToCwl)>1){
+        cwlVersion <- WF$clt[[1]]$cwlVersion
+        class <- WF$clt[[1]]$class
+        module_load <- WF$yamlinput$ModulesToLoad[[1]]
+        results_path <- WF$yamlinput$results_path$path
+        WF$clt <- write.clt(WF$cmdToCwl, cwlVersion=cwlVersion, class=class, writeout= FALSE, silent = silent) 
+        WF$yamlinput <- write.yml(WF$cmdToCwl, results_path=results_path, module_load=module_load, writeout=FALSE, silent = silent) 
+    } else if (length(WF$cmdToCwl)==0){
         ## targets
         if(!is.null(new_targets)){
-            args$targets <- new_targets
+            WF$targets <- new_targets
         } else{
-            args$targets <- args$targets
+            WF$targets <- WF$targets
         }
         ## targetsheader
         if(!is.null(new_targetsheader)){
-            args$targetsheader <- new_targetsheader
+            WF$targetsheader <- new_targetsheader
         } else{
-            args$targetsheader <- args$targetsheader
+            WF$targetsheader <- WF$targetsheader
         }
         
-        args$yamlinput <- args$yamlinput
-        args$clt <- args$clt
-        results_path <- args$yamlinput$results_path$path
+        WF$yamlinput <- WF$yamlinput
+        WF$clt <- WF$clt
+        results_path <- WF$yamlinput$results_path$path
     }
-    args$input <- args$output <- args$cmdlist <- sapply(names(args$clt), function(x) list(NULL))
+    WF$input <- WF$output <- WF$cmdlist <- sapply(names(WF$clt), function(x) list(NULL))
     ## write the new yaml
     if(write.yaml==TRUE){
         if(name.yaml=="default"){
-            path <- .getPath(args$files$yml)
-            name <- paste0(.getFileName(args$files$yml), 
+            path <- .getPath(WF$files$yml)
+            name <- paste0(.getFileName(WF$files$yml), 
                            format(Sys.time(), "%b%d%Y_%H%M"), ".yml")
             name.yaml <- file.path(path, name)
         } else{
             name.yaml <- name.yaml
         }
-        yaml::write_yaml(args$yamlinput, name.yaml)
+        yaml::write_yaml(WF$yamlinput, name.yaml)
         if (silent != TRUE) 
             cat("\t", "Written content of 'yamlinput(x)' to file:",  "\n",
                 name.yaml, "\n")
-        args$files$yml <- name.yaml
+        WF$files$yml <- name.yaml
     }
-    args <- as(args, "SYSargs2")
-    args <- renderWF(args, inputvars=inputvars)
+    WF <- as(WF, "SYSargs2")
+    WF <- renderWF(WF, inputvars=inputvars)
     ## Update status slot
-    args[["status"]] <- .statusPending(args)
-    return(args)
+    WF[["status"]] <- .statusPending(WF)
+    return(WF)
 }
 
 ## Usage:
-# yamlinput(WF)$thread <- 6
-# WF <- updateWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+# yamlinput(WF, "thread")  <- 6L
+# WF <- updateWF(WF, write.yaml = TRUE)
+# cmdlist(WF)[1]
+# yamlinput(WF)$thread
 
 
-###############################################################
-## Subsetting the input and output slots by name or position ##
-###############################################################
-subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
-  ## Check the class and slot
-  if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")
-  if(all(!c("input", "output", "step") %in% slot)) stop("Argument slot can only be assigned one of: 'input' or 'output' or 'step'.")
-
-  ## slot input
-  if(slot %in% "input"){
-    ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(inputvars(args)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(inputvars(args)), collapse=", "), "OR the corresponding position OR NULL"))
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(args))) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(inputvars(args))), collapse=", "), "OR the names OR NULL"))
-    subset_input <- input(args)
-    subset_sample <- sapply(names(subset_input), function(x) list(NULL))
-    if(!is.null(subset)) {
-      for(i in seq_along(names(subset_input)))
-        subset_sample[[i]] <- subset_input[[i]][[subset]]
-    } else {
-      subset_sample <- subset_input
-    }
-  }
-  ## slot output
-  if(slot %in% "output"){
-    ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL"))
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL"))
-    if(!is.null(subset)){
-      if(!any(seq_along(output(args)[[1]][[subset]]) %in% index)) stop(paste("For the 'index' argument, can only be assigned one of the following position:", paste(seq_along(output(args)[[1]][[subset]]), collapse=", ")))
-    }
-
-    subset_output <- output(args)
-    subset_sample <- as.character()
-    if(all(!is.null(subset) & !is.null(index))) {
-      for(i in seq_along(names(subset_output)))
-        # subset_sample[[i]] <- subset_output[[i]][[subset]]
-        subset_sample <- c(subset_sample, subset_output[[i]][[subset]][index])
-    } else {
-      subset_sample <- subset_output
-    }
-    names(subset_sample) <- rep(names(subset_output), each=length(subset_sample[1]))
-  }
-  ## slot step
-  if(slot %in% "step"){
-    ## Check the subset
-    if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL"))
-    if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL"))
-    subset_step <- cmdlist(args)
-    subset_sample <- sapply(names(subset_step), function(x) list(NULL))
-    if(!is.null(subset)) {
-      for(i in seq_along(names(subset_sample)))
-        subset_sample[[i]] <- subset_step[[i]][[subset]]
-    } else {
-      subset_sample <- subset_step
-    }
-  }
-  ## IF subset=NULL returns a list
-  if(!is.null(subset)){
-    names <- names(subset_sample)
-    subset_sample <- as.character(subset_sample)
-    names(subset_sample) <- names
-  }
-  ## delete == TRUE
-  if(delete==TRUE){
-    ## delete option only works if the subset is define
-    if(!is.character(subset_sample)) {
-      stop(paste("Please define the 'subset' to be deleted in the subset argument"))
-    }
-    if(all(file.exists(subset_sample))){
-      del <- file.remove(subset_sample)
-      cat("The following files has been deleted:", paste(subset_sample, collapse = ", "), "\n")
-    } else if(all(!file.exists(subset_sample))) {
-      cat("The subset cannot be deleted: no such file ", "\n")
-    }
-  }
-  return(subset_sample)
-}
-
-## Usage:
-# subsetWF(WF, slot="input", subset='FileName')
-# subsetWF(WF, slot="step", subset=1)
-# subsetWF(WF, slot="output", subset=1, index=1)
-# subsetWF(WF, slot="output", subset=1, index=1, delete=TRUE) ## in order to delete the subset files list
-
-###############################################################
-## Subsetting the input and output slots by name or position ##
-###############################################################
-check.output <- function(args, type="data.frame"){
+##################################################
+## check outfiles: if the expected files exist ##
+##################################################
+check.output <- function(sysargs, type="data.frame"){
     ## Check the class and slot
-    if(inherits(args, c("SYSargs2"))){
-        return(.check.output.sysargs2(args, type=type))
-    } else if(inherits(args, c("SYSargsList"))){
-        steps <- sapply(names(stepsWF(args)), function(x) list(NULL))
-        sysargs <- unlist(lapply(stepsWF(args), function(x) which(inherits(x, c("SYSargs2")))))
-        args <- args[names(sysargs)]
-        for(i in seq_along(stepsWF(args))){
-            step.dir <- args$runInfo$directory[names(steps)[i]]
-            steps[[i]] <- .check.output.sysargs2(stepsWF(args)[[i]], type=type, 
+    if(inherits(sysargs, c("SYSargs2"))){
+        return(.check.output.sysargs2(sysargs, type=type))
+    } else if(inherits(sysargs, c("SYSargsList"))){
+        steps <- sapply(names(stepsWF(sysargs)), function(x) list(NULL))
+        sysargs_names <- unlist(lapply(stepsWF(sysargs), function(x) which(inherits(x, c("SYSargs2")))))
+        sysargs <- sysargs[names(sysargs_names)]
+        for(i in seq_along(stepsWF(sysargs))){
+            step.dir <- sysargs$runInfo$directory[names(steps)[i]]
+            steps[[i]] <- .check.output.sysargs2(stepsWF(sysargs)[[i]], type=type, 
                                                  step.name = names(steps)[i], step.dir=step.dir)
         }
         return(steps)
     } else {
-        stop("args needs to be object of class 'SYSargs2' or 'SYSargsList'.")
+        stop("sysargs needs to be object of class 'SYSargs2' or 'SYSargsList'.")
     }
 }
 
@@ -402,105 +222,7 @@ check.output <- function(args, type="data.frame"){
 # check.output(WF)
 
 ## check.outfiles alias
-
 check.outfiles <- check.output 
-
-## .check.output.sysargs2
-.check.output.sysargs2 <- function(args, type, step.name, step.dir=FALSE){
-    if(type=="data.frame"){
-        checkfile <- sapply(names(output(args)), function(x) list(NULL))
-        for(i in seq_along(output(args))){
-            checkfile[[i]][['Total']] <- length(unlist(output(args)[[i]]))
-            if(step.dir==TRUE){
-                newfile <- sum(file.exists(file.path(.getPath(unlist(output(args)[[i]]), full_path = FALSE, warning = FALSE), step.name, basename(unlist(output(args)[[i]])))))
-                checkfile[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])), newfile)
-            } else if(step.dir==FALSE){
-                checkfile[[i]][['Existing']] <- sum(file.exists(unlist(output(args)[[i]])))
-            }
-            checkfile[[i]][['Missing']] <- length(unlist(output(args)[[i]])) - checkfile[[i]][['Existing']]
-        }
-        checkfile <- data.frame(matrix(unlist(checkfile), nrow=length(checkfile), byrow=TRUE))
-        checkfile <- data.frame(cbind(Targets=names(output(args)), Total_Files = as.numeric(checkfile$X1),
-                                       Existing_Files = checkfile$X2, Missing_Files=checkfile$X3
-                                       ), stringsAsFactors = FALSE)
-        checkfile[, 2:4] <- sapply(checkfile[, 2:4], as.numeric)
-        return(checkfile)
-    } else if(type=="list"){
-        checkfile <- sapply(names(output(args)), function(x) list(NULL))
-        for(i in seq_along(output(args))){
-            checkfile[[i]] <- all(file.exists(unlist(output(args)[[i]])))
-        }
-        return(unlist(checkfile))
-    }
-}
-
-#########################################################
-## Update the output location after run runCommandline ##
-#########################################################
-output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extension=NULL, make_bam=FALSE){
-  ## Folder name provide in the yml file
-  ## this file will exists, because its create on the definition of the project or when runCommandline is used.
-  # if(is.null(args$yamlinput$results_path$path)) {
-  #   if(is.null(dir.name)) {
-  #     stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
-  #   }}
-  ## Validation for 'args'
-  if(any(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
-  ## If the argument 'replace' is TRUE, it is required to specify the 'extension' argument
-  if(replace!=FALSE){
-    if(is.null(extension)) {
-      stop("argument 'extension' missing. The argument can only be assigned 'NULL' when no replacement is required. The argument should be assigned as a character vector with the current extension and the new one.")  
-    }}
-  if(replace==TRUE){
-    args <- as(args, "list")
-    for(i in seq_along(args$output)){
-      for(j in seq_along(args$output[[i]])){
-        for(k in seq_along(args$output[[i]][[j]])){
-          name <- basename(args$output[[i]][[j]][k])
-          dirRep <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
-          if(grepl(extension[1], name)){
-            sam <- .getExt(name)
-            args$output[[i]][[j]][k] <- file.path(dirRep, paste0(.getFileName(name), extension[2]))
-          } else {
-            # message if the extension are not matching, return the same object
-            args$output[[i]][[j]][k] <- args$output[[i]][[j]][k]
-          }
-          if(make_bam==TRUE){
-            if(grepl("bam", args$output[[i]][[j]][k])){
-              args$output[[i]][[j]][length(args$output[[i]][[j]])+1] <- paste0(gsub("\\.bam$", "", args$output[[i]][[j]][k]), ".bam.bai")
-            }
-          }
-        }
-      }
-    }
-    args <- as(args, "SYSargs2")
-  }
-  if(dir==TRUE){
-    args <- as(args, "list")
-    ## Results path
-    logdir <- normalizePath(args$yamlinput$results_path$path)
-    ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
-    if(is.null(dir.name)) {
-        cwl.wf <- file.path(logdir, .getFileName(args$files$cwl))
-    } else if(!is.null(dir.name)){
-        cwl.wf <- file.path(logdir, dir.name)
-    }
-    ## New path
-    for(i in seq_along(args$output)){
-      for(j in seq_along(args$output[[i]])){
-        for(k in seq_along(args$output[[i]][[j]])){
-          name <- basename(args$output[[i]][[j]][k])
-          args$output[[i]][[j]][k] <- file.path(cwl.wf, name)
-        }
-      }
-    }
-    args <- as(args, "SYSargs2")
-  }
-  return(args)
-}
-## Usage:
-# WF <- output_update(WF, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
-# WF <- output_update(WF, dir=TRUE, replace=TRUE, extension=c(".sam", ".bam"))
 
 ##################################
 ## Unexported helper functions ##
@@ -1005,34 +727,314 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 ##   .renderWFsingle   ##
 #########################
 .renderWFsingle <- function(WF, id, inputvars) { 
-  inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
-  if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
-  input <- yamlinput(WF)
-  for(i in seq_along(inputvars)) {
-    subvalue <- targets(WF)[[id]][[names(inputvars)[i]]]
-    if(length(subvalue)!=0) {
-      input <- rapply(input, function(x) gsub(inputvars[[i]], subvalue, x), how = "replace")
-      inputvarslist[[i]] <- subvalue
-    }
-  }
-  WF <- as(WF, "list")
-  WF$yamlinput <- input
-  WF <- as(WF, "SYSargs2")
-  WF <- injectCommandlinelist(WF)
-  ## Fix for cases like IDX/tophat/STAR, more than one output file per cmdlist
-  outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
-  for(i in seq_along(outfilelist)) {
-    for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output))
-        if("stdout" %in% names(cmdlist(WF)[[names(outfilelist[i])]]$output[[j]])){
-            outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$stdout
-        } else {
-            outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
+    inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
+    if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
+    input <- yamlinput(WF)
+    for(i in seq_along(inputvars)) {
+        subvalue <- targets(WF)[[id]][[names(inputvars)[i]]]
+        if(length(subvalue)!=0) {
+            input <- rapply(input, function(x) gsub(inputvars[[i]], subvalue, x), how = "replace")
+            inputvarslist[[i]] <- subvalue
         }
-  }
-  cmdlist <- renderCommandline(WF, redirect=">")
-  inputvars <- as.list(inputvars)
-  return(list(cmd=cmdlist, input=inputvarslist, output=outfilelist, inputvars=inputvars))
+    }
+    WF <- as(WF, "list")
+    WF$yamlinput <- input
+    WF <- as(WF, "SYSargs2")
+    WF <- injectCommandlinelist(WF)
+    ## Fix for cases like IDX/tophat/STAR, more than one output file per cmdlist
+    outfilelist <- sapply(names(cmdlist(WF)), function(x) list(NULL))
+    for(i in seq_along(outfilelist)) {
+        for (j in seq_along(cmdlist(WF)[[names(outfilelist[i])]]$output))
+            if("stdout" %in% names(cmdlist(WF)[[names(outfilelist[i])]]$output[[j]])){
+                outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$stdout
+            } else {
+                outfilelist[[i]][j] <- cmdlist(WF)[[names(outfilelist[i])]]$output[[j]]$glob
+            }
+    }
+    cmdlist <- renderCommandline(WF, redirect=">")
+    inputvars <- as.list(inputvars)
+    return(list(cmd=cmdlist, input=inputvarslist, output=outfilelist, inputvars=inputvars))
 }
+
+############################
+## .check.output.sysargs2 ##
+############################
+.check.output.sysargs2 <- function(sysargs, type, step.name, step.dir=FALSE){
+    if(type=="data.frame"){
+        checkfile <- sapply(names(output(sysargs)), function(x) list(NULL))
+        for(i in seq_along(output(sysargs))){
+            checkfile[[i]][['Total']] <- length(unlist(output(sysargs)[[i]]))
+            if(step.dir==TRUE){
+                newfile <- sum(file.exists(file.path(.getPath(unlist(output(sysargs)[[i]]), full_path = FALSE, warning = FALSE), step.name, basename(unlist(output(sysargs)[[i]])))))
+                checkfile[[i]][['Existing']] <- sum(file.exists(unlist(output(sysargs)[[i]])), newfile)
+            } else if(step.dir==FALSE){
+                checkfile[[i]][['Existing']] <- sum(file.exists(unlist(output(sysargs)[[i]])))
+            }
+            checkfile[[i]][['Missing']] <- length(unlist(output(sysargs)[[i]])) - checkfile[[i]][['Existing']]
+        }
+        checkfile <- data.frame(matrix(unlist(checkfile), nrow=length(checkfile), byrow=TRUE))
+        checkfile <- data.frame(cbind(Targets=names(output(sysargs)), Total_Files = as.numeric(checkfile$X1),
+                                      Existing_Files = checkfile$X2, Missing_Files=checkfile$X3
+        ), stringsAsFactors = FALSE)
+        checkfile[, 2:4] <- sapply(checkfile[, 2:4], as.numeric)
+        return(checkfile)
+    } else if(type=="list"){
+        checkfile <- sapply(names(output(sysargs)), function(x) list(NULL))
+        for(i in seq_along(output(sysargs))){
+            checkfile[[i]] <- all(file.exists(unlist(output(sysargs)[[i]])))
+        }
+        return(unlist(checkfile))
+    }
+}
+
+###############################################################
+## Subsetting the input and output slots by name or position ##
+###############################################################
+subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
+    ## Check the class and slot
+    if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")
+    if(all(!c("input", "output", "step") %in% slot)) stop("Argument slot can only be assigned one of: 'input' or 'output' or 'step'.")
+    
+    ## slot input
+    if(slot %in% "input"){
+        ## Check the subset
+        if(all(!is.null(subset) & is.character(subset) & !any(names(inputvars(args)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(inputvars(args)), collapse=", "), "OR the corresponding position OR NULL"))
+        if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(args))) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(inputvars(args))), collapse=", "), "OR the names OR NULL"))
+        subset_input <- input(args)
+        subset_sample <- sapply(names(subset_input), function(x) list(NULL))
+        if(!is.null(subset)) {
+            for(i in seq_along(names(subset_input)))
+                subset_sample[[i]] <- subset_input[[i]][[subset]]
+        } else {
+            subset_sample <- subset_input
+        }
+    }
+    ## slot output
+    if(slot %in% "output"){
+        ## Check the subset
+        if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL"))
+        if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL"))
+        if(!is.null(subset)){
+            if(!any(seq_along(output(args)[[1]][[subset]]) %in% index)) stop(paste("For the 'index' argument, can only be assigned one of the following position:", paste(seq_along(output(args)[[1]][[subset]]), collapse=", ")))
+        }
+        
+        subset_output <- output(args)
+        subset_sample <- as.character()
+        if(all(!is.null(subset) & !is.null(index))) {
+            for(i in seq_along(names(subset_output)))
+                # subset_sample[[i]] <- subset_output[[i]][[subset]]
+                subset_sample <- c(subset_sample, subset_output[[i]][[subset]][index])
+        } else {
+            subset_sample <- subset_output
+        }
+        names(subset_sample) <- rep(names(subset_output), each=length(subset_sample[1]))
+    }
+    ## slot step
+    if(slot %in% "step"){
+        ## Check the subset
+        if(all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse=", "), "OR the corresponding position OR NULL"))
+        if(all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse=", "), "OR the names OR NULL"))
+        subset_step <- cmdlist(args)
+        subset_sample <- sapply(names(subset_step), function(x) list(NULL))
+        if(!is.null(subset)) {
+            for(i in seq_along(names(subset_sample)))
+                subset_sample[[i]] <- subset_step[[i]][[subset]]
+        } else {
+            subset_sample <- subset_step
+        }
+    }
+    ## IF subset=NULL returns a list
+    if(!is.null(subset)){
+        names <- names(subset_sample)
+        subset_sample <- as.character(subset_sample)
+        names(subset_sample) <- names
+    }
+    ## delete == TRUE
+    if(delete==TRUE){
+        ## delete option only works if the subset is define
+        if(!is.character(subset_sample)) {
+            stop(paste("Please define the 'subset' to be deleted in the subset argument"))
+        }
+        if(all(file.exists(subset_sample))){
+            del <- file.remove(subset_sample)
+            cat("The following files has been deleted:", paste(subset_sample, collapse = ", "), "\n")
+        } else if(all(!file.exists(subset_sample))) {
+            cat("The subset cannot be deleted: no such file ", "\n")
+        }
+    }
+    return(subset_sample)
+}
+
+## Usage:
+# subsetWF(WF, slot="input", subset='FileName')
+# subsetWF(WF, slot="step", subset=1)
+# subsetWF(WF, slot="output", subset=1, index=1)
+# subsetWF(WF, slot="output", subset=1, index=1, delete=TRUE) ## in order to delete the subset files list
+
+#########################################################
+## Update the output location after run runCommandline ##
+#########################################################
+output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extension=NULL, make_bam=FALSE){
+    ## Folder name provide in the yml file
+    ## this file will exists, because its create on the definition of the project or when runCommandline is used.
+    # if(is.null(args$yamlinput$results_path$path)) {
+    #   if(is.null(dir.name)) {
+    #     stop("argument 'dir.name' missing. The argument can only be assigned 'NULL' when directory name is provided in the yml template. The argument should be assigned as a character vector of length 1")
+    #   }}
+    ## Validation for 'args'
+    if(any(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
+    ## If the argument 'replace' is TRUE, it is required to specify the 'extension' argument
+    if(replace!=FALSE){
+        if(is.null(extension)) {
+            stop("argument 'extension' missing. The argument can only be assigned 'NULL' when no replacement is required. The argument should be assigned as a character vector with the current extension and the new one.")  
+        }}
+    if(replace==TRUE){
+        args <- as(args, "list")
+        for(i in seq_along(args$output)){
+            for(j in seq_along(args$output[[i]])){
+                for(k in seq_along(args$output[[i]][[j]])){
+                    name <- basename(args$output[[i]][[j]][k])
+                    dirRep <- sub("/([^/]*)$", "", args$output[[i]][[j]][k])
+                    if(grepl(extension[1], name)){
+                        sam <- .getExt(name)
+                        args$output[[i]][[j]][k] <- file.path(dirRep, paste0(.getFileName(name), extension[2]))
+                    } else {
+                        # message if the extension are not matching, return the same object
+                        args$output[[i]][[j]][k] <- args$output[[i]][[j]][k]
+                    }
+                    if(make_bam==TRUE){
+                        if(grepl("bam", args$output[[i]][[j]][k])){
+                            args$output[[i]][[j]][length(args$output[[i]][[j]])+1] <- paste0(gsub("\\.bam$", "", args$output[[i]][[j]][k]), ".bam.bai")
+                        }
+                    }
+                }
+            }
+        }
+        args <- as(args, "SYSargs2")
+    }
+    if(dir==TRUE){
+        args <- as(args, "list")
+        ## Results path
+        logdir <- normalizePath(args$yamlinput$results_path$path)
+        ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
+        if(is.null(dir.name)) {
+            cwl.wf <- file.path(logdir, .getFileName(args$files$cwl))
+        } else if(!is.null(dir.name)){
+            cwl.wf <- file.path(logdir, dir.name)
+        }
+        ## New path
+        for(i in seq_along(args$output)){
+            for(j in seq_along(args$output[[i]])){
+                for(k in seq_along(args$output[[i]][[j]])){
+                    name <- basename(args$output[[i]][[j]][k])
+                    args$output[[i]][[j]][k] <- file.path(cwl.wf, name)
+                }
+            }
+        }
+        args <- as(args, "SYSargs2")
+    }
+    return(args)
+}
+## Usage:
+# WF <- output_update(WF, dir=FALSE, replace=TRUE, extension=c(".sam", ".bam"))
+# WF <- output_update(WF, dir=TRUE, replace=TRUE, extension=c(".sam", ".bam"))
+
+###################################################
+##   Create CommandLineTools from Command-line   ##
+###################################################
+createWF <- function(targets=NULL, commandLine, results_path="./results", module_load="baseCommand", file = "default", 
+                     overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", writeout=FALSE, silent=FALSE){
+    ## TODO if is not default, module load and file
+    if(all(!is(commandLine)=="list")) stop("'commandLine' needs to be object of class 'list'.")  
+    if(any(!c("baseCommand", "inputs", "outputs") %in% names(commandLine))) stop("Argument 'commandLine' needs to be assigned at least to: 'baseCommand', 'input' or 'output'.")
+    if(all(!c("Workflow", "CommandLineTool") %in% class)) stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
+    if(dir.exists(results_path)==FALSE) dir.create(path=results_path)
+    ## module_load 
+    ## 1.  module_load="baseCommand" will use the name of the software 
+    ## 2.  module_load=c("ncbi-blast/2.2.30+", "hisat2/2.1.0") will use the specific version and names
+    if(module_load == "baseCommand"){
+        module_load <- commandLine$baseCommand[[1]]
+    } else {
+        module_load <- module_load
+    }
+    ## File Path
+    ## 1. file="default"
+    ## 2. file = c("test.cwl", "test.yml")
+    if("default" %in% file){
+        if(dir.exists(paste("param/cwl/", commandLine$baseCommand, sep=""))==FALSE) dir.create(path=paste("param/cwl/", commandLine$baseCommand, sep=""), recursive = TRUE)
+        file.cwl <- paste("param/cwl/", commandLine$baseCommand, "/", commandLine$baseCommand, ".cwl", sep="")
+        file.yml <- paste("param/cwl/", commandLine$baseCommand, "/", commandLine$baseCommand, ".yml", sep="")
+    } else {
+        for(i in seq_along(file)){
+            extension <- sub('.*\\.', '', file[[i]])
+            if(!c("cwl") %in% extension & !c("yml") %in% extension) stop ("Argument 'file' needs to be assigned as a character vector with the names of the two param file. For example, 'test.cwl' and 'test.yml'.")
+            if(c("yml") %in% extension){
+                file.yml <- file[[i]]
+            } else if(c("cwl") %in% extension){
+                file.cwl <- file[[i]]
+            }
+        }
+    }
+    if(file.exists(file.cwl) & overwrite == FALSE) 
+        stop(paste("I am not allowed to overwrite files; please delete existing file:", 
+                   file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
+    if(file.exists(file.yml) & overwrite == FALSE) 
+        stop(paste("I am not allowed to overwrite files; please delete existing file:", 
+                   file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
+    ## class("CommandLineTool", "Workflow")
+    # WF.temp <- SYScreate("SYSargs2")
+    WF.temp <- as(SYScreate("SYSargs2"), "list")
+    WF.temp$wf <- list()
+    WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, writeout= writeout, silent = silent) 
+    WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, writeout=writeout, silent = silent) 
+    WF.temp$modules <- WF.temp$yamlinput$ModulesToLoad
+    WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
+    WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
+    WF.temp$output <- sapply(names(WF.temp$clt), function(x) list(NULL))
+    WF.temp$internal_outfiles <- sapply(names(WF.temp$clt), function(x) list(NULL))
+    WF.temp$files <- list(cwl=file.path(file.cwl), 
+                          yml=file.path(file.yml), 
+                          steps=names(WF.temp$clt))
+    WF.temp$cmdToCwl <- commandLine
+    ## targets
+    if(!is.null(targets)) {
+        mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
+        mytargets <- targets.as.list(mytargets)
+        targetsheader <- readLines(normalizePath(file.path(targets)))
+        targetsheader <- targetsheader[grepl("^#", targetsheader)]
+        WF.temp$files["targets"] <- normalizePath(file.path(targets))
+        WF.temp <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF.temp)
+    } else {
+        WF.temp$files["targets"] <- NA
+        WF.temp <- c(list(targets=data.frame(), targetsheader=list()), WF.temp)
+    }
+    WF.temp <- as(WF.temp, "SYSargs2")
+    # WF.temp[["status"]] <- .statusPending(WF.temp)
+    return(WF.temp)
+}
+
+## Usage: 
+## Example commandLine
+# "hisat2 -S ./results/_SampleName_.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000 --threads 4 -U _FASTQ_PATH1_"
+## Provide a list 
+# baseCommand <- list(baseCommand="hisat2")
+# inputs <- list(
+#   "S"=list(type="File", preF="-S", yml="./results/_SampleName_.sam"),
+#   "x"=list(type="File", preF="-x", yml="./data/tair10.fasta"),
+#   "k"= list(type="int", preF="-k", yml= 1L),
+#   "threads"= list(type="int", preF="-threads", yml=4L),
+#   "min-intronlen"= list(type="int", preF="--min-intronlen", yml= 30L),
+#   "max-intronlen"= list(type="int", preF="--max-intronlen", yml=3000L),
+#   "U"=list(type="File", preF="-U", yml="./data/_FASTQ_PATH1_") )
+# outputs <- list("hisat2_sam"=list(type="File", "./results/_SampleName_.sam"))
+# commandLine <- list(baseCommand=baseCommand, inputs=inputs, outputs=outputs)
+# 
+## Creates a SYSargs2 object, populate all the command-line, and creates *.cwl and *.yml files
+# targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+# WF <- createWF(targets=targets, commandLine, results_path="./results", module_load="baseCommand",
+#                file = "default", overwrite = FALSE, cwlVersion = "v1.0",
+#                class = "CommandLineTool")
+# WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
 
 ###################
 ##   write.cwl   ##
