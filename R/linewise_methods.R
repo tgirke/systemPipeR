@@ -113,20 +113,6 @@ setMethod("$",
     }
 )
 
-## Print accessor for codeLine slot
-setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x) {
-    rcode <- sapply(names(x$stepsWF), function(x) list(NULL))
-    for (i in seq_along(x)) {
-        if (!inherits(stepsWF(x)[[i]], "LineWise")) stop("This step is 'SYSargs2'. Please provide an 'LineWise' class step")
-        code_list <- x$stepsWF[[i]]$codeLine
-        rcode[[i]] <- code_list
-    }
-    for (i in seq_along(rcode)) {
-        cat(crayon::blue(names(rcode[i])), paste0("    ", as.character(rcode[[i]])), sep = "\n")
-    }
-    # return(rcode)
-})
-
 ###########################################
 ## Replacement Definitions for LineWise ##
 ##########################################
