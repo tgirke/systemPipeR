@@ -27,7 +27,10 @@ test_that("check_SYSargsList_test", {
     expect_type(SEobj(sal), "list")
     expect_type(outfiles(sal), "list")
     expect_type(cmdlist(sal), "list")
+    expect_type(runInfo(sal), "list")
     expect_type(sysargslist(sal), "list")
+    expect_error(SampleName(sal))
+    baseCommand(sal)
     ## Class
     expect_s4_class(sal, "SYSargsList")
     expect_length(sal, 1)
