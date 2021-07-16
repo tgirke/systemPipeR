@@ -226,7 +226,8 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
       if(all(!is.na(dependency(args2)[[i]]))){
         dep_single <- sapply(dependency(args2)[[i]], function(x) args2$statusWF[[x]]$status.summary)
         if("Pending" %in% dep_single){
-          stop("Previous steps:", "\n", paste0(names(dep_single), collapse = " AND "), "\n", "have been not executed yet.")
+          message("Previous steps:", "\n", paste0(names(dep_single), collapse = " AND "), "\n", "have been not executed yet.")
+          break()
         }
       }
       ## Printing step name
@@ -261,13 +262,14 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
             stop("Caught an error, stop workflow!")
           }
         }
-        cat(crayon::bgBlue(paste0("Step Status: ", step.status.summary), "\n"))
+        cat(status_color(step.status.summary)(paste0("Step Status: ", step.status.summary), "\n"))
       } else if(inherits(args.run, "LineWise")){
         envir <- args2$runInfo$env
+        assign(x=as.character(as.list(match.call())$sysargs), args2, envir = envir)
         args.run <- runRcode(args.run, step=single.step, file_log=file_log, envir=envir, force=force)
-        stepsWF(args2, i) <- args.run
-        statusWF(args2, i) <- args.run$status
         assign("args2", get(as.character(as.list(match.call())$sysargs), envir), environment())
+        args2[["stepsWF"]][[i]] <- args.run
+        args2[["statusWF"]][[i]] <- args.run$status
        ## Stop workflow
         if(is.element("Warning", unlist(args.run$status$status.summary))){
           if(warning.stop==TRUE) {
@@ -280,7 +282,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
             stop("Caught an error, stop workflow!")
           }
         }
-        cat(crayon::bgBlue(paste0("Step Status: ", args.run$status$status.summary), "\n"))
+        cat(status_color(args.run$status$status.summary)(paste0("Step Status: ", args.run$status$status.summary), "\n"))
       }
     } else {
       ## Printing step name
@@ -290,9 +292,9 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
   }
   if(saveEnv == TRUE){
     envPath <- file.path(sysproj, "sysargsEnv.rds")
-    # if(any(as.character(as.list(match.call())$sysargs) %in% ls(sysargs@runInfo$env, all.names = TRUE))){
-    #   rm(list=as.character(as.list(match.call())$sysargs), envir = sysargs@runInfo$env )
-    # }
+     if(any(as.character(as.list(match.call())$sysargs) %in% ls(sysargs@runInfo$env, all.names = TRUE))){
+       rm(list=as.character(as.list(match.call())$sysargs), envir = sysargs@runInfo$env )
+     }
     saveRDS(args2$runInfo$env, envPath)
     args2[["projectInfo"]][["envir"]] <- envPath
   }
@@ -794,11 +796,16 @@ renderReport <- function(sysargslist, type = c("html_document"), silent=FALSE) {
 ## renderLogs function ##
 ###########################
 ## type: c("pdf_document", "html_document")
-renderLogs <- function(sysargslist, type = "html_document", fileName="default", silent=FALSE) {
-  file <-  projectInfo(sysargslist)$logsFile
-  if (!file.exists(file) == TRUE) stop("Provide valid 'sysargslist' object. Check the initialization of the project.")
+renderLogs <- function(sysargs, type = "html_document", fileName="default", silent=FALSE) {
+  dir_log <- projectInfo(sysargs)$logsDir
+  if (!file.exists(dir_log) == TRUE) stop("Provide valid 'sysargs' object. Check the initialization of the project.")
+  if(is.null(projectInfo(sysargs)$logsFile)) {
+    stop ("Log files not found. Please execute the 'sysargs' object.")
+  } else {
+    file <- projectInfo(sysargs)$logsFile
+  }
   if(fileName=="default"){
-    fileName <- file.path(projectInfo(sysargslist)$project, paste0("logs_", format(Sys.time(), "%b%d%Y_%H%M"),".Rmd"))
+    fileName <- file.path(projectInfo(sysargs)$project, paste0("logs_", format(Sys.time(), "%b%d%Y_%H%M"),".Rmd"))
   } else {
     fileName <- fileName
   }
@@ -808,16 +815,19 @@ renderLogs <- function(sysargslist, type = "html_document", fileName="default", 
     "title: 'Report'",
     paste0("date: 'Last update: ", format(Sys.time(), '%d %B, %Y'), "'"),
     "output:",
-    paste0("  BiocStyle::", type, ":"),
-    "    toc_float: true",
-    "    code_folding: show",
+    paste0("  ", type, ":"),
+    "    number_sections: true",
+    "    theme: flatly",
+    "    toc: true",
+    "    toc_float:",
+    "      collapsed: false",
     "package: systemPipeR",
     "fontsize: 14pt",
     "---",
     log),
     con = fileName)
-  #rmarkdown::render(input = fileName, c(paste0("BiocStyle::", type)), quiet = TRUE, envir = new.env())
   rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
+  #rmarkdown::render(input = fileName, c('BiocStyle::html_document'), quiet = TRUE, envir = new.env())
   file_path <- .getPath(fileName)
   file_out <- .getFileName(fileName)
   if(type=="html_document"){
@@ -825,14 +835,15 @@ renderLogs <- function(sysargslist, type = "html_document", fileName="default", 
   } else {
     ext <- "pdf"
   }
-  sysargslist <- as(sysargslist, "list")
-  sysargslist$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep="."))
+  sysargs <- as(sysargs, "list")
+  sysargs$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep="."))
   if(silent != TRUE) cat("\t", "Written content of 'Report' to file:", paste(file_out, ext, sep="."), "\n")
-  return(as(sysargslist, "SYSargsList"))
+  return(as(sysargs, "SYSargsList"))
 }
 
 ## Usage
-# sysargslist <- renderLogs(sysargslist)
+# sal <- runWF(sal)
+# sal <- renderLogs(sal)
 
 ########################
 ## subsetRmd function ##

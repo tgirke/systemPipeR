@@ -7,12 +7,16 @@ Execute SYSargsList
 Function to execute all the code list specified in SYSargsList object.
 }
 \usage{
-runWF(sysargs, force = FALSE, saveEnv = TRUE, warning.stop =
+runWF(sysargs, steps = NULL, force = FALSE, saveEnv = TRUE, warning.stop =
                  FALSE, error.stop = TRUE, silent = FALSE, ...)
 }
 \arguments{
   \item{sysargs}{
   object of class \code{SYSargsList}.
+}
+  \item{steps}{
+  character or numeric. Step name or index. If \code{NULL}, all the step will be 
+  executed.
 }
   \item{force}{
    Internally, the function checks if the expected \code{output} files exist, and it skips the command lines when the respective files exist. If the argument \code{force} is set to \code{TRUE}, the command line will be executed and the files overwrite. Default is \code{force=FALSE}. 

@@ -41,8 +41,6 @@
 \alias{subset,SYSargsList-method}
 \alias{getColumn}
 \alias{getColumn,SYSargsList-method}
-\alias{updateColumn}
-\alias{updateColumn,SYSargsList-method}
 \alias{baseCommand}
 \alias{baseCommand,SYSargsList-method}
 \alias{SampleName}
@@ -74,11 +72,12 @@
 \alias{renameStep<-,SYSargsList-method}
 \alias{yamlinput<-}
 \alias{yamlinput<-,SYSargsList-method}
-%\alias{yamlinput<-,SYSargsList,ANY,ANY-method}
 \alias{appendCodeLine<-}
 \alias{appendCodeLine<-,SYSargsList-method}
 \alias{replaceCodeLine<-}
 \alias{replaceCodeLine<-,SYSargsList-method}
+\alias{updateColumn<-}
+\alias{updateColumn<-,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
@@ -114,7 +113,7 @@ targetsheader(x, ...)
 yamlinput(x, ...)
 cmdlist(x, ...)
 codeLine(x, ...)
-copyEnvir(x, list, new.env)
+copyEnvir(x, list = character(), new.env = globalenv(), silent = FALSE)
 viewEnvir(x)
 
 ## Subset Methods
@@ -122,7 +121,7 @@ viewEnvir(x)
 subset(x, ...)
 getColumn(x, step, position = c("outfiles", "targetsWF"), column = 1, names = SampleName(x, step))
 
-updateColumn(x, step, df, position = c("outfiles", "targetsWF"))
+
 
 ## Replacement
 
@@ -133,6 +132,7 @@ renameStep(x, step, ...) <- value
 yamlinput(x, paramName, ...) <- value
 appendCodeLine(x, after = length(x), ...) <- value
 replaceCodeLine(x, line, ...) <- value
+updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
 }
 
 \arguments{
@@ -192,13 +192,6 @@ replaceCodeLine(x, line, ...) <- value
   \item{names}{
   character vector. Names of the new column. 
 }
-  \item{df}{
-  a dataframe that must have the same rows as the modifying dataframe.
-  However, if there is no column in the original dataframe. This new df will replace 
-  the empty one. If there is a non-empty dataframe, any existing columns with the 
-  same name as this new df will be replaced. Any columns that do not exist in the 
-  original column but this new df will be added to the original df.
-}
   \item{after}{
   A subscript, after which the values are to be appended.
 }
@@ -210,7 +203,12 @@ replaceCodeLine(x, line, ...) <- value
 }
   \item{value}{
   object containing the values to be replaced to x. Values may be of the same 
-  class as the orginal values. 
+  class as the orginal values. For \code{updateColumn<-}a dataframe that must have
+  the same rows as the modifying dataframe.
+  However, if there is no column in the original dataframe. This new df will replace 
+  the empty one. If there is a non-empty dataframe, any existing columns with the 
+  same name as this new df will be replaced. Any columns that do not exist in the 
+  original column but this new df will be added to the original data.frame.
 }
   \item{...}{
   object containing the values to be replaced to x. Values may be of the same 
@@ -310,12 +308,13 @@ viewEnvir(sal)
 
 sal_sub <- subset(sal, subset_steps=1, input_targets=1:2, keep_steps = TRUE)
 targetsIn <- getColumn(sal, step=1, position = c("outfiles"))
-sal <- updateColumn(sal, step=2, df=data.frame(targetsIn), position = c("targetsWF"))
-targetsWF(sal)
 
 ## Replacement
 renameStep(sal, step=1) <- "new_echo"
 dependency(sal, step=2) <- "new_echo"
+updateColumn(sal, step=2, position = c("targetsWF")) <- data.frame(targetsIn)
+targetsWF(sal)
+
 replaceStep(sal, step=2) <- LineWise(code = {
                             hello <- "Printing a new message"
                             }, 
