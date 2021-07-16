@@ -50,7 +50,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
         sal$projectInfo$envir <- NULL
       }
       sal <- as(sal, "SYSargsList")
-      write_SYSargsList(sal, sys.file, silent=FALSE)
+      write_SYSargsList(sal, sys.file, silent=silent)
       return(sal)
     }
   }
@@ -298,7 +298,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
     saveRDS(args2$runInfo$env, envPath)
     args2[["projectInfo"]][["envir"]] <- envPath
   }
-  args2 <- .check_write_SYSargsList(args2)
+  args2 <- .check_write_SYSargsList(args2, TRUE)
   return(args2)
 }
 
@@ -480,7 +480,7 @@ output.as.df <- function(x) {
 ################################
 ## write_SYSargsList function ##
 ################################
-write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", silent=FALSE){
+write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", silent=TRUE){
   if(!inherits(args, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.")
   args2 <- sysargslist(args)
   args_comp <- sapply(args2, function(x) list(NULL))
@@ -529,7 +529,7 @@ write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", sile
   args_comp[["stepsWF"]] <- steps_comp
   ## Save file
   yaml::write_yaml(args_comp, sys.file)
-  if (silent != TRUE) cat("Creating file '", normalizePath(sys.file), "'", sep = "", "\n")
+  if(silent != TRUE) cat("Creating file '", normalizePath(sys.file), "'", sep = "", "\n")
   return(normalizePath(sys.file))
 }
 
@@ -600,6 +600,8 @@ read_SYSargsList <- function(sys.file){
     steps_comp <- sapply(steps, function(x) list(NULL))
     for(j in steps){
       steps_comp[j] <- yaml::yaml.load(args_comp_yml[[i]][j])
+      steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
+      steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
       steps_comp[j][[1]][[2]] <- data.frame(steps_comp[j][[1]][[2]], check.names = FALSE)
       steps_comp[j][[1]][[3]] <- data.frame(steps_comp[j][[1]][[3]])
     }
@@ -816,7 +818,7 @@ renderLogs <- function(sysargs, type = "html_document", fileName="default", sile
     paste0("date: 'Last update: ", format(Sys.time(), '%d %B, %Y'), "'"),
     "output:",
     paste0("  ", type, ":"),
-    "    number_sections: true",
+    "    number_sections: false",
     "    theme: flatly",
     "    toc: true",
     "    toc_float:",
@@ -824,6 +826,11 @@ renderLogs <- function(sysargs, type = "html_document", fileName="default", sile
     "package: systemPipeR",
     "fontsize: 14pt",
     "---",
+    "```{r, echo=FALSE, message=FALSE}",
+    "library(systemPipeR)",
+    "sal <- SPRproject(restart = TRUE, silent=TRUE)",
+    "plotWF(sal, in_log=TRUE)",
+    "```",
     log),
     con = fileName)
   rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())

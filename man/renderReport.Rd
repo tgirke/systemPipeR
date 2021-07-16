@@ -49,7 +49,9 @@ appendStep(sal) <- LineWise(code = {
                             }, 
                             step_name = "R_read", 
                             dependency = "echo")
+\dontrun{
 sal <- runWF(sal)
 sal <- renderLogs(sal)
+}
 }
 \keyword{ utilities }

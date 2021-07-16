@@ -563,7 +563,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
 })
 
 ## Internal functions ##
-.check_write_SYSargsList <- function(x) {
+.check_write_SYSargsList <- function(x, silent=TRUE) {
     if (!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'.")
     sys.file <- projectInfo(x)$sysargslist
     if (is.null(sys.file)) {
@@ -591,7 +591,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         }
     } else if (!is.null(sys.file)) {
         sys.file <- projectInfo(x)$sysargslist
-        write_SYSargsList(x, sys.file, silent = TRUE)
+        write_SYSargsList(x, sys.file, silent = silent)
         return(x)
     }
 }

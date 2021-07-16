@@ -6,6 +6,7 @@ genWorkenvir("rnaseq", mydirname = file.path(tempdir(), "rnaseq2"))
 setwd(file.path(tempdir(), "rnaseq2"))
 
 test_that("check_SYSargsList_test", {
+    skip_on_os("windows")
     ## build instance
     dir_path <- system.file("extdata/cwl/example", package = "systemPipeR")
     sal <- SPRproject(overwrite = TRUE)
@@ -50,7 +51,6 @@ test_that("check_SYSargsList_test", {
         step_name = "R_code",
         dependency = "newStep"
     )
-    sal <- runWF(sal)
     ## `+` method
     sal <- sal[1] + sal[2]
     expect_length(sal, 2)
