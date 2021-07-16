@@ -192,12 +192,11 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
   return(sal)
 }
 
-
-#####################
+####################
 ## runWF function ##
 #####################
 #####################
-runWF <- function(sysargs, force=FALSE, saveEnv=TRUE,
+runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
                   warning.stop=FALSE, error.stop=TRUE, silent=FALSE, ...) {
   # Validations
   if (!inherits(sysargs, "SYSargsList")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList'")
@@ -220,58 +219,72 @@ runWF <- function(sysargs, force=FALSE, saveEnv=TRUE,
   sysargs[["projectInfo"]]$logsFile <- file_log
   ## steps loop
   args2 <- sysargs
+  if(is.null(steps)) steps <- 1:length(args2)
   for (i in seq_along(stepsWF(args2))){
-    ## Printing step name
-    step <- names(stepsWF(args2)[i])
-    cat(crayon::bgMagenta(paste0("Running Step: ", step)), "\n")
-    ## Printing step name at log files
-    cat("# ", names(stepsWF(args2)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
-    args.run <- stepsWF(args2)[[i]]
-    ## SYSargs2 STEP
-    if(inherits(args.run, "SYSargs2")){
-      ## runC arguments
-      dir <- args2$runInfo$directory[[i]]
-      dir.name <- step
-      args.run <- runCommandline(args.run, dir = dir, dir.name = dir.name, force=force, ...)
-      cat(readLines(args.run$files$log), file=file_log, sep = "\n", append=TRUE)
-      ## update object
-      step.status.summary <- status(args.run)$status.summary
-      statusWF(args2, i) <- args.run$status
-      stepsWF(args2, i) <- args.run
-      args2[["outfiles"]][[i]] <- .outList2DF(args.run)
-      args2 <- .updateAfterRunC(args2, step)
-      assign(x=as.character(as.list(match.call())$sysargs), args2, envir = args2$runInfo$env)
-      ## Stop workflow
-      if(is.element("Warning", unlist(step.status.summary))){
-        if(warning.stop==TRUE) {
-          on.exit(return(args2))
-          stop("Caught an warning, stop workflow!")
-        }
-      } else if(is.element("Error", unlist(step.status.summary))){
-        if(error.stop==TRUE) {
-          on.exit(return(args2))
-          stop("Caught an error, stop workflow!")
+    if(i %in% steps){
+      ## check single dependency
+      if(all(!is.na(dependency(args2)[[i]]))){
+        dep_single <- sapply(dependency(args2)[[i]], function(x) args2$statusWF[[x]]$status.summary)
+        if("Pending" %in% dep_single){
+          stop("Previous steps:", "\n", paste0(names(dep_single), collapse = " AND "), "\n", "have been not executed yet.")
         }
       }
-      cat(crayon::blue(paste0("Step Status: ", step.status.summary), "\n"))
-    } else if(inherits(args.run, "LineWise")){
-      envir <- args2$runInfo$env
-      args.run <- runRcode(args.run, step=step, file_log=file_log, envir=envir, force=force)
-      stepsWF(args2, i) <- args.run
-      statusWF(args2, i) <- args.run$status
-      ## Stop workflow
-      if(is.element("Warning", unlist(args.run$status$status.summary))){
-        if(warning.stop==TRUE) {
-          on.exit(return(args2))
-          stop("Caught an warning, stop workflow!")
+      ## Printing step name
+      single.step <- names(stepsWF(args2)[i])
+      cat(crayon::bgMagenta(paste0("Running Step: ", single.step)), "\n")
+      ## Printing single.step name at log files
+      cat("# ", names(stepsWF(args2)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
+      args.run <- stepsWF(args2)[[i]]
+      ## SYSargs2 STEP
+      if(inherits(args.run, "SYSargs2")){
+        ## runC arguments
+        dir <- args2$runInfo$directory[[i]]
+        dir.name <- single.step
+        args.run <- runCommandline(args.run, dir = dir, dir.name = dir.name, force=force, ...)
+        cat(readLines(args.run$files$log), file=file_log, sep = "\n", append=TRUE)
+        ## update object
+        step.status.summary <- status(args.run)$status.summary
+        statusWF(args2, i) <- args.run$status
+        stepsWF(args2, i) <- args.run
+        args2[["outfiles"]][[i]] <- .outList2DF(args.run)
+        args2 <- .updateAfterRunC(args2, single.step)
+        assign(x=as.character(as.list(match.call())$sysargs), args2, envir = args2$runInfo$env)
+        ## Stop workflow
+        if(is.element("Warning", unlist(step.status.summary))){
+          if(warning.stop==TRUE) {
+            on.exit(return(args2))
+            stop("Caught an warning, stop workflow!")
+          }
+        } else if(is.element("Error", unlist(step.status.summary))){
+          if(error.stop==TRUE) {
+            on.exit(return(args2))
+            stop("Caught an error, stop workflow!")
+          }
         }
-      } else if(is.element("Error", unlist(args.run$status$status.summary))){
-        if(error.stop==TRUE) {
-          on.exit(return(args2))
-          stop("Caught an error, stop workflow!")
+        cat(crayon::bgBlue(paste0("Step Status: ", step.status.summary), "\n"))
+      } else if(inherits(args.run, "LineWise")){
+        envir <- args2$runInfo$env
+        args.run <- runRcode(args.run, step=single.step, file_log=file_log, envir=envir, force=force)
+        stepsWF(args2, i) <- args.run
+        statusWF(args2, i) <- args.run$status
+        ## Stop workflow
+        if(is.element("Warning", unlist(args.run$status$status.summary))){
+          if(warning.stop==TRUE) {
+            on.exit(return(args2))
+            stop("Caught an warning, stop workflow!")
+          }
+        } else if(is.element("Error", unlist(args.run$status$status.summary))){
+          if(error.stop==TRUE) {
+            on.exit(return(args2))
+            stop("Caught an error, stop workflow!")
+          }
         }
+        cat(crayon::bgBlue(paste0("Step Status: ", args.run$status$status.summary), "\n"))
       }
-      cat(crayon::blue(paste0("Step Status: ", args.run$status$status.summary), "\n"))
+    } else {
+      ## Printing step name
+      single.step <- names(stepsWF(args2)[i])
+      cat(status_color("Skipping")(paste0("Skipping Step: ", single.step)), "\n")
     }
   }
   if(saveEnv == TRUE){
@@ -285,6 +298,22 @@ runWF <- function(sysargs, force=FALSE, saveEnv=TRUE,
   args2 <- .check_write_SYSargsList(args2)
   return(args2)
 }
+
+status_color <- function(x){
+  switch(x,
+         "Pending" = crayon::bgBlue,
+         "Warning" = crayon::bgYellow,
+         "Error" = crayon::bgRed,
+         "Success" = crayon::bgGreen, 
+         "Skipping" = crayon::bgCyan
+  )
+}
+
+# cat(status_color("Pending")("test"))
+# cat(status_color("Warning")("test"))
+# cat(status_color("Error")("test"))
+# cat(status_color("Success")("test"))
+# cat(status_color("Skipping")("test"))
 
 #######################
 ## runRcode function ##
@@ -369,13 +398,10 @@ runRcode <- function(args, step=stepName(args), file_log=NULL, envir=globalenv()
 ## .updateAfterRunC function ##
 ###############################
 .updateAfterRunC <- function(args, step){
-  # conList <- lapply(args$targets_connection, function(x) if(!is.null(x)){
-  #   x$targets_step })
   conList <- args$targets_connection[lengths(args$targets_connection) != 0]
   conList_step <- sapply(conList, "[[", 1)
   for(l in seq_along(conList_step)){
     if(step %in% conList_step[[l]]){
-      # print(conList_step[[l]])
       requiredUP <- names(conList)[[l]]
       for(s in requiredUP){
         WF <- args[s]
@@ -389,7 +415,6 @@ runRcode <- function(args, step=stepName(args), file_log=NULL, envir=globalenv()
         col_out_l <- col_out_l[lapply(col_out_l,length)>0]
         
         if(all(sapply(col_out_l, function(x) length(x)==1))){
-          # col_out <- col_out[col_out %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
           col_out_df <- lapply(names(col_out_l), function(x) getColumn(args, step=x, position = "outfiles", column = col_out_l[[x]]))
           names(col_out_df) <- col_out_l
           new_targets[as.character(col_out_l)] <- col_out_df

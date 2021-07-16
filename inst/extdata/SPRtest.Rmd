@@ -33,12 +33,6 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
-```{r setup_libraries, echo=FALSE, message=FALSE, warning=FALSE, spr='r'}
-suppressPackageStartupMessages({
-    library(systemPipeR)
-})
-```
-
 # Introduction
 
 This is a test template.
@@ -85,7 +79,7 @@ appendStep(sal) <- SYSargsList(dir = FALSE,
                                dependency = "quality")
 ```
 
-```{r Mapping, spr='sysargs', eval=TRUE}
+```{r Mapping, spr='sysargs', spr.dep="index", eval=TRUE}
 appendStep(sal) <- SYSargsList(targets="quality",
                                dir=TRUE, 
                                wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",

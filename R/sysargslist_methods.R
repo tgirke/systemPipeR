@@ -746,30 +746,19 @@ setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_name = 
         x$stepsWF[[step]] <- value
         x$statusWF[[step]] <- value$status
     }
+    x <- as(x, "SYSargsList")
     if (step_name == "default") {
         name <- stepName(value)
         if (name %in% names(x$stepsWF)) {
-            names(x$stepsWF)[step] <- paste0("Step_", step)
-            names(x$statusWF)[step] <- paste0("Step_", step)
-            names(x$dependency)[step] <- paste0("Step_", step)
-            names(x$targetsWF)[step] <- paste0("Step_", step)
-            names(x$outfiles)[step] <- paste0("Step_", step)
+            renameStep(x, step) <- paste0("Step_", step)
             cat(paste0("Index name of x", "[", step, "]", " was rename to ", paste0("Step_", step), " to avoid duplications."))
         } else {
-            names(x$stepsWF)[step] <- stepName(value)
-            names(x$statusWF)[step] <- stepName(value)
-            names(x$dependency)[step] <- stepName(value)
-            names(x$targetsWF)[step] <- stepName(value)
-            names(x$outfiles)[step] <- stepName(value)
+            renameStep(x, step) <- stepName(value)
         }
     } else {
-        names(x$stepsWF)[step] <- step_name
-        names(x$statusWF)[step] <- step_name
-        names(x$dependency)[step] <- step_name
-        names(x$targetsWF)[step] <- step_name
-        names(x$outfiles)[step] <- step_name
+        renameStep(x, step) <- step_name
     }
-    x <- as(x, "SYSargsList")
+
     if (any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
     x <- .check_write_SYSargsList(x)
     x
@@ -780,6 +769,7 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
     if (inherits(value, "character")) {
         if (any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
         value <- gsub("[[:space:]]", "_", value)
+        original <- names(x@stepsWF)[step]
         names(x@stepsWF)[step] <- value
         names(x@statusWF)[step] <- value
         names(x@dependency)[step] <- value
@@ -793,6 +783,12 @@ setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
     } else {
         stop("Replace value needs to be assigned an 'character' name for the workflow step.")
     }
+    ## check in dependency step
+    x[["dependency"]] <- lapply(x$dependency, function(y) gsub(original, value, y))
+    ## check in targets_connection step
+    x[["targets_connection"]] <- sapply(x$targets_connection, function(y)
+        if(!is.null(y)) lapply(y, function(w) if(names(w) == "targets_step") 
+            sub(original, value, w) else w))
     if (!is.null(x$projectInfo$sysargslist)) {
         x <- .check_write_SYSargsList(x)
     }
