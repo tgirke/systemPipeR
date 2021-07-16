@@ -7,7 +7,7 @@ Render RMarkdown Logs Report
 Render the logs report file to the specified output format using pandoc.
 }
 \usage{
-renderLogs(sysargs, type = "html_document", fileName="default", silent=FALSE)
+renderLogs(sysargs, type = "html_document", fileName = "default", silent = FALSE)
 }
 \arguments{
   \item{sysargs}{
@@ -16,6 +16,9 @@ renderLogs(sysargs, type = "html_document", fileName="default", silent=FALSE)
   \item{type}{
   	The R Markdown output format to convert to. Default is \code{"ALL"}.The option 
   	can be the name of a format (e.g. \code{"pdf_document"} or \code{"html_document"}).
+}
+  \item{fileName}{
+  haracter string naming a file output. Default is \code{"logs_<date>.Rmd"}.
 }
   \item{silent}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.
