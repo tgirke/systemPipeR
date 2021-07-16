@@ -32,8 +32,7 @@ this connectivity is established by \code{`appendStep<-`} method. Please
 check more details from \code{\link{SYSargsList-class}} class.
 }
 \usage{
-loadWorkflow(targets = NULL, wf_file, input_file, dir_path = ".")
-loadWF(targets = NULL, wf_file, input_file, dir_path = "param/cwl")
+loadWorkflow(targets = NULL, wf_file, input_file, dir_path = "param/cwl")
 
 renderWF(WF, inputvars = NULL)
 
