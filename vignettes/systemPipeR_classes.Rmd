@@ -147,7 +147,7 @@ appendStep(sal) <- LineWise(code = {
 
 ```{r, eval=TRUE}
 appendStep(sal) <- LineWise(code = {
-                            Sys.sleep(60)
+                           log(-1)
                             }, 
                             step_name = "R_read2", 
                             dependency = "R_read")
@@ -166,6 +166,26 @@ appendStep(sal) <- LineWise(code = {
 ```{r, eval=FALSE}
 sal <- runWF(sal)
 sal
+
+sal2 <- SPRproject(overwrite=TRUE, envir = new.env()) 
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+appendStep(sal2) <- SYSargsList(step_name = "echo", 
+                               targets=targetspath, dir=TRUE,
+                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+
+appendStep(sal2) <- LineWise(code = {
+    updateColumn(sal2, step=1, data.frame(sal2$targetsWF$echo$Message), 'targetsWF')
+    a <- 1
+    }, 
+step_name = "R_read", 
+dependency = "echo")
+
+sal3 <- runWF(sal2)
+sal3$targetsWF
+sal2$targetsWF
+
 ```
 
 - Visualize workflow
@@ -612,8 +632,8 @@ sal <- importWF(sal, file_path)
 sal
 stepsWF(sal)
 dependency(sal)
-codeLine(sal, 3)
-renameStep(sal, 3) <- "New_load"
+codeLine(sal, 2)
+renameStep(sal, 2) <- "New_load"
 ```
 
 ### Project Recovery
@@ -808,9 +828,9 @@ imported as a workflow.
 rmd <- system.file("extdata/", "SPRtest.Rmd", package = "systemPipeR")
 sal_lw <- SPRproject(overwrite = TRUE)
 sal_lw <- importWF(sal_lw, rmd)
-lw <- stepsWF(sal_lw[3])[[1]]
+lw <- stepsWF(sal_lw[2])[[1]]
 codeLine(lw)
-codeLine(sal_lw, step =c(1, 3))
+codeLine(sal_lw, step =c(1, 2))
 ```
 
 - Coerce methods available:
