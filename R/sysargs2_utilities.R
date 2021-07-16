@@ -5,7 +5,17 @@
 ###################
 ## Load Workflow ##
 ###################
-loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
+loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path="param/cwl") {
+    if(is.null(dir_path)) {
+        dir_path <- ""
+        cwlfiles <- list(cwl=wf_file,
+                         yml=input_file,
+                         dir_path=NA)
+    } else if(!is.null(dir_path)){
+        cwlfiles <- list(cwl= wf_file,
+                         yml=input_file,
+                         dir_path=normalizePath(dir_path))
+    } else stopifnot(is.character(dir_path))
     if(any(is(wf_file)=="list")) {
         wf <- wf_file
     } else {
@@ -20,21 +30,14 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     }
   modules <- input$ModulesToLoad
   if(is.null(modules)) modules <- list()
-  if(is.null(dir_path)){
-      cwlfiles <- list(cwl=NA, yml=NA, dir_path=NA)
-  } else {
-      cwlfiles <- list(cwl=normalizePath(file.path(dir_path, wf_file)), 
-                       yml=normalizePath(file.path(dir_path, input_file)), 
-                       dir_path=normalizePath(dir_path))
-  }
   inputvars <- list()
-  if(tolower(wf$class) == "workflow") { 
+  if(tolower(wf$class) == "workflow") {
     steps <- names(wf$steps)
     cwlfiles$steps <- steps
     cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
     names(cltpaths) <- strsplit(basename(cltpaths), ".cwl")
     cwlfiles$cltpaths <- cltpaths
-    cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE) 
+    cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE)
     names(cltlist) <- sapply(seq_along(steps), function(x) wf$steps[[steps[x]]]$run)
     #names(cltlist) <- steps
     cmdlist <- sapply(names(cltlist), function(x) list(NULL))
@@ -53,7 +56,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
     cwlfiles$steps <- strsplit(basename(wf_file), ".cwl")[[1]]
     cwlfiles$output_names <-  names(cltlist[[1]]$outputs)
     WF <- list(modules=modules, wf=list(), clt=cltlist, yamlinput=input, cmdlist=cmdlist,
-               input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars, 
+               input=myinput, output=myoutput, files=cwlfiles, inputvars=inputvars,
                cmdToCwl=list(), status=list(), internal_outfiles=list())
   } else {
     stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
@@ -74,7 +77,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path=".") {
         mytargets <- yaml::read_yaml(targets)
       }
       targetsheader <- readLines(normalizePath(file.path(targets)))
-      targetsheader <- targetsheader[grepl("^#", targetsheader)] 
+      targetsheader <- targetsheader[grepl("^#", targetsheader)]
       WF$files["targets"] <- file.path(targets)
       WF <- c(list(targets=mytargets, targetsheader=list(targetsheader=targetsheader)), WF)
     }
@@ -98,23 +101,23 @@ loadWF <- loadWorkflow
 ## Render WF for all samples in targets slot ##
 ###############################################
 renderWF <- function(WF, inputvars=NULL) {
-  if(any(length(cmdlist(WF)[[1]])!=0)) stop("Argument 'WF' needs to be assigned an object of class 'SYSargs2' and an object created by the 'loadWorkflow' function")  
+  if(any(length(cmdlist(WF)[[1]])!=0)) stop("Argument 'WF' needs to be assigned an object of class 'SYSargs2' and an object created by the 'loadWorkflow' function")
   ids <- names(targets(WF))
   if(length(ids)==0) ids <- "defaultid"
   bucket <- sapply(ids, function(x) "", simplify=FALSE)
   bucketlist <- list(cmd=bucket, input=bucket, output=bucket)
   if(length(targets(WF))==0){
     if(!is.null(inputvars)){
-      
+
     }
   }
   for(i in ids) {
-    tmplist <- .renderWFsingle(WF=WF, id=i, inputvars=inputvars) 
+    tmplist <- .renderWFsingle(WF=WF, id=i, inputvars=inputvars)
     bucketlist[["cmd"]][[i]] <- tmplist[["cmd"]]
     bucketlist[["input"]][[i]] <- tmplist[["input"]]
     bucketlist[["output"]][[i]] <- tmplist[["output"]]
   }
-  WF <- as(WF, "list") 
+  WF <- as(WF, "list")
   WF$cmdlist <- bucketlist$cmd
   WF$input <- bucketlist$input
   WF$output <- bucketlist$output
@@ -133,7 +136,7 @@ renderWF <- function(WF, inputvars=NULL) {
 ###############################################################
 updateWF <- function(WF, write.yaml=FALSE, name.yaml="default", new_targets=NULL,
                      new_targetsheader=NULL, inputvars=NULL, silent=FALSE){
-    if(!inherits(WF, "SYSargs2")) stop("WF needs to be object of class 'SYSargs2'.")  
+    if(!inherits(WF, "SYSargs2")) stop("WF needs to be object of class 'SYSargs2'.")
     WF <- sysargs2(WF)
     if(is.null(inputvars)){
         WF$inputvars <- inputvars <- WF$inputvars
@@ -145,8 +148,8 @@ updateWF <- function(WF, write.yaml=FALSE, name.yaml="default", new_targets=NULL
         class <- WF$clt[[1]]$class
         module_load <- WF$yamlinput$ModulesToLoad[[1]]
         results_path <- WF$yamlinput$results_path$path
-        WF$clt <- write.clt(WF$cmdToCwl, cwlVersion=cwlVersion, class=class, writeout= FALSE, silent = silent) 
-        WF$yamlinput <- write.yml(WF$cmdToCwl, results_path=results_path, module_load=module_load, writeout=FALSE, silent = silent) 
+        WF$clt <- write.clt(WF$cmdToCwl, cwlVersion=cwlVersion, class=class, writeout= FALSE, silent = silent)
+        WF$yamlinput <- write.yml(WF$cmdToCwl, results_path=results_path, module_load=module_load, writeout=FALSE, silent = silent)
     } else if (length(WF$cmdToCwl)==0){
         ## targets
         if(!is.null(new_targets)){
@@ -160,7 +163,7 @@ updateWF <- function(WF, write.yaml=FALSE, name.yaml="default", new_targets=NULL
         } else{
             WF$targetsheader <- WF$targetsheader
         }
-        
+
         WF$yamlinput <- WF$yamlinput
         WF$clt <- WF$clt
         results_path <- WF$yamlinput$results_path$path
@@ -170,14 +173,14 @@ updateWF <- function(WF, write.yaml=FALSE, name.yaml="default", new_targets=NULL
     if(write.yaml==TRUE){
         if(name.yaml=="default"){
             path <- .getPath(WF$files$yml)
-            name <- paste0(.getFileName(WF$files$yml), 
+            name <- paste0(.getFileName(WF$files$yml),
                            format(Sys.time(), "%b%d%Y_%H%M"), ".yml")
             name.yaml <- file.path(path, name)
         } else{
             name.yaml <- name.yaml
         }
         yaml::write_yaml(WF$yamlinput, name.yaml)
-        if (silent != TRUE) 
+        if (silent != TRUE)
             cat("\t", "Written content of 'yamlinput(x)' to file:",  "\n",
                 name.yaml, "\n")
         WF$files$yml <- name.yaml
@@ -209,7 +212,7 @@ check.output <- function(sysargs, type="data.frame"){
         sysargs <- sysargs[names(sysargs_names)]
         for(i in seq_along(stepsWF(sysargs))){
             step.dir <- sysargs$runInfo$directory[names(steps)[i]]
-            steps[[i]] <- .check.output.sysargs2(stepsWF(sysargs)[[i]], type=type, 
+            steps[[i]] <- .check.output.sysargs2(stepsWF(sysargs)[[i]], type=type,
                                                  step.name = names(steps)[i], step.dir=step.dir)
         }
         return(steps)
@@ -222,7 +225,7 @@ check.output <- function(sysargs, type="data.frame"){
 # check.output(WF)
 
 ## check.outfiles alias
-check.outfiles <- check.output 
+check.outfiles <- check.output
 
 ##################################
 ## Unexported helper functions ##
@@ -257,7 +260,7 @@ pathInstance <- function(pathvar, input, altinput) {
     myvalue_list <- sapply(seq_along(pathvarlist), function(x) altinput[[pathvarlist[[x]][[2]]]]$default, simplify=FALSE)
   }
   enforce_list <- length(myvalue_list) == 1
-  if(any(enforce_list)) for(i in which(enforce_list)) myvalue_list[[i]] <- list(class=NULL, path=myvalue_list[[i]]) 
+  if(any(enforce_list)) for(i in which(enforce_list)) myvalue_list[[i]] <- list(class=NULL, path=myvalue_list[[i]])
   mypathvec <- list()
   for(i in seq_along(myvalue_list)){
     for(j in seq_along(myvalue_list[[i]])){
@@ -294,7 +297,7 @@ pathInstance <- function(pathvar, input, altinput) {
         extension <- extension[extension != ""]
         mypath <- c(mypath, extension)
       }
-    } 
+    }
   returnpath <- file.path(paste(mypath, collapse="/"))
   return(returnpath)
 }
@@ -306,16 +309,16 @@ pathUtils <- function(x, type, dropdir=TRUE) {
     if(type=="dirname") {
         mypath <- dirname(x)
     } else if(type=="basename") {
-        mypath <- basename(x)    
+        mypath <- basename(x)
     } else if(type=="nameroot") {
-        mypath <- gsub("(^.*)\\..*$", "\\1", basename(x))    
+        mypath <- gsub("(^.*)\\..*$", "\\1", basename(x))
     } else {
         mypath <- x # Return unchanged input if 'type' is not one the above three values
         # warning("Argument 'type' needs to be assigned one of: 'dirname', 'basename', 'nameroot'")
     }
     ## Construct output
     if(dropdir==TRUE) {
-        return(mypath) 
+        return(mypath)
     } else if(dropdir==FALSE & type!="dirname") {
         return(file.path(dirname(x), mypath))
     } else {
@@ -395,16 +398,16 @@ populateCommandline <- function(WF, cltid, exclude=exclude, mmp) {
 ####################################################################################
 injectCommandlinelist <- function(WF) {
     if(class(WF)=="SYSargs2") {
-        WF <- as(WF, "list") 
+        WF <- as(WF, "list")
     } else {
         stop("WF needs to be object of class 'SYSargs2'.")
     }
     cmdsteps <- names(WF$cmdlist)
     mmp <- list(class=c("class", "type"), path=c("path", "type"))
     exclude <- c("baseCommand", "prefix")
-    for(i in seq_along(cmdsteps)) { 
+    for(i in seq_along(cmdsteps)) {
         WF$cmdlist[[i]] <- populateCommandline(WF, cltid=cmdsteps[i], exclude=exclude, mmp)
-    } 
+    }
     ## Update inputs that depend on output of one of the previous steps
     .connectInout <- function(WF) {
         steps <- WF$wf$steps
@@ -425,9 +428,9 @@ injectCommandlinelist <- function(WF) {
                     ## Inject output string into input of corresponding downstream step
                     termname <- as.character(sapply(nestedNames(steps[[names(connected)]]), tail, 1)[connected[[1]][i]])
                     namepath <- c("cmdlist", stepnames[[names(connected)]], "inputs", termname)
-                    #fix 02Jan19 # namepath <- c("cmdlist", stepnames[[names(connected[i])]], "inputs", 
+                    #fix 02Jan19 # namepath <- c("cmdlist", stepnames[[names(connected[i])]], "inputs",
                     #                            names(steps[[names(connected[i])]][connected[[i]]][["in"]]))
-                    WF <- injectListbyName(l=WF, namepath, value=as.character(connectedoutput), type="value") 
+                    WF <- injectListbyName(l=WF, namepath, value=as.character(connectedoutput), type="value")
                 }
             }
         }
@@ -444,7 +447,7 @@ injectCommandlinelist <- function(WF) {
 ################################
 renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
     if(class(x)=="SYSargs2") {
-        x <- as(x, "list") 
+        x <- as(x, "list")
     } else {
         stop("x needs to be object of class 'SYSargs2'.")
     }
@@ -462,11 +465,11 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
             for(i in seq_along(cmdnamessub)) {
                 stdoutstr <- unlist(subsetListbyName(l=cmd, cmdnamessub[[i]]))
                 stdoutstr <- paste(redirect, stdoutstr, sep=" ")
-                cmd <- injectListbyName(l=cmd, cmdnamessub[[i]], value=stdoutstr, type="value") 
+                cmd <- injectListbyName(l=cmd, cmdnamessub[[i]], value=stdoutstr, type="value")
             }
         } else {
-          #if(dropoutput==TRUE & x$baseCommand[1]!="mkdir") x <- x[names(x) != "outputs"] 
-          if(dropoutput==TRUE) x <- x[names(x) != "outputs"] 
+          #if(dropoutput==TRUE & x$baseCommand[1]!="mkdir") x <- x[names(x) != "outputs"]
+          if(dropoutput==TRUE) x <- x[names(x) != "outputs"]
             cmd <- x
         }
         ## Collapse list to single string
@@ -474,8 +477,8 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
         return(cmd)
     }
     ## Check here for WF class instead of names once implemented
-    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "files", "inputvars", "cmdToCwl", "status", "internal_outfiles"))) { 
-        cmdstring <- sapply(names(x$cmdlist), 
+    if(all(names(x) == c("targets", "targetsheader", "modules", "wf", "clt", "yamlinput", "cmdlist", "input", "output", "files", "inputvars", "cmdToCwl", "status", "internal_outfiles"))) {
+        cmdstring <- sapply(names(x$cmdlist),
                             function(i) .renderCommandline(x=x$cmdlist[[i]], redirect=redirect),
                             simplify=FALSE)
     } else {
@@ -484,7 +487,7 @@ renderCommandline <- function(x, dropoutput=TRUE, redirect=">") {
     return(cmdstring)
 }
 
-########################################################### 
+###########################################################
 ## Helper Function to render inputs of single clt object ##
 ###########################################################
 renderInputs <- function(x=WF$clt[[1]]$inputs, returntags=list(inputBinding=c("prefix"), type="any")) {
@@ -496,8 +499,8 @@ renderInputs <- function(x=WF$clt[[1]]$inputs, returntags=list(inputBinding=c("p
     x <- x[inputnames]
     inputlist <- sapply(inputnames, function(i) {
             tmp <- c(x[[i]][[names(returntags["inputBinding"])]][returntags$inputBinding],
-                  x[[i]][names(returntags["type"])]) 
-                  # input=x[[i]][[names(returntags["type"])]]) 
+                  x[[i]][names(returntags["type"])])
+                  # input=x[[i]][[names(returntags["type"])]])
             tmp <- tmp[!sapply(tmp, length) < 1]
             tmp}, simplify=FALSE)
     inputposition <- sapply(inputnames, function(i) x[[i]]$inputBinding$position)
@@ -516,18 +519,18 @@ renderOutputs <- function(x=WF$clt[[1]]$outputs, stdout=WF$clt[[1]]$stdout, retu
     outputlist <- sapply(outputnames, function(i) {
             tmp <- c(x[[i]][[names(returntags["outputBinding"])]][returntags$outputBinding[1]],
                     x[[i]][[names(returntags["outputBinding"])]][returntags$outputBinding[2]],
-                    type=x[[i]][[names(returntags["type"])]]) 
-                    # x[[i]][[names(returntags["type"])]]) 
+                    type=x[[i]][[names(returntags["type"])]])
+                    # x[[i]][[names(returntags["type"])]])
             tmp <- tmp[!sapply(tmp, length) < 1]
             tmp}, simplify=FALSE)
     ## Remove entries 'type: Directory' since they are only relevant for CWL internals
-    types <- sapply(seq_along(outputlist), function(i) outputlist[[i]][["type"]]) 
+    types <- sapply(seq_along(outputlist), function(i) outputlist[[i]][["type"]])
     outputlist <- outputlist[tolower(types) != "directory"]
     for(i in seq_along(outputlist)) {
         check <- outputlist[[i]][["type"]]
         if(is.null(check)) check <- "absent"
         if(check == "stdout") {
-            # outputlist[[i]] <- c(outputlist[[i]]["type"], stdout=stdout) 
+            # outputlist[[i]] <- c(outputlist[[i]]["type"], stdout=stdout)
             outputlist[[i]] <- list(stdout=stdout)
         }
     }
@@ -538,7 +541,7 @@ renderOutputs <- function(x=WF$clt[[1]]$outputs, stdout=WF$clt[[1]]$stdout, retu
 ## Name unnamed ##
 ##################
 ## Yaml format may have unnamed components; not having names creates
-## problems in some cases with name-based subsetting of lists; thus the 
+## problems in some cases with name-based subsetting of lists; thus the
 ## following function assigns names to unnamed components. A tagging syntax
 ## can be used to ignore them in subsetting routines if necessary.
 nameUnnamed <- function(l) {
@@ -546,10 +549,10 @@ nameUnnamed <- function(l) {
         for(b in seq_along(l[[a]])) {
             for(c in seq_along(l[[a]][[b]])) {
                 for(d in seq_along(l[[a]][[b]][[c]])) {
-                    if(is.null(names(l[[a]][[b]][[c]][[d]])) & class(l[[a]][[b]][[c]][[d]])=="list") names(l[[a]][[b]][[c]][[d]]) <- paste0("_", seq_along(l[[a]][[b]][[c]][[d]]), "_") 
-                    if(is.null(names(l[[a]][[b]][[c]])) & class(l[[a]][[b]][[c]])=="list") names(l[[a]][[b]][[c]]) <- paste0("_", seq_along(l[[a]][[b]][[c]]), "_") 
-                    if(is.null(names(l[[a]][[b]])) & class(l[[a]][[b]])=="list") names(l[[a]][[b]]) <- paste0("_", seq_along(l[[a]][[b]]), "_") 
-                    if(is.null(names(l[[a]])) & class(l[[a]])=="list") names(l[[a]]) <- paste0("_", seq_along(l[[a]]), "_") 
+                    if(is.null(names(l[[a]][[b]][[c]][[d]])) & class(l[[a]][[b]][[c]][[d]])=="list") names(l[[a]][[b]][[c]][[d]]) <- paste0("_", seq_along(l[[a]][[b]][[c]][[d]]), "_")
+                    if(is.null(names(l[[a]][[b]][[c]])) & class(l[[a]][[b]][[c]])=="list") names(l[[a]][[b]][[c]]) <- paste0("_", seq_along(l[[a]][[b]][[c]]), "_")
+                    if(is.null(names(l[[a]][[b]])) & class(l[[a]][[b]])=="list") names(l[[a]][[b]]) <- paste0("_", seq_along(l[[a]][[b]]), "_")
+                    if(is.null(names(l[[a]])) & class(l[[a]])=="list") names(l[[a]]) <- paste0("_", seq_along(l[[a]]), "_")
                 }
             }
         }
@@ -561,14 +564,14 @@ nameUnnamed <- function(l) {
 ## Return names of nested lists (with up to 5 nesting levels) as vectors ##
 ###########################################################################
 nestedNames <- function(l, sep="_") {
-    nestednames <- lapply(seq_along(l), function(a) 
-                      lapply(seq_along(l[[a]]), function(b) 
-                             lapply(seq_along(l[[a]][[b]]), function(c) 
-                                lapply(seq_along(l[[a]][[b]][[c]]), function(d) 
-                                    lapply(seq_along(l[[a]][[b]][[c]][[d]]), function(e) 
-                                    c(names(l[a]), 
-                                      names(l[[a]][b]), 
-                                      names(l[[a]][[b]][c]), 
+    nestednames <- lapply(seq_along(l), function(a)
+                      lapply(seq_along(l[[a]]), function(b)
+                             lapply(seq_along(l[[a]][[b]]), function(c)
+                                lapply(seq_along(l[[a]][[b]][[c]]), function(d)
+                                    lapply(seq_along(l[[a]][[b]][[c]][[d]]), function(e)
+                                    c(names(l[a]),
+                                      names(l[[a]][b]),
+                                      names(l[[a]][[b]][c]),
                                       names(l[[a]][[b]][[c]][d]),
                                       names(l[[a]][[b]][[c]][[d]][e])))))))
     while(any(sapply(nestednames, is.list))) nestednames <- unlist(nestednames, recursive=FALSE)
@@ -580,9 +583,9 @@ nestedNames <- function(l, sep="_") {
 ## Find best matches among name vectors for two lists ##
 ########################################################
 findBestMatch <- function(x, y, mmp, minmatch=2) {
-	matchindex <- setNames(rep(NA, length(x)), names(x))	
+	matchindex <- setNames(rep(NA, length(x)), names(x))
 	## Perfect matches
-	matchpos <- sapply(names(y), function(j) { 
+	matchpos <- sapply(names(y), function(j) {
 					sapply(names(x), function(i) {
 						ident <- all(y[[j]] %in% x[[i]])
 						lengthcheck <- length(y[[j]]) == length(x[[i]])
@@ -595,7 +598,7 @@ findBestMatch <- function(x, y, mmp, minmatch=2) {
 		if(is.na(matchindex[i])==TRUE) matchindex[i] <- matchpos[[i]][1]
 	}
 	## Matches with tag specific terminal mismatches
-	matchpos <- sapply(names(y), function(j) { 
+	matchpos <- sapply(names(y), function(j) {
 					sapply(names(x), function(i) {
 						all(termMMatch(x=x[[i]], y=y[[j]], mmp=mmp, minmatch=minmatch, returntype="logical"))
 						})
@@ -605,8 +608,8 @@ findBestMatch <- function(x, y, mmp, minmatch=2) {
 	for(i in seq_along(matchpos)) {
 		if(is.na(matchindex[i])==TRUE) matchindex[i] <- matchpos[[i]][1]
 	}
-	## Matches with terminal (max 1) length differences 
-	matchpos <- sapply(names(y), function(j) { 
+	## Matches with terminal (max 1) length differences
+	matchpos <- sapply(names(y), function(j) {
 					sapply(names(x), function(i) {
 						ident <- all(y[[j]] %in% x[[i]][1:length(y[[j]])])
 						lengthcheck <- length(y[[j]]) >= minmatch
@@ -627,13 +630,13 @@ findBestMatch <- function(x, y, mmp, minmatch=2) {
 injectListbyName <- function(l, name_index, value, type="value") {
     ## Input validity check for l and name_index
     if(all(!c("name", "value") %in% type[1])) stop("Argument type can only be assigned one of: 'name' or 'value'.")
-    checknames <- nestedNames(l) 
+    checknames <- nestedNames(l)
     checknames <- checknames[!sapply(checknames, length) < length(name_index)]
     checknames <- sapply(checknames, function(x) which(name_index == x[seq_along(name_index)]), simplify=FALSE)
-    checknames <- checknames[sapply(checknames, length) == length(name_index)]    
+    checknames <- checknames[sapply(checknames, length) == length(name_index)]
     checkindex <- sapply(seq_along(checknames), function(x) all(checknames[[x]] == seq_along(checknames[[x]])))
     if(length(checkindex)==0) checkindex <- FALSE
-    if(any(checkindex==FALSE)) stop("Invalid 'name_index' lacking consecutive name matches in any list component.") 
+    if(any(checkindex==FALSE)) stop("Invalid 'name_index' lacking consecutive name matches in any list component.")
     if(length(name_index)==1) {
         if(type=="name") names(l)[which(names(l) %in% name_index[1])] <- value
         if(type=="value") l[[name_index[1]]] <- value
@@ -647,8 +650,8 @@ injectListbyName <- function(l, name_index, value, type="value") {
         if(type=="name") names(l[[name_index[1]]][[name_index[2]]][[name_index[3]]]) <- value
         if(type=="value") l[[name_index[1]]][[name_index[2]]][[name_index[3]]][[name_index[4]]] <- value
     } else if(length(name_index)==5) {
-        if(type=="name") names(l[[name_index[1]]][[name_index[2]]][[name_index[3]]][[name_index[4]]]) <- value 
-        if(type=="value") l[[name_index[1]]][[name_index[2]]][[name_index[3]]][[name_index[4]]][[name_index[5]]] <- value 
+        if(type=="name") names(l[[name_index[1]]][[name_index[2]]][[name_index[3]]][[name_index[4]]]) <- value
+        if(type=="value") l[[name_index[1]]][[name_index[2]]][[name_index[3]]][[name_index[4]]][[name_index[5]]] <- value
     } else {
         stop("Nesting level (length of name_index) cannot exceed 5.")
     }
@@ -660,23 +663,23 @@ injectListbyName <- function(l, name_index, value, type="value") {
 ################################
 subsetListbyName <- function(l, name_index) {
     ## Input validity check for l and name_index
-    checknames <- nestedNames(l) 
+    checknames <- nestedNames(l)
     checknames <- checknames[!sapply(checknames, length) < length(name_index)]
     checknames <- sapply(checknames, function(x) which(name_index == x[seq_along(name_index)]), simplify=FALSE)
-    checknames <- checknames[sapply(checknames, length) == length(name_index)]    
+    checknames <- checknames[sapply(checknames, length) == length(name_index)]
     checkindex <- sapply(seq_along(checknames), function(x) all(checknames[[x]] == seq_along(checknames[[x]])))
     if(length(checkindex)==0) checkindex <- FALSE
-    if(any(checkindex==FALSE)) stop("Invalid 'name_index' lacking consecutive name matches in any list component.") 
+    if(any(checkindex==FALSE)) stop("Invalid 'name_index' lacking consecutive name matches in any list component.")
     if(length(name_index)==1) {
-        lsub <- l[name_index[1]] 
+        lsub <- l[name_index[1]]
     } else if(length(name_index)==2) {
         lsub <- l[[name_index[1]]][name_index[2]]
     } else if(length(name_index)==3) {
-        lsub <- l[[name_index[1]]][[name_index[2]]][name_index[3]] 
+        lsub <- l[[name_index[1]]][[name_index[2]]][name_index[3]]
     } else if(length(name_index)==4) {
-        lsub <- l[[name_index[1]]][[name_index[2]]][[name_index[3]]][name_index[4]] 
+        lsub <- l[[name_index[1]]][[name_index[2]]][[name_index[3]]][name_index[4]]
     } else if(length(name_index)==5) {
-        lsub <- l[[name_index[1]]][[name_index[2]]][[name_index[3]]][[name_index[4]]][name_index[5]] 
+        lsub <- l[[name_index[1]]][[name_index[2]]][[name_index[3]]][[name_index[4]]][name_index[5]]
     } else {
         stop("Nesting level (length of name_index) cannot exceed 5.")
     }
@@ -691,9 +694,9 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
     if(!all(sapply(mmp, length) == 2)) stop("List components of 'mmp' need to be vectors of length = 2.")
     if(!all(sapply(names(mmp), function(x) x %in% mmp[[x]]))) stop("Names of 'mmp' list components need to match one of the entries in the corresponding list.")
     ## Check for candidate matches
-    lengthcheck <- length(x) == length(y) 
+    lengthcheck <- length(x) == length(y)
     term <- unique(c(tail(x, 1), tail(y, 1)))
-    l <- length(term)==2 
+    l <- length(term)==2
     minmatchcheck <- sum(x[-length(x)] == y[-length(y)]) >= minmatch
     index <- which(sapply(names(mmp), function(x) all(term %in% mmp[[x]])))
     p <- length(index) > 0
@@ -716,7 +719,7 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 		} else if(returntype=="logical") {
 			x <- x == y[1:length(x)]
 			x[is.na(x)] <- FALSE
-			return(x) 
+			return(x)
 		} else {
 			stop("Argument 'returntype' can only be assigned one of: 'values' or 'logical'.")
 		}
@@ -726,7 +729,7 @@ termMMatch <- function(x, y, mmp, minmatch=2, returntype="values") {
 #########################
 ##   .renderWFsingle   ##
 #########################
-.renderWFsingle <- function(WF, id, inputvars) { 
+.renderWFsingle <- function(WF, id, inputvars) {
     inputvarslist <- sapply(names(inputvars), function(x) "", simplify=FALSE)
     if(!length(names(targets(WF)))==0) (if(any(!names(inputvars) %in% colnames(targets.as.df(WF$targets)))) stop("Please note that the 'inputvars' variables need to be defined in the 'input_file'; as well it needs to match the column names defined in the 'targets' file."))
     input <- yamlinput(WF)
@@ -794,7 +797,7 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
     ## Check the class and slot
     if(!class(args)=="SYSargs2") stop("args needs to be object of class 'SYSargs2'.")
     if(all(!c("input", "output", "step") %in% slot)) stop("Argument slot can only be assigned one of: 'input' or 'output' or 'step'.")
-    
+
     ## slot input
     if(slot %in% "input"){
         ## Check the subset
@@ -817,7 +820,7 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
         if(!is.null(subset)){
             if(!any(seq_along(output(args)[[1]][[subset]]) %in% index)) stop(paste("For the 'index' argument, can only be assigned one of the following position:", paste(seq_along(output(args)[[1]][[subset]]), collapse=", ")))
         }
-        
+
         subset_output <- output(args)
         subset_sample <- as.character()
         if(all(!is.null(subset) & !is.null(index))) {
@@ -886,7 +889,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
     ## If the argument 'replace' is TRUE, it is required to specify the 'extension' argument
     if(replace!=FALSE){
         if(is.null(extension)) {
-            stop("argument 'extension' missing. The argument can only be assigned 'NULL' when no replacement is required. The argument should be assigned as a character vector with the current extension and the new one.")  
+            stop("argument 'extension' missing. The argument can only be assigned 'NULL' when no replacement is required. The argument should be assigned as a character vector with the current extension and the new one.")
         }}
     if(replace==TRUE){
         args <- as(args, "list")
@@ -942,15 +945,15 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
 ###################################################
 ##   Create CommandLineTools from Command-line   ##
 ###################################################
-createWF <- function(targets=NULL, commandLine, results_path="./results", module_load="baseCommand", file = "default", 
+createWF <- function(targets=NULL, commandLine, results_path="./results", module_load="baseCommand", file = "default",
                      overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", writeout=FALSE, silent=FALSE){
     ## TODO if is not default, module load and file
-    if(all(!is(commandLine)=="list")) stop("'commandLine' needs to be object of class 'list'.")  
+    if(all(!is(commandLine)=="list")) stop("'commandLine' needs to be object of class 'list'.")
     if(any(!c("baseCommand", "inputs", "outputs") %in% names(commandLine))) stop("Argument 'commandLine' needs to be assigned at least to: 'baseCommand', 'input' or 'output'.")
     if(all(!c("Workflow", "CommandLineTool") %in% class)) stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
     if(dir.exists(results_path)==FALSE) dir.create(path=results_path)
-    ## module_load 
-    ## 1.  module_load="baseCommand" will use the name of the software 
+    ## module_load
+    ## 1.  module_load="baseCommand" will use the name of the software
     ## 2.  module_load=c("ncbi-blast/2.2.30+", "hisat2/2.1.0") will use the specific version and names
     if(module_load == "baseCommand"){
         module_load <- commandLine$baseCommand[[1]]
@@ -975,25 +978,25 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
             }
         }
     }
-    if(file.exists(file.cwl) & overwrite == FALSE) 
-        stop(paste("I am not allowed to overwrite files; please delete existing file:", 
+    if(file.exists(file.cwl) & overwrite == FALSE)
+        stop(paste("I am not allowed to overwrite files; please delete existing file:",
                    file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
-    if(file.exists(file.yml) & overwrite == FALSE) 
-        stop(paste("I am not allowed to overwrite files; please delete existing file:", 
+    if(file.exists(file.yml) & overwrite == FALSE)
+        stop(paste("I am not allowed to overwrite files; please delete existing file:",
                    file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"))
     ## class("CommandLineTool", "Workflow")
     # WF.temp <- SYScreate("SYSargs2")
     WF.temp <- as(SYScreate("SYSargs2"), "list")
     WF.temp$wf <- list()
-    WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, writeout= writeout, silent = silent) 
-    WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, writeout=writeout, silent = silent) 
+    WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, writeout= writeout, silent = silent)
+    WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, writeout=writeout, silent = silent)
     WF.temp$modules <- WF.temp$yamlinput$ModulesToLoad
     WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
     WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
     WF.temp$output <- sapply(names(WF.temp$clt), function(x) list(NULL))
     WF.temp$internal_outfiles <- sapply(names(WF.temp$clt), function(x) list(NULL))
-    WF.temp$files <- list(cwl=file.path(file.cwl), 
-                          yml=file.path(file.yml), 
+    WF.temp$files <- list(cwl=file.path(file.cwl),
+                          yml=file.path(file.yml),
                           steps=names(WF.temp$clt))
     WF.temp$cmdToCwl <- commandLine
     ## targets
@@ -1013,10 +1016,10 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
     return(WF.temp)
 }
 
-## Usage: 
+## Usage:
 ## Example commandLine
 # "hisat2 -S ./results/_SampleName_.sam  -x ./data/tair10.fasta  -k 1  --min-intronlen 30  --max-intronlen 3000 --threads 4 -U _FASTQ_PATH1_"
-## Provide a list 
+## Provide a list
 # baseCommand <- list(baseCommand="hisat2")
 # inputs <- list(
 #   "S"=list(type="File", preF="-S", yml="./results/_SampleName_.sam"),
@@ -1028,7 +1031,7 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
 #   "U"=list(type="File", preF="-U", yml="./data/_FASTQ_PATH1_") )
 # outputs <- list("hisat2_sam"=list(type="File", "./results/_SampleName_.sam"))
 # commandLine <- list(baseCommand=baseCommand, inputs=inputs, outputs=outputs)
-# 
+#
 ## Creates a SYSargs2 object, populate all the command-line, and creates *.cwl and *.yml files
 # targets <- system.file("extdata", "targets.txt", package="systemPipeR")
 # WF <- createWF(targets=targets, commandLine, results_path="./results", module_load="baseCommand",
@@ -1040,14 +1043,14 @@ createWF <- function(targets=NULL, commandLine, results_path="./results", module
 ##   write.cwl   ##
 ###################
 write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout=TRUE, silent=FALSE) {
-  cwlVersion <- cwlVersion 
+  cwlVersion <- cwlVersion
   class <- class
   baseCommand <- commandLine$baseCommand[[1]]
   ## File
   clt <- list(cwlVersion=cwlVersion, class=class)
   ##requirements
   if(is.null(commandLine$requeriments)){
-    dump <- "do nothing" 
+    dump <- "do nothing"
   } else if(!is.null(commandLine$requeriments)) {
     requeriments <- list() ##TODO
     clt <- c(clt, list(requeriments=requeriments))
@@ -1070,15 +1073,15 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout=TRUE, s
   for(i in seq_along(commandLine$inputs)){
     if("type" %in% names(commandLine$inputs[[i]])){
       if(!c("type") %in% names(commandLine$inputs[[i]])) stop("Each element of the sublist 'inputs' in 'commandLine' needs to be defined the type of the argument, for example: type='Directory' or type='File' or type='int' or type='string'")
-      inputs[[i]]["type"] <-commandLine$inputs[[i]]$type 
-    } 
+      inputs[[i]]["type"] <-commandLine$inputs[[i]]$type
+    }
     if("preF" %in% names(commandLine$inputs[[i]])){
       if(commandLine$inputs[[i]]$preF==""){
         inputs[[i]]["inputBinding"] <- list(list(prefix=NULL))
       } else{
         inputs[[i]]["inputBinding"] <- list(list(prefix=commandLine$inputs[[i]]$preF))
       }
-    } 
+    }
     if(any(c("label", "secondaryFiles", "doc", "default", "format", "streamable") %in% names(commandLine$inputs[[i]]))){
       for(j in which(c("label", "secondaryFiles", "doc", "default", "format", "streamable") %in% names(commandLine$inputs[[i]]))){
         inputs[[i]][names(commandLine$inputs[[i]][j])] <- commandLine$inputs[[i]][names(commandLine$inputs[[i]])][[j]]
@@ -1098,7 +1101,7 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout=TRUE, s
   ## writing file
     if (writeout == TRUE) {
         yaml::write_yaml(x=clt, file = file.cwl)
-        ## print message 
+        ## print message
         if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.cwl, "\n")
     }
   clt <- list(clt)
@@ -1107,17 +1110,17 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout=TRUE, s
 }
 
 ## Usage:
-# clt_cwl <- write.clt(commandLine, cwlVersion, class, file.cwl) 
+# clt_cwl <- write.clt(commandLine, cwlVersion, class, file.cwl)
 
 ###################
 ##   write.yml   ##
 ###################
-## Write the yaml file  
+## Write the yaml file
 write.yml <- function(commandLine, file.yml, results_path, module_load, writeout=TRUE, silent=FALSE){
   inputs <- commandLine$inputs
   if(any(names(inputs)=="")) stop("Each element of the list 'commandLine' needs to be assigned a name")
   if(is.null(names(inputs))) stop("Each element of the list 'commandLine' needs to be assigned a name")
-  ##yamlinput_yml 
+  ##yamlinput_yml
   yamlinput_yml <- sapply(names(inputs), function(x) list())
   for(i in seq_along(inputs)){
       ##TODO!!!
@@ -1143,14 +1146,14 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, writeout
   ## write out the '.yml' file
   if (writeout == TRUE) {
       yaml::write_yaml(x=yamlinput_yml, file = file.yml)
-      ## print message 
+      ## print message
     if (silent != TRUE) cat("\t", "Written content of 'commandLine' to file:", "\n", file.yml, "\n")
   }
   return(yamlinput_yml)
 }
 
-## Usage: 
-# yamlinput_yml <- write.yml(commandLine, file.yml, results_path, module_load) 
+## Usage:
+# yamlinput_yml <- write.yml(commandLine, file.yml, results_path, module_load)
 
 ###################
 ##  cmdTool2wf   ##
@@ -1158,19 +1161,19 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, writeout
 ## CommandlineTool --> Workflow class
 cmdTool2wf <- function(cmdTool_path, file.cwl, writeout=TRUE, silent=FALSE){
     cmdTools <- yaml::read_yaml(file.path(cmdTool_path))
-    cwlVersion <- cmdTools$cwlVersion 
+    cwlVersion <- cmdTools$cwlVersion
     class <- "Workflow"
     ## Input
     inputs_names <- names(cmdTools$inputs)
     inputs <- sapply(inputs_names, function(x) list(cmdTools$inputs[[x]]$type))
     ## output
-    outputs <- sapply(names(cmdTools$outputs), function(x) list(NULL)) 
+    outputs <- sapply(names(cmdTools$outputs), function(x) list(NULL))
     for( i in seq_along(outputs)){
         outputs[[i]][["outputSource"]] <- paste0(cmdTools$baseCommand, "/", names(outputs)[i])
         outputs[[i]][["type"]] <- cmdTools$outputs[[i]]$type
     }
     ## Steps
-    step.in <- sapply(names(inputs), function(x) list(x)) 
+    step.in <- sapply(names(inputs), function(x) list(x))
     step.out <- paste0("[", paste0(names(outputs), collapse = ", "), "]")
     steps <- list(list(`in`=step.in, `out`=step.out, run=cmdTool_path))
     if(length( cmdTools$baseCommand) >1){
@@ -1180,12 +1183,12 @@ cmdTool2wf <- function(cmdTool_path, file.cwl, writeout=TRUE, silent=FALSE){
     }
     names(steps) <- cmdTools$baseCommand
     ## Combine
-    wf2 <- list(class= class, cwlVersion= cwlVersion, inputs=inputs, 
+    wf2 <- list(class= class, cwlVersion= cwlVersion, inputs=inputs,
                 outputs=outputs, steps=steps)
     ## write out the '.cwl' file
     if (writeout == TRUE) {
         yaml::write_yaml(x=wf2, file = file.cwl)
-        ## print message 
+        ## print message
         if (silent != TRUE) cat("\t", "Written content of 'Workflow' to file:", "\n", file.cwl, "\n")
     }
     ## Return
@@ -1194,6 +1197,6 @@ cmdTool2wf <- function(cmdTool_path, file.cwl, writeout=TRUE, silent=FALSE){
 
 # cmdTools_path <- "param/cwl/hisat2/hisat2-pe/hisat2-mapping-pe.cwl"
 # cmdTools_path <- "param/cwl/hisat2/hisat2-idx/hisat2-index.cwl"
-# 
-# ## Usage: 
-# wf <- cmdTool2wf(cmdTools_path, file.cwl = "test.cwl") 
+#
+# ## Usage:
+# wf <- cmdTool2wf(cmdTools_path, file.cwl = "test.cwl")

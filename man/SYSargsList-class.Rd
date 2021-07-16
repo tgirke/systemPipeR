@@ -41,8 +41,6 @@
 \alias{subset,SYSargsList-method}
 \alias{getColumn}
 \alias{getColumn,SYSargsList-method}
-\alias{updateColumn}
-\alias{updateColumn,SYSargsList-method}
 \alias{baseCommand}
 \alias{baseCommand,SYSargsList-method}
 \alias{SampleName}
@@ -74,20 +72,19 @@
 \alias{renameStep<-,SYSargsList-method}
 \alias{yamlinput<-}
 \alias{yamlinput<-,SYSargsList-method}
-%\alias{yamlinput<-,SYSargsList,ANY,ANY-method}
 \alias{appendCodeLine<-}
 \alias{appendCodeLine<-,SYSargsList-method}
 \alias{replaceCodeLine<-}
 \alias{replaceCodeLine<-,SYSargsList-method}
+\alias{updateColumn<-}
+\alias{updateColumn<-,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
 S4 class container for storing parameters and information of command-line- or R-based workflow.
 
-S4 class container for storing parameters of command-line- or R-based software. 
 \code{SYSargsList} instances are constructed by the \code{SYSargsList} function.
 }
-
 \usage{
 ## Constructor
 
@@ -116,7 +113,7 @@ targetsheader(x, ...)
 yamlinput(x, ...)
 cmdlist(x, ...)
 codeLine(x, ...)
-copyEnvir(x, list, new.env)
+copyEnvir(x, list = character(), new.env = globalenv(), silent = FALSE)
 viewEnvir(x)
 
 ## Subset Methods
@@ -124,7 +121,7 @@ viewEnvir(x)
 subset(x, ...)
 getColumn(x, step, position = c("outfiles", "targetsWF"), column = 1, names = SampleName(x, step))
 
-updateColumn(x, step, df, position = c("outfiles", "targetsWF"))
+
 
 ## Replacement
 
@@ -135,11 +132,12 @@ renameStep(x, step, ...) <- value
 yamlinput(x, paramName, ...) <- value
 appendCodeLine(x, after = length(x), ...) <- value
 replaceCodeLine(x, line, ...) <- value
+updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
 }
 
 \arguments{
   \item{sysargs}{
-  \code{SYSargs2} object
+  \code{SYSargs2} object.
 }
   \item{step_name}{
   character with the step index name.
@@ -148,13 +146,13 @@ replaceCodeLine(x, line, ...) <- value
   the path to \code{targets} file. The \code{targets} file can be either a simple tabular or yml file. Also, it is possible to assign \code{NULL} to run the pipeline without the 'targets' file. This can be useful for running specific workflows that do not require input files.
 }
   \item{wf_file}{
-  name and path to \code{CWL param} file.
+  name and path to \code{CWL parameters} file.
 }
   \item{input_file}{
-  name and path to \code{input} file.
+  name and path to \code{input parameters} file.
 }
   \item{dir_path}{
-  full path to the directory with the \code{CWL param} and \code{input} files.
+  full path to the directory with the \code{CWL parameters} and \code{input} files.
 }
   \item{inputvars}{
   variables list defined in the \code{input} file that matches the column names defined in the \code{targets} file.
@@ -164,12 +162,11 @@ replaceCodeLine(x, line, ...) <- value
 }
   \item{dir}{
   This option allows creating an exclusive results folder for each step in the 
-  workflow and a sub-folder for each sample defined in the targets file. All the 
-  outputs and log files for the particular step will be created in the respective
-  folders. Default is \code{dir=TRUE}.
+  workflow. All the outfiles and log files for the particular step will be created 
+  in the respective folders. Default is \code{dir=TRUE}.
 }
   \item{dependency}{
-  step previous dependency.
+  name of the step dependency.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
@@ -178,25 +175,22 @@ replaceCodeLine(x, line, ...) <- value
   An instance of class \code{SYSargsList}.
 }
   \item{step}{
-  a
+  character or numeric. Step name or index.
 }
   \item{list}{
-  a
+  a character vector naming objects to be copyied from the enviroment.
 }
   \item{new.env}{
-  a
+  An environment to copy to. Default is \code{globalenv()}.
 }
   \item{position}{
-  a
+  character. Options are \code{"outfiles" or "targetsWF"} slots.
 }
   \item{column}{
-  a
+  character or numeric. Which column will be replaces from the position argument.
 }
   \item{names}{
-  a
-}
-  \item{df}{
-  a
+  character vector. Names of the new column. 
 }
   \item{after}{
   A subscript, after which the values are to be appended.
@@ -209,7 +203,12 @@ replaceCodeLine(x, line, ...) <- value
 }
   \item{value}{
   object containing the values to be replaced to x. Values may be of the same 
-  class as the orginal values. 
+  class as the orginal values. For \code{updateColumn<-}a dataframe that must have
+  the same rows as the modifying dataframe.
+  However, if there is no column in the original dataframe. This new df will replace 
+  the empty one. If there is a non-empty dataframe, any existing columns with the 
+  same name as this new df will be replaced. Any columns that do not exist in the 
+  original column but this new df will be added to the original data.frame.
 }
   \item{...}{
   object containing the values to be replaced to x. Values may be of the same 
@@ -309,12 +308,13 @@ viewEnvir(sal)
 
 sal_sub <- subset(sal, subset_steps=1, input_targets=1:2, keep_steps = TRUE)
 targetsIn <- getColumn(sal, step=1, position = c("outfiles"))
-sal <- updateColumn(sal, step=2, df=data.frame(targetsIn), position = c("targetsWF"))
-targetsWF(sal)
 
 ## Replacement
 renameStep(sal, step=1) <- "new_echo"
 dependency(sal, step=2) <- "new_echo"
+updateColumn(sal, step=2, position = c("targetsWF")) <- data.frame(targetsIn)
+targetsWF(sal)
+
 replaceStep(sal, step=2) <- LineWise(code = {
                             hello <- "Printing a new message"
                             }, 

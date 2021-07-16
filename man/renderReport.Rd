@@ -1,21 +1,24 @@
-\name{renderReport}
-\alias{renderReport}
+\name{renderLogs}
+\alias{renderLogs}
 \title{
-Render RMarkdown Report
+Render RMarkdown Logs Report
 }
 \description{
-Render the input file to the specified output format using pandoc.
+Render the logs report file to the specified output format using pandoc.
 }
 \usage{
-renderReport(sysargslist, type = c("html_document"),  silent = FALSE)
+renderLogs(sysargs, type = "html_document", fileName = "default", silent = FALSE)
 }
 \arguments{
-  \item{sysargslist}{
-  object of class SYSargsList.
+  \item{sysargs}{
+  object of class \code{SYSargsList}.
 }
   \item{type}{
   	The R Markdown output format to convert to. Default is \code{"ALL"}.The option 
   	can be the name of a format (e.g. \code{"pdf_document"} or \code{"html_document"}).
+}
+  \item{fileName}{
+  haracter string naming a file output. Default is \code{"logs_<date>.Rmd"}.
 }
   \item{silent}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.
@@ -31,17 +34,24 @@ Daniela Cassol and Thomas Girke
 See also as \code{SYSargsList-class}.
 }
 \examples{
-\dontrun{
 ## Construct SYSargsList object from Rmd file
-library(systemPipeRdata)
-script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- tempdir()
-SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
-sysargslist <- initWF(sysconfig ="SYSconfig.yml")
-sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
-sysargslist <- runWF(sysargslist = sysargslist, steps = "ALL")
-renderReport(x=sysargslist)
+sal <- SPRproject(overwrite=TRUE)
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+
+## Constructor and `appendStep<-`
+appendStep(sal) <- SYSargsList(step_name = "echo", 
+                               targets=targetspath, dir=TRUE,
+                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+appendStep(sal) <- LineWise(code = {
+                            hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
+                            }, 
+                            step_name = "R_read", 
+                            dependency = "echo")
+\dontrun{
+sal <- runWF(sal)
+sal <- renderLogs(sal)
 }
 }
 \keyword{ utilities }

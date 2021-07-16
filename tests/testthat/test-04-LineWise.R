@@ -44,7 +44,7 @@ test_that("check_LineWise_test", {
     appendCodeLine(lw) <- "6+7"
     expect_equal(as.character(lw[4]$codeLine), "6 + 7")
    ## Error
-    expect_error(codeLine(sal[4]))
+    expect_error(codeLine(sal, step=4))
     ## Replacements SYSargsList
     replaceCodeLine(sal, step=1, line=1) <- "5+5"
     codeLine(sal[1])
@@ -53,7 +53,7 @@ test_that("check_LineWise_test", {
     codeLine(sal[1])
     expect_equal(as.character(stepsWF(sal[1])[[1]]$codeLine[2]), "66 + 55")
    #runWF()
-   sal <- runWF(sal[1:3])
+   sal <- runWF(sal, steps = 1:3)
    expect_setequal(sal$statusWF[[1]]$status.summary, "Success")
    ## Methods
    expect_setequal(status(stepsWF(sal)[[1]])$status.summary, "Success")

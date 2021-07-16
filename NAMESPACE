@@ -142,7 +142,7 @@ exportMethods(
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
     "dependency", "projectInfo", "runInfo", 
-    "sysargslist", "subset", "stepName", "getColumn", "updateColumn",
+    "sysargslist", "subset", "stepName", "getColumn", "updateColumn<-",
     "SampleName", "viewEnvir", "copyEnvir",  
     "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
     ## LineWise
@@ -174,9 +174,9 @@ export(
     "targets.as.df", "targets.as.list", "evalCode", "tryPath", "tryCL", "tryCMD",
     "configWF", "config.param", 
     # SYSargsList
-    "SPRproject", "SYSargsList", "runWF", "renderReport", "check.outfiles", "createParamFiles", 
+    "SPRproject", "SYSargsList", "runWF", "check.outfiles", "createParamFiles", 
     "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", 
-    "appendParam",  "plotWF", 
+    "appendParam",  "plotWF", "renderLogs",
     ## LineWise
     "importWF", "LineWise"
 )  
