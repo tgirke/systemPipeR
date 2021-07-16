@@ -58,7 +58,7 @@ setGeneric(name = "stepName", def = function(x) standardGeneric("stepName"))
 setGeneric(name = "getColumn", def = function(x, step, position = c("outfiles", "targetsWF"), column = 1, names = SampleName(x, step)) standardGeneric("getColumn"))
 setGeneric(name = "updateColumn", def = function(x, step, df, position = c("outfiles", "targetsWF")) standardGeneric("updateColumn"))
 setGeneric(name = "viewEnvir", def = function(x) standardGeneric("viewEnvir"))
-setGeneric(name = "copyEnvir", def = function(x, list, new.env) standardGeneric("copyEnvir"))
+setGeneric(name = "copyEnvir", def = function(x, list = character(), new.env = globalenv(), silent=FALSE) standardGeneric("copyEnvir"))
 ## Coerce back to list: as(SYSargsList, "list")
 setGeneric(name = "sysargslist", def = function(x) standardGeneric("sysargslist"))
 ## Replacement methods

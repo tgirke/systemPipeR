@@ -267,7 +267,8 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
         args.run <- runRcode(args.run, step=single.step, file_log=file_log, envir=envir, force=force)
         stepsWF(args2, i) <- args.run
         statusWF(args2, i) <- args.run$status
-        ## Stop workflow
+        assign("args2", get(as.character(as.list(match.call())$sysargs), envir), environment())
+       ## Stop workflow
         if(is.element("Warning", unlist(args.run$status$status.summary))){
           if(warning.stop==TRUE) {
             on.exit(return(args2))
@@ -289,9 +290,9 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
   }
   if(saveEnv == TRUE){
     envPath <- file.path(sysproj, "sysargsEnv.rds")
-    if(any(as.character(as.list(match.call())$sysargs) %in% ls(sysargs@runInfo$env, all.names = TRUE))){
-      rm(list=as.character(as.list(match.call())$sysargs), envir = sysargs@runInfo$env )
-    }
+    # if(any(as.character(as.list(match.call())$sysargs) %in% ls(sysargs@runInfo$env, all.names = TRUE))){
+    #   rm(list=as.character(as.list(match.call())$sysargs), envir = sysargs@runInfo$env )
+    # }
     saveRDS(args2$runInfo$env, envPath)
     args2[["projectInfo"]][["envir"]] <- envPath
   }

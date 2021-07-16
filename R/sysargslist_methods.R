@@ -431,9 +431,9 @@ setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x) {
 })
 
 ## copyEnvir() methods for SYSargslist
-setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list = character(), new.env = globalenv()) {
+setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list = character(), new.env = globalenv(), silent=FALSE) {
     envir <- x@runInfo$env
-    print(envir)
+    if(!silent) print(envir)
     if (length(list) == 0) {
         list <- ls(envir, all.names = TRUE)
     } else {
@@ -442,9 +442,8 @@ setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, l
     for (l in list) {
         assign(l, get(l, envir), new.env)
     }
-    cat(paste0("Copying to 'new.env': ", "\n", paste0(list, collapse = ", ")))
+    if(!silent) cat(paste0("Copying to 'new.env': ", "\n", paste0(list, collapse = ", ")))
 })
-
 
 ## Replacement method for SYSargsList using "[[" operator
 setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, j, value) {
