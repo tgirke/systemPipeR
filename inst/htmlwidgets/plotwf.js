@@ -12,9 +12,8 @@ HTMLWidgets.widget({
       renderValue: function(x) {
         // don't know why Rmd like to append this to table and doesn't give it a </div> closing, remove it
         if (x.rmd) x.dot = x.dot.replaceAll(`<div class='horizontal-scroll'>`, '');
-
+        var plot = document.querySelector(`#${x.plotid}`);
         function makeResponsive(plotid){
-         var plot = document.querySelector(`#${plotid}`);
          if (plot) {
           if (plot.width) {plot.removeAttribute("width")}
           if (plot.height) {plot.removeAttribute("height")}
@@ -35,6 +34,7 @@ HTMLWidgets.widget({
           if(singlePage) document.querySelector('body').style.padding = '0';
 
           if(x.responsive) makeResponsive(x.plotid);
+          document.dispatchEvent(new Event('wf_plot_created'));
         })
         .catch(e => {
           var p = document.createElement("pre");
@@ -50,3 +50,5 @@ HTMLWidgets.widget({
     };
   }
 });
+
+
