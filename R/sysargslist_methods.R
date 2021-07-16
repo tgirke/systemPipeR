@@ -766,28 +766,30 @@ setReplaceMethod("replaceStep", c("SYSargsList"), function(x, step, step_name = 
 setReplaceMethod("renameStep", c("SYSargsList"), function(x, step, ..., value) {
     if (length(step) != length(value)) stop("value argument needs to be the same length of the step for rename")
     if (inherits(value, "character")) {
-        if (any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
-        value <- gsub("[[:space:]]", "_", value)
-        original <- names(x@stepsWF)[step]
-        names(x@stepsWF)[step] <- value
-        names(x@statusWF)[step] <- value
-        names(x@dependency)[step] <- value
-        names(x@targetsWF)[step] <- value
-        names(x@outfiles)[step] <- value
-        # names(x@SEobj)[step] <- value
-        names(x@targets_connection)[step] <- value
-        if (!is.null(x$runInfo$directory)) {
-            names(x@runInfo$directory)[step] <- value
-        }
-    } else {
+      if (any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
+      value <- gsub("[[:space:]]", "_", value) } else {
         stop("Replace value needs to be assigned an 'character' name for the workflow step.")
-    }
-    ## check in dependency step
-    x[["dependency"]] <- lapply(x$dependency, function(y) gsub(original, value, y))
-    ## check in targets_connection step
-    x[["targets_connection"]] <- sapply(x$targets_connection, function(y)
+        }
+    for (i in step){
+      original <- names(x@stepsWF)[i]
+      names(x@stepsWF)[i] <- value[i]
+      names(x@statusWF)[i] <- value[i]
+      names(x@dependency)[i] <- value[i]
+      names(x@targetsWF)[i] <- value[i]
+      names(x@outfiles)[i] <- value[i]
+      # names(x@SEobj)[i] <- value
+      names(x@targets_connection)[i] <- value[i]
+      if (!is.null(x$runInfo$directory)) {
+        names(x@runInfo$directory)[i] <- value[i]
+        }
+      ## check in dependency step
+      x[["dependency"]] <- lapply(x$dependency, function(y) gsub(original, value[i], y))
+      ## check in targets_connection step
+      x[["targets_connection"]] <- sapply(x$targets_connection, function(y)
         if(!is.null(y)) lapply(y, function(w) if(names(w) == "targets_step") 
-            sub(original, value, w) else w))
+          sub(original, value[i], w) else w))
+      }
+  ## Save
     if (!is.null(x$projectInfo$sysargslist)) {
         x <- .check_write_SYSargsList(x)
     }
