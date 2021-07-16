@@ -176,7 +176,7 @@ export(
     # SYSargsList
     "SPRproject", "SYSargsList", "runWF", "renderReport", "check.outfiles", "createParamFiles", 
     "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", 
-    "appendParam",  "plotWF", "renderLogs"
+    "appendParam",  "plotWF", "renderLogs",
     ## LineWise
     "importWF", "LineWise"
 )  
