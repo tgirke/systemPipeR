@@ -4,7 +4,7 @@ fq1:
 outdir:
   class: Directory
   path: ./results/fastqc
-threads: '4'
+threads: 4
 results_path:
   class: Directory
   path: ./results

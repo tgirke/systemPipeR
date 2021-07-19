@@ -16,6 +16,7 @@ bibliography: bibtex.bib
 editor_options: 
   markdown: 
     wrap: 80
+  chunk_output_type: console
 ---
 
 ```{r, include=FALSE}
@@ -103,12 +104,13 @@ workflows accordingly.
 
 - Load sample data and directory structure
 
-```{r genNew_wf, eval=TRUE, }
-systemPipeRdata::genWorkenvir(workflow="new", mydirname = "spr_project")
-setwd("spr_project")
+```{r genNew_wf, eval=TRUE}
+systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
+
 ```
 
-```{r, include=FALSE}
+```{r, include=FALSE, warning=FALSE}
+setwd("spr_project")
 knitr::opts_knit$set(root.dir = 'spr_project')
 ```
 
@@ -141,51 +143,25 @@ outfiles(sal)
 appendStep(sal) <- LineWise(code = {
                             hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
                             }, 
-                            step_name = "R_read", 
+                            step_name = "R_getCol", 
                             dependency = "echo")
 ```
 
-```{r, eval=TRUE}
-appendStep(sal) <- LineWise(code = {
-                           log(-1)
-                            }, 
-                            step_name = "R_read2", 
-                            dependency = "R_read")
-```
+- Add R Step which updates the sal object
 
-```{r, eval=TRUE}
+```{r}
 appendStep(sal) <- LineWise(code = {
-                           Sys.sleep(70)
-                            }, 
-                            step_name = "R_read3", 
-                            dependency = "R_read2")
+                  updateColumn(sal, step=1, 'targetsWF') <- data.frame(newcol=matrix(unlist(hello), nrow=length(hello), byrow=TRUE))
+                  }, 
+                  step_name = "R_updateCol", 
+                  dependency = c("echo", "R_getCol"))
 ```
 
 - Run workflow
 
 ```{r, eval=FALSE}
-sal <- runWF(sal)
-sal
-
-sal2 <- SPRproject(overwrite=TRUE, envir = new.env()) 
-targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
-appendStep(sal2) <- SYSargsList(step_name = "echo", 
-                               targets=targetspath, dir=TRUE,
-                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
-                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
-                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
-
-appendStep(sal2) <- LineWise(code = {
-    updateColumn(sal2, step=1, data.frame(sal2$targetsWF$echo$Message), 'targetsWF')
-    a <- 1
-    }, 
-step_name = "R_read", 
-dependency = "echo")
-
-sal3 <- runWF(sal2)
-sal3$targetsWF
-sal2$targetsWF
-
+sal <- runWF(sal, steps = c(1,2,3))
+targetsWF(sal)
 ```
 
 - Visualize workflow
@@ -198,6 +174,12 @@ plotWF(sal, show_legend = TRUE, width = "80%", height="250px", rstudio = TRUE)
 
 ```{r, eval=TRUE}
 statusWF(sal)
+```
+
+- Log Reports
+
+```{r, eval=FALSE}
+sal <- renderLogs(sal)
 ```
 
 - Append steps from R Markdown
