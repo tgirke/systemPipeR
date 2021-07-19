@@ -175,9 +175,10 @@ status(WF)
 ## The subsetting operator '[' allows to select specific command-line
 WF2 <- WF[1:2]
 
+\dontrun{
 ## Execute SYSargs2 on single machine
 WF2 <- runCommandline(WF2)
-
+}
 \dontrun{
 ## Execute SYSargs2 on multiple machines of a compute cluster. The following
 ## example uses the conf and template files for the Slurm scheduler. Please 
