@@ -632,6 +632,9 @@ makeDot <- function(df,
 
 .buildDF <- function(sal) {
     sal_temp <- sal
+    if(length(sal_temp)==0){
+        stop("Workflow has no steps. Please make sure to add a step to the workflow.")
+    }
     df <- data.frame(step_name = stepName(sal_temp))
     dep <- dependency(sal_temp)
     for (i in seq_along(dep)) {

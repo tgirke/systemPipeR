@@ -97,7 +97,8 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     ## SYSargs2 class ##
     ## Check if the command is in the PATH
     if(!baseCommand(args) == c("bash")){
-      tryCatch(system(baseCommand(args), ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", baseCommand(args), ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+      #tryCatch(system(baseCommand(args), ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", baseCommand(args), ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
+      tryCMD(command=baseCommand(args))
     }
     ## Workflow Name (Workflow OR CommandLineTool class)
     if(length(wf(args)$steps)==0){

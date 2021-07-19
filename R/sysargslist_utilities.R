@@ -1147,28 +1147,33 @@ SYScreate <- function(class) {
 #########################################################################################
 ## Function to check if the command line / Software is installed and set in your PATH ##
 #########################################################################################
-tryCL <- function(command) {
+tryCMD <- function(command) {
   if(command=="fastqc") command <- "fastqc --version"
+  if(command=="gunzip") command <- "gunzip -h"
+  if(command=="gzip") command <- "gzip -h"
   tryCatch(
     {
       system(command, ignore.stdout = TRUE, ignore.stderr = TRUE)
-      print("All set up, proceed!")
+      #print("All set up, proceed!")
+      return("All set up, proceed!")
     },
     warning = function(w) {
       cat(paste0(
         "ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
         "Please make sure to configure your PATH environment variable according to the software in use."
       ), "\n")
+      invisible(return("error"))
     }
   )
 }
 
 ## Usage:
-# tryCL(command="R")
-# tryCL(command="blastp")
-# tryCL(command="fastqc")
+# tryCMD(command="R")
+# tryCMD(command="blastp")
+# tryCMD(command="fastqc")
+# tryCMD(command="gzip")
 
-tryCMD <- tryCL 
+tryCL <- tryCMD
 ########################################################
 ## Function to check if the Path (file or dir) exists ##
 ########################################################
