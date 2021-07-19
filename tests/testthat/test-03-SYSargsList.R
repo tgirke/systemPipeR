@@ -37,10 +37,10 @@ test_that("check_SYSargsList_test", {
     expect_length(sal, 1)
     expect_length(cmdlist(sal)[[1]], 3)
     ## runWF()
-    sal <- runWF(sal)
-    expect_setequal(sal$statusWF[[1]]$status.summary, "Success")
-    check <- check.output(sal)
-    expect_setequal(check$example$Existing_Files, "1")
+    # sal <- runWF(sal)
+    # expect_setequal(sal$statusWF[[1]]$status.summary, "Success")
+    # check <- check.output(sal)
+    # expect_setequal(check$example$Existing_Files, "1")
     ## replacement methods
     renameStep(sal, 1) <- "newStep"
     expect_error(appendStep(sal) <- sal)

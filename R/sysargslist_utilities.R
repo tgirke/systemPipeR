@@ -799,6 +799,10 @@ renderReport <- function(sysargslist, type = c("html_document"), silent=FALSE) {
 ###########################
 ## type: c("pdf_document", "html_document")
 renderLogs <- function(sysargs, type = "html_document", fileName="default", silent=FALSE) {
+  wd <- getwd()
+  if(wd != projectInfo(sysargs)$project){
+    setwd(projectInfo(sysargs)$project)
+  }
   dir_log <- projectInfo(sysargs)$logsDir
   if (!file.exists(dir_log) == TRUE) stop("Provide valid 'sysargs' object. Check the initialization of the project.")
   if(is.null(projectInfo(sysargs)$logsFile)) {
@@ -826,6 +830,7 @@ renderLogs <- function(sysargs, type = "html_document", fileName="default", sile
     "package: systemPipeR",
     "fontsize: 14pt",
     "---",
+    "",
     "```{r, echo=FALSE, message=FALSE}",
     "library(systemPipeR)",
     "sal <- SPRproject(restart = TRUE, silent=TRUE)",
@@ -844,7 +849,8 @@ renderLogs <- function(sysargs, type = "html_document", fileName="default", sile
   }
   sysargs <- as(sysargs, "list")
   sysargs$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep="."))
-  if(silent != TRUE) cat("\t", "Written content of 'Report' to file:", paste(file_out, ext, sep="."), "\n")
+  if(silent != TRUE) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep="."), "\n")
+  setwd(wd)
   return(as(sysargs, "SYSargsList"))
 }
 

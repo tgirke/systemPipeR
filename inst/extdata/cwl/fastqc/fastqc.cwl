@@ -1,8 +1,5 @@
 cwlVersion: v1.0
 class: CommandLineTool
-arguments:
-  trimmed-only:
-    preF: --trimmed-only
 baseCommand: fastqc
 inputs:
   fq1:

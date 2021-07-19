@@ -16,6 +16,7 @@ bibliography: bibtex.bib
 editor_options: 
   markdown: 
     wrap: 80
+  chunk_output_type: console
 ---
 
 ```{r, include=FALSE}
@@ -103,12 +104,13 @@ workflows accordingly.
 
 - Load sample data and directory structure
 
-```{r genNew_wf, eval=TRUE, }
-systemPipeRdata::genWorkenvir(workflow="new", mydirname = "spr_project")
-setwd("spr_project")
+```{r genNew_wf, eval=TRUE}
+systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
+
 ```
 
-```{r, include=FALSE}
+```{r, include=FALSE, warning=FALSE}
+setwd("spr_project")
 knitr::opts_knit$set(root.dir = 'spr_project')
 ```
 
@@ -157,13 +159,8 @@ appendStep(sal) <- LineWise(code = {
 
 - Run workflow
 
-```{r, eval=TRUE}
-sal <- runWF(sal, steps = c(1,3))
-sal
-sal <- runWF(sal, step=1:2)
-sal
-sal <- runWF(sal, step=3)
-sal
+```{r, eval=FALSE}
+sal <- runWF(sal, steps = c(1,2,3))
 targetsWF(sal)
 ```
 
@@ -181,7 +178,7 @@ statusWF(sal)
 
 - Log Reports
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 sal <- renderLogs(sal)
 ```
 

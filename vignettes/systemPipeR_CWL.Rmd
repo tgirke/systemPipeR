@@ -316,7 +316,7 @@ If running the workflow in non-interactive mode, the `createParamFiles` function
 consider "yes" and returning the container.
 
 ```{r}
-cmd <- createParamFiles(command, writeParamFiles = FALSE) 
+cmd <- createParamFiles(command, writeParamFiles = FALSE)
 ```
 
 If the user chooses not to save the `param` files on the above operation, 
