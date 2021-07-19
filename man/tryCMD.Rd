@@ -26,8 +26,8 @@ Please note that not necessary the software is not installed if the message indi
 Danela Cassol
 }
 \examples{
-tryCMD(command="R") 
 \dontrun{
+tryCMD(command="R") 
 tryCMD(command="blastp") 
 tryCMD(command="hisat2") 
   }

@@ -172,7 +172,7 @@ inputvars(WF)
 cmdToCwl(WF)
 status(WF)
 
-## The subsetting operator '[' allows to select specific command-line
+## The subsetting operator '[' allows to select specific command-line/sample
 WF2 <- WF[1:2]
 
 \dontrun{
