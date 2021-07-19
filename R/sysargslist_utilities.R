@@ -600,8 +600,10 @@ read_SYSargsList <- function(sys.file){
     steps_comp <- sapply(steps, function(x) list(NULL))
     for(j in steps){
       steps_comp[j] <- yaml::yaml.load(args_comp_yml[[i]][j])
-      steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
-      steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
+      if(length(steps_comp[[j]]$status.time)!=0){
+        steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
+        steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
+      }
       steps_comp[j][[1]][[2]] <- data.frame(steps_comp[j][[1]][[2]], check.names = FALSE)
       steps_comp[j][[1]][[3]] <- data.frame(steps_comp[j][[1]][[3]])
     }
