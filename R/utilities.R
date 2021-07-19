@@ -219,7 +219,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       file.rename(from=file_log, to=file.path(logdir, dir.name, "_logs", basename(file_log)))
       args.return[["files"]][["log"]] <- file.path(logdir, dir.name, "_logs", basename(file_log))
       ## output FILES
-      if(make_bam==TRUE) args.return <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, dir.name=dir.name)$args
+      if(make_bam==TRUE) args.return <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, force=force, dir.name=dir.name)$args
       for(i in seq_along(output(args))){
         if(length(output(args)[[i]]) > 1){
             for(j in seq_along(output(args)[[i]])){
