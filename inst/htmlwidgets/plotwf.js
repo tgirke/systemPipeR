@@ -21,14 +21,17 @@ HTMLWidgets.widget({
           plot.style.height = "100%";
          }
         }
+
         var viz = new Viz();
         viz[x.plot_method](x.dot)
-        .then(function(element) {
-          element.id = x.plotid;
+        .then(function(plot_el) {
+          plot_el.id = x.plotid;
           el.style.width = x.width ? x.width: "100%";
           el.style.height = x.height ? x.height: "100%";
           el.style.overflow = "auto";
-          el.appendChild(element);
+
+          [...el.children].forEach(e => e.remove()); //clear all children before attach
+          el.appendChild(plot_el);
 
           var singlePage = document.querySelector(`#htmlwidget_container`);
           if(singlePage) document.querySelector('body').style.padding = '0';
