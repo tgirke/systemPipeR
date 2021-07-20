@@ -1,15 +1,17 @@
 ## createParamFiles ##
 createParamFiles <- function(commandline, cwlVersion = "v1.1", class = "CommandLineTool", 
                              results_path = "./results", module_load = "baseCommand", 
-                             file = "default", writeParamFiles = FALSE, 
+                             file = "default", writeParamFiles = TRUE, confirm=FALSE,
                              overwrite = FALSE, silent = FALSE) {
     commandline <- .modifyCwlParse(commandline = commandline)
-    if (interactive()) {
+    if (all(interactive() && confirm==FALSE)) {
+      
         correct <- readline(cat(
             cat(crayon::bgMagenta("*****Checking Output*****\n")),
             "Is it all correct? ", "\n",
             "Would you like to proceed now? Type a number: \n 1. Yes \n 2. No \n"
         ))
+        if(all(is.na(pmatch(c(1,2), correct)))) stop("Unrecognized response ", dQuote(correct))
     } else {
         ## For an non-interactive session
         correct <- "1"
@@ -27,13 +29,11 @@ createParamFiles <- function(commandline, cwlVersion = "v1.1", class = "CommandL
         ## Return
         return(WF)
     } else if (correct == "2") {
-        WF <- createWF(
-            targets = NULL, commandline, results_path = results_path,
-            module_load = module_load, overwrite = TRUE, cwlVersion = cwlVersion, class = class
-        )
-        return(WF)
+      message("Please try to adjust the raw command line and try again!")
     }
 }
+
+createParam <- createParamFiles
 
 ## Usage: 
 # command <- "

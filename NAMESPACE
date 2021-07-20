@@ -174,9 +174,10 @@ export(
     "targets.as.df", "targets.as.list", "evalCode", "tryPath", "tryCL", "tryCMD",
     "configWF", "config.param", 
     # SYSargsList
-    "SPRproject", "SYSargsList", "runWF", "check.outfiles", "createParamFiles", 
-    "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", 
-    "appendParam",  "plotWF", "renderLogs",
+    "SPRproject", "SYSargsList", "runWF", "check.outfiles", "plotWF", "renderLogs",
+    ## cmd2cwl
+    "createParamFiles", "createParam", "writeParamFiles", "printParam", 
+    "subsetParam", "replaceParam", "renameParam", "appendParam",
     ## LineWise
     "importWF", "LineWise"
 )  
