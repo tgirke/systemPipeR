@@ -200,6 +200,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
                   warning.stop=FALSE, error.stop=TRUE, silent=FALSE, ...) {
   # Validations
   if (!inherits(sysargs, "SYSargsList")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList'")
+  if (length(sysargs) == 0) message("Workflow has no steps. Please add a step before trying to execute the workflow.")
   if (is.null(projectInfo(sysargs)$project)) stop("Project was not initialized with the 'SPRproject' function.")
   if (!dir.exists(projectInfo(sysargs)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
@@ -1147,22 +1148,23 @@ SYScreate <- function(class) {
 #########################################################################################
 ## Function to check if the command line / Software is installed and set in your PATH ##
 #########################################################################################
-tryCMD <- function(command) {
+tryCMD <- function(command, silent=FALSE) {
   if(command=="fastqc") command <- "fastqc --version"
   if(command=="gunzip") command <- "gunzip -h"
   if(command=="gzip") command <- "gzip -h"
   tryCatch(
     {
       system(command, ignore.stdout = TRUE, ignore.stderr = TRUE)
-      #print("All set up, proceed!")
-      return("All set up, proceed!")
+      if(!silent) print("All set up, proceed!")
+      if(silent) (return("proceed"))
     },
     warning = function(w) {
-      cat(paste0(
-        "ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
-        "Please make sure to configure your PATH environment variable according to the software in use."
-      ), "\n")
-      invisible(return("error"))
+      if(silent) invisible(return("error"))
+      if (!silent)
+        cat(paste0(
+          "ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
+          "Please make sure to configure your PATH environment variable according to the software in use."
+        ), "\n") 
     }
   )
 }
