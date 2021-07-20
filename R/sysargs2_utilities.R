@@ -237,6 +237,14 @@ check.outfiles <- check.output
 pathInstance <- function(pathvar, input, altinput) {
   pathvar <- unlist(strsplit(pathvar[[1]], "/"))
   extension <- gsub("^.*\\)", "", pathvar)
+  if(grepl(".\\$\\(", pathvar[length(pathvar)])){
+      ext <- sub("\\)", "", sub(".*[$\\(]", "", pathvar[length(pathvar)])  )
+      ext <- strsplit(ext, "\\.")[[1]]
+      ext <- ext[length(ext)]
+      ext <- input[[ext]]
+      extension <- c("", paste0(".", ext))
+      pathvar <- sub(".\\$\\(.*", "", pathvar)
+  }
   pathvar <- gsub("(^.*\\)).*", "\\1", pathvar)
   pathvar <- gsub("\\$|\\(|\\)", "", pathvar)
   pathvarlist <- strsplit(pathvar, "\\.")
@@ -302,6 +310,8 @@ pathInstance <- function(pathvar, input, altinput) {
   return(returnpath)
 }
 
+# pathvar <- c("$(inputs.results_path.basename)","$(inputs.SampleName).$(inputs.ext)")
+# pathvar <- c("$(inputs.results_path.basename)","$(inputs.SampleName).sam")
 #################################################################
 ## Helper function to construct/manipulate path and file names ##
 #################################################################
@@ -877,7 +887,7 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 #########################################################
 ## Update the output location after run runCommandline ##
 #########################################################
-output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extension=NULL, make_bam=FALSE){
+output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extension=NULL, make_bam=FALSE, del_sam=TRUE){
     ## Folder name provide in the yml file
     ## this file will exists, because its create on the definition of the project or when runCommandline is used.
     # if(is.null(args$yamlinput$results_path$path)) {
@@ -909,10 +919,14 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
                         if(grepl("bam", args$output[[i]][[j]][k])){
                             args$output[[i]][[j]][length(args$output[[i]][[j]])+1] <- paste0(gsub("\\.bam$", "", args$output[[i]][[j]][k]), ".bam.bai")
                         }
+                        if(del_sam==FALSE){
+                            args$output[[i]][[j]] <- append(args$output[[i]][[j]], args$internal_outfiles[[i]][[j]][k], after = 0)
+                        }
+                        }
                     }
                 }
             }
-        }
+        #}
         args <- as(args, "SYSargs2")
     }
     if(dir==TRUE){

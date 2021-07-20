@@ -98,7 +98,11 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     ## Check if the command is in the PATH
     if(!baseCommand(args) == c("bash")){
       #tryCatch(system(baseCommand(args), ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", baseCommand(args), ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
-      tryCMD(command=baseCommand(args))
+      cmd_test <- tryCMD(command=baseCommand(args), silent=TRUE)
+      if(cmd_test == "error"){
+        stop(paste0("\n", baseCommand(args), ": command not found. ", 
+                          '\n', "Please make sure to configure your PATH environment variable according to the software in use."))
+      }
     }
     ## Workflow Name (Workflow OR CommandLineTool class)
     if(length(wf(args)$steps)==0){
@@ -119,7 +123,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     }
     ## Check if expected files exists or not
     ## Important, this happen in the new location in the case of dir=TRUE
-    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, force=force)
+    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, force=force, del_sam = del_sam)
     args.return <- return$args_complete
     completed <- return$completed
     args <- return$args
@@ -195,6 +199,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     ## Status and log.files
     df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
     colnames(df.status) <- files(args.return)$steps
+    if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, force=force, dir.name=dir.name, del_sam = del_sam)$args_complete
     check <- check.output(args)
     df.status.f <- cbind(check, df.status)
     df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
@@ -220,7 +225,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       file.rename(from=file_log, to=file.path(logdir, dir.name, "_logs", basename(file_log)))
       args.return[["files"]][["log"]] <- file.path(logdir, dir.name, "_logs", basename(file_log))
       ## output FILES
-      if(make_bam==TRUE) args.return <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, force=force, dir.name=dir.name)$args
+      #if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, force=force, dir.name=dir.name, del_sam = del_sam)$args_complete
       for(i in seq_along(output(args))){
         if(length(output(args)[[i]]) > 1){
             for(j in seq_along(output(args)[[i]])){
@@ -361,12 +366,12 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 ## .checkOutArgs2 function: internal function to check
 ## if the expected output has been created  ##
 ########################################################
-.checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name, force){
+.checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name, force, del_sam){
   args_complete <- args
   if(make_bam==TRUE) {
     ## Validation for Hisat2
-    if(any(grepl("samtools", names(clt(args_complete))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'")}
-    args_complete <- output_update(args_complete, dir=dir, dir.name=dir.name, replace=TRUE, extension=c(".sam", ".bam"), make_bam=make_bam)
+    if(any(grepl("samtools", names(clt(args_complete))))){ stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'", call. = FALSE)}
+    args_complete <- output_update(args_complete, dir=dir, dir.name=dir.name, replace=TRUE, extension=c(".sam", ".bam"), make_bam=make_bam, del_sam = del_sam)
   }
   if(dir==TRUE) {
     args_complete <- output_update(args_complete, dir=dir, dir.name=dir.name)
