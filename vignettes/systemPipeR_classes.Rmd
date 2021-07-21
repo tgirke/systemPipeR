@@ -38,6 +38,99 @@ in data analysis.
 This tutorial will walk through diverse examples, and demonstrating all the new 
 features and utilities on how to develop a new workflow from scratch.
 
+## Quick Example
+
+- Load sample data and directory structure
+
+```{r genNew_wf, eval=TRUE}
+systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
+```
+
+```{r, include=FALSE, warning=FALSE}
+setwd("spr_project")
+knitr::opts_knit$set(root.dir = 'spr_project')
+```
+
+- Create a project
+
+```{r SPRproject_ex, eval=TRUE}
+sal <- SPRproject(overwrite=TRUE) 
+```
+
+- Add first step
+
+```{r firstStep, eval=TRUE}
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+appendStep(sal) <- SYSargsList(step_name = "echo", 
+                               targets=targetspath, dir=TRUE,
+                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+```
+
+```{r sal, eval=TRUE}
+sal
+cmdlist(sal)
+outfiles(sal)
+```
+
+- Add a R step
+
+```{r, eval=TRUE}
+appendStep(sal) <- LineWise(code = {
+                            hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
+                            }, 
+                            step_name = "R_getCol", 
+                            dependency = "echo")
+```
+
+- Add R Step which updates the sal object
+
+```{r}
+appendStep(sal) <- LineWise(code = {
+                  updateColumn(sal, step=1, 'targetsWF') <- data.frame(newcol=matrix(unlist(hello), nrow=length(hello), byrow=TRUE))
+                  }, 
+                  step_name = "R_updateCol", 
+                  dependency = c("echo", "R_getCol"))
+```
+
+- Run workflow
+
+```{r, eval=Sys.info()[['sysname']]!="Windows"}
+sal <- runWF(sal, steps = c(1,2,3))
+targetsWF(sal)
+```
+
+- Visualize workflow
+
+```{r, eval=TRUE}
+plotWF(sal, show_legend = TRUE, width = "80%", height="250px", rstudio = TRUE)
+```
+
+- Check workflow status
+
+```{r, eval=TRUE}
+statusWF(sal)
+```
+
+- Log Reports
+
+```{r, eval=FALSE}
+sal <- renderLogs(sal)
+```
+
+## How to get help for systemPipeR
+
+All questions about the package or any particular function should be posted to 
+the Bioconductor support site (https://support.bioconductor.org)[https://support.bioconductor.org]. 
+
+Please add the "systemPipeR" tag to your question, and the package authors will 
+automatically receive an alert. 
+
+We appreciate receiving reports of bugs in the functions or in the documentation, 
+and suggestions for improvement. For that, please consider opening an issue at
+[GitHub](https://github.com/tgirke/systemPipeR/issues/new). 
+
 # Workflow design structure using `SYSargsList`
 
 The flexibility of `systemPipeR's` new interface workflow management class is
@@ -104,9 +197,8 @@ workflows accordingly.
 
 - Load sample data and directory structure
 
-```{r genNew_wf, eval=TRUE}
+```{r genNew_wf2, eval=TRUE}
 systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
-
 ```
 
 ```{r, include=FALSE, warning=FALSE}
@@ -116,13 +208,13 @@ knitr::opts_knit$set(root.dir = 'spr_project')
 
 - Create a project
 
-```{r SPRproject_ex, eval=TRUE}
+```{r SPRproject_ex2, eval=TRUE}
 sal <- SPRproject(overwrite=TRUE) 
 ```
 
 - Add first step
 
-```{r firstStep, eval=TRUE}
+```{r firstStep2, eval=TRUE}
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "echo", 
                                targets=targetspath, dir=TRUE,
@@ -131,7 +223,7 @@ appendStep(sal) <- SYSargsList(step_name = "echo",
                                inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 ```
 
-```{r sal, eval=TRUE}
+```{r sal2, eval=TRUE}
 sal
 cmdlist(sal)
 outfiles(sal)
