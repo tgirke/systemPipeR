@@ -308,7 +308,7 @@ status_color <- function(x){
          "Pending" = crayon::bgBlue,
          "Warning" = crayon::bgYellow,
          "Error" = crayon::bgRed,
-         "Success" = crayon::bgGreen, 
+         "Success" = crayon::bgGreen,
          "Skipping" = crayon::bgCyan
   )
 }
@@ -417,7 +417,7 @@ runRcode <- function(args, step=stepName(args), file_log=NULL, envir=globalenv()
           col_out_l[[i]] <- col_out[[i]][col_out[[i]] %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
         }
         col_out_l <- col_out_l[lapply(col_out_l,length)>0]
-        
+
         if(all(sapply(col_out_l, function(x) length(x)==1))){
           col_out_df <- lapply(names(col_out_l), function(x) getColumn(args, step=x, position = "outfiles", column = col_out_l[[x]]))
           names(col_out_df) <- col_out_l
@@ -800,16 +800,21 @@ renderReport <- function(sysargslist, type = c("html_document"), silent=FALSE) {
 ###########################
 ## renderLogs function ##
 ###########################
-## type: c("pdf_document", "html_document")
-renderLogs <- function(sysargs, type = "html_document", fileName="default", silent=FALSE) {
+renderLogs <- function(sysargs, type = c("html_document", "pdf_document"), fileName="default", silent=FALSE) {
+  if(!inherits(sysargs, "SYSargsList")) stop("`sysargs` must be a 'SYSargsList' object.")
+  type <- match.arg(type, c("html_document", "pdf_document"))
+  stopifnot(is.character(fileName) && length(fileName) == 1)
+  stopifnot(is.logical(silent) && length(silent) == 1)
+
   wd <- getwd()
   if(wd != projectInfo(sysargs)$project){
     setwd(projectInfo(sysargs)$project)
+    on.exit({try(setwd(wd), TRUE)})
   }
   dir_log <- projectInfo(sysargs)$logsDir
-  if (!file.exists(dir_log) == TRUE) stop("Provide valid 'sysargs' object. Check the initialization of the project.")
+  if (!file.exists(dir_log) == TRUE) stop("Provide valid 'SYSargsList' object. Check the initialization of the project.")
   if(is.null(projectInfo(sysargs)$logsFile)) {
-    stop ("Log files not found. Please execute the 'sysargs' object.")
+    stop ("Log files not found. Please run the workflow to generate some logs.")
   } else {
     file <- projectInfo(sysargs)$logsFile
   }
@@ -819,12 +824,14 @@ renderLogs <- function(sysargs, type = "html_document", fileName="default", sile
     fileName <- fileName
   }
   log <- readLines(file)
+  if(type == "html_document") plot_path <- .prepareRmdPlot(sysargs, dir_log)
   writeLines(c(
     "---",
-    "title: 'Report'",
+    "title: '&nbsp;'",
     paste0("date: 'Last update: ", format(Sys.time(), '%d %B, %Y'), "'"),
     "output:",
     paste0("  ", type, ":"),
+    if(type == "html_document") paste0("    includes:\n      before_body: ", plot_path),
     "    number_sections: false",
     "    theme: flatly",
     "    toc: true",
@@ -834,27 +841,32 @@ renderLogs <- function(sysargs, type = "html_document", fileName="default", sile
     "fontsize: 14pt",
     "---",
     "",
-    "```{r, echo=FALSE, message=FALSE}",
-    "library(systemPipeR)",
-    "sal <- SPRproject(restart = TRUE, silent=TRUE)",
-    "plotWF(sal, in_log=TRUE)",
-    "```",
+    if(type == "html_document") "<script>$(document).on('wf_plot_created', '#htmlwidget_container svg').removeAttr('height width')});</script>",
     log),
     con = fileName)
   rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
   #rmarkdown::render(input = fileName, c('BiocStyle::html_document'), quiet = TRUE, envir = new.env())
   file_path <- .getPath(fileName)
   file_out <- .getFileName(fileName)
-  if(type=="html_document"){
-    ext <- "html"
-  } else {
-    ext <- "pdf"
-  }
+  ext <- if(type=="html_document") "html" else "pdf"
   sysargs <- as(sysargs, "list")
   sysargs$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep="."))
-  if(silent != TRUE) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep="."), "\n")
-  setwd(wd)
+  if(!silent) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep="."), "\n")
   return(as(sysargs, "SYSargsList"))
+}
+
+.prepareRmdPlot <- function(sysargs, dir_log) {
+  out_path <- file.path(dir_log, "log_plot.html")
+  plotWF(sysargs, out_format = "html", out_path = out_path, rmarkdown = TRUE, in_log = TRUE, rstudio = TRUE)
+  # modify HTML content
+  if(!file.exists(out_path)) stop("Cannot create the workflow plot for logs at\n", out_path)
+  plot_content <- readLines(out_path)
+  writeLines(c(
+    plot_content[seq(13)],
+    '<h1>SPS Workflow Log Report</h1>',
+    plot_content[seq(14, length(plot_content))]
+  ), con = out_path)
+  out_path
 }
 
 ## Usage
@@ -1164,7 +1176,7 @@ tryCMD <- function(command, silent=FALSE) {
         cat(paste0(
           "ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
           "Please make sure to configure your PATH environment variable according to the software in use."
-        ), "\n") 
+        ), "\n")
     }
   )
 }
