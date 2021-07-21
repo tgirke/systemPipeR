@@ -34,7 +34,8 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path="param/cwl"
   if(tolower(wf$class) == "workflow") {
     steps <- names(wf$steps)
     cwlfiles$steps <- steps
-    cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
+    #cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
+    cltpaths <- sapply(seq_along(steps), function(x) file.path(dir_path, wf$steps[[steps[x]]]$run))
     names(cltpaths) <- strsplit(basename(cltpaths), ".cwl")
     cwlfiles$cltpaths <- cltpaths
     cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE)
@@ -932,7 +933,7 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
     if(dir==TRUE){
         args <- as(args, "list")
         ## Results path
-        logdir <- normalizePath(args$yamlinput$results_path$path)
+        logdir <- file.path(args$yamlinput$results_path$path)
         ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
         if(is.null(dir.name)) {
             cwl.wf <- file.path(logdir, .getFileName(args$files$cwl))

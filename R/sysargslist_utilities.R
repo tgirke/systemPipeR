@@ -15,12 +15,12 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
   ## Main folder structure
   dirProject <- .dirProject(projPath=projPath, data = data, param = param, results = results, silent = silent)
   ## sys.file full path
-  sys.file <- file.path(projPath, sys.file)
+  sys.file <- file.path(sys.file)
   ## log Folder
-  logs.dir <- file.path(projPath, logs.dir)
+  logs.dir <- file.path(logs.dir)
   if (file.exists(logs.dir) == FALSE) {
     dir.create(logs.dir, recursive = TRUE)
-    if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
+    if (silent != TRUE) cat("Creating directory '", file.path(logs.dir), "'", sep = "", "\n")
   } else if (file.exists(logs.dir) == TRUE) {
     if (restart == FALSE) {
       if (file.exists(logs.dir)) {
@@ -29,7 +29,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
         } else if(overwrite==TRUE){
           unlink(logs.dir, recursive = TRUE)
           dir.create(logs.dir, recursive = TRUE)
-          if (silent != TRUE) cat("Creating directory '", normalizePath(logs.dir), "'", sep = "", "\n")
+          if (silent != TRUE) cat("Creating directory '", file.path(logs.dir), "'", sep = "", "\n")
         }
       }
     } else if (restart == TRUE) {
@@ -56,7 +56,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
   }
   ## Return SYSargsList obj - empty
   yaml::write_yaml("", file= sys.file)
-  dirProject <- c(dirProject, logsDir=logs.dir, sysargslist=normalizePath(sys.file))
+  dirProject <- c(dirProject, logsDir=logs.dir, sysargslist=sys.file)
   init <- as(SYScreate("SYSargsList"), "list")
   init$projectInfo <- dirProject
   init$runInfo <- list(env=envir)
@@ -530,8 +530,8 @@ write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", sile
   args_comp[["stepsWF"]] <- steps_comp
   ## Save file
   yaml::write_yaml(args_comp, sys.file)
-  if(silent != TRUE) cat("Creating file '", normalizePath(sys.file), "'", sep = "", "\n")
-  return(normalizePath(sys.file))
+  if(silent != TRUE) cat("Creating file '", file.path(sys.file), "'", sep = "", "\n")
+  return(sys.file)
 }
 
 # ## Usage:
@@ -623,9 +623,9 @@ read_SYSargsList <- function(sys.file){
 .dirProject <- function(projPath, data, param, results, silent){
   project <- list(
     project = projPath,
-    data = file.path(projPath, data),
-    param = file.path(projPath, param),
-    results = file.path(projPath, results)
+    data = file.path(data),
+    param = file.path(param),
+    results = file.path(results)
   )
   path <- sapply(project, function(x) suppressMessages(tryPath(x)))
   create <- NULL
@@ -789,7 +789,7 @@ renderReport <- function(sysargslist, type = c("html_document"), silent=FALSE) {
   file_out <- .getFileName(file)
   ext <- strsplit(basename(type), split = "\\_")[[1]][1]
   sysargslist <- as(sysargslist, "list")
-  sysargslist$projectInfo[["Report"]] <- normalizePath(paste0(file_path, "/", file_out, ".", ext))
+  sysargslist$projectInfo[["Report"]] <- file.path(file_path,  paste(file_out, ext, sep = "."))
   if(silent != TRUE) cat("\t", "Written content of 'Report' to file:", paste0(file_out, ".", ext), "\n")
   return(as(sysargslist, "SYSargsList"))
 }
@@ -1003,7 +1003,7 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
     append(1:(t_start[1] - 1), .) %>%
     unique()
   writeLines(file[final_lines], Rmd_outfile)
-  cat(paste("File write to", normalizePath(Rmd_outfile), "\n"))
+  cat(paste("File write to", file.path(Rmd_outfile), "\n"))
   return(rmd_df)
 }
 

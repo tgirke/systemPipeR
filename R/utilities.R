@@ -111,14 +111,14 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       cwl.wf <- strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
     }
     ## Check if "results" folders exists...
-    if(!dir.exists(normalizePath(file.path(yamlinput(args)$results_path$path))))
+    if(!dir.exists(file.path(yamlinput(args)$results_path$path)))
       stop("Please check our current directory ('getwd()').
            The PATH defined at `yamlinput(args)` was not found and it is required.")
     if(is.null(dir.name)) {
-      logdir <- normalizePath(yamlinput(args)$results_path$path)
+      logdir <- file.path(yamlinput(args)$results_path$path)
       dir.name <- cwl.wf
     } else {
-      logdir <- normalizePath(yamlinput(args)$results_path$path)
+      logdir <- file.path(yamlinput(args)$results_path$path)
       dir.name <- dir.name
     }
     ## Check if expected files exists or not
