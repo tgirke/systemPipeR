@@ -366,7 +366,7 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 ## .checkOutArgs2 function: internal function to check
 ## if the expected output has been created  ##
 ########################################################
-.checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name, force, del_sam){
+.checkOutArgs2 <- function(args, make_bam, dir=dir, dir.name, force, del_sam=TRUE){
   args_complete <- args
   if(make_bam==TRUE) {
     ## Validation for Hisat2
