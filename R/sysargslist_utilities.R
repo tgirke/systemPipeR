@@ -833,7 +833,7 @@ renderLogs <- function(
   if(type == "html_document") plot_path <- .prepareRmdPlot(sysargs, dir_log)
   writeLines(c(
     "---",
-    "title: '&nbsp;'",
+    if(type == "html_document") "title: '&nbsp;'" else "title: 'SPS Workflow Log Report'",
     paste0("date: 'Last update: ", format(Sys.time(), '%d %B, %Y'), "'"),
     "output:",
     paste0("  ", type, ":"),
