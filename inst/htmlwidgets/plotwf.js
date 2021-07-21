@@ -32,9 +32,10 @@ HTMLWidgets.widget({
 
           [...el.children].forEach(e => e.remove()); //clear all children before attach
           el.appendChild(plot_el);
-
           var singlePage = document.querySelector(`#htmlwidget_container`);
           if(singlePage) document.querySelector('body').style.padding = '0';
+
+          if (x.rmd) $(plot_el).removeAttr('height width');
 
           if(x.responsive) makeResponsive(x.plotid);
           document.dispatchEvent(new Event('wf_plot_created'));
