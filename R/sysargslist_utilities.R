@@ -800,11 +800,17 @@ renderReport <- function(sysargslist, type = c("html_document"), silent=FALSE) {
 ###########################
 ## renderLogs function ##
 ###########################
-renderLogs <- function(sysargs, type = c("html_document", "pdf_document"), fileName="default", silent=FALSE) {
+renderLogs <- function(
+  sysargs,
+  type = c("html_document", "pdf_document"),
+  fileName="default",
+  silent=FALSE,
+  open_file = TRUE) {
   if(!inherits(sysargs, "SYSargsList")) stop("`sysargs` must be a 'SYSargsList' object.")
   type <- match.arg(type, c("html_document", "pdf_document"))
   stopifnot(is.character(fileName) && length(fileName) == 1)
   stopifnot(is.logical(silent) && length(silent) == 1)
+  stopifnot(is.logical(open_file) && length(open_file) == 1)
 
   wd <- getwd()
   if(wd != projectInfo(sysargs)$project){
@@ -841,7 +847,6 @@ renderLogs <- function(sysargs, type = c("html_document", "pdf_document"), fileN
     "fontsize: 14pt",
     "---",
     "",
-    if(type == "html_document") "<script>$(document).on('wf_plot_created', '#htmlwidget_container svg').removeAttr('height width')});</script>",
     log),
     con = fileName)
   rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
@@ -852,6 +857,7 @@ renderLogs <- function(sysargs, type = c("html_document", "pdf_document"), fileN
   sysargs <- as(sysargs, "list")
   sysargs$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep="."))
   if(!silent) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep="."), "\n")
+  if(open_file) try(browseURL(file.path(file_path, paste(file_out, ext, sep="."))), TRUE)
   return(as(sysargs, "SYSargsList"))
 }
 
