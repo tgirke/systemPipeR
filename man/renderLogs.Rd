@@ -7,7 +7,9 @@ Render RMarkdown Logs Report
 Render the logs report file to the specified output format using pandoc.
 }
 \usage{
-renderLogs(sysargs, type = "html_document", fileName = "default", silent = FALSE)
+renderLogs(sysargs, type = c("html_document", "pdf_document"), 
+            fileName = "default", silent = FALSE, 
+            open_file = TRUE)
 }
 \arguments{
   \item{sysargs}{
@@ -22,6 +24,9 @@ renderLogs(sysargs, type = "html_document", fileName = "default", silent = FALSE
 }
   \item{silent}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.
+}
+  \item{open_file}{
+Default is \code{TRUE}. 
 }
 }
 \value{

@@ -99,7 +99,7 @@ plotWF <- function(sysargs,
         if(!all(col_names <- c("step_name", "dep", "spr", "has_run", "success",
           "sample_pass", "sample_warn", "sample_error",
           "sample_total", "log_path", "time_start", "time_end") %in%
-            names(return_df))) {
+            names(df))) {
             stop("If sysargs is a dataframe, it must contain these columns:\n", paste(col_names, collapse = ", "))
         }
         if(nrow(df) < 1) stop("plotWF: empty dataframe")
@@ -112,8 +112,6 @@ plotWF <- function(sysargs,
         }
     }
     else {stop("`sysargs` can only be a dataframe or a SYSargsList object")}
-
-
     if (verbose) message("Translating to DOT format...")
     dot <- makeDot(
         df, branch_method, branch_no, layout, show_legend,

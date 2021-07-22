@@ -63,7 +63,7 @@ plotWF
 If no argument is provided, the basic plot will automatically detect width, height, 
 layout, plot method, branches, _etc_. 
 ```{r}
-plotWF(df, verbose = FALSE)
+plotWF(df, verbose = TRUE)
 ```
 ### Color and text
 On the plot, different colors and numbers indicate different status. This information 

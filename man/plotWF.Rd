@@ -1,5 +1,7 @@
 \name{plotWF}
 \alias{plotWF}
+\alias{plotwfOutput}
+\alias{renderPlotwf}
 \title{Visualize SPR workflow and status}
 \usage{
 plotWF(
@@ -26,7 +28,7 @@ plotWF(
 
 plotwfOutput(
   outputId, 
-  width = '100%', 
+  width = '100\%',
   height = '400px'
 )
   
