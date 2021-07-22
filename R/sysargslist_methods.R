@@ -734,13 +734,36 @@ setReplaceMethod(f = "replaceStep", signature = c("SYSargsList"),
             ))
         }
     }
+    ## used in `importWF`
+    on.exit(options(spr_importing = FALSE))
+    ## used in `+.SYSargsList`
+    on.exit(options(appendPlus = FALSE))
+    if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
+    ## Dependency
+    if(all(is.na(dependency(value)) && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) stop("'dependency' argument is required to replace a step in the workflow.")
+    if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+    if(step>1){
+      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x))) stop("Dependency value needs to be present in the Workflow.")
+    }
+    ## replace
     x <- sysargslist(x)
     if (inherits(value, "SYSargsList")) {
         x$stepsWF[step] <- value$stepsWF
         x$statusWF[step] <- value$statusWF
+        x$targetsWF[step] <- value$targetsWF
+        x$outfiles[step] <- value$outfiles
+        #x$SEobj[step] <- value$SEobj
+        x$dependency[step] <- value$dependency
+        x$targets_connection[step] <- value$targets_connection
+        x$runInfo[['directory']][step] <- value$runInfo[['directory']]
     } else if (inherits(value, "LineWise")) {
         x$stepsWF[[step]] <- value
         x$statusWF[[step]] <- value$status
+        x$targetsWF[[step]] <- S4Vectors::DataFrame()
+        x$outfiles[[step]] <- S4Vectors::DataFrame()
+        x$dependency[[step]] <- value$dependency
+        x$targets_connection[[step]] <- list(NULL)
+        x$runInfo[["directory"]][[step]] <- list(FALSE)
     }
     x <- as(x, "SYSargsList")
     if (step_name == "default") {
@@ -754,7 +777,6 @@ setReplaceMethod(f = "replaceStep", signature = c("SYSargsList"),
     } else {
         renameStep(x, step) <- step_name
     }
-
     if (any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
     x <- .check_write_SYSargsList(x)
     x
