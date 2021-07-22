@@ -7,64 +7,86 @@
 ##########################
 ## Detection and creation of the logs directory of the project
 ## This function detects an existing project or creates a project structure on the path provide
+
 SPRproject <- function(projPath = getwd(), data = "data", param = "param", results = "results",
-                       logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml",
-                       envir=new.env(), restart = FALSE, load.envir = FALSE,
-                       overwrite=FALSE, silent = FALSE){
-  if (!file.exists(projPath)) stop("Provide valid 'projPath' PATH.")
-  ## Main folder structure
-  dirProject <- .dirProject(projPath=projPath, data = data, param = param, results = results, silent = silent)
-  ## sys.file full path
-  sys.file <- file.path(sys.file)
-  ## log Folder
-  logs.dir <- file.path(logs.dir)
-  if (file.exists(logs.dir) == FALSE) {
-    dir.create(logs.dir, recursive = TRUE)
-    if (silent != TRUE) cat("Creating directory '", file.path(logs.dir), "'", sep = "", "\n")
-  } else if (file.exists(logs.dir) == TRUE) {
-    if (restart == FALSE) {
-      if (file.exists(logs.dir)) {
-        if(overwrite==FALSE){
-          stop(paste0(logs.dir, " already exists.", "\n", "The Workflow can be restart where it was stopped, using the argument 'restart=TRUE'."))
-        } else if(overwrite==TRUE){
-          unlink(logs.dir, recursive = TRUE)
-          dir.create(logs.dir, recursive = TRUE)
-          if (silent != TRUE) cat("Creating directory '", file.path(logs.dir), "'", sep = "", "\n")
+                        logs.dir = ".SPRproject", sys.file = "SYSargsList.yml",
+                        envir = new.env(), restart = FALSE,
+                        restart.sys.file = NULL,
+                        load.envir = FALSE,
+                        overwrite = FALSE, silent = FALSE) {
+    projPath <- normalizePath(projPath)
+    if (!file.exists(projPath)) stop("Provide valid 'projPath' PATH.")
+    ## Main folder structure
+    dirProject <- .dirProject(projPath = projPath, data = data, param = param, results = results, silent = silent)
+    ## sys.file full path
+    sys.file <- file.path(logs.dir, sys.file)
+    ## log Folder
+    logs.dir <- file.path(logs.dir)
+    if (file.exists(file.path(projPath, logs.dir)) == FALSE) {
+        dir.create(file.path(projPath, logs.dir), recursive = TRUE)
+        if (silent != TRUE) cat("Creating directory '", file.path(projPath, logs.dir), "'", sep = "", "\n")
+    } else if (file.exists(file.path(projPath, logs.dir)) == TRUE) {
+        if (overwrite == FALSE) {
+            stop(paste0(
+                file.path(projPath, logs.dir),
+                " already exists.", "\n",
+                "The Workflow can be restart where it was stopped, using the argument 'restart=TRUE'",
+                "\n", "OR", "\n",
+                "overwrite using 'overwrite=TRUE'. Please use this option with caution!"
+            ))
+        } else if (overwrite == TRUE) {
+            unlink(file.path(projPath, logs.dir), recursive = TRUE)
+            dir.create(file.path(projPath, logs.dir), recursive = TRUE)
+            if (silent != TRUE) cat("Creating directory '", file.path(projPath, logs.dir), "'", sep = "", "\n")
         }
-      }
-    } else if (restart == TRUE) {
-      if(!file.exists(sys.file)) stop("Provide valid 'sys.file' PATH")
-      sal <- read_SYSargsList(sys.file)
-      sal <- as(sal, "list")
-      if(load.envir==TRUE){
-        if(is.null(sal$projectInfo$envir)){
-          message("We could not find any environment saved...")
-        } else {
-          envir <- readRDS(sal$projectInfo$envir)
-          sal$runInfo <- append(sal$runInfo, envir, after=0)
-          names(sal$runInfo)[[1]] <- c("env")
-        }
-      } else {
-        sal$runInfo <- append(sal$runInfo, envir, after=0)
-        names(sal$runInfo)[[1]] <- "env"
-        sal$projectInfo$envir <- NULL
-      }
-      sal <- as(sal, "SYSargsList")
-      write_SYSargsList(sal, sys.file, silent=silent)
-      return(sal)
     }
-  }
-  ## Return SYSargsList obj - empty
-  yaml::write_yaml("", file= sys.file)
-  dirProject <- c(dirProject, logsDir=logs.dir, sysargslist=sys.file)
-  init <- as(SYScreate("SYSargsList"), "list")
-  init$projectInfo <- dirProject
-  init$runInfo <- list(env=envir)
-  init <- as(init, "SYSargsList")
-  write_SYSargsList(init, sys.file, silent=silent)
-  ## used in `importWF`
-  options(linewise_importing = FALSE)
-  return(init)
+    if (restart == FALSE) {
+        ## Return SYSargsList obj - empty
+        yaml::write_yaml("", file = file.path(projPath, sys.file))
+        dirProject <- c(dirProject, logsDir = logs.dir, sysargslist = sys.file)
+        init <- as(SYScreate("SYSargsList"), "list")
+        init$projectInfo <- dirProject
+        init$runInfo <- list(env = envir)
+        init <- as(init, "SYSargsList")
+        write_SYSargsList(init, file.path(projPath, sys.file), silent = silent)
+        ## used in `importWF`
+        options(linewise_importing = FALSE)
+    } else if (restart == TRUE) {
+        if (is.null(restart.sys.file)) stop("Provide valid 'restart.sys.file' PATH for restart the project.")
+        if (!file.exists(restart.sys.file)) stop("Provide valid 'restart.sys.file' PATH for restart the project.")
+        restart.sys.file <- normalizePath(restart.sys.file)
+        init <- read_SYSargsList(restart.sys.file)
+        init <- as(init, "list")
+        if (load.envir == TRUE) {
+            if (is.null(init$projectInfo$envir)) {
+                message("We could not find any environment saved...")
+            } else {
+                envir <- readRDS(init$projectInfo$envir)
+                init$runInfo <- append(init$runInfo, envir, after = 0)
+                names(init$runInfo)[[1]] <- c("env")
+            }
+        } else {
+            init$runInfo <- append(init$runInfo, envir, after = 0)
+            names(init$runInfo)[[1]] <- "env"
+            init$projectInfo$envir <- NULL
+        }
+        init$projectInfo$project <- projPath
+        init$projectInfo$logsDir <- logs.dir
+        init$projectInfo$sysargslist <- sys.file
+        init <- as(init, "SYSargsList")
+        write_SYSargsList(init, sys.file, silent = silent)
+    }
+    ## Message about the paths
+    if (getwd() != projPath) {
+        message(paste0(
+            "Your current working directory is different from the directory chosen for the Project Workflow.",
+            "\n",
+            "For accurate location of the files and running the Workflow, please set the working directory to ",
+            "\n",
+            paste0("'setwd(", projPath, ")'")
+        ))
+    }
+    return(init)
 }
 
 ## Usage:
@@ -72,6 +94,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
 # sal <- SPRproject(projPath = tempdir())
 # sal <- SPRproject(restart = TRUE)
 # sal <- SPRproject(overwrite = TRUE)
+
 
 ##########################
 ## SYSargsList function ##
@@ -623,9 +646,9 @@ read_SYSargsList <- function(sys.file){
 .dirProject <- function(projPath, data, param, results, silent){
   project <- list(
     project = projPath,
-    data = file.path(data),
-    param = file.path(param),
-    results = file.path(results)
+    data = file.path(projPath, data),
+    param = file.path(projPath, param),
+    results = file.path(projPath, results)
   )
   path <- sapply(project, function(x) suppressMessages(tryPath(x)))
   create <- NULL
@@ -637,7 +660,8 @@ read_SYSargsList <- function(sys.file){
     ## For an interactive() session
     if (interactive()) {
       dir_create <- readline(cat(
-        "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep="\n"), "\n", "\n",
+        "It is required to have the project structure in place. We can create the directories now, and you can find more information by reading the `?SPRProject` help file. ", "\n",
+        "\n", "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep="\n"), "\n", "\n",
         "Would you like to create this directory now? Type a number: \n 1. Yes \n 2. No \n"
       ))
     } else {
@@ -649,10 +673,16 @@ read_SYSargsList <- function(sys.file){
         dir.create(create[[i]], recursive = TRUE)
         if (silent != TRUE) cat(paste("Creating directory:", create[[i]]), "\n")
       } else if (dir_create == 2) {
-        stop("Aborting project creation.")
+        stop("Aborting project creation. Find more information by reading the `?SPRProject` help file.", call. = FALSE)
       }
     }
   }
+  project <- list(
+    project = projPath,
+    data = file.path(data),
+    param = file.path(param),
+    results = file.path(results)
+  )
   return(project)
 }
 
