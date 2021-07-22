@@ -31,6 +31,13 @@ HTMLWidgets.widget({
           el.style.overflow = "auto";
 
           [...el.children].forEach(e => e.remove()); //clear all children before attach
+          if(x.msg !== "") {
+            let msgNode = document.createElement("h4");
+            msgNode.innerText = x.msg;
+            msgNode.style.textAlign = "center";
+            msgNode.style.color = "red";
+            el.appendChild(msgNode);
+          }
           el.appendChild(plot_el);
           var singlePage = document.querySelector(`#htmlwidget_container`);
           if(singlePage) document.querySelector('body').style.padding = '0';
