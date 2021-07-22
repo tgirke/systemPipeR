@@ -475,7 +475,13 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     after <- after
     if (stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
     ## Dependency
-    if (all(is.na(dependency(value)) && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) stop("'dependency' argument is required to append a step in the workflow.")
+    if(after>0){
+    if (all(is.na(dependency(value)) && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
+      stop("'dependency' argument is required to append a step in the workflow.")
+      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x))) 
+        stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
+                    paste0(stepName(x), collapse = ", ")))
+    }
     if (dependency(value) == "") value[["dependency"]][[1]] <- NA
     ## Append
     if (inherits(value, "SYSargsList")) {
@@ -740,10 +746,19 @@ setReplaceMethod(f = "replaceStep", signature = c("SYSargsList"),
     on.exit(options(appendPlus = FALSE))
     if(stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
     ## Dependency
-    if(all(is.na(dependency(value)) && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) stop("'dependency' argument is required to replace a step in the workflow.")
-    if (dependency(value) == "") value[["dependency"]][[1]] <- NA
     if(step>1){
-      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x))) stop("Dependency value needs to be present in the Workflow.")
+      if(all(is.na(dependency(value)) && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) 
+        stop("'dependency' argument is required to replace a step in the workflow.")
+      if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x))) 
+        stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
+                    paste0(stepName(x), collapse = ", ")))
+    } else if(step==1){
+      ## first step usually is NA
+      if(!is.na(value$dependency[[1]])){
+        if(!value$dependency[[1]] %in% stepName(x)) 
+          stop("Usually, the first step is NA, without dependencies. Also, the dependency step specify is not in the Workflow. Please check the dependency tree.")
+      }
     }
     ## replace
     x <- sysargslist(x)
