@@ -1,5 +1,5 @@
 ## IMPORTS
-import(GenomicRanges, GenomicFeatures, Rsamtools, 
+import(GenomicRanges, GenomicFeatures, Rsamtools,
        Biostrings, ShortRead, GOstats, GO.db, VariantAnnotation)
 importFrom("annotate", "Ontology")
 importFrom("annotate", "Term")
@@ -11,11 +11,11 @@ importFrom("batchtools", "batchMap")
 importFrom("batchtools", "chunk")
 importFrom("batchtools", "makeRegistry")
 importFrom("batchtools", "submitJobs")
-importFrom("BiocGenerics", "end<-") 
-importFrom("BiocGenerics", "start<-") 
-importFrom("BiocGenerics", "strand<-") 
-importFrom("BiocGenerics", "width") 
-importFrom("BiocGenerics", "width<-") 
+importFrom("BiocGenerics", "end<-")
+importFrom("BiocGenerics", "start<-")
+importFrom("BiocGenerics", "strand<-")
+importFrom("BiocGenerics", "width")
+importFrom("BiocGenerics", "width<-")
 importFrom("crayon", "bgBlue")
 importFrom("crayon", "bgMagenta")
 importFrom("DOT", "dot")
@@ -60,6 +60,8 @@ importFrom("grid", "pushViewport")
 importFrom("grid", "viewport")
 importFrom("htmlwidgets", "createWidget")
 importFrom("htmlwidgets", "saveWidget")
+importFrom("htmlwidgets", "shinyWidgetOutput")
+importFrom("htmlwidgets", "shinyRenderWidget")
 importFrom("IRanges", "IRanges")
 importFrom("IRanges", "subsetByOverlaps")
 importFrom("limma", "makeContrasts")
@@ -127,26 +129,26 @@ exportMethods(
     ## common
     "[[", "[[<-", "$", "show", "names", "length", "[",
     ## SYSargs class
-    "targetsin", "targetsout", "targetsheader", "modules", "software", "cores", 
-    "other", "reference", "results", "infile1", "infile2", "outfile1", "SampleName", 
+    "targetsin", "targetsout", "targetsheader", "modules", "software", "cores",
+    "other", "reference", "results", "infile1", "infile2", "outfile1", "SampleName",
     "sysargs", "outpaths",
     ## catDB
-    "catmap", "catlist", "idconv", 
+    "catmap", "catlist", "idconv",
     ## VENNset
-    "setlist", "intersectmatrix", "complexitylevels","vennlist", 
-    "intersectlist", "as.list",  
+    "setlist", "intersectmatrix", "complexitylevels","vennlist",
+    "intersectlist", "as.list",
     ## SYSargs2
     "targets", "wf", "clt", "yamlinput", "cmdlist", "input",  "output", "files",
     "inputvars", "cmdToCwl", "status",
     "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-",
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
-    "dependency", "projectInfo", "runInfo", 
+    "dependency", "projectInfo", "runInfo",
     "sysargslist", "subset", "stepName", "getColumn", "updateColumn<-",
-    "SampleName", "viewEnvir", "copyEnvir",  
+    "SampleName", "viewEnvir", "copyEnvir",
     "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
     ## LineWise
-    "codeLine", "codeChunkStart", "rmdPath", "linewise", 
+    "codeLine", "codeChunkStart", "rmdPath", "linewise",
     "replaceCodeLine<-", "appendCodeLine<-"
 )
 S3method("+", SYSargsList)
@@ -158,26 +160,25 @@ export(
     ## Import/exports
     "readComp", "writeTargetsout", "writeTargetsRef", "mergeBamByFactor",
     ## Utilities
-    "alignStats", "clusterRun", "returnRPKM", 
-    "runCommandline", "systemArgs", "symLink2bam", "moduleload", 
-    "modulelist", "moduleAvail", "moduleClear", "moduleInit", "moduleUnload", 
+    "alignStats", "clusterRun", "returnRPKM",
+    "runCommandline", "systemArgs", "symLink2bam", "moduleload",
+    "modulelist", "moduleAvail", "moduleClear", "moduleInit", "moduleUnload",
     "module", "run_edgeR", "run_DESeq2", "filterDEGs", "seeFastq", "seeFastqPlot",
     "GOHyperGAll", "GOHyperGAll_Subset", "GOHyperGAll_Simplify", "GOCluster_Report",
     "makeCATdb", "goBarplot", "overLapper", "vennPlot", "olBarplot",
-    "preprocessReads", "filterVars", "variantReport", "combineVarReports", 
-    "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts", 
+    "preprocessReads", "filterVars", "variantReport", "combineVarReports",
+    "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts",
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
     "scaleRanges", "olRanges",
     ## SYSargs2
     "loadWorkflow", "loadWF", "renderWF", "updateWF", "check.output",
-    "subsetWF", "output_update", 
+    "subsetWF", "output_update",
     "targets.as.df", "targets.as.list", "evalCode", "tryPath", "tryCL", "tryCMD",
-    "configWF", "config.param", 
+    "configWF", "config.param",
     # SYSargsList
-    "SPRproject", "SYSargsList", "runWF", "check.outfiles", "plotWF", "renderLogs",
-    ## cmd2cwl
-    "createParamFiles", "createParam", "writeParamFiles", "printParam", 
-    "subsetParam", "replaceParam", "renameParam", "appendParam",
+    "SPRproject", "SYSargsList", "runWF", "check.outfiles", "createParamFiles",
+    "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam",
+    "appendParam",  "plotWF", "plotwfOutput", "renderPlotwf", "renderLogs",
     ## LineWise
     "importWF", "LineWise"
-)  
+)
