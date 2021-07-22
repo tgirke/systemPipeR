@@ -31,12 +31,15 @@ Thomas Girke
 m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m) 
 m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
 listAttributes(m) # Choose data types you want to download
-go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
+go <- getBM(attributes=c("go_accession", "tair_locus", 
+                            "go_namespace_1003"), mart=m)
 go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
-write.table(go, "GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
+write.table(go, "GOannotationsBiomart_mod.txt", quote=FALSE, 
+            row.names=FALSE, col.names=FALSE, sep="\t")
 
 ## Create catDB instance (takes a while but needs to be done only once)
-catdb <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=NULL)
+catdb <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, 
+                    org="", colno=c(1,2,3), idconv=NULL)
 catdb
 
 ## Access methods for catDB

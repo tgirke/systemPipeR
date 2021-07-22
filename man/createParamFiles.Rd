@@ -129,7 +129,7 @@ hisat2 \
     -U <F: ./data/SRR446027_1.fastq.gz> \
     --verbose
 "
-cmd <- createParam(command)
+cmd <- createParam(command, writeParamFiles=FALSE)
 cmdlist(cmd)
 }
 

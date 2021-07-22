@@ -267,14 +267,19 @@ Daniela Cassol and Thomas Girke
 }
 \examples{
 sal <- SPRproject(overwrite=TRUE)
-targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", 
+                            package="systemPipeR")
 
 ## Constructor and `appendStep<-`
 appendStep(sal) <- SYSargsList(step_name = "echo", 
                                targets=targetspath, dir=TRUE,
-                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
-                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
-                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+                               wf_file="example/workflow_example.cwl", 
+                               input_file="example/example.yml", 
+                               dir_path = system.file("extdata/cwl", 
+                               package="systemPipeR"),
+                               inputvars = c(Message = "_STRING_",
+                               SampleName = "_SAMPLE_"))
+                               
 appendStep(sal) <- LineWise(code = {
                             hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
                             }, 
