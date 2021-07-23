@@ -105,7 +105,8 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
     }
     sal_imp[["projectInfo"]]$rmd_file <- file_path
     sal_imp <- as(sal_imp, "SYSargsList")
-    write_SYSargsList(sal_imp, sal_imp$projectInfo$sysargslist, silent = TRUE)
+    sysargslist <- file.path(sal_imp$projectInfo$project, sal_imp$projectInfo$sysargslist)
+    write_SYSargsList(sal_imp, sysargslist, silent = TRUE)
     return(sal_imp)
 }
 
