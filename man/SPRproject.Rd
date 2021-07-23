@@ -87,7 +87,7 @@ Daniela Cassol
 See also as \code{SYSargsList-class}.
 }
 \examples{
-sal <- SPRproject()
+sal <- SPRproject(projPath = tempdir())
 sal
 }
 \keyword{ utilities }

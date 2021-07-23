@@ -770,7 +770,7 @@ setReplaceMethod(
             }
         }
         ## Update connections
-        value <- .validationStepConn(x[-c(step)], value)
+        if(inherits(value, "SYSargsList")) value <- .validationStepConn(x[-c(step)], value)
         if (is.na(dependency(value))) value[["dependency"]][[1]] <- ""
         ## replace
         x <- sysargslist(x)
