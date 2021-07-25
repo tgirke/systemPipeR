@@ -2,7 +2,7 @@
 ## LineWise function ##
 #######################
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
-                     rmdPath = character(), dependency = NA) {
+                     rmdPath = character(), dependency = "") {
     ## used in `importWF`
     on.exit(options(linewise_importing = FALSE))
     ## Step name
@@ -12,11 +12,7 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
         step_name <- step_name
     }
     ## dependency
-    if (all(is.na(dependency))) {
-        dependency <- list(NA)
-    } else {
-        dependency <- list(dependency)
-    }
+    dependency <- list(dependency)
     names(dependency) <- step_name
     ## status
     step_status <- list(
@@ -66,7 +62,7 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
     ## start
     if (verbose) cat(crayon::blue$bold("Reading Rmd file"))
     df <- parseRmd(file_path, ignore_eval = ignore_eval, verbose = verbose)
-    df$dep <- lapply(df$dep, function(x) ifelse(x == "", NA, x))
+    #df$dep <- lapply(df$dep, function(x) ifelse(x == "", NA, x))
     names(df$dep) <- df$step_name
     ## create a new env for sysarges to eval
     sysargs_env <- new.env()

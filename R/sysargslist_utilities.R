@@ -116,7 +116,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
                         targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".", inputvars=NULL,
                         rm_targets_col = NULL,
                         dir=TRUE,
-                        dependency=NA, silent = FALSE) {
+                        dependency="", silent = FALSE) {
   ## step_name and dependency from ImportWF
   on.exit(options(importwf_options = NULL))
   if(!is.null(getOption("importwf_options"))){
@@ -149,11 +149,11 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
         sal$statusWF <- list(status(sysargs))
       }
       ## dependency
-      if (all(is.na(dependency))){
-        sal$dependency <- list(NA)
-      } else {
+      #if (all(is.na(dependency))){
+       # sal$dependency <- list(NA)
+      #} else {
         sal$dependency <- list(dependency)
-      }
+      #}
       sal$outfiles <- list(.outList2DF(sysargs))
       sal$targets_connection <- list(NULL)
       sal$runInfo <- list(directory=dir)
@@ -201,11 +201,11 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
       names(sal$targets_connection) <- step_name
     }
     ## dependency
-    if (all(is.na(dependency))){
-      sal$dependency <- list(NA)
-    } else {
+    #if (all(is.na(dependency))){
+     # sal$dependency <- list(NA)
+    #} else {
       sal$dependency <- list(dependency)
-    }
+    #}
     ## statusWF
     sal$statusWF <- list(.statusPending(WF))
     # directory structure
@@ -243,7 +243,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
   sysproj <- projectInfo(sysargs)$logsDir
   ## check dependency
   for(i in seq_along(dependency(sysargs))){
-    if(all(!is.na(dependency(sysargs)[[i]]))){
+    if(all(!dependency(sysargs)[[i]] == "")){
       dep_names <- unlist(dependency(sysargs)[[i]])
       if(any(!dep_names %in% names(stepsWF(sysargs))))
         stop("'sysargs' has dependency on the following steps:", "\n",
@@ -260,7 +260,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
   for (i in seq_along(stepsWF(args2))){
     if(i %in% steps){
       ## check single dependency
-      if(all(!is.na(dependency(args2)[[i]]))){
+      if(all(!dependency(args2)[[i]] == "")){
         dep_single <- sapply(dependency(args2)[[i]], function(x) args2$statusWF[[x]]$status.summary)
         if("Pending" %in% dep_single){
           message("Previous steps:", "\n", paste0(names(dep_single), collapse = " AND "), "\n", "have been not executed yet.")
