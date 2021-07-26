@@ -91,7 +91,7 @@ S4 class container for storing parameters and information of command-line- or R-
 SYSargsList(sysargs = NULL, step_name = "default", 
             targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", 
             inputvars = NULL, rm_targets_col = NULL, 
-            dir = TRUE, dependency = NA, silent = FALSE)
+            dir = TRUE, dependency = "", silent = FALSE)
 
 ## Accessors
 
@@ -166,7 +166,9 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   in the respective folders. Default is \code{dir=TRUE}.
 }
   \item{dependency}{
-  name of the step dependency.
+  character. Dependency tree, required when appending this step to 
+  the workflow. Character name of a previous step in the workflow. 
+  Default is empty string \code{""}.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
