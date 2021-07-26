@@ -1,6 +1,6 @@
 ---
-title: "systemPipeR: Workflow design and reporting generation environment" 
-author: "Author: Daniela Cassol (danielac@ucr.edu) and Thomas Girke (thomas.girke@ucr.edu)"
+title: "Workflows by systemPipeR" 
+author: "Author: Daniela Cassol, Le Zhang, and Thomas Girke"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
   BiocStyle::html_document:
@@ -9,11 +9,13 @@ output:
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{systemPipeR: Workflow design and reporting generation environment}
+  %\VignetteIndexEntry{SPR}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
 editor_options: 
+  markdown: 
+    wrap: 80
   chunk_output_type: console
 ---
 
@@ -26,11 +28,6 @@ word-wrap: initial !important;
 }
 ```
 
-<!--
-- Compile from command-line
-Rscript -e "rmarkdown::render('systemPipeR.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeR.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeR.knit.md 2; Rscript -e "rmarkdown::render('systemPipeR.Rmd', c('BiocStyle::pdf_document'))"
--->
-
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
 options(width=80, max.print=1000)
@@ -40,28 +37,28 @@ knitr::opts_chunk$set(
     tidy.opts=list(width.cutoff=80), tidy=TRUE)
 ```
 
-```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+```{r load_library, eval=TRUE, include=FALSE}
 suppressPackageStartupMessages({
     library(systemPipeR)
-    library(BiocParallel)
-    library(Biostrings)
-    library(Rsamtools)
-    library(GenomicRanges)
-    library(ggplot2)
-    library(GenomicAlignments)
-    library(ShortRead)
-    library(ape)
-    library(batchtools)
-    library(magrittr)
 })
 ```
 
-**Note:** if you use _`systemPipeR`_ in published research, please cite:
-Backman, T.W.H and Girke, T. (2016). _`systemPipeR`_: NGS Workflow and Report Generation Environment. *BMC Bioinformatics*, 17: 388. [10.1186/s12859-016-1241-0](https://doi.org/10.1186/s12859-016-1241-0).
 
 # Introduction
 
-[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) provides flexible utilities for building and running automated end-to-end analysis workflows for a wide range of research applications, including next-generation sequencing (NGS) experiments, such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq [@H_Backman2016-bt]. Important features include a uniform workflow interface across different data analysis applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters (Figure 1). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. For instance, _`systemPipeR`_ can be used with most command-line aligners such as `BWA` [@Li2013-oy; @Li2009-oc], `HISAT2` [@Kim2015-ve], `TopHat2` [@Kim2013-vg] and `Bowtie2` [@Langmead2012-bs], as well as the R-based NGS aligners [_`Rsubread`_](http://www.bioconductor.org/packages/devel/bioc/html/Rsubread.html) [@Liao2013-bn] and [_`gsnap (gmapR)`_](http://www.bioconductor.org/packages/devel/bioc/html/gmapR.html) [@Wu2010-iq]. Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental designs are facilitated by a well-defined sample annotation infrastructure which improves reproducibility and user-friendliness of many typical analysis workflows in the NGS area [@Lawrence2013-kt]. 
+[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) 
+provides flexible utilities for building and running automated end-to-end analysis 
+workflows for a wide range of research applications, including next-generation 
+sequencing (NGS) experiments [@H_Backman2016-bt]. Important features include a 
+uniform workflow interface across different data analysis applications, automated 
+report generation, and support for running both R and command-line software, 
+on local computers or compute clusters (Figure 1). The latter supports interactive 
+job submissions and batch submissions to queuing systems of clusters. 
+
+Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental 
+designs are facilitated by a well-defined sample annotation infrastructure which
+improves reproducibility and user-friendliness of many typical analysis workflows
+in the NGS area [@Lawrence2013-kt]. 
 
 The main motivation and advantages of using _`systemPipeR`_ for complex data analysis tasks are:
 
@@ -73,23 +70,19 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 6. Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes
 6. Improves reproducibility by automating analyses and generation of analysis reports 
 
-<center><img src="utilities.png"></center>
-
-**Figure 1:** Relevant features in _`systemPipeR`_.
-Workflow design concepts are illustrated under (A & B). Examples of
-*systemPipeR’s* visualization functionalities are given under (C). </br>
+```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A & B). Examples of *systemPipeR's* visualization functionalities are given under (C)."}
+knitr::include_graphics("utilities.png")  
+```
 
 A central concept for designing workflows within the _`systemPipeR`_ environment 
-is the use of workflow management containers. In previous versions, _`systemPipeR`_ 
-used a custom command-line interface called _`SYSargs`_ (see Figure 3) and for 
-this purpose will continue to be supported for some time. With the latest [Bioconductor Release 3.9](http://www.bioconductor.org/packages/release/bioc/html/systemPipeR.html), 
-we are adopting for this functionality the widely used community standard 
-[Common Workflow Language](https://www.commonwl.org/) (CWL) for describing 
-analysis workflows in a generic and reproducible manner, introducing _`SYSargs2`_
-workflow control class (see Figure 2). Using this community standard in _`systemPipeR`_
+is the use of workflow management containers. 
+Workflow management containers allow the automation of design, build, run and 
+scale different steps and tools in data analysis.
+_`systemPipeR`_ adopted the widely used community standard [Common Workflow Language](https://www.commonwl.org/) (CWL) 
+[@Amstutz2016-ka] for describing parameters analysis workflows in a generic and reproducible 
+manner. Using this community standard in _`systemPipeR`_
 has many advantages. For instance, the integration of CWL allows running _`systemPipeR`_
-workflows from a single specification instance either entirely from within R, from various command-line
-wrappers (e.g., *cwl-runner*) or from other languages (*, e.g.,* Bash or Python).
+workflows from a single specification instance either entirely from within R, from various command-line wrappers (e.g., *cwl-runner*) or from other languages (*, e.g.,* Bash or Python).
 _`systemPipeR`_ includes support for both command-line and R/Bioconductor software 
 as well as resources for containerization, parallel evaluations on computer clusters 
 along with the automated generation of interactive analysis reports.
@@ -112,73 +105,113 @@ This overview introduces the design of a new CWL S4 class in _`systemPipeR`_,
 as well as the custom command-line interface, combined with the overview of all
 the common analysis steps of NGS experiments.
 
-## Workflow design structure using _`SYSargs2`_ 
+## New WF management structure
 
-The flexibility of _`systemPipeR's`_ new interface workflow control class is the driving factor behind 
-the use of as many steps necessary for the analysis, as well as the connection 
-between command-line- or R-based software. The connectivity among all
-workflow steps is achieved by the _`SYSargs2`_ workflow control class (see Figure 3).
+The flexibility of `systemPipeR's` new interface workflow management class is
+the driving factor behind the use of as many steps necessary for the analysis,
+as well as the connection between command-line- or R-based software. The
+connectivity among all workflow steps is achieved by the `SYSargsList` workflow
+management class.
+
 This S4 class is a list-like container where each instance stores all the
 input/output paths and parameter components required for a particular data
-analysis step. _`SYSargs2`_ instances are generated by two constructor
-functions, *loadWorkflow* and *renderWF*, using as data input *targets* or
-*yaml* files as well as two *cwl* parameter files (for details see below). When
-running preconfigured workflows, the only input the user needs to provide is
-the initial *targets* file containing the paths to the input files (*e.g.*
-FASTQ) along with unique sample labels. Subsequent targets instances are
-created automatically. The parameters required for running command-line
-software is provided by the parameter (*.cwl*) files described below. 
+analysis step.
 
-We also introduce the *`SYSargsList`* class that organizes one or many
-SYSargs2 containers in a single compound object capturing all information
-required to run, control and monitor complex workflows from start to finish. This
-design enhances the *`systemPipeR`* workflow framework with a generalized,
-flexible, and robust design.
+`systemPipeR` includes support for both command line and R/Bioconductor software 
+as well as resources for containerization, parallel evaluations on computer 
+clusters along with the automated generation of interactive analysis reports.
 
-<center><img src="SYS_WF.png"></center>
+# Quick Start
 
-**Figure 2:** Workflow steps with input/output file operations are controlled by 
-_`SYSargs2`_ objects. Each _`SYSargs2`_ instance is constructed from one *targets* 
-and two *param* files. The only input provided by the user is the initial *targets* 
-file. Subsequent *targets* instances are created automatically, from the previous 
-output files. Any number of predefined or custom workflow steps are supported. One
-or many _`SYSargs2`_ objects are organized in an *`SYSargsList`* container.
+- Load sample data and directory structure
 
-## Workflow Management using _`SYSargsList`_ 
+```{r genNew_wf, eval=TRUE}
+systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
+```
 
-**systemPipeR** allows creation (multi-step analyses) and workflow execution entirely for R, with control, flexibility, and scalability of all processes. The workflow execution can be sent to an HPC, can be parallelized, accelerating results acquisition. **systemPipeR** workflow management system provides an infrastructure for organizing all steps, execution, and monitoring all tasks.
+```{r, include=FALSE, warning=FALSE}
+setwd("spr_project")
+knitr::opts_knit$set(root.dir = 'spr_project')
+```
 
-<center><img src="sysargslist.png"></center>
-**Figure 3:** Workflow Management using _`SYSargsList`_.
+- Create a project
 
-## Workflow design structure using _`SYSargs`_: Previous version
+```{r SPRproject_ex, eval=TRUE}
+sal <- SPRproject(overwrite=TRUE) 
+```
 
-Instances of this S4 object class are constructed by the _`systemArgs`_ function 
-from two simple tabular files: a _`targets`_ file and a _`param`_ file. The latter
-is optional for workflow steps lacking command-line software. Typically, a 
-_`SYSargs`_ instance stores all sample-level inputs as well as the paths to the 
-corresponding outputs generated by command-line- or R-based software generating 
-sample-level output files, such as read preprocessors (trimmed/filtered FASTQ 
-files), aligners (SAM/BAM files), variant callers (VCF/BCF files) or peak callers 
-(BED/WIG files). Each sample level input/output operation uses its own _`SYSargs`_ 
-instance. The outpaths of _`SYSargs`_ usually define the sample inputs for the 
-next _`SYSargs`_ instance. This connectivity is established by writing the 
-outpaths with the _`writeTargetsout`_ function to a new _`targets`_ file that 
-serves as input to the next _`systemArgs`_ call. Typically, the user has to 
-provide only the initial _`targets`_ file. All downstream _`targets`_ files are 
-generated automatically. By chaining several _`SYSargs`_ steps together one can 
-construct complex workflows involving many sample-level input/output file 
-operations with any combination of command-line or R-based software. 
+- Add first step
 
-<center><img src="SystemPipeR_Workflow.png"></center>
+```{r firstStep, eval=TRUE}
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+appendStep(sal) <- SYSargsList(step_name = "echo", 
+                               targets=targetspath, dir=TRUE,
+                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+```
 
-**Figure 4:** Workflow design structure of _`systemPipeR`_ using _`SYSargs`_. 
+```{r sal, eval=TRUE}
+sal
+cmdlist(sal)
+outfiles(sal)
+```
+
+- Add a R step
+
+```{r, eval=TRUE}
+appendStep(sal) <- LineWise(code = {
+                            hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
+                            }, 
+                            step_name = "R_getCol", 
+                            dependency = "echo")
+```
+
+- Add R Step which updates the sal object
+
+```{r}
+appendStep(sal) <- LineWise(code = {
+                  updateColumn(sal, step=1, 'targetsWF') <- data.frame(newcol=matrix(unlist(hello), nrow=length(hello), byrow=TRUE))
+                  }, 
+                  step_name = "R_updateCol", 
+                  dependency = c("echo", "R_getCol"))
+```
+
+- Run workflow
+
+```{r, eval=Sys.info()[['sysname']]!="Windows"}
+sal <- runWF(sal, steps = c(1,2,3))
+targetsWF(sal)
+```
+
+- Visualize workflow
+
+```{r, eval=TRUE}
+plotWF(sal, show_legend = TRUE, width = "80%", height="250px", rstudio = TRUE)
+```
+
+- Check workflow status
+
+```{r, eval=TRUE}
+statusWF(sal)
+```
+
+- Log Reports
+
+```{r, eval=FALSE}
+sal <- renderLogs(sal)
+```
 
 # Getting Started
 
 ## Installation
 
-The R software for running [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) can be downloaded from [_CRAN_](http://cran.at.r-project.org/). The _`systemPipeR`_ environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) command. The associated data package [_`systemPipeRdata`_](http://www.bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ workflow environments with a single command containing all parameter files and sample data required to quickly test and run workflows. 
+[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) 
+environment can be installed from the R console using the [_`BiocManager::install`_](https://cran.r-project.org/web/packages/BiocManager/index.html) 
+command. The associated data package [_`systemPipeRdata`_](http://www.bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html) 
+can be installed the same way. The latter is a helper package for generating _`systemPipeR`_ 
+workflow environments with a single command containing all parameter files and 
+sample data required to quickly test and run workflows. 
 
 ```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")
@@ -196,64 +229,33 @@ library(help="systemPipeR") # Lists package info
 vignette("systemPipeR") # Opens vignette
 ```
 
-## Load sample data and workflow templates
+## How to get help for systemPipeR
 
-The mini sample FASTQ files used by this overview vignette as well as the 
-associated workflow reporting vignettes can be loaded via the _`systemPipeRdata`_ 
-package as shown below. The chosen data set [`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) 
-obtains 18 paired-end (PE) read sets from _Arabidposis thaliana_ [@Howard2013-fq]. 
-To minimize processing time during testing, each FASTQ file has been subsetted to 
-90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides 
-of each chromosome of the _A. thalina_ genome. The corresponding reference genome 
-sequence (FASTA) and its GFF annotation files (provided in the same download) have 
-been truncated accordingly. This way the entire test sample data set requires 
-less than 200MB disk storage space. A PE read set has been chosen for this test 
-data set for flexibility, because it can be used for testing both types of analysis 
-routines requiring either SE (single-end) reads or PE reads. 
+All questions about the package or any particular function should be posted to 
+the Bioconductor support site [https://support.bioconductor.org](https://support.bioconductor.org). 
 
-The following generates a fully populated _`systemPipeR`_ workflow environment 
-(here for RNA-Seq) in the current working directory of an R session. At this time 
-the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq, and Ribo-Seq. 
-Templates for additional NGS applications will be provided in the future.
+Please add the "systemPipeR" tag to your question, and the package authors will 
+automatically receive an alert. 
 
-If you desire run this tutorial with your data set, please follow the instruction here:
+We appreciate receiving reports of bugs in the functions or in the documentation, 
+and suggestions for improvement. For that, please consider opening an issue at
+[GitHub](https://github.com/tgirke/systemPipeR/issues/new). 
 
-```{r genRna_workflow, eval=FALSE}
-library(systemPipeRdata)
-genWorkenvir(workflow="rnaseq")
-setwd("rnaseq")
-```
-
-### Workflow template from an individual's package
-
-The package provides pre-configured workflows and reporting templates for a wide range of NGS applications that are listed [here](https://github.com/tgirke/systemPipeR/tree/devel#workflow). Additional workflow templates will be provided in the future. 
-If you desire to use an individual package and version, follow the instruction below:
-
-```{r genRna_npkg, eval=FALSE}
-library(systemPipeRdata)
-genWorkenvir(workflow=NULL, package_repo = "systemPipeR/SPriboseq", ref = "master", subdir = NULL)
-```
-
-```{r genRna_pkg_branch, eval=FALSE}
-library(systemPipeRdata)
-genWorkenvir(workflow=NULL, package_repo = "systemPipeR/SPrnaseq", ref = "singleMachine", subdir = NULL)
-```
+# Project structure
 
 ## Directory Structure
 
-The working environment of the sample data loaded in the previous step contains
-the following pre-configured directory structure (Figure 4). Directory names are indicated
-in  <span style="color:grey">***green***</span>. Users can change this
-structure as needed, but need to adjust the code in their workflows
-accordingly. 
+`systemPipeR` provides pre-configured workflows, reporting templates and sample 
+data loaded as demonstrated below. Directory names are indicated in <span style="color:grey">***green***</span>.
+Users can change this structure as needed, but need to adjust the code in their 
+workflows accordingly. 
 
-* <span style="color:green">_**workflow/**_</span> (*e.g.* *rnaseq/*) 
+* <span style="color:green">_**workflow/**_</span> (*e.g.* *myproject/*) 
     + This is the root directory of the R session running the workflow.
     + Run script ( *\*.Rmd*) and sample annotation (*targets.txt*) files are located here.
-    + Note, this directory can have any name (*e.g.* <span style="color:green">_**rnaseq**_</span>, <span style="color:green">_**varseq**_</span>). Changing its name does not require any modifications in the run script(s).
+    + Note, this directory can have any name (*e.g.* <span style="color:green">_**myproject**_</span>). Changing its name does not require any modifications in the run script(s).
   + **Important subdirectories**: 
     + <span style="color:green">_**param/**_</span> 
-        + Stores non-CWL parameter files such as: *\*.param*, *\*.tmpl* and *\*.run.sh*. These files are only required for backwards compatibility to run old workflows using the previous custom command-line interface.
         + <span style="color:green">_**param/cwl/**_</span>: This subdirectory stores all the CWL parameter files. To organize workflows, each can have its own subdirectory, where all `CWL param` and `input.yml` files need to be in the same subdirectory. 
     + <span style="color:green">_**data/**_ </span>
         + FASTQ files
@@ -264,22 +266,11 @@ accordingly.
         + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
         + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
-<center><img src="SYSdir.png"></center>
+```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "*systemPipeR's* preconfigured directory structure."}
+knitr::include_graphics("spr_project.png")  
+```
 
-**Figure 5:** *systemPipeR's* preconfigured directory structure.
-
-The following parameter files are included in each workflow template:
-
-1. *`targets.txt`*: initial one provided by user; downstream *`targets_*.txt`* files are generated automatically
-2. *`*.param/cwl`*: defines parameter for input/output file operations, *e.g.*:
-    + *`hisat2-se/hisat2-mapping-se.cwl`* 
-    + *`hisat2-se/hisat2-mapping-se.yml`*
-3. *`*_run.sh`*: optional bash scripts 
-4. Configuration files for computer cluster environments (skip on single machines):
-    + *`.batchtools.conf.R`*: defines the type of scheduler for *`batchtools`* pointing to template file of cluster, and located in user's home directory
-    + *`*.tmpl`*: specifies parameters of scheduler used by a system, *e.g.* Torque, SGE, Slurm, etc.
-
-## Structure of _`targets`_ file
+## Structure of initial _`targets`_ file
 
 The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
 comparisons of an analysis workflow. The following shows the format of a sample 
@@ -338,236 +329,486 @@ genes in RNA-Seq experiments based on simple pair-wise comparisons.
 readComp(file=targetspath, format="vector", delim="-")
 ```
 
-## Structure of the new _`param`_ files and construct _`SYSargs2`_ container
+# Targets files description
 
-_`SYSargs2`_ stores all the information and instructions needed for processing
-a set of input files with a single or many command-line steps within a workflow
-(*i.e.* several components of the software or several independent software tools).
-The _`SYSargs2`_ object is created and fully populated with the *loadWF* 
-and *renderWF* functions, respectively. 
 
-In CWL, files with the extension *`.cwl`* define the parameters of a chosen 
-command-line step or workflow, while files with the extension *`.yml`* define 
-the input variables of command-line steps. Note, input variables provided
-by a *targets* file can be passed on to a _`SYSargs2`_ instance via the *inputvars* 
-argument of the *renderWF* function. 
+# New parameters
 
-```{r CWL_structure, echo = FALSE, eval=FALSE}
-hisat2.cwl <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.cwl", package="systemPipeR")
-yaml::read_yaml(hisat2.cwl)
+## Short description
+## Link to full CWL details
+
+# Project initialization
+
+To create a Workflow within `systemPipeR`, we can start by defining an empty
+container and checking the directory structure:
+
+```{r SPRproject, eval=TRUE}
+sal <- SPRproject(overwrite=TRUE) 
 ```
 
-```{r yaml_structure, echo = FALSE, eval=FALSE}
-hisat2.yml <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.yml", package="systemPipeR")
-yaml::read_yaml(hisat2.yml)
+<span style="color:green">***NOTE_DC:***</span>
+We are using overwrite option here just for convenience; once the 
+documentation is published, we want to remove this option in this section of the vignette. 
+
+Internally, `SPRproject` function will check and/or create the basic folder
+structure, which means `data`, `param`, and `results` folder. 
+If the user wants to use a different names for these directories, can be specified 
+as follows:
+
+```{r SPRproject_dir, eval=FALSE}
+sal <- SPRproject(projPath = getwd(), data = "data", param = "param", results = "results") 
 ```
 
-The following imports a *`.cwl`* file (here *`hisat2-mapping-se.cwl`*) for running
-the short read aligner HISAT2 [@Kim2015-ve]. The *loadWF* and *renderWF* 
-functions render the proper command-line strings for each sample and software tool.
+Also, this function allows creating a hidden folder called `.SPRproject`, by default,
+to store all the log files.
+A `YAML` file, here called `SYSargsList.yml`, has been created, which initially
+contains the basic location of the project structure; however, every time the 
+workflow object is updated in R, the new information will also be store in this 
+file for easy recovery.
+If you desire different names for the logs folder and the `YAML` file, these can 
+be modified as follows:
 
-```{r SYSargs2_structure, eval=TRUE}
-library(systemPipeR)
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- system.file("extdata/cwl", package="systemPipeR")
-WF <- loadWF(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl",
-                   input_file="hisat2/hisat2-mapping-se.yml",
-                   dir_path=dir_path)
-
-WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+```{r SPRproject_logs, eval=FALSE}
+sal <- SPRproject(logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
 ```
 
-Several accessor methods are available that are named after the slot names of the _`SYSargs2`_ object.
+It is possible to separate all the objects created within the workflow analysis 
+from the current environment. `SPRproject` function provides the option to create 
+a new environment, and in this way, it is not overwriting any object you may want
+to have at your current section. 
 
-```{r names_WF, eval=TRUE}
-names(WF)
+```{r SPRproject_env, eval=FALSE}
+sal <- SPRproject(envir = new.env()) 
 ```
 
-Of particular interest is the *`cmdlist()`* method. It constructs the system
-commands for running command-line software as specified by a given *`.cwl`*
-file combined with the paths to the input samples (*e.g.* FASTQ files) provided
-by a *`targets`* file. The example below shows the *`cmdlist()`* output for
-running HISAT2 on the first SE read sample. Evaluating the output of
-*`cmdlist()`* can be very helpful for designing and debugging *`.cwl`* files
-of new command-line software or changing the parameter settings of existing
-ones.  
+In this stage, the object `sal` is a empty container, except the project
+information, as the project, `data`, `results` and `param` folder paths, as can be
+access but the `projectInfo` accessory method:
 
-```{r cmdlist, eval=TRUE}
-cmdlist(WF)[1]
+```{r}
+sal
+projectInfo(sal)
 ```
 
-The output components of _`SYSargs2`_ define the expected output files for 
-each step in the workflow; some of which are the input for the next workflow step, 
-here next _`SYSargs2`_ instance (see Figure 2).
+Also, the length function will return how many steps this workflow contains and
+in this case it is empty, as follow:
 
-```{r output_WF, eval=TRUE}
-output(WF)[1]
-modules(WF)
-targets(WF)[1]
-targets.as.df(targets(WF))[1:4,1:4]
-output(WF)[1]
-files(WF)
-inputvars(WF)
+```{r}
+length(sal)
 ```
 
-In an 'R-centric' rather than a 'CWL-centric' workflow design the connectivity
-among workflow steps is established by writing all relevant output with the
-*writeTargetsout* function to a new targets file that serves as input to the
-next *loadWorkflow* and *renderWF* call. By chaining several _`SYSargs2`_ steps
-together one can construct complex workflows involving many sample-level
-input/output file operations with any combination of command-line or R-based
-software. Alternatively, a CWL-centric workflow design can be used that defines
-all/most workflow steps with CWL workflow and parameter files. Due to time and
-space restrictions, the CWL-centric approach is not covered by this tutorial. 
+# Build WF interactive
 
-### Third-party software tools {#tools}
+## Adding a new step from template
 
-Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
+Next, we need to populate the object created with the first step in the
+workflow. Here, an example of how to perform this task using parametrs template
+files for trimming FASTQ files with [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) software [@Bolger2014-yr].
 
-```{r table_tools, echo=FALSE, message=FALSE}
-library(magrittr)
-# library(kableExtra)
-SPR_software <- system.file("extdata", "SPR_software.csv", package="systemPipeR")
-#SPR_software <- "SPR_software.csv"
-software <- read.delim(SPR_software, sep=",", comment.char = "#")
-colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
-id <- as.numeric(c((unique(software$Category))))
-software %>%
-  dplyr::mutate(Step = kableExtra::cell_spec(Step, color = "white", bold = TRUE,
-    background = factor(Category, id, colors)
-  )) %>%
-   dplyr::select(Tool, Description, Step) %>%
-  dplyr::arrange(Tool) %>% 
-  kableExtra::kable(escape = FALSE, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
-  kableExtra::kable_styling(c("striped", "hover", "condensed"), full_width = TRUE) %>%
-  kableExtra::scroll_box(width = "80%", height = "500px")
+The constructor functions create an `SYSargsList` S4 class object from three
+input files:
+
+    - CWL command-line specification file (`wf_file` argument);
+    - Input variables (`input_file` argument);
+    - Targets file (`targets` argument).
+
+The latter is optional for workflow steps lacking input files. The connection
+between input variables and the targets file are defined under the `inputvars`
+argument. It is required a named vector, where each element name needs to match
+with column names in the targets file and the value must match the names of the
+*.yml* variables.
+
+In CWL, files with the extension `.cwl` define the parameters of a chosen
+command-line step or workflow, while files with the extension `.yml` define the
+input variables of command-line steps. 
+
+For more information of each one of those files, please check [here]().
+<span style="color:green">***NOTE_DC:***</span> ##TODO: add link to dedicate section or 
+supplementary file (vignettes/systemPipeR_CWL.Rmd) explaining the dynamic between those 3 files.
+
+`SYSargsList` function requires the initial *targets* path, a unique *name* for the step, all the *cwl files path*, and the `inputvar` information connecting the information 
+between *targets* files and cwl parameters, as specified above. 
+`appendStep` is required to append a step to the previous empty container created. 
+
+```{r, trim_step, eval=TRUE}
+targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
+appendStep(sal) <- SYSargsList(targets=targetspath, 
+                   step_name="Quality",
+                   wf_file = "trimmomatic/workflow_trimmomatic-pe.cwl", 
+                   input_file = "trimmomatic/trimmomatic-pe.yml",
+                   dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
-Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
+When running preconfigured workflows, the only input the user needs to provide is
+the initial *targets* file containing the paths to the input files (*e.g.*
+FASTQ) along with unique sample labels. Subsequent targets instances are
+created automatically, building the connection between the steps. 
 
-```{r test_tool_path, eval=FALSE}
-tryCL(command="grep") 
+For a brief overview of the workflow, we can check the object as follows:
+
+```{r}
+sal
 ```
 
-## Structure of _`param`_ file and _`SYSargs`_ container (Previous version)
+Note that we have one step, and it is expected 72 files. Also, the workflow status 
+is *Pending*, which means the workflow object is rendered in R; however, we did 
+not run the step yet. 
+In addition to this summary, it can be observed this step has 18 command lines. 
 
-The _`param`_ file defines the parameters of a chosen command-line software. 
-The following shows the format of a sample _`param`_ file provided by this package. 
+For more details about the command line rendered for each target file, it can be checked as follows: 
 
-```{r param_structure, eval=TRUE}
-parampath <- system.file("extdata", "tophat.param", package="systemPipeR")
-read.delim(parampath, comment.char = "#")
+```{r}
+cmdlist(sal, targets=1:2)
 ```
 
-The _`systemArgs`_ function imports the definitions of both the _`param`_ file
-and the _`targets`_ file, and stores all relevant information in a _`SYSargs`_
-object (S4 class). To run the pipeline without command-line software, one can
-assign _`NULL`_ to _`sysma`_ instead of a _`param`_ file. In addition, one can
-start _`systemPipeR`_ workflows with pre-generated BAM files by providing a
-targets file where the _`FileName`_ column provides the paths to the BAM files.
-Note, in the following example the usage of _`suppressWarnings()`_ is only relevant for 
-building this vignette. In typical workflows it should be removed.
+This is a powerful utility since we can visualize all the command lines before running and facilities to find any issues and debugging. 
 
-```{r param_import, eval=TRUE}
-targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
-args <- suppressWarnings(systemArgs(sysma=parampath, mytargets=targetspath))
-args
+- Adding a second step:
+
+Next, to add new steps to the workflow, we use the same functions, `appendStep<-` and `SYSargsList`. 
+For this particular example, we want to add the build index for Hisat2 [@Kim2015-ve]. 
+In this example, it is required one command line, and a targets argument is not 
+necessary. 
+
+For the workflow, all the steps required a unique name, and this can be added to 
+the `step_name` argument. If no value is provided, the step will be named as 
+*step_X*, where *X* reflects the workflow position. 
+
+For the outputs files, in this step, it is required to be added on the *data/*
+directory, and not in a specif subdirectory, as default. In this case, the function
+allows setting `dir=FALSE`.
+
+```{r}
+appendStep(sal) <- SYSargsList(step_name = "Index", dir = FALSE,
+                               targets=NULL, 
+                               wf_file = "hisat2/workflow_hisat2-index.cwl",
+                               input_file="hisat2/hisat2-index.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"), 
+                               dependency = "Quality")
 ```
 
-Several accessor methods are available that are named after the slot names of the _`SYSargs`_ object. 
+We can check all the expected `outfiles` for this particular step, as follows:
 
-```{r sysarg_access, eval=TRUE}
-names(args)
+```{r outfiles_2, eval=TRUE}
+outfiles(sal[2])
+# outfiles(sal["Index"])
 ```
 
-Of particular interest is the _`sysargs()`_ method. It constructs the system
-commands for running command-lined software as specified by a given _`param`_
-file combined with the paths to the input samples (_e.g._ FASTQ files) provided
-by a _`targets`_ file. The example below shows the _`sysargs()`_ output for
-running TopHat2 on the first PE read sample. Evaluating the output of
-_`sysargs()`_ can be very helpful for designing and debugging _`param`_ files
-of new command-line software or changing the parameter settings of existing
-ones.  
+## Using the outfiles for the next step
 
-```{r sysarg_access2, eval=TRUE}
-sysargs(args)[1]
-modules(args)
-cores(args)
-outpaths(args)[1]
+Here, in this example, we would like to use the outfiles from *Quality* Step, as
+input from the next step, which is the *Mapping*. In this case, let's look at the 
+outfiles from the first step:
+
+```{r}
+outfiles(sal[1])
 ```
 
-The content of the _`param`_ file can also be returned as JSON object as follows (requires _`rjson`_ package).
+The two-column you may want to use here are "trimmomatic_1\_paired" and
+"trimmomatic_2\_paired". For the argument `targets` in the `SYSargsList` function,
+should provide the name of the correspondent step in the Workflow and which outfiles 
+you would like to be incorporated in the next step. Here, the name of the columns 
+we previously explore above.
+The argument `inputvars` allows the connectivity between the new targets file. 
+Here, the name of the previous `outfiles` should be provided it.
+It is possible to keep all the original columns from the `targets` files or remove
+some columns for a clean `targets` file.
+The argument `rm_targets_col` provides this flexibility, where it is possible to
+specify the names of the columns that should be removed. If no names are passing
+here, the new columns will be appended. 
 
-```{r sysarg_json, eval=TRUE}
-systemArgs(sysma=parampath, mytargets=targetspath, type="json")
+In addition, a useful utility establishes a dependency among the steps in the workflow,
+and this is possible with the `dependency` argument, where the names of steps are specified.
+
+```{r, eval=TRUE}
+appendStep(sal) <- SYSargsList(targets="Quality",
+                               step_name="Mapping", dir=TRUE, 
+                               wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
+                               input_file="workflow-hisat2/workflow_hisat2-pe.yml",
+                               dir_path=system.file("extdata/cwl", package = "systemPipeR"),
+                               inputvars=c(trimmomatic_1_paired="_FASTQ_PATH1_",
+                                           trimmomatic_2_paired="_FASTQ_PATH2_", SampleName="_SampleName_"),
+                               rm_targets_col = c("FileName1", "FileName2"),
+                               dependency = c("Quality", "Index"))
 ```
 
-# How to run a Workflow
+Now, we can observe that the third step contains four substeps.
 
-This tutorial introduces the basic ideas and tools needed to build a specific workflow from preconfigured templates.
-
-## Load sample data and workflow templates
-
-```{r workflow, eval=FALSE}
-library(systemPipeRdata)
-genWorkenvir(workflow="rnaseq")
-setwd("rnaseq")
+```{r}
+sal
 ```
 
-## Setup and Requirements 
+In addition, we can access all the command lines for each one of the substeps. 
 
-To go through this tutorial, you need the following software installed:
-
-* R/>=3.6.2 
-* systemPipeR R package (version 1.22)
-* Hisat2/2.1.0
-
-If you desire to build your pipeline with any different software, make sure to have the respective software installed and configured in your PATH. To make sure if the configuration is right, you always can test as follow:
-
-```{r test_software, eval=FALSE}
-tryCL(command="hisat2") ## "All set up, proceed!"
+```{r, eval=TRUE}
+cmdlist(sal["Mapping"], targets=1)
 ```
 
-## Project Initialization 
+## Update a parameter the workflow
 
-The Project management structure is essential, especially for reproducibility and efficiency in the analysis. Here we show how to construct an instance of this S4 object class by the _`initWF`_ function. The object of class _`SYSarsgsList`_ storing all the configuration information for the project and allows management and control at a high level. 
-
-```{r initwf, eval=FALSE}
-getwd() ## rnaseq
-script <- "systemPipeRNAseq.Rmd"
-targetspath <- "targets.txt"
-sysargslist <- initWF(script = script, targets = targetspath)
+```{r, eval=TRUE}
+## check values
+yamlinput(sal, step=1)
+## check on command line
+cmdlist(sal[1], 1)
+## Replace
+yamlinput(sal, step=1, paramName = "thread") <- 8L 
+sal
+## check NEW values
+yamlinput(sal, step=1)
+## Check on command line
+cmdlist(sal[1], 1)
 ```
 
-## Project Initialization in a Temporary Directory
+## Adding a R code as new Step
 
-```{r initwf_tempdir, eval=FALSE}
-library(systemPipeRdata)
-script <- system.file("extdata/workflows/rnaseq", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-dir_path <- tempdir()
-SYSconfig <- initProject(projPath=dir_path, targets=targets, script=script, overwrite = TRUE)
-sysargslist_temp <- initWF(sysconfig ="SYSconfig.yml")
+```{r}
+appendStep(sal) <- LineWise({
+                            log_cal <- log(1)
+                            }, step_name = "R_code",
+                            dependency = "Mapping")
+sal
+stepsWF(sal)
 ```
 
-## Configuration and run of the project
+- Replacement and Append methods for R Code Steps
 
-```{r config, eval=FALSE}
-sysargslist <- configWF(x=sysargslist, input_steps = "1:3")
-sysargslist <- runWF(sysargslist = sysargslist, steps = "1:2")
+```{r, sal_lw_rep, eval=TRUE}
+appendCodeLine(sal, step="R_code", after=1) <- "log_cal_100 <- log(100)"
+codeLine(sal, step="R_code")
+
+replaceCodeLine(sal, step="R_code", line=1) <- "log_cal_100 <- log(50)"
+codeLine(sal, step=4)
 ```
 
-## How to Use Pipes with *systemPipeR*
+For more details about the `LineWise` class, please check [below](#linewise).
 
-At first encounter, you may wonder whether an operator such as *%>%* can really be all that beneficial; but as you may notice, it semantically changes your code in a way that makes it more intuitive to both read and write.
+## Running the workflow
 
-Consider the following example, in which the steps are the initialization, configuration and running the entire workflow.
+For running the workflow, `runWF` function will execute all the command lines store in the workflow container:
 
-```{r pipes, eval=FALSE}
-library(systemPipeR)
-sysargslist <- initWF(script ="systemPipeRNAseq.Rmd", overwrite = TRUE) %>%
-    configWF(input_steps = "1:3") %>%
-    runWF(steps = "1:2")
+```{r, eval=FALSE}
+sal_sub <- subset(sal, subset_steps = c(1,3), input_targets = 1:4, keep_steps = TRUE)
+sal_sub <- runWF(sal_sub)
+sal_sub
+```
+
+## Accessing the workflow details
+
+Let's explore our workflow:
+
+- Accessor Methods:
+
+Several accessor methods are available that are named after the slot names of
+the `SYSargsList` workflow object.
+
+```{r}
+names(sal)
+```
+
+- Check the length of the workflow:
+
+```{r}
+length(sal)
+```
+
+- Check the steps of the workflow:
+
+```{r}
+stepsWF(sal)
+```
+
+- Checking the command-line for each target sample:
+
+`cmdlist()` method constructs the system commands for running command-line
+software as specified by a given `.cwl` file combined with the paths to the
+input samples (e.g. FASTQ files) provided by a `targets` file. The example below
+shows the `cmdlist()` output for running Trimmomatic on the first PE read
+sample. Evaluating the output of `cmdlist()` can be very helpful for designing
+and debugging `.cwl` files of new command-line software or changing the
+parameter settings of existing ones.
+
+```{r}
+cmdlist(sal[1:3], targets=1)
+```
+
+- Check the workflow status:
+
+```{r}
+statusWF(sal)
+```
+
+- Check the workflow targets files:
+
+```{r}
+targetsWF(sal[1])
+```
+
+- Checking the expected outfiles files:
+
+The `outfiles` components of `SYSargsList` define the expected outfiles files for
+each step in the workflow; some of which are the input for the next workflow
+step.
+
+```{r}
+##outfiles slot
+outfiles(sal[3])
+```
+
+- Check the workflow dependencies:
+
+```{r}
+dependency(sal)
+```
+
+- Check the sample comparisons:
+
+Sample comparisons are defined in the header lines of the *targets* file 
+starting with '``# <CMP>``'. This information can be accessed as follows:
+
+```{r}
+targetsheader(sal, step="Quality")
+```
+
+- Get the Sample Id for on particular step
+
+```{r}
+SampleName(sal, step="Quality")
+SampleName(sal, step="Index")
+```
+
+- Get the workflow steps names 
+
+```{r}
+stepName(sal)
+```
+
+- Get the outfiles or targets column files 
+
+```{r}
+getColumn(sal, "outfiles", step="Quality", column = "trimmomatic_1_unpaired")
+getColumn(sal, "targetsWF", step="Quality", column = "FileName1")
+```
+
+## Subsetting the workflow details
+
+- The `SYSargsList` class and its subsetting operator `[`:
+
+```{r}
+sal[1]
+sal[1:3]
+sal[c(1,3)]
+```
+
+- The `SYSargsList` class and its subsetting input samples: 
+
+```{r}
+sal_sub <- subset(sal, subset_steps = c(1,3), input_targets = ("M1A"), keep_steps = TRUE)
+stepsWF(sal_sub)
+targetsWF(sal_sub)
+outfiles(sal_sub)
+```
+
+- The `SYSargsList` class and its operator `+`:
+
+```{r, eval=FALSE}
+sal[1] + sal[2] + sal[3]
+```
+
+- Rename a Step
+
+```{r}
+renameStep(sal_sub, step=1) <- "newStep"
+renameStep(sal_sub, c(1, 2)) <- c("newStep", "newIndex")
+sal_sub
+names(outfiles(sal_sub))
+names(targetsWF(sal_sub))
+```
+
+- Replace a Step
+
+```{r, eval=FALSE}
+sal_test <- sal[c(1,3)]
+replaceStep(sal_test, step=1, step_name="Index" ) <- sal[2]
+sal_test
+```
+
+- Removing a Step
+
+```{r}
+sal_test <- sal[c(1,3)]
+sal_test <- sal_test[-2]
+sal_test
+```
+
+
+# Build WF from a script
+
+```{r, eval=TRUE}
+file_path <- system.file("extdata", "SPRtest.Rmd", package="systemPipeR")
+sal <- SPRproject(overwrite=TRUE)
+#file_path <- "../inst/extdata/SPRtest.Rmd"
+sal <- importWF(sal, file_path)
+sal
+stepsWF(sal)
+dependency(sal)
+codeLine(sal, 2)
+renameStep(sal, 2) <- "New_load"
+```
+
+## Details
+
+- To include a particular code chunk from the R Markdown file in the workflow
+    analysis, please use the following code chunk options:
+
+    -   `spr = 'r'`: for code chunks with R code lines;
+    -   `spr = 'sysargs'`: for code chunks with an `SYSargsList` object;
+    -   `spr.dep = <StepName>`: for specify the previous dependency.
+
+-   For `spr = 'sysargs'`, the last object assigned needs to be the
+    `SYSargsList`, for example:
+
+```{r fromFile_example_rules, eval=TRUE}
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+HW_mul <- SYSargsList(step_name = "Example", 
+                      targets=targetspath, 
+                      wf_file="example/example.cwl", input_file="example/example.yml", 
+                      dir_path = system.file("extdata/cwl", package="systemPipeR"), 
+                      inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+```
+
+Also, note that all the required files to generate this particular object needed
+to be defined in the code chunk. The motivation for this is that when R Markdown
+files will be imported, and this code chunk will be evaluated and stored in the
+workflow control class as the `SYSargsList` object.
+
+# Running the workflow
+
+For running the workflow, `runWF` function will execute all the command lines store in the workflow container:
+
+```{r, eval=FALSE}
+sal_sub <- subset(sal, subset_steps = c(1,3), input_targets = 1:4, keep_steps = TRUE)
+sal_sub <- runWF(sal_sub)
+sal_sub
+```
+
+ Visualize workflow
+
+```{r, eval=TRUE}
+plotWF(sal, show_legend = TRUE, width = "80%", height="250px", rstudio = TRUE)
+```
+
+- Check workflow status
+
+```{r, eval=TRUE}
+statusWF(sal)
+```
+
+- Log Reports
+
+```{r, eval=FALSE}
+sal <- renderLogs(sal)
 ```
 
 ## How to run the workflow on a cluster
@@ -586,7 +827,7 @@ q("no") # closes R session on head node
 
 ```{bash node_environment, eval=FALSE}
 srun --x11 --partition=short --mem=2gb --cpus-per-task 4 --ntasks 1 --time 2:00:00 --pty bash -l
-module load R/4.0.3
+module load R/4.1.0
 R
 ```
 
@@ -631,9 +872,640 @@ getStatus(reg=reg)
 waitForJobs(reg=reg)
 ```
 
-# Workflow steps overview
+# Save to Rmd/bash
 
-## TODO: Provide the link to WF steps...
+
+# Project recovery
+
+If you desire to restart a project that has been initialized in the past, 
+`SPRproject` function allows this operation.
+With the restart option, it is possible to load the `SYSargsList` object in R and 
+restart the analysis. Please, make sure to provide the logs.dir location and the 
+corresponded `YAML` file name.
+The current working directory needs to be in the project root directory.
+
+
+```{r SPR_restart, eval=FALSE}
+sal <- SPRproject(restart=TRUE, logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
+```
+
+If you choose to save the environment in the last analysis, you can recover all the files created in that particular section. `SPRproject` function allows this with `load.envir` argument. Please note that the environment was saved only with you run the workflow 
+in the last section (`runWF()`).
+
+```{r restart_load, eval=FALSE}
+sal <- SPRproject(restart=TRUE, load.envir = TRUE) 
+```
+
+After loading the workflow at your current section, you can check the objects 
+created in the old environment and decide if it is necessary to copy them to the
+current environment.
+
+```{r envir, eval=FALSE}
+viewEnvir(sal)
+copyEnvir(sal, list="hello", new.env = globalenv())
+```
+
+The last and more drastic option from `SYSproject` function is to overwrite the
+logs and the workflow. This option will just delete the hidden folder and the 
+information on the `SYSargsList.yml` files. This will not delete any parameter 
+file nor any results it was created in previous runs.
+
+```{r SPR_overwrite, eval=FALSE}
+sal <- SPRproject(overwrite = TRUE) 
+```
+
+# Inner Classes
+
+`SYSargsList` steps are can be defined with two inner classes, `SYSargs2` and
+`LineWise`. Next, more details on both classes.
+
+## `SYSargs2` Class {#sysargs2}
+
+*`SYSargs2`* workflow control class, an S4 class, is a list-like container where
+each instance stores all the input/output paths and parameter components
+required for a particular data analysis step. *`SYSargs2`* instances are
+generated by two constructor functions, *loadWF* and *renderWF*, using as data
+input *targets* or *yaml* files as well as two *cwl* parameter files (for
+details see below).
+
+In CWL, files with the extension *`.cwl`* define the parameters of a chosen
+command-line step or workflow, while files with the extension *`.yml`* define
+the input variables of command-line steps. Note, input variables provided by a
+*targets* file can be passed on to a *`SYSargs2`* instance via the *inputvars*
+argument of the *renderWF* function.
+
+The following imports a *`.cwl`* file (here *`hisat2-mapping-se.cwl`*) for
+running the short read aligner HISAT2 [@Kim2015-ve]. For more details about the
+file structure and how to design or customize our own software tools, please
+check `systemPipeR and CWL` pipeline.
+
+```{r sysargs2_cwl_structure, echo = FALSE, eval=FALSE}
+hisat2.cwl <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.cwl", package="systemPipeR")
+yaml::read_yaml(hisat2.cwl)
+```
+
+```{r sysargs2_yaml_structure, echo = FALSE, eval=FALSE}
+hisat2.yml <- system.file("extdata", "cwl/hisat2/hisat2-mapping-se.yml", package="systemPipeR")
+yaml::read_yaml(hisat2.yml)
+```
+
+The *loadWF* and *renderWF* functions render the proper command-line strings for
+each sample and software tool.
+
+```{r SYSargs2_structure, eval=TRUE}
+library(systemPipeR)
+targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+WF <- loadWF(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl",
+                   input_file="hisat2/hisat2-mapping-se.yml",
+                   dir_path=dir_path)
+
+WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+```
+
+Several accessor methods are available that are named after the slot names of
+the *`SYSargs2`* object.
+
+```{r names_WF, eval=TRUE}
+names(WF)
+```
+
+Of particular interest is the *`cmdlist()`* method. It constructs the system
+commands for running command-line software as specified by a given *`.cwl`* file
+combined with the paths to the input samples (*e.g.* FASTQ files) provided by a
+*`targets`* file. The example below shows the *`cmdlist()`* output for running
+HISAT2 on the first SE read sample. Evaluating the output of *`cmdlist()`* can
+be very helpful for designing and debugging *`.cwl`* files of new command-line
+software or changing the parameter settings of existing ones.
+
+```{r cmdlist, eval=TRUE}
+cmdlist(WF)[1]
+```
+
+The output components of *`SYSargs2`* define the expected output files for each
+step in the workflow; some of which are the input for the next workflow step,
+here next *`SYSargs2`* instance.
+
+```{r output_WF, eval=TRUE}
+output(WF)[1]
+```
+
+The targets components of `SYSargs2` object can be accessed by the targets
+method. Here, for single-end (SE) samples, the structure of the targets file is
+defined by:
+
+- `FileName`: specify the FASTQ files path;
+- `SampleName`: Unique IDs for each sample;
+- `Factor`: ID for each treatment or condition.
+
+```{r, targets_WF, eval=TRUE}
+targets(WF)[1]
+as(WF, "DataFrame")
+```
+
+Please note, to work with custom data, users need to generate a *`targets`* file
+containing the paths to their own FASTQ files and then provide under
+*`targetspath`* the path to the corresponding *`targets`* file.
+
+In addition, if the [Environment Modules](http://modules.sourceforge.net/) is
+available, it is possible to define which module should be loaded, as shown
+here:
+
+```{r, module_WF, eval=TRUE}
+modules(WF)
+```
+
+Additional information can be accessed, as the parameters files location and the
+`inputvars` provided to generate the object.
+
+```{r, other_WF, eval=FALSE}
+files(WF)
+inputvars(WF)
+```
+
+## LineWise Class {#linewise}
+
+`LineWise` was designed to store all the R code chunk when an RMarkdown file is
+imported as a workflow.
+
+```{r lw, eval=TRUE}
+rmd <- system.file("extdata/", "SPRtest.Rmd", package = "systemPipeR")
+sal_lw <- SPRproject(overwrite = TRUE)
+sal_lw <- importWF(sal_lw, rmd, verbose=FALSE)
+lw <- stepsWF(sal_lw[2])[[1]]
+codeLine(lw)
+codeLine(sal_lw, step =c(1, 2))
+```
+
+- Coerce methods available:
+
+```{r, lw_coerce, eval=TRUE}
+## Coerce
+ll <- as(lw, "list")
+class(ll)
+lw <- as(ll, "LineWise")
+lw
+```
+
+- Access details
+
+```{r, lw_access, eval=TRUE}
+length(lw)
+names(lw)
+codeLine(lw)
+codeChunkStart(lw)
+rmdPath(lw)
+```
+
+- Subsetting
+
+```{r, lw_sub, eval=TRUE}
+l <- lw[2]
+codeLine(l)
+l_sub <- lw[-2]
+codeLine(l_sub)
+```
+
+- Replacement methods
+
+```{r, lw_rep, eval=TRUE}
+replaceCodeLine(lw, line=2) <- "5+5"
+codeLine(lw)
+appendCodeLine(lw, after=0) <- "6+7"
+codeLine(lw)
+```
+
+- Replacement methods for `SYSargsList`
+
+```{r, sal_rep_append, eval=FALSE}
+replaceCodeLine(sal_lw, step=3, line=2) <- "5+5"
+codeLine(sal_lw, step=2)
+
+appendCodeLine(sal_lw, step=3) <- "66+55"
+codeLine(sal_lw, step=3)
+
+appendCodeLine(sal_lw, step=1, after=1) <- "66+55"
+codeLine(sal_lw, step=1)
+```
+
+## Workflow design structure using *`SYSargs`*: Previous version
+
+Instances of this S4 object class are constructed by the *`systemArgs`* function
+from two simple tabular files: a *`targets`* file and a *`param`* file. The
+latter is optional for workflow steps lacking command-line software. Typically,
+a *`SYSargs`* instance stores all sample-level inputs as well as the paths to
+the corresponding outputs generated by command-line- or R-based software
+generating sample-level output files, such as read preprocessors
+(trimmed/filtered FASTQ files), aligners (SAM/BAM files), variant callers
+(VCF/BCF files) or peak callers (BED/WIG files). Each sample level input/output
+operation uses its own *`SYSargs`* instance. The outpaths of *`SYSargs`* usually
+define the sample inputs for the next *`SYSargs`* instance. This connectivity is
+established by writing the outpaths with the *`writeTargetsout`* function to a
+new *`targets`* file that serves as input to the next *`systemArgs`* call.
+Typically, the user has to provide only the initial *`targets`* file. All
+downstream *`targets`* files are generated automatically. By chaining several
+*`SYSargs`* steps together one can construct complex workflows involving many
+sample-level input/output file operations with any combination of command-line
+or R-based software.
+
+```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow design structure of *`systemPipeR`* using previous version of *`SYSargs`*"}
+knitr::include_graphics("SystemPipeR_Workflow.png")  
+```
+
+# Structure of the new parameters files
+
+This section will introduce how CWL describes command line tools and how to connect 
+them to create workflows. In addition, we will demonstrate how the workflow can
+be easily scalable with _`systemPipeR`_.
+
+CWL command line specifications are written in [YAML](http://yaml.org/) format.
+
+In CWL, files with the extension `.cwl` define the parameters of a chosen 
+command line step or workflow, while files with the extension `.yml` define 
+the input variables of command line steps. 
+
+## CWL `CommandLineTool`
+
+`CommandLineTool` by CWL definition is a standalone process, with no interaction 
+if other programs, execute a program, and produce output. 
+
+Let's explore the `.cwl` file: 
+
+```{r}
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+cwl <- yaml::read_yaml(file.path(dir_path, "example/example.cwl"))
+```
+
+- The `cwlVersion` component shows the CWL specification version used by the document. 
+- The `class` component shows this document describes a `CommandLineTool.`
+Note that CWL has another `class`, called `Workflow` which represents a union of one 
+or more command line tools together. 
+
+```{r}
+cwl[1:2]
+```
+
+- `baseCommand` component provides the name of the software that we desire to execute.
+
+```{r}
+cwl[3]
+```
+
+- The `inputs` section provides the input information to run the tool. Important 
+components of this section are: 
+    - `id`: each input has an id describing the input name;
+    - `type`: describe the type of input value (string, int, long, float, double, 
+    File, Directory or Any);
+    - `inputBinding`: It is optional. This component indicates if the input 
+    parameter should appear on the command line. If this component is missing 
+    when describing an input parameter, it will not appear in the command line 
+    but can be used to build the command line.
+
+```{r}
+cwl[4]
+```
+
+- The `outputs` section should provide a list of the expected outputs after running the command line tools. Important 
+components of this section are: 
+    - `id`: each input has an id describing the output name;
+    - `type`: describe the type of output value (string, int, long, float, double, 
+    File, Directory, Any or `stdout`);
+    - `outputBinding`: This component defines how to set the outputs values. The `glob` component will define the name of the output value. 
+
+```{r}
+cwl[5]
+```
+
+- `stdout`: component to specify a `filename` to capture standard output.
+Note here we are using a syntax that takes advantage of the inputs section, 
+using results_path parameter and also the `SampleName` to construct the output `filename.` 
+
+```{r}
+cwl[6]
+```
+
+## CWL `Workflow`
+
+`Workflow` class in CWL is defined by multiple process steps, where can have 
+interdependencies between the steps, and the output for one step can be used as 
+input in the further steps.
+
+```{r}
+cwl.wf <- yaml::read_yaml(file.path(dir_path, "example/workflow_example.cwl"))
+```
+
+- The `cwlVersion` component shows the CWL specification version used by the document. 
+- The `class` component shows this document describes a `Workflow`.
+
+```{r}
+cwl.wf[1:2]
+```
+
+- The `inputs` section describes the inputs of the workflow.
+
+```{r}
+cwl.wf[3]
+```
+
+- The `outputs` section describes the outputs of the workflow.
+
+```{r}
+cwl.wf[4]
+```
+
+- The `steps` section describes the steps of the workflow. In this simple example, 
+we demonstrate one step.
+
+```{r}
+cwl.wf[5]
+```
+
+## CWL Input Parameter 
+
+Next, let's explore the *.yml* file, which provide the input parameter values for all
+the components we describe above. 
+
+For this simple example, we have three parameters defined:
+
+```{r}
+yaml::read_yaml(file.path(dir_path, "example/example_single.yml"))
+```
+
+Note that if we define an input component in the *.cwl* file, this value needs 
+to be also defined here in the *.yml* file. 
+
+## How to connect CWL description files within `systemPipeR`
+
+`SYSargsList` container stores all the information and instructions needed for processing 
+a set of input files with a single or many command-line steps within a workflow 
+(i.e. several components of the software or several independent software tools). 
+The `SYSargsList` object is created and fully populated with the `SYSargsList` construct
+function.
+
+The following imports a `.cwl` file (here `example.cwl`) for running the `echo Hello World` 
+example.
+
+```{r fromFile, eval=TRUE}
+HW <- SYSargsList(wf_file="example/workflow_example.cwl", 
+                  input_file="example/example_single.yml", dir_path = dir_path)
+HW
+cmdlist(HW)
+```
+
+However, we are limited to run just one command line or one sample in this example. 
+To scale the command line over many samples, a simple solution offered by `systemPipeR` 
+is to provide a `variable` for each of the parameters that we want to run with multiple samples. 
+
+Let's explore the example:
+
+```{r}
+yml <- yaml::read_yaml(file.path(dir_path, "example/example.yml"))
+yml
+```
+
+For the `message` and `SampleName` parameter, we are passing a variable connecting 
+with a third file called `targets.` 
+
+Now, let's explore the `targets` file structure:
+
+```{r}
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+read.delim(targetspath, comment.char = "#")
+```
+
+The `targets` file defines all input files or values and sample ids of an analysis workflow. 
+For this example, we have defined a string message for the `echo` command line tool,
+in the first column that will be evaluated, and the second column is the 
+`SampleName` id for each one of the messages.
+Any number of additional columns can be added as needed.
+
+Users should note here, the usage of `targets` files is optional when using 
+`systemPipeR's` new CWL interface. Since for organizing experimental variables targets 
+files are extremely useful and user-friendly. Thus, we encourage users to keep using them.
+
+> Important!
+
+When the target file is provided, the only column required is `SampleName.` 
+The reason for this is that, internally, `SampleName` is used to construct the object, 
+and hence mandatory.
+
+### How to connect the parameter files and `targets` file information?
+
+The constructor function creates an `SYSargsList` S4 class object connecting three input files:
+
+    - CWL command line specification file (`wf_file` argument);
+    - Input variables (`input_file` argument);
+    - Targets file (`targets` argument).
+    
+As demonstrated above, the latter is optional for workflow steps lacking input files. 
+The connection between input variables (here defined by `input_file` argument) 
+and the `targets` file are defined under the `inputvars` argument. 
+A named vector is required, where each element name needs to match with column 
+names in the `targets` file, and the value must match the names of the *.yml* 
+variables. This is used to replace the CWL variable and construct all the command-line
+for that particular step. 
+
+The variable pattern `_XXXX_` is used to distinguish CWL variables that target 
+columns will replace. This pattern is recommended for consistency and easy identification
+but not enforced.
+
+The following imports a `.cwl` file (same example demonstrated above) for running
+the `echo Hello World` example. However, now we are connecting the variable defined 
+on the `.yml` file with the `targets` file inputs.
+
+```{r fromFile_example, eval=TRUE}
+HW_mul <- SYSargsList(step_name = "echo", 
+                      targets=targetspath, 
+                      wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
+                      dir_path = dir_path, 
+                      inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+HW_mul
+cmdlist(HW_mul)
+```
+
+```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "WConnectivity between CWL param files and targets files."}
+knitr::include_graphics("SPR_CWL_hello.png")  
+```
+
+# Creating the CWL param files from the command line
+
+Users need to define the command line in a pseudo-bash script format:
+
+```{r cmd, eval=TRUE}
+command <- "hisat2 \
+    -S <F, out: ./results/M1A.sam> \
+    -x <F: ./data/tair10.fasta> \
+     -k <int: 1> \
+    -min-intronlen <int: 30> \
+    -max-intronlen <int: 3000> \
+    -threads <int: 4> \
+    -U <F: ./data/SRR446027_1.fastq.gz>
+"
+```
+
+## Define prefix and defaults
+
+- First line is the base command. Each line is an argument with its default value.
+
+- For argument lines (starting from the second line), any word before the first 
+  space with leading `-` or `--` in each will be treated as a prefix, like `-S` or 
+  `--min`. Any line without this first word will be treated as no prefix. 
+  
+- All defaults are placed inside `<...>`.
+
+- First argument is the input argument type. `F` for "File", "int", "string" are unchanged.
+
+- Optional: use the keyword `out` followed the type with a `,` comma separation to 
+  indicate if this argument is also an CWL output.
+  
+- Then, use `:` to separate keywords and default values, any non-space value after the `:`
+  will be treated as the default value. 
+  
+- If any argument has no default value, just a flag, like `--verbose`, there is no need to add any `<...>`
+
+## `createParam` Function
+
+`createParam` function requires the `string` as defined above as an input. 
+
+First of all, the function will print the three components of the `cwl` file:
+    - `BaseCommand`: Specifies the program to execute. 
+    - `Inputs`: Defines the input parameters of the process.
+    - `Outputs`: Defines the parameters representing the output of the process.
+    
+The four component is the original command line.
+
+If in interactive mode, the function will verify that everything is correct and 
+will ask you to proceed. Here, the user can answer "no" and provide more 
+information at the string level. Another question is to save the param created here.
+
+If running the workflow in non-interactive mode, the `createParam` function will 
+consider "yes" and returning the container.
+
+```{r}
+cmd <- createParam(command, writeParamFiles = FALSE)
+```
+
+If the user chooses not to save the `param` files on the above operation, 
+it can use the `writeParamFiles` function.
+
+```{r saving, eval=FALSE}
+writeParamFiles(cmd, overwrite = TRUE)
+```
+
+## How to access and edit param files
+
+### Print a component
+
+```{r}
+printParam(cmd, position = "baseCommand") ## Print a baseCommand section
+printParam(cmd, position = "outputs")
+printParam(cmd, position = "inputs", index = 1:2) ## Print by index
+printParam(cmd, position = "inputs", index = -1:-2) ## Negative indexing printing to exclude certain indices in a position
+```
+
+### Subsetting the command line
+
+```{r}
+cmd2 <- subsetParam(cmd, position = "inputs", index = 1:2, trim = TRUE)
+cmdlist(cmd2)
+
+cmd2 <- subsetParam(cmd, position = "inputs", index = c("S", "x"), trim = TRUE)
+cmdlist(cmd2)
+```
+
+### Replacing a existing argument in the command line
+
+```{r}
+cmd3 <- replaceParam(cmd, "base", index = 1, replace = list(baseCommand = "bwa"))
+cmdlist(cmd3)
+```
+
+```{r}
+new_inputs <- new_inputs <- list(
+    "new_input1" = list(type = "File", preF="-b", yml ="myfile"),
+    "new_input2" = "-L <int: 4>"
+)
+cmd4 <- replaceParam(cmd, "inputs", index = 1:2, replace = new_inputs)
+cmdlist(cmd4)
+```
+
+### Adding new arguments
+
+```{r}
+newIn <- new_inputs <- list(
+    "new_input1" = list(type = "File", preF="-b1", yml ="myfile1"),
+    "new_input2" = list(type = "File", preF="-b2", yml ="myfile2"),
+    "new_input3" = "-b3 <F: myfile3>"
+)
+cmd5 <- appendParam(cmd, "inputs", index = 1:2, append = new_inputs)
+cmdlist(cmd5)
+
+cmd6 <- appendParam(cmd, "inputs", index = 1:2, after=0, append = new_inputs)
+cmdlist(cmd6)
+```
+
+### Editing `output` param
+
+```{r}
+new_outs <- list(
+    "sam_out" = "<F: $(inputs.results_path)/test.sam>"
+) 
+cmd7 <- replaceParam(cmd, "outputs", index = 1, replace = new_outs)
+output(cmd7) 
+```
+
+### Internal Check
+
+```{r sysargs2, eval=TRUE}
+cmd <- "
+    hisat2 \
+    -S <F, out: _SampleName_.sam> \
+    -x <F: ./data/tair10.fasta> \
+    -k <int: 1> \
+    -min-intronlen <int: 30> \
+    -max-intronlen <int: 3000> \
+    -threads <int: 4> \
+    -U <F: _FASTQ_PATH1_>
+"
+WF <- createParam(cmd, overwrite = TRUE, writeParamFiles = TRUE, confirm = TRUE) 
+targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
+WF_test <- loadWorkflow(targets = targetspath, wf_file="hisat2.cwl",
+                   input_file="hisat2.yml", dir_path = "param/cwl/hisat2/")
+WF_test <- renderWF(WF_test, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+WF_test
+cmdlist(WF_test)[1:2]
+```
+
+# Third-party software tools {#tools}
+
+Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
+
+```{r table_tools, echo=FALSE, message=FALSE}
+library(magrittr)
+# library(kableExtra)
+SPR_software <- system.file("extdata", "SPR_software.csv", package="systemPipeR")
+#SPR_software <- "SPR_software.csv"
+software <- read.delim(SPR_software, sep=",", comment.char = "#")
+colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
+id <- as.numeric(c((unique(software$Category))))
+software %>%
+  dplyr::mutate(Step = kableExtra::cell_spec(Step, color = "white", bold = TRUE,
+    background = factor(Category, id, colors)
+  )) %>%
+   dplyr::select(Tool, Description, Step) %>%
+  dplyr::arrange(Tool) %>% 
+  kableExtra::kable(escape = FALSE, align = "c", col.names = c("Tool Name",	"Description", "Step")) %>%
+  kableExtra::kable_styling(c("striped", "hover", "condensed"), full_width = TRUE) %>%
+  kableExtra::scroll_box(width = "80%", height = "500px")
+```
+
+Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
+
+```{r test_tool_path, eval=FALSE}
+tryCL(command="grep") 
+```
+
+# Version information
 
 ```{r sessionInfo}
 sessionInfo()
