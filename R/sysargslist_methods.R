@@ -475,8 +475,14 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     after <- after
     if (stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
     ## Dependency
-    if (all(is.na(dependency(value)) && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) stop("'dependency' argument is required to append a step in the workflow.")
-    if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+    if(after>0){
+    if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
+      stop("'dependency' argument is required to append a step in the workflow.")
+      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% ""] %in% stepName(x))) 
+        stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
+                    paste0(stepName(x), collapse = ", ")))
+    }
+    #if (dependency(value) == "") value[["dependency"]][[1]] <- NA
     ## Append
     if (inherits(value, "SYSargsList")) {
         value <- .validationStepConn(x, value)
@@ -590,9 +596,9 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             stop("Quiting...")
         }
     } else if (!is.null(sys.file)) {
-        sys.file <- projectInfo(x)$sysargslist
-        write_SYSargsList(x, sys.file, silent = silent)
-        return(x)
+      sys.file <- file.path(projectInfo(x)$project, projectInfo(x)$sysargslist)
+      write_SYSargsList(x, sys.file, silent = silent)
+      return(x)
     }
 }
 
@@ -675,7 +681,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     if (inherits(value, "SYSargs2")) {
         value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
     }
-    if (all(!is.na(dependency(value)) && !getOption("spr_importing"))) {
+    if (all(!dependency(value) == "" && !getOption("spr_importing"))) {
         dep <- dependency(value)[[1]]
         if (inherits(dep, "character")) {
             if (all(!dep %in% names(stepsWF(x)))) {
@@ -706,152 +712,217 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
 # appendStep(sal) <- SYSargsList(WF)
 # appendStep(sal, after=0) <- SYSargsList(WF)
 # appendStep(sal, after=0, step_index="test_11") <- SYSargsList(WF)
-setReplaceMethod(f ="yamlinput", signature = c("SYSargsList"), 
-                 definition = function(x, step, paramName, value) {
-    x_sub <- x[step]
-    args <- x_sub@stepsWF[[1]]
-    yamlinput(args, paramName) <- value
-    x <- sysargslist(x)
-    x$stepsWF[[1]] <- args
-    x <- as(x, "SYSargsList")
-    x <- .check_write_SYSargsList(x)
-    x
-})
-
-setReplaceMethod(f = "replaceStep", signature = c("SYSargsList"), 
-                 definition = function(x, step, step_name = "default", value) {
-    if (any(!inherits(value, "SYSargsList") && !inherits(value, "LineWise"))) {
-          stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' or 'LineWise'.")
-      }
-    if (all(inherits(value, "SYSargsList") && length(value) > 1)) stop("Argument 'value' cannot have 'length(value) > 1")
-    if (inherits(step, "numeric")) {
-        if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
-    } else if (inherits(step, "character")) {
-        if (!step %in% names(stepsWF(x))) {
-            stop(paste0(
-                "Argument 'step' needs to be assigned one of the following: ",
-                paste(names(stepsWF(x)), collapse = " OR ")
-            ))
-        }
-    }
-    x <- sysargslist(x)
-    if (inherits(value, "SYSargsList")) {
-        x$stepsWF[step] <- value$stepsWF
-        x$statusWF[step] <- value$statusWF
-    } else if (inherits(value, "LineWise")) {
-        x$stepsWF[[step]] <- value
-        x$statusWF[[step]] <- value$status
-    }
-    x <- as(x, "SYSargsList")
-    if (step_name == "default") {
-        name <- stepName(value)
-        if (name %in% names(x$stepsWF)) {
-            renameStep(x, step) <- paste0("Step_", step)
-            cat(paste0("Index name of x", "[", step, "]", " was rename to ", paste0("Step_", step), " to avoid duplications."))
-        } else {
-            renameStep(x, step) <- stepName(value)
-        }
-    } else {
-        renameStep(x, step) <- step_name
-    }
-
-    if (any(duplicated(names(stepsWF(x))))) warning("Duplication is found in names(stepsWF(x)). Consider renaming the steps.")
-    x <- .check_write_SYSargsList(x)
-    x
-})
-
-setReplaceMethod(f = "renameStep", signature = c("SYSargsList"), 
-                 definition = function(x, step, ..., value) {
-    if (length(step) != length(value)) stop("value argument needs to be the same length of the step for rename")
-    if (inherits(value, "character")) {
-      if (any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
-      value <- gsub("[[:space:]]", "_", value) } else {
-        stop("Replace value needs to be assigned an 'character' name for the workflow step.")
-        }
-    for (i in seq_along(step)){
-      original <- names(x@stepsWF)[step[i]]
-      names(x@stepsWF)[step[i]] <- value[i]
-      names(x@statusWF)[step[i]] <- value[i]
-      names(x@dependency)[step[i]] <- value[i]
-      names(x@targetsWF)[step[i]] <- value[i]
-      names(x@outfiles)[step[i]] <- value[i]
-      # names(x@SEobj)[i] <- value
-      names(x@targets_connection)[step[i]] <- value[i]
-      if (!is.null(x$runInfo$directory)) {
-        names(x@runInfo$directory)[step[i]] <- value[i]
-        }
-      ## check in dependency step
-      x[["dependency"]] <- lapply(x$dependency, function(y) gsub(original, value[i], y))
-      ## check in targets_connection step
-      x[["targets_connection"]] <- sapply(x$targets_connection, function(y)
-        if(!is.null(y)) lapply(y, function(w) if(all(w == original))
-          sub(original, value[i], w) else w))
-      }
-  ## Save
-    if (!is.null(x$projectInfo$sysargslist)) {
+setReplaceMethod(
+    f = "yamlinput", signature = c("SYSargsList"),
+    definition = function(x, step, paramName, value) {
+        x_sub <- x[step]
+        args <- x_sub@stepsWF[[1]]
+        yamlinput(args, paramName) <- value
+        x <- sysargslist(x)
+        x$stepsWF[[1]] <- args
+        x <- as(x, "SYSargsList")
         x <- .check_write_SYSargsList(x)
+        x
     }
-    x
-})
+)
 
-setReplaceMethod(f = "dependency", signature = c("SYSargsList"), 
-                 definition = function(x, step, ..., value) {
-    x@dependency[[step]] <- value
-    x <- .check_write_SYSargsList(x)
-    x
-})
-
-setReplaceMethod(f = "replaceCodeLine", signature = c("SYSargsList"), 
-                 definition = function(x, step, line, value) {
-    y <- x$stepsWF[step][[1]]
-    if (!inherits(y, "LineWise")) stop("The step argument needs to be assigned a 'LineWise' object")
-    y <- as(y, "list")
-    y$codeLine <- as.character(y$codeLine)
-    y$codeLine[line] <- value
-    y$codeLine <- parse(text = y$codeLine)
-    y <- as(y, "LineWise")
-    x <- as(x, "list")
-    x$stepsWF[step][[1]] <- y
-    x <- as(x, "SYSargsList")
-    sys.file <- projectInfo(x)$sysargslist
-    write_SYSargsList(x, sys.file, silent = TRUE)
-    x
-})
-
-setReplaceMethod(f = "appendCodeLine", signature = c("SYSargsList"), 
-                 definition = function(x, step, after = NULL, value) {
-    if (is.null(after)) after <- length(stepsWF(x[step])[[1]])
-    y <- x$stepsWF[step][[1]]
-    if (!inherits(y, "LineWise")) stop("Provide 'LineWise' class object")
-    lengx <- length(y)
-    y <- linewise(y)
-    value <- parse(text = value)
-    if (!after) {
-        y$codeLine <- c(value, y$codeLine)
-    } else if (after >= lengx) {
-        y$codeLine <- c(y$codeLine, value)
-    } else {
-        y$codeLine <- c(y$codeLine[1L:after], value, y$codeLine[(after + 1L):lengx])
+setReplaceMethod(
+    f = "replaceStep", signature = c("SYSargsList"),
+    definition = function(x, step, step_name = "default", value) {
+        if (any(!inherits(value, "SYSargsList") && !inherits(value, "LineWise"))) {
+            stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' or 'LineWise'.")
+        }
+        if (all(inherits(value, "SYSargsList") && length(value) > 1)) stop("Argument 'value' cannot have 'length(value) > 1")
+        ## Check step name or index on x
+        if (inherits(step, "numeric")) {
+            if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
+        } else if (inherits(step, "character")) {
+            if (!step %in% stepName(x)) {
+                stop(paste0(
+                    "Argument 'step' needs to be assigned one of the following: ",
+                    paste(stepName(x), collapse = " OR ")
+                ))
+            }
+            step <- grep(step, stepName(x))
+        }
+        ## used in `importWF`
+        on.exit(options(spr_importing = FALSE))
+        ## used in `+.SYSargsList`
+        on.exit(options(appendPlus = FALSE))
+        ## Dependency
+        if (step > 1) {
+            #if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+            if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) {
+                stop("'dependency' argument is required to replace a step in the workflow.")
+            }
+            if (any(!value$dependency[[1]][!value$dependency[[1]] %in% ""] %in% stepName(x))) {
+                stop(paste0(
+                    "Dependency value needs to be present in the Workflow. ", "Options are: ", "\n",
+                    paste0(stepName(x)[1:step - 1], collapse = ", ")
+                ))
+            }
+        } else if (step == 1) {
+            ## first step usually is ""
+            if (!value$dependency[[1]] == "") {
+                if (!value$dependency[[1]] %in% stepName(x)) {
+                    stop("Usually, the first step is empty string, without dependencies. Also, the dependency step specify is not in the Workflow. Please check the dependency tree.")
+                }
+            }
+        }
+        ## Update connections
+        if(inherits(value, "SYSargsList")) value <- .validationStepConn(x[-c(step)], value)
+        if (is.na(dependency(value))) value[["dependency"]][[1]] <- ""
+        ## replace
+        x <- sysargslist(x)
+        if (inherits(value, "SYSargsList")) {
+            x$stepsWF[step] <- value$stepsWF
+            x$statusWF[step] <- value$statusWF
+            x$targetsWF[step] <- value$targetsWF
+            x$outfiles[step] <- value$outfiles
+            # x$SEobj[step] <- value$SEobj
+            x$dependency[step] <- value$dependency
+            x$targets_connection[step] <- value$targets_connection
+            x$runInfo[["directory"]][step] <- value$runInfo[["directory"]]
+        } else if (inherits(value, "LineWise")) {
+            x$stepsWF[[step]] <- value
+            x$statusWF[[step]] <- value$status
+            x$targetsWF[[step]] <- S4Vectors::DataFrame()
+            x$outfiles[[step]] <- S4Vectors::DataFrame()
+            x$dependency[[step]] <- value$dependency[[1]]
+            x$targets_connection[[step]] <- list(NULL)
+            x$runInfo[["directory"]][[step]] <- list(FALSE)
+        }
+        x <- as(x, "SYSargsList")
+        ## rename
+        if (step_name == "default") {
+            name <- stepName(value)
+            if (name %in% stepName(x)) {
+                renameStep(x, step) <- paste0("Step_", step)
+                cat(paste0("Index name of x", "[", step, "]", " was rename to ", paste0("Step_", step), " to avoid duplications."))
+            } else {
+                renameStep(x, step) <- stepName(value)
+            }
+        } else {
+            renameStep(x, step) <- step_name
+        }
+        x <- .check_write_SYSargsList(x)
+        x
     }
-    y <- as(y, "LineWise")
-    x <- as(x, "list")
-    x$stepsWF[step][[1]] <- y
-    x <- as(x, "SYSargsList")
-    sys.file <- projectInfo(x)$sysargslist
-    write_SYSargsList(x, sys.file, silent = TRUE)
-    x
-})
+)
 
-setReplaceMethod(f = "stepsWF", signature = c("SYSargsList"), 
-                 definition = function(x, step, ..., value) {
-    x@stepsWF[[step]] <- value
-    x <- .check_write_SYSargsList(x)
-    x
-})
+setReplaceMethod(
+    f = "renameStep", signature = c("SYSargsList"),
+    definition = function(x, step, ..., value) {
+        if (length(step) != length(value)) stop("value argument needs to be the same length of the step for rename")
+        if (inherits(value, "character")) {
+            if (any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
+            value <- gsub("[[:space:]]", "_", value)
+        } else {
+            stop("Replace value needs to be assigned an 'character' name for the workflow step.")
+        }
+        for (i in seq_along(step)) {
+            original <- names(x@stepsWF)[step[i]]
+            names(x@stepsWF)[step[i]] <- value[i]
+            names(x@statusWF)[step[i]] <- value[i]
+            names(x@dependency)[step[i]] <- value[i]
+            names(x@targetsWF)[step[i]] <- value[i]
+            names(x@outfiles)[step[i]] <- value[i]
+            # names(x@SEobj)[i] <- value
+            names(x@targets_connection)[step[i]] <- value[i]
+            if (!is.null(x$runInfo$directory)) {
+                names(x@runInfo$directory)[step[i]] <- value[i]
+            }
+            ## check in dependency step
+            x[["dependency"]] <- lapply(x$dependency, function(y) gsub(original, value[i], y))
+            ## check in targets_connection step
+            x[["targets_connection"]] <- sapply(x$targets_connection, function(y) {
+                if (!is.null(y)) {
+                    lapply(y, function(w) {
+                        if (all(w == original)) {
+                            sub(original, value[i], w)
+                        } else {
+                            w
+                        }
+                    })
+                }
+            })
+        }
+        ## Save
+        if (!is.null(x$projectInfo$sysargslist)) {
+            x <- .check_write_SYSargsList(x)
+        }
+        x
+    }
+)
 
-setReplaceMethod(f = "statusWF", signature = c("SYSargsList"), 
-                 definition = function(x, step, ..., value) {
-    x@statusWF[[step]] <- value
-    x <- .check_write_SYSargsList(x)
-    x
-})
+setReplaceMethod(
+    f = "dependency", signature = c("SYSargsList"),
+    definition = function(x, step, ..., value) {
+        x@dependency[[step]] <- value
+        x <- .check_write_SYSargsList(x)
+        x
+    }
+)
+
+setReplaceMethod(
+    f = "replaceCodeLine", signature = c("SYSargsList"),
+    definition = function(x, step, line, value) {
+        y <- x$stepsWF[step][[1]]
+        if (!inherits(y, "LineWise")) stop("The step argument needs to be assigned a 'LineWise' object")
+        y <- as(y, "list")
+        y$codeLine <- as.character(y$codeLine)
+        y$codeLine[line] <- value
+        y$codeLine <- parse(text = y$codeLine)
+        y <- as(y, "LineWise")
+        x <- as(x, "list")
+        x$stepsWF[step][[1]] <- y
+        x <- as(x, "SYSargsList")
+        sys.file <- projectInfo(x)$sysargslist
+        write_SYSargsList(x, sys.file, silent = TRUE)
+        x
+    }
+)
+
+setReplaceMethod(
+    f = "appendCodeLine", signature = c("SYSargsList"),
+    definition = function(x, step, after = NULL, value) {
+        if (is.null(after)) after <- length(stepsWF(x[step])[[1]])
+        y <- x$stepsWF[step][[1]]
+        if (!inherits(y, "LineWise")) stop("Provide 'LineWise' class object")
+        lengx <- length(y)
+        y <- linewise(y)
+        value <- parse(text = value)
+        if (!after) {
+            y$codeLine <- c(value, y$codeLine)
+        } else if (after >= lengx) {
+            y$codeLine <- c(y$codeLine, value)
+        } else {
+            y$codeLine <- c(y$codeLine[1L:after], value, y$codeLine[(after + 1L):lengx])
+        }
+        y <- as(y, "LineWise")
+        x <- as(x, "list")
+        x$stepsWF[step][[1]] <- y
+        x <- as(x, "SYSargsList")
+        sys.file <- projectInfo(x)$sysargslist
+        write_SYSargsList(x, sys.file, silent = TRUE)
+        x
+    }
+)
+
+setReplaceMethod(
+    f = "stepsWF", signature = c("SYSargsList"),
+    definition = function(x, step, ..., value) {
+        x@stepsWF[[step]] <- value
+        x <- .check_write_SYSargsList(x)
+        x
+    }
+)
+
+setReplaceMethod(
+    f = "statusWF", signature = c("SYSargsList"),
+    definition = function(x, step, ..., value) {
+        x@statusWF[[step]] <- value
+        x <- .check_write_SYSargsList(x)
+        x
+    }
+)

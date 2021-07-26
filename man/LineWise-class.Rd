@@ -55,7 +55,7 @@ will store the R Markdown file path.
 ## Constructor
 
 LineWise(code, step_name="default", codeChunkStart=integer(), rmdPath=character(), 
-        dependency=NA)
+        dependency="")
 }
 \arguments{
   \item{code}{
@@ -74,9 +74,9 @@ LineWise(code, step_name="default", codeChunkStart=integer(), rmdPath=character(
   step to the workflow.
 }
   \item{dependency}{
-  logical or character. Dependency tree, required when appending this step to 
+  character. Dependency tree, required when appending this step to 
   the workflow. Character name of a previous step in the workflow. 
-  Default is \code{NA}.
+  Default is empty string \code{""}.
 }
 }
 \section{Objects from the Class}{

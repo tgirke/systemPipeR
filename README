@@ -1,4 +1,15 @@
 changelog
+    version 1.27.12
+	- plotWF accepts empty sal + minor updates
+	- alias tryCMD
+	- New argument createParam (confirm=FALSE)
+	- sal object with relative Paths
+	- Improvements SPRproject: resume and restart
+	- Bugs: runCommandLine and tryCMD
+	- Bugs fixed: replaceSteps<- + improvements
+	- Bug fixed: dependency in LineWise and SYSargsList functions
+	- Documentation
+	
      version 1.27.11
         - Deprecated: getQsubargs and qsubRun functions
         - LineWise: help files and files organization

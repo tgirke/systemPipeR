@@ -91,7 +91,7 @@ S4 class container for storing parameters and information of command-line- or R-
 SYSargsList(sysargs = NULL, step_name = "default", 
             targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", 
             inputvars = NULL, rm_targets_col = NULL, 
-            dir = TRUE, dependency = NA, silent = FALSE)
+            dir = TRUE, dependency = "", silent = FALSE)
 
 ## Accessors
 
@@ -166,7 +166,9 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   in the respective folders. Default is \code{dir=TRUE}.
 }
   \item{dependency}{
-  name of the step dependency.
+  character. Dependency tree, required when appending this step to 
+  the workflow. Character name of a previous step in the workflow. 
+  Default is empty string \code{""}.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
@@ -267,14 +269,19 @@ Daniela Cassol and Thomas Girke
 }
 \examples{
 sal <- SPRproject(overwrite=TRUE)
-targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+targetspath <- system.file("extdata/cwl/example/targets_example.txt", 
+                            package="systemPipeR")
 
 ## Constructor and `appendStep<-`
 appendStep(sal) <- SYSargsList(step_name = "echo", 
                                targets=targetspath, dir=TRUE,
-                               wf_file="example/workflow_example.cwl", input_file="example/example.yml", 
-                               dir_path = system.file("extdata/cwl", package="systemPipeR"),
-                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+                               wf_file="example/workflow_example.cwl", 
+                               input_file="example/example.yml", 
+                               dir_path = system.file("extdata/cwl", 
+                               package="systemPipeR"),
+                               inputvars = c(Message = "_STRING_",
+                               SampleName = "_SAMPLE_"))
+                               
 appendStep(sal) <- LineWise(code = {
                             hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
                             }, 

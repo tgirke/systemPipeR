@@ -1,5 +1,7 @@
 \name{plotWF}
 \alias{plotWF}
+\alias{plotwfOutput}
+\alias{renderPlotwf}
 \title{Visualize SPR workflow and status}
 \usage{
 plotWF(
@@ -22,6 +24,18 @@ plotWF(
   rmarkdown = "detect",
   verbose = FALSE,
   exit_point = 0
+)
+
+plotwfOutput(
+  outputId, 
+  width = '100\%',
+  height = '400px'
+)
+  
+renderPlotwf(
+  expr, 
+  env = parent.frame(), 
+  quoted = FALSE
 )
 }
 \arguments{
@@ -82,12 +96,24 @@ can force it to be \code{TRUE} or \code{FALSE}}
 \item{verbose}{bool, turn on verbose mode will give you more information}
 
 \item{exit_point}{numeric, for advanced debugging only, see details}
+  
+\item{outputId}{string, shiny output ID}
+  
+\item{expr}{An expression that generates a plotwf, like \code{plotWF(sal)}}
+  
+\item{env}{The environment in which to evaluate \code{expr}.}
+  
+\item{quoted}{Is \code{expr} a quoted expression (with \code{quote()})? 
+This is useful if you want to save an expression in a variable.}
 }
 \value{
 see \code{out_format} and \code{exit_point}
 }
 \description{
-Visualize SPR workflow and status
+Visualize SPR workflow and status. \code{plotWF} is the general function 
+that creates the plot. 
+\code{plotwfOutput} and \code{renderPlotwf} are used in Shiny UI and server 
+respectively, similar to \code{plotOutput} and \code{renderPlot}.
 }
 \details{
 \subsection{layout}{
@@ -119,5 +145,12 @@ Rmarkdown will change some of the format and cause conflicts. If the plot can be
 rendered outside Rmd but cannot within Rmd, try to turn this option on. Some additional
 javascript processing will be performed to avoid the conflict but may cause unknown
 issues.
+}
+
+
+\subsection{Shiny}{
+
+When the plot is rendered in a Shiny app, the \code{rstudio} option must be turned on, 
+\code{plotWF(sal, rstudio = TRUE, ...)}.
 }
 }

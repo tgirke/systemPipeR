@@ -21,17 +21,28 @@ HTMLWidgets.widget({
           plot.style.height = "100%";
          }
         }
+
         var viz = new Viz();
         viz[x.plot_method](x.dot)
-        .then(function(element) {
-          element.id = x.plotid;
+        .then(function(plot_el) {
+          plot_el.id = x.plotid;
           el.style.width = x.width ? x.width: "100%";
           el.style.height = x.height ? x.height: "100%";
           el.style.overflow = "auto";
-          el.appendChild(element);
 
+          [...el.children].forEach(e => e.remove()); //clear all children before attach
+          if(x.msg !== "") {
+            let msgNode = document.createElement("h4");
+            msgNode.innerText = x.msg;
+            msgNode.style.textAlign = "center";
+            msgNode.style.color = "red";
+            el.appendChild(msgNode);
+          }
+          el.appendChild(plot_el);
           var singlePage = document.querySelector(`#htmlwidget_container`);
           if(singlePage) document.querySelector('body').style.padding = '0';
+
+          if (x.rmd) $(plot_el).removeAttr('height width');
 
           if(x.responsive) makeResponsive(x.plotid);
           document.dispatchEvent(new Event('wf_plot_created'));

@@ -11,11 +11,12 @@
 \description{
 To test a sample population of genes for over-representation of GO terms, the
 core function \code{GOHyperGAll} computes for all nodes in the three GO networks
-(BP, CC and MF) an enrichment test based on the hypergeometric distribution and returns the corresponding raw and
-Bonferroni corrected p-values. Subsequently, a filter function supports GO Slim
-analyses using default or custom GO Slim categories. Several convenience functions
-are provided to process large numbers of gene sets (e.g. clusters from partitioning
-results) and to visualize the results. 
+(BP, CC and MF) an enrichment test based on the hypergeometric distribution and 
+returns the corresponding raw and Bonferroni corrected p-values. 
+Subsequently, a filter function supports GO Slim analyses using default or 
+custom GO Slim categories. Several convenience functions are provided to process
+large numbers of gene sets (e.g. clusters from partitioning results) and to 
+visualize the results. 
 
 Note: \code{GOHyperGAll} provides similar utilities as the \code{GOHyperG}
 function in the \code{GOstats} package. The main difference is that
@@ -24,19 +25,23 @@ as the usage of custom array-to-gene and gene-to-GO mappings.
 }
 \usage{
 ## Generate gene-to-GO mappings and store as catDB object 
-makeCATdb(myfile, lib = NULL, org = "", colno = c(1, 2, 3), idconv = NULL, rootUK=FALSE)
+makeCATdb(myfile, lib = NULL, org = "", colno = c(1, 2, 3), idconv = NULL, 
+            rootUK=FALSE)
 
 ## Enrichment function
 GOHyperGAll(catdb, gocat = "MF", sample, Nannot = 2)
 
 ## GO slim analysis
-GOHyperGAll_Subset(catdb, GOHyperGAll_result, sample = test_sample, type = "goSlim", myslimv)
+GOHyperGAll_Subset(catdb, GOHyperGAll_result, sample = test_sample, 
+            type = "goSlim", myslimv)
 
 ## Reduce GO term redundancy 
 GOHyperGAll_Simplify(GOHyperGAll_result, gocat = "MF", cutoff = 0.001, correct = TRUE)
 
 ## Batch analysis of many gene sets
-GOCluster_Report(catdb, setlist, id_type = "affy", method = "all", CLSZ = 10, cutoff = 0.001, gocats = c("MF", "BP", "CC"), myslimv = "default", correct = TRUE, recordSpecGO = NULL, ...)
+GOCluster_Report(catdb, setlist, id_type = "affy", method = "all", CLSZ = 10, 
+            cutoff = 0.001, gocats = c("MF", "BP", "CC"), myslimv = "default",
+            correct = TRUE, recordSpecGO = NULL, ...)
 
 ## Bar plot of GOCluster_Report results
 goBarplot(GOBatchResult, gocat)
@@ -157,21 +162,28 @@ listMarts() # To choose BioMart database
 m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m) 
 m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
 listAttributes(m) # Choose data types you want to download
-go <- getBM(attributes=c("go_accession", "tair_locus", "go_namespace_1003"), mart=m)
+go <- getBM(attributes=c("go_accession", "tair_locus", 
+            "go_namespace_1003"), mart=m)
 go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
-write.table(go, "GOannotationsBiomart_mod.txt", quote=FALSE, row.names=FALSE, col.names=FALSE, sep="\t")
+write.table(go, "GOannotationsBiomart_mod.txt", quote=FALSE, 
+            row.names=FALSE, col.names=FALSE, sep="\t")
 
 ## Create catDB instance (takes a while but needs to be done only once)
-catdb <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=NULL)
+catdb <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, org="",
+                    colno=c(1,2,3), idconv=NULL)
 catdb
 
 ## Create catDB from Bioconductor annotation package
-# catdb <- makeCATdb(myfile=NULL, lib="ath1121501.db", org="", colno=c(1,2,3), idconv=NULL)
+# catdb <- makeCATdb(myfile=NULL, lib="ath1121501.db", org="", 
+                    colno=c(1,2,3), idconv=NULL)
 
 ## AffyID-to-GeneID mappings when working with AffyIDs 
-# affy2locusDF <- systemPipeR:::.AffyID2GeneID(map = "ftp://ftp.arabidopsis.org/home/tair/Microarrays/Affymetrix/affy_ATH1_array_elements-2010-12-20.txt", download=TRUE)
-# catdb_conv <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, org="", colno=c(1,2,3), idconv=list(affy=affy2locusDF))
-# systemPipeR:::.AffyID2GeneID(catdb=catdb_conv, affyIDs=c("244901_at", "244902_at"))
+# affy2locusDF <- systemPipeR:::.AffyID2GeneID(map = "ftp://ftp.arabidopsis.org/home/tair/Microarrays/Affymetrix/affy_ATH1_array_elements-2010-12-20.txt",
+                                                download=TRUE)
+# catdb_conv <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, org="", 
+                            colno=c(1,2,3), idconv=list(affy=affy2locusDF))
+# systemPipeR:::.AffyID2GeneID(catdb=catdb_conv, 
+                                affyIDs=c("244901_at", "244902_at"))
 
 ## Next time catDB can be loaded from file
 save(catdb, file="catdb.RData") 
@@ -186,13 +198,17 @@ GOHyperGAll_result <- GOHyperGAll(catdb=catdb, gocat="MF", sample=test_sample, N
 GOHyperGAll_Subset(catdb, GOHyperGAll_result, sample=test_sample, type="goSlim") 
 
 ## Reduce GO term redundancy in 'GOHyperGAll_results'
-simplifyDF <- GOHyperGAll_Simplify(GOHyperGAll_result, gocat="MF", cutoff=0.001, correct=T)
+simplifyDF <- GOHyperGAll_Simplify(GOHyperGAll_result, gocat="MF", 
+                                    cutoff=0.001, correct=T)
 # Returns the redundancy reduced data set. 
 data.frame(GOHyperGAll_result[GOHyperGAll_result[,1] %in% simplifyDF[,1], -8], GO_OL_Match=simplifyDF[,2])
 
 ## Batch Analysis of Gene Clusters
 testlist <- list(Set1=test_sample)
-GOBatchResult <- GOCluster_Report(catdb=catdb, setlist=testlist, method="all", id_type="gene", CLSZ=10, cutoff=0.001, gocats=c("MF", "BP", "CC"), recordSpecGO=c("GO:0003674", "GO:0008150", "GO:0005575"))
+GOBatchResult <- GOCluster_Report(catdb=catdb, setlist=testlist, method="all", 
+                                    id_type="gene", CLSZ=10, cutoff=0.001, 
+                                    gocats=c("MF", "BP", "CC"), 
+                                    recordSpecGO=c("GO:0003674", "GO:0008150", "GO:0005575"))
 
 ## Plot 'GOBatchResult' as bar plot
 goBarplot(GOBatchResult, gocat="MF")

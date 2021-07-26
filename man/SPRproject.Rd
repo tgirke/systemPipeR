@@ -5,9 +5,9 @@ Workflow Project Initiation
 }
 \description{
 Function to construct \code{SYSargsList} workflow control environment (S4 object). 
-This function creates the directory structure, with it is not available on the 
-fly to register all the parameters of the workflow.
-This function checks the project structure, which by default is:
+This function creates and checks the directory structure. If the expected directories
+are not available, it is possible to create those. 
+The project directory structure expected is: 
 
 \itemize{
   \item{\code{SPRproject/}}
@@ -17,13 +17,14 @@ This function checks the project structure, which by default is:
       \item{\code{results/}}
   }
 }
-
-The default structure of the project directories can be modified here. 
+The project working directory default structure of the project directories can be modified here. 
 }
 \usage{
 SPRproject(projPath = getwd(), data = "data", param = "param", results = "results",
-                      logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml", 
-                      envir = new.env(), restart = FALSE, load.envir = FALSE,
+                      logs.dir= ".SPRproject", sys.file="SYSargsList.yml", 
+                      envir = new.env(), 
+                      restart = FALSE, resume=FALSE, 
+                      load.envir = FALSE,
                       overwrite = FALSE, silent = FALSE)
 }
 \arguments{
@@ -56,7 +57,12 @@ and image/plot files.
   Another option is to use \code{globalenv()}.
 }
   \item{restart}{
-  if set to TRUE, existing SYSargsList save in the directory will be used to restart the 
+  if set to TRUE, existing \code{SYSargsList} save in the directory will be used to restart the 
+  workflow. This option requires \code{overwrite=TRUE}. 
+  All the log will be deleted. 
+}
+  \item{resume}{
+  if set to TRUE, existing SYSargsList save in the directory will be used to resume the 
   workflow.
 }
   \item{load.envir}{
@@ -81,9 +87,7 @@ Daniela Cassol
 See also as \code{SYSargsList-class}.
 }
 \examples{
-## Construct SYSargsList object from Rmd file
-library(systemPipeRdata)
-sal <- SPRproject(overwrite=TRUE)
+sal <- SPRproject(projPath = tempdir())
 sal
 }
 \keyword{ utilities }

@@ -1,8 +1,10 @@
-\name{createParamFiles}
+\name{createParam}
 \alias{createParamFiles}
 \alias{writeParamFiles}
+\alias{createParam}
+
 \title{
-createParamFiles
+createParam
 }
 \description{
 The constructor function creates an \code{SYSargs2} S4 class object from 
@@ -13,69 +15,83 @@ following the standard and specification defined on Common Workflow Language (CW
 \usage{
 createParamFiles(commandline, cwlVersion = "v1.1", class = "CommandLineTool",
                   results_path = "./results", module_load = "baseCommand", 
-                  file = "default", writeParamFiles = FALSE, overwrite = FALSE, 
-                  silent = FALSE)
+                  file = "default", writeParamFiles = TRUE, confirm = FALSE,
+                  overwrite = FALSE, silent = FALSE)
                   
 writeParamFiles(sysargs, file = "default", overwrite = TRUE, silent = FALSE)
 }
 
 \arguments{
   \item{commandline}{
-  string. Original command-line to create the CWL files from. Please see \code{Details} for more information. 
+  string. Original command-line to create the CWL files from. Please see 
+  \code{Details} for more information. 
 }
   \item{cwlVersion}{
-  string. The version of the Common Workflow Language. More information here: https://www.commonwl.org/.
+  string. The version of the Common Workflow Language. More information 
+  here: https://www.commonwl.org/.
 }
   \item{class}{
-  character. Name of Common Workflow Language Description class. The following is accepted: \code{CommandLineTool}.
+  character. Name of Common Workflow Language Description class. The following 
+  is accepted: \code{CommandLineTool}.
 }
   \item{results_path}{
   Path to the results folder. Default is \code{results}.
 }
   \item{module_load}{
-  string, Name of software to load by Environment Modules system. Default is "baseCommand", which creates a subfolder and two files: *.cwl and *.yml at ./param/cwl/.
+  string, Name of software to load by Environment Modules system. Default is 
+  "baseCommand", which creates a subfolder and two files: *.cwl and *.yml 
+  at \code{./param/cwl/}.
 }
   \item{file}{
   character. Name and path of output files. If set to "default" then the name of 
-  the output files will have the pattern \code{<software>.cwl} and \code{<software>.yml}, 
-  where <software> will be what \code{baseCommand(x)} returns, when \code{x} is an 
-  object of class \code{SYSargs2}. 
+  the output files will have the pattern \code{<software>.cwl} and 
+  \code{<software>.yml}, where <software> will be what \code{baseCommand(x)} 
+  returns, when \code{x} is an object of class \code{SYSargs2}. 
   Also, it creates a subfolder at \code{./param/cwl/} with name <software>.
 }
   \item{writeParamFiles}{
-  logical. If set to TRUE, it will write to file the content of the CWL files:\code{*.cwl} and \code{*.yml}.
-  Default is \code{FALSE}.
+  logical. If set to TRUE, it will write to file the content of the CWL 
+  files:\code{*.cwl} and \code{*.yml}. Default is \code{TRUE}.
+}
+  \item{confirm}{
+  If set to \code{FALSE} and in an interactive section, it will prompt a question to 
+  proceed or not.
 }
   \item{overwrite}{
-  logical. If set to TRUE, existing files of the same name will be overwritten. Default is \code{FALSE}.
+   logical. If set to TRUE, existing files of the same name will be overwritten.
+   Default is \code{FALSE}.
 }
   \item{silent}{
-  logical. If set to TRUE, all messages returned by the function will be suppressed. Default is \code{FALSE}.
+  logical. If set to TRUE, all messages returned by the function will be 
+  suppressed. Default is \code{FALSE}.
 }
   \item{sysargs}{
-  Object of class \code{SYSargs2}. Output from the \code{createParamFiles} function.
+  Object of class \code{SYSargs2}. Output from the \code{createParamFiles} 
+  function.
 }
 }
 \details{
-- First line of the command-line object will be treated as the \code{baseCommand};
+- First line of the command-line object will be treated as the 
+\code{baseCommand};
 
 - For argument lines (starting from the second line), any word before the first 
-  space with leading `-` or `--` in each will be treated as a prefix, like \code{-S} or 
-  \code{--min}. Any line without this first word will be treated as no prefix;
+  space with leading `-` or `--` in each will be treated as a prefix, like 
+  \code{-S} or \code{--min}. Any line without this first word will be treated 
+  as no prefix;
   
 - All defaults are placed inside \code{<...>};
 
-- First argument is the input argument type. \code{F} for "File", \code{int} for integer, 
-  \code{string} for string;
+- First argument is the input argument type. \code{F} for "File", \code{int} 
+  for integer, \code{string} for string;
   
-- Optional: use the keyword \code{out} followed the type with a \code{,} comma separation to 
-  indicate if this argument is also a CWL output;
+- Optional: use the keyword \code{out} followed the type with a \code{,} comma 
+  separation to indicate if this argument is also a CWL output;
   
-- Then, use \code{:} to separate keywords and default values, any non-space value after the \code{:}
-  will be treated as the default value;
+- Then, use \code{:} to separate keywords and default values, any non-space 
+  value after the \code{:} will be treated as the default value;
   
-- If any argument has no default value, just a flag, like \code{--verbose}, there no need to 
-  add any \code{<...>}.
+- If any argument has no default value, just a flag, like \code{--verbose}, 
+  there no need to add any \code{<...>}.
   
 - The \code{\\} is not required, however for consistency it is recommended to add.
 }
@@ -83,7 +99,8 @@ writeParamFiles(sysargs, file = "default", overwrite = TRUE, silent = FALSE)
 \code{SYSargs2} object
 }
 \references{
-For more details on \code{CWL}, please consult the following page: https://www.commonwl.org/
+For more details on \code{CWL}, please consult the following 
+page: https://www.commonwl.org/
 }
 \author{
 Le Zhang and Daniela Cassol
@@ -112,7 +129,7 @@ hisat2 \
     -U <F: ./data/SRR446027_1.fastq.gz> \
     --verbose
 "
-cmd <- createParamFiles(command)
+cmd <- createParam(command, writeParamFiles=FALSE)
 cmdlist(cmd)
 }
 

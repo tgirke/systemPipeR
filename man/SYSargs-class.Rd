@@ -114,8 +114,10 @@ args[1:4]
 runCommandline(args=args)
 
 ## Execute SYSargs on multiple machines  
-qsubargs <- getQsubargs(queue="batch", Nnodes="nodes=1", cores=cores(args), memory="mem=10gb", time="walltime=20:00:00")
-qsubRun(appfct="runCommandline(args=args)", appargs=args, qsubargs=qsubargs, Nqsubs=1, submitdir="results", package="systemPipeR")
+qsubargs <- getQsubargs(queue="batch", Nnodes="nodes=1", cores=cores(args), 
+                        memory="mem=10gb", time="walltime=20:00:00")
+qsubRun(appfct="runCommandline(args=args)", appargs=args, qsubargs=qsubargs, 
+        Nqsubs=1, submitdir="results", package="systemPipeR")
 
 ## Write outpaths to new targets file for next SYSargs step
 writeTargetsout(x=args, file="default")

@@ -34,7 +34,8 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path="param/cwl"
   if(tolower(wf$class) == "workflow") {
     steps <- names(wf$steps)
     cwlfiles$steps <- steps
-    cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
+    #cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
+    cltpaths <- sapply(seq_along(steps), function(x) file.path(dir_path, wf$steps[[steps[x]]]$run))
     names(cltpaths) <- strsplit(basename(cltpaths), ".cwl")
     cwlfiles$cltpaths <- cltpaths
     cltlist <- sapply(cltpaths, function(x) yaml::read_yaml(file.path(x)), simplify = FALSE)
@@ -237,6 +238,14 @@ check.outfiles <- check.output
 pathInstance <- function(pathvar, input, altinput) {
   pathvar <- unlist(strsplit(pathvar[[1]], "/"))
   extension <- gsub("^.*\\)", "", pathvar)
+  if(grepl(".\\$\\(", pathvar[length(pathvar)])){
+      ext <- sub("\\)", "", sub(".*[$\\(]", "", pathvar[length(pathvar)])  )
+      ext <- strsplit(ext, "\\.")[[1]]
+      ext <- ext[length(ext)]
+      ext <- input[[ext]]
+      extension <- c("", paste0(".", ext))
+      pathvar <- sub(".\\$\\(.*", "", pathvar)
+  }
   pathvar <- gsub("(^.*\\)).*", "\\1", pathvar)
   pathvar <- gsub("\\$|\\(|\\)", "", pathvar)
   pathvarlist <- strsplit(pathvar, "\\.")
@@ -302,6 +311,8 @@ pathInstance <- function(pathvar, input, altinput) {
   return(returnpath)
 }
 
+# pathvar <- c("$(inputs.results_path.basename)","$(inputs.SampleName).$(inputs.ext)")
+# pathvar <- c("$(inputs.results_path.basename)","$(inputs.SampleName).sam")
 #################################################################
 ## Helper function to construct/manipulate path and file names ##
 #################################################################
@@ -877,7 +888,7 @@ subsetWF <- function(args, slot, subset=NULL, index=NULL, delete=FALSE){
 #########################################################
 ## Update the output location after run runCommandline ##
 #########################################################
-output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extension=NULL, make_bam=FALSE){
+output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extension=NULL, make_bam=FALSE, del_sam=TRUE){
     ## Folder name provide in the yml file
     ## this file will exists, because its create on the definition of the project or when runCommandline is used.
     # if(is.null(args$yamlinput$results_path$path)) {
@@ -909,16 +920,20 @@ output_update <- function(args, dir=FALSE, dir.name=NULL, replace=FALSE, extensi
                         if(grepl("bam", args$output[[i]][[j]][k])){
                             args$output[[i]][[j]][length(args$output[[i]][[j]])+1] <- paste0(gsub("\\.bam$", "", args$output[[i]][[j]][k]), ".bam.bai")
                         }
+                        if(del_sam==FALSE){
+                            args$output[[i]][[j]] <- append(args$output[[i]][[j]], args$internal_outfiles[[i]][[j]][k], after = 0)
+                        }
+                        }
                     }
                 }
             }
-        }
+        #}
         args <- as(args, "SYSargs2")
     }
     if(dir==TRUE){
         args <- as(args, "list")
         ## Results path
-        logdir <- normalizePath(args$yamlinput$results_path$path)
+        logdir <- file.path(args$yamlinput$results_path$path)
         ## Workflow Name: Detail: if the folder was not created during 'runCommandline,' it will return a warning message pointing 'no such directory'
         if(is.null(dir.name)) {
             cwl.wf <- file.path(logdir, .getFileName(args$files$cwl))
