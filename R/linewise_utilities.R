@@ -9,6 +9,7 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
     if (step_name == "default") {
         step_name <- "Step_x"
     } else {
+        .checkSpecialChar(step_name)
         step_name <- step_name
     }
     ## dependency
@@ -44,6 +45,9 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
 # plot <- LineWise({
 #   plot(iris)
 # })
+
+
+
 
 ########################
 ## importRmd function ##
