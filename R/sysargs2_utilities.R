@@ -5,7 +5,7 @@
 ###################
 ## Load Workflow ##
 ###################
-loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path="param/cwl") {
+loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path="param/cwl", id="SampleName") {
     if(is.null(dir_path)) {
         dir_path <- ""
         cwlfiles <- list(cwl=wf_file,
@@ -73,7 +73,7 @@ loadWorkflow <- function(targets=NULL, wf_file, input_file, dir_path="param/cwl"
       ext <- ext[[-1]]
       if("txt" %in% ext){
         mytargets <- read.delim(normalizePath(file.path(targets)), comment.char = "#")
-        mytargets <- targets.as.list(mytargets)
+        mytargets <- targets.as.list(mytargets, id)
       } else if( any(c("yml", "yaml") %in% ext)){
         mytargets <- yaml::read_yaml(targets)
       }

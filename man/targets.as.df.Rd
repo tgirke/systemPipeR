@@ -9,12 +9,16 @@ Convert targets files to \code{list} or \code{data.frame} object.
 }
 \usage{
 targets.as.df(x)
-targets.as.list(x)
+targets.as.list(x, id="SampleName")
 }
 \arguments{
   \item{x}{
   An object of the class \code{"list"} or \code{"data.frame"} that stores data 
   from each target file, as \code{targets(WF)}.
+  }
+    \item{id}{
+    A column from \code{targets} file, which will be used as an id for each one
+    of the samples. It is required to be unique.
   }
 }
 \value{
