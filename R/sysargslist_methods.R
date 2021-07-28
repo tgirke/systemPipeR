@@ -466,10 +466,13 @@ setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i
 ## Replacement method
 setReplaceMethod(f = "appendStep", signature = c("SYSargsList"), 
                  definition = function(x, after = length(x), ..., value) {
-    ## used in `importWF`
-    on.exit(options(spr_importing = FALSE))
-    ## used in `+.SYSargsList`
-    on.exit(options(appendPlus = FALSE))
+    on.exit({
+      ## used in `importWF`
+      options(spr_importing = FALSE)
+      ## used in `+.SYSargsList`
+      options(appendPlus = FALSE)
+      options(linewise_importing = FALSE)
+    })
     ## append position
     lengx <- length(x)
     after <- after

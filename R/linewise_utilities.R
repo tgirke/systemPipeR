@@ -4,7 +4,7 @@
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
                      rmdPath = character(), dependency = "") {
     ## used in `importWF`
-    on.exit(options(linewise_importing = FALSE))
+    on.exit({options(linewise_importing = FALSE)})
     ## Step name
     if (step_name == "default") {
         step_name <- "Step_x"
@@ -45,8 +45,6 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
 # plot <- LineWise({
 #   plot(iris)
 # })
-
-
 
 
 ########################
