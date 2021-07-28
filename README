@@ -1,17 +1,23 @@
 changelog
+    version 1.27.13
+    - clusterRun()
+    
     version 1.27.12
-	- plotWF accepts empty sal + minor updates
-	- alias tryCMD
-	- New argument createParam (confirm=FALSE)
-	- sal object with relative Paths
-	- Improvements SPRproject: resume and restart
-	- Bugs: runCommandLine and tryCMD
-	- Bugs fixed: replaceSteps<- + improvements
-	- Bug fixed: dependency in LineWise and SYSargsList functions
-	- Documentation
-	- Removed requirement of SampleName for loadWF
-	- Internal functions: .checkSpecialChar; .cbindTargetsOutfiles; .checkInputVars
-	
+    - plotWF accepts empty sal + minor updates
+    - alias tryCMD
+    version 1.27.12
+    - plotWF accepts empty sal + minor updates
+    - alias tryCMD
+    - New argument createParam (confirm=FALSE)
+    - sal object with relative Paths
+    - Improvements SPRproject: resume and restart
+    - Bugs: runCommandLine and tryCMD
+    - Bugs fixed: replaceSteps<- + improvements
+    - Bug fixed: dependency in LineWise and SYSargsList functions
+    - Documentation
+    - Removed requirement of SampleName for loadWF
+    - Internal functions: .checkSpecialChar; .cbindTargetsOutfiles; .checkInputVars
+
      version 1.27.11
         - Deprecated: getQsubargs and qsubRun functions
         - LineWise: help files and files organization
@@ -51,59 +57,59 @@ changelog
         - runCommandline --> removed sample subfolder structure
         
      version 1.27.7
-     	- Added option to dir=T/F for each step
-     	- Fixed bugs to save and restart SYSargsList object
-     	- Added colors to status show method
+         - Added option to dir=T/F for each step
+         - Fixed bugs to save and restart SYSargsList object
+         - Added colors to status show method
         
      version 1.27.6
-     	- SYSargs2 updates:
+         - SYSargs2 updates:
      	    - status(): New Method and slot
      	    - Update show Method
-     	- SYSargsList updates: 
+         - SYSargsList updates: 
      	    - Rename slot projectInfo
      	    - runInfo(): New slot and Method
      	    - Removed sprconfig method/slot
      	    - Update statusWF() printing and replacement methods
      	    - show() method: more details
      	    - New methods: viewEnvir and copyEnvir
-     	- LineWise Upadates:
+         - LineWise Upadates:
      	    - New slot/methods: status()
         - Update SPRproject, write_SYSargsList, read_SYSargsList, SYSargsList, runWF, renderReport, renderLogs, SYScreate functions
         - Major improvement in RunCommandline function
 
      version 1.27.5
-     	- check.output for SYSargsList
-     	- New Fct: cmdTool2wf
-     	- New Methods: subsetTargets; 
-     	- Improve SYSargsList Methods
-     	- SPRproject function (new internal design)
-     	- `+` method
-     	- LineWise Class and Methods
-     	- CWL templates path 
-     	- New unit tests
-     	- Vignettes
+         - check.output for SYSargsList
+         - New Fct: cmdTool2wf
+         - New Methods: subsetTargets; 
+         - Improve SYSargsList Methods
+         - SPRproject function (new internal design)
+         - `+` method
+         - LineWise Class and Methods
+         - CWL templates path 
+         - New unit tests
+         - Vignettes
      	
      version 1.27.4
-     	- R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
+         - R CMD build and check _R_CHECK_LENGTH_1_CONDITION_=verbose
      version 1.27.3
-     	- Adding createParamFiles, "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", "updateWF", "SYSargsList" functions
-     	- Adding "cmdToCwl", "baseCommand", "sprconfig", "stepsWF", "statusWF", "dependency", "projectInfo", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-", "replaceStep<-", "renameStep<-" methods
-     	- Updating SYSargs2 and SYSargsList class
-    	- Updating "loadWorkflow", "createWF", "output_update", "write.clt", "write.yml", "SYScreate", "runWF", "initWF"  functions
-    	- Adding systemPipeR_CWL.Rmd vignette
+         - Adding createParamFiles, "writeParamFiles", "printParam", "subsetParam", "replaceParam", "renameParam", "appendParam", "updateWF", "SYSargsList" functions
+         - Adding "cmdToCwl", "baseCommand", "sprconfig", "stepsWF", "statusWF", "dependency", "projectInfo", "targetsWF", "SEobj", "outfiles", "sysargslist", "appendStep<-", "replaceStep<-", "renameStep<-" methods
+         - Updating SYSargs2 and SYSargsList class
+        - Updating "loadWorkflow", "createWF", "output_update", "write.clt", "write.yml", "SYScreate", "runWF", "initWF"  functions
+        - Adding systemPipeR_CWL.Rmd vignette
     	
      version 1.27.2
-     	- Special case for Rscript
+         - Special case for Rscript
      	
      version 1.27.1
-     	- Added unittest 
+         - Added unittest 
      	     	
      version 1.25.17
-     	- Fixed bug: 'symLink2bam()'
+         - Fixed bug: 'symLink2bam()'
      	     	
      version 1.25.16
-     	- `module()` bug fix for RStudio Server
-     	- `plotfeaturetypeCounts()` and `plotfeaturetypeCounts()` --> `scale_x_discrete`
+         - `module()` bug fix for RStudio Server
+         - `plotfeaturetypeCounts()` and `plotfeaturetypeCounts()` --> `scale_x_discrete`
      	     	
      version 1.25.14
         - Clean message from `runCommandline()`
@@ -113,28 +119,28 @@ changelog
         - upgrade `runWF()`
      	     	
      version 1.25.13
-     	- Fixed `GO.db` dependency
+         - Fixed `GO.db` dependency
      	
      version 1.25.12
-     	- Fixed .Rbuildignore
+         - Fixed .Rbuildignore
      	
      version 1.25.11
-     	- Added "cwl/*" files:
-		- BUSCO/*
-		- blast/*
-		- bowtie2/bowtie2-mi/*
-		- bwa/bwa-aln/*
-		- bwa/bwa-mem-pe/*
-		- bwa/bwa-mem-se/*
-		- bwa/bwa-samse/*
-		- cutadapt/*
-		- fastqc/*
-		- fastx_toolkit/*
-		- gunzip/*
-		- kallisto/*
-		- picard/*
-		- star/*
-		- workflow-bwa-aln/*
+         - Added "cwl/*" files:
+	    - BUSCO/*
+	    - blast/*
+	    - bowtie2/bowtie2-mi/*
+	    - bwa/bwa-aln/*
+	    - bwa/bwa-mem-pe/*
+	    - bwa/bwa-mem-se/*
+	    - bwa/bwa-samse/*
+	    - cutadapt/*
+	    - fastqc/*
+	    - fastx_toolkit/*
+	    - gunzip/*
+	    - kallisto/*
+	    - picard/*
+	    - star/*
+	    - workflow-bwa-aln/*
 
      version 1.25.10
         - `moduleload` updated help file
