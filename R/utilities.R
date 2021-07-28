@@ -85,7 +85,10 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=TRUE, dir.name=NULL, force=FALSE, ...) {
+runCommandline <- function(args, runid="01", 
+                           make_bam=FALSE, del_sam=TRUE, 
+                           dir=TRUE, dir.name=NULL, 
+                           force=FALSE, ...) {
   ## Validation for 'args'
   if(any(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
     ## Environment Modules section
@@ -535,7 +538,7 @@ clusterRun <- function(args,
     for(j in seq_along(sal)){
       logdir1 <- paste0(path, "/submitargs", 01, "_btdb_", paste(sample(0:9, 4), collapse = ""))
       reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-      ids <- batchtools::batchMap(fun = f, 1, more.args = list(sal=sal, step=j), reg = reg)
+      ids <- batchtools::batchMap(fun = f, 1, more.args = list(sal=sal, steps=j), reg = reg)
       chunk <- batchtools::chunk(ids$job.id, n.chunks = 1, shuffle = FALSE)
       ids$chunk <- chunk
       done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resourceList)
