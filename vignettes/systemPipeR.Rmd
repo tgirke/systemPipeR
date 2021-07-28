@@ -30,11 +30,11 @@ word-wrap: initial !important;
 
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
-options(width=80, max.print=1000)
+options(width=100, max.print=1000)
 knitr::opts_chunk$set(
     eval=as.logical(Sys.getenv("KNITR_EVAL", "TRUE")),
     cache=as.logical(Sys.getenv("KNITR_CACHE", "TRUE")), 
-    tidy.opts=list(width.cutoff=80), tidy=TRUE)
+    tidy.opts=list(width.cutoff=100), tidy=FALSE)
 ```
 
 ```{r load_library, eval=TRUE, include=FALSE}
@@ -42,7 +42,6 @@ suppressPackageStartupMessages({
     library(systemPipeR)
 })
 ```
-
 
 # Introduction
 
@@ -70,8 +69,8 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 6. Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes
 6. Improves reproducibility by automating analyses and generation of analysis reports 
 
-```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A & B). Examples of *systemPipeR's* visualization functionalities are given under (C)."}
-knitr::include_graphics("utilities.png")  
+```{r, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A & B). Examples of *systemPipeR's* visualization functionalities are given under (C)."}
+knitr::include_graphics(system.file("extdata/images", "utilities.png", package="systemPipeR"))
 ```
 
 A central concept for designing workflows within the _`systemPipeR`_ environment 
@@ -130,8 +129,8 @@ systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
 ```
 
 ```{r, include=FALSE, warning=FALSE}
-setwd("spr_project")
 knitr::opts_knit$set(root.dir = 'spr_project')
+#setwd("spr_project")
 ```
 
 - Create a project
@@ -266,8 +265,8 @@ workflows accordingly.
         + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
         + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
-```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "*systemPipeR's* preconfigured directory structure."}
-knitr::include_graphics("spr_project.png")  
+```{r, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "*systemPipeR's* preconfigured directory structure."}
+knitr::include_graphics(system.file("extdata/images", "spr_project.png", package="systemPipeR"))  
 ```
 
 ## Structure of initial _`targets`_ file
@@ -793,11 +792,23 @@ sal_sub <- runWF(sal_sub)
 sal_sub
 ```
 
- Visualize workflow
+# Visualize workflow
+
+SPR workflows can be visualized with the `plotWF` function.
+This function will make a plot of selected workflow instance and following 
+information is displayed on the plot: 
+    - Workflow structure (dependency graphs between different steps); 
+    - Workflow step status, i.e. success, fail, pending; 
+    - Sample status and statistics; 
+    - Workflow timing: start, end and duration time. 
+
+If no argument is provided, the basic plot will automatically detect width, height, layout, plot method, branches, _etc_. 
 
 ```{r, eval=TRUE}
 plotWF(sal, show_legend = TRUE, width = "80%", height="250px", rstudio = TRUE)
 ```
+
+For more details, please see additional information here.
 
 - Check workflow status
 
@@ -1108,8 +1119,8 @@ downstream *`targets`* files are generated automatically. By chaining several
 sample-level input/output file operations with any combination of command-line
 or R-based software.
 
-```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow design structure of *`systemPipeR`* using previous version of *`SYSargs`*"}
-knitr::include_graphics("SystemPipeR_Workflow.png")  
+```{r, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow design structure of *`systemPipeR`* using previous version of *`SYSargs`*"}
+knitr::include_graphics(system.file("extdata/images", "SystemPipeR_Workflow.png", package="systemPipeR"))  
 ```
 
 # Structure of the new parameters files
@@ -1323,8 +1334,8 @@ HW_mul
 cmdlist(HW_mul)
 ```
 
-```{r, eval=FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "WConnectivity between CWL param files and targets files."}
-knitr::include_graphics("SPR_CWL_hello.png")  
+```{r, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "WConnectivity between CWL param files and targets files."}
+knitr::include_graphics(system.file("extdata/images", "SPR_CWL_hello.png", package="systemPipeR"))
 ```
 
 # Creating the CWL param files from the command line
@@ -1332,7 +1343,8 @@ knitr::include_graphics("SPR_CWL_hello.png")
 Users need to define the command line in a pseudo-bash script format:
 
 ```{r cmd, eval=TRUE}
-command <- "hisat2 \
+command <- "
+    hisat2 \
     -S <F, out: ./results/M1A.sam> \
     -x <F: ./data/tair10.fasta> \
      -k <int: 1> \
@@ -1471,9 +1483,252 @@ WF <- createParam(cmd, overwrite = TRUE, writeParamFiles = TRUE, confirm = TRUE)
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
 WF_test <- loadWorkflow(targets = targetspath, wf_file="hisat2.cwl",
                    input_file="hisat2.yml", dir_path = "param/cwl/hisat2/")
-WF_test <- renderWF(WF_test, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+WF_test <- renderWF(WF_test, inputvars = c(FileName = "_FASTQ_PATH1_"))
 WF_test
 cmdlist(WF_test)[1:2]
+```
+
+# Visualize Workflow - Full details 
+
+## Color and text
+
+On the plot, different colors and numbers indicate different status. This information 
+can be found also in the plot legends.
+
+**Shapes:**
+
+- circular steps: pure R code steps
+- rounded squares steps: `sysargs` steps, steps that will invoke commandline calls
+- blue colored steps and arrows: main branch (see [main branch](#main-branch) section below)
+
+**Step colors**
+
+- black: pending steps
+- <span class="text-success">Green</span>: successful steps
+- <span class="text-danger">Green</span>: failed steps
+
+**Number and colors**
+
+<br>There are 4 numbers in the second row of each step, separated by `/`
+
+- <span class="text-success">First No.</span>: number of passed samples
+- <span class="text-warning">Second No.</span>: number of warning samples
+- <span class="text-danger">Third No.</span>: number of erros samples
+- <span style="color:blue;">Forth No.</span>: number of total samples
+
+**Duration**
+
+<br>This is shown after the sample information, as how long it took to run this step. 
+Units are a few seconds (**s**), some minutes (**m**), or some hours (**h**). 
+
+## on hover
+
+When the mouse is hovering on each step, detailed information will be displayed.
+
+## logging
+
+The workflow steps will also become clickable if `in_log = TRUE`. This will create links 
+for each step that navigate to corresponding log section in the SPR 
+[workflow log file](change to page that introduce the log file). Normally this option 
+is handled by SPR log file generating function to create this plot on top of the log file,
+so when a certain step is click, it will navigate to the detailed section down the page. 
+Here is only an example to demo how the plot can be clickable (will not navigate you to 
+anywhere). Visit [this page](link) to see a real example. 
+
+```{r}
+plotWF(sal, in_log = TRUE)
+```
+
+## Plot Method
+
+The default plotting method is `svg`. It means the plot is generated by `svg` embedding. 
+Sometimes certain browsers may not display `svg` correctly. In this case, the other option 
+is to use `png` to embed the plot. However, you will **lose hovering, clicking and some** 
+**responsiveness** (plot auto resizing ability) of the plot. 
+
+```{r}
+plotWF(sal, plot_method = "png")
+```
+
+## Rstudio
+
+By default, even if you are working inside Rstudio the plot is **not displayed in Rstudio viewer**. 
+This is because the workflow steps will be too small inside Rstudio viewer too 
+see the details. We recommend to view it in a larger space, so by default it will 
+open up your web browser to display it. You can enforce `rstudio = TRUE` to see it 
+in Rstudio Viewer. 
+
+```{r}
+plotWF(sal, rstudio = TRUE)
+```
+
+## Responsiveness
+
+This is a term often used in web development. It means will the plot resize itself 
+if the user resize the document window? By default, `plotWF` will be responsive, 
+meaning it will fit current window container size and adjust the size once the window 
+size has changed. To always display the full sized plot, use `responsive = FALSE`,
+useful for embedding the plot in a full-screen mode.
+
+<div style="height: 500px">
+```{r}
+plotWF(sal, responsive = FALSE)
+```
+</div>
+
+For the plot above, you need to scroll to see the plot.
+
+## Layout
+
+There a few different layout you can choose. There is no best layout. It all depends 
+on the workflow structure you have. The default is `compact` but we recommend you 
+to try different layouts to find the best fitting one. 
+
+- `compact`: try to plot steps as close as possible.
+- `vertical`: main branch will be placed vertically and side branches will be placed
+  on the same horizontal level and sub steps of side branches will be placed
+  vertically.
+- `horizontal`: main branch is placed horizontally and side branches and sub
+  steps will be placed vertically.
+- `execution`: a linear plot to show the workflow execution order of all steps.
+
+**vertical**
+
+```{r}
+plotWF(sal, layout = "vertical", height = "600px")
+```
+The plot is very long, use `height` to make it smaller.
+
+**horizontal**
+
+```{r}
+plotWF(sal, layout = "horizontal")
+```
+
+**execution**
+
+```{r}
+plotWF(sal, layout = "execution", height = "600px", responsive = FALSE)
+```
+
+The plot is very long but if we use `height` to limit to a smaller size, details are 
+hard to see. Then it will be good to use `height` and `responsive = FALSE` together. 
+
+## Main branch 
+
+From the plots above, you can that there are many steps which do not connect to any 
+other steps. These dead-ends are called ending steps. If we connect the first step,
+steps in between and these ending step, this will become a branch. Imagine the workflow is 
+a upside-down tree structure and the root is the first step. Therefore, there are 
+many possible ways to connect the workflow. For the convenience of plotting, we 
+introduce a concept of _"main branch"_, meaning one of the possible connecting 
+strategies that will be placed at the center of the plot. Other steps that are not 
+in this major branch will surround this major space. 
+
+This main branch will not impact the `compact` layout so much but will have a huge 
+effect on `horizontal` and `vertical` layouts. 
+
+The plotting function has an algorithm that will automatically choose a best branch for 
+you by default. In simple words, it favors: a. branches that connect first and last step;
+b. as long as possible. 
+
+You can also choose a branch you want by `branch_method = "choose"`. It will first 
+list all possible branches, and then give you a prompt to ask for your favorite branch. 
+Here, for rendering the Rmarkdown, we cannot have a prompt, so we use a second argument 
+in combination, `branch_no = x` to directly choose a branch and skip the prompt. Also, 
+we use the `verbose = TRUE` to imitate the branch listing in console. In a real case, 
+you only need `branch_method = "choose"`.
+
+Watch closely how the plot change by choosing different branches. Here we use `vertical`
+layout to demo. Remember, the main branch is marked in blue. 
+
+```{r collapse=TRUE}
+plotWF(sal, layout = "vertical", branch_method = "choose", branch_no = 1, verbose = FALSE)
+```
+
+### Unmark main branch 
+
+The _main branch_ concept may not represent the main workflow. It is introduced 
+for the convenience of plotting. Most times by auto detecting, it will find the 
+major steps in a workflows, sometimes it does not. It depends on how the users 
+design the workflow. If you think this is not a good representation, you can mute it 
+by `mark_main_branch = FALSE`. You will no longer see the blue-colored steps on 
+plot and on legends. 
+
+```{r}
+plotWF(sal, mark_main_branch = FALSE, height = "500px")
+```
+
+## Legends 
+
+The legend can also be removed by `show_legend = FALSE`
+
+```{r}
+plotWF(sal, show_legend = FALSE, height = "500px")
+```
+
+## Output formats 
+
+There are current three output formats: `"html"` and `"dot"`, `"dot_print"`. If first 
+two were chosen, you also need provide a path `out_path` to save the file. 
+
+- html: a single html file contains the plot.
+- dot: a DOT script file with the code to reproduce the plot in a [graphiz](https://graphviz.org/)
+  DOT engine. 
+- dot_print: directly cat the dot script to console. 
+
+```{r}
+plotWF(sal, out_format = "html", out_path = "example_out.html")
+file.exists("example_out.html")
+```
+
+```{r}
+plotWF(sal, out_format = "dot", out_path = "example_out.dot")
+cat(readLines("example_out.dot")[1:5], sep = "\n")
+```
+
+```{r eval=FALSE}
+plotWF(sal, out_format = "dot_print") #
+```
+
+### Save to a static image file
+
+Some users may want to save the plot to a static image, like `.png` format. We will 
+need do some extra work to save the file. The reason we cannot directly save it to 
+a png file is the plot is generated in real-time by a browser javascript engine. It 
+requires one type of javascript engine, like Chrome, MS Edge, Viewer in Rstudio,
+to render the plot before we can see it.
+
+#### Interactive 
+
+- If you are working in Rstudio, you can use the `export` button in the viewer to save 
+an image file. 
+- If you are working from commandline, use `plot_method = 'png'` to first ask the browser
+  to generate a png and then when you see the image, you can right-click to save it. 
+  
+#### Non-interactive
+
+If you cannot have an interactive session, like submitting a job to a cluster, 
+but still want the png, we recommend to use the {[webshot2](https://github.com/wch/webshot)}
+package to screenshot the plot. It runs headless Chrome in the back-end (which has a javascript engine).
+
+Install the package 
+
+```{r eval=FALSE}
+# remotes::install_github("rstudio/webshot2")
+```
+
+Save to html first
+
+```{r eval=FALSE}
+#plotWF(sal, out_format = "html", out_path = "example_out.html")
+# file.exists("example_out.html")
+```
+
+Use webshot2 to save the image
+
+```{r}
+# webshot2::webshot("example_out.html", "example_out.png")
 ```
 
 # Third-party software tools {#tools}
@@ -1502,7 +1757,7 @@ software %>%
 Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
 
 ```{r test_tool_path, eval=FALSE}
-tryCL(command="grep") 
+tryCMD(command="grep") 
 ```
 
 # Version information

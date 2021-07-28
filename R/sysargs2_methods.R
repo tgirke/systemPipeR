@@ -190,7 +190,7 @@ setMethod("$",
 )
 
 ## Convert targets data.frame to list
-targets.as.list <- function(x) {
+targets.as.list <- function(x, id="SampleName") {
     targetslist <- yaml::yaml.load(yaml::as.yaml(x, column.major = FALSE))
     names(targetslist) <- x$SampleName
     return(targetslist)

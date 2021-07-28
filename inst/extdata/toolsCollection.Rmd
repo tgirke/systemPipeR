@@ -892,6 +892,26 @@ output(WF[1])
 identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ```
 
+### Workflow hisat2 + samtools
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl", 
+    input_file = "workflow-hisat2/workflow_hisat2-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
+```{r, spr='sysargs'}
+WF <- loadWF(targets = targetspathPE, wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl", 
+    input_file = "workflow-hisat2/workflow_hisat2-pe.yml", dir_path = dir_path)
+WF <- renderWF(WF,inputvars = c(FileName1 = "_FASTQ_PATH1_",
+                                     FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
+cmdlist(WF[1])
+output(WF[1])
+```
+
 # kallisto
  
 ## kallisto-index

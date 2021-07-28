@@ -121,6 +121,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
   on.exit(options(importwf_options = NULL))
   if(!is.null(getOption("importwf_options"))){
     step_name <- getOption("importwf_options")[[1]]
+    .checkSpecialChar(step_name)
     dependency <- getOption("importwf_options")[[2]]
   }
   sal <- as(SYScreate("SYSargsList"), "list")
@@ -133,6 +134,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
       if(step_name=="default"){
         step_name <- "Step_x"
       } else {
+      .checkSpecialChar(step_name)
         step_name <- step_name
       }
       sal$stepsWF <- list(sysargs)
@@ -177,6 +179,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     if(step_name=="default"){
       step_name <- "Step_x"
     } else {
+      .checkSpecialChar(step_name)
       step_name <- step_name
     }
     sal$stepsWF <- list(WF)
@@ -518,6 +521,8 @@ output.as.df <- function(x) {
 ## write_SYSargsList function ##
 ################################
 write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", silent=TRUE){
+  ## check logDir folder
+  ## TODO
   if(!inherits(args, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.")
   args2 <- sysargslist(args)
   args_comp <- sapply(args2, function(x) list(NULL))
@@ -1431,3 +1436,19 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## Usage:
 # .tryCatch(x=codeList[[1]])
 
+################################
+## .checkSpecialChar function ##
+################################
+.checkSpecialChar <- function(x){
+  chunk_names_bad <- stringr::str_detect(x, "\\W")
+  if (any(chunk_names_bad)) {
+    stop(
+      "Only letters, numbers, and '_' allowed for step_name. Invalid name:\n",
+      paste0(x[chunk_names_bad], collapse = ", "), call. = FALSE
+    )
+  }
+}
+
+## Usage:
+# .checkSpecialChar("name@")
+# .checkSpecialChar("name test")

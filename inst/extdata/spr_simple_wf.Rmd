@@ -22,6 +22,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 - Create a project
 
+```{r SPRdata_template, eval=TRUE}
+sal <- SPRproject(overwrite=TRUE) 
+```
+
+- Create a project
+
 ```{r SPRproject_ex, eval=TRUE}
 sal <- SPRproject(overwrite=TRUE) 
 ```
@@ -29,25 +35,47 @@ sal <- SPRproject(overwrite=TRUE)
 - Add first step
 
 ```{r firstStep, eval=TRUE, spr='r'}
-LineWise(code="
-mapply(function(x, y) write.csv(x, y), 
-       split(iris, factor(iris$Species)), 
-       paste0(names(split(iris, factor(iris$Species))), ".csv"))
-1+1
+appendStep(sal) <- LineWise(code={
+  mapply(function(x, y) write.csv(x, y), 
+         split(iris, factor(iris$Species)), 
+         file.path("results", paste0(names(split(iris, factor(iris$Species))), ".csv")))
+  }, step_name = "write_sp")
+```
 
-..
-..
 
-..
-")
+```{r}
+targetspath <- "../inst/extdata/cwl/gunzip/targets_gunzip.txt"
+appendStep(sal) <- SYSargsList(step_name = "gzip", 
+                      targets=targetspath, dir=TRUE,
+                      wf_file="gunzip/gzip.cwl", input_file="gunzip/gzip.yml",
+                      #dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                      dir_path = "../inst/extdata/cwl",
+                      inputvars = c(FileName = "_FILE_PATH_", SampleName = "_SampleName_"), 
+                      dependency = "write_sp")
 
-a <- LineWise(
- mapply(function(x, y) write.csv(x, y), 
-       split(iris, factor(iris$Species)), 
-       paste0(names(split(iris, factor(iris$Species))), ".csv"))
-1+1
 
-, step_name = "steps")
+WF <- loadWF(targets=targetspath, wf_file="gunzip/gzip.cwl", input_file="gunzip/gzip.yml",
+                      #dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                      dir_path = "../inst/extdata/cwl")
+
+WF <- renderWF(WF, inputvars = c(FileName = "_FILE_PATH_", SampleName = "_SampleName_"))
+
+
 
 ```
-)
+
+
+```{r firstStep, eval=TRUE, spr='sysargs'}
+appendStep(sal) <- SYSargsList(step_name = "gunzip", 
+                      targets="gzip", dir=TRUE,
+                      wf_file="gunzip/workflow_gunzip.cwl", input_file="gunzip/gunzip.yml",
+                      #dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                      dir_path = "../inst/extdata/cwl",
+                      inputvars = c(gzip_file = "_FILE_PATH_", SampleName = "_SampleName_"), 
+                      dependency = "gzip")
+```
+
+```{r}
+sal <- runWF(sal)
+```
+
