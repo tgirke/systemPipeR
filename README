@@ -9,6 +9,8 @@ changelog
 	- Bugs fixed: replaceSteps<- + improvements
 	- Bug fixed: dependency in LineWise and SYSargsList functions
 	- Documentation
+	- Removed requirement of SampleName for loadWF
+	- Internal functions: .checkSpecialChar; .cbindTargetsOutfiles; .checkInputVars
 	
      version 1.27.11
         - Deprecated: getQsubargs and qsubRun functions
