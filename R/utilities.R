@@ -128,7 +128,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     completed <- return$completed
     args <- return$args
     ## Create log files
-    file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
+    file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", 
+                                         format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
+                          paste(sample(0:9, 4), collapse = "")))
     ## Sample status and Time
     sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
