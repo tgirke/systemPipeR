@@ -279,6 +279,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 # runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 # runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 
+###############
+## .tryRunC ##
+###############
 .tryRunC <- function(command, commandargs){
   warning <- error <- NULL
   value <- withCallingHandlers(
@@ -535,7 +538,7 @@ clusterRun <- function(args,
       ids <- batchtools::batchMap(fun = f, 1, more.args = list(sal=sal, step=j), reg = reg)
       chunk <- batchtools::chunk(ids$job.id, n.chunks = 1, shuffle = FALSE)
       ids$chunk <- chunk
-      done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resources)
+      done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resourceList)
       batchtools::waitForJobs()
       sal <- batchtools::loadResult(reg=reg, id=ids)
     }	

@@ -588,7 +588,7 @@ For more details about the `LineWise` class, please check [below](#linewise).
 For running the workflow, `runWF` function will execute all the command lines store in the workflow container:
 
 ```{r, eval=FALSE}
-sal_sub <- subset(sal, subset_steps = c(1,3), input_targets = 1:4, keep_steps = TRUE)
+sal_sub <- subset(sal, subset_steps = c(1), input_targets = 1, keep_steps = TRUE)
 sal_sub <- runWF(sal_sub)
 sal_sub
 ```
