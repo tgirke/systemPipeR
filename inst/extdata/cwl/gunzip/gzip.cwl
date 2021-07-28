@@ -1,5 +1,5 @@
 ################################################################
-##                           gunzip                           ##
+##                             gzip                           ##
 ################################################################
 
 cwlVersion: v1.0
@@ -9,7 +9,7 @@ class: CommandLineTool
 ##            baseCommand and arguments definitions           ##
 ################################################################
 
-baseCommand: [ "gunzip", "-c" ]
+baseCommand: [ "gzip" ]
 
 requirements:
   - class: InlineJavascriptRequirement
@@ -37,16 +37,15 @@ inputs:
     type: Directory
 
 outputs:
-    gunzip_file:
-        type: stdout
-    
-stdout: $(inputs.results_path.basename)/$(inputs.SampleName).csv
-
+  gzip_file:
+    type: File
+    outputBinding:
+      glob: $(inputs.results_path.basename)/$(inputs.SampleName).$(inputs.ext)
 
 ###########
 ## Notes ##
 ###########
 
 ## If the template its used in bash script with the "cwl-runner", run: 
-# "cwl-runner --outdir <path> gunzip.cwl gunzip.yml"
+# "cwl-runner --outdir <path>/ gzip.cwl gzip.yml"
 

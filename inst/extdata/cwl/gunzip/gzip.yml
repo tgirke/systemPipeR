@@ -1,5 +1,5 @@
 ################################################################
-#                            gunzip.yml                        #
+#                              gzip.yml                        #
 ################################################################
 file:
   class: File
@@ -7,7 +7,7 @@ file:
   
 SampleName: _SampleName_
 
-ext: csv
+ext: csv.gz
 
 results_path:
   class: Directory
