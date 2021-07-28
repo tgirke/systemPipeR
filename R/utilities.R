@@ -128,7 +128,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     completed <- return$completed
     args <- return$args
     ## Create log files
-    file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", format(Sys.time(), "%b%d%Y_%H%Ms%S")))
+    file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", 
+                                         format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
+                          paste(sample(0:9, 4), collapse = "")))
     ## Sample status and Time
     sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
@@ -463,38 +465,118 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 ## batchtools-based function to submit runCommandline jobs to queuing system of a cluster ##
 ############################################################################################
 ## The advantage of this function is that it should work with most queuing/scheduling systems such as SLURM, Troque, SGE, ...
-clusterRun <- function(args, FUN = runCommandline, more.args = list(args = args, make_bam = TRUE), conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs, runid = "01", resourceList) {
+clusterRun <- function(args, 
+                       FUN = runCommandline, 
+                       more.args = list(args = args, make_bam = TRUE), 
+                       conffile = ".batchtools.conf.R", 
+                       template = "batchtools.slurm.tmpl", 
+                       Njobs, runid = "01", resourceList) {
   ## Validity checks of inputs
-  if (any(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
-  if (class(FUN) != "function") stop("Value assigned to 'FUN' argument is not an object of class function.")
-  if (!file.exists(conffile)) stop("Need to point under 'conffile' argument to proper config file. See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html. Note: in this file *.tmpl needs to point to a valid template file.")
-  if (!file.exists(template)) stop("Need to point under 'template' argument to proper template file. Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
-  if (!class(more.args) == "list") stop("'more.args' needs to be object of class 'list'.")
-  if (any(!names(more.args) %in% names(as.list(formals(FUN))))) stop(paste("The list of arguments assigned to 'more.args' can only be the following arguments defined in the function 'FUN':", paste(names(as.list(formals(FUN))), collapse = ", ")))
-  ## SYSargs class
-  if (class(args) == "SYSargs") {
-    path <- normalizePath(results(args))
-    args.f <- seq(along = args)
-    ## SYSargs2 class
-  } else if (class(args) == "SYSargs2") {
-    path <- normalizePath(args$yamlinput$results_path$path)
-    args.f <- seq(along = cmdlist(args))
+  if (!any(inherits(args, c("SYSargs", "SYSargs2", "SYSargsList")))) 
+    stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
+  if (!inherits(FUN, "function")) 
+    stop("Value assigned to 'FUN' argument is not an object of class function.")
+  if (!file.exists(conffile)) 
+    stop("Need to point under 'conffile' argument to proper config file. ", 
+         "See more information here: https://mllg.github.io/batchtools/reference/makeRegistry.html. ", 
+         "Note: in this file *.tmpl needs to point to a valid template file.")
+  if (!file.exists(template)) 
+    stop("Need to point under 'template' argument to proper template file. ",
+         "Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/")
+  if (!class(more.args) == "list") 
+    stop("'more.args' needs to be object of class 'list'.")
+  if (any(!names(more.args) %in% names(as.list(formals(FUN)))))
+    stop(paste("The list of arguments assigned to 'more.args' can only be the ", 
+               "following arguments defined in the function 'FUN':", 
+               paste(names(as.list(formals(FUN))), collapse = ", ")))
+  if(grepl("slurm", template)){
+    if(!grepl("slurm", Sys.getenv("PATH"))){
+      try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern=TRUE, ignore.stderr=TRUE)), silent=TRUE)
+      ## "Environment Modules" is not available
+      if(length(modulecmd_path) == 0 ) {
+        stop("Please export Slurm to your PATH")
+        ## "Environment Modules" is available and proceed the module load
+      } else if (length(modulecmd_path) > 0) {
+        module_out <- moduleload("slurm") # loads specified software from module system
+      }
+    } 
   }
-  ## batchtools routines
-  f <- function(i, args, ...) FUN(args = args[i], ...)
-  logdir1 <- paste0(path, "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
-  reg <- makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-  ids <- batchMap(fun = f, args.f, more.args = more.args, reg = reg)
-  chunk <- chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
-  ids$chunk <- chunk
-  done <- submitJobs(ids = ids, reg = reg, resources = resourceList)
-  return(reg)
+  if(inherits(args, c("SYSargs", "SYSargs2"))){
+    if(!identical(FUN, runCommandline)) stop("For 'SYargs' OR 'SYSargs2' class, please use `FUN=runCommandline` function")
+    ## SYSargs class
+    if (inherits(args, "SYSargs")) {
+      path <- normalizePath(results(args))
+      args.f <- seq(along = args)
+      ## SYSargs2 class
+    } else if (inherits(args, "SYSargs2")) {
+      path <- normalizePath(args$yamlinput$results_path$path)
+      args.f <- seq(along = cmdlist(args))
+    } 
+    ## batchtools routines
+    f <- function(i, args, ...) FUN(args = args[i], ...)
+    logdir1 <- paste0(path, "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
+    reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
+    ids <- batchtools::batchMap(fun = f, args.f, more.args = more.args, reg = reg)
+    chunk <- batchtools::chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
+    ids$chunk <- chunk
+    done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resourceList)
+    return(reg)
+  } else 	if(inherits(args, c("SYSargsList"))){
+    if(!identical(FUN, runWF)) stop("For 'SYargsList' class, please use `FUN=runWF` function")
+    sal <- args
+    f <- function(i, sal, ...){
+      sal <- runWF(sysargs=sal, ...)
+      return(sal)
+    }
+    path <- normalizePath(sal$projectInfo$results)
+    for(j in seq_along(sal)){
+      logdir1 <- paste0(path, "/submitargs", 01, "_btdb_", paste(sample(0:9, 4), collapse = ""))
+      reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
+      ids <- batchtools::batchMap(fun = f, 1, more.args = list(sal=sal, step=j), reg = reg)
+      chunk <- batchtools::chunk(ids$job.id, n.chunks = 1, shuffle = FALSE)
+      ids$chunk <- chunk
+      done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resources)
+      batchtools::waitForJobs()
+      sal <- batchtools::loadResult(reg=reg, id=ids)
+    }	
+    return(sal)
+  }
 }
+
 ## Usage:
-# resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
-# reg <- clusterRun(args, conffile = ".batchtools.conf.R", template = "batchtools.slurm.tmpl", Njobs=18, runid="01", resourceList=resources)
+targets <- system.file("extdata", "targets.txt", package="systemPipeR")
+# dir_path <- system.file("extdata/cwl", package="systemPipeR")
+# WF <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+#                    input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
+# WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+# WF
+# runCommandline(WF[1])
+# 
+# resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024) 
+# reg <- clusterRun(WF[1], FUN = runCommandline, 
+#                   more.args = list(args = WF, make_bam = TRUE),
+#                   conffile=".batchtools.conf.R", 
+#                   template="batchtools.slurm.tmpl",
+#                   Njobs=9, runid="01", resourceList=resources)
 # getStatus(reg=reg)
 # waitForJobs(reg=reg)
+# 
+# sal <- SPRproject(overwrite=TRUE) 
+# targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
+# appendStep(sal) <- SYSargsList(step_name = "echo", targets=targetspath, dir=TRUE, wf_file="example/workflow_example.cwl", input_file="example/example.yml", dir_path = system.file("extdata/cwl", package="systemPipeR"),inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+# 
+# appendStep(sal) <- LineWise(code = {
+#   hello <- lapply(getColumn(sal, step=1, 'outfiles'), function(x) yaml::read_yaml(x))
+# }, 
+# step_name = "R_getCol", 
+# dependency = "echo")
+# 
+# args <- sal
+# sal <- clusterRun(sal, FUN = runWF, 
+#                   more.args = list(),
+#                   conffile=".batchtools.conf.R", 
+#                   template="batchtools.slurm.tmpl",
+#                   Njobs=1, runid="01", resourceList=resources)
 
 ########################
 ## Read preprocessing ##
