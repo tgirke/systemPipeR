@@ -255,12 +255,14 @@ check.outfiles <- check.output
 ######################
 .checkInputVars <- function(WF, inputvars) {
     inputvars <- unlist(inputvars)
-    targets <- colnames(targets.as.df(WF$targets))
-    input <- unlist(WF$yamlinput)
-    if (!all(names(inputvars) %in% targets)) {
+    if(length(WF$targets)!=0){
+      targets <- colnames(targets.as.df(WF$targets))
+      if (!all(names(inputvars) %in% targets)) {
         stop("names of the inputvars are not matching with targets colnames.", 
              call. = FALSE)
+      }
     }
+    input <- unlist(WF$yamlinput)
     if (!all(inputvars %in% input)) {
         stop(
             "inputvars elements are not matching with input variables. ",
