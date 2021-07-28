@@ -67,6 +67,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
         ))
       } else if (overwrite == TRUE){
         ## Return SYSargsList obj - empty
+        ## TODO: unlink(logs.dir, recursive=TRUE)
         yaml::write_yaml("", file = file.path(projPath, sys.file))
         dirProject <- c(dirProject, logsDir = logs.dir, sysargslist = sys.file)
         init <- as(SYScreate("SYSargsList"), "list")
