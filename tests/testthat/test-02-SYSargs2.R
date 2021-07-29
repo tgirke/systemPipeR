@@ -6,6 +6,7 @@ genWorkenvir("rnaseq", mydirname = file.path(tempdir(), "rnaseq"))
 setwd(file.path(tempdir(), "rnaseq"))
 
 test_that("check_SYSargs2_test", {
+    skip_on_bioc()
     ## build instance 
     ## loadWorkflow() // renderWF()
     dir_path <- system.file("extdata/cwl/test/", package = "systemPipeR")

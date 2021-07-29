@@ -67,7 +67,9 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
         ))
       } else if (overwrite == TRUE){
         ## Return SYSargsList obj - empty
-        ## TODO: unlink(logs.dir, recursive=TRUE)
+        unlink(logs.dir, recursive=TRUE)
+        dir.create(file.path(projPath, logs.dir), recursive = TRUE)
+        if (silent != TRUE) cat("Recreating directory '", file.path(projPath, logs.dir), "'", sep = "", "\n")
         yaml::write_yaml("", file = file.path(projPath, sys.file))
         dirProject <- c(dirProject, logsDir = logs.dir, sysargslist = sys.file)
         init <- as(SYScreate("SYSargsList"), "list")
@@ -891,7 +893,7 @@ renderLogs <- function(
     "    theme: flatly",
     "    toc: true",
     "    toc_float:",
-    "      collapsed: false",
+    "      collapsed: true",
     "package: systemPipeR",
     "fontsize: 14pt",
     "---",

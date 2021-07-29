@@ -1013,3 +1013,24 @@ filterDEGs <- function(degDF, filter, plot = TRUE) {
 }
 ## Usage:
 # DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=1))
+
+#############
+## showDF ##
+#############
+showDF <- function(data, ...) {
+  DT::datatable(
+    data,
+    extensions = c("FixedColumns", "Scroller"),
+    options = list(
+      scrollX = TRUE,
+      fixedColumns = TRUE,
+      deferRender = TRUE,
+      scrollY = 200,
+      scroller = TRUE
+    )
+  )
+}
+## Usage:
+# targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
+# targets <- read.delim(targetspath, comment.char = "#")
+# showDF(targets)
