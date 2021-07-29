@@ -46,30 +46,33 @@ suppressPackageStartupMessages({
 # Introduction
 
 [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) 
-provides flexible utilities for building and running automated end-to-end analysis 
+provides flexible utilities for designing, building, and running automated nd-to-end analysis 
 workflows for a wide range of research applications, including next-generation 
 sequencing (NGS) experiments [@H_Backman2016-bt]. Important features include a 
 uniform workflow interface across different data analysis applications, automated 
 report generation, and support for running both R and command-line software, 
-on local computers or compute clusters (Figure 1). The latter supports interactive 
-job submissions and batch submissions to queuing systems of clusters. 
+on local computers or compute clusters (see Figure \@ref(fig:utilities)).
+The latter supports interactive job submissions and batch submissions to queuing 
+systems of clusters. 
 
-Efficient handling of complex sample sets (_e.g._ FASTQ/BAM files) and experimental 
-designs are facilitated by a well-defined sample annotation infrastructure which
-improves reproducibility and user-friendliness of many typical analysis workflows
-in the NGS area [@Lawrence2013-kt]. 
+It has been designed to improve the reproducibility of large-scale data analysis 
+projects while substantially reducing the time it takes to analyze complex omics
+data sets. Its unique features include a uniform workflow interface and management 
+system that allows the user to run selected steps, customize, and design entirely
+new workflows. Also, the package features take advantage of central community S4 
+classes of the Bioconductor ecosystem and command-line-based software support.
 
 The main motivation and advantages of using _`systemPipeR`_ for complex data analysis tasks are:
 
-1. Facilitates the design of complex NGS workflows involving multiple R/Bioconductor packages
-2. Common workflow interface for different NGS applications
-3. Makes NGS analysis with Bioconductor utilities more accessible to new users
+1. Facilitates the design of complex workflows involving multiple R/Bioconductor packages
+2. Common workflow interface for different applications
+3. Makes analysis with Bioconductor utilities more accessible to new users
 4. Simplifies usage of command-line software from within R
 5. Reduces the complexity of using compute clusters for R and command-line software
 6. Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes
 6. Improves reproducibility by automating analyses and generation of analysis reports 
 
-```{r, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A & B). Examples of *systemPipeR's* visualization functionalities are given under (C)."}
+```{r utilities, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A & B). Examples of *systemPipeR's* visualization functionalities are given under (C)."}
 knitr::include_graphics(system.file("extdata/images", "utilities.png", package="systemPipeR"))
 ```
 
@@ -100,25 +103,44 @@ designing and debugging workflows, such as a command-line rendering function to
 retrieve the exact command-line strings for each data set and processing step
 prior to running a command-line.
 
-This overview introduces the design of a new CWL S4 class in _`systemPipeR`_, 
-as well as the custom command-line interface, combined with the overview of all
-the common analysis steps of NGS experiments.
+This overview introduces the design of a workflow management container, an S4 
+class in _`systemPipeR`_, as well as the custom command-line interface, 
+combined with the overview of all the common analysis steps of NGS experiments.
 
-## New WF management structure
+## New workflow management interface
 
-The flexibility of `systemPipeR's` new interface workflow management class is
+_`systemPipeR`_ allows creation (multi-step analyses) and execution of workflow 
+entirely for R, with control, flexibility, and scalability of the all process. 
+The execution of the workflow can be sent to a HPC, can be parallelizes, 
+accelerating results acquisition. 
+
+The flexibility of _`systemPipeR's`_ new interface workflow management class is
 the driving factor behind the use of as many steps necessary for the analysis,
 as well as the connection between command-line- or R-based software. The
 connectivity among all workflow steps is achieved by the `SYSargsList` workflow
 management class.
 
-This S4 class is a list-like container where each instance stores all the
+`SYSargsList` S4 class is a list-like container where each instance stores all the
 input/output paths and parameter components required for a particular data
-analysis step.
+analysis step (see Figure \@ref(fig:sysargslist_image)).
 
-`systemPipeR` includes support for both command line and R/Bioconductor software 
-as well as resources for containerization, parallel evaluations on computer 
-clusters along with the automated generation of interactive analysis reports.
+The `SYSargsList` constructor function will generate the instances, using as data 
+input initial targets files, as well as two-parameter files (for details, see below).
+When running preconfigured workflows, the only input the user needs to provide 
+is the initial targets file containing the paths to the input files (e.g., FASTQ) 
+along with unique sample labels. Subsequent targets instances are created 
+automatically, based on the connectivity establish between the steps. The 
+parameters required for running command-line software is provided by the 
+parameter (`*.cwl` and `*.yml`)) files described below.
+
+The class store one or multiple steps, allowing central control for running, 
+checking status, and monitor complex workflows from start to finish. This design 
+enhances the systemPipeR workflow framework with a generalized, flexible, and 
+robust design.
+
+```{r sysargslist_image, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow steps with input/output file operations are controlled by `SYSargs2` objects. Each `SYSargs2` instance is constructed from one targets and two param files. The only input provided by the user is the initial targets file. Subsequent targets instances are created automatically, from the previous output files. Any number of predefined or custom workflow steps are supported. One or many `SYSargs2` objects are organized in an `SYSargsList` container."}
+knitr::include_graphics(system.file("extdata/images", "SPR_WF.png", package="systemPipeR"))
+```
 
 # Quick Start
 
@@ -137,11 +159,19 @@ knitr::opts_knit$set(root.dir = 'spr_project')
 
 ```{r SPRproject_ex, eval=TRUE}
 sal <- SPRproject(overwrite=TRUE) 
+file_path <- system.file("extdata", "spr_simple_wf.Rmd", package="systemPipeR")
+sal <- SPRproject(overwrite = TRUE)
+sal <- importWF(sal, file_path)
+sal <- runWF(sal)
+statusWF(sal)
+plotWF(sal)
+sal <- renderLogs(sal)
 ```
 
 - Add first step
 
 ```{r firstStep, eval=TRUE}
+sal <- SPRproject(overwrite=TRUE) 
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package="systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "echo", 
                                targets=targetspath, dir=TRUE,

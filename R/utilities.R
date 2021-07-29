@@ -88,7 +88,7 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 runCommandline <- function(args, runid="01", 
                            make_bam=FALSE, del_sam=TRUE, 
                            dir=TRUE, dir.name=NULL, 
-                           force=FALSE, ...) {
+                           force=FALSE, input_targets=NULL, ...) {
   ## Validation for 'args'
   if(any(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
     ## Environment Modules section
@@ -126,7 +126,8 @@ runCommandline <- function(args, runid="01",
     }
     ## Check if expected files exists or not
     ## Important, this happen in the new location in the case of dir=TRUE
-    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, force=force, del_sam = del_sam)
+    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, 
+                             force=force, del_sam = del_sam)
     args.return <- return$args_complete
     completed <- return$completed
     args <- return$args
@@ -150,7 +151,14 @@ runCommandline <- function(args, runid="01",
       inp_targets2 <- TRUE
     }
     ## LOOP
-    for(i in seq_along(cmdlist(args))){
+    ## Targets input
+    if (!is.null(input_targets)){
+      input_targets <- input_targets
+    } else {
+      input_targets <- seq_along(cmdlist(args))
+    }
+    
+    for(i in input_targets){
       setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
       ## Time
@@ -191,6 +199,8 @@ runCommandline <- function(args, runid="01",
             cat(stdout$warning, file=file_log, sep = "\n", append=TRUE)
             sample_status[[i]][[args$files$steps[j]]] <- "Warning"
           } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
+            ## TODO: add here, if the file is not created, keep pending status
+            ## only if the files exists, replace to success
             sample_status[[i]][[args$files$steps[j]]] <- "Success"
           }
           ## close R chunk

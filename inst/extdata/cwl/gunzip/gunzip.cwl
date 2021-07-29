@@ -9,13 +9,16 @@ class: CommandLineTool
 ##            baseCommand and arguments definitions           ##
 ################################################################
 
-baseCommand: [ "gunzip", "-c" ]
+baseCommand: [ "gunzip" ]
 
 requirements:
   - class: InlineJavascriptRequirement
   - class: InitialWorkDirRequirement
     listing:
       - $(inputs.results_path)
+
+arguments:
+  - prefix: -c
 
 ################################################################
 ##               Inputs and Outputs Settings                  ##

@@ -17,6 +17,9 @@ requirements:
     listing:
       - $(inputs.results_path)
 
+arguments:
+  - prefix: -c
+
 ################################################################
 ##               Inputs and Outputs Settings                  ##
 ################################################################
@@ -38,9 +41,9 @@ inputs:
 
 outputs:
   gzip_file:
-    type: File
-    outputBinding:
-      glob: $(inputs.results_path.basename)/$(inputs.SampleName).$(inputs.ext)
+    type: stdout
+
+stdout: $(inputs.results_path.basename)/$(inputs.SampleName).$(inputs.ext)
 
 ###########
 ## Notes ##
