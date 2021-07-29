@@ -1,5 +1,9 @@
 changelog
-    version 1.27.13
+    version 1.27.15
+    - Updates Documentation
+    - Minor fixes
+    
+    version 1.27.14
     - clusterRun()
     
     version 1.27.12

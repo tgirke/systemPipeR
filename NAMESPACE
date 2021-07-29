@@ -19,6 +19,7 @@ importFrom("BiocGenerics", "width<-")
 importFrom("crayon", "bgBlue")
 importFrom("crayon", "bgMagenta")
 importFrom("DOT", "dot")
+importFrom("DT", "datatable")
 importFrom("edgeR", "calcNormFactors")
 importFrom("edgeR", "DGEList")
 importFrom("edgeR", "estimateGLMCommonDisp")
@@ -104,6 +105,7 @@ importFrom("SummarizedExperiment", "colData")
 importFrom("SummarizedExperiment", "metadata<-")
 importFrom("SummarizedExperiment", "rowRanges")
 importFrom("SummarizedExperiment", "SummarizedExperiment")
+importFrom("utils", "browseURL")
 importFrom("utils", "capture.output")
 importFrom("utils", "combn")
 importFrom("utils", "menu")
@@ -169,7 +171,7 @@ export(
     "preprocessReads", "filterVars", "variantReport", "combineVarReports",
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts",
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
-    "scaleRanges", "olRanges",
+    "scaleRanges", "olRanges", "showDF",
     ## SYSargs2
     "loadWorkflow", "loadWF", "renderWF", "updateWF", "check.output",
     "subsetWF", "output_update",

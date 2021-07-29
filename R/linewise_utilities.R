@@ -163,7 +163,7 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     # get r chunks -----
     r_chunk <- lines[chunk_start] %>% stringr::str_detect("^```\\{r")
     # get chunk start and end
-    if (verbose) message(crayon::blue("---- Actions ----"))
+    if (verbose) message(crayon::blue("\n", "---- Actions ----"))
     if (verbose && length(chunk_start[!r_chunk])) message("Ignore none-R chunks at line: ", paste0(chunk_start[!r_chunk], collapse = ", "))
     df <- df[r_chunk, ]
     if (nrow(df) == 0) stop("No valid R code chunk left")

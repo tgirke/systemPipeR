@@ -85,7 +85,10 @@ writeTargetsout <- function (x, file = "default", silent = FALSE, overwrite = FA
 ##############################################################################
 ## Function to run NGS aligners including sorting and indexing of BAM files ##
 ##############################################################################
-runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=TRUE, dir.name=NULL, force=FALSE, ...) {
+runCommandline <- function(args, runid="01", 
+                           make_bam=FALSE, del_sam=TRUE, 
+                           dir=TRUE, dir.name=NULL, 
+                           force=FALSE, input_targets=NULL, ...) {
   ## Validation for 'args'
   if(any(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
     ## Environment Modules section
@@ -123,7 +126,8 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
     }
     ## Check if expected files exists or not
     ## Important, this happen in the new location in the case of dir=TRUE
-    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, force=force, del_sam = del_sam)
+    return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, 
+                             force=force, del_sam = del_sam)
     args.return <- return$args_complete
     completed <- return$completed
     args <- return$args
@@ -147,7 +151,14 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
       inp_targets2 <- TRUE
     }
     ## LOOP
-    for(i in seq_along(cmdlist(args))){
+    ## Targets input
+    if (!is.null(input_targets)){
+      input_targets <- input_targets
+    } else {
+      input_targets <- seq_along(cmdlist(args))
+    }
+    
+    for(i in input_targets){
       setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
       ## Time
@@ -188,6 +199,8 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
             cat(stdout$warning, file=file_log, sep = "\n", append=TRUE)
             sample_status[[i]][[args$files$steps[j]]] <- "Warning"
           } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
+            ## TODO: add here, if the file is not created, keep pending status
+            ## only if the files exists, replace to success
             sample_status[[i]][[args$files$steps[j]]] <- "Success"
           }
           ## close R chunk
@@ -279,6 +292,9 @@ runCommandline <- function(args, runid="01", make_bam=FALSE, del_sam=TRUE, dir=T
 # runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 # runid="01"; make_bam=FALSE; del_sam=FALSE; dir=TRUE; dir.name=NULL; force=TRUE
 
+###############
+## .tryRunC ##
+###############
 .tryRunC <- function(command, commandargs){
   warning <- error <- NULL
   value <- withCallingHandlers(
@@ -532,10 +548,10 @@ clusterRun <- function(args,
     for(j in seq_along(sal)){
       logdir1 <- paste0(path, "/submitargs", 01, "_btdb_", paste(sample(0:9, 4), collapse = ""))
       reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-      ids <- batchtools::batchMap(fun = f, 1, more.args = list(sal=sal, step=j), reg = reg)
+      ids <- batchtools::batchMap(fun = f, 1, more.args = list(sal=sal, steps=j), reg = reg)
       chunk <- batchtools::chunk(ids$job.id, n.chunks = 1, shuffle = FALSE)
       ids$chunk <- chunk
-      done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resources)
+      done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resourceList)
       batchtools::waitForJobs()
       sal <- batchtools::loadResult(reg=reg, id=ids)
     }	
@@ -997,3 +1013,24 @@ filterDEGs <- function(degDF, filter, plot = TRUE) {
 }
 ## Usage:
 # DEG_list <- filterDEGs(degDF=edgeDF, filter=c(Fold=2, FDR=1))
+
+#############
+## showDF ##
+#############
+showDF <- function(data, ...) {
+  DT::datatable(
+    data,
+    extensions = c("FixedColumns", "Scroller"),
+    options = list(
+      scrollX = TRUE,
+      fixedColumns = TRUE,
+      deferRender = TRUE,
+      scrollY = 200,
+      scroller = TRUE
+    )
+  )
+}
+## Usage:
+# targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
+# targets <- read.delim(targetspath, comment.char = "#")
+# showDF(targets)
