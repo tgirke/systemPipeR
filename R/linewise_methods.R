@@ -125,7 +125,7 @@ setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j
     if (i == 4) x@stepName <- value
     if (i == 5) x@dependency <- value
     if (i == 6) x@status <- value
-    if (i == 7) x@files <- files
+    if (i == 7) x@files <- value
     if (i == "codeLine") x@codeLine <- value
     if (i == "codeChunkStart") x@codeChunkStart <- value
     if (i == "rmdPath") x@rmdPath <- value

@@ -46,7 +46,9 @@ test_that("check_LineWise_test", {
    ## Error
     expect_error(codeLine(sal, step=4))
     ## Replacements SYSargsList
-    replaceCodeLine(sal, step=1, line=1) <- "5+5"
+    replaceCodeLine(sal, step=1, line=1) <- LineWise(code={
+                                                        5+5
+                                                      })
     codeLine(sal[1])
     expect_equal(as.character(stepsWF(sal[1])[[1]]$codeLine[1]), "5 + 5")
     appendCodeLine(sal, step=1) <- "66+55"
