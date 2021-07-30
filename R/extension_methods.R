@@ -2,11 +2,11 @@
 ## .SYSargsList ##
 ########################################################
 `+.SYSargsList` <- function(sal1, sal2){
-    if(!inherits(sal1, "SYSargsList")) stop(crayon::red$bold("Argument 1 must be 'SYSargsList' class"))
-    if(!inherits(sal2, "SYSargsList")) stop(crayon::red$bold("Argument 2 must be 'SYSargsList' class"))
+    if (!inherits(sal1, "SYSargsList")) stop(crayon::red$bold("Argument 1 must be 'SYSargsList' class"))
+    if (!inherits(sal2, "SYSargsList")) stop(crayon::red$bold("Argument 2 must be 'SYSargsList' class"))
     options(appendPlus = TRUE)
     appendStep(sal1) <- sal2
-    message("'dependency' tree needs to be revised. ")
+    message("'dependency' graph needs to be revised.")
     return(sal1)
 }
 

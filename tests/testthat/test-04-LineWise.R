@@ -11,14 +11,14 @@ test_that("check_LineWise_test", {
       x <- 1+1; y <- 100
     })
     ## build instance from Rmd
-    rmdPath <- system.file("extdata", "systemPipeTEST.Rmd", package="systemPipeR")
+    rmdPath <- system.file("extdata", "SPRtest.Rmd", package="systemPipeR")
     sal <- SPRproject(overwrite = TRUE)
     sal <- importWF(sal, rmdPath)
-    lw <- stepsWF(sal[3])[[1]]
+    lw <- stepsWF(sal[2])[[1]]
     show(lw)
     ## Class
     expect_s4_class(sal, "SYSargsList")
-    expect_length(sal, 14)
+    expect_length(sal, 6)
     expect_s4_class(lw, "LineWise")
     expect_length(lw, 3)
     expect_length(lw$codeLine, 3)
@@ -53,7 +53,7 @@ test_that("check_LineWise_test", {
     codeLine(sal[1])
     expect_equal(as.character(stepsWF(sal[1])[[1]]$codeLine[2]), "66 + 55")
    #runWF()
-   sal <- runWF(sal, steps = 1:3)
+   sal <- runWF(sal, steps = 1:2)
    expect_setequal(sal$statusWF[[1]]$status.summary, "Success")
    ## Methods
    expect_setequal(status(stepsWF(sal)[[1]])$status.summary, "Success")

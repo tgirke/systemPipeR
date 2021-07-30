@@ -884,7 +884,7 @@ renderLogs <- function(
   if(type == "html_document") plot_path <- .prepareRmdPlot(sysargs, dir_log)
   writeLines(c(
     "---",
-    if(type == "html_document") "title: '&nbsp;'" else "title: 'SPS Workflow Log Report'",
+    if(type == "html_document") "title: '&nbsp;'" else "title: 'SPR Workflow Technical Report'",
     paste0("date: 'Last update: ", format(Sys.time(), '%d %B, %Y'), "'"),
     "output:",
     paste0("  ", type, ":"),
@@ -912,6 +912,13 @@ renderLogs <- function(
   return(as(sysargs, "SYSargsList"))
 }
 
+## Usage
+# sal <- runWF(sal)
+# sal <- renderLogs(sal)
+
+########################
+## .prepareRmdPlot ##
+########################
 .prepareRmdPlot <- function(sysargs, dir_log) {
   out_path <- file.path(dir_log, "log_plot.html")
   plotWF(sysargs, out_format = "html", out_path = out_path, rmarkdown = TRUE, in_log = TRUE, rstudio = TRUE)
@@ -925,10 +932,6 @@ renderLogs <- function(
   ), con = out_path)
   out_path
 }
-
-## Usage
-# sal <- runWF(sal)
-# sal <- renderLogs(sal)
 
 ########################
 ## subsetRmd function ##

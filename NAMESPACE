@@ -179,7 +179,7 @@ export(
     "configWF", "config.param",
     # SYSargsList
     "SPRproject", "SYSargsList", "runWF", "check.outfiles",  "plotWF", 
-    "plotwfOutput", "renderPlotwf", "renderLogs",
+    "plotwfOutput", "renderPlotwf", "renderLogs", "sal2rmd", "sal2bash", 
     ## cmd2cwl
     "createParamFiles", "createParam", "writeParamFiles", "printParam", 
     "subsetParam", "replaceParam", "renameParam",

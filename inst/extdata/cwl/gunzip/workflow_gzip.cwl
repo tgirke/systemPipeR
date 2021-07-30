@@ -6,15 +6,15 @@ inputs:
   ext: string
   results_path: Directory
 outputs:
-  gunzip_file:
-    outputSource: gunzip/gunzip_file
+  gzip_file:
+    outputSource: gzip/gzip_file
     type: stdout
 steps:
-  gunzip:
+  gzip:
     in:
       file: file
       SampleName: SampleName
       ext: ext
       results_path: results_path
-    out: '[gunzip_file]'
-    run: gunzip/gunzip.cwl
+    out: '[gzip_file]'
+    run: gunzip/gzip.cwl

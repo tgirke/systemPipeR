@@ -109,9 +109,8 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
 }
 
 ## Usage:
-# file_path <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
+# file_path <- system.file("extdata", "spr_simple_wf.Rmd", package="systemPipeR")
 # sal <- SPRproject(overwrite = TRUE)
-# file_path <- "../inst/extdata/systemPipeTEST.Rmd"
 # sal <- importWF(sal, file_path)
 
 ########################
@@ -276,5 +275,5 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     df
 }
 ## Usage:
-# rmdpath <- system.file("extdata/systemPipeTEST.Rmd", package="systemPipeR")
+# rmdpath <- system.file("extdata", "spr_simple_wf.Rmd", package="systemPipeR")
 # df <- parseRmd(rmdpath)
