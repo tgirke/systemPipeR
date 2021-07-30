@@ -889,7 +889,16 @@ sal <- renderLogs(sal)
 
 # Exported the workflow 
 
+_`systemPipeR`_ workflow management system allows to translate and export the 
+workflow build interactively to R Markdown format or an executable bash script.
+This feature advances the reusability of the workflow, as well as the flexibility
+for workflow execution.
+
 ## R Markdown file
+
+`sal2rmd` function takes an `SYSargsList` workflow container and translates it to 
+SPR workflow template R markdown format. This file can be imported with the 
+`importWF` function, as demonstrated above.
 
 ```{r, eval=FALSE}
 sal2rmd(sal)
@@ -897,29 +906,42 @@ sal2rmd(sal)
 
 ## Bash script
 
+`sal2bash` function takes an `SYSargsList` workflow container and translates 
+it to an executable bash script, so one can run the workflow without loading 
+`SPR` or using an R console.
+
+
 ```{r, eval=FALSE}
 sal2bash(sal)
 ```
 
+It will be generated on the project root an executable bash script, called by
+default the `spr_wf.sh`. Also, a directory `./spr_wf` will be created and store 
+all the R scripts based on the workflow steps. Please note that this function will 
+"collapse" adjacent R steps into one file as much as possible.
+
+
 # Project Resume and Restart
 
-If you desire to restart a project that has been initialized in the past, 
+If you desire to resume or restart a project that has been initialized in the past, 
 `SPRproject` function allows this operation.
 With the restart option, it is possible to load the `SYSargsList` object in R and 
-restart the analysis. Please, make sure to provide the logs.dir location and the 
+restart the analysis. Please, make sure to provide the `logs.dir` location and the 
 corresponded `YAML` file name.
 The current working directory needs to be in the project root directory.
 
-
 ```{r SPR_restart, eval=FALSE}
-sal <- SPRproject(restart=TRUE, logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
+sal <- SPRproject(restart = TRUE, logs.dir = ".SPRproject", 
+                  sys.file = ".SPRproject/SYSargsList.yml") 
 ```
 
-If you choose to save the environment in the last analysis, you can recover all the files created in that particular section. `SPRproject` function allows this with `load.envir` argument. Please note that the environment was saved only with you run the workflow 
+If you choose to save the environment in the last analysis, you can recover all 
+the files created in that particular section. `SPRproject` function allows this 
+with `load.envir` argument. Please note that the environment was saved only with you run the workflow 
 in the last section (`runWF()`).
 
 ```{r restart_load, eval=FALSE}
-sal <- SPRproject(restart=TRUE, load.envir = TRUE) 
+sal <- SPRproject(restart = TRUE, load.envir = TRUE) 
 ```
 
 After loading the workflow at your current section, you can check the objects 
@@ -1079,7 +1101,7 @@ targetsWF(sal_sub)
 outfiles(sal_sub)
 ```
 
-## The `SYSargsList` class and its operator `+`
+- The `SYSargsList` class and its operator `+`
 
 ```{r, eval=FALSE}
 sal[1] + sal[2] + sal[3]
@@ -1957,7 +1979,6 @@ or R-based software.
 knitr::include_graphics(system.file("extdata/images", "SystemPipeR_Workflow.png", package = "systemPipeR"))  
 ```
 
-
 # Third-party software tools {#tools}
 
 Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
@@ -1984,7 +2005,7 @@ software %>%
 Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
 
 ```{r test_tool_path, eval=FALSE}
-tryCMD(command="grep") 
+tryCMD(command="gzip") 
 ```
 
 # Version information

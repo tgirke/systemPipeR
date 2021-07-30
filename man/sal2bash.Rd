@@ -1,10 +1,10 @@
 \name{sal2bash}
 \alias{sal2bash}
 \title{
-Translate sysArgsList back to a bash workflow
+Translate SYSargsList back to a bash workflow
 }
 \description{
-    This function takes a sysArgsList object and translate it to an 
+    This function takes a SYSargsList object and translate it to an 
     executable bash script, so one can run the workflow without loading SPR or 
     using an R console.
 }
@@ -48,11 +48,11 @@ sal2bash(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error = TRUE)
     Therefore, it will be good to keep all R steps bundle together as much as possible 
     to avoid the package and environment loading/saving overhead time. 
     
-    Initially, this environment only contains the sysArgsList object that was used to 
-    create the bash script. Note: the sysArgsList object name will be the same 
+    Initially, this environment only contains the SYSargsList object that was used to 
+    create the bash script. Note: the SYSargsList object name will be the same 
     as what you pass to `sal2bash`. If you have `sal2bash(my_sal)`, then in the 
     `spr_wf.RData` there will be an object called `my_sal` saved there. It is important 
-    to keep using the same name for the sysArgsList object managing the workflow 
+    to keep using the same name for the SYSargsList object managing the workflow 
     and in workflow running. For example, if you have an R step that requires to 
     query a column from the outfiles of the SAL, `getColumn(sal, "FileName1")`, but you 
     pass `my_sal` to `sal2bash(my_sal)`, this will cause this R step cannot find 

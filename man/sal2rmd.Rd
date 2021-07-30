@@ -1,10 +1,10 @@
 \name{sal2rmd}
 \alias{sal2rmd}
 \title{
-Translate sysArgsList back to a workflow template Rmarkdown file
+Translate SYSargsList back to a workflow template Rmarkdown file
 }
 \description{
-This function takes a sysArgsList object and translate it to SPR workflow 
+This function takes a SYSargsList object and translate it to SPR workflow 
 template Rmarkdown format.
 }
 \usage{
