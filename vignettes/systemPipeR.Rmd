@@ -895,7 +895,6 @@ sal <- renderLogs(sal)
 sal2rmd(sal)
 ```
 
-
 ## Bash script
 
 ```{r, eval=FALSE}
