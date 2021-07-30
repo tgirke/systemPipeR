@@ -1193,8 +1193,8 @@ sal_test
 
 This section will introduce how CWL describes command-line tools and the 
 specification and terminology of each file. 
-For complete information, please check the full documentation [here](https://www.commonwl.org/v1.2/CommandLineTool.html) 
-for CommandLineTools and [here](https://www.commonwl.org/v1.2/Workflow.html) for Workflows and the user guide [here](https://www.commonwl.org/user_guide/). 
+For complete documentation, please check the CommandLineTools documentation [here](https://www.commonwl.org/v1.2/CommandLineTool.html) 
+and [here](https://www.commonwl.org/v1.2/Workflow.html) for Workflows and the user guide [here](https://www.commonwl.org/user_guide/). 
 
 CWL command-line specifications are written in [YAML](http://yaml.org/) format.
 
@@ -1207,7 +1207,7 @@ the input variables of command-line steps.
 `CommandLineTool` by CWL definition is a standalone process, with no interaction 
 if other programs, execute a program, and produce output. 
 
-Let's explore the `.cwl` file: 
+Let's explore the `*.cwl` file: 
 
 ```{r}
 dir_path <- system.file("extdata/cwl", package = "systemPipeR")
@@ -1330,8 +1330,8 @@ The following imports a `.cwl` file (here `example.cwl`) for running the `echo H
 example.
 
 ```{r fromFile, eval=TRUE}
-HW <- SYSargsList(wf_file="example/workflow_example.cwl", 
-                  input_file="example/example_single.yml", 
+HW <- SYSargsList(wf_file = "example/workflow_example.cwl", 
+                  input_file = "example/example_single.yml", 
                   dir_path = system.file("extdata/cwl", package = "systemPipeR"))
 HW
 cmdlist(HW)
@@ -1572,7 +1572,7 @@ can be found also in the plot legends.
 **Shapes:**
 
 - circular steps: pure R code steps
-- rounded squares steps: `sysargs` steps, steps that will invoke commandline calls
+- rounded squares steps: `sysargs` steps, steps that will invoke command-line calls
 - blue colored steps and arrows: main branch (see [main branch](#main-branch) section below)
 
 **Step colors**
@@ -1847,11 +1847,12 @@ each sample and software tool.
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
 dir_path <- system.file("extdata/cwl", package = "systemPipeR")
-WF <- loadWF(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl",
-                   input_file="hisat2/hisat2-mapping-se.yml",
-                   dir_path=dir_path)
+WF <- loadWF(targets = targetspath, wf_file = "hisat2/hisat2-mapping-se.cwl",
+                   input_file = "hisat2/hisat2-mapping-se.yml",
+                   dir_path = dir_path)
 
-WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", 
+                                 SampleName = "_SampleName_"))
 ```
 
 Several accessor methods are available that are named after the slot names of
@@ -1920,17 +1921,16 @@ inputvars(WF)
 imported as a workflow.
 
 ```{r lw, eval=TRUE}
-rmd <- system.file("extdata/", "SPRtest.Rmd", package = "systemPipeR")
+rmd <- system.file("extdata", "spr_simple_lw.Rmd", package = "systemPipeR")
 sal_lw <- SPRproject(overwrite = TRUE)
-sal_lw <- importWF(sal_lw, rmd, verbose=FALSE)
-lw <- stepsWF(sal_lw[2])[[1]]
-codeLine(lw)
-codeLine(sal_lw, step =c(1, 2))
+sal_lw <- importWF(sal_lw, rmd, verbose = FALSE)
+codeLine(sal_lw)
 ```
 
 - Coerce methods available:
 
 ```{r, lw_coerce, eval=TRUE}
+lw <- stepsWF(sal_lw)[[2]]
 ## Coerce
 ll <- as(lw, "list")
 class(ll)
@@ -1960,23 +1960,23 @@ codeLine(l_sub)
 - Replacement methods
 
 ```{r, lw_rep, eval=TRUE}
-replaceCodeLine(lw, line=2) <- "5+5"
+replaceCodeLine(lw, line = 2) <- "5+5"
 codeLine(lw)
-appendCodeLine(lw, after=0) <- "6+7"
+appendCodeLine(lw, after = 0) <- "6+7"
 codeLine(lw)
 ```
 
 - Replacement methods for `SYSargsList`
 
 ```{r, sal_rep_append, eval=FALSE}
-replaceCodeLine(sal_lw, step=3, line=2) <- "5+5"
-codeLine(sal_lw, step=2)
+replaceCodeLine(sal_lw, step = 2, line = 2) <- "5+5"
+codeLine(sal_lw, step = 2)
 
-appendCodeLine(sal_lw, step=3) <- "66+55"
-codeLine(sal_lw, step=3)
+appendCodeLine(sal_lw, step = 2) <- "66+55"
+codeLine(sal_lw, step = 2)
 
-appendCodeLine(sal_lw, step=1, after=1) <- "66+55"
-codeLine(sal_lw, step=1)
+appendCodeLine(sal_lw, step = 1, after = 1) <- "66+55"
+codeLine(sal_lw, step = 1)
 ```
 
 ## Workflow design structure using *`SYSargs`*: Previous version
@@ -2005,13 +2005,13 @@ knitr::include_graphics(system.file("extdata/images", "SystemPipeR_Workflow.png"
 
 # Third-party software tools {#tools}
 
-Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
+Current, *systemPipeR* provides the _`param`_ file templates for third-party 
+software tools. Please check the listed software tools. 
 
 ```{r table_tools, echo=FALSE, message=FALSE}
 library(magrittr)
 # library(kableExtra)
 SPR_software <- system.file("extdata", "SPR_software.csv", package = "systemPipeR")
-#SPR_software <- "SPR_software.csv"
 software <- read.delim(SPR_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))
@@ -2026,7 +2026,9 @@ software %>%
   kableExtra::scroll_box(width = "80%", height = "500px")
 ```
 
-Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
+Remember, if you desire to run any of these tools, make sure to have the 
+respective software installed on your system and configure in the `PATH`. 
+You can check as follows: 
 
 ```{r test_tool_path, eval=FALSE}
 tryCMD(command="gzip") 
