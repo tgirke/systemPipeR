@@ -799,6 +799,20 @@ and errors and running the workflow by the arguments `warning.stop` and
 sal <- runWF(sal, force = TRUE, warning.stop = FALSE, error.stop = TRUE)
 ```
 
+When the project was initialized by `SPRproject` function, it was created an 
+environment for all objects created during the workflow execution. This 
+environment can be accessed as follows:
+
+```{r runWF_env, eval=FALSE}
+viewEnvir(sal)
+```
+
+The workflow execution allows to save this environment for future recovery:
+
+```{r runWF_saveenv, eval=FALSE}
+sal <- runWF(sal, saveEnv = TRUE)
+```
+
 ## Workflow status
 
 To check the summary of the workflow, we can use:
@@ -920,28 +934,28 @@ default the `spr_wf.sh`. Also, a directory `./spr_wf` will be created and store
 all the R scripts based on the workflow steps. Please note that this function will 
 "collapse" adjacent R steps into one file as much as possible.
 
-
 # Project Resume and Restart
 
 If you desire to resume or restart a project that has been initialized in the past, 
 `SPRproject` function allows this operation.
-With the restart option, it is possible to load the `SYSargsList` object in R and 
-restart the analysis. Please, make sure to provide the `logs.dir` location and the 
+
+With the resume option, it is possible to load the `SYSargsList` object in R and 
+resume the analysis. Please, make sure to provide the `logs.dir` location, and the 
 corresponded `YAML` file name.
 The current working directory needs to be in the project root directory.
 
-```{r SPR_restart, eval=FALSE}
-sal <- SPRproject(restart = TRUE, logs.dir = ".SPRproject", 
+```{r SPR_resume, eval=FALSE}
+sal <- SPRproject(resume = TRUE, logs.dir = ".SPRproject", 
                   sys.file = ".SPRproject/SYSargsList.yml") 
 ```
 
 If you choose to save the environment in the last analysis, you can recover all 
 the files created in that particular section. `SPRproject` function allows this 
-with `load.envir` argument. Please note that the environment was saved only with you run the workflow 
-in the last section (`runWF()`).
+with `load.envir` argument. Please note that the environment was saved only with
+you run the workflow in the last section (`runWF()`).
 
-```{r restart_load, eval=FALSE}
-sal <- SPRproject(restart = TRUE, load.envir = TRUE) 
+```{r resume_load, eval=FALSE}
+sal <- SPRproject(resume = TRUE, load.envir = TRUE) 
 ```
 
 After loading the workflow at your current section, you can check the objects 
@@ -950,13 +964,21 @@ current environment.
 
 ```{r envir, eval=FALSE}
 viewEnvir(sal)
-copyEnvir(sal, list="hello", new.env = globalenv())
+copyEnvir(sal, list="df", new.env = globalenv())
+```
+
+This option will keep all previous logs in the folder; however, if you desire to 
+clean the execution history and restart the workflow, the `restart=TRUE` option
+can be used.
+
+```{r restart_load, eval=FALSE}
+sal <- SPRproject(restart = TRUE, overwrite = TRUE, load.envir = FALSE) 
 ```
 
 The last and more drastic option from `SYSproject` function is to overwrite the
-logs and the workflow. This option will just delete the hidden folder and the 
-information on the `SYSargsList.yml` files. This will not delete any parameter 
-file nor any results it was created in previous runs.
+logs and the workflow. This option will delete the hidden folder and the 
+information on the `SYSargsList.yml` files. This will not delete any parameter
+file nor any results it was created in previous runs. Please use with caution. 
 
 ```{r SPR_overwrite, eval=FALSE}
 sal <- SPRproject(overwrite = TRUE) 
@@ -1092,10 +1114,10 @@ sal[1:3]
 sal[c(1,3)]
 ```
 
-- The `SYSargsList` class and its subsetting input samples: 
+- The `SYSargsList` class and its subsetting by steps and input samples: 
 
 ```{r}
-sal_sub <- subset(sal, subset_steps = c(2,3), input_targets = ("SE"), keep_steps = TRUE)
+sal_sub <- subset(sal, subset_steps = c( 2,3), input_targets = ("SE"), keep_steps = TRUE)
 stepsWF(sal_sub)
 targetsWF(sal_sub)
 outfiles(sal_sub)
@@ -1136,7 +1158,7 @@ replaceCodeLine(sal_c, step="export_iris", line = 2) <- "log_cal_100 <- log(50)"
 codeLine(sal_c, step = 1)
 ```
 
-For more details about the `LineWise` class, please check [below](#linewise).
+For more details about the `LineWise` class, please see [below](#linewise).
 
 - Rename a Step
 
@@ -1146,6 +1168,7 @@ renameStep(sal_c, c(1, 2)) <- c("newStep", "newIndex")
 sal_c
 names(outfiles(sal_c))
 names(targetsWF(sal_c))
+dependency(sal_c)
 ```
 
 - Replace a Step
@@ -1156,7 +1179,8 @@ replaceStep(sal_test, step = 1, step_name = "gunzip" ) <- sal[3]
 sal_test
 ```
 
-Note: 
+Note: Please use this method with attention, because it can disrupt all 
+the dependency graphs. 
 
 - Removing a Step
 
