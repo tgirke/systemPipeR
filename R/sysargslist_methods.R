@@ -617,9 +617,9 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     ## Check value length 
     ## only one step at the time
     if (length(value) > 1) stop("One step can be appended in each operation.", call. = FALSE)
-    targesCon <- value$targets_connection[[1]]
-    if (!is.null(targesCon[[1]])) {
-        step <- targesCon[[1]][[1]]
+    targetsCon <- value$targets_connection[[1]]
+    if (!is.null(targetsCon[[1]])) {
+        step <- targetsCon[[1]][[1]]
         if (any(!step %in% names(stepsWF(x)))) {
             stop(paste0(
                 "'targets' argument needs to be assigned as valid targets file OR", 
@@ -627,14 +627,19 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
                 paste0(names(stepsWF(x)), collapse = " OR ")
             ), call. = FALSE)
         }
-        new_targets <- .cbindTargetsOutfiles(x, step, targesCon[[3]][[1]])[[1]]
+        ## check new_targets_col
+        all_names <- unlist(append(lapply(outfiles(x), function(y) names(y)), 
+                                   unique(unlist(lapply(targetsWF(x)[step], function(y) names(y))))))
+        if(!all(targetsCon[[2]][[1]] %in% all_names)) stop("Invalid `inputVars`.")
+        new_targets_col <- targetsCon[[2]][[1]][!targetsCon[[2]][[1]] %in% unlist(lapply(targetsWF(x)[step], function(y) names(y)))]
+        new_targets <- .cbindTargetsOutfiles(x, step, new_targets_col, targetsCon[[3]][[1]])
         new_targetsheader <- sapply(step, function(y) targetsheader(x, y))
         if(!all(sapply(new_targetsheader, function(x)  identical(x, new_targetsheader[[1]])))) {
           stop("Step(s) you selected have different targetsheader(x), cannot use these step(s) as targets connections", call. = FALSE) }
         new_targetsheader <- new_targetsheader[1]; names(new_targetsheader) <- "targetsheader"
         # if (length(step) == 1) {
         #     targets_name <- paste(colnames(targetsWF(x)[step][[1]]), collapse = "|")
-        #     new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+        #     new_targets_col <- targetsCon[[2]][[1]][-c(which(grepl(targets_name, targetsCon[[2]][[1]])))]
         #     ## add skip
         #     if (all(!new_targets_col %in% colnames(x$outfiles[[step]]))) {
         #         stop(paste0(
@@ -644,10 +649,10 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         #     }
         #     ## Check outfiles names X targets names
         #     if (any(new_targets_col %in% targets_name)) warning("We found duplication on 'outfiles' colnames and targetsWF colnames... Would you please make sure you are connecting the right steps? ")
-        #     if (is.null(targesCon[[3]][[1]])) {
+        #     if (is.null(targetsCon[[3]][[1]])) {
         #         old_targets <- x$targetsWF[[step]]
         #     } else {
-        #         old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targesCon[[3]][[1]], collapse = "|"), colnames(x$targetsWF[[step]]))))]
+        #         old_targets <- x$targetsWF[[step]][-c(which(grepl(paste(targetsCon[[3]][[1]], collapse = "|"), colnames(x$targetsWF[[step]]))))]
         #     }
         #     new_targets <- cbind(x$outfiles[[step]][new_targets_col], old_targets)
         #     new_targetsheader <- targetsheader(x, step)
@@ -657,7 +662,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         #     targets_list_name <- unique(unlist(lapply(targets_list, function(y) names(y))))
         #     old_targets <- Reduce(function(x, y) merge(x, y, by = targets_list_name, all = TRUE), targets_list)
         #     targets_name <- paste(targets_list_name, collapse = "|")
-        #     new_targets_col <- targesCon[[2]][[1]][-c(which(grepl(targets_name, targesCon[[2]][[1]])))]
+        #     new_targets_col <- targetsCon[[2]][[1]][-c(which(grepl(targets_name, targetsCon[[2]][[1]])))]
         #     ## Check outfiles names X targets names
         #     if (any(new_targets_col %in% targets_name)) warning("We found duplication on 'outfiles' colnames and targetsWF colnames... Would you please make sure you are connecting the right steps? ")
         #     colnames_outfiles <- sapply(outfiles(x), function(y) names(y))
@@ -667,10 +672,10 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         #             paste0(colnames_outfiles, collapse = " OR \n")
         #         ))
         #     }
-        #     if (is.null(targesCon[[3]][[1]])) {
+        #     if (is.null(targetsCon[[3]][[1]])) {
         #         old_targets <- old_targets
         #     } else {
-        #         old_targets <- old_targets[-c(which(grepl(paste(targesCon[[3]][[1]], collapse = "|"), colnames(old_targets))))]
+        #         old_targets <- old_targets[-c(which(grepl(paste(targetsCon[[3]][[1]], collapse = "|"), colnames(old_targets))))]
         #     }
         #     new_col_list <- lapply(step, function(y) outfiles(x)[[y]])
         #     new_targets <- cbind(new_col_list, old_targets)
@@ -716,37 +721,64 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     return(value)
 }
 
-.cbindTargetsOutfiles <- function(sal, targets_con, rm_targets_con = NULL) {
+.cbindTargetsOutfiles <- function(sal, targets_con, new_targets_col, rm_targets_con = NULL) {
   ## handle outfiles
   outfiles <- outfiles(sal)[targets_con] %>%
     lapply(as.data.frame) %>%
     {.[lapply(., function(x) nrow(x) > 0) %>% unlist()]}
-  if(length(outfiles) > 1) {
+  if(length(targets) > 1) {
     outfiles_length <- lapply(outfiles, nrow) %>% unlist()
-    if(outfiles_length[1] != mean(outfiles_length)) {
-      stop("Steps you selected have different nrow in outfiles, cannot use these step(s) as targets connections")
+    if(
+      (length(unique(outfiles_length)) > 2) ||
+      (outfiles_length[1] != mean(outfiles_length)) &&
+      (!1 %in% outfiles_length)
+    ) {
+      stop("Steps you selected have different Sample length in outfiles, cannot use these steps as targets connections")
     }
   }
-  outfiles <- cbind(outfiles)
+  outfiles <- data.frame(lapply(outfiles, function(x) x[colnames(x) %in% new_targets_col]))
+  colnames(outfiles) <- new_targets_col
   ## handle targets
   targets <- targetsWF(sal)[targets_con] %>%
-    lapply(as.data.frame) %>%
+  #   lapply(as.data.frame) %>%
+  #   {.[lapply(., function(x) nrow(x) > 0) %>% unlist()]}
+  # ## cases of removal of columns
+  # targets <- lapply(targets, function(x) x[!colnames(x) %in% rm_targets_con])
+  # if(length(targets) > 1) {
+  #   targets_length <- lapply(targets_length, nrow) %>% unlist()
+  #   if(targets_length[1] != mean(targets_length)) {
+  #     stop("Steps you selected have different nrow in targets, cannot use these step(s) as targets connections")
+  #   }
+  #   targets <- lapply(seq_along(targets), function(x){
+  #     if(x == 1) return(targets_dfs[[x]])
+  #     message("columns in step ", step_names[x], " has been renamed with `columnName_StepName`.")
+  #     names(targets[[x]]) <- paste0(names(targets[[x]]), "_", step_names[x])
+  #     targets[[x]]
+  #   })
+  #   targets <- mapply(cbind, targets, outfiles, SIMPLIFY=FALSE)
+  # }
+  # 
+  lapply(as.data.frame) %>%
     {.[lapply(., function(x) nrow(x) > 0) %>% unlist()]}
   ## cases of removal of columns
-  targets <- lapply(targets, function(x) x[!colnames(x) %in% rm_targets_con])
+  if(!is.null(rm_targets_con)) targets <- lapply(targets, function(x) x[!colnames(x) %in% rm_targets_con])
   if(length(targets) > 1) {
-    targets_length <- lapply(targets_length, nrow) %>% unlist()
-    if(targets_length[1] != mean(targets_length)) {
-      stop("Steps you selected have different nrow in targets, cannot use these step(s) as targets connections")
+    targets_length <- lapply(targets, nrow) %>% unlist()
+    if(
+      (length(unique(targets_length)) > 2) ||
+      (targets_length[1] != mean(targets_length)) &&
+      (!1 %in% targets_length)
+    ) {
+      stop("Steps you selected have different Sample length in targets, cannot use these steps as targets connections")
     }
     targets <- lapply(seq_along(targets), function(x){
-      if(x == 1) return(targets_dfs[[x]])
-      message("columns in step ", step_names[x], " has been renamed with `columnName_StepName`.")
-      names(targets[[x]]) <- paste0(names(targets[[x]]), "_", step_names[x])
+      if(x == 1) return(targets[[x]])
+      message("columns in step ", names(targets[x]), " has been renamed with `columnName_StepName`.")
+      names(targets[[x]]) <- paste0(names(targets[[x]]), "_", names(targets[x]))
       targets[[x]]
     })
-    targets <- mapply(cbind, targets, outfiles, SIMPLIFY=FALSE)
   }
+  targets <- do.call(cbind, targets)
   ## merge both
   df <-  if(length(outfiles) == 0 && length(targets) != 0) {
     targets
@@ -760,7 +792,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
            "outfiles and targets dataframes or the outfiles",
            "length is not 1, this is not allowed", call. = FALSE)
     }
-    df <- mapply(cbind, outfiles, targets, SIMPLIFY=FALSE)
+    df <- cbind(outfiles, targets)
   }
   return(df)
 }
