@@ -778,7 +778,9 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
       targets[[x]]
     })
   }
+  names <- unlist(lapply(targets, function(y) names(y)))
   targets <- do.call(cbind, targets)
+  colnames(targets) <- names
   ## merge both
   df <-  if(length(outfiles) == 0 && length(targets) != 0) {
     targets
