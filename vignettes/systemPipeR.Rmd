@@ -1,5 +1,5 @@
 ---
-title: "Workflows by systemPipeR" 
+title: "systemPipeR: Workflow and Visualization Toolkit" 
 author: "Author: Daniela Cassol, Le Zhang, and Thomas Girke"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -127,7 +127,7 @@ management class.
 
 `SYSargsList` S4 class is a list-like container where each instance stores all the
 input/output paths and parameter components required for a particular data
-analysis step (see Figure \@ref(fig:sysargslist_image)).
+analysis step (see Figure \@ref(fig:sysargslistImage)).
 
 The `SYSargsList` constructor function will generate the instances, using as data 
 input initial targets files, as well as two-parameter files (for details, see below).
@@ -143,7 +143,8 @@ checking status, and monitor complex workflows from start to finish. This design
 enhances the systemPipeR workflow framework with a generalized, flexible, and 
 robust design.
 
-```{r sysargslist_image, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow steps with input/output file operations are controlled by `SYSargs2` objects. Each `SYSargs2`instance is constructed from one targets and two param files. The only input provided by the user is the initial targets file. Subsequent targets instances are created automatically, from the previous output files. Any number of predefined or custom workflow steps are supported. One or many `SYSargs2` objects are organized in an `SYSargsList` container."}
+```{r sysargslistImage, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow steps with input/output file operations are controlled by `SYSargs2` objects. Each `SYSargs2`instance is constructed from one targets and two param files. The only input provided by the user is the initial targets file. Subsequent targets instances are created automatically, from the previous output files. Any number of predefined or custom workflow steps are supported. One or many `SYSargs2` objects are organized in an `SYSargsList` container."}
+
 knitr::include_graphics(system.file("extdata/images", "SPR_WF.png", package = "systemPipeR"))
 ```
 
@@ -401,7 +402,7 @@ readComp(file = targetspath, format = "vector", delim = "-")
 ## Downstream targets files description
 
 After the step which required the initial targets file information, the downstream 
-targets files are created automatically (see Figure \@ref(fig:targets_fig)).
+targets files are created automatically (see Figure \@ref(fig:targetsFig)).
 Each step that uses the previous step outfiles as an input, the new targets input 
 will be managed internally by the workflow instances, establishing connectivity 
 among the steps in the workflow. 
@@ -409,7 +410,7 @@ _`systemPipeR`_ provides features to automatically and systematically build this
 connection, providing security that all the samples will be managed efficiently 
 and reproducibly.
 
-```{r targets_fig, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "_`systemPipeR`_ automatically creates the downstream `targets` files based on the previous steps outfiles. A) Usually, users provide the initial `targets` files, and this step will generate some outfiles, as demonstrated on B. Then, those files are used to build the new `targets` files as inputs in the next step. _`systemPipeR`_ (C) manages this connectivity among the steps automatically for the users."}
+```{r targetsFig, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "_`systemPipeR`_ automatically creates the downstream `targets` files based on the previous steps outfiles. A) Usually, users provide the initial `targets` files, and this step will generate some outfiles, as demonstrated on B. Then, those files are used to build the new `targets` files as inputs in the next step. _`systemPipeR`_ (C) manages this connectivity among the steps automatically for the users."}
 knitr::include_graphics(system.file("extdata/images", "targets_con.png", package = "systemPipeR"))  
 ```
 
@@ -571,7 +572,7 @@ The `targets` file is optional for workflow steps lacking `input` files. The con
 between `input` variables and the `targets` file is defined under the `inputvars` 
 argument. It is required a `named vector`, where each element name needs to match
 with column names in the `targets` file, and the value must match the names of 
-the `input` variables defined in the `*.yml` files (see Figure \@ref(fig:spr_cwl)). 
+the `input` variables defined in the `*.yml` files (see Figure \@ref(fig:sprCWL)). 
 
 A detailed description of the dynamic between `input` variables and `targets` 
 files can be found [here](#cwl_targets). 
@@ -580,13 +581,13 @@ In addition, the CWL syntax overview can be found [here](#cwl).
 Besides all the data form `targets`, `wf_file`, `input_file` and `dir_path` arguments,
 `SYSargsList` constructor function options include: 
 
-    - `step_name`: a unique *name* for the step. This is not mandatory; however, 
+  - `step_name`: a unique *name* for the step. This is not mandatory; however, 
     it is highly recommended. If no name is provided, a default `step_x`, where
     `x` reflects the step index, will be added. 
-    - `dir`: this option allows creating an exclusive subdirectory for the step 
+  - `dir`: this option allows creating an exclusive subdirectory for the step 
     in the workflow. All the outfiles and log files for this particular step will 
     be generated in the respective folders.
-    - `dependency`: after the first step, all the additional steps appended to 
+  - `dependency`: after the first step, all the additional steps appended to 
     the workflow require the information of the dependency tree. 
 
 The `appendStep<-` method is used to append a new step in the workflow.
@@ -705,7 +706,7 @@ appendStep(sal) <- LineWise(code = {
                     stats <- data.frame(cbind(mean = apply(df[,1:4], 2, mean), sd = apply(df[,1:4], 2, sd)))
                     stats$species <- rownames(stats)
                     
-                    ggplot2::ggplot(stats, ggplot2::aes(x = species, y = mean, fill = species)) + 
+                    plot <- ggplot2::ggplot(stats, ggplot2::aes(x = species, y = mean, fill = species)) + 
                       ggplot2::geom_bar(stat = "identity", color = "black", position = ggplot2::position_dodge()) +
                       ggplot2::geom_errorbar(ggplot2::aes(ymin = mean-sd, ymax = mean+sd), width = .2, position = ggplot2::position_dodge(.9)) 
                     },
@@ -751,6 +752,7 @@ analysis, please use the following code chunk options:
 For example: 
 
 > *```{r step_1, eval=TRUE, spr='r', spr.dep='step_0'}*
+
 > *```{r step_2, eval=TRUE, spr='sysargs', spr.dep='step_1'}*
 
 For `spr = 'sysargs'`, the last object assigned must to be the `SYSargsList`, for example:
@@ -964,7 +966,7 @@ current environment.
 
 ```{r envir, eval=FALSE}
 viewEnvir(sal)
-copyEnvir(sal, list="df", new.env = globalenv())
+copyEnvir(sal, list="plot", new.env = globalenv())
 ```
 
 This option will keep all previous logs in the folder; however, if you desire to 
@@ -1095,7 +1097,7 @@ viewEnvir(sal)
 - Copy one or multiple objects from the running environment to a new enviroment:
 
 ```{r}
-copyEnvir(sal, list = c("df"), new.env = globalenv(), silent = FALSE)
+copyEnvir(sal, list = c("plot"), new.env = globalenv(), silent = FALSE)
 ```
 
 - Accessing the `*.yml` data
@@ -1378,9 +1380,9 @@ and hence mandatory.
 
 The constructor function creates an `SYSargsList` S4 class object connecting three input files:
 
-    - CWL command-line specification file (`wf_file` argument);
-    - Input variables (`input_file` argument);
-    - Targets file (`targets` argument).
+  - CWL command-line specification file (`wf_file` argument);
+  - Input variables (`input_file` argument);
+  - Targets file (`targets` argument).
     
 As demonstrated above, the latter is optional for workflow steps lacking input files. 
 The connection between input variables (here defined by `input_file` argument) 
@@ -1408,7 +1410,7 @@ HW_mul
 cmdlist(HW_mul)
 ```
 
-```{r spr_cwl, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "WConnectivity between CWL param files and targets files."}
+```{r sprCWL, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "WConnectivity between CWL param files and targets files."}
 knitr::include_graphics(system.file("extdata/images", "SPR_CWL_hello.png", package = "systemPipeR"))
 ```
 
