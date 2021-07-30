@@ -2012,9 +2012,8 @@ software tools. Please check the listed software tools.
 
 ```{r table_tools, echo=FALSE, message=FALSE}
 library(magrittr)
-# library(kableExtra)
 SPR_software <- system.file("extdata", "SPR_software.csv", package = "systemPipeR")
-software <- read.delim(SPR_software, sep=",", comment.char = "#")
+software <- read.delim(SPR_software, sep = ",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))
 software %>%
