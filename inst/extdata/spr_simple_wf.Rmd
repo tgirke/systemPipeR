@@ -36,7 +36,7 @@ mapply(
 
 - Adding the second step, as `SYSargs2` 
 
-```{r gzip, eval=TRUE, spr='sysargs'}
+```{r gzip, eval=TRUE, spr='sysargs', spr.dep='export_iris'}
 targetspath <- system.file("extdata/cwl/gunzip", "targets_gunzip.txt", package="systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "gzip", 
                       targets=targetspath, dir=TRUE,
@@ -48,19 +48,19 @@ appendStep(sal) <- SYSargsList(step_name = "gzip",
 
 ## Decompress data
 
-```{r gunzip, eval=TRUE, spr='sysargs'}
+```{r gunzip, eval=TRUE, spr='sysargs', spr.dep='gzip'}
 appendStep(sal) <- SYSargsList(step_name = "gunzip", 
                       targets = "gzip", dir = TRUE,
                       wf_file = "gunzip/workflow_gunzip.cwl", input_file = "gunzip/gunzip.yml",
                       dir_path = system.file("extdata/cwl", package = "systemPipeR"),
                       inputvars = c(gzip_file = "_FILE_PATH_", SampleName = "_SampleName_"), 
-                      rm_targets_col = NULL, 
+                       rm_targets_col = "FileName", 
                       dependency = "gzip")
 ```
 
 ## Import data to R and perform statistical analysis and visualization 
 
-```{r stats, eval=TRUE, spr='r'}
+```{r stats, eval=TRUE, spr='r', spr.dep='gunzip'}
 df <- lapply(getColumn(sal, step="gunzip", 'outfiles'), function(x) read.delim(x, sep=",")[-1])
 df <- do.call(rbind, df)
 

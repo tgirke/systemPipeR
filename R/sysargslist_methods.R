@@ -811,7 +811,7 @@ setReplaceMethod(
         args <- x_sub@stepsWF[[1]]
         yamlinput(args, paramName) <- value
         x <- sysargslist(x)
-        x$stepsWF[[1]] <- args
+        x$stepsWF[[step]] <- args
         x <- as(x, "SYSargsList")
         x <- .check_write_SYSargsList(x)
         x
