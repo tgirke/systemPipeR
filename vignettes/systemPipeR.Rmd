@@ -887,8 +887,20 @@ easier to click on the respective step.
 sal <- renderLogs(sal)
 ```
 
-# Save to Rmd/bash
+# Exported the workflow 
 
+## R Markdown file
+
+```{r, eval=FALSE}
+sal2rmd(sal)
+```
+
+
+## Bash script
+
+```{r, eval=FALSE}
+sal2bash(sal)
+```
 
 # Project Resume and Restart
 
