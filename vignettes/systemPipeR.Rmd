@@ -799,6 +799,20 @@ and errors and running the workflow by the arguments `warning.stop` and
 sal <- runWF(sal, force = TRUE, warning.stop = FALSE, error.stop = TRUE)
 ```
 
+When the project was initialized by `SPRproject` function, it was created an 
+environment for all objects created during the workflow execution. This 
+environment can be accessed as follows:
+
+```{r runWF_env, eval=FALSE}
+viewEnvir(sal)
+```
+
+The workflow execution allows to save this environment for future recovery:
+
+```{r runWF_saveenv, eval=FALSE}
+sal <- runWF(sal, saveEnv = TRUE)
+```
+
 ## Workflow status
 
 To check the summary of the workflow, we can use:
@@ -889,7 +903,16 @@ sal <- renderLogs(sal)
 
 # Exported the workflow 
 
+_`systemPipeR`_ workflow management system allows to translate and export the 
+workflow build interactively to R Markdown format or an executable bash script.
+This feature advances the reusability of the workflow, as well as the flexibility
+for workflow execution.
+
 ## R Markdown file
+
+`sal2rmd` function takes an `SYSargsList` workflow container and translates it to 
+SPR workflow template R markdown format. This file can be imported with the 
+`importWF` function, as demonstrated above.
 
 ```{r, eval=FALSE}
 sal2rmd(sal)
@@ -897,29 +920,42 @@ sal2rmd(sal)
 
 ## Bash script
 
+`sal2bash` function takes an `SYSargsList` workflow container and translates 
+it to an executable bash script, so one can run the workflow without loading 
+`SPR` or using an R console.
+
+
 ```{r, eval=FALSE}
 sal2bash(sal)
 ```
 
+It will be generated on the project root an executable bash script, called by
+default the `spr_wf.sh`. Also, a directory `./spr_wf` will be created and store 
+all the R scripts based on the workflow steps. Please note that this function will 
+"collapse" adjacent R steps into one file as much as possible.
+
 # Project Resume and Restart
 
-If you desire to restart a project that has been initialized in the past, 
+If you desire to resume or restart a project that has been initialized in the past, 
 `SPRproject` function allows this operation.
-With the restart option, it is possible to load the `SYSargsList` object in R and 
-restart the analysis. Please, make sure to provide the logs.dir location and the 
+
+With the resume option, it is possible to load the `SYSargsList` object in R and 
+resume the analysis. Please, make sure to provide the `logs.dir` location, and the 
 corresponded `YAML` file name.
 The current working directory needs to be in the project root directory.
 
-
-```{r SPR_restart, eval=FALSE}
-sal <- SPRproject(restart=TRUE, logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml") 
+```{r SPR_resume, eval=FALSE}
+sal <- SPRproject(resume = TRUE, logs.dir = ".SPRproject", 
+                  sys.file = ".SPRproject/SYSargsList.yml") 
 ```
 
-If you choose to save the environment in the last analysis, you can recover all the files created in that particular section. `SPRproject` function allows this with `load.envir` argument. Please note that the environment was saved only with you run the workflow 
-in the last section (`runWF()`).
+If you choose to save the environment in the last analysis, you can recover all 
+the files created in that particular section. `SPRproject` function allows this 
+with `load.envir` argument. Please note that the environment was saved only with
+you run the workflow in the last section (`runWF()`).
 
-```{r restart_load, eval=FALSE}
-sal <- SPRproject(restart=TRUE, load.envir = TRUE) 
+```{r resume_load, eval=FALSE}
+sal <- SPRproject(resume = TRUE, load.envir = TRUE) 
 ```
 
 After loading the workflow at your current section, you can check the objects 
@@ -928,13 +964,21 @@ current environment.
 
 ```{r envir, eval=FALSE}
 viewEnvir(sal)
-copyEnvir(sal, list="hello", new.env = globalenv())
+copyEnvir(sal, list="df", new.env = globalenv())
+```
+
+This option will keep all previous logs in the folder; however, if you desire to 
+clean the execution history and restart the workflow, the `restart=TRUE` option
+can be used.
+
+```{r restart_load, eval=FALSE}
+sal <- SPRproject(restart = TRUE, overwrite = TRUE, load.envir = FALSE) 
 ```
 
 The last and more drastic option from `SYSproject` function is to overwrite the
-logs and the workflow. This option will just delete the hidden folder and the 
-information on the `SYSargsList.yml` files. This will not delete any parameter 
-file nor any results it was created in previous runs.
+logs and the workflow. This option will delete the hidden folder and the 
+information on the `SYSargsList.yml` files. This will not delete any parameter
+file nor any results it was created in previous runs. Please use with caution. 
 
 ```{r SPR_overwrite, eval=FALSE}
 sal <- SPRproject(overwrite = TRUE) 
@@ -1070,16 +1114,16 @@ sal[1:3]
 sal[c(1,3)]
 ```
 
-- The `SYSargsList` class and its subsetting input samples: 
+- The `SYSargsList` class and its subsetting by steps and input samples: 
 
 ```{r}
-sal_sub <- subset(sal, subset_steps = c(2,3), input_targets = ("SE"), keep_steps = TRUE)
+sal_sub <- subset(sal, subset_steps = c( 2,3), input_targets = ("SE"), keep_steps = TRUE)
 stepsWF(sal_sub)
 targetsWF(sal_sub)
 outfiles(sal_sub)
 ```
 
-## The `SYSargsList` class and its operator `+`
+- The `SYSargsList` class and its operator `+`
 
 ```{r, eval=FALSE}
 sal[1] + sal[2] + sal[3]
@@ -1114,7 +1158,7 @@ replaceCodeLine(sal_c, step="export_iris", line = 2) <- "log_cal_100 <- log(50)"
 codeLine(sal_c, step = 1)
 ```
 
-For more details about the `LineWise` class, please check [below](#linewise).
+For more details about the `LineWise` class, please see [below](#linewise).
 
 - Rename a Step
 
@@ -1124,6 +1168,7 @@ renameStep(sal_c, c(1, 2)) <- c("newStep", "newIndex")
 sal_c
 names(outfiles(sal_c))
 names(targetsWF(sal_c))
+dependency(sal_c)
 ```
 
 - Replace a Step
@@ -1134,7 +1179,8 @@ replaceStep(sal_test, step = 1, step_name = "gunzip" ) <- sal[3]
 sal_test
 ```
 
-Note: 
+Note: Please use this method with attention, because it can disrupt all 
+the dependency graphs. 
 
 - Removing a Step
 
@@ -1147,8 +1193,8 @@ sal_test
 
 This section will introduce how CWL describes command-line tools and the 
 specification and terminology of each file. 
-For complete information, please check the full documentation [here](https://www.commonwl.org/v1.2/CommandLineTool.html) 
-for CommandLineTools and [here](https://www.commonwl.org/v1.2/Workflow.html) for Workflows and the user guide [here](https://www.commonwl.org/user_guide/). 
+For complete documentation, please check the CommandLineTools documentation [here](https://www.commonwl.org/v1.2/CommandLineTool.html) 
+and [here](https://www.commonwl.org/v1.2/Workflow.html) for Workflows and the user guide [here](https://www.commonwl.org/user_guide/). 
 
 CWL command-line specifications are written in [YAML](http://yaml.org/) format.
 
@@ -1161,7 +1207,7 @@ the input variables of command-line steps.
 `CommandLineTool` by CWL definition is a standalone process, with no interaction 
 if other programs, execute a program, and produce output. 
 
-Let's explore the `.cwl` file: 
+Let's explore the `*.cwl` file: 
 
 ```{r}
 dir_path <- system.file("extdata/cwl", package = "systemPipeR")
@@ -1284,8 +1330,8 @@ The following imports a `.cwl` file (here `example.cwl`) for running the `echo H
 example.
 
 ```{r fromFile, eval=TRUE}
-HW <- SYSargsList(wf_file="example/workflow_example.cwl", 
-                  input_file="example/example_single.yml", 
+HW <- SYSargsList(wf_file = "example/workflow_example.cwl", 
+                  input_file = "example/example_single.yml", 
                   dir_path = system.file("extdata/cwl", package = "systemPipeR"))
 HW
 cmdlist(HW)
@@ -1526,7 +1572,7 @@ can be found also in the plot legends.
 **Shapes:**
 
 - circular steps: pure R code steps
-- rounded squares steps: `sysargs` steps, steps that will invoke commandline calls
+- rounded squares steps: `sysargs` steps, steps that will invoke command-line calls
 - blue colored steps and arrows: main branch (see [main branch](#main-branch) section below)
 
 **Step colors**
@@ -1801,11 +1847,12 @@ each sample and software tool.
 library(systemPipeR)
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
 dir_path <- system.file("extdata/cwl", package = "systemPipeR")
-WF <- loadWF(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl",
-                   input_file="hisat2/hisat2-mapping-se.yml",
-                   dir_path=dir_path)
+WF <- loadWF(targets = targetspath, wf_file = "hisat2/hisat2-mapping-se.cwl",
+                   input_file = "hisat2/hisat2-mapping-se.yml",
+                   dir_path = dir_path)
 
-WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", 
+                                 SampleName = "_SampleName_"))
 ```
 
 Several accessor methods are available that are named after the slot names of
@@ -1874,17 +1921,16 @@ inputvars(WF)
 imported as a workflow.
 
 ```{r lw, eval=TRUE}
-rmd <- system.file("extdata/", "SPRtest.Rmd", package = "systemPipeR")
+rmd <- system.file("extdata", "spr_simple_lw.Rmd", package = "systemPipeR")
 sal_lw <- SPRproject(overwrite = TRUE)
-sal_lw <- importWF(sal_lw, rmd, verbose=FALSE)
-lw <- stepsWF(sal_lw[2])[[1]]
-codeLine(lw)
-codeLine(sal_lw, step =c(1, 2))
+sal_lw <- importWF(sal_lw, rmd, verbose = FALSE)
+codeLine(sal_lw)
 ```
 
 - Coerce methods available:
 
 ```{r, lw_coerce, eval=TRUE}
+lw <- stepsWF(sal_lw)[[2]]
 ## Coerce
 ll <- as(lw, "list")
 class(ll)
@@ -1914,23 +1960,23 @@ codeLine(l_sub)
 - Replacement methods
 
 ```{r, lw_rep, eval=TRUE}
-replaceCodeLine(lw, line=2) <- "5+5"
+replaceCodeLine(lw, line = 2) <- "5+5"
 codeLine(lw)
-appendCodeLine(lw, after=0) <- "6+7"
+appendCodeLine(lw, after = 0) <- "6+7"
 codeLine(lw)
 ```
 
 - Replacement methods for `SYSargsList`
 
 ```{r, sal_rep_append, eval=FALSE}
-replaceCodeLine(sal_lw, step=3, line=2) <- "5+5"
-codeLine(sal_lw, step=2)
+replaceCodeLine(sal_lw, step = 2, line = 2) <- "5+5"
+codeLine(sal_lw, step = 2)
 
-appendCodeLine(sal_lw, step=3) <- "66+55"
-codeLine(sal_lw, step=3)
+appendCodeLine(sal_lw, step = 2) <- "66+55"
+codeLine(sal_lw, step = 2)
 
-appendCodeLine(sal_lw, step=1, after=1) <- "66+55"
-codeLine(sal_lw, step=1)
+appendCodeLine(sal_lw, step = 1, after = 1) <- "66+55"
+codeLine(sal_lw, step = 1)
 ```
 
 ## Workflow design structure using *`SYSargs`*: Previous version
@@ -1957,16 +2003,15 @@ or R-based software.
 knitr::include_graphics(system.file("extdata/images", "SystemPipeR_Workflow.png", package = "systemPipeR"))  
 ```
 
-
 # Third-party software tools {#tools}
 
-Current, *systemPipeR* provides the _`param`_ file templates for third-party software tools. Please check the listed software tools. 
+Current, *systemPipeR* provides the _`param`_ file templates for third-party 
+software tools. Please check the listed software tools. 
 
 ```{r table_tools, echo=FALSE, message=FALSE}
 library(magrittr)
 # library(kableExtra)
 SPR_software <- system.file("extdata", "SPR_software.csv", package = "systemPipeR")
-#SPR_software <- "SPR_software.csv"
 software <- read.delim(SPR_software, sep=",", comment.char = "#")
 colors <- colorRampPalette((c("darkseagreen", "indianred1")))(length(unique(software$Category)))
 id <- as.numeric(c((unique(software$Category))))
@@ -1981,10 +2026,12 @@ software %>%
   kableExtra::scroll_box(width = "80%", height = "500px")
 ```
 
-Remember, if you desire to run any of these tools, make sure to have the respective software installed on your system and configure in the PATH. You can check as follows: 
+Remember, if you desire to run any of these tools, make sure to have the 
+respective software installed on your system and configure in the `PATH`. 
+You can check as follows: 
 
 ```{r test_tool_path, eval=FALSE}
-tryCMD(command="grep") 
+tryCMD(command="gzip") 
 ```
 
 # Version information

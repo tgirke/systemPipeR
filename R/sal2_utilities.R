@@ -1,6 +1,6 @@
-#' Translate sysArgsList back to a workflow template Rmarkdown file
+#' Translate SYSargsList back to a workflow template Rmarkdown file
 #'
-#' @param sal sysArgsList object
+#' @param sal SYSargsList object
 #' @param out_path string, output file name
 #' @param rmd_title string, title of the Rmd
 #' @param rmd_author string, author(s) of the Rmd, put all authors in a single character string
