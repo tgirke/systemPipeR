@@ -330,7 +330,9 @@ replaceStep(sal, step=2) <- LineWise(code = {
 #yamlinput(sal, step=1, paramName="results_path") <- list(results_path=list(class="Directory", path="./data"))
 appendCodeLine(sal, step=2, after = 0) <- "log <- log(10)"
 codeLine(sal, 2)
-replaceCodeLine(sal, step=2, line=1) <-  "log <- log(50)"
+replaceCodeLine(sal, step=2, line=1) <- LineWise(code = {
+                            log <- log(50)
+                            })
 codeLine(sal, 2)
 }
 \keyword{ classes }

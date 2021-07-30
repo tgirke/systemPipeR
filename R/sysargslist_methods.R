@@ -892,6 +892,7 @@ setReplaceMethod(
                 renameStep(x, step) <- paste0("Step_", step)
                 cat(paste0("Index name of x", "[", step, "]", " was rename to ", paste0("Step_", step), " to avoid duplications."))
             } else {
+              ##TODO: check if the name is already in x
                 renameStep(x, step) <- stepName(value)
             }
         } else {
@@ -960,11 +961,16 @@ setReplaceMethod(
 setReplaceMethod(
     f = "replaceCodeLine", signature = c("SYSargsList"),
     definition = function(x, step, line, value) {
+      if (!inherits(value, "LineWise")) stop("The value argument needs to be assigned a 'LineWise' object")
         y <- x$stepsWF[step][[1]]
         if (!inherits(y, "LineWise")) stop("The step argument needs to be assigned a 'LineWise' object")
         y <- as(y, "list")
         y$codeLine <- as.character(y$codeLine)
-        y$codeLine[line] <- value
+        if(missing(line)) {
+          y$codeLine <- as.character(value$codeLine)
+        } else {
+          y$codeLine[line] <- as.character(value$codeLine)
+        }
         y$codeLine <- parse(text = y$codeLine)
         y <- as(y, "LineWise")
         x <- as(x, "list")

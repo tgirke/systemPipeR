@@ -1,4 +1,8 @@
 changelog
+    version 1.27.17
+    - Updates Documentation
+    - Minor fixes
+    
     version 1.27.16
     - Exported "sal2rmd" and "sal2bash"
     
