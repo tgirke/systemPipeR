@@ -9,11 +9,19 @@ total number of reads in the FASTQ files, the number of total alignments, as
 well as the number of primary alignments in the corresponding BAM files. 
 }
 \usage{
-alignStats(args, output_index = 1, subset="FileName1")
+alignStats(args, fqpaths, pairEnd = TRUE, output_index = 1, subset="FileName1")
 }
 \arguments{
   \item{args}{
-	Object of class \code{SYSargs} or \code{SYSargs2}. 
+	Object of class \code{SYSargs} or \code{SYSargs2} or \code{named character} 
+	with BAM files PATH and the names should be the sampleID. 
+}
+  \item{fqpaths}{
+  \code{named vector} with raw FASTQ files PATH and the names should be the sampleID. 
+  Required when \code{class(args)} is "character".
+}
+  \item{pairEnd}{
+  logical. For pair-end libraries, select \code{TRUE}.
 }
   \item{output_index}{
   A numeric index positions of the file in \code{SYSargs2} object, slot \code{output}. Default is \code{output_index=1}.
