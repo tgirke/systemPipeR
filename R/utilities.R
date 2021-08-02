@@ -723,15 +723,19 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
 #####################
 ## Alignment Stats ##
 #####################
-alignStats <- function(args, output_index = 1, subset="FileName1") {
-  #fqpaths <- infile1(args)
-  ## SYSargs class
+alignStats <- function(args, fqpaths, pairEnd = TRUE, 
+                       output_index = 1,
+                       subset = "FileName1") {
+    # if (class(args) %in% c("SYSargs", "SYSargs2")) {
+  pairEnd <- pairEnd
+    #   ## SYSargs class
   if (class(args) == "SYSargs") {
     fqpaths <- infile1(args)
     bampaths <- outpaths(args)
+    if (!nchar(infile2(args))[1] > 0) pairEnd <- FALSE
     # SYSargs2 class
   } else if (class(args) == "SYSargs2") {
-    fqpaths <- subsetWF(args, slot = "input", subset=subset)
+    fqpaths <- infile1(args)
     output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
     bampaths <- as.character()
     for (i in seq_along(output.all)) {
@@ -745,8 +749,12 @@ alignStats <- function(args, output_index = 1, subset="FileName1") {
       }
     }
     names(bampaths) <- names(output.all)
-  }
-  
+    if (!nchar(infile2(args))[1] > 0) pairEnd = FALSE
+  } else if (class(args) == "character"){
+      if(missing(fqpaths)) stop("Please provide fqpaths! It must be a named vector, names will be used as sample names")
+      bampaths <- args
+      fqpaths <- fqpaths
+      }
   bamexists <- file.exists(bampaths)
   fqpaths <- fqpaths[bamexists]
   bampaths <- bampaths[bamexists]
@@ -754,7 +762,7 @@ alignStats <- function(args, output_index = 1, subset="FileName1") {
   Nreads <- countLines(fqpaths) / 4
   names(Nreads) <- names(fqpaths)
   ## If reads are PE multiply by 2 as a rough approximation
-  if (nchar(infile2(args))[1] > 0) Nreads <- Nreads * 2
+  if(pairEnd) Nreads <- Nreads * 2
   ## Obtain total number of alignments from BAM files
   bfl <- BamFileList(bampaths, yieldSize = 50000, index = character())
   param <- ScanBamParam(flag = scanBamFlag(isUnmappedQuery = FALSE))
@@ -770,8 +778,31 @@ alignStats <- function(args, output_index = 1, subset="FileName1") {
     Nalign_Primary = Nalignprim$records,
     Perc_Aligned_Primary = Nalignprim$records / Nreads * 100
   )
-  if (nchar(infile2(args))[1] > 0) colnames(statsDF)[which(colnames(statsDF) == "Nreads")] <- "Nreads2x"
+  if (pairEnd) colnames(statsDF)[which(colnames(statsDF) == "Nreads")] <- "Nreads2x"
   return(statsDF)
+    # } else {
+    #     stopifnot(is.character(args))
+    #     stopifnot(is.character(out_dir) && length(out_dir) == 1)
+    #     if(is.null(names(args))) stop("args must be a named vector, names will be used as sample names")
+    #     if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+    #     if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
+    #     if(!all(check_args <- file.exists(args))) stop("Some args are missing:\n", paste0(args[!check_args], collapse = ",\n"))
+    #     if(!all(check_ext <- stringr::str_detect(args, "\\.bam$"))) stop("alignStats: All args need to end with .bam\n", paste0(args[!check_ext], collapse = ",\n"))
+    #     
+    #     file_base <- basename(args)
+    #     out_args <- file.path(out_dir, gsub("\\.bam$", "_bam_stats.csv", file_base))
+    #     samplenames <- names(args)
+    #     bam_df <- data.frame(Sample= samplenames, File= file_base, Mapped = NA, Unmapped = NA)
+    #     for (i in seq_along(args)) {
+    #         bam_stats <- Rsamtools::idxstatsBam(args[i])
+    #         message("Write bam stats for ", samplenames[i], " to ", basename(out_args[i]))
+    #         write.csv(bam_stats, out_args[i], row.names = FALSE)
+    #         map_info <- colSums(bam_stats[, c(3, 4)])
+    #         bam_df[i, c(3, 4)] <- map_info
+    #     }
+    #     bam_df$Perc_Mapped <- round(bam_df$Mapped/(bam_df$Mapped + bam_df$Unmapped), 3) * 100
+    #     return(bam_df)
+    # }
 }
 ## Usage:
 # read_statsDF <- alignStats(args=args)

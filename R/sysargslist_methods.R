@@ -906,14 +906,28 @@ setReplaceMethod(
 setReplaceMethod(
     f = "renameStep", signature = c("SYSargsList"),
     definition = function(x, step, ..., value) {
+      ## checking step and value length 
         if (length(step) != length(value)) stop("value argument needs to be the same length of the step for rename")
-        # if (inherits(value, "character")) {
-        #     if (any(grepl("[[:space:]]", value))) message("Spaces found in the Step Name has been replaced by `_`")
-        #     value <- gsub("[[:space:]]", "_", value)
-        # } else {
-        #     stop("Replace value needs to be assigned an 'character' name for the workflow step.")
-        # }
-      .checkSpecialChar(value)
+      ## checking for special characters
+        if (inherits(value, "character")) {
+              .checkSpecialChar(value)
+        } else {
+            stop("Replace value needs to be assigned an 'character' name for the workflow step.")
+        }
+      ## step_name duplication
+      if (any(value %in% stepName(x))) stop("Steps Names need to be unique.")
+      ## Check step name or index on x
+      if (inherits(step, "numeric")) {
+        if (length(step) > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
+      } else if (inherits(step, "character")) {
+        if (!all(step %in% stepName(x))) {
+          stop(paste0(
+            "Argument 'step' needs to be assigned one of the following: ",
+            paste(stepName(x), collapse = " OR ")
+          ))
+        }
+        step <- sapply(as.list(step), function(y) grep(y, stepName(x)))
+      }
         for (i in seq_along(step)) {
             original <- names(x@stepsWF)[step[i]]
             names(x@stepsWF)[step[i]] <- value[i]
@@ -952,6 +966,22 @@ setReplaceMethod(
 setReplaceMethod(
     f = "dependency", signature = c("SYSargsList"),
     definition = function(x, step, ..., value) {
+      ## checking step length
+      if (length(step) > 1) stop("Dependency of one step at the time can be replaced...")
+      ## Check step name or index on x
+      if (inherits(step, "numeric")) {
+        if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
+        if (!value %in% stepName(x)[step:1]) stop("Dependency name cannot be found in the workflow.")
+      } else if (inherits(step, "character")) {
+        if (!step %in% stepName(x)) {
+          stop(paste0(
+            "Argument 'step' needs to be assigned one of the following: ",
+            paste(stepName(x), collapse = " OR ")
+          ))
+        }
+        step <- grep(step, stepName(x))
+        if (!value %in% stepName(x)[step:1]) stop("Dependency name cannot be found in the workflow.")
+      }
         x@dependency[[step]] <- value
         x <- .check_write_SYSargsList(x)
         x

@@ -523,13 +523,13 @@ output.as.df <- function(x) {
 ################################
 ## write_SYSargsList function ##
 ################################
-write_SYSargsList <- function(args, sys.file=".SPRproject/SYSargsList.yml", silent=TRUE){
+write_SYSargsList <- function(sysargs, sys.file=".SPRproject/SYSargsList.yml", silent=TRUE){
   ## check logDir folder
   ## TODO
-  if(!inherits(args, "SYSargsList")) stop("args needs to be object of class 'SYSargsList'.")
-  args2 <- sysargslist(args)
+  if(!inherits(sysargs, "SYSargsList")) stop("sysargs needs to be object of class 'SYSargsList'.")
+  args2 <- sysargslist(sysargs)
   args_comp <- sapply(args2, function(x) list(NULL))
-  steps <- names(stepsWF(args))
+  steps <- names(stepsWF(sysargs))
   ## special case for "runInfo" slot
   yaml_slots <- c("runInfo")
   for(i in yaml_slots){

@@ -124,32 +124,21 @@ setMethod(
 )
 
 ## Extend infile1() method
-setMethod(f = "infile1", signature = "SYSargs2", definition = function(x) {
+setMethod(f = "infile1", signature = "SYSargs2", definition = function(x, input=c("FileName", "FileName1")) {
     subset_input <- input(x)
-    subset_sample <- sapply(names(subset_input), function(x) list(NULL))
-    for (i in seq_along(names(subset_input))) {
-        if ("FileName" %in% names(subset_input[[i]])) {
-            subset_sample[[i]] <- normalizePath(subset_input[[i]][["FileName"]])
-        } else {
-            subset_sample[[i]] <- normalizePath(subset_input[[i]][["FileName1"]])
-        }
-        subset_sample <- as.character(subset_sample)
-        names(subset_sample) <- names(subset_input)
-    }
+    input_sub <- input[input %in% names(input(x)[[1]])]
+    subset_sample <- sapply(names(subset_input), function(y) subset_input[[y]][[input_sub]])
+    subset_sample <- sapply(names(subset_sample), function(y) ifelse(is.null(subset_sample[[y]]), "", subset_sample[y]))
     return(subset_sample)
 })
 
 ## Extend infile2() method
-setMethod(f = "infile2", signature = "SYSargs2", definition = function(x) {
+setMethod(f = "infile2", signature = "SYSargs2", definition = function(x, input="FileName2") {
     subset_input <- input(x)
-    subset_sample <- sapply(names(subset_input), function(x) list(NULL))
-    for (i in seq_along(names(subset_input))) {
-        if ("FileName2" %in% names(subset_input[[i]])) {
-            subset_sample[[i]] <- normalizePath(subset_input[[i]][["FileName2"]])
-        }
-        subset_sample <- as.character(subset_sample)
-        names(subset_sample) <- names(subset_input)
-    }
+    input_sub <- input[input %in% names(input(x)[[1]])]
+    if(length(input_sub)==0) input_sub <- ""
+    subset_sample <- sapply(names(subset_input), function(y) subset_input[[y]][[input_sub]])
+    subset_sample <- sapply(names(subset_sample), function(y) ifelse(is.null(subset_sample[[y]]), "", subset_sample[y]))
     return(subset_sample)
 })
 
