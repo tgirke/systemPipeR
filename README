@@ -1,33 +1,39 @@
 changelog
+    version 1.27.18/19
+    	- Updates Documentation
+    	- Minor fixes: infile1/infile2, alignStats
+    	- exporting write_SYSargsList
+    
     version 1.27.17
-    - Updates Documentation
-    - Minor fixes
+    	- Updates Documentation
+    	- Minor fixes
     
     version 1.27.16
-    - Exported "sal2rmd" and "sal2bash"
+    	- Exported "sal2rmd" and "sal2bash"
     
     version 1.27.15
-    - Updates Documentation
-    - Minor fixes
+    	- Updates Documentation
+    	- Minor fixes
     
     version 1.27.14
-    - clusterRun()
+    	- clusterRun()
     
     version 1.27.12
-    - plotWF accepts empty sal + minor updates
-    - alias tryCMD
+    	- plotWF accepts empty sal + minor updates
+    	- alias tryCMD
+    
     version 1.27.12
-    - plotWF accepts empty sal + minor updates
-    - alias tryCMD
-    - New argument createParam (confirm=FALSE)
-    - sal object with relative Paths
-    - Improvements SPRproject: resume and restart
-    - Bugs: runCommandLine and tryCMD
-    - Bugs fixed: replaceSteps<- + improvements
-    - Bug fixed: dependency in LineWise and SYSargsList functions
-    - Documentation
-    - Removed requirement of SampleName for loadWF
-    - Internal functions: .checkSpecialChar; .cbindTargetsOutfiles; .checkInputVars
+    	- plotWF accepts empty sal + minor updates
+   	- alias tryCMD
+    	- New argument createParam (confirm=FALSE)
+    	- sal object with relative Paths
+    	- Improvements SPRproject: resume and restart
+    	- Bugs: runCommandLine and tryCMD
+    	- Bugs fixed: replaceSteps<- + improvements
+    	- Bug fixed: dependency in LineWise and SYSargsList functions
+    	- Documentation
+    	- Removed requirement of SampleName for loadWF
+    	- Internal functions: .checkSpecialChar; .cbindTargetsOutfiles; .checkInputVars
 
      version 1.27.11
         - Deprecated: getQsubargs and qsubRun functions
