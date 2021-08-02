@@ -1168,7 +1168,7 @@ For more details about the `LineWise` class, please see [below](#linewise).
 
 ```{r}
 renameStep(sal_c, step = 1) <- "newStep"
-renameStep(sal_c, c(1, 2)) <- c("newStep", "newIndex")
+renameStep(sal_c, c(1, 2)) <- c("newStep2", "newIndex")
 sal_c
 names(outfiles(sal_c))
 names(targetsWF(sal_c))
