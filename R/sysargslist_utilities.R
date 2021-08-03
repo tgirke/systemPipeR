@@ -14,6 +14,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
                         load.envir = FALSE,
                         overwrite = FALSE, silent = FALSE) {
   projPath <- normalizePath(projPath)
+  on.exit(options(projPath = projPath), add =TRUE)
   if (!file.exists(projPath)) stop("Provide valid 'projPath' PATH.")
   ## Main folder structure
   dirProject <- .dirProject(projPath = projPath, data = data, param = param, results = results, silent = silent)
@@ -112,15 +113,18 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
 # sal <- SPRproject(restart = TRUE, overwrite=TRUE)
 # sal <- SPRproject(resume=TRUE)
 
+
+
 ##########################
 ## SYSargsList function ##
 ##########################
 SYSargsList <- function(sysargs=NULL, step_name="default",
-                        targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".", inputvars=NULL,
+                        targets=NULL, wf_file=NULL, input_file=NULL, dir_path=".",
+                        inputvars=NULL,
                         rm_targets_col = NULL,
                         dir=TRUE,
-                        dependency="", silent = FALSE) {
-  ## step_name and dependency from ImportWF
+                        dependency="", silent = FALSE, projPath = getOption("projPath", getwd())) {
+  ## step_name and dependency from importWF
   on.exit(options(importwf_options = NULL))
   if(!is.null(getOption("importwf_options"))){
     step_name <- getOption("importwf_options")[[1]]
@@ -130,7 +134,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
   sal <- as(SYScreate("SYSargsList"), "list")
   if(all(is.null(sysargs) && is.null(wf_file) && is.null(input_file))){
     sal <- sal ## This will not create a SPRproject.
-    #message("please use 'SPRproject()' function")
+    message("Please consider to use 'SPRproject()' function instead")
   } else if (!is.null(sysargs)){
     if(inherits(sysargs, "SYSargs2")){
       if(length(cmdlist(sysargs))==0) stop ("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2' after 'renderWF()'.")
@@ -153,12 +157,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
       } else {
         sal$statusWF <- list(status(sysargs))
       }
-      ## dependency
-      #if (all(is.na(dependency))){
-       # sal$dependency <- list(NA)
-      #} else {
-        sal$dependency <- list(dependency)
-      #}
+      sal$dependency <- list(dependency)
       sal$outfiles <- list(.outList2DF(sysargs))
       sal$targets_connection <- list(NULL)
       sal$runInfo <- list(directory=dir)
@@ -169,16 +168,25 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     if(is.null(targets)){
       targets <- targets
     } else if(inherits(targets, "character")){
-      if(all(all(file.exists(targets)) && length(targets)==1)){
+      if(is.fullPath(targets)) {
         targets <- targets
-      } else {
+      } else if(all(all(file.exists(file.path(projPath, targets))) && length(targets) == 1)){
+           targets <- file.path(projPath, targets)
+        } else {
         targets_step <- targets
         targets <- NULL
       }
     }
-    WF <- loadWorkflow(targets=targets, wf_file=wf_file,
-                       input_file=input_file, dir_path=dir_path)
-    WF <- renderWF(WF, inputvars=inputvars)
+    if(is.fullPath(dir_path)) {
+      dir_path <- dir_path
+    } else {
+      dir_path <- file.path(projPath, dir_path)
+    }
+    WF <- loadWF(targets = targets, wf_file = wf_file,
+                input_file = input_file, 
+                 dir_path =  dir_path)
+    if(!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
+    WF <- renderWF(WF, inputvars = inputvars)
     if(step_name=="default"){
       step_name <- "Step_x"
     } else {
@@ -206,15 +214,8 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
       sal$targets_connection <- list(NULL)
       names(sal$targets_connection) <- step_name
     }
-    ## dependency
-    #if (all(is.na(dependency))){
-     # sal$dependency <- list(NA)
-    #} else {
-      sal$dependency <- list(dependency)
-    #}
-    ## statusWF
+    sal$dependency <- list(dependency)
     sal$statusWF <- list(.statusPending(WF))
-    # directory structure
     sal$runInfo <- list(directory=list(dir))
     ## names
     names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo[[1]]) <- step_name
@@ -1338,9 +1339,17 @@ evalCode <- function(infile, eval = TRUE, output) {
   return(filename)
 }
 
+#################################################
+## Return the logical, if the path is absolute ##
+#################################################
+is.fullPath <- function(x) {
+  grepl("^(/|[A-Za-z]:|\\\\|~)", x)
+}
+
 ## Usage:
-# x <- system.file("extdata", "targets.txt", package = "systemPipeR")
-# .getFileName(x) ## internal fct: it will delete any suffixes up to the last slash ('/') character and return the 'filename' of the file'
+# targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+# is.fullPath(targetspath)
+# is.fullPath("./results")
 
 ##########################################################
 ## Internal function to detect nested of the param list ##

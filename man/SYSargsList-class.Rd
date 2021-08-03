@@ -91,7 +91,8 @@ S4 class container for storing parameters and information of command-line- or R-
 SYSargsList(sysargs = NULL, step_name = "default", 
             targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", 
             inputvars = NULL, rm_targets_col = NULL, 
-            dir = TRUE, dependency = "", silent = FALSE)
+            dir = TRUE, dependency = "", silent = FALSE, 
+            projPath = getOption("projPath", getwd()))
 
 ## Accessors
 
@@ -172,6 +173,9 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
+}
+  \item{projPath}{
+  a character vector of a full project path name. Default is the current path. 
 }
   \item{x}{
   An instance of class \code{SYSargsList}.
