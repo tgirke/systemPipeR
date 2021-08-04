@@ -1,4 +1,8 @@
 changelog
+    version 1.27.20/21
+    	- Updates Documentation
+    	- Minor fixes
+    	
     version 1.27.18/19
     	- Updates Documentation
     	- Minor fixes: infile1/infile2, alignStats
