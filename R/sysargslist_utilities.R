@@ -186,6 +186,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
                 input_file = input_file, 
                  dir_path =  dir_path)
     if(!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
+    if(grepl("^/", WF@files$targets)) WF@files$targets <- sub("^/", "", WF$files$targets)
     WF <- renderWF(WF, inputvars = inputvars)
     if(step_name=="default"){
       step_name <- "Step_x"
