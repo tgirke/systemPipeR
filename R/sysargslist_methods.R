@@ -773,10 +773,12 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     }
     targets <- lapply(seq_along(targets), function(x){
       if(x == 1) return(targets[[x]])
-      message("columns in step ", names(targets[x]), " has been renamed with `columnName_StepName`.")
+      #message("columns in step ", names(targets[x]), " has been renamed with `columnName_StepName`.")
+      print_targets <- names(targets[x])
       names(targets[[x]]) <- paste0(names(targets[[x]]), "_", names(targets[x]))
       targets[[x]]
     })
+    if(exists("print_targets")) message("columns in step ", print_targets, " has been renamed with `columnName_StepName`.")
   }
   names <- unlist(lapply(targets, function(y) names(y)))
   targets <- do.call(cbind, targets)
