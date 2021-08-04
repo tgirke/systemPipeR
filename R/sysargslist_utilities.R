@@ -168,7 +168,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     if(is.null(targets)){
       targets <- targets
     } else if(inherits(targets, "character")){
-      if(is.fullPath(targets)) {
+      if(all(is.fullPath(targets))) {
         targets <- targets
       } else if(all(all(file.exists(file.path(projPath, targets))) && length(targets) == 1)){
            targets <- file.path(projPath, targets)
@@ -185,8 +185,12 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     WF <- loadWF(targets = targets, wf_file = wf_file,
                 input_file = input_file, 
                  dir_path =  dir_path)
+    ## targets 
     if(!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
     if(grepl("^/", WF@files$targets)) WF@files$targets <- sub("^/", "", WF$files$targets)
+    ## dir_path
+    if(!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(getOption("projPath"), "", WF$files$dir_path)
+    if(all(!is.fullPath(dir_path) && grepl("^/", WF@files$dir_path))) WF@files$targets <- sub("^/", "", WF$files$targets)
     WF <- renderWF(WF, inputvars = inputvars)
     if(step_name=="default"){
       step_name <- "Step_x"
