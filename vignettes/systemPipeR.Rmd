@@ -1372,12 +1372,6 @@ Users should note here, the usage of `targets` files is optional when using
 `systemPipeR's` new CWL interface. Since for organizing experimental variables targets 
 files are extremely useful and user-friendly. Thus, we encourage users to keep using them.
 
-> Important!
-
-When the target file is provided, the only column required is `SampleName.` 
-The reason for this is that, internally, `SampleName` is used to construct the object, 
-and hence mandatory.
-
 ### How to connect the parameter files and `targets` file information?
 
 The constructor function creates an `SYSargsList` S4 class object connecting three input files:
@@ -1781,7 +1775,7 @@ to render the plot before we can see it.
 
 - If you are working in Rstudio, you can use the `export` button in the viewer to save 
 an image file. 
-- If you are working from commandline, use `plot_method = 'png'` to first ask the browser
+- If you are working from command-line, use `plot_method = 'png'` to first ask the browser
   to generate a png and then when you see the image, you can right-click to save it. 
   
 #### Non-interactive
@@ -1803,7 +1797,7 @@ Save to html first
 # file.exists("example_out.html")
 ```
 
-Use webshot2 to save the image
+Use `webshot2` to save the image
 
 ```{r}
 # webshot2::webshot("example_out.html", "example_out.png")

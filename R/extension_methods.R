@@ -6,7 +6,6 @@
     if (!inherits(sal2, "SYSargsList")) stop(crayon::red$bold("Argument 2 must be 'SYSargsList' class"))
     options(appendPlus = TRUE)
     appendStep(sal1) <- sal2
-    message("'dependency' graph needs to be revised.")
     return(sal1)
 }
 
