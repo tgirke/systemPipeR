@@ -94,26 +94,27 @@ plotWF <- function(sysargs,
         "png" = "renderImageElement"
     )
     msg <- "" # additional msg to display on plot
-
     if (verbose) message("Converting SYSargsList to df...")
-    if(inherits(sysargs, "data.frame")){
+    if (inherits(sysargs, "data.frame")) {
         df <- sysargs
-        if(!all(col_names <- c("step_name", "dep", "spr", "has_run", "success",
-          "sample_pass", "sample_warn", "sample_error",
-          "sample_total", "log_path", "time_start", "time_end") %in%
+        if (!all(col_names <- c(
+            "step_name", "dep", "spr", "has_run", "success",
+            "sample_pass", "sample_warn", "sample_error",
+            "sample_total", "log_path", "time_start", "time_end"
+        ) %in%
             names(df))) {
             stop("If sysargs is a dataframe, it must contain these columns:\n", paste(col_names, collapse = ", "))
         }
-        if(nrow(df) < 1) stop("plotWF: empty dataframe")
-    }
-    else if(inherits(sysargs, "SYSargsList")){
+        if (nrow(df) < 1) stop("plotWF: empty dataframe")
+    } else if (inherits(sysargs, "SYSargsList")) {
         df <- .buildDF(sysargs)
-        if(nrow(df) == 1 && df$step_name[1] == "Empty_workflow") {
-            show_legend = FALSE;
-            branch_method = "auto"
+        if (nrow(df) == 1 && df$step_name[1] == "Empty_workflow") {
+            show_legend <- FALSE
+            branch_method <- "auto"
         }
+    } else {
+        stop("`sysargs` can only be a dataframe or a SYSargsList object")
     }
-    else {stop("`sysargs` can only be a dataframe or a SYSargsList object")}
     if (verbose) message("Translating to DOT format...")
     dot_vector <- makeDot(
         df, branch_method, branch_no, layout, show_legend,
@@ -121,19 +122,21 @@ plotWF <- function(sysargs,
     )
     dot <- dot_vector[1]
     msg <- dot_vector[2]
-
     dot <- gsub(x = dot, "'", "\"")
     # if exit point
-    if (exit_point > 0) return(dot)
-
+    if (exit_point > 0) {
+        return(dot)
+    }
     # if dot or dot_print
-    if (out_format == "dot") return(writeLines(dot, out_path))
-    if (out_format == "dot_print") return(cat(dot))
-
+    if (out_format == "dot") {
+        return(writeLines(dot, out_path))
+    }
+    if (out_format == "dot_print") {
+        return(cat(dot))
+    }
     # Decide if in Rmarkdown rendering
     if (is.character(rmarkdown) && rmarkdown != "detect") stop("rmarkdown can only be 'detect', TRUE or FALSE")
     if (rmarkdown == "detect") rmarkdown <- isTRUE(getOption("knitr.in.progress"))
-
     # forward options using x
     if (verbose) message("Making the plot...")
     x <- list(
@@ -146,7 +149,6 @@ plotWF <- function(sysargs,
         rmd = rmarkdown,
         msg = msg
     )
-
     # create widget
     grviz <- htmlwidgets::createWidget(
         name = "plotwf",
@@ -156,13 +158,13 @@ plotWF <- function(sysargs,
         package = "systemPipeR",
         elementId = elementId
     )
-
     # if html out
     if (out_format == "html") {
         return(htmlwidgets::saveWidget(widget = grviz, file = out_path, selfcontained = TRUE))
     }
-
-    if (no_plot) return(invisible(grviz))
+    if (no_plot) {
+        return(invisible(grviz))
+    }
     # force to open browser tab instead of viewer in Rstudio
     if ((!rstudio || Sys.getenv("RSTUDIO") != "1") && !rmarkdown) {
         viewer <- getOption("viewer")
@@ -194,18 +196,18 @@ plotWF <- function(sysargs,
 #' @name plotwf-shiny
 #'
 #' @export
-plotwfOutput <- function(outputId, width = '100%', height = '400px'){
-  htmlwidgets::shinyWidgetOutput(outputId, 'plotwf', width, height, package = 'systemPipeR')
+plotwfOutput <- function(outputId, width = "100%", height = "400px") {
+    htmlwidgets::shinyWidgetOutput(outputId, "plotwf", width, height, package = "systemPipeR")
 }
 
 #' @rdname plotwf-shiny
 #' @export
 renderPlotwf <- function(expr, env = parent.frame(), quoted = FALSE) {
-  if (!quoted) { expr <- substitute(expr) } # force quoted
-  htmlwidgets::shinyRenderWidget(expr, plotwfOutput, env, quoted = TRUE)
+    if (!quoted) {
+        expr <- substitute(expr)
+    } # force quoted
+    htmlwidgets::shinyRenderWidget(expr, plotwfOutput, env, quoted = TRUE)
 }
-
-
 
 #' Translate a workflow structure and status into a dot language string----
 makeDot <- function(df,
@@ -224,7 +226,6 @@ makeDot <- function(df,
     if (verbose) message("Workflow inputs pre-checking ...")
     stopifnot(is.character(df$step_name))
     stopifnot(is.logical(in_log) && length(in_log) == 1)
-
     # early exit for linear method
     layout <- match.arg(layout, c("compact", "vertical", "horizontal", "execution"))
     if (layout == "execution") {
@@ -235,12 +236,7 @@ makeDot <- function(df,
         if (!is.character(df$dep[[i]])) stop("No.", i, " item in dep is not a character vector")
     })
     branch_method <- match.arg(branch_method, c("auto", "choose"))
-
     stopifnot(is.numeric(exit_point) && length(exit_point) == 1)
-
-
-
-
     # find all possible branches
     if (verbose) message("Looking for possible branches ...")
     step_names <- df$step_name
@@ -275,25 +271,22 @@ makeDot <- function(df,
         branch_no <- as.numeric(menu(paste("Branch", seq_along(tree)), title = "Choose a main branch to plot workflow"))
     } else {
         branch_no <- .recommendBranch(tree, df$step_name, verbose)
-        if(!is.null(names(branch_no))) {
-          msg <- names(branch_no)[1]
-          df <- df[df$step_name %in% tree[[branch_no]], ]
+        if (!is.null(names(branch_no))) {
+            msg <- names(branch_no)[1]
+            df <- df[df$step_name %in% tree[[branch_no]], ]
         }
     }
-
     if (verbose) message("Build the workflow tree ...")
     nodes <- .buildTree(tree, branch_no)
     if (exit_point == 2) {
         return(nodes)
     }
-
     # organize all node attach point
     node_attach <- unique(unlist(lapply(nodes, `[[`, "attach_point")))
     # organize all side branch
     node_side <- unique(unlist(lapply(nodes, `[[`, "branch_side")))
     # connecting the main branch
     branch_trans <- paste(tree[[branch_no]], collapse = " -> ")
-
     # translation
     trans_func <- switch(layout,
         "compact" = .WFcompact,
@@ -319,10 +312,9 @@ makeDot <- function(df,
     c(paste0(p_main, "\n}\n"), msg)
 }
 
-
 #' internal func to find all dep branches
 #'
-#' @param step_n nuermic, current step number, starting from 1
+#' @param step_n numeric, current step number, starting from 1
 #' @param steps string vector, all steps in a WF
 #' @param deps a list of string vector, deps of steps
 #' @param dep_chain a list to store all branches
@@ -362,8 +354,6 @@ makeDot <- function(df,
     dep_chain
 }
 
-
-
 #' Find recommended branch
 #'
 #' @param tree list, tree return from [.findBranch]
@@ -389,11 +379,9 @@ makeDot <- function(df,
         }
         tree_complete <- tree[branch_complete]
     }
-
     branch_len <- unlist(lapply(tree, length))
     branch_long <- which(branch_len == max(branch_len))
     if (verbose) cat("Find branch(es)", paste0(branch_long, collapse = ", "), ": with the largest number of steps", max(branch_len), "\n")
-
     branch_recommand <- intersect(branch_long, branch_complete)
     # use first complete branch if no intersection
     if (length(branch_recommand) == 0) {
@@ -403,18 +391,15 @@ makeDot <- function(df,
             branch_recommand <- branch_long[1]
         }
     }
-
     if (verbose) cat("**********\n")
     if (verbose) cat("Based on the detection, branch(es):", paste0(branch_recommand, collapse = ", "), "is (are) recommended\n")
     if (verbose) cat("Branch", crayon::yellow$bold(branch_recommand[1]), "will be used as the main branch\n")
     return(branch_recommand[1])
 }
 
-
 #' Build the new tree based on the chosen main branch
-#'
 #' @param tree list of branches
-#' @param branch_no numeric, which bracnh
+#' @param branch_no numeric, which branch
 .buildTree <- function(tree, branch_no) {
     branch <- tree[[branch_no]]
     # reconstruct side branches based on the selected main branch
@@ -443,7 +428,6 @@ makeDot <- function(df,
                 branch_side[[list_pos]] <- x[in_branch[i]]
             }
         }
-
         branch_side <- lapply(branch_side, function(branches) {
             nodes <- c()
             for (n in seq_along(branches)) {
@@ -452,7 +436,6 @@ makeDot <- function(df,
             }
             nodes
         })
-
         list(attach_point = attach_point, branch_side = branch_side)
     })
 }
@@ -584,11 +567,11 @@ makeDot <- function(df,
 # add node colors, links -------
 #' @param steps step names
 #' @param has_run bool, steps has run?
-#' @param success bool, steps sucessful?
+#' @param success bool, steps successful?
 #' @param spr string, SPR option, 'sys' or 'r'
 #' @param sample_pass numeric, no. of samples passed each step
-#' @param sample_warn umeric, no. of samples have warnings each step
-#' @param sample_error umeric, no. of samples have errors each step
+#' @param sample_warn numeric, no. of samples have warnings each step
+#' @param sample_error numeric, no. of samples have errors each step
 #' @param sample_total numeric, no. of samples total each step
 .addNodeDecor <- function(steps, has_run, success, spr, sample_pass, sample_warn, sample_error, sample_total, log_path, time_start, time_end, in_log = FALSE) {
     node_text <- c()
@@ -621,8 +604,6 @@ makeDot <- function(df,
     paste0(node_text, collapse = "")
 }
 
-
-
 # figure the right unit to display for duration time.
 
 #' inputs should be `Sys.time()` timestamp
@@ -644,21 +625,21 @@ makeDot <- function(df,
 
 .buildDF <- function(sal) {
     sal_temp <- sal
-    if(length(sal_temp)==0){
+    if (length(sal_temp) == 0) {
         warning("Workflow has no steps. Please make sure to add a step to the workflow before plotting.", call. = FALSE)
         return_df <- data.frame(
-                step_name = "Empty_workflow",
-                dep = NA,
-                spr = 'sysargs',
-                has_run = FALSE,
-                success = FALSE,
-                sample_pass = 0,
-                sample_warn = 0,
-                sample_error = 0,
-                sample_total = 0,
-                log_path = "",
-                time_start = Sys.time(),
-                time_end = Sys.time()
+            step_name = "Empty_workflow",
+            dep = NA,
+            spr = "sysargs",
+            has_run = FALSE,
+            success = FALSE,
+            sample_pass = 0,
+            sample_warn = 0,
+            sample_error = 0,
+            sample_total = 0,
+            log_path = "",
+            time_start = Sys.time(),
+            time_end = Sys.time()
         )
         return_df$dep <- list("")
         return(return_df)

@@ -290,8 +290,10 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
         ## runC arguments
         dir <- args2$runInfo$directory[[i]]
         dir.name <- single.step
-        args.run <- runCommandline(args.run, dir = dir, dir.name = dir.name, force=force, ...)
-        cat(readLines(args.run$files$log), file=file_log, sep = "\n", append=TRUE)
+        args.run <- runCommandline(args.run, dir = dir, dir.name = dir.name, 
+                                   force = force, ...)
+        cat(readLines(args.run$files$log), file = file_log, sep = "\n", 
+            append = TRUE)
         ## update object
         step.status.summary <- status(args.run)$status.summary
         statusWF(args2, i) <- args.run$status
