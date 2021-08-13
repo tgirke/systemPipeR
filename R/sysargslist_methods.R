@@ -973,7 +973,7 @@ setReplaceMethod(
       ## Check step name or index on x
       if (inherits(step, "numeric")) {
         if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
-        if (!value %in% stepName(x)[step:1]) stop("Dependency name cannot be found in the workflow.")
+        if (any(!value %in% stepName(x)[step:1])) stop("Dependency name cannot be found in the workflow.")
       } else if (inherits(step, "character")) {
         if (!step %in% stepName(x)) {
           stop(paste0(
@@ -982,7 +982,7 @@ setReplaceMethod(
           ))
         }
         step <- grep(step, stepName(x))
-        if (!value %in% stepName(x)[step:1]) stop("Dependency name cannot be found in the workflow.")
+        if (any(!value %in% stepName(x)[step:1])) stop("Dependency name cannot be found in the workflow.")
       }
         x@dependency[[step]] <- value
         x <- .check_write_SYSargsList(x)

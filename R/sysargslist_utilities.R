@@ -243,7 +243,6 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
 ####################
 ## runWF function ##
 #####################
-#####################
 runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
                   warning.stop=FALSE, error.stop=TRUE, silent=FALSE, ...) {
   # Validations
