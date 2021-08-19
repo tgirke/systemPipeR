@@ -1604,6 +1604,20 @@ output(WF[1])
 identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ```
 
+# Trinity
+
+## CommandLineTool
+
+```{r, spr='sysargs'}
+args <- loadWF(targets = targetspathPE, wf_file = "trinity/trinity.cwl", 
+    input_file = "trinity/trinity.yml", dir_path = dir_path)
+args <- renderWF(args)
+cmdlist(args[1])
+output(args[1])
+```
+
+## Workflow
+
 # varseq
 
 ## annotate
