@@ -2,14 +2,14 @@
 ##                  Trinity.cwl                               ##
 ################################################################
 
-cwlVersion: v1.0
+cwlVersion: v1.1
 class: CommandLineTool
-label: Last updated 07/2019
+label: Last updated 07/2021
 hints:
   SoftwareRequirement:
     packages:
     - package: trinity-rnaseq
-      version: [ 2.8.4 ]
+      version: [ 2.11.0 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
@@ -22,17 +22,17 @@ requirements:
     listing: [ $(inputs.results_path) ]
 
 arguments:
-  - prefix: --seqType
-    valueFrom: 'fq'
-  - prefix: --trimmomatic
-  - prefix: --quality_trimming_params
-    valueFrom: '''SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:35'''
+
 
 ################################################################
 ##               Inputs and Outputs Settings                  ##
 ################################################################
 
 inputs:
+  seqType:
+    type: string
+    inputBinding:
+      prefix: --seqType
   max_memory:
     type: string
     inputBinding:
@@ -51,11 +51,13 @@ inputs:
       prefix: --output
   ss_lib_type:
     type: string?
-  SampleName:
+  trimmomatic:
     type: string
-    
+    inputBinding:
+      prefix: --trimmomatic --quality_trimming_params
+
 outputs:
   trinity_results:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.basename)/Trinity.fasta
+      glob: $(inputs.results_path)/Trinity.fasta

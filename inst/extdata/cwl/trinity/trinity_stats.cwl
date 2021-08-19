@@ -2,14 +2,14 @@
 ##                  Trinity-Paired_end.cwl                     ##
 ################################################################
 
-cwlVersion: v1.0
+cwlVersion: v1.1
 class: CommandLineTool
-label: Last updated 07/2019
+label: Last updated 07/2021
 hints:
   SoftwareRequirement:
     packages:
     - package: trinity-rnaseq
-      version: [ 2.8.4 ]
+      version: [ 2.11.0 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##

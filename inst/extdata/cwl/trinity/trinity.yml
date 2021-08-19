@@ -1,20 +1,21 @@
 ###########################
 ## Trinity.yml ##
 ###########################
-
+seqType: fq
+    
 samples_file:
   class: File
   path: targets_trinity.txt
   
-SampleName: _SampleName_
-
 results_path:
   class: Directory
-  path: ./results_trinity
+  path: ./results/results_trinity
 
-max_memory: 9G
+max_memory: 10G
 thread: 3
 ss_lib_type: RF
 
+trimmomatic: '''SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:35'''
+
 ModulesToLoad: 
-  module1: trinity-rnaseq/2.8.4
+  module1: trinity-rnaseq/2.11.0

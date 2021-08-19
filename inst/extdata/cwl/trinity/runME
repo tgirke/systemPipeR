@@ -2,7 +2,7 @@
 writeTargetsTrinity("targets.txt")
 args <- loadWorkflow(targets = NULL, wf_file = "trinity.cwl", 
     input_file = "trinity.yml", dir_path = "param/cwl/trinity")
-args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH_"))
+args <- renderWF(args)
 cmdlist(args)
 ## "Trinity --seqType fq  --trimmomatic  --quality_trimming_params 'SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:35'  --max_memory 480G --samples_file targets_trinity.txt --CPU 34 --output ./results --SS_lib_type RF"
 getStatus(reg=reg)
