@@ -227,11 +227,11 @@ check.output <- function(sysargs, type = "data.frame") {
         steps <- sapply(names(stepsWF(sysargs)), function(x) list(NULL))
         sysargs_names <- unlist(lapply(stepsWF(sysargs), function(x) which(inherits(x, c("SYSargs2")))))
         sysargs <- sysargs[names(sysargs_names)]
-        for (i in seq_along(stepsWF(sysargs))) {
-            step.dir <- sysargs$runInfo$directory[names(steps)[i]]
+        for (i in names(sysargs_names)) {
+            step.dir <- sysargs$runInfo$runOption[[i]]$directory
             steps[[i]] <- .check.output.sysargs2(stepsWF(sysargs)[[i]],
                 type = type,
-                step.name = names(steps)[i], step.dir = step.dir
+                step.name = i, step.dir = step.dir
             )
         }
         return(steps)

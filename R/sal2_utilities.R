@@ -57,12 +57,12 @@ sal2rmd <- function(
   step_names <- names(sal$stepsWF)
   deps <- sal$dependency
   t_connects <- sal$targets_connection
-  dirs <- sal$runInfo$directory
+  dirs <- sal$runInfo$runOption
 
   for(i in seq_along(sal$stepsWF)) {
     if(verbose) message(crayon::blue$bold("Now writing step", i, step_names[i]))
     if (inherits(sal$stepsWF[[i]], "LineWise")) .sal2rmd_rstep(sal, con, i, step_names[i], deps[[i]])
-    else .sal2rmd_sysstep(sal, con, i, step_names[i], deps[[i]], dirs[[i]], t_connects[[i]])
+    else .sal2rmd_sysstep(sal, con, i, step_names[i], deps[[i]], dirs[[i]]$directory, t_connects[[i]])
   }
 
   if(verbose) message(crayon::green$bold("Success! File created at", out_path))

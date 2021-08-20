@@ -88,7 +88,7 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
             sal_imp$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
             sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
-            sal_imp$runInfo[["directory"]][df$step_name[i]] <- list(FALSE)
+            sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(list(directory=FALSE))
         } else if (df$spr[i] == "sysargs") {
             options(spr_importing = TRUE)
             options(importwf_options = c(df$step_name[i], df$dep[i]))

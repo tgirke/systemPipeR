@@ -160,8 +160,8 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
       sal$dependency <- list(dependency)
       sal$outfiles <- list(.outList2DF(sysargs))
       sal$targets_connection <- list(NULL)
-      sal$runInfo <- list(directory=dir)
-      names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo) <- step_name
+      sal$runInfo <-  list(runOption = list(list(directory=dir)))
+      names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <- step_name
     } else stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2'.")
   } else if(all(!is.null(wf_file) && !is.null(input_file))){
     ## targets
@@ -202,7 +202,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     names(sal$stepsWF) <- step_name
     ## Connection to previous outfiles
     if(exists("targets_step")){
-      targets_step_list <- list(targets_step=targets_step)
+      targets_step_list <- list(targets_step = targets_step)
       new_targets_col <- names(inputvars)
       if(is.null(new_targets_col))
         stop("inputvars argument need to be assigned to the output column names from the previous step specified on the targets argument")
@@ -221,9 +221,11 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     }
     sal$dependency <- list(dependency)
     sal$statusWF <- list(.statusPending(WF))
-    sal$runInfo <- list(directory=list(dir))
+    #sal$runInfo <- list(directory=list(dir))
+    sal$runInfo <- list(runOption = list(list(directory=dir)))
     ## names
-    names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo[[1]]) <- step_name
+   # names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo[[1]]) <- step_name
+   names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo$runOption) <- step_name
     ## outfiles
     if(length(sal$stepsWF) > 0) {
       sal$outfiles <- .outList2DF(sal)
@@ -287,7 +289,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
       ## SYSargs2 STEP
       if(inherits(args.run, "SYSargs2")){
         ## runC arguments
-        dir <- args2$runInfo$directory[[i]]
+        dir <- args2$runInfo$runOption[[i]]$directory
         dir.name <- single.step
         args.run <- runCommandline(args.run, dir = dir, dir.name = dir.name, 
                                    force = force, ...)

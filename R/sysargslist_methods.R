@@ -188,7 +188,7 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
     x@dependency <- x@dependency[i]
     x@targets_connection <- x@targets_connection[names(x@targets_connection) %in% names_tc]
     x@projectInfo <- x@projectInfo
-    x@runInfo$directory <- x@runInfo$directory[i]
+    x@runInfo$runOption <- x@runInfo$runOption[i]
     # x <- .check_write_SYSargsList(x)
     return(x)
 })
@@ -308,7 +308,7 @@ setMethod(f = "subset", signature = "SYSargsList", definition = function(x, subs
         x@dependency <- x@dependency
         x@targets_connection <- x@targets_connection
         x@projectInfo <- x@projectInfo
-        x@runInfo$directory <- x@runInfo$directory
+        x@runInfo$runOption <- x@runInfo$runOption
     }
     x <- .check_write_SYSargsList(x)
     x
@@ -501,7 +501,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$dependency <- c(dependency(value), x$dependency)
             x$outfiles <- c(outfiles(value), x$outfiles)
             x$targets_connection <- c(value$targets_connection, x$targets_connection)
-            x$runInfo$directory <- c(value$runInfo$directory, x$runInfo$directory)
+            x$runInfo$runOption <- c(value$runInfo$runOption, x$runInfo$runOption)
         } else if (after >= lengx) {
             x$stepsWF <- c(x$stepsWF, value$stepsWF)
             x$targetsWF <- c(x$targetsWF, targetsWF(value))
@@ -509,7 +509,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$dependency <- c(x$dependency, dependency(value))
             x$outfiles <- c(x$outfiles, outfiles(value))
             x$targets_connection <- c(x$targets_connection, value$targets_connection)
-            x$runInfo$directory <- c(x$runInfo$directory, value$runInfo$directory)
+            x$runInfo$runOption <- c(x$runInfo$runOption, value$runInfo$runOption)
         } else {
             after_tc <- names(x$stepsWF)[1L:after]
             before_tc <- names(x$stepsWF)[(after + 1L):lengx]
@@ -519,7 +519,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$statusWF <- c(x$statusWF[1L:after], value$statusWF, x$statusWF[(after + 1L):lengx])
             x$dependency <- c(x$dependency[1L:after], dependency(value), x$dependency[(after + 1L):lengx])
             x$outfiles <- c(x$outfiles[1L:after], outfiles(value), x$outfiles[(after + 1L):lengx])
-            x$runInfo$directory <- c(x$runInfo$directory[1L:after], value$runInfo$directory, x$runInfo$directory[(after + 1L):lengx])
+            x$runInfo$runOption <- c(x$runInfo$runOption[1L:after], value$runInfo$runOption, x$runInfo$runOption[(after + 1L):lengx])
         }
         x <- as(x, "SYSargsList")
     } else if (inherits(value, "LineWise")) {
@@ -536,7 +536,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$dependency <- c(value$dependency, x$dependency)
             x$outfiles <- c(list(DataFrame()), x$outfiles)
             x$targets_connection <- c(list(NULL), x$targets_connection)
-            x$runInfo$directory <- c(list(FALSE), x$runInfo$directory)
+            x$runInfo$runOption <- c(list(list(directory=FALSE)), x$runInfo$runOption)
         } else if (after >= lengx) {
             x$stepsWF <- c(x$stepsWF, value)
             x$targetsWF <- c(x$targetsWF, list(DataFrame()))
@@ -544,7 +544,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$dependency <- c(x$dependency, value$dependency)
             x$outfiles <- c(x$outfiles, list(DataFrame()))
             x$targets_connection <- c(x$targets_connection, list(NULL))
-            x$runInfo$directory <- c(x$runInfo$directory, list(FALSE))
+            x$runInfo$runOption <- c(x$runInfo$runOption,list(list(directory=FALSE)))
         } else {
             after_tc <- names(x$stepsWF)[1L:after]
             before_tc <- names(x$stepsWF)[(after + 1L):lengx]
@@ -554,7 +554,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$statusWF <- c(x$statusWF[1L:after], list(value$status), x$statusWF[(after + 1L):lengx])
             x$dependency <- c(x$dependency[1L:after], value$dependency, x$dependency[(after + 1L):lengx])
             x$outfiles <- c(x$outfiles[1L:after], list(DataFrame()), x$outfiles[(after + 1L):lengx])
-            x$runInfo$directory <- c(x$runInfo$directory[1L:after], list(FALSE), x$runInfo$directory[(after + 1L):lengx])
+            x$runInfo$runOption <- c(x$runInfo$runOption[1L:after], list(list(directory=FALSE)), x$runInfo$runOption[(after + 1L):lengx])
         }
         names(x$stepsWF)[after + 1L] <- step_name
         names(x$statusWF)[after + 1L] <- step_name
@@ -562,7 +562,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         names(x$targetsWF)[after + 1L] <- step_name
         names(x$outfiles)[after + 1L] <- step_name
         names(x$targets_connection)[after + 1L] <- step_name
-        names(x$runInfo$directory)[after + 1L] <- step_name
+        names(x$runInfo$runOption)[after + 1L] <- step_name
         x <- as(x, "SYSargsList")
     } else {
         stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' OR 'LineWise'.")
@@ -716,7 +716,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     }
     ## runInfo
     if ("env" %in% names(value$runInfo)) {
-        value[["runInfo"]] <- value$runInfo$directory
+        value[["runInfo"]] <- value$runInfo$runOption
     }
     return(value)
 }
@@ -876,7 +876,7 @@ setReplaceMethod(
             # x$SEobj[step] <- value$SEobj
             x$dependency[step] <- value$dependency
             x$targets_connection[step] <- value$targets_connection
-            x$runInfo[["directory"]][step] <- value$runInfo[["directory"]]
+            x$runInfo[["runOption"]][step] <- value$runInfo[["runOption"]]
         } else if (inherits(value, "LineWise")) {
             x$stepsWF[[step]] <- value
             x$statusWF[[step]] <- value$status
@@ -884,7 +884,7 @@ setReplaceMethod(
             x$outfiles[[step]] <- S4Vectors::DataFrame()
             x$dependency[[step]] <- value$dependency[[1]]
             x$targets_connection[[step]] <- list(NULL)
-            x$runInfo[["directory"]][[step]] <- list(FALSE)
+            x$runInfo[["runOption"]][[step]] <- list(FALSE)
         }
         x <- as(x, "SYSargsList")
         ## rename
@@ -939,8 +939,8 @@ setReplaceMethod(
             names(x@outfiles)[step[i]] <- value[i]
             # names(x@SEobj)[i] <- value
             names(x@targets_connection)[step[i]] <- value[i]
-            if (!is.null(x$runInfo$directory)) {
-                names(x@runInfo$directory)[step[i]] <- value[i]
+            if (!is.null(x$runInfo$runOption)) {
+                names(x@runInfo$runOption)[step[i]] <- value[i]
             }
             ## check in dependency step
             x[["dependency"]] <- lapply(x$dependency, function(y) gsub(original, value[i], y))
