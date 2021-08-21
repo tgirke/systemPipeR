@@ -25,7 +25,8 @@ setClass("LineWise", slots = c(
     stepName = "character",
     dependency = "list",
     status = "list", 
-    files = "list"
+    files = "list", 
+    runInfo = "list"
 ))
 
 ####################################

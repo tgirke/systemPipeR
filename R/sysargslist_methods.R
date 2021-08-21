@@ -536,7 +536,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$dependency <- c(value$dependency, x$dependency)
             x$outfiles <- c(list(DataFrame()), x$outfiles)
             x$targets_connection <- c(list(NULL), x$targets_connection)
-            x$runInfo$runOption <- c(list(list(directory=FALSE)), x$runInfo$runOption)
+            x$runInfo$runOption <- c(value$runInfo$runOption, x$runInfo$runOption)
         } else if (after >= lengx) {
             x$stepsWF <- c(x$stepsWF, value)
             x$targetsWF <- c(x$targetsWF, list(DataFrame()))
@@ -544,7 +544,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$dependency <- c(x$dependency, value$dependency)
             x$outfiles <- c(x$outfiles, list(DataFrame()))
             x$targets_connection <- c(x$targets_connection, list(NULL))
-            x$runInfo$runOption <- c(x$runInfo$runOption,list(list(directory=FALSE)))
+            x$runInfo$runOption <- c(x$runInfo$runOption, value$runInfo$runOption)
         } else {
             after_tc <- names(x$stepsWF)[1L:after]
             before_tc <- names(x$stepsWF)[(after + 1L):lengx]
@@ -554,7 +554,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             x$statusWF <- c(x$statusWF[1L:after], list(value$status), x$statusWF[(after + 1L):lengx])
             x$dependency <- c(x$dependency[1L:after], value$dependency, x$dependency[(after + 1L):lengx])
             x$outfiles <- c(x$outfiles[1L:after], list(DataFrame()), x$outfiles[(after + 1L):lengx])
-            x$runInfo$runOption <- c(x$runInfo$runOption[1L:after], list(list(directory=FALSE)), x$runInfo$runOption[(after + 1L):lengx])
+            x$runInfo$runOption <- c(x$runInfo$runOption[1L:after], value$runInfo$runOption, x$runInfo$runOption[(after + 1L):lengx])
         }
         names(x$stepsWF)[after + 1L] <- step_name
         names(x$statusWF)[after + 1L] <- step_name

@@ -123,7 +123,10 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
                         inputvars=NULL,
                         rm_targets_col = NULL,
                         dir=TRUE,
-                        dependency="", silent = FALSE, projPath = getOption("projPath", getwd())) {
+                        dependency="", 
+                        run_step = "mandatory",
+                        run_session = "rsession",
+                        silent = FALSE, projPath = getOption("projPath", getwd())) {
   ## step_name and dependency from importWF
   on.exit(options(importwf_options = NULL))
   if(!is.null(getOption("importwf_options"))){
@@ -131,6 +134,9 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     .checkSpecialChar(step_name)
     dependency <- getOption("importwf_options")[[2]]
   }
+    ## check options
+    run_step <- match.arg(run_step, c("mandatory", "optional"))
+    run_session <- match.arg(run_session, c("rsession", "cluster"))
   sal <- as(SYScreate("SYSargsList"), "list")
   if(all(is.null(sysargs) && is.null(wf_file) && is.null(input_file))){
     sal <- sal ## This will not create a SPRproject.
@@ -160,7 +166,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
       sal$dependency <- list(dependency)
       sal$outfiles <- list(.outList2DF(sysargs))
       sal$targets_connection <- list(NULL)
-      sal$runInfo <-  list(runOption = list(list(directory=dir)))
+      sal$runInfo <-  list(runOption = list(list(directory=dir, run_step = run_step, run_session = run_session)))
       names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <- step_name
     } else stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2'.")
   } else if(all(!is.null(wf_file) && !is.null(input_file))){
@@ -192,7 +198,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     if(!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(getOption("projPath"), "", WF$files$dir_path)
     if(all(!is.fullPath(dir_path) && grepl("^/", WF@files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "",  WF$files$dir_path)
     WF <- renderWF(WF, inputvars = inputvars)
-    if(step_name=="default"){
+    if (step_name == "default") {
       step_name <- "Step_x"
     } else {
       .checkSpecialChar(step_name)
@@ -201,10 +207,10 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     sal$stepsWF <- list(WF)
     names(sal$stepsWF) <- step_name
     ## Connection to previous outfiles
-    if(exists("targets_step")){
+    if (exists("targets_step")) {
       targets_step_list <- list(targets_step = targets_step)
       new_targets_col <- names(inputvars)
-      if(is.null(new_targets_col))
+      if (is.null(new_targets_col))
         stop("inputvars argument need to be assigned to the output column names from the previous step specified on the targets argument")
       new_col <- list(new_targets_col=new_targets_col)
       if(!is.null(rm_targets_col)){
@@ -222,7 +228,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     sal$dependency <- list(dependency)
     sal$statusWF <- list(.statusPending(WF))
     #sal$runInfo <- list(directory=list(dir))
-    sal$runInfo <- list(runOption = list(list(directory=dir)))
+    sal$runInfo <- list(runOption = list(list(directory=dir, run_step = run_step, run_session = run_session)))
     ## names
    # names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo[[1]]) <- step_name
    names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo$runOption) <- step_name
@@ -542,7 +548,7 @@ write_SYSargsList <- function(sysargs, sys.file=".SPRproject/SYSargsList.yml", s
   ## special case for "runInfo" slot
   yaml_slots <- c("runInfo")
   for(i in yaml_slots){
-    args_comp[[i]] <- yaml::as.yaml(args2[[i]]$directory)
+    args_comp[[i]] <- yaml::as.yaml(args2[[i]]$runOption)
   }
  ## Simple yaml slots
   yaml_slots <- c("projectInfo", "SEobj")
@@ -605,7 +611,7 @@ read_SYSargsList <- function(sys.file){
   ## runInfo yaml slots
   yaml_slots <- c("runInfo")
   for(i in yaml_slots){
-    args_comp[[i]] <- list(directory=yaml::yaml.load(args_comp_yml[i]))
+    args_comp[[i]] <- list(runOption=yaml::yaml.load(args_comp_yml[i]))
   }
   ## Yaml Slots + steps
   yaml_slots_S <- c("dependency","targets_connection")

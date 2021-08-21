@@ -2,9 +2,14 @@
 ## LineWise function ##
 #######################
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
-                     rmdPath = character(), dependency = "") {
+                     rmdPath = character(), dependency = "", 
+                     run_step = "mandatory",
+                     run_session = "rsession") {
     ## used in `importWF`
     on.exit({options(linewise_importing = FALSE)})
+    ## check options
+    run_step <- match.arg(run_step, c("mandatory", "optional"))
+    run_session <- match.arg(run_session, c("rsession", "cluster"))
     ## Step name
     if (step_name == "default") {
         step_name <- "Step_x"
@@ -15,6 +20,10 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
     ## dependency
     dependency <- list(dependency)
     names(dependency) <- step_name
+    ## RunInfo
+    runInfo <- list(runOption = list(list(directory = FALSE, run_step = run_step, 
+                                          run_session = run_session)))
+    names(runInfo$runOption) <- step_name
     ## status
     step_status <- list(
         status.summary = "Pending",
@@ -34,7 +43,8 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
         stepName = step_name,
         dependency = dependency,
         status = step_status,
-        files = list()
+        files = list(), 
+        runInfo = runInfo
     )
     return(as(line, "LineWise"))
 }
@@ -88,7 +98,7 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
             sal_imp$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
             sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
-            sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(list(directory=FALSE))
+            sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(list(directory = FALSE, run_step = "mandatory", run_session = "rsession"))
         } else if (df$spr[i] == "sysargs") {
             options(spr_importing = TRUE)
             options(importwf_options = c(df$step_name[i], df$dep[i]))

@@ -81,7 +81,8 @@
 
 \title{Class \code{"SYSargsList"}}
 \description{
-S4 class container for storing parameters and information of command-line- or R-based workflow.
+S4 class container for storing parameters and information of command-line- or 
+R-based workflow.
 
 \code{SYSargsList} instances are constructed by the \code{SYSargsList} function.
 }
@@ -91,7 +92,10 @@ S4 class container for storing parameters and information of command-line- or R-
 SYSargsList(sysargs = NULL, step_name = "default", 
             targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", 
             inputvars = NULL, rm_targets_col = NULL, 
-            dir = TRUE, dependency = "", silent = FALSE, 
+            dir = TRUE, dependency = "", 
+            run_step = "mandatory",
+            run_session = "rsession",
+            silent = FALSE, 
             projPath = getOption("projPath", getwd()))
 
 ## Accessors
@@ -120,7 +124,8 @@ viewEnvir(x)
 ## Subset Methods
 
 subset(x, ...)
-getColumn(x, step, position = c("outfiles", "targetsWF"), column = 1, names = SampleName(x, step))
+getColumn(x, step, position = c("outfiles", "targetsWF"), column = 1, 
+          names = SampleName(x, step))
 
 
 
@@ -144,7 +149,10 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   character with the step index name.
 }
   \item{targets}{
-  the path to \code{targets} file. The \code{targets} file can be either a simple tabular or yml file. Also, it is possible to assign \code{NULL} to run the pipeline without the 'targets' file. This can be useful for running specific workflows that do not require input files.
+  the path to \code{targets} file. The \code{targets} file can be either a simple 
+  tabular or yml file. Also, it is possible to assign \code{NULL} to run the 
+  pipeline without the 'targets' file. This can be useful for running specific 
+  workflows that do not require input files.
 }
   \item{wf_file}{
   name and path to \code{CWL parameters} file.
@@ -153,23 +161,31 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   name and path to \code{input parameters} file.
 }
   \item{dir_path}{
-  full path to the directory with the \code{CWL parameters} and \code{input} files.
+  full path to the directory with the \code{CWL parameters} and \code{input} 
+  files.
 }
   \item{inputvars}{
-  variables list defined in the \code{input} file that matches the column names defined in the \code{targets} file.
+  variables list defined in the \code{input} file that matches the column names 
+  defined in the \code{targets} file.
 }
   \item{rm_targets_col}{
   targets file colunms to be removed.
 }
   \item{dir}{
   This option allows creating an exclusive results folder for each step in the 
-  workflow. All the outfiles and log files for the particular step will be created 
-  in the respective folders. Default is \code{dir=TRUE}.
+  workflow. All the outfiles and log files for the particular step will be 
+  created in the respective folders. Default is \code{dir=TRUE}.
 }
   \item{dependency}{
   character. Dependency tree, required when appending this step to 
   the workflow. Character name of a previous step in the workflow. 
   Default is empty string \code{""}.
+}
+  \item{run_step}{
+  character. If the step has "mandatory" or "optional" flag for the execution.
+}
+  \item{run_session}{
+  character. If the step has "rsession" or "cluster" flag for the execution.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
@@ -209,12 +225,13 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
 }
   \item{value}{
   object containing the values to be replaced to x. Values may be of the same 
-  class as the orginal values. For \code{updateColumn<-}a dataframe that must have
-  the same rows as the modifying dataframe.
-  However, if there is no column in the original dataframe. This new df will replace 
-  the empty one. If there is a non-empty dataframe, any existing columns with the 
-  same name as this new df will be replaced. Any columns that do not exist in the 
-  original column but this new df will be added to the original data.frame.
+  class as the orginal values. For \code{updateColumn<-}a dataframe that must 
+  have the same rows as the modifying dataframe.
+  However, if there is no column in the original dataframe. This new df will 
+  replace the empty one. If there is a non-empty dataframe, any existing 
+  columns with the same name as this new df will be replaced. Any columns 
+  that do not exist in the original column but this new df will be added to 
+  the original \code{data.frame}.
 }
   \item{...}{
   object containing the values to be replaced to x. Values may be of the same 
@@ -226,43 +243,75 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{stepsWF}:}{Object of class \code{"list"} storing all the \code{SYSargs2} objects of the workflow }
-    \item{\code{statusWF}:}{Object of class \code{"list"} storing all the success and failure of each step in the workflow }
-    \item{\code{targetsWF}:}{Object of class \code{"list"} storing all the targets files for each step in the workflow}
-    \item{\code{outfiles}:}{Object of class \code{"list"} storing all the output files in the workflow }
-    \item{\code{SEobj}:}{Object of class \code{"list"} storing all the SummarizedExperiment objects in the workflow }
-    \item{\code{dependency}:}{Object of class \code{"list"} storing all the dependency steps in the workflow }
-    \item{\code{targets_connection}:}{Object of class \code{"list"} storing all targets files connection in the workflow }
-    \item{\code{projectInfo}:}{Object of class \code{"list"} storing all the \code{projectInfo} information of the workflow }
-    \item{\code{runInfo}:}{Object of class \code{"list"} storing all the \code{runInfo} information of the workflow }
+    \item{\code{stepsWF}:}{Object of class \code{"list"} storing all the 
+    \code{SYSargs2} objects of the workflow }
+    \item{\code{statusWF}:}{Object of class \code{"list"} storing all the 
+    success and failure of each step in the workflow }
+    \item{\code{targetsWF}:}{Object of class \code{"list"} storing all the 
+    targets files for each step in the workflow}
+    \item{\code{outfiles}:}{Object of class \code{"list"} storing all the 
+    output files in the workflow }
+    \item{\code{SEobj}:}{Object of class \code{"list"} storing all the 
+    \code{SummarizedExperiment} objects in the workflow }
+    \item{\code{dependency}:}{Object of class \code{"list"} storing all the 
+    dependency steps in the workflow }
+    \item{\code{targets_connection}:}{Object of class \code{"list"} storing all 
+    targets files connection in the workflow }
+    \item{\code{projectInfo}:}{Object of class \code{"list"} storing all the 
+    \code{projectInfo} information of the workflow }
+    \item{\code{runInfo}:}{Object of class \code{"list"} storing all the
+    \code{runInfo} information of the workflow }
   }
 }
 \section{Methods}{
   \describe{
-    \item{[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", drop = "ANY")}: subsetting of class with bracket operator }
-    \item{[[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY")}: subsetting of class with bracket operator }
-    \item{[[<-}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", value = "ANY")}: replacement method for \code{SYSargsList} class }
-    \item{$}{\code{signature(x = "SYSargsList")}: extracting slots elements by name }
-    \item{coerce}{\code{signature(from = "list", to = "SYSargsList")}: \code{as(list, "SYSargsList")} }
-    \item{coerce}{\code{signature(from = "SYSargsList", to = "list")}: \code{as(SYSargsList, "list")} }
-    \item{length}{\code{signature(x = "SYSargsList")}: extracts number of \code{SYSargs2} objects }
+    \item{[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", drop = "ANY")}: 
+    subsetting of class with bracket operator }
+    \item{[[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY")}:
+    subsetting of class with bracket operator }
+    \item{[[<-}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", value = "ANY")}: 
+    replacement method for \code{SYSargsList} class }
+    \item{$}{\code{signature(x = "SYSargsList")}: 
+    extracting slots elements by name }
+    \item{coerce}{\code{signature(from = "list", to = "SYSargsList")}:
+    \code{as(list, "SYSargsList")} }
+    \item{coerce}{\code{signature(from = "SYSargsList", to = "list")}: 
+    \code{as(SYSargsList, "list")} }
+    \item{length}{\code{signature(x = "SYSargsList")}: extracts number of 
+    \code{SYSargs2} objects }
     \item{names}{\code{signature(x = "SYSargsList")}: extracts slot names }
-    \item{show}{\code{signature(object = "SYSargsList")}: summary view of \code{SYSargsList} steps }
-    \item{stepsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{stepsWF} slot }
-    \item{statusWF}{\code{signature(x = "SYSargsList")}: extract data from \code{statusWF} slot }
-    \item{dependency}{\code{signature(x = "SYSargsList")}: extract data from \code{dependency} slot }
-    \item{projectInfo}{\code{signature(x = "SYSargsList")}: extract data from \code{projectInfo} slot }
-    \item{runInfo}{\code{signature(x = "SYSargsList")}: extract data from \code{runInfo} slot }
-    \item{targetsWF}{\code{signature(x = "SYSargsList")}: extract data from \code{targetsWF} slot }
-    \item{sysargslist}{\code{signature(x = "SYSargsList")}: Coerce back to list \code{as(SYSargsList, "list")} }
-    \item{SEobj}{\code{signature(x = "SYSargsList")}: extract data from \code{SEobj} slot }
-    \item{cmdlist}{\code{signature(x = "SYSargsList", sample=NULL)}: extracts data from \code{cmdlist} slot for each step }
-    \item{appendStep<-}{\code{signature(x = "SYSargsList")}: replacement method for append a step }
-    \item{appendStep<-}{\code{signature(x = "SYSargsList")}: replacement method for append a step }
-    \item{replaceStep<-}{\code{signature(x = "SYSargsList")}: replacement method for replace a step }
-    \item{renameStep<-}{\code{signature(x = "SYSargsList")}: replacement method for rename a step}
-    \item{yamlinput<-}{\code{signature(x = "SYSargsList")}: replacement method for \code{yamlinput} slot for each step }
-    \item{dependency<-}{\code{signature(x = "SYSargsList")}: replacement method for \code{dependency} slot for each step }
+    \item{show}{\code{signature(object = "SYSargsList")}: summary view of 
+    \code{SYSargsList} steps }
+    \item{stepsWF}{\code{signature(x = "SYSargsList")}: extract data from 
+    \code{stepsWF} slot }
+    \item{statusWF}{\code{signature(x = "SYSargsList")}: extract data from 
+    \code{statusWF} slot }
+    \item{dependency}{\code{signature(x = "SYSargsList")}: extract data from 
+    \code{dependency} slot }
+    \item{projectInfo}{\code{signature(x = "SYSargsList")}: extract data from
+    \code{projectInfo} slot }
+    \item{runInfo}{\code{signature(x = "SYSargsList")}: extract data from
+    \code{runInfo} slot }
+    \item{targetsWF}{\code{signature(x = "SYSargsList")}: extract data from 
+    \code{targetsWF} slot }
+    \item{sysargslist}{\code{signature(x = "SYSargsList")}: Coerce back to 
+    list \code{as(SYSargsList, "list")} }
+    \item{SEobj}{\code{signature(x = "SYSargsList")}: extract data from 
+    \code{SEobj} slot }
+    \item{cmdlist}{\code{signature(x = "SYSargsList", sample=NULL)}: 
+    extracts data from \code{cmdlist} slot for each step }
+    \item{appendStep<-}{\code{signature(x = "SYSargsList")}:
+    replacement method for append a step }
+    \item{appendStep<-}{\code{signature(x = "SYSargsList")}: 
+    replacement method for append a step }
+    \item{replaceStep<-}{\code{signature(x = "SYSargsList")}:
+    replacement method for replace a step }
+    \item{renameStep<-}{\code{signature(x = "SYSargsList")}: 
+    replacement method for rename a step}
+    \item{yamlinput<-}{\code{signature(x = "SYSargsList")}: 
+    replacement method for \code{yamlinput} slot for each step }
+    \item{dependency<-}{\code{signature(x = "SYSargsList")}: 
+    replacement method for \code{dependency} slot for each step }
   }
 }
 \author{
@@ -331,7 +380,8 @@ replaceStep(sal, step=2) <- LineWise(code = {
                             }, 
                             step_name = "R_hello", 
                             dependency = "new_echo")
-#yamlinput(sal, step=1, paramName="results_path") <- list(results_path=list(class="Directory", path="./data"))
+#yamlinput(sal, step=1, paramName="results_path") <- list(results_path=list(
+#                                            class="Directory", path="./data"))
 appendCodeLine(sal, step=2, after = 0) <- "log <- log(10)"
 codeLine(sal, 2)
 replaceCodeLine(sal, step=2, line=1) <- LineWise(code = {

@@ -8,7 +8,6 @@
 % Subsetting and Quick access
 \alias{[,LineWise,ANY,ANY,ANY-method}
 \alias{[[,LineWise,ANY,missing-method}
-%\alias{[[,LineWise,ANY,ANY-method}
 \alias{[[<-,LineWise,ANY,ANY,ANY-method}
 \alias{$,LineWise-method}
 \alias{length,LineWise-method}
@@ -20,17 +19,16 @@
 \alias{linewise}
 \alias{linewise,LineWise-method}
 %Accessors
-%\alias{codeLine}
 \alias{codeLine,LineWise-method}
 \alias{codeChunkStart}
 \alias{codeChunkStart,LineWise-method}
 \alias{rmdPath}
 \alias{rmdPath,LineWise-method}
-%\alias{stepName}
 \alias{stepName,LineWise-method}
 \alias{dependency,LineWise-method}
 \alias{status,LineWise-method}
 \alias{files,LineWise-method}
+\alias{runInfo,LineWise-method}
 %Replacement
 \alias{appendCodeLine,LineWise-method}
 %\alias{appendCodeLine<-}
@@ -54,8 +52,11 @@ will store the R Markdown file path.
 \usage{
 ## Constructor
 
-LineWise(code, step_name="default", codeChunkStart=integer(), rmdPath=character(), 
-        dependency="")
+LineWise(code, step_name = "default", codeChunkStart = integer(), 
+            rmdPath = character(), dependency="", 
+            run_step = "mandatory",
+            run_session = "rsession") 
+        
 }
 \arguments{
   \item{code}{
@@ -78,6 +79,12 @@ LineWise(code, step_name="default", codeChunkStart=integer(), rmdPath=character(
   the workflow. Character name of a previous step in the workflow. 
   Default is empty string \code{""}.
 }
+  \item{run_step}{
+  character. If the step has "mandatory" or "optional" flag for the execution.
+}
+  \item{run_session}{
+  character. If the step has "rsession" or "cluster" flag for the execution.
+}
 }
 \section{Objects from the Class}{
   Objects can be created by calls of the form \code{new("LineWise", ...)}.
@@ -85,16 +92,21 @@ LineWise(code, step_name="default", codeChunkStart=integer(), rmdPath=character(
 }
 \section{Slots}{
   \describe{
-    \item{\code{codeLine}:}{Object of class \code{"expression"} storing R-based code.}
+    \item{\code{codeLine}:}{Object of class \code{"expression"} storing R-based 
+    code.}
     \item{\code{codeChunkStart}:}{Object of class \code{"interger"} storing start 
-                                line from the \code{rmdPath} file, when the LineWise is 
-                                built from R Markdown.}
-    \item{\code{rmdPath}:}{Object of class \code{"character"} storing path from the R Markdown file.}
+                                line from the \code{rmdPath} file, when the 
+                                \code{"LineWise"} is built from R Markdown.}
+    \item{\code{rmdPath}:}{Object of class \code{"character"} storing path from 
+                        the R Markdown file.}
     \item{\code{stepName}:}{Object of class \code{"character"} storing step name.}
-    \item{\code{dependency}:}{Object of class \code{"list"} storing dependency tree.}
+    \item{\code{dependency}:}{Object of class \code{"list"} storing dependency 
+                             tree.}
     \item{\code{status}:}{Object of class \code{"list"} storing status steps.}
     \item{\code{files}:}{Object of class \code{"list"} storing file path containing
                         stdout and stderr after running the R-based code.}
+    \item{\code{runInfo}:}{Object of class \code{"list"} storing all the
+                            \code{runInfo} information of the workflow }
   }
 }
 \section{Functions and Methods}{

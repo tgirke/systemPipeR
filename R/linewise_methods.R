@@ -23,7 +23,9 @@ setMethod(f = "status", signature = "LineWise", definition = function(x) {
 setMethod(f = "files", signature = "LineWise", definition = function(x) {
     return(x@files)
 })
-
+setMethod(f = "runInfo", signature = "LineWise", definition = function(x) {
+    return(x@runInfo)
+})
 #######################################
 ## Constructor Methods for LineWise ##
 #######################################
@@ -39,7 +41,8 @@ setAs(
             stepName = from$stepName,
             dependency = from$dependency,
             status = from$status, 
-            files = from$files
+            files = from$files, 
+            runInfo = from$runInfo
         )
 })
 
@@ -48,7 +51,7 @@ setMethod(f = "linewise", signature = "LineWise", definition = function(x) {
     linewise <- list(
         codeLine = x@codeLine, codeChunkStart = x@codeChunkStart,
         rmdPath = x@rmdPath, stepName = x@stepName, dependency = x@dependency,
-        status = x@status, files = x@files
+        status = x@status, files = x@files, runInfo = x@runInfo
     )
     return(linewise)
 })
@@ -94,6 +97,7 @@ setMethod(f = "[", signature = "LineWise", definition = function(x, i, ..., drop
     x@dependency <- x@dependency
     x@status <- x@status
     x@files <- x@files
+    x@runInfo = x@runInfo
     return(x)
 })
 
@@ -126,6 +130,7 @@ setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j
     if (i == 5) x@dependency <- value
     if (i == 6) x@status <- value
     if (i == 7) x@files <- value
+    if (i == 8) x@runInfo <- value
     if (i == "codeLine") x@codeLine <- value
     if (i == "codeChunkStart") x@codeChunkStart <- value
     if (i == "rmdPath") x@rmdPath <- value
@@ -133,6 +138,7 @@ setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j
     if (i == "dependency") x@dependency <- value
     if (i == "status") x@status <- value
     if (i == "files") x@files <- value
+    if (i == "runInfo") x@runInfo <- value
     return(x)
 })
 
