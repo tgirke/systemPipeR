@@ -39,11 +39,11 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
     line <- list(
         codeLine = codeLine,
         codeChunkStart = codeChunkStart,
-        rmdPath = rmdPath,
+       # rmdPath = rmdPath,
         stepName = step_name,
         dependency = dependency,
         status = step_status,
-        files = list(), 
+        files = list(rmdPath = rmdPath), 
         runInfo = runInfo
     )
     return(as(line, "LineWise"))

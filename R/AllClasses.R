@@ -21,7 +21,7 @@ setClass("SYSargsList", slots = c(
 setClass("LineWise", slots = c(
     codeLine = "expression",
     codeChunkStart = "integer",
-    rmdPath = "character",
+    #rmdPath = "character",
     stepName = "character",
     dependency = "list",
     status = "list", 
@@ -70,3 +70,4 @@ setClass("SYSargs", representation(
     sysargs = "character",
     outpaths = "character"
 ))
+

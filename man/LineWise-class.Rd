@@ -97,13 +97,12 @@ LineWise(code, step_name = "default", codeChunkStart = integer(),
     \item{\code{codeChunkStart}:}{Object of class \code{"interger"} storing start 
                                 line from the \code{rmdPath} file, when the 
                                 \code{"LineWise"} is built from R Markdown.}
-    \item{\code{rmdPath}:}{Object of class \code{"character"} storing path from 
-                        the R Markdown file.}
     \item{\code{stepName}:}{Object of class \code{"character"} storing step name.}
     \item{\code{dependency}:}{Object of class \code{"list"} storing dependency 
                              tree.}
     \item{\code{status}:}{Object of class \code{"list"} storing status steps.}
-    \item{\code{files}:}{Object of class \code{"list"} storing file path containing
+    \item{\code{files}:}{Object of class \code{"list"} storing file for
+                          R Markdown file and the file  containing
                         stdout and stderr after running the R-based code.}
     \item{\code{runInfo}:}{Object of class \code{"list"} storing all the
                             \code{runInfo} information of the workflow }

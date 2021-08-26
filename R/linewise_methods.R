@@ -6,7 +6,7 @@ setMethod(f = "codeLine", signature = "LineWise", definition = function(x) {
     return(cat(as.character(x@codeLine), sep = "\n"))
 })
 setMethod(f = "rmdPath", signature = "LineWise", definition = function(x) {
-    return(x@rmdPath)
+    return(x@files$rmdPath)
 })
 setMethod(f = "codeChunkStart", signature = "LineWise", definition = function(x) {
     return(x@codeChunkStart)
@@ -37,7 +37,7 @@ setAs(
         new("LineWise",
             codeLine = from$codeLine,
             codeChunkStart = from$codeChunkStart,
-            rmdPath = from$rmdPath,
+            #rmdPath = from$rmdPath,
             stepName = from$stepName,
             dependency = from$dependency,
             status = from$status, 
@@ -50,7 +50,8 @@ setAs(
 setMethod(f = "linewise", signature = "LineWise", definition = function(x) {
     linewise <- list(
         codeLine = x@codeLine, codeChunkStart = x@codeChunkStart,
-        rmdPath = x@rmdPath, stepName = x@stepName, dependency = x@dependency,
+        #rmdPath = x@rmdPath, 
+        stepName = x@stepName, dependency = x@dependency,
         status = x@status, files = x@files, runInfo = x@runInfo
     )
     return(linewise)
@@ -92,7 +93,7 @@ setMethod(f = "[", signature = "LineWise", definition = function(x, i, ..., drop
         i <- which(i)
     }
     x@codeLine <- x@codeLine[i]
-    x@rmdPath <- x@rmdPath
+    #x@rmdPath <- x@rmdPath
     x@stepName <- x@stepName
     x@dependency <- x@dependency
     x@status <- x@status
@@ -125,7 +126,7 @@ setMethod("$",
 setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j, value) {
     if (i == 1) x@codeLine <- value
     if (i == 2) x@codeChunkStart <- value
-    if (i == 3) x@rmdPath <- value
+  #  if (i == 3) x@rmdPath <- value
     if (i == 4) x@stepName <- value
     if (i == 5) x@dependency <- value
     if (i == 6) x@status <- value
@@ -133,7 +134,7 @@ setReplaceMethod(f = "[[", signature = "LineWise", definition = function(x, i, j
     if (i == 8) x@runInfo <- value
     if (i == "codeLine") x@codeLine <- value
     if (i == "codeChunkStart") x@codeChunkStart <- value
-    if (i == "rmdPath") x@rmdPath <- value
+ #   if (i == "rmdPath") x@rmdPath <- value
     if (i == "stepName") x@stepName <- value
     if (i == "dependency") x@dependency <- value
     if (i == "status") x@status <- value
