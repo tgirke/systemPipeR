@@ -78,6 +78,8 @@
 \alias{replaceCodeLine<-,SYSargsList-method}
 \alias{updateColumn<-}
 \alias{updateColumn<-,SYSargsList-method}
+\alias{updateStatus<-}
+\alias{updateStatus<-,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
@@ -266,52 +268,54 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
 \section{Methods}{
   \describe{
     \item{[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", drop = "ANY")}: 
-    subsetting of class with bracket operator }
+              subsetting of class with bracket operator }
     \item{[[}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY")}:
-    subsetting of class with bracket operator }
+              subsetting of class with bracket operator }
     \item{[[<-}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", value = "ANY")}: 
-    replacement method for \code{SYSargsList} class }
+              replacement method for \code{SYSargsList} class }
     \item{$}{\code{signature(x = "SYSargsList")}: 
-    extracting slots elements by name }
+              extracting slots elements by name }
     \item{coerce}{\code{signature(from = "list", to = "SYSargsList")}:
-    \code{as(list, "SYSargsList")} }
+              \code{as(list, "SYSargsList")} }
     \item{coerce}{\code{signature(from = "SYSargsList", to = "list")}: 
-    \code{as(SYSargsList, "list")} }
+              \code{as(SYSargsList, "list")} }
     \item{length}{\code{signature(x = "SYSargsList")}: extracts number of 
-    \code{SYSargs2} objects }
+              \code{SYSargs2} objects }
     \item{names}{\code{signature(x = "SYSargsList")}: extracts slot names }
     \item{show}{\code{signature(object = "SYSargsList")}: summary view of 
-    \code{SYSargsList} steps }
+              \code{SYSargsList} steps }
     \item{stepsWF}{\code{signature(x = "SYSargsList")}: extract data from 
-    \code{stepsWF} slot }
+              \code{stepsWF} slot }
     \item{statusWF}{\code{signature(x = "SYSargsList")}: extract data from 
-    \code{statusWF} slot }
+              \code{statusWF} slot }
     \item{dependency}{\code{signature(x = "SYSargsList")}: extract data from 
-    \code{dependency} slot }
+              \code{dependency} slot }
     \item{projectInfo}{\code{signature(x = "SYSargsList")}: extract data from
-    \code{projectInfo} slot }
+              \code{projectInfo} slot }
     \item{runInfo}{\code{signature(x = "SYSargsList")}: extract data from
-    \code{runInfo} slot }
+              \code{runInfo} slot }
     \item{targetsWF}{\code{signature(x = "SYSargsList")}: extract data from 
-    \code{targetsWF} slot }
+              \code{targetsWF} slot }
     \item{sysargslist}{\code{signature(x = "SYSargsList")}: Coerce back to 
-    list \code{as(SYSargsList, "list")} }
+              list \code{as(SYSargsList, "list")} }
     \item{SEobj}{\code{signature(x = "SYSargsList")}: extract data from 
-    \code{SEobj} slot }
+              \code{SEobj} slot }
     \item{cmdlist}{\code{signature(x = "SYSargsList", sample=NULL)}: 
-    extracts data from \code{cmdlist} slot for each step }
+              extracts data from \code{cmdlist} slot for each step }
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}:
-    replacement method for append a step }
+              replacement method for append a step }
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}: 
-    replacement method for append a step }
+              replacement method for append a step }
     \item{replaceStep<-}{\code{signature(x = "SYSargsList")}:
-    replacement method for replace a step }
+              replacement method for replace a step }
     \item{renameStep<-}{\code{signature(x = "SYSargsList")}: 
-    replacement method for rename a step}
+              replacement method for rename a step}
     \item{yamlinput<-}{\code{signature(x = "SYSargsList")}: 
-    replacement method for \code{yamlinput} slot for each step }
+              replacement method for \code{yamlinput} slot for each step }
     \item{dependency<-}{\code{signature(x = "SYSargsList")}: 
-    replacement method for \code{dependency} slot for each step }
+              replacement method for \code{dependency} slot for each step }
+    \item{updateStatus<-}{\code{signature(x = "SYSargsList")}:
+              updateStatus method for update a step status }
   }
 }
 \author{

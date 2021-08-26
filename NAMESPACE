@@ -149,6 +149,7 @@ exportMethods(
     "sysargslist", "subset", "stepName", "getColumn", "updateColumn<-",
     "SampleName", "viewEnvir", "copyEnvir",
     "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
+    "updateStatus<-",
     ## LineWise
     "codeLine", "codeChunkStart", "rmdPath", "linewise",
     "replaceCodeLine<-", "appendCodeLine<-"

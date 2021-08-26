@@ -6,7 +6,8 @@ setMethod(f = "stepsWF", signature = "SYSargsList", definition = function(x) {
     return(x@stepsWF)
 })
 setMethod(f = "statusWF", signature = "SYSargsList", definition = function(x) {
-    return(lapply(lapply(x@statusWF, "[[", 2), function(y) S4Vectors::DataFrame(y, check.names = FALSE)))
+    return(lapply(lapply(x@statusWF, "[[", 2), 
+                  function(y) S4Vectors::DataFrame(y, check.names = FALSE)))
 })
 setMethod(f = "targetsWF", signature = "SYSargsList", definition = function(x) {
     return(x@targetsWF)
@@ -903,6 +904,55 @@ setReplaceMethod(
         x <- .check_write_SYSargsList(x)
         x
     }
+)
+
+setReplaceMethod(
+  f = "updateStatus", signature = c("SYSargsList"),
+  definition = function(x, step, value) {
+    if (!inherits(value, "SYSargsList")) {
+      stop("Argument 'value' needs to be assigned an object of class 'SYSargsList'.")
+    }
+    if(length(step) > 1) stop("Argument 'step' cannot have 'length(step) > 1")
+    if (!all(stepName(value) %in% stepName(x))) stop("Argument 'value' are required to have the same stepName then x")
+    ## Check step name or index on x
+    if (inherits(step, "numeric")) {
+      if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
+      step <- stepName(x)[step]
+    } else if (inherits(step, "character")) {
+      if (!step %in% stepName(x)) {
+        stop(paste0(
+          "Argument 'step' needs to be assigned one of the following: ",
+          paste(stepName(x), collapse = " OR ")
+        ))
+      }
+      # step <- grep(step, stepName(x))
+    }
+    ## Dependency
+      if(!all(dependency(x)[[step]] == dependency(value)[[step]])) stop("'dependency' for 'x' and 'value' objects are required to have the same structure")
+    ## replace
+    extra <- which(dependency(x) %in% stepName(x[step]))
+    extra <- c(step, extra)
+    x <- sysargslist(x)
+    if (inherits(value, "SYSargsList")) {
+      x$stepsWF[extra] <- value$stepsWF[extra]
+      x$statusWF[extra] <- value$statusWF[extra]
+      x$targetsWF[extra] <- value$targetsWF[extra]
+      x$outfiles[extra] <- value$outfiles[extra]
+      x$runInfo[["runOption"]][extra] <- value$runInfo[["runOption"]][extra]
+      if(!is.null(value$projectInfo$logsFile)){
+        if(!is.null(x$projectInfo$logsFile)){
+          cat(readLines(value$projectInfo$logsFile), file = x$projectInfo$logsFile, sep = "\n", 
+              append = TRUE)
+        } 
+      }
+    }
+    x <- as(x, "SYSargsList")
+    if(length(ls(value$runInfo$env)) > 0 ){
+      copyEnvir(value, new.env = x$runInfo$env, silent = TRUE)
+    }
+    x <- .check_write_SYSargsList(x)
+    x
+  }
 )
 
 setReplaceMethod(

@@ -69,6 +69,7 @@ setGeneric(name = "stepsWF<-", def = function(x, step, ..., value) standardGener
 setGeneric(name = "renameStep<-", def = function(x, step, ..., value) standardGeneric("renameStep<-"))
 setGeneric(name = "statusWF<-", def = function(x, step, ..., value) standardGeneric("statusWF<-"))
 setGeneric(name = "dependency<-", def = function(x, step, ..., value) standardGeneric("dependency<-"))
+setGeneric(name = "updateStatus<-", def = function(x, step, ..., value) standardGeneric("updateStatus<-"))
 
 ######################################
 ## Generic Definitions for LineWise ##
