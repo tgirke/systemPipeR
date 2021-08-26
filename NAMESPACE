@@ -142,7 +142,7 @@ exportMethods(
     ## SYSargs2
     "targets", "wf", "clt", "yamlinput", "cmdlist", "input",  "output", "files",
     "inputvars", "cmdToCwl", "status",
-    "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-",
+    "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-", 
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
     "dependency", "projectInfo", "runInfo",

@@ -169,7 +169,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
       sal$runInfo <-  list(runOption = list(list(directory=dir, run_step = run_step, run_session = run_session)))
       names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <- step_name
     } else stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2'.")
-  } else if(all(!is.null(wf_file) && !is.null(input_file))){
+  } else if(all(!is.null(wf_file) && !is.null(input_file))){ ## Build the instance from files
     ## targets
     if(is.null(targets)){
       targets <- targets
@@ -191,7 +191,7 @@ SYSargsList <- function(sysargs=NULL, step_name="default",
     WF <- loadWF(targets = targets, wf_file = wf_file,
                 input_file = input_file, 
                  dir_path =  dir_path)
-    ## targets 
+    ## targets_path to projPath
     if(!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
     if(grepl("^/", WF@files$targets)) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
     ## dir_path
@@ -271,7 +271,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
     }
   }
   ## Logs
-  file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "%b%d%Y_%H%M")))
+  file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "%b%d%Y_%H%M"), "_", paste(sample(0:9, 4), collapse = "") ))
   sysargs[["projectInfo"]]$logsFile <- file_log
   ## steps loop
   args2 <- sysargs
@@ -307,7 +307,8 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
         stepsWF(args2, i) <- args.run
         args2[["outfiles"]][[i]] <- .outList2DF(args.run)
         args2 <- .updateAfterRunC(args2, single.step)
-        assign(x=as.character(as.list(match.call())$sysargs), args2, envir = args2$runInfo$env)
+        assign(x = as.character(as.list(match.call())$sysargs), args2, 
+               envir = args2$runInfo$env)
         ## Stop workflow
         if(is.element("Warning", unlist(step.status.summary))){
           if(warning.stop==TRUE) {
@@ -315,7 +316,7 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
             stop("Caught an warning, stop workflow!")
           }
         } else if(is.element("Error", unlist(step.status.summary))){
-          if(error.stop==TRUE) {
+          if(error.stop == TRUE) {
             on.exit(return(args2))
             stop("Caught an error, stop workflow!")
           }
@@ -323,11 +324,19 @@ runWF <- function(sysargs, steps = NULL, force=FALSE, saveEnv=TRUE,
         cat(status_color(step.status.summary)(paste0("Step Status: ", step.status.summary), "\n"))
       } else if(inherits(args.run, "LineWise")){
         envir <- args2$runInfo$env
-        assign(x=as.character(as.list(match.call())$sysargs), args2, envir = envir)
-        args.run <- runRcode(args.run, step=single.step, file_log=file_log, envir=envir, force=force)
-        assign("args2", get(as.character(as.list(match.call())$sysargs), envir), environment())
+        assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
+        if(!dir.exists(file.path(sysproj, "Rsteps"))){
+          dir.create(file.path(sysproj, "Rsteps"))
+        }
+        file_log_Rcode <- file.path(sysproj, "Rsteps", paste0("_logRstep_", single.step, "_", format(Sys.time(), "%b%d%Y_%H%M%S")))
+        args.run <- runRcode(args.run, step = single.step, file_log = file_log_Rcode,
+                             envir = envir, force = force)
+        assign("args2", get(as.character(as.list(match.call())$sysargs), envir), 
+               environment())
         args2[["stepsWF"]][[i]] <- args.run
         args2[["statusWF"]][[i]] <- args.run$status
+        cat(readLines(file_log_Rcode), file = file_log, sep = "\n", 
+            append = TRUE)
        ## Stop workflow
         if(is.element("Warning", unlist(args.run$status$status.summary))){
           if(warning.stop==TRUE) {
@@ -430,9 +439,9 @@ runRcode <- function(args, step=stepName(args), file_log=NULL, envir=globalenv()
   }
   setTxtProgressBar(pb, length(args))
   ## close R chunk
-  cat("```", file=file_log, sep = "\n", append=TRUE)
+  cat("``` \n", file=file_log, sep = "\n", append=TRUE)
   close(pb)
-  args[["files"]] <- list(log=file_log)
+  args[["files"]] <- list(log = file_log)
   return(args)
 }
 
@@ -637,10 +646,10 @@ read_SYSargsList <- function(sys.file){
     for(j in steps){
       if("codeLine" %in% names(yaml::yaml.load(args_comp_yml[["stepsWF"]][[j]]))){
         args <- yaml::yaml.load(args_comp_yml[["stepsWF"]][[j]])
-        if(length(args$codeLine)>=1) { args$codeLine <- parse(text=args$codeLine)}
-        if(length(args$codeChunkStart)==0) args$codeChunkStart <- integer()
-        if(length(args$rmdPath)==0) args$rmdPath <- character()
-        if(length(args$dependency)==0) args$dependency <- character()
+        if(length(args$codeLine) >= 1) { args$codeLine <- parse(text=args$codeLine)}
+        if(length(args$codeChunkStart) == 0) args$codeChunkStart <- integer()
+        if(length(args$files) == 0) args$files$rmdPath <- character()
+        if(length(args$dependency) == 0) args$dependency <- character()
         args <- as(args, "LineWise")
         steps_comp[[j]] <- args
       } else {

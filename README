@@ -1,10 +1,13 @@
 changelog
     version 1.27.23
+        - Added new method: updateStatus<-
         - Added new slot to LineWise Class - runInfo
         - Added new arguments to LineWise function: 
             - run_step
             - run_session
         - Updated write_SYSargsList and read_SYSargsList
+        - Removed LineWise slot: rmdPath. Info can be found on the files slot or still using the method 
+        - Added random numbers to log files names + collect each R code steps logs
         
     version 1.27.22
         - slot runInfo updated
