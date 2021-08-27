@@ -253,6 +253,7 @@ makeDot <- function(df,
     }
     tree <- .findBranch(step_names, deps)
     if (sum(starting_root) > 1) tree <- lapply(tree, function(x) x[!x == "root_step0"])
+    # debug exit point
     if (exit_point == 1) {
         return(tree)
     }
@@ -271,8 +272,9 @@ makeDot <- function(df,
         branch_no <- as.numeric(menu(paste("Branch", seq_along(tree)), title = "Choose a main branch to plot workflow"))
     } else {
         branch_no <- .recommendBranch(tree, df$step_name, verbose)
-        if (!is.null(names(branch_no))) {
-            msg <- names(branch_no)[1]
+        branch_msg <- names(branch_no)[1]
+        if(stringr::str_starts(branch_msg, "Workflow's first step is")) {
+            msg <- branch_msg
             df <- df[df$step_name %in% tree[[branch_no]], ]
         }
     }
@@ -303,7 +305,7 @@ makeDot <- function(df,
     p_main <- paste0(p_main, .addNodeDecor(
         df$step_name, df$has_run, df$success, df$spr, df$sample_pass,
         df$sample_warn, df$sample_error, df$sample_total, df$log_path,
-        df$time_start, df$time_end, in_log
+        df$time_start, df$time_end, df$req, df$session, in_log
     ))
     # add legend
     if (show_legend) p_main <- paste0(p_main, .addDotLegend(mark_main_branch), collapse = "\n")
@@ -521,7 +523,7 @@ makeDot <- function(df,
         .addNodeDecor(
             df$step_name, df$has_run, df$success, df$spr, df$sample_pass,
             df$sample_warn, df$sample_error, df$sample_total, df$log_path,
-            df$time_start, df$time_end, in_log
+            df$time_start, df$time_end,  df$req, df$session, in_log
         ),
         if (show_legend) .addDotLegend(FALSE),
         "\n}\n"
@@ -536,19 +538,13 @@ makeDot <- function(df,
     paste0(
         '    subgraph cluster_legend {
         rankdir=TB;
-        color="#EEEEEE";
+        color="#eeeeee";
         style=filled;
-        node [style=filled];',
-        if (show_main) {
-            '
-        {rank=same; R_step; Sysargs_step; Main_branch}
-        Main_branch -> Sysargs_step -> R_step[color="#EEEEEE"]
-        Main_branch[label="Main branch" color="dodgerblue", style="filled", fillcolor=white];'
-        } else {
-            "
-        {rank=same; R_step; Sysargs_step}"
-        },
-        '   Sysargs_step ->step_state[color="#EEEEEE"];
+        node [style=filled];
+        {rank=same; legend_sysargs_step; legend_optional; legend_cluster}
+        legend_main_branch -> legend_sysargs_step -> legend_optional -> legend_cluster[color="#eeeeee"]
+        legend_main_branch[label="Main branch/Mandatory/R step/R session" color="dodgerblue", style="filled", fillcolor="#f7f7f7"];
+        legend_cluster -> step_state[color="#eeeeee"];
         step_state[style="filled", shape="box" color=white, label =<
             <table>
             <tr><td><b>Step Colors</b></td></tr>
@@ -557,8 +553,9 @@ makeDot <- function(df,
             >];
         label="Legends";
         fontsize = 30;
-        Sysargs_step[label="Sysargs step" style="rounded, filled", shape="box", fillcolor=white];
-        R_step[label="R step" style="rounded, filled", fillcolor=white];
+        legend_sysargs_step[label="Sysargs step" style="rounded, filled", shape="box", fillcolor="#f7f7f7"];
+        legend_optional[label="Optional" style="rounded, filled", fillcolor=white];
+        legend_cluster[label="cluster" style="filled, dashed", fillcolor="#f7f7f7"];
     }\n'
     )
 }
@@ -573,13 +570,29 @@ makeDot <- function(df,
 #' @param sample_warn numeric, no. of samples have warnings each step
 #' @param sample_error numeric, no. of samples have errors each step
 #' @param sample_total numeric, no. of samples total each step
-.addNodeDecor <- function(steps, has_run, success, spr, sample_pass, sample_warn, sample_error, sample_total, log_path, time_start, time_end, in_log = FALSE) {
+#' @param log_path string, href link to the step in log file
+#' @param time_start POSIXct, step starting time
+#' @param time_end POSIXct, step ending time
+#' @param req one of mandatory or optional
+#' @param session one of rsession, or cluster
+#' @param in_log bool, if this plot is used in log file
+.addNodeDecor <- function(
+    steps, has_run, success, spr, sample_pass, sample_warn,
+    sample_error, sample_total, log_path, time_start, time_end,
+    req, session, in_log = FALSE
+    ) {
     node_text <- c()
     for (i in seq_along(steps)) {
         step_color <- if (has_run[i] && success[i]) "#5cb85c" else if (has_run[i] && !success[i]) "#d9534f" else "black"
         duration <- .stepDuration(time_start[i], time_end[i])
         node_text <- c(node_text, paste0(
-            "    ", steps[i], "[label=<<b>",
+            "    ", steps[i], "[",
+            if(req[i] == "mandatory") 'fillcolor="#f7f7f7" ' else "",
+            if(req[i] == "mandatory" && session[i] == "cluster") 'style="filled, dashed" '
+            else if(req[i] == "mandatory" && session[i] != "cluster") 'style="filled" '
+            else if(req[i] != "mandatory" && session[i] == "cluster") 'style="dashed" '
+            else "",
+            "label=<<b>",
             '<font color="', step_color, '">', steps[i], "</font><br></br>",
             '<font color="#5cb85c">', sample_pass[i], "</font>/",
             '<font color="#f0ad4e">', sample_warn[i], "</font>/",
@@ -631,6 +644,8 @@ makeDot <- function(df,
             step_name = "Empty_workflow",
             dep = NA,
             spr = "sysargs",
+            req = "mandatory",
+            session = "rsession",
             has_run = FALSE,
             success = FALSE,
             sample_pass = 0,
