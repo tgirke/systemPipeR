@@ -120,6 +120,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
 ##########################
 SYSargsList <- function(sysargs = NULL, step_name = "default",
                         targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".",
+                        id = "SampleName",
                         inputvars = NULL,
                         rm_targets_col = NULL,
                         dir = TRUE,
@@ -138,9 +139,11 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
     run_step <- match.arg(run_step, c("mandatory", "optional"))
     run_session <- match.arg(run_session, c("rsession", "cluster"))
     sal <- as(SYScreate("SYSargsList"), "list")
+    ## Empty container
     if (all(is.null(sysargs) && is.null(wf_file) && is.null(input_file))) {
         sal <- sal ## This will not create a SPRproject.
         message("Please consider to use 'SPRproject()' function instead")
+        ## sal container based on a SYSargs2 container ##
     } else if (!is.null(sysargs)) {
         if (inherits(sysargs, "SYSargs2")) {
             if (length(cmdlist(sysargs)) == 0) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2' after 'renderWF()'.")
@@ -154,8 +157,13 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             ## Targets
             if (length(targets(sysargs)) == 0) {
                 sal$targetsWF <- list(NULL)
+                sal$SE <- list()
             } else {
                 sal$targetsWF <- list(as(sysargs, "DataFrame"))
+                row.names(sal$targetsWF) <- sal$targetsWF[ ,sysargs$files$id]
+                sal$SE <- list(SummarizedExperiment(
+                  colData = sal$targetsWF,
+                  metadata = sysargs$targetsheader))
             }
             ## Status
             if (length(status(sysargs)) == 0) {
@@ -167,11 +175,12 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             sal$outfiles <- list(.outList2DF(sysargs))
             sal$targets_connection <- list(NULL)
             sal$runInfo <- list(runOption = list(list(directory = dir, run_step = run_step, run_session = run_session)))
-            names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <- step_name
+            names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <-  names(sal$SE) <- step_name
         } else {
             stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2'.")
         }
-    } else if (all(!is.null(wf_file) && !is.null(input_file))) { ## Build the instance from files
+      ## Build the instance from files ##
+    } else if (all(!is.null(wf_file) && !is.null(input_file))) {
         ## targets
         if (is.null(targets)) {
             targets <- targets
@@ -193,7 +202,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
         WF <- loadWF(
             targets = targets, wf_file = wf_file,
             input_file = input_file,
-            dir_path = dir_path
+            dir_path = dir_path, id = id
         )
         ## targets_path to projPath
         if (!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
@@ -215,8 +224,8 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             targets_step_list <- list(targets_step = targets_step)
             new_targets_col <- names(inputvars)
             if (is.null(new_targets_col)) {
-                  stop("inputvars argument need to be assigned to the output column names from the previous step specified on the targets argument")
-              }
+                stop("inputvars argument need to be assigned to the output column names from the previous step specified on the targets argument")
+            }
             new_col <- list(new_targets_col = new_targets_col)
             if (!is.null(rm_targets_col)) {
                 rm_col <- list(rm_targets_col = rm_targets_col)
@@ -243,11 +252,16 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             ## targets
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
+                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][ ,sal$stepsWF[[1]]$files$id]
+                sal$SE <- list(SummarizedExperiment(
+                  colData = sal$targetsWF,
+                  metadata = sal$stepsWF[[1]]$targetsheader))
             } else {
                 sal$targetsWF <- list(S4Vectors::DataFrame())
+                sal$SE <- list(NULL)
             }
         }
-        names(sal$targetsWF) <- step_name
+        names(sal$targetsWF) <- names(sal$SE) <- step_name
     }
     sal <- as(sal, "SYSargsList")
     return(sal)
@@ -585,7 +599,7 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
         args_comp[[i]] <- yaml::as.yaml(args2[[i]]$runOption)
     }
     ## Simple yaml slots
-    yaml_slots <- c("projectInfo", "SEobj")
+    yaml_slots <- c("projectInfo")
     for (i in yaml_slots) {
         args_comp[[i]] <- yaml::as.yaml(args2[[i]])
     }
@@ -621,6 +635,21 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
         }
     }
     args_comp[["stepsWF"]] <- steps_comp
+    ## SE slot
+    path <- file.path(.getPath(sys.file), "SE")
+    if(!dir.exists(path)) {
+      dir.create(path)
+    }
+    steps_comp <- sapply(steps, function(x) list(NULL))
+    for (j in steps) {
+      if(!is.null(args2[["SE"]][[j]])){
+        writeSE(args2[["SE"]][[j]], dir.path = path, dir.name = j, overwrite = TRUE, silent = TRUE)
+        steps_comp[[j]] <- yaml::as.yaml(list(dir.path=path, dir.name=j))
+      } else {
+        steps_comp[j]  <- yaml::as.yaml(args2[["SE"]][j])
+      }
+  }
+    args_comp[["SE"]] <- steps_comp
     ## Save file
     yaml::write_yaml(args_comp, sys.file)
     if (silent != TRUE) cat("Creating file '", file.path(sys.file), "'", sep = "", "\n")
@@ -630,6 +659,7 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
 # ## Usage:
 # write_SYSargsList(sal, sys.file, silent=FALSE)
 
+
 ################################
 ## read_SYSargsList function ##
 ################################
@@ -638,7 +668,7 @@ read_SYSargsList <- function(sys.file) {
     args_comp <- sapply(args_comp_yml, function(x) list(NULL))
     steps <- names(args_comp_yml$stepsWF)
     ## Simple yaml slots
-    yaml_slots <- c("projectInfo", "SEobj")
+    yaml_slots <- c("projectInfo")
     for (i in yaml_slots) {
         args_comp[[i]] <- yaml::yaml.load(args_comp_yml[i])
     }
@@ -705,12 +735,124 @@ read_SYSargsList <- function(sys.file) {
         }
         args_comp[[i]] <- steps_comp
     }
+    
+    
+    ## SE slot
+      steps_comp <- sapply(steps, function(x) list(NULL))
+      for (j in steps) {
+        steps_comp[[j]] <- yaml::yaml.load(args_comp_yml[["SE"]][[j]])
+        if(!is.null(steps_comp[[j]][[1]])){
+          dir.path <- steps_comp[[j]][[1]]
+          dir.name <- steps_comp[[j]][[2]]
+          SE <- readSE(dir.path = dir.path, dir.name = dir.name)
+          steps_comp[[j]] <- list(SE)
+          } else {
+            steps_comp[[j]] <-  steps_comp[[j]]
+          }
+        }
+      args_comp[["SE"]] <- sapply(steps_comp, function(x) x[[1]])
     return(as(args_comp, "SYSargsList"))
 }
 
 # ## Usage:
 # sys.file=".SPRproject/SYSargsList.yml"
 # sal3 <- read_SYSargsList(sys.file)
+
+################################
+## writeSE function ##
+################################
+writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE){
+  # Validations
+  if (!inherits(SE, "SummarizedExperiment")) stop("Argument 'SE' needs to be assigned an object of class 'SummarizedExperiment'")
+  if (!dir.exists(dir.path)) stop("'dir.path' doesn't exist.")
+  if (all(dir.exists(file.path(dir.path, dir.name)) & overwrite == FALSE)) stop(paste("'dir.name' directory already exist. Please delete existing directory:", dir.name, "or set 'overwrite=TRUE'"))
+  if(!dir.exists(file.path(dir.path, dir.name))){
+    dir.create(file.path(dir.path, dir.name))
+  }
+  path <- file.path(dir.path, dir.name)
+  ## Counts
+  if(length(assays(SE)) > 0) {
+    for (i in length(assays(SE))){
+      write.table(assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")), quote = FALSE, row.names = FALSE,
+                  col.names = TRUE, sep = "\t")
+    }
+  }
+  ## Metadata
+  yaml::write_yaml(metadata(SE), file.path(path, paste0("metadata.yml")))
+  ## colData
+  write.table(colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
+              col.names = TRUE, sep = "\t")
+  ## RowRanges
+  if(!is.null(rowRanges(SE))){
+    write.table(as.data.frame(rowRanges(SE)), file=file.path(path, paste0("rowRanges.csv")),
+                sep="\t", quote = FALSE, row.names = FALSE)
+  }
+  ## Final message
+  if(silent != TRUE) cat("\t", "Written content of 'SE' to directory:", path, "\n")
+}
+
+# writeSE(rse, dir.path = getwd(), dir.name = "seobj")
+# 
+# dir.path <- getwd()
+# dir.name <- "seobj"
+
+################################
+## readSE function ##
+################################
+readSE <- function(dir.path, dir.name){
+  path <- file.path(dir.path, dir.name)
+  if (!dir.exists(path)) stop("'dir.path' doesn't exist.")
+  ## Counts
+  files_counts <- list.files(path, pattern = "counts")
+  if(length(files_counts) > 0) {
+    counts_ls <- SimpleList(NULL)
+    for (i in files_counts){
+      counts_ls <- as.matrix(read.table(file.path(path, i), check.names = FALSE, header = TRUE))
+    } 
+  }  else {
+    counts_ls <- SimpleList()
+  }
+  ## Metadata
+  metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
+  ## colData
+  colData <- read.table(file.path(path, paste0("colData.csv")), check.names = FALSE)
+  ## rowRanges
+  files_counts <- list.files(path, pattern = "rowRanges")
+  if(length(files_counts) > 0) {
+  rowRanges_df <- read.table(file.path(path, paste0("rowRanges.csv")), check.names = FALSE, header = TRUE)
+  rowRanges <- makeGRangesFromDataFrame(rowRanges_df, keep.extra.columns=TRUE)
+  } else {
+    rowRanges = GRangesList()
+  }
+  SE <- SummarizedExperiment(
+    assays=counts_ls,
+    #rowData=NULL, 
+    rowRanges=rowRanges,
+    colData=colData,
+    metadata=metadata)
+  return(SE)
+}
+
+# nrows <- 200; ncols <- 6
+# counts <- matrix(runif(nrows * ncols, 1, 1e4), nrows)
+# rowRanges <- GRanges(rep(c("chr1", "chr2"), c(50, 150)),
+#                      IRanges(floor(runif(200, 1e5, 1e6)), width=100),
+#                      strand=sample(c("+", "-"), 200, TRUE),
+#                      feature_id=sprintf("ID%03d", 1:200))
+# colData <- DataFrame(Treatment=rep(c("ChIP", "Input"), 3),
+#                      row.names=LETTERS[1:6])
+# rse <- SummarizedExperiment(assays=SimpleList(counts=counts),
+#                             rowRanges=rowRanges, colData=colData)
+# rse
+# writeSE(rse, dir.path = getwd(), dir.name = "seobj")
+# SE <- readSE(dir.path = getwd(), dir.name = "seobj")
+# library(diffobj)
+# diffPrint(target=SE, current=rse)
+
+# writeSE(sal$SE$gzip, dir.path = getwd(), dir.name = "seobj")
+# SE <- readSE(dir.path = getwd(), dir.name = "seobj")
+# library(diffobj)
+# diffPrint(target=SE, current=rse)
 
 ################################
 ## .dirProject function ##

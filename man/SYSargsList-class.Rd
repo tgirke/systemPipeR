@@ -13,8 +13,8 @@
 \alias{targetsWF,SYSargsList-method}
 \alias{outfiles}
 \alias{outfiles,SYSargsList-method}
-\alias{SEobj}
-\alias{SEobj,SYSargsList-method}
+\alias{SE}
+\alias{SE,SYSargsList-method}
 \alias{dependency}
 \alias{dependency,SYSargsList-method}
 \alias{targets_connection}
@@ -106,7 +106,7 @@ stepsWF(x)
 statusWF(x)
 targetsWF(x)
 outfiles(x)
-SEobj(x)
+SE(x)
 dependency(x)
 projectInfo(x)
 runInfo(x)
@@ -253,7 +253,7 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
     targets files for each step in the workflow}
     \item{\code{outfiles}:}{Object of class \code{"list"} storing all the 
     output files in the workflow }
-    \item{\code{SEobj}:}{Object of class \code{"list"} storing all the 
+    \item{\code{SE}:}{Object of class \code{"list"} storing all the 
     \code{SummarizedExperiment} objects in the workflow }
     \item{\code{dependency}:}{Object of class \code{"list"} storing all the 
     dependency steps in the workflow }
@@ -298,8 +298,8 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
               \code{targetsWF} slot }
     \item{sysargslist}{\code{signature(x = "SYSargsList")}: Coerce back to 
               list \code{as(SYSargsList, "list")} }
-    \item{SEobj}{\code{signature(x = "SYSargsList")}: extract data from 
-              \code{SEobj} slot }
+    \item{SE}{\code{signature(x = "SYSargsList")}: extract data from 
+              \code{SE} slot }
     \item{cmdlist}{\code{signature(x = "SYSargsList", sample=NULL)}: 
               extracts data from \code{cmdlist} slot for each step }
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}:
@@ -351,7 +351,7 @@ stepsWF(sal)
 statusWF(sal)
 targetsWF(sal)
 outfiles(sal)
-SEobj(sal)
+SE(sal)
 dependency(sal)
 projectInfo(sal)
 runInfo(sal)

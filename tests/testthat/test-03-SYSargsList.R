@@ -25,7 +25,7 @@ test_that("check_SYSargsList_test", {
     expect_type(dependency(sal), "list")
     expect_type(projectInfo(sal), "list")
     expect_type(targetsWF(sal), "list")
-    expect_type(SEobj(sal), "list")
+    expect_type(SE(sal), "list")
     expect_type(outfiles(sal), "list")
     expect_type(cmdlist(sal), "list")
     expect_type(runInfo(sal), "list")

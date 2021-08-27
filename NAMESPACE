@@ -144,7 +144,7 @@ exportMethods(
     "inputvars", "cmdToCwl", "status",
     "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-", 
     ## SYSargsList
-    "stepsWF", "statusWF", "targetsWF", "outfiles", "SEobj",
+    "stepsWF", "statusWF", "targetsWF", "outfiles", "SE",
     "dependency", "projectInfo", "runInfo",
     "sysargslist", "subset", "stepName", "getColumn", "updateColumn<-",
     "SampleName", "viewEnvir", "copyEnvir",

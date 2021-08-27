@@ -96,6 +96,7 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
             )
             sal_imp$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
             sal_imp$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
+            sal_imp$SE[df$step_name[i]] <- list(NULL)
             sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
             sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(list(directory = FALSE, run_step = "mandatory", run_session = "rsession"))

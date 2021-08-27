@@ -76,6 +76,7 @@ loadWorkflow <- function(targets = NULL, wf_file, input_file, dir_path = "param/
         if (inherits(targets, "SummarizedExperiment")) {
             mytargets <- as.data.frame(SummarizedExperiment::colData(targets))
             targetsheader <- S4Vectors::metadata(targets)
+            WF$files$id <- colnames(targets)
             WF <- c(list(targets = mytargets, targetsheader = targetsheader), WF)
         } else {
             if (!file.exists(file.path(targets)) == TRUE) stop("Provide valid 'targets' file. Check the file PATH.")
@@ -90,10 +91,12 @@ loadWorkflow <- function(targets = NULL, wf_file, input_file, dir_path = "param/
             targetsheader <- readLines(normalizePath(file.path(targets)))
             targetsheader <- targetsheader[grepl("^#", targetsheader)]
             WF$files["targets"] <- file.path(targets)
+            WF$files["id"] <- id
             WF <- c(list(targets = mytargets, targetsheader = list(targetsheader = targetsheader)), WF)
         }
     } else {
         WF$files["targets"] <- NA
+        WF$files["id"] <- id
         WF <- c(list(targets = data.frame(), targetsheader = list()), WF)
     }
     return(as(WF, "SYSargs2"))
