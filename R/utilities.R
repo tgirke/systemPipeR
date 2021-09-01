@@ -529,10 +529,10 @@ clusterRun <- function(args,
       args.f <- seq(along = cmdlist(args))
     } 
     ## batchtools routines
-    f <- function(i, args, ...) FUN(args = args[i], ...)
+    fct <- function(i, args, ...) FUN(args = args[i], ...)
     logdir1 <- paste0(path, "/submitargs", runid, "_btdb_", paste(sample(0:9, 4), collapse = ""))
     reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-    ids <- batchtools::batchMap(fun = f, args.f, more.args = more.args, reg = reg)
+    ids <- batchtools::batchMap(fun = fct, args.f, more.args = more.args, reg = reg)
     chunk <- batchtools::chunk(ids$job.id, n.chunks = Njobs, shuffle = FALSE)
     ids$chunk <- chunk
     done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resourceList)
@@ -540,7 +540,7 @@ clusterRun <- function(args,
   } else 	if(inherits(args, c("SYSargsList"))){
     if(!identical(FUN, runWF)) stop("For 'SYargsList' class, please use `FUN=runWF` function")
     sal <- args
-    f <- function(i, sal, ...){
+    fct_sal <- function(i, sal, ...){
       sal <- runWF(sysargs=sal, ...)
       return(sal)
     }
@@ -548,7 +548,7 @@ clusterRun <- function(args,
     for(j in seq_along(sal)){
       logdir1 <- paste0(path, "/submitargs", 01, "_btdb_", paste(sample(0:9, 4), collapse = ""))
       reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
-      ids <- batchtools::batchMap(fun = f, 1, more.args = list(sal=sal, steps=j), reg = reg)
+      ids <- batchtools::batchMap(fun = fct_sal, 1, more.args = list(sal=sal, steps=j), reg = reg)
       chunk <- batchtools::chunk(ids$job.id, n.chunks = 1, shuffle = FALSE)
       ids$chunk <- chunk
       done <- batchtools::submitJobs(ids = ids, reg = reg, resources = resourceList)
@@ -935,9 +935,9 @@ run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, 
       edgeDF <- cbind(edgeDF, deg[rownames(edgeDF), ])
     }
     if (nchar(mdsplot) > 0) {
-      pdf(paste("./results/sample_MDS_", paste(unique(subset), collapse = "-"), ".pdf", sep = ""))
+      grDevices::pdf(paste("./results/sample_MDS_", paste(unique(subset), collapse = "-"), ".pdf", sep = ""))
       plotMDS(y)
-      dev.off()
+      grDevices::dev.off()
     }
   }
   return(edgeDF)

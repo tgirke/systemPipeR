@@ -15,12 +15,12 @@
 setGeneric(name = "addAssay", def = function(x, ...) standardGeneric("addAssay"))
 setMethod(f = "addAssay", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
     listSE <- SimpleList()
-    for (i in seq_along(assays(x))) {
-        listSE[[i]] <- assays(x)[[i]]
+    for (i in seq_along(SummarizedExperiment::assays(x))) {
+        listSE[[i]] <- SummarizedExperiment::assays(x)[[i]]
     }
     listSE[[length(listSE) + 1]] <- value
-    names(listSE) <- c(assayNames(x), xName)
-    assays(x, withDimnames = FALSE) <- listSE
+    names(listSE) <- c(SummarizedExperiment::assayNames(x), xName)
+    SummarizedExperiment::assays(x, withDimnames = FALSE) <- listSE
     return(x)
 })
 
@@ -61,7 +61,7 @@ SPRdata <- function(counts = SimpleList(), rowData = NULL, rowRanges = GRangesLi
             colData = targets,
             metadata = metadata
         )
-        if (all(!length(assays(se))==0 & is.null(assayNames(se)))) assayNames(se) <- "counts"
+        if (all(!length(assays(se))==0 & is.null(SummarizedExperiment::assayNames(se)))) SummarizedExperiment::assayNames(se) <- "counts"
         return(se)
     } else if (!is.null(SEobj)) {
         if (SEobjName == "default") SEobjName <- paste0("assays_", length(assays(SEobj)) + 1)

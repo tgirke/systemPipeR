@@ -735,6 +735,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
 }
 
 .cbindTargetsOutfiles <- function(sal, targets_con, new_targets_col, rm_targets_con = NULL) {
+  . <- print_targets <- NULL
   ## handle outfiles
   outfiles <- outfiles(sal)[targets_con] %>%
     lapply(as.data.frame) %>%

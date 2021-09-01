@@ -781,7 +781,7 @@ writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE){
   yaml::write_yaml(metadata(SE), file.path(path, paste0("metadata.yml")))
   ## colData
   write.table(colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
-              col.names = TRUE, sep = "\t")
+              col.names = NA, sep = "\t")
   ## RowRanges
   if(!is.null(rowRanges(SE))){
     write.table(as.data.frame(rowRanges(SE)), file=file.path(path, paste0("rowRanges.csv")),
@@ -815,7 +815,7 @@ readSE <- function(dir.path, dir.name){
   ## Metadata
   metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
   ## colData
-  colData <- read.table(file.path(path, paste0("colData.csv")), check.names = FALSE)
+  colData <- read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t")
   ## rowRanges
   files_counts <- list.files(path, pattern = "rowRanges")
   if(length(files_counts) > 0) {
@@ -1154,6 +1154,7 @@ renderLogs <- function(sysargs,
 ## It returns a data frame of title levels, title numbers, title text, whether it is selected, and R code under this title.
 
 subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile = NULL, save_Rmd = TRUE) {
+    . <- NULL
     # function start, check inputs
     assertthat::assert_that(file.exists(Rmd))
     if (assertthat::not_empty(input_steps)) assertthat::assert_that(assertthat::is.string(input_steps))
@@ -1597,6 +1598,7 @@ is.fullPath <- function(x) {
 ##########################
 ## Internal parse function used in the subsetRmd function
 .parse_step <- function(t_lvl, input_steps) {
+    . <- NULL
     t_lvl_name <- names(t_lvl)
     input_steps <- unlist(input_steps %>% stringr::str_remove_all(" ") %>% stringr::str_split(",") %>% list())
     # single steps

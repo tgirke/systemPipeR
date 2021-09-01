@@ -151,13 +151,13 @@ countRangeset <- function(bfl, args, format="tabular", ...) {
       df <- read.delim(infile1(args)[i],comment.char = "#")
       peaks <- as(df, "GRanges")
     } else if(format=="bed") {
-      peaks <- import.bed(infile1(args)[i])
+      peaks <- rtracklayer::import.bed(infile1(args)[i])
     } else {
       stop("Input file format not supported.")
     }
     names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
     peaks <- split(peaks, names(peaks))
-    countDF <- summarizeOverlaps(peaks, bfl, ...)
+    countDF <- GenomicAlignments::summarizeOverlaps(peaks, bfl, ...)
     countDF <- assays(countDF)$counts
     write.table(countDF, countDFnames[i], col.names=NA, quote=FALSE, sep="\t")
     cat("Wrote count result", i, "to", basename(countDFnames[i]), "\n")
@@ -191,9 +191,9 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
     countDF <- read.delim(countfiles[i], row.names=1)
     edgeDF <- diffFct(countDF=countDF, targets, cmp, ...)
     write.table(edgeDF, dbrDFnames[i], quote=FALSE, sep="\t", col.names = NA)
-    pdf(paste0(dbrDFnames[i], ".pdf"))
+    grDevices::pdf(paste0(dbrDFnames[i], ".pdf"))
     DBR_list <- filterDEGs(degDF=edgeDF, filter=dbrfilter)
-    dev.off()
+    grDevices::dev.off()
     dbrlists <- c(dbrlists, list(DBR_list))
     names(dbrlists)[i] <- names(dbrDFnames[i]) 
     cat("Wrote count result", i, "to", basename(dbrDFnames[i]), "\n")
@@ -216,8 +216,8 @@ olRanges <- function(query, subject, output="gr") {
   }
   ## Find overlapping ranges
   if(class(query)=="GRanges") {
-    seqlengths(query) <- rep(NA, length(seqlengths(query)))
-    seqlengths(subject) <- rep(NA, length(seqlengths(subject)))
+    GenomeInfoDb::seqlengths(query) <- rep(NA, length(GenomeInfoDb::seqlengths(query)))
+    GenomeInfoDb::seqlengths(subject) <- rep(NA, length(GenomeInfoDb::seqlengths(subject)))
   }
   olindex <- as.matrix(findOverlaps(query, subject))
   query <- query[olindex[,1]]

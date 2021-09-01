@@ -94,15 +94,13 @@ setMethod(
 
 ## (A.1.2) Obtain mappings from BioC
 .sampleDFgene2GO <- function(lib) {
-  ## global functions or variables
-  #GOTERM <- getOntology <- NULL
   require(lib, character.only = TRUE)
   mylibbase <- gsub(".db", "", lib)
-  GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), getOntology, "MF") # generates list with GeneID components containing MFGOs
+  GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
   GO_MF_DF <- data.frame(GOID = unlist(GOMF), GeneID = rep(names(GOMF), as.vector(sapply(GOMF, length))), Count = rep(as.vector(sapply(GOMF, length)), as.vector(sapply(GOMF, length))))
-  GOBP <- eapply(get(paste(mylibbase, "GO", sep = "")), getOntology, "BP") # generates list with GeneID components containing BPGOs
+  GOBP <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
   GO_BP_DF <- data.frame(GOID = unlist(GOBP), GeneID = rep(names(GOBP), as.vector(sapply(GOBP, length))), Count = rep(as.vector(sapply(GOBP, length)), as.vector(sapply(GOBP, length))))
-  GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), getOntology, "CC") # generates list with GeneID components containing CCGOs
+  GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
   GO_CC_DF <- data.frame(GOID = unlist(GOCC), GeneID = rep(names(GOCC), as.vector(sapply(GOCC, length))), Count = rep(as.vector(sapply(GOCC, length)), as.vector(sapply(GOCC, length))))
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
   go_df <- data.frame(GOID = names(Term(GOTERM)), Term = Term(GOTERM), Ont = Ontology(GOTERM))
@@ -321,7 +319,7 @@ GOHyperGAll <- function(catdb, gocat = "MF", sample, Nannot = 2) {
 ## (C.1) Define subsetting function
 GOHyperGAll_Subset <- function(catdb, GOHyperGAll_result, sample = test_sample, type = "goSlim", myslimv) { # type: "goSlim" or "assigned"; optional argument "myslimv" to privde custom goSlim vector
   ## global functions or variables
-  #test_sample <- GO_CC_DF <- NULL
+  test_sample <- NULL
   if (type == "goSlim") {
     if (missing(myslimv)) {
       slimv <- c("GO:0003674", "GO:0008150", "GO:0005575", "GO:0030246", "GO:0008289", "GO:0003676", "GO:0000166", "GO:0019825", "GO:0005515", "GO:0003824", "GO:0030234", "GO:0003774", "GO:0004871", "GO:0005198", "GO:0030528", "GO:0045182", "GO:0005215", "GO:0006519", "GO:0007154", "GO:0016043", "GO:0006412", "GO:0006464", "GO:0006810", "GO:0007275", "GO:0007049", "GO:0005975", "GO:0006629", "GO:0006139", "GO:0019748", "GO:0015979", "GO:0005618", "GO:0005829", "GO:0005783", "GO:0005768", "GO:0005794", "GO:0005739", "GO:0005777", "GO:0009536", "GO:0005840", "GO:0005773", "GO:0005764", "GO:0005856", "GO:0005634", "GO:0005886", "GO:0005576") # contains new unknown terms: "GO:0003674", "GO:0008150", "GO:0005575"
@@ -335,7 +333,7 @@ GOHyperGAll_Subset <- function(catdb, GOHyperGAll_result, sample = test_sample, 
     ## Import required data frames
     GO_MF_DF <- catmap(catdb)$D_MF
     GO_BP_DF <- catmap(catdb)$D_BP
-    # GO_CC_DF <- catmap(catdb)$D_CC
+    GO_CC_DF <- catmap(catdb)$D_CC
     termGO <- c(
       as.vector(GO_MF_DF[GO_MF_DF$GeneID %in% sample, 1]),
       as.vector(GO_BP_DF[GO_BP_DF$GeneID %in% sample, 1]),
@@ -545,7 +543,7 @@ GOCluster_Report <- function(catdb, setlist, id_type = "affy", method = "all", C
 ######################
 goBarplot <- function(GOBatchResult, gocat) {
   ## global functions or variables
-  #SampleMatch <- Sample <- NULL
+  SampleMatch <- Sample <- NULL
   x <- GOBatchResult
   x <- x[, c("SampleMatch", "Term", "CLID", "Ont")]
   x <- x[x$Ont == gocat, 1:3]

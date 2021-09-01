@@ -259,8 +259,8 @@ appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mut
 
 ## Internal Functions
 .cmdToCwl <- function(cmd, mute = FALSE) {
+    . <- slash_line <- NULL
     stopifnot(is.character(cmd) && length(cmd) == 1)
-
     cmd_split <- stringr::str_split(cmd, "\n", simplify = TRUE) %>% # split args by line
         stringr::str_remove_all("^[ ]+") %>% # remove all leading, ending spaces
         stringr::str_remove_all("[ ]+$")

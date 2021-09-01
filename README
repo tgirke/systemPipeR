@@ -1,4 +1,7 @@
 changelog
+    version 1.27.24
+        - Dependencies and global variables fixed
+    
     version 1.27.23
         - Added new method: updateStatus<-
         - Added new slot to LineWise Class - runInfo

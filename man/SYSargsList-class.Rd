@@ -93,6 +93,7 @@ R-based workflow.
 
 SYSargsList(sysargs = NULL, step_name = "default", 
             targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", 
+            id = "SampleName",
             inputvars = NULL, rm_targets_col = NULL, 
             dir = TRUE, dependency = "", 
             run_step = "mandatory",
@@ -165,6 +166,10 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   \item{dir_path}{
   full path to the directory with the \code{CWL parameters} and \code{input} 
   files.
+}
+  \item{id}{
+  A column from \code{targets} file, which will be used as an id for each one
+  of the samples. It is required to be unique.
 }
   \item{inputvars}{
   variables list defined in the \code{input} file that matches the column names 

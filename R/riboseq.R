@@ -2,8 +2,6 @@
 ## Generate various feature types from TxDb objects ##
 ######################################################
 genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, downstream=0, verbose=TRUE) {
-    ## global functions or variables
-    seqinfo <- mcols <- seqlengths <- strand <- NULL
     ## Check validity of inputs
     supported_features <- c("tx_type", "promoter", "intron", "exon", "cds", "fiveUTR", "threeUTR", "intergenic")
     if(tolower(featuretype[1])=="all") featuretype <- supported_features
@@ -490,7 +488,7 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
             scale_x_discrete(limits = unique(x$Feature))
         get(graphicsformat)(graphicsfile)
             print(myplot)
-        dev.off()
+        grDevices::dev.off()
         cat("Generated graphics file", graphicsfile, "\n")
         return(myplot)
     ## Plot with read length resolution
@@ -540,7 +538,7 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
             grid::grid.newpage() # Open a new page on grid device
             grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
             for(i in seq(along=myplotlist)) print(myplotlist[[i]], vp = grid::viewport(layout.pos.row = 1, layout.pos.col = i))
-        dev.off()
+        grDevices::dev.off()
         cat("Generated graphics file", graphicsfile, "\n")
         return(myplotlist)
     }
