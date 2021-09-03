@@ -544,7 +544,7 @@ makeDot <- function(df,
         node [style=filled];
         {rank=same; legend_sysargs_step; legend_optional; legend_cluster}
         legend_main_branch -> legend_sysargs_step -> legend_optional -> legend_cluster[color="#eeeeee"]
-        legend_main_branch[label="Main branch/Mandatory/R step/R session" color="dodgerblue", style="filled", fillcolor="#f7f7f7"];
+        legend_main_branch[label="Main branch/Mandatory/R step/R session" color="dodgerblue", style="filled", fillcolor="#d3d6eb"];
         legend_cluster -> step_state[color="#eeeeee"];
         step_state[style="filled", shape="box" color=white, label =<
             <table>
@@ -554,9 +554,9 @@ makeDot <- function(df,
             >];
         label="Legends";
         fontsize = 30;
-        legend_sysargs_step[label="Sysargs step" style="rounded, filled", shape="box", fillcolor="#f7f7f7"];
+        legend_sysargs_step[label="Sysargs step" style="rounded, filled", shape="box", fillcolor="#d3d6eb"];
         legend_optional[label="Optional" style="rounded, filled", fillcolor=white];
-        legend_cluster[label="cluster" style="filled, dashed", fillcolor="#f7f7f7"];
+        legend_cluster[label="cluster" style="filled, dashed", fillcolor="#d3d6eb"];
     }\n'
     )
 }
@@ -588,7 +588,7 @@ makeDot <- function(df,
         duration <- .stepDuration(time_start[i], time_end[i])
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
-            if(req[i] == "mandatory") 'fillcolor="#f7f7f7" ' else "",
+            if(req[i] == "mandatory") 'fillcolor="#d3d6eb" ' else "",
             if(req[i] == "mandatory" && session[i] == "cluster") 'style="filled, dashed" '
             else if(req[i] == "mandatory" && session[i] != "cluster") 'style="filled" '
             else if(req[i] != "mandatory" && session[i] == "cluster") 'style="dashed" '
