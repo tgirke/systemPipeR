@@ -26,7 +26,7 @@
 % Subsetting and Quick access
 \alias{[,SYSargsList,ANY,ANY,ANY-method}
 \alias{[[,SYSargsList,ANY,missing-method}
-%\alias{[[,SYSargsList,ANY,ANY-method}
+\alias{[[,SYSargsList,ANY,ANY-method}
 \alias{$,SYSargsList-method}
 \alias{names,SYSargsList-method}
 \alias{show,SYSargsList-method}
@@ -37,7 +37,7 @@
 \alias{sysargslist}
 \alias{sysargslist,SYSargsList-method}
 % Methods 
-\alias{subset}
+%\alias{subset}
 \alias{subset,SYSargsList-method}
 \alias{getColumn}
 \alias{getColumn,SYSargsList-method}
@@ -62,6 +62,7 @@
 \alias{cmdlist,SYSargsList-method}
 % Replacement Methods
 \alias{[[<-,SYSargsList,ANY,ANY,ANY-method}
+\alias{[[<-,SYSargsList,ANY,ANY-method}
 \alias{dependency<-}
 \alias{dependency<-,SYSargsList-method}
 \alias{appendStep<-}
@@ -126,11 +127,9 @@ viewEnvir(x)
 
 ## Subset Methods
 
-subset(x, ...)
+# subset(x, ...)
 getColumn(x, step, position = c("outfiles", "targetsWF"), column = 1, 
           names = SampleName(x, step))
-
-
 
 ## Replacement
 
@@ -307,6 +306,8 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
               \code{SE} slot }
     \item{cmdlist}{\code{signature(x = "SYSargsList", sample=NULL)}: 
               extracts data from \code{cmdlist} slot for each step }
+    \item{subset}{\code{signature(x = "SYSargsList")}: 
+              subset the object based on the steps and targets samples }
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}:
               replacement method for append a step }
     \item{appendStep<-}{\code{signature(x = "SYSargsList")}: 
