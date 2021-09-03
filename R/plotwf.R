@@ -384,7 +384,8 @@ makeDot <- function(df,
     branch_len <- unlist(lapply(tree, length))
     branch_long <- which(branch_len == max(branch_len))
     if (verbose) cat("Find branch(es)", paste0(branch_long, collapse = ", "), ": with the largest number of steps", max(branch_len), "\n")
-    branch_recommand <- intersect(branch_long, branch_complete)
+    branch_recommand <- base::intersect(branch_long, branch_complete)
+    branch_recommand <- tree[branch_recommand %in% tree]
     # use first complete branch if no intersection
     if (length(branch_recommand) == 0) {
         branch_recommand <- branch_complete[1]
@@ -668,6 +669,8 @@ makeDot <- function(df,
     }
     df$dep <- dep
     df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal_temp)[[x]], "SYSargs2")), "sysargs", "r")
+    df$req <- sapply(df$step_name, function(x) sal_temp$runInfo$runOption[[x]]$run_step)
+    df$session <- sapply(df$step_name, function(x) sal_temp$runInfo$runOption[[x]]$run_session)
     df$has_run <- ifelse(!sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Pending", TRUE, FALSE)
     df$success <- ifelse(sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Success", TRUE, FALSE)
     df <- cbind(df, data.frame(
