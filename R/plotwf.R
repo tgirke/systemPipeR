@@ -219,7 +219,7 @@ makeDot <- function(df,
                     in_log = FALSE,
                     verbose = FALSE,
                     exit_point = 0,
-                    branch_msg = "") {
+                    msg = "") {
     # check
     stopifnot(is.logical(verbose) && length(verbose) == 1)
     stopifnot(is.logical(show_legend) && length(show_legend) == 1)
@@ -274,7 +274,7 @@ makeDot <- function(df,
         branch_no <- .recommendBranch(tree, df$step_name, verbose)
         branch_msg <- names(branch_no)[1]
         if(stringr::str_starts(branch_msg, "Workflow's first step is")) {
-            branch_msg <- branch_msg
+            msg <- branch_msg
             df <- df[df$step_name %in% tree[[branch_no]], ]
         }
     }
@@ -291,9 +291,9 @@ makeDot <- function(df,
     branch_trans <- paste(tree[[branch_no]], collapse = " -> ")
     # translation
     trans_func <- switch(layout,
-        "compact" = .WFcompact,
-        "vertical" = .WFvert,
-        "horizontal" = .WFhori
+                         "compact" = .WFcompact,
+                         "vertical" = .WFvert,
+                         "horizontal" = .WFhori
     )
     if (verbose) message("Translate tree  to DOT language...")
     # build the skeleton
@@ -311,7 +311,7 @@ makeDot <- function(df,
     if (show_legend) p_main <- paste0(p_main, .addDotLegend(mark_main_branch), collapse = "\n")
     # close the plot
     # return plot and additional msg
-    c(paste0(p_main, "\n}\n"), branch_msg)
+    c(paste0(p_main, "\n}\n"), msg)
 }
 
 #' internal func to find all dep branches
