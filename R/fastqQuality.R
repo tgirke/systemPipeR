@@ -20,16 +20,16 @@ seeFastq <- function(fastq, batchsize, klength=8) {
     ## Processing of single fastq file
     seeFastqSingle <- function(fastq, batchsize, klength) {
         ## Random sample N reads from fastq file (N=batchsize)
-        f <- FastqSampler(fastq, batchsize)
-        fq <- yield(f)
+        f <- ShortRead::FastqSampler(fastq, batchsize)
+        fq <- ShortRead::yield(f)
         nReads <- f$status()[["total"]] # Total number of reads in fastq file
         close(f)
         
         ## If reads are not of constant width then inject them into a matrix pre-populated with 
         ## N/NA values and of dimensions N_rows = number_of_reads and N_columns = length_of_longest_read. 
         if(length(unique(width(fq))) == 1) {
-            q <- as.matrix(PhredQuality(quality(fq))) 
-            s <- as.matrix(sread(fq))
+            q <- as.matrix(Biostrings::PhredQuality(Biostrings::quality(fq))) 
+            s <- as.matrix(ShortRead::sread(fq))
         } else {
             mymin <- min(width(fq)); mymax <- max(width(fq))
             s <- matrix("N", length(fq), mymax)
@@ -72,7 +72,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
         A <- q; A[s %in% c("T", "G", "C")] <- NA; A <- colMeans(A, na.rm=TRUE)
         T <- q; T[s %in% c("A", "G", "C")] <- NA; T <- colMeans(T, na.rm=TRUE)
         G <- q; G[s %in% c("T", "A", "C")] <- NA; G <- colMeans(G, na.rm=TRUE)
-        C <- q; C[s %in% c("T", "G", "A")] <- NA; C <- colMeans(C, na.rm=TRUE)
+        C <- q; C[s %in% c("T", "G", "A")] <- NA; C <- BiocGenerics::colMeans(C, na.rm=TRUE)
         cstats <- data.frame(Quality=c(A, C, G, T), Base=rep(c("A", "C", "G", "T"), each=length(A)), Cycle=c(names(A), names(C), names(G), names(T)))
         cstats[,3] <- factor(cstats[,3], levels=unique(cstats[,3]), ordered=TRUE) 
 
@@ -130,6 +130,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
 
 ## (B) Plot seeFastq results 
 seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
+    checkPkg("grid", quietly = FALSE)
     ## Create plotting instances from fqlist
     fastqPlot <- function(x=fqlist) {
         Cycle <- low <- mid <- top <- Frequency <- Base <- Quality <- RelDiv <- Method <- minQuality <- Percent <- Outliers <- NULL

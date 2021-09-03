@@ -487,6 +487,7 @@ clusterRun <- function(args,
                        conffile = ".batchtools.conf.R", 
                        template = "batchtools.slurm.tmpl", 
                        Njobs, runid = "01", resourceList) {
+  checkPkg("batchtools", quietly = FALSE)
   ## Validity checks of inputs
   if (!any(inherits(args, c("SYSargs", "SYSargs2", "SYSargsList")))) 
     stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
@@ -876,6 +877,8 @@ readComp <- function(file, format = "vector", delim = "-") {
 #######################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
 run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, mdsplot = "") {
+  pkg <- c("edgeR", "limma", "grDevices")
+  checkPkg(pkg, quietly = FALSE)
   ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
   ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
   if (all(class(cmp) != "matrix" & length(cmp) == 2)) cmp <- t(as.matrix(cmp))
@@ -892,7 +895,7 @@ run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, 
   }
   for (j in loopv) {
     ## Filtering and normalization
-    y <- DGEList(counts = countDF, group = group) # Constructs DGEList object
+    y <- edgeR::DGEList(counts = countDF, group = group) # Constructs DGEList object
     if (independent == TRUE) {
       subset <- samples[samples %in% cmp[j, ]]
       y <- y[, names(subset)]
@@ -900,7 +903,7 @@ run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, 
     }
     keep <- rowSums(edgeR::cpm(y) > 1) >= 2
     y <- y[keep, ]
-    y <- calcNormFactors(y)
+    y <- edgeR::calcNormFactors(y)
     ## Design matrix
     if (length(paired) == 0) {
       design <- model.matrix(~ 0 + y$samples$group, data = y$samples)
@@ -913,30 +916,30 @@ run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, 
       levels(design) <- levels(y$samples$group)
     }
     ## Estimate dispersion
-    y <- estimateGLMCommonDisp(y, design, verbose = TRUE) # Estimates common dispersions
-    y <- estimateGLMTrendedDisp(y, design) # Estimates trended dispersions
-    y <- estimateGLMTagwiseDisp(y, design) # Estimates tagwise dispersions
-    fit <- glmFit(y, design) # Fits the negative binomial GLM for each tag and produces an object of class DGEGLM with some new components.
+    y <- edgeR::estimateGLMCommonDisp(y, design, verbose = TRUE) # Estimates common dispersions
+    y <- edgeR::estimateGLMTrendedDisp(y, design) # Estimates trended dispersions
+    y <- edgeR::estimateGLMTagwiseDisp(y, design) # Estimates tagwise dispersions
+    fit <- edgeR::glmFit(y, design) # Fits the negative binomial GLM for each tag and produces an object of class DGEGLM with some new components.
     ## Contrast matrix is optional but makes anlysis more transparent
     if (independent == TRUE) {
       mycomp <- paste(cmp[j, 1], cmp[j, 2], sep = "-")
     } else {
       mycomp <- paste(cmp[, 1], cmp[, 2], sep = "-")
     }
-    if (length(paired) == 0) contrasts <- makeContrasts(contrasts = mycomp, levels = design)
+    if (length(paired) == 0) contrasts <- limma::makeContrasts(contrasts = mycomp, levels = design)
     for (i in seq(along = mycomp)) {
       if (length(paired) == 0) {
-        lrt <- glmLRT(fit, contrast = contrasts[, i]) # Takes DGEGLM object and carries out the likelihood ratio test.
+        lrt <- edgeR::glmLRT(fit, contrast = contrasts[, i]) # Takes DGEGLM object and carries out the likelihood ratio test.
       } else {
-        lrt <- glmLRT(fit) # No contrast matrix with paired design
+        lrt <- edgeR::glmLRT(fit) # No contrast matrix with paired design
       }
-      deg <- as.data.frame(topTags(lrt, n = length(rownames(y))))
+      deg <- as.data.frame(edgeR::topTags(lrt, n = length(rownames(y))))
       colnames(deg) <- paste(paste(mycomp[i], collapse = "_"), colnames(deg), sep = "_")
       edgeDF <- cbind(edgeDF, deg[rownames(edgeDF), ])
     }
     if (nchar(mdsplot) > 0) {
       grDevices::pdf(paste("./results/sample_MDS_", paste(unique(subset), collapse = "-"), ".pdf", sep = ""))
-      plotMDS(y)
+      limma::plotMDS(y)
       grDevices::dev.off()
     }
   }
@@ -951,6 +954,8 @@ run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, 
 ####################################################################
 ## If independent=TRUE then countDF will be subsetted for each comparison
 run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE, lfcShrink=FALSE, type="normal") {
+  pkg <- c("DESeq2")
+  checkPkg(pkg, quietly = FALSE)
   ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
   ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
   if (all(class(cmp) != "matrix" & length(cmp) == 2)) cmp <- t(as.matrix(cmp))
@@ -1049,6 +1054,7 @@ filterDEGs <- function(degDF, filter, plot = TRUE) {
 ## showDF ##
 #############
 showDF <- function(data, ...) {
+  checkPkg("DT", quietly = FALSE)
   DT::datatable(
     data,
     extensions = c("FixedColumns", "Scroller"),
@@ -1065,3 +1071,19 @@ showDF <- function(data, ...) {
 # targetspath <- system.file("extdata", "targets.txt", package="systemPipeR") 
 # targets <- read.delim(targetspath, comment.char = "#")
 # showDF(targets)
+
+###############
+## checkPkg ##
+###############
+# param pkg character vector of the names of packages
+checkPkg <- function(pkg, quietly = TRUE){
+  if (!inherits(pkg, "character")) stop("Argument 'pkg' needs to be assigned an object of class 'character'")
+  for(i in pkg){
+    if(!requireNamespace(i, quietly = quietly)) {
+      stop(paste0("Package '", i, "' should be installed.","\n"), call. = FALSE)
+    }
+  }
+}
+# pkg <- c("AnnotationDbi", "GO.db")
+# pkg <- c("annotate")
+# checkPkg(pkg, quietly = FALSE)

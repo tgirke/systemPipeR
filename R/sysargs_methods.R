@@ -135,7 +135,10 @@ systemArgs <- function(sysma, mytargets, type = "SYSargs") {
     arglist <- sapply(as.character(unique(sysma[, "PairSet"])), function(x) as.vector(t(as.matrix(sysma[sysma[, "PairSet"] == x, 2:3]))), simplify = FALSE)
     for (i in seq(along = arglist)) names(arglist[[i]]) <- paste(rep(c("n", "v"), length(arglist[[i]]) / 2), rep(1:(length(arglist[[i]]) / 2), 2), sep = "")
     if (type == "json") {
-        return(toJSON(arglist))
+        if(!requireNamespace("rjson", quietly = TRUE)) {
+            stop(paste("Package 'rjson' should be installed.", "Please use: `install.packages('rjson')`", sep = "\n"))
+        }
+        return(rjson::toJSON(arglist))
     }
     ## Read comment/header lines from targets file
     targetsheader <- readLines(mytargets)

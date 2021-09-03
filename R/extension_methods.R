@@ -12,9 +12,9 @@
 ##################################################################
 ## addAssay: Extension accessor for SummarizedExperiment object ##
 ##################################################################
-setGeneric(name = "addAssay", def = function(x, ...) standardGeneric("addAssay"))
-setMethod(f = "addAssay", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
-    listSE <- SimpleList()
+methods::setGeneric(name = "addAssay", def = function(x, ...) standardGeneric("addAssay"))
+methods::setMethod(f = "addAssay", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
+    listSE <- S4Vectors::SimpleList()
     for (i in seq_along(SummarizedExperiment::assays(x))) {
         listSE[[i]] <- SummarizedExperiment::assays(x)[[i]]
     }
@@ -27,15 +27,15 @@ setMethod(f = "addAssay", signature = "SummarizedExperiment", definition = funct
 ####################################################################
 ## addMetadata: Extension accessor for SummarizedExperiment object ##
 ####################################################################
-setGeneric(name = "addMetadata", def = function(x, ...) standardGeneric("addMetadata"))
-setMethod(f = "addMetadata", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
+methods::setGeneric(name = "addMetadata", def = function(x, ...) standardGeneric("addMetadata"))
+methods::setMethod(f = "addMetadata", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
     listSE <- list()
-    for (i in seq_along(metadata(x))) {
-        listSE[[i]] <- metadata(x)[[i]]
+    for (i in seq_along(SummarizedExperiment::metadata(x))) {
+        listSE[[i]] <- SummarizedExperiment::metadata(x)[[i]]
     }
     listSE[[length(listSE) + 1]] <- value
-    names(listSE) <- c(names(metadata(x)), xName)
-    metadata(x) <- listSE
+    names(listSE) <- c(names(SummarizedExperiment::metadata(x)), xName)
+    SummarizedExperiment::metadata(x) <- listSE
     return(x)
 })
 
@@ -56,15 +56,15 @@ SPRdata <- function(counts = SimpleList(), rowData = NULL, rowRanges = GRangesLi
             cmpMA <- systemPipeR::readComp(file = targetspath, format = "matrix", delim = "-")
             metadata <- list(version = packageVersion("systemPipeR"), comparison = cmpMA)
         }
-        se <- SummarizedExperiment(
+        se <- SummarizedExperiment::SummarizedExperiment(
             assays = counts,
             colData = targets,
             metadata = metadata
         )
-        if (all(!length(assays(se))==0 & is.null(SummarizedExperiment::assayNames(se)))) SummarizedExperiment::assayNames(se) <- "counts"
+        if (all(!length(SummarizedExperiment::assays(se))==0 & is.null(SummarizedExperiment::assayNames(se)))) SummarizedExperiment::assayNames(se) <- "counts"
         return(se)
     } else if (!is.null(SEobj)) {
-        if (SEobjName == "default") SEobjName <- paste0("assays_", length(assays(SEobj)) + 1)
+        if (SEobjName == "default") SEobjName <- paste0("assays_", length(SummarizedExperiment::assays(SEobj)) + 1)
         sprSE <- addAssay(SEobj, counts, SEobjName)
     }
 }
