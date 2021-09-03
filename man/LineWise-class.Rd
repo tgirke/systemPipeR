@@ -9,6 +9,7 @@
 \alias{[,LineWise,ANY,ANY,ANY-method}
 \alias{[[,LineWise,ANY,missing-method}
 \alias{[[<-,LineWise,ANY,ANY,ANY-method}
+\alias{[[<-,LineWise,ANY,ANY-method}
 \alias{$,LineWise-method}
 \alias{length,LineWise-method}
 \alias{names,LineWise-method}

@@ -22,16 +22,16 @@
 ## (C) Extract 100,000 reads from each fastq file mapping to the truncated regions in reference
 ## Step (C) is performed with the following function
 .subsetReadsByMappingRegion <- function(args) {
-  ## global functions or variables
-  readGAlignments <- seqlengths <- NULL
+    pkg <- c("GenomicAlignments", "GenomeInfoDb")
+    checkPkg(pkg, quietly = FALSE)
 	chromosomelength <- 100000
 	mydir <- getwd()
 	setwd("./data/SRP010938_sub") # outdir
 	for(i in seq(along=outpaths(args))) {
 		fl <- outpaths(args)[i]
-		si <- seqinfo(BamFile(fl))                                                                                                                                                                                                                 
-		gr <- GRanges(seqnames(si), IRanges(100, seqlengths(si)-100))                                                                                                                                                                                
-		aligns <- readGAlignments(fl, param=ScanBamParam(which=gr), use.names=TRUE)
+		si <- GenomeInfoDb::seqinfo(BamFile(fl))                                                                                                                                                                                                                 
+		gr <- GRanges(seqnames(si), IRanges::IRanges(100, GenomeInfoDb::seqlengths(si)-100))                                                                                                                                                                                
+		aligns <- GenomicAlignments::readGAlignments(fl, param=ScanBamParam(which=gr), use.names=TRUE)
 		keepids <- names(aligns[start(aligns) < chromosomelength]) # Return read ids mapping in first 100000 nucleotides of chromosomes
 		myN <- sample(90000:100000, 1) # Keep number of random sampled reads between 90-100K
 		keepids <- sample(unique(keepids), myN) # random sample x reads

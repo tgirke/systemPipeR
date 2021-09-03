@@ -2,6 +2,9 @@
 ## Generate various feature types from TxDb objects ##
 ######################################################
 genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, downstream=0, verbose=TRUE) {
+    pkg <- c("GenomeInfoDb", "GenomicFeatures")
+    checkPkg(pkg, quietly = FALSE)
+    #require("GenomicFeatures")
     ## Check validity of inputs
     supported_features <- c("tx_type", "promoter", "intron", "exon", "cds", "fiveUTR", "threeUTR", "intergenic")
     if(tolower(featuretype[1])=="all") featuretype <- supported_features
@@ -9,24 +12,24 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     if(any(!featuretype %in% supported_features)) stop("featuretype supports any of the following values: ", paste(supported_features, collapse=", "))
 	
     ## Empty GRangesList to store results
-    featuresGRl <- GRangesList()
-    seqinfo(featuresGRl) <- seqinfo(txdb)
+    featuresGRl <- GenomicRanges::GRangesList()
+    GenomeInfoDb::seqinfo(featuresGRl) <- GenomeInfoDb::seqinfo(txdb)
     
     ## Empty GRanges object for feature types that don't exist
-    gr_empty <- GRanges()
+    gr_empty <- GenomicRanges::GRanges()
     mcols(gr_empty) <- DataFrame(feature_by=character(), featuretype_id=character(), featuretype=character())
-    seqinfo(gr_empty) <- seqinfo(txdb)
+    GenomeInfoDb::seqinfo(gr_empty) <- GenomeInfoDb::seqinfo(txdb)
 
     ## Gene/transcript id mappings (required for some features)
-    ids <- mcols(transcripts(txdb,  columns=c("tx_id", "tx_name", "gene_id")))
-    ge_id <- unstrsplit(ids$gene_id)
+    ids <- mcols(GenomicFeatures::transcripts(txdb,  columns=c("tx_id", "tx_name", "gene_id")))
+    ge_id <- S4Vectors::unstrsplit(ids$gene_id)
     names(ge_id) <- ids$tx_id
 	
     ## Transcript ranges: each 'tx_type' as separate GRanges object (reduced by gene)
     if("tx_type" %in% featuretype) {
-        tx <- transcripts(txdb, columns=c("tx_name", "gene_id", "tx_type"))
+        tx <- GenomicFeatures::transcripts(txdb, columns=c("tx_name", "gene_id", "tx_type"))
         if(length(tx)==0) { # If range set is empty, append 'gr_empty'.
-            featuresGRl <- c(featuresGRl, GRangesList("transcript"=gr_empty))
+            featuresGRl <- c(featuresGRl, GenomicRanges::GRangesList("transcript"=gr_empty))
         } else {
             mcols(tx)$tx_type <- ifelse(is.na(mcols(tx)$tx_type), "transcript", mcols(tx)$tx_type)
             tx_type <- unique(mcols(tx)$tx_type)
@@ -38,11 +41,11 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                     feature_id <- paste(names(tmp), ":", tx_type[i], "_red", sep="")
                     mcols(tmp) <- DataFrame(feature_by=names(tmp), featuretype_id=feature_id, featuretype=paste0(tx_type[i], "_red"))
                     names(tmp) <- seq_along(tmp)
-                    featuresGRl <- c(featuresGRl, GRangesList(tmp=tmp))
+                    featuresGRl <- c(featuresGRl, GenomicRanges::GRangesList(tmp=tmp))
                     names(featuresGRl)[length(featuresGRl)] <- paste0(tx_type[i], "_red")
                 } else {
                     mcols(tmp) <- DataFrame(feature_by=mcols(tmp)$gene_id, featuretype_id=mcols(tmp)$tx_name, featuretype=tx_type[i])
-                    featuresGRl <- c(tmp=featuresGRl, GRangesList(tmp=tmp))
+                    featuresGRl <- c(tmp=featuresGRl, GenomicRanges::GRangesList(tmp=tmp))
                     names(tmp) <- seq_along(tmp)
                     names(featuresGRl)[length(featuresGRl)] <- tx_type[i]
                 }
@@ -53,22 +56,22 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
 
     ## Create promoter ranges reduced by gene
 	if("promoter" %in% featuretype) {
-        mycheck <- suppressWarnings(promoters(transcriptsBy(txdb, "gene"), upstream, downstream))
+        mycheck <- suppressWarnings(promoters(GenomicFeatures::transcriptsBy(txdb, "gene"), upstream, downstream))
         if(length(mycheck)==0) { # If range set is empty, append 'gr_empty'.
-            featuresGRl <- c(featuresGRl, GRangesList("promoter"=gr_empty))
+            featuresGRl <- c(featuresGRl, GenomicRanges::GRangesList("promoter"=gr_empty))
         } else {
             if(reduce_ranges==TRUE) {
-                mypromoters <- suppressWarnings(unlist(reduce(promoters(transcriptsBy(txdb, "gene"), upstream, downstream))))
+                mypromoters <- suppressWarnings(unlist(reduce(promoters(GenomicFeatures::transcriptsBy(txdb, "gene"), upstream, downstream))))
                 mypromoters <- trim(mypromoters)
                 feature_id <- paste0(names(mypromoters), ":P_red")
                 mcols(mypromoters) <- DataFrame(feature_by=names(mypromoters), featuretype_id=feature_id, featuretype="promoter_red")
                 names(mypromoters) <- seq_along(mypromoters)
-                featuresGRl <- c(featuresGRl, GRangesList("promoter_red"=mypromoters))
+                featuresGRl <- c(featuresGRl, GenomicRanges::GRangesList("promoter_red"=mypromoters))
             } else {
                 mypromoters <- suppressWarnings(promoters(txdb, upstream, downstream, columns=c("tx_name", "gene_id", "tx_type")))
                 mypromoters <- trim(mypromoters)
                 mcols(mypromoters) <- DataFrame(feature_by=as(mcols(mypromoters)$gene_id, "CharacterList"), featuretype_id=mcols(mypromoters)$tx_name, featuretype="promoter")
-                featuresGRl <- c(featuresGRl, GRangesList("promoter"=mypromoters))
+                featuresGRl <- c(featuresGRl, GenomicRanges::GRangesList("promoter"=mypromoters))
             }
             if(verbose==TRUE) cat("Created feature ranges: promoter", "\n")
         }
@@ -77,12 +80,14 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create intron ranges reduced by gene
 	if("intron" %in% featuretype) {
         ## Introns by transcript
-		myintrons <- intronsByTranscript(txdb)
+		myintrons <- GenomicFeatures::intronsByTranscript(txdb)
         if(length(myintrons)==0) { # If range set is empty, append 'gr_empty'.
-            featuresGRl <- c(featuresGRl, GRangesList("intron"=gr_empty))
+            featuresGRl <- c(featuresGRl, GenomicRanges::GRangesList("intron"=gr_empty))
         } else {
             ## Convert to introns by genes
+            print(myintrons)
             intron_count <- sapply(width(myintrons), length) 
+            print(myintrons)
             names(intron_count) <- ge_id[names(intron_count)]
             intron_count <- intron_count[intron_count!=0]
             ge_id_intron <- rep(names(intron_count), intron_count)
@@ -105,7 +110,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 myintrons <- unlist(myintrons) 
                 mcols(myintrons) <- DataFrame(feature_by=as(ge_id_red_intron, "CharacterList"), featuretype_id=feature_id, featuretype="intron")
                 names(myintrons) <- seq_along(myintrons)
-                featuresGRl <- c(featuresGRl, GRangesList("intron"=myintrons))
+                featuresGRl <- c(featuresGRl, GenomicRanges::GRangesList("intron"=myintrons))
             }
             if(verbose==TRUE) cat("Created feature ranges: intron", "\n")
 	    }
@@ -114,7 +119,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create exon ranges reduced by gene 
 	if("exon" %in% featuretype) {
         ## exons by gene
-		myexons <- exonsBy(txdb, "gene")
+		myexons <- GenomicFeatures::exonsBy(txdb, "gene")
         if(length(myexons)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("exon"=gr_empty))
         } else {
@@ -144,7 +149,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create CDS ranges reduced by gene 
 	if("cds" %in% featuretype) {
         ## CDS by gene
-		mycds <- cdsBy(txdb, "gene")
+		mycds <- GenomicFeatures::cdsBy(txdb, "gene")
         if(length(mycds)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("cds"=gr_empty))
         } else {
@@ -173,7 +178,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create 5'UTR ranges reduced by gene
 	if("fiveUTR" %in% featuretype) {
         ## 5'UTRs by transcript
-		myfiveutr <- fiveUTRsByTranscript(txdb)
+		myfiveutr <- GenomicFeatures::fiveUTRsByTranscript(txdb)
         if(length(myfiveutr)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("fiveUTR"=gr_empty))
         } else {
@@ -210,7 +215,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create 3'UTR ranges reduced by gene
 	if("threeUTR" %in% featuretype) {
         ## 3'UTRs by transcript
-		mythreeutr <- threeUTRsByTranscript(txdb)
+		mythreeutr <- GenomicFeatures::threeUTRsByTranscript(txdb)
         if(length(mythreeutr)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("threeUTR"=gr_empty))
         } else {
@@ -247,12 +252,12 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create intergenic ranges
 	if("intergenic" %in% featuretype) {
         # if(verbose==TRUE & any(is.na(seqlengths(txdb)))) warning("seqlengths missing for: ", paste(head(names(seqlengths(txdb))[is.na(seqlengths(txdb))]), collapse=", "), ". Thus, corresponding chromosome end ranges will be missing in intergenic results.")
-        ge <- genes(txdb)
+        ge <- GenomicFeatures::genes(txdb)
         if(length(ge)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("intergenic"=gr_empty))
         } else {
-            myseqinfo <- seqinfo(ge)
-            seqlengths(ge) <- NA # Note: the following ignores chromosome end ranges on the right end
+            myseqinfo <- GenomeInfoDb::seqinfo(ge)
+            GenomeInfoDb::seqlengths(ge) <- NA # Note: the following ignores chromosome end ranges on the right end
             mynames <- names(ge)
             strand(ge) <- "*"
             ge <- reduce(ge, with.revmap=TRUE)
@@ -270,7 +275,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 mcols(myintergenics) <- DataFrame(feature_by=as(sprintf("INTER%08d", seq_along(myids)), "CharacterList"), featuretype_id=as.character(myids), featuretype="intergenic")
             }
             names(myintergenics) <- seq_along(myintergenics)
-            seqinfo(myintergenics) <- myseqinfo
+            GenomeInfoDb::seqinfo(myintergenics) <- myseqinfo
             featuresGRl <- c(featuresGRl, GRangesList("intergenic"=myintergenics))
             if(verbose==TRUE) cat("Created feature ranges: intergenic", "\n")
 	    }
@@ -289,8 +294,8 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
 #############################################################
 ## Compute distribution of reads across feature types
 featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="data.frame") {
-    ## global functions or variables
-    readGAlignments <- readGAlignmentPairs <- qwidth <- last <- strand <- NULL
+    pkg <- c("GenomicAlignments", "IRanges")
+    checkPkg(pkg, quietly = FALSE)
     ## Check for valid inputs
     if(!(is.null(readlength[1]) | is.integer(readlength))) stop("readlength needs to be assigned NULL or integer vector")
     if(length(type) != 1) stop("Argument needs to be character vector of length 1.")
@@ -319,9 +324,9 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
         bf <- open(bfl[[j]])
         while(isIncomplete(bf)) {
             if(singleEnd==TRUE) {
-                aligns <- readGAlignments(bf, use.names=FALSE)
+                aligns <- GenomicAlignments::readGAlignments(bf, use.names=FALSE)
             } else if(singleEnd==FALSE) {
-                aligns <- readGAlignmentPairs(bf, use.names=FALSE)
+                aligns <- GenomicAlignments::readGAlignmentPairs(bf, use.names=FALSE)
             } else {
                 stop("singleEnd needs to be TRUE or FALSE")
             }
@@ -329,24 +334,24 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
                 gr <- grl[[i]]
                 counter <- which(feature==i)
                 ## Non-strand-specific counts
-                alignssub <- subsetByOverlaps(aligns, gr, ignore.strand=TRUE)
+                alignssub <- IRanges::subsetByOverlaps(aligns, gr, ignore.strand=TRUE)
                 if(singleEnd==TRUE) {
                     if(is.null(readlength[1])) {
                         counts <- length(alignssub)
                         if(counter==1) totalcounts <- length(aligns)
                     } else {
-                        counts <- table(qwidth(alignssub))[colnames(myMA)]
-                        if(counter==1) totalcounts <- table(qwidth(aligns))[colnames(myMA)]
+                        counts <- table(GenomicAlignments::qwidth(alignssub))[colnames(myMA)]
+                        if(counter==1) totalcounts <- table(GenomicAlignments::qwidth(aligns))[colnames(myMA)]
                     } 
                 } else { # The following reports for PE reads the mean read length for each pair
                     if(is.null(readlength[1])) {
                         counts <- length(alignssub)
                         if(counter==1) totalcounts <- length(aligns)
                     } else {
-                        mywidth <- round((qwidth(last(alignssub)) + qwidth(first(alignssub)))/2)
+                        mywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(alignssub)) + GenomicAlignments::qwidth(first(alignssub)))/2)
                         counts <- table(mywidth)[colnames(myMA)]
                         if(counter==1) { 
-                            totalmywidth <- round((qwidth(last(aligns)) + qwidth(first(aligns)))/2)
+                            totalmywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(aligns)) + GenomicAlignments::qwidth(first(aligns)))/2)
                             totalcounts <- table(totalmywidth)[colnames(myMA)]
                         }
                     } 
@@ -358,24 +363,24 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
                     myMA["N_total_aligned",] <- myMA["N_total_aligned",] + totalcounts
                 }
                 ## Strand-specific counts
-                alignssub <- subsetByOverlaps(aligns, gr, ignore.strand=FALSE)
+                alignssub <- IRanges::subsetByOverlaps(aligns, gr, ignore.strand=FALSE)
                 if(singleEnd==TRUE) {
                     if(is.null(readlength[1])) {
                         sensecounts <- length(alignssub)
                         if(counter==1) totalsensecounts <- length(aligns[strand(aligns)=="+"])
                     } else {
-                        sensecounts <- table(qwidth(alignssub))[colnames(myMAsense)]
-                        if(counter==1) totalsensecounts <- table(qwidth(aligns[strand(aligns)=="+"]))[colnames(myMAsense)]
+                        sensecounts <- table(GenomicAlignments::qwidth(alignssub))[colnames(myMAsense)]
+                        if(counter==1) totalsensecounts <- table(GenomicAlignments::qwidth(aligns[strand(aligns)=="+"]))[colnames(myMAsense)]
                     }
                 } else { # The following reports for PE reads the mean read length for each pair
                     if(is.null(readlength[1])) {
                         sensecounts <- length(alignssub)
                         if(counter==1) totalsensecounts <- length(aligns[strand(aligns)=="+"])
                     } else {
-                        mywidth <- round((qwidth(last(alignssub)) + qwidth(first(alignssub)))/2)
+                        mywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(alignssub)) + GenomicAlignments::qwidth(first(alignssub)))/2)
                         sensecounts <- table(mywidth)[colnames(myMA)]
                         if(counter==1) { 
-                            totalmywidth <- round((qwidth(last(aligns)) + qwidth(first(aligns)))/2)
+                            totalmywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(aligns)) + GenomicAlignments::qwidth(first(aligns)))/2)
                             totalsensecounts <- table(totalmywidth)[colnames(myMA)]
                         }
                     } 
@@ -421,6 +426,7 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
 ## Plot distribution of reads across feature types ##
 ###################################################### 
 plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales="fixed", anyreadlength=FALSE, drop_N_total_aligned=TRUE, scale_count_val=10^6, scale_length_val=NULL) { 
+    checkPkg("grid", quietly = FALSE)
     ## Input validity checks
     if(class(x)!="data.frame") stop("x needs to be object of class 'data.frame'")
     if(any(colnames(x)[1:3]!=c("SampleName", "Strand", "Featuretype"))) stop("First three column names need to be: 'SampleName', 'Strand', 'Featuretype'")
@@ -556,8 +562,8 @@ plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat="pdf", scales=
 ##############################################
 ## Computes coverage along single and multi component features, such as exons/cds by transcripts. 
 featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix, resizefeatures, upstream, downstream, outfile, overwrite=FALSE) {
-    ## global functions or variables
-    readGAlignments <- qwidth <- NULL
+    pkg <- c("GenomicAlignments", "IRanges")
+    checkPkg(pkg, quietly = FALSE)
     ## Input validity checks
     if(!is.null(outfile)) {
         if(file.exists(outfile) & overwrite==FALSE) stop(paste("File", outfile, "exists. Delete it or set 'overwrite=TRUE'"))
@@ -595,22 +601,22 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
         ## one needs to import the corresponding alignment sections first.
         
         ## Import alignment chunk
-        aligns <- readGAlignments(bfl[[mysample]], param=ScanBamParam(what=scanBamWhat(), which=gr))
+        aligns <- GenomicAlignments::readGAlignments(bfl[[mysample]], param=ScanBamParam(what=scanBamWhat(), which=gr))
         ## Remove duplicated mappings generated by readGAlignment for nearby/overlapping ranges; reduce() doesn't fix that
-        aligns <- aligns[!duplicated(paste(as.character(seqnames(aligns)), start(aligns), end(aligns), as.character(strand(aligns)), mcols(aligns)$qname, sep="_"))]   
+        aligns <- aligns[!duplicated(paste(as.character(seqnames(aligns)), start(aligns), end(aligns), as.character(BiocGenerics::strand(aligns)), mcols(aligns)$qname, sep="_"))]   
      
         ## Subset to specific read length range specified under readlengthrange
         if(is.numeric(readlengthrange)) {
-                aligns <- aligns[qwidth(aligns) >= readlengthrange[1] & qwidth(aligns) <= readlengthrange[2]]
+                aligns <- aligns[GenomicAlignments::qwidth(aligns) >= readlengthrange[1] & GenomicAlignments::qwidth(aligns) <= readlengthrange[2]]
         } 
        
         ## Compute coverage 
         if(is.numeric(resizereads[1])) {
             cov <- coverage(resize(granges(aligns), resizereads[1]))
-            cov_pos <- coverage(resize(granges(subsetByOverlaps(aligns, gr, ignore.strand=FALSE)), resizereads[1]))
+            cov_pos <- coverage(resize(granges(IRanges::subsetByOverlaps(aligns, gr, ignore.strand=FALSE)), resizereads[1]))
         } else if(is.null(resizereads)) {
             cov <- coverage(aligns)
-            cov_pos <- coverage(subsetByOverlaps(aligns, gr, ignore.strand=FALSE))
+            cov_pos <- coverage(IRanges::subsetByOverlaps(aligns, gr, ignore.strand=FALSE))
         } else {
             stop("'resizereads' needs to be assigned NULL or positive integer of length 1.")   
         }
@@ -754,7 +760,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
     }
 }
 ## Usage:
-# grl <- cdsBy(txdb, "tx", use.names=TRUE)
+# grl <- GenomicFeatures::cdsBy(txdb, "tx", use.names=TRUE)
 # fcov <- featureCoverage(bfl=BamFileList(outpaths[1]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
 
 ## Helper function to extend single and multi component ranges
@@ -762,8 +768,8 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
 ## such as exons in CDSs or transcripts so that only the first and last components 
 ## get extended. Single component features will be extended the same way.
 .resizeFeature <- function(grl, upstream, downstream, component_resort=TRUE) { 
-    ## global functions or variables
-    end <- start <- mcols <- NULL
+    # ## global functions or variables
+    # end <- start <- mcols <- NULL
     if(!is(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
     gr <- unlist(grl)    
     if(!all(names(grl) %in% unique(names(gr)))) stop("None or not all components in grl are named.")
@@ -813,6 +819,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
 ###########################
 ## Plots tabular coverage data generated by featureCoverage()
 plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6) {
+    checkPkg("grid", quietly = FALSE)
     ## Some input validity checks
     if(class(covMA) != "data.frame") stop("'covMA' needs to be assigned an object of class 'data.frame'.")
     expectedcol <- c("SampleName", "N_total_aligned", "IDs", "Strand")
@@ -916,12 +923,12 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
     
     ## Generate graphics 
     grid::grid.newpage() # Open a new page on grid device
-    grid::pushViewport(viewport(layout = grid::grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
+    grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
     for(i in seq(along=myplotlist)) print(myplotlist[[i]], vp = grid::viewport(layout.pos.row = 1, layout.pos.col = i))
 }
 
 ## Usage:
-# grl <- cdsBy(txdb, "tx", use.names=TRUE)
+# grl <- GenomicFeatures::cdsBy(txdb, "tx", use.names=TRUE)
 # fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
 # plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 
@@ -930,6 +937,8 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
 ##################
 ## Function to predict ORFs in DNA sequences provided as DNAString/DNAStringSet objects
 predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disjoint=FALSE, startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA")) {
+    pkg <- c("IRanges")
+    checkPkg(pkg, quietly = FALSE)
 	## Check input validity 
     if(any(nchar(c(startcodon, stopcodon))!=3)) stop("startcodon and stopcodons can only contain 3-letter strings.")
     if(!toupper(mode) %in% c("ORF", "CDS")) stop("'mode' can only be assigned one of: 'orf' or 'cds'")
@@ -1126,8 +1135,6 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 ## (e.g. between exons of transcribed regions) that are absent in 
 ## the query ranges, but present in the corresponding subject ranges.
 scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
-    ## global functions or variables
-    mcols <- NULL
     ## Both input objects need to be of class GRangesList
     if(!is(subject, "GRangesList") | !is(query, "GRangesList")) stop("Both subject and query need to be GRangesList objects.")
     ## All names(query) need to be present in names(subject)
@@ -1135,8 +1142,6 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
 
     ## Perform scaling on single subject/query pair each containing on entry
     .scaleRanges <- function(subject, query, returntype="df") {
-        ## global functions or variables
-        mcols <- NULL
         ## Check for validity of query
         if(length(query)>1) warning("Only the first range in 'query' will be used.")
         query <- query[1]
@@ -1204,8 +1209,8 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
     return(grl)
 }
 ## Usage for simple example
-# subject <- GRanges(seqnames="Chr1", IRanges(c(5,15,30),c(10,25,40)), strand="+")
-# query <- GRanges(seqnames="myseq", IRanges(1, 9), strand="+")
+# subject <- GRanges(seqnames="Chr1", IRanges::IRanges(c(5,15,30),c(10,25,40)), strand="+")
+# query <- GRanges(seqnames="myseq", IRanges::IRanges(1, 9), strand="+")
 # scaleRanges(GRangesList(myid1=subject), GRangesList(myid1=query), type="test")
 
 ## Usage for more complex example

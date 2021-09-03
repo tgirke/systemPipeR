@@ -2,6 +2,8 @@
 ## Filter VCF files ##
 ######################
 filterVars <- function (files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
+  pkg <- c("VariantAnnotation")
+  checkPkg(pkg, quietly = FALSE)
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
     return(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
@@ -12,13 +14,11 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   stopifnot(is.character(out_dir) && length(out_dir) == 1)
   if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
   if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
-  ## global functions or variables
-  totalDepth<- refDepth <- altDepth <- totalDepth <- refDepth <- altDepth <- NULL
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
   if(!all(check_ext <- stringr::str_detect(files, "\\.vcf$"))) stop("filterVars: All files need to end with .vcf\n", paste0(files[!check_ext], collapse = ",\n"))
   outfiles <- file.path(out_dir, basename(gsub("\\.vcf", "_filter.vcf", files)))
   for (i in seq(along = files)) {
-    vcf <- readVcf(files[i], organism)
+    vcf <- VariantAnnotation::readVcf(files[i], organism)
     vr <- as(vcf, "VRanges")
     if (varcaller == "gatk") {
       vrfilt <- vr[eval(parse(text = filter)), ]
@@ -27,13 +27,13 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
       vrsambcf <- vr
       vr <- unlist(values(vr)$DP4)
       vr <- matrix(vr, ncol = 4, byrow = TRUE)
-      totalDepth(vrsambcf) <- as.integer(values(vrsambcf)$DP)
-      refDepth(vrsambcf) <- rowSums(vr[, 1:2])
-      altDepth(vrsambcf) <- rowSums(vr[, 3:4])
+      VariantAnnotation::totalDepth(vrsambcf) <- as.integer(values(vrsambcf)$DP)
+      VariantAnnotation::refDepth(vrsambcf) <- rowSums(vr[, 1:2])
+      VariantAnnotation::altDepth(vrsambcf) <- rowSums(vr[, 3:4])
       vrfilt <- vrsambcf[eval(parse(text = filter)), ]
     }
-    vcffilt <- asVCF(vrfilt)
-    writeVcf(vcffilt, outfiles[i], index = TRUE)
+    vcffilt <- VariantAnnotation::asVCF(vrfilt)
+    VariantAnnotation::writeVcf(vcffilt, outfiles[i], index = TRUE)
     print(paste("Generated file", i, gsub(".*/", "", paste0(outfiles[i], ".bgz"))))
   }
   out_paths <- paste0(outfiles, ".bgz")
@@ -41,6 +41,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   out_paths
 }
 ## Usage for GATK:
+# library(VariantAnnotation)
 # filter <- "totalDepth(vr) >= 20 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==6"
 # filterVars(args, filter, varcaller="gatk", organism="Pinfest")
 ## Usage for BCFtools:
@@ -86,7 +87,9 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 
 ## Report for predictCoding() where data for each variant if collapsed to one line.
 .codingReport <- function(x, txdb) {
-  txids <- values(transcripts(txdb))$tx_name; names(txids) <- values(transcripts(txdb))$tx_id
+  pkg <- c("GenomicFeatures")
+  checkPkg(pkg, quietly = FALSE)
+  txids <- values(GenomicFeatures::transcripts(txdb))$tx_name; names(txids) <- values(GenomicFeatures::transcripts(txdb))$tx_id
   #myf <- as.factor(names(values(x)$CDSLOC))
   myf <- as.factor(names(x))
   if(length(myf)>0) {
@@ -110,6 +113,8 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 ## Variant Report ##
 ####################
 variantReport <- function (files, args=files, txdb, fa, organism, out_dir="results") {
+  pkg <- c("VariantAnnotation")
+  checkPkg(pkg, quietly = FALSE)
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
     return(warning('variantReport: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
                    'Use `getColumn` to get a vector of paths instead.'))
@@ -125,14 +130,14 @@ variantReport <- function (files, args=files, txdb, fa, organism, out_dir="resul
   outfiles <- file.path(out_dir, basename(gsub("(\\.vcf$|\\.vcf.bgz$|\\.bgz$)", "_anno.tsv", files)))
 
   for (i in seq(along = files)) {
-    vcf <- readVcf(files[i], organism)
-    allvar <- locateVariants(vcf, txdb, AllVariants())
+    vcf <- VariantAnnotation::readVcf(files[i], organism)
+    allvar <- VariantAnnotation::locateVariants(vcf, txdb, VariantAnnotation::AllVariants())
     varreport <- .allAnnot(allvar, vcf)
-    coding <- predictCoding(vcf, txdb, seqSource = fa)
+    coding <- VariantAnnotation::predictCoding(vcf, txdb, seqSource = fa)
     codereport <- .codingReport(coding, txdb)
     vr <- as(vcf, "VRanges")
     varid <- paste(as.character(seqnames(vr)), ":", start(vr),
-                   "_", ref(vr), "/", alt(vr), sep = "")
+                   "_", VariantAnnotation::ref(vr), "/", VariantAnnotation::alt(vr), sep = "")
     vrdf <- data.frame(row.names = varid, as.data.frame(vr))
     vrdf <- vrdf[, c("totalDepth", "refDepth", "altDepth")]
     fullreport <- cbind(varreport, codereport[rownames(varreport), -1])

@@ -5,7 +5,7 @@
 \alias{[[<-,EnvModules-method}
 \alias{[,EnvModules,ANY,ANY,ANY-method}
 \alias{[[,EnvModules,ANY,ANY-method}
-\alias{[[<-,EnvModules,ANY,ANY,ANY-method}
+\alias{[[<-,EnvModules,ANY,ANY-method}
 \alias{$,EnvModules-method}
 \alias{available_modules,EnvModules-method}
 \alias{coerce,EnvModules,list-method}

@@ -6,23 +6,23 @@
 ## Class and Method Definitions for catDB ##
 ############################################
 ## Define catDB class
-setClass("catDB", representation(catmap = "list", catlist = "list", idconv = "ANY"))
+methods::setClass("catDB", methods::representation(catmap = "list", catlist = "list", idconv = "ANY"))
 ## Methods to return catDB components as lists
-setGeneric(name = "catmap", def = function(x) standardGeneric("catmap"))
-setMethod(f = "catmap", signature = "catDB", definition = function(x) {
+methods::setGeneric(name = "catmap", def = function(x) standardGeneric("catmap"))
+methods::setMethod(f = "catmap", signature = "catDB", definition = function(x) {
   return(x@catmap)
 })
-setGeneric(name = "catlist", def = function(x) standardGeneric("catlist"))
-setMethod(f = "catlist", signature = "catDB", definition = function(x) {
+methods::setGeneric(name = "catlist", def = function(x) standardGeneric("catlist"))
+methods::setMethod(f = "catlist", signature = "catDB", definition = function(x) {
   return(x@catlist)
 })
-setGeneric(name = "idconv", def = function(x) standardGeneric("idconv"))
-setMethod(f = "idconv", signature = "catDB", definition = function(x) {
+methods::setGeneric(name = "idconv", def = function(x) standardGeneric("idconv"))
+methods::setMethod(f = "idconv", signature = "catDB", definition = function(x) {
   return(x@idconv)
 })
 ## Constructor methods
 ## List to catDB with: as(mylist, "catDB")
-setAs(
+methods::setAs(
   from = "list", to = "catDB",
   def = function(from) {
     new("catDB",
@@ -33,7 +33,7 @@ setAs(
   }
 )
 ## Define print behavior for catDB
-setMethod(
+methods::setMethod(
   f = "show", signature = "catDB",
   definition = function(object) {
     cat("An instance of '", class(object), "' containing:", "\n\t",
@@ -49,7 +49,7 @@ setMethod(
 setMethod(
   f = "names", signature = "catDB",
   definition = function(x) {
-    return(slotNames(x))
+    return(methods::slotNames(x))
   }
 )
 
@@ -61,8 +61,8 @@ setMethod(
 ## custom mappings can be used here, but need to have the same format as GO_XX_DFs in the following examples
 ## (A.1.1) Obtain mappings from geneontology.org
 .readGOorg <- function(myfile, colno, org) {
-  ## global functions or variables
-  #GOTERM <- NULL
+  pkg <- c("AnnotationDbi", "GO.db")
+  checkPkg(pkg, quietly = FALSE)
   go_org <- read.delim(myfile, na.strings = "", header = FALSE, comment.char = "!", sep = "\t")
   go_org <- go_org[, colno]
   names(go_org) <- c("GOID", "GeneID", "GOCAT")
@@ -83,7 +83,7 @@ setMethod(
   GO_BP_DF <- go_org[go_org[, 3] == "P", ]
   GO_CC_DF <- go_org[go_org[, 3] == "C", ]
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
-  go_df <- data.frame(GOID = names(Term(GOTERM)), Term = Term(GOTERM), Ont = Ontology(GOTERM))
+  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
   go_df <- na.omit(go_df)
   ## Return results
   dflist <- list(D_BP = GO_BP_DF, D_CC = GO_CC_DF, D_MF = GO_MF_DF, GO_DF = go_df)
@@ -94,16 +94,20 @@ setMethod(
 
 ## (A.1.2) Obtain mappings from BioC
 .sampleDFgene2GO <- function(lib) {
+  pkg <- c("GO.db", "annotate", "AnnotationDbi")
+  checkPkg(pkg, quietly = FALSE)
   require(lib, character.only = TRUE)
   mylibbase <- gsub(".db", "", lib)
-  GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
+  env <- new.env()
+  env$GO <- get(paste(mylibbase, "GO", sep = ""))
+  GOMF <- eapply(env, annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
   GO_MF_DF <- data.frame(GOID = unlist(GOMF), GeneID = rep(names(GOMF), as.vector(sapply(GOMF, length))), Count = rep(as.vector(sapply(GOMF, length)), as.vector(sapply(GOMF, length))))
-  GOBP <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
+  GOBP <- eapply(env, annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
   GO_BP_DF <- data.frame(GOID = unlist(GOBP), GeneID = rep(names(GOBP), as.vector(sapply(GOBP, length))), Count = rep(as.vector(sapply(GOBP, length)), as.vector(sapply(GOBP, length))))
-  GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
+  GOCC <- eapply(env, annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
   GO_CC_DF <- data.frame(GOID = unlist(GOCC), GeneID = rep(names(GOCC), as.vector(sapply(GOCC, length))), Count = rep(as.vector(sapply(GOCC, length)), as.vector(sapply(GOCC, length))))
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
-  go_df <- data.frame(GOID = names(Term(GOTERM)), Term = Term(GOTERM), Ont = Ontology(GOTERM))
+  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
   go_df <- na.omit(go_df)
   ## Return results
   dflist <- list(D_BP = GO_BP_DF, D_CC = GO_CC_DF, D_MF = GO_MF_DF, GO_DF = go_df)
@@ -115,8 +119,7 @@ setMethod(
 ## (A.2) Generate list containing gene-to-GO-OFFSPRING associations including assiged nodes
 ## This is slow (3 minutes), but needs to be done only once!
 .gene2GOlist <- function(catdf, rootUK = FALSE) { # If the argument 'rootUK' is set to TRUE then the root nodes are treated as terminal nodes to account for the new unknown terms
-  ## global functions or variables
-  #GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
+  checkPkg("GO.db", quietly = FALSE)
   ## Import required data frames
   GO_MF_DF <- catdf$D_MF
   GO_BP_DF <- catdf$D_BP
@@ -124,13 +127,13 @@ setMethod(
   ## Populate each GO node with associated gene ids
   for (i in c("MF", "BP", "CC")) {
     if (i == "MF") {
-      go_offspr_list <- as.list(GOMFOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOMFOFFSPRING)
     }
     if (i == "BP") {
-      go_offspr_list <- as.list(GOBPOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOBPOFFSPRING)
     }
     if (i == "CC") {
-      go_offspr_list <- as.list(GOCCOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOCCOFFSPRING)
     }
     go_offspr_list <- lapply(go_offspr_list, unlist)
     go_offspr_list <- lapply(go_offspr_list, as.vector) # clean-up step for the list
@@ -181,7 +184,7 @@ setMethod(
     my_list <- apply(affy2locus[, -c(3)], 1, list)
     my_list <- lapply(my_list, unlist)
     my_list <- lapply(my_list, function(x) as.vector(x[-1]))
-    my_list <- lapply(my_list, strsplit, ";")
+    my_list <- lapply(my_list, Biostrings::strsplit, ";")
     my_list <- lapply(my_list, unlist)
     affy2locusDF <- data.frame(unlist(my_list))
     affy2locusDF <- data.frame(rep(names(unlist(lapply(my_list, length))), as.vector(unlist(lapply(my_list, length)))), affy2locusDF)
@@ -362,8 +365,7 @@ GOHyperGAll_Simplify <- function(GOHyperGAll_result, gocat = "MF", cutoff = 0.00
   if (gocat != as.vector(GOHyperGAll_result$Ont[!is.na(GOHyperGAll_result$Ont)])[1]) {
     stop("The GO categories in GOHyperGAll_Simplify() and GOHyperGAll_result need to match")
   }
-  ## global functions or variables
-  #GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
+  checkPkg("GO.db", quietly = FALSE)
   testDF <- GOHyperGAll_result[GOHyperGAll_result$Padj <= cutoff, ]
   testDF <- data.frame(testDF, test = rep(0, times = length(testDF[, 1])))
   testDF <- testDF[!is.na(testDF$Ont), ]
@@ -374,21 +376,21 @@ GOHyperGAll_Simplify <- function(GOHyperGAll_result, gocat = "MF", cutoff = 0.00
     test <- as.vector(testDF[, 1])
     for (j in 1:length(test)) {
       if (gocat == "MF") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOMFOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOMFOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOMFOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOMFOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOMFOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOMFOFFSPRING)[[test[j]]])
         }
       }
       if (gocat == "BP") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOBPOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOBPOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOBPOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOBPOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOBPOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOBPOFFSPRING)[[test[j]]])
         }
       }
       if (gocat == "CC") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOCCOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOCCOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOCCOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOCCOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOCCOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOCCOFFSPRING)[[test[j]]])
         }
       }
       clusterv <- c(clusterv, mymatch)
@@ -543,7 +545,7 @@ GOCluster_Report <- function(catdb, setlist, id_type = "affy", method = "all", C
 ######################
 goBarplot <- function(GOBatchResult, gocat) {
   ## global functions or variables
-  SampleMatch <- Sample <- NULL
+  SampleMatch <- Sample <- Term <- NULL
   x <- GOBatchResult
   x <- x[, c("SampleMatch", "Term", "CLID", "Ont")]
   x <- x[x$Ont == gocat, 1:3]
