@@ -98,7 +98,7 @@ plotWF <- function(sysargs,
     if (inherits(sysargs, "data.frame")) {
         df <- sysargs
         if (!all(col_names <- c(
-            "step_name", "dep", "spr", "has_run", "success",
+            "step_name", "dep", "spr", "req", "session", "has_run", "success",
             "sample_pass", "sample_warn", "sample_error",
             "sample_total", "log_path", "time_start", "time_end"
         ) %in%
@@ -590,9 +590,10 @@ makeDot <- function(df,
             "    ", steps[i], "[",
             if(req[i] == "mandatory") 'fillcolor="#d3d6eb" ' else "",
             if(req[i] == "mandatory" && session[i] == "cluster") 'style="filled, dashed" '
-            else if(req[i] == "mandatory" && session[i] != "cluster") 'style="filled" '
-            else if(req[i] != "mandatory" && session[i] == "cluster") 'style="dashed" '
-            else "",
+            else if(req[i] == "mandatory" && session[i] != "cluster") 'style="filled, '
+            else if(req[i] != "mandatory" && session[i] == "cluster") 'style="dashed, '
+            else 'style="solid, ',
+            if(spr[i] == "sysargs") 'rounded" ' else '"',
             "label=<<b>",
             '<font color="', step_color, '">', steps[i], "</font><br></br>",
             '<font color="#5cb85c">', sample_pass[i], "</font>/",
@@ -601,7 +602,7 @@ makeDot <- function(df,
             '<font color="blue">', sample_total[i], "</font></b>; ",
             '<font color="black">', duration$short, "</font>",
             "> ",
-            if (spr[i] == "sysargs") ', style="rounded", shape="box" ' else "",
+            if (spr[i] == "sysargs") ', shape="box" ' else "",
             if (in_log) paste0('href="', log_path[i], '" ') else " ",
             'tooltip="step ', steps[i], ": ",
             sample_pass[i], " samples passed; ",
