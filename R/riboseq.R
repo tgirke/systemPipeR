@@ -868,7 +868,7 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
     }
     ## Generate graphics 
     grid::grid.newpage() # Open a new page on grid device
-    grid::pushViewport(viewport(layout = grid::grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
+    grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, length(myplotlist)))) # Assign to device viewport with 1 by 2 grid layout 
     for(i in seq(along=myplotlist)) print(myplotlist[[i]], vp = grid::viewport(layout.pos.row = 1, layout.pos.col = i))
 }
 
