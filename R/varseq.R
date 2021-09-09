@@ -52,7 +52,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 #################
 ## Report for locatVariants() where data for each variant is collapsed to a single line.
 .allAnnot <- function(x, vcf) {
-  rd <- rowRanges(vcf)
+  rd <- SummarizedExperiment::rowRanges(vcf)
   ## Make variant calls in rd unique by collapsing duplicated ones
   VARID <- VARID <- unique(names(rd))
   REF <- tapply(as.character(values(rd)$REF), factor(names(rd)), function(i) paste(unique(i), collapse=" "))

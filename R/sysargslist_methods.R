@@ -696,7 +696,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         value$targetsWF[[1]] <- as(WF2, "DataFrame")
         ## SE object update
         row.names(value$targetsWF[[1]]) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
-        value$SE <- list(SummarizedExperiment(
+        value$SE <- list(SummarizedExperiment::SummarizedExperiment(
           colData = value$targetsWF,
           metadata = value$stepsWF[[1]]$targetsheader))
         names(value$SE) <- names( value$targetsWF)

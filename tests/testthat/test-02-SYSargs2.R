@@ -56,13 +56,13 @@ test_that("check_SYSargs2_hisat2", {
     skip_on_ci()
     ## build instance
     ## loadWorkflow() // renderWF()
-    targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+    targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
     dir_path <- system.file("extdata/cwl", package="systemPipeR")
-    WF <- loadWF(targets=targetspath, wf_file="hisat2/hisat2-mapping-se.cwl",
-                 input_file="hisat2/hisat2-mapping-se.yml",
+    WF <- loadWF(targets=targetspath, wf_file="hisat2/hisat2-mapping-pe.cwl",
+                 input_file="hisat2/hisat2-mapping-pe.yml",
                  dir_path=dir_path)
-    WF <- renderWF(WF, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
-    WF <- WF[1]
+    WF <- renderWF(WF, inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
+    WF <- WF[1:2]
     expect_s4_class(WF, "SYSargs2")
     ## Replacement Methods
     yamlinput(WF, "thread") <- 5L
@@ -76,9 +76,10 @@ test_that("check_SYSargs2_hisat2", {
     ## runCommandline() //check.output()
     WF <- runCommandline(args=WF, make_bam = TRUE, dir=FALSE)
     out <- check.output(WF)
-    expect_equal(out$Existing_Files, 2)
+    expect_equal(out$Existing_Files, c(2,2))
     ## alignStats()
     read_statsDF <- alignStats(WF, subset = "FileName") 
-    expect_equal(read_statsDF$FileName, "M1A")
+    expect_equal(read_statsDF$FileName, c("M1A", "M1B"))
     write.table(read_statsDF, "results/alignStats.xls", row.names=FALSE, quote=FALSE, sep="\t")
 })
+    

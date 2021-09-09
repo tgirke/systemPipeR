@@ -35,7 +35,7 @@ setMethod(f = "addMetadata", signature = "SummarizedExperiment", definition = fu
     }
     listSE[[length(listSE) + 1]] <- value
     names(listSE) <- c(names(metadata(x)), xName)
-    metadata(x) <- listSE
+    SummarizedExperiment::metadata(x) <- listSE
     return(x)
 })
 
@@ -56,15 +56,15 @@ SPRdata <- function(counts = SimpleList(), rowData = NULL, rowRanges = GRangesLi
             cmpMA <- systemPipeR::readComp(file = targetspath, format = "matrix", delim = "-")
             metadata <- list(version = packageVersion("systemPipeR"), comparison = cmpMA)
         }
-        se <- SummarizedExperiment(
+        se <- SummarizedExperiment::SummarizedExperiment(
             assays = counts,
             colData = targets,
             metadata = metadata
         )
-        if (all(!length(assays(se))==0 & is.null(SummarizedExperiment::assayNames(se)))) SummarizedExperiment::assayNames(se) <- "counts"
+        if (all(!length(SummarizedExperiment::assays(se))==0 & is.null(SummarizedExperiment::assayNames(se)))) SummarizedExperiment::assayNames(se) <- "counts"
         return(se)
     } else if (!is.null(SEobj)) {
-        if (SEobjName == "default") SEobjName <- paste0("assays_", length(assays(SEobj)) + 1)
+        if (SEobjName == "default") SEobjName <- paste0("assays_", length(SummarizedExperiment::assays(SEobj)) + 1)
         sprSE <- addAssay(SEobj, counts, SEobjName)
     }
 }

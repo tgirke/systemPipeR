@@ -161,7 +161,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             } else {
                 sal$targetsWF <- list(as(sysargs, "DataFrame"))
                 row.names(sal$targetsWF) <- sal$targetsWF[ ,sysargs$files$id]
-                sal$SE <- list(SummarizedExperiment(
+                sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
                   colData = sal$targetsWF,
                   metadata = sysargs$targetsheader))
             }
@@ -253,7 +253,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
                 row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][ ,sal$stepsWF[[1]]$files$id]
-                sal$SE <- list(SummarizedExperiment(
+                sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
                   colData = sal$targetsWF,
                   metadata = sal$stepsWF[[1]]$targetsheader))
             } else {
@@ -771,20 +771,20 @@ writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE){
   }
   path <- file.path(dir.path, dir.name)
   ## Counts
-  if(length(assays(SE)) > 0) {
-    for (i in length(assays(SE))){
-      write.table(assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")), quote = FALSE, row.names = FALSE,
+  if(length(SummarizedExperiment::assays(SE)) > 0) {
+    for (i in length(SummarizedExperiment::assays(SE))){
+      write.table(SummarizedExperiment::assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")), quote = FALSE, row.names = FALSE,
                   col.names = TRUE, sep = "\t")
     }
   }
   ## Metadata
   yaml::write_yaml(metadata(SE), file.path(path, paste0("metadata.yml")))
   ## colData
-  write.table(colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
+  write.table(SummarizedExperiment::colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
               col.names = NA, sep = "\t")
   ## RowRanges
-  if(!is.null(rowRanges(SE))){
-    write.table(as.data.frame(rowRanges(SE)), file=file.path(path, paste0("rowRanges.csv")),
+  if(!is.null(SummarizedExperiment::rowRanges(SE))){
+    write.table(as.data.frame(SummarizedExperiment::rowRanges(SE)), file=file.path(path, paste0("rowRanges.csv")),
                 sep="\t", quote = FALSE, row.names = FALSE)
   }
   ## Final message
@@ -824,7 +824,7 @@ readSE <- function(dir.path, dir.name){
   } else {
     rowRanges = GRangesList()
   }
-  SE <- SummarizedExperiment(
+  SE <- SummarizedExperiment::SummarizedExperiment(
     assays=counts_ls,
     #rowData=NULL, 
     rowRanges=rowRanges,
@@ -841,7 +841,7 @@ readSE <- function(dir.path, dir.name){
 #                      feature_id=sprintf("ID%03d", 1:200))
 # colData <- DataFrame(Treatment=rep(c("ChIP", "Input"), 3),
 #                      row.names=LETTERS[1:6])
-# rse <- SummarizedExperiment(assays=SimpleList(counts=counts),
+# rse <- SummarizedExperiment::SummarizedExperiment(assays=SimpleList(counts=counts),
 #                             rowRanges=rowRanges, colData=colData)
 # rse
 # writeSE(rse, dir.path = getwd(), dir.name = "seobj")
