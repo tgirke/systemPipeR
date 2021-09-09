@@ -487,6 +487,7 @@ clusterRun <- function(args,
                        conffile = ".batchtools.conf.R", 
                        template = "batchtools.slurm.tmpl", 
                        Njobs, runid = "01", resourceList) {
+  checkPkg("batchtools", quietly = FALSE)
   ## Validity checks of inputs
   if (!any(inherits(args, c("SYSargs", "SYSargs2", "SYSargsList")))) 
     stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2'")
