@@ -950,7 +950,7 @@ readSE <- function(dir.path, dir.name){
 ## .outputTargets function ##
 #############################
 .outputTargets <- function(args, fromStep, index = 1, toStep, replace = c("FileName")) {
-    if (!is(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
+    if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
     outputfiles <- outfiles(args[fromStep])[[1]]
     if (length(targetsWF(args)[[fromStep]]) > 0) {
         df <- targetsWF(args)[[fromStep]]
@@ -964,7 +964,7 @@ readSE <- function(dir.path, dir.name){
 ########################
 configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALSE, ...) {
     ## Validations
-    if (class(x) != "SYSargsList") stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
+    if (!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
     capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") ## TODO: refazer
     if ("ALL" %in% input_steps) {
         input_steps <- paste0(steps_all$t_number[1], ":", steps_all$t_number[length(steps_all$t_number)])

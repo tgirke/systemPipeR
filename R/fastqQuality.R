@@ -28,7 +28,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
         ## If reads are not of constant width then inject them into a matrix pre-populated with 
         ## N/NA values and of dimensions N_rows = number_of_reads and N_columns = length_of_longest_read. 
         if(length(unique(width(fq))) == 1) {
-            q <- as.matrix(PhredQuality(quality(fq))) 
+            q <- as.matrix(Biostrings::PhredQuality(Biostrings::quality(fq))) 
             s <- as.matrix(ShortRead::sread(fq))
         } else {
             mymin <- min(width(fq)); mymax <- max(width(fq))
@@ -37,8 +37,8 @@ seeFastq <- function(fastq, batchsize, klength=8) {
             for(i in mymin:mymax) {
                 index <- width(fq)==i
                 if(any(index)) {
-                    s[index, 1:i] <- as.matrix(DNAStringSet(ShortRead::sread(fq)[index], start=1, end=i))
-                    q[index, 1:i] <- as.matrix(PhredQuality(quality(fq))[index]) 
+                    s[index, 1:i] <- as.matrix(Biostrings::DNAStringSet(ShortRead::sread(fq)[index], start=1, end=i))
+                    q[index, 1:i] <- as.matrix(Biostrings::PhredQuality(Biostrings::quality(fq))[index]) 
                 }
             }
         }
@@ -79,7 +79,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
         ## (D) Relative K-mer Diversity 
         dna <- ShortRead::sread(fq)
         loopv <- 1:(min(width(dna)) - (klength-1))
-        kcount <- sapply(loopv, function(x) length(unique(DNAStringSet(start=x, end=x+klength-1, dna))))    
+        kcount <- sapply(loopv, function(x) length(unique(Biostrings::DNAStringSet(start=x, end=x+klength-1, dna))))    
         reldiv <- kcount/(5^klength) # 5 instead of 4 because of Ns
         reldiv <- c(rep(NA, klength-1), reldiv) # Adds dummy NAs to align with sequencing cycles 
         names(reldiv) <- 1:length(reldiv)    

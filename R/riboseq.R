@@ -2,7 +2,6 @@
 ## Generate various feature types from TxDb objects ##
 ######################################################
 genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, downstream=0, verbose=TRUE) {
-    print(seqnames)
     pkg <- c("GenomeInfoDb", "GenomicFeatures")
     checkPkg(pkg, quietly = FALSE)
     ## Check validity of inputs
@@ -543,7 +542,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
         if(file.exists(outfile) & overwrite==TRUE) unlink(outfile)
     }
     if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'")
-    if(!is(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
+    if(!inherits(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
     if(!is.null(readlengthrange)) {
         if(is.numeric(readlengthrange) & length(readlengthrange)!=2) stop("'readlengthrange' needs to be assigned NULL or numeric vector of length 2")
         if(!is.numeric(readlengthrange)) stop("'readlengthrange' needs to be assigned NULL or numeric vector of length 2")
@@ -588,12 +587,12 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
         cov_neg <- cov - cov_pos    
         ## Extract coverage for gr components. 
         ## Sense coverage
-        # cov_posreg <- suppressWarnings(Views(cov_pos, as(gr, "IntegerRangesList"))) # delete 
-        cov_posreg <- suppressWarnings(Views(cov_pos[names(as(gr, "IntegerRangesList"))], as(gr, "IntegerRangesList"))) # Update 22-Nov-15: cov_pos needs to be subsetted by seqnames in IntegerRangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
+        # cov_posreg <- suppressWarnings(Biostrings::Views(cov_pos, as(gr, "IntegerRangesList"))) # delete 
+        cov_posreg <- suppressWarnings(Biostrings::Views(cov_pos[names(as(gr, "IntegerRangesList"))], as(gr, "IntegerRangesList"))) # Update 22-Nov-15: cov_pos needs to be subsetted by seqnames in IntegerRangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
         cov_posreg <- cov_posreg[sapply(cov_posreg, length) > 0] # Removes empty components (chr) 
         ## Antisense coverage
-        # cov_negreg <- suppressWarnings(Views(cov_neg, as(gr, "IntegerRangesList"))) # delete
-        cov_negreg <- suppressWarnings(Views(cov_neg[names(as(gr, "IntegerRangesList"))], as(gr, "IntegerRangesList"))) # Update 22-Nov-15: cov_neg needs to be subsetted by seqnames in IntegerRangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
+        # cov_negreg <- suppressWarnings(Biostrings::Views(cov_neg, as(gr, "IntegerRangesList"))) # delete
+        cov_negreg <- suppressWarnings(Biostrings::Views(cov_neg[names(as(gr, "IntegerRangesList"))], as(gr, "IntegerRangesList"))) # Update 22-Nov-15: cov_neg needs to be subsetted by seqnames in IntegerRangesList. This is relevant if txdb/grl was created from gff with scaffolds not containing any genes
         cov_negreg <- cov_negreg[sapply(cov_negreg, length) > 0] # Removes empty components (chr) 
         ## Collapse (splice) multicomponent coverage ranges, e.g. cds exons to full cds   
         ## Sense coverage
@@ -727,7 +726,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
 ## such as exons in CDSs or transcripts so that only the first and last components 
 ## get extended. Single component features will be extended the same way.
 .resizeFeature <- function(grl, upstream, downstream, component_resort=TRUE) { 
-    if(!is(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
+    if(!inherits(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
     gr <- unlist(grl)    
     if(!all(names(grl) %in% unique(names(gr)))) stop("None or not all components in grl are named.")
     ## Add sort_index
@@ -900,23 +899,23 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 		} else if(tolower(strand)=="antisense") {
             ## Reverse and complement start/stop plus swap their assignment
 		    mystrand <- 2 # for -
-		    stopcodon_temp <- as.character(reverseComplement(DNAStringSet(stopcodon)))
-            startcodon_temp <- as.character(reverseComplement(DNAStringSet(startcodon)))
+		    stopcodon_temp <- as.character(Biostrings::reverseComplement(Biostrings::DNAStringSet(stopcodon)))
+            startcodon_temp <- as.character(Biostrings::reverseComplement(Biostrings::DNAStringSet(startcodon)))
 		    stopcodon <- startcodon_temp 
             startcodon <- stopcodon_temp
         } else {
             stop("strand can only be assigned 'sense', 'antisense' or 'both'")
         }
         ## Sequences containing N are not processed
-        if(alphabetFrequency(x)["N"] > 0) {
+        if(Biostrings::alphabetFrequency(x)["N"] > 0) {
             orfRanges <- cbind(subject_id=numeric(), start=numeric(), end=numeric(), width=numeric(), strand=numeric(), inframe2end=numeric())
             warning("Skipped sequence containing Ns.")
             return(orfRanges)
         }
         ## Tripletize x for each frame 
-        c1 <- as.character(suppressWarnings(codons(x)))
-		c2 <- as.character(suppressWarnings(codons(x[2:length(x)])))
-		c3 <- as.character(suppressWarnings(codons(x[3:length(x)])))
+        c1 <- as.character(suppressWarnings(Biostrings::codons(x)))
+		c2 <- as.character(suppressWarnings(Biostrings::codons(x[2:length(x)])))
+		c3 <- as.character(suppressWarnings(Biostrings::codons(x[3:length(x)])))
         ## Identify position of start/stop in tripletized x
 		startpos1 <- which(c1 %in% startcodon)
 		stoppos1 <- which(c1 %in% stopcodon)
@@ -1072,7 +1071,7 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
     pkg <- c("IRanges")
     checkPkg(pkg, quietly = FALSE)
     ## Both input objects need to be of class GRangesList
-    if(!is(subject, "GRangesList") | !is(query, "GRangesList")) stop("Both subject and query need to be GRangesList objects.")
+    if(!inherits(subject, "GRangesList") | !inherits(query, "GRangesList")) stop("Both subject and query need to be GRangesList objects.")
     ## All names(query) need to be present in names(subject)
     if(any(!names(query) %in% names(subject))) stop("All 'names(query)' need to be present in 'names(subject)'.")
     ## Perform scaling on single subject/query pair each containing on entry

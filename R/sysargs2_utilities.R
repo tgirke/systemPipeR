@@ -22,13 +22,13 @@ loadWorkflow <- function(targets = NULL, wf_file, input_file, dir_path = "param/
     } else {
         stopifnot(is.character(dir_path))
     }
-    if (any(is(wf_file) == "list")) {
+    if (any(inherits(wf_file, "list"))) {
         wf <- wf_file
     } else {
         if (!file.exists(file.path(dir_path, wf_file)) == TRUE) stop("Provide valid '.cwl' file. Check the file PATH.")
         wf <- yaml::read_yaml(file.path(dir_path, wf_file))
     }
-    if (any(is(input_file) == "list")) {
+    if (any(inherits(input_file, "list"))) {
         input <- input_file
     } else {
         if (!file.exists(file.path(dir_path, input_file)) == TRUE) stop("Provide valid 'files.'.yml' file. Check the file PATH.")
@@ -1038,7 +1038,7 @@ output_update <- function(args, dir = FALSE, dir.name = NULL, replace = FALSE, e
 createWF <- function(targets = NULL, commandLine, results_path = "./results", module_load = "baseCommand", file = "default",
                      overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", writeout = FALSE, silent = FALSE) {
     ## TODO if is not default, module load and file
-    if (all(!is(commandLine) == "list")) stop("'commandLine' needs to be object of class 'list'.")
+    if (all(!inherits(commandLine, "list"))) stop("'commandLine' needs to be object of class 'list'.")
     if (any(!c("baseCommand", "inputs", "outputs") %in% names(commandLine))) stop("Argument 'commandLine' needs to be assigned at least to: 'baseCommand', 'input' or 'output'.")
     if (all(!c("Workflow", "CommandLineTool") %in% class)) stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
     if (dir.exists(results_path) == FALSE) dir.create(path = results_path)

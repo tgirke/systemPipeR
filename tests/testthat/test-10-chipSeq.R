@@ -23,6 +23,7 @@ test_that("check_chipSeq_fnc", {
     args <- renderWF(args, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
                                          FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
     args <- args[1:4]
+    args
     args <- runCommandline(args, make_bam = TRUE, dir=FALSE, force = F)
     
     writeTargetsout(x = args, file = "targets_bam.txt", step = 1, 
@@ -38,6 +39,7 @@ test_that("check_chipSeq_fnc", {
                                          SampleName = "_SampleName_"))
     
     args_merge <- mergeBamByFactor(args = args, overwrite = TRUE)
+    args_merge
     writeTargetsout(x = args_merge, file = "targets_mergeBamByFactor.txt", 
                     step = 1, new_col = "FileName", new_col_output_index = 1, 
                     overwrite = TRUE, remove = TRUE)
@@ -133,27 +135,27 @@ test_that("check_chipSeq_fnc", {
     writeTargetsout(x = args_diff, file = "targets_rundiff.txt", 
                     step = 1, new_col = "FileName", new_col_output_index = 1, 
                     overwrite = TRUE)
-    
-    library(Biostrings)
-    library(seqLogo)
-    library(BCRANK)
-    dir_path <- system.file("extdata/cwl/annotate_peaks", package = "systemPipeR")
-    args <- loadWF(targets = "targets_macs.txt", wf_file = "annotate_peaks.cwl", 
-                   input_file = "annotate_peaks.yml", dir_path = dir_path)
-    args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
-                                         SampleName = "_SampleName_"))
-    
-    rangefiles <- infile1(args)
-    for (i in seq(along = rangefiles)) {
-        df <- read.delim(rangefiles[i], comment = "#")
-        peaks <- as(df, "GRanges")
-        names(peaks) <- paste0(as.character(seqnames(peaks)), "_", 
-                               start(peaks), "-", end(peaks))
-        peaks <- peaks[order(values(peaks)$X.log10.pvalue., decreasing = TRUE)]
-        pseq <- getSeq(FaFile("./data/tair10.fasta"), peaks)
-        names(pseq) <- names(peaks)
-        writeXStringSet(pseq, paste0(rangefiles[i], ".fasta"))
-    }
+    # 
+    # library(Biostrings)
+    # library(seqLogo)
+    # library(BCRANK)
+    # dir_path <- system.file("extdata/cwl/annotate_peaks", package = "systemPipeR")
+    # args <- loadWF(targets = "targets_macs.txt", wf_file = "annotate_peaks.cwl", 
+    #                input_file = "annotate_peaks.yml", dir_path = dir_path)
+    # args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
+    #                                      SampleName = "_SampleName_"))
+    # 
+    # rangefiles <- infile1(args)
+    # for (i in seq(along = rangefiles)) {
+    #     df <- read.delim(rangefiles[i], comment = "#")
+    #     peaks <- as(df, "GRanges")
+    #     names(peaks) <- paste0(as.character(seqnames(peaks)), "_", 
+    #                            start(peaks), "-", end(peaks))
+    #     peaks <- peaks[order(values(peaks)$X.log10.pvalue., decreasing = TRUE)]
+    #     pseq <- getSeq(FaFile("./data/tair10.fasta"), peaks)
+    #     names(pseq) <- names(peaks)
+    #     writeXStringSet(pseq, paste0(rangefiles[i], ".fasta"))
+    # }
     
 })
 

@@ -1,6 +1,5 @@
 ## IMPORTS
-import(GenomicRanges, Rsamtools,
-       Biostrings)
+import(GenomicRanges, Rsamtools)
 
 importFrom("BiocGenerics", "end<-")
 importFrom("BiocGenerics", "start<-")
@@ -8,7 +7,16 @@ importFrom("BiocGenerics", "strand<-")
 importFrom("BiocGenerics", "width")
 importFrom("BiocGenerics", "width<-")
 
-
+importFrom("Biostrings", "reverseComplement")
+importFrom("Biostrings", "DNAStringSet")
+importFrom("Biostrings", "alphabetFrequency")
+importFrom("Biostrings", "codons")
+#importFrom("Biostrings", "tail")
+importFrom("Biostrings", "Views")
+#importFrom("Biostrings", "reverse") #?
+#importFrom("Biostrings", "unstrsplit") #?
+importFrom("Biostrings", "PhredQuality")
+importFrom("Biostrings", "quality")
 
 importFrom("crayon", "blue")
 importFrom("crayon", "make_style")
@@ -62,6 +70,7 @@ importFrom("methods", "new")
 importFrom("methods", "slot")
 importFrom("methods", "slotNames")
 
+
 importFrom("S4Vectors", "DataFrame")
 importFrom("S4Vectors", "elementMetadata<-")
 importFrom("S4Vectors", "first")
@@ -73,7 +82,7 @@ importFrom("S4Vectors", "SimpleList")
 importFrom("ShortRead", "readFastq")
 importFrom("ShortRead", "id")
 importFrom("ShortRead", "writeFastq")
-#importFrom("ShortRead", "files")
+importFrom("ShortRead", "files")
 importFrom("ShortRead", "FastqSampler")
 importFrom("ShortRead", "yield")
 importFrom("ShortRead", "sread")
@@ -119,6 +128,9 @@ importFrom("utils", "read.table")
 importFrom("utils", "write.table")
 importFrom("utils", "setTxtProgressBar")
 importFrom("utils", "txtProgressBar")
+importFrom("utils", "head")
+importFrom("utils", "tail")
+
 
 importFrom("yaml", "as.yaml")
 importFrom("yaml", "read_yaml")

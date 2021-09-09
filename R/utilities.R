@@ -698,13 +698,13 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
 ##################################################################
 symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".bai"), urlbase, urlfile) {
   ## Create URL file
-  if(all(is(sysargs, "SYSargs") & is(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  if(all(inherits(sysargs, "SYSargs") & inherits(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
   ## SYSargs class
-  if(is(sysargs, "SYSargs")) {
+  if(inherits(sysargs, "SYSargs")) {
     bampaths <- outpaths(sysargs)
     symname <- SampleName(sysargs)
     ## SYSargs2 class ##
-  } else if (is(sysargs, "SYSargs2")) {
+  } else if (inherits(sysargs, "SYSargs2")) {
     bampaths <- normalizePath(subsetWF(args = sysargs, slot = "output", subset = 1, index = 1))
     symname <- names(targets(sysargs))
   }
