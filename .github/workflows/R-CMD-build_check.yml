@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - spr_dep_clean
   pull_request:
     branches:
       - master
