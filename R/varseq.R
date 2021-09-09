@@ -52,6 +52,8 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 #################
 ## Report for locatVariants() where data for each variant is collapsed to a single line.
 .allAnnot <- function(x, vcf) {
+  pkg <- c("GenomeInfoDb")
+  checkPkg(pkg, quietly = FALSE)
   rd <- SummarizedExperiment::rowRanges(vcf)
   ## Make variant calls in rd unique by collapsing duplicated ones
   VARID <- VARID <- unique(names(rd))
@@ -62,7 +64,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   ## fix names field in x if incomplete
   if(any(names(x)=="")) {
     index <- unique(names(rd)); names(index) <- gsub("_.*", "", index)
-    names(x) <- index[paste(as.character(seqnames(x)), ":", start(x), sep="")]
+    names(x) <- index[paste(as.character(GenomeInfoDb::seqnames(x)), ":", start(x), sep="")]
   }
 
   ## Make annotated variant calls in x unique by collapsing duplicated ones
@@ -112,7 +114,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 ## Variant Report ##
 ####################
 variantReport <- function (files, args=files, txdb, fa, organism, out_dir="results") {
-  pkg <- c("VariantAnnotation")
+  pkg <- c("VariantAnnotation", "GenomeInfoDb")
   checkPkg(pkg, quietly = FALSE)
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
     return(warning('variantReport: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
@@ -135,7 +137,7 @@ variantReport <- function (files, args=files, txdb, fa, organism, out_dir="resul
     coding <- VariantAnnotation::predictCoding(vcf, txdb, seqSource = fa)
     codereport <- .codingReport(coding, txdb)
     vr <- as(vcf, "VRanges")
-    varid <- paste(as.character(seqnames(vr)), ":", start(vr),
+    varid <- paste(as.character(GenomeInfoDb::seqnames(vr)), ":", start(vr),
                    "_", VariantAnnotation::ref(vr), "/", VariantAnnotation::alt(vr), sep = "")
     vrdf <- data.frame(row.names = varid, as.data.frame(vr))
     vrdf <- vrdf[, c("totalDepth", "refDepth", "altDepth")]

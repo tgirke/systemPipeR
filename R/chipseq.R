@@ -134,6 +134,8 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ## Convenience function to perform read counting over serveral different
 ## range sets, e.g. peak ranges or feature types
 countRangeset <- function(bfl, args, format="tabular", ...) {
+  pkg <- c("GenomeInfoDb")
+  checkPkg(pkg, quietly = FALSE)
   ## Input validity checks
   if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
   if(all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
@@ -156,7 +158,7 @@ countRangeset <- function(bfl, args, format="tabular", ...) {
     } else {
       stop("Input file format not supported.")
     }
-    names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
+    names(peaks) <- paste0(as.character(GenomeInfoDb::seqnames(peaks)), "_", start(peaks), "-", end(peaks))
     peaks <- split(peaks, names(peaks))
     countDF <- GenomicAlignments::summarizeOverlaps(peaks, bfl, ...)
     countDF <- SummarizedExperiment::assays(countDF)$counts
@@ -211,7 +213,7 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
 ###########################################################
 ##  Identify Range Overlaps 
 olRanges <- function(query, subject, output="gr") {
-  pkg <- c("IRanges")
+  pkg <- c("IRanges", "GenomeInfoDb")
   checkPkg(pkg, quietly = FALSE)
   ## Input check
   if(!((class(query)=="GRanges" & class(subject)=="GRanges") | (class(query)=="IRanges" & class(subject)=="IRanges"))) {
@@ -260,7 +262,7 @@ olRanges <- function(query, subject, output="gr") {
   ## Output type
   oldf <- data.frame(Qindex=olindex[,1], Sindex=olindex[,2], olma, OLstart, OLend, OLlength, OLpercQ, OLpercS, OLtype)
   if(class(query) == "GRanges") {
-    oldf <- cbind(space=as.character(seqnames(query)), oldf)
+    oldf <- cbind(space=as.character(GenomeInfoDb::seqnames(query)), oldf)
   }
   if(output=="df") {
     return(oldf)
