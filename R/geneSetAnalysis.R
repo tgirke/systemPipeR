@@ -83,7 +83,7 @@ setMethod(
   GO_BP_DF <- go_org[go_org[, 3] == "P", ]
   GO_CC_DF <- go_org[go_org[, 3] == "C", ]
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
-  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GOTERM)), Term = AnnotationDbi::Term(GOTERM), Ont = AnnotationDbi::Ontology(GOTERM))
+  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
   go_df <- na.omit(go_df)
   ## Return results
   dflist <- list(D_BP = GO_BP_DF, D_CC = GO_CC_DF, D_MF = GO_MF_DF, GO_DF = go_df)
@@ -105,7 +105,7 @@ setMethod(
   GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
   GO_CC_DF <- data.frame(GOID = unlist(GOCC), GeneID = rep(names(GOCC), as.vector(sapply(GOCC, length))), Count = rep(as.vector(sapply(GOCC, length)), as.vector(sapply(GOCC, length))))
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
-  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GOTERM)), Term = AnnotationDbi::Term(GOTERM), Ont = AnnotationDbi::Ontology(GOTERM))
+  go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
   go_df <- na.omit(go_df)
   ## Return results
   dflist <- list(D_BP = GO_BP_DF, D_CC = GO_CC_DF, D_MF = GO_MF_DF, GO_DF = go_df)
@@ -117,8 +117,6 @@ setMethod(
 ## (A.2) Generate list containing gene-to-GO-OFFSPRING associations including assiged nodes
 ## This is slow (3 minutes), but needs to be done only once!
 .gene2GOlist <- function(catdf, rootUK = FALSE) { # If the argument 'rootUK' is set to TRUE then the root nodes are treated as terminal nodes to account for the new unknown terms
-  ## global functions or variables
-  #GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
   ## Import required data frames
   GO_MF_DF <- catdf$D_MF
   GO_BP_DF <- catdf$D_BP
@@ -126,13 +124,13 @@ setMethod(
   ## Populate each GO node with associated gene ids
   for (i in c("MF", "BP", "CC")) {
     if (i == "MF") {
-      go_offspr_list <- as.list(GOMFOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOMFOFFSPRING)
     }
     if (i == "BP") {
-      go_offspr_list <- as.list(GOBPOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOBPOFFSPRING)
     }
     if (i == "CC") {
-      go_offspr_list <- as.list(GOCCOFFSPRING)
+      go_offspr_list <- as.list(GO.db::GOCCOFFSPRING)
     }
     go_offspr_list <- lapply(go_offspr_list, unlist)
     go_offspr_list <- lapply(go_offspr_list, as.vector) # clean-up step for the list
@@ -364,33 +362,31 @@ GOHyperGAll_Simplify <- function(GOHyperGAll_result, gocat = "MF", cutoff = 0.00
   if (gocat != as.vector(GOHyperGAll_result$Ont[!is.na(GOHyperGAll_result$Ont)])[1]) {
     stop("The GO categories in GOHyperGAll_Simplify() and GOHyperGAll_result need to match")
   }
-  ## global functions or variables
-  #GOMFOFFSPRING <- GOBPOFFSPRING <- GOCCOFFSPRING <- NULL
+  checkPkg("GO.db", quietly = FALSE)
   testDF <- GOHyperGAll_result[GOHyperGAll_result$Padj <= cutoff, ]
   testDF <- data.frame(testDF, test = rep(0, times = length(testDF[, 1])))
   testDF <- testDF[!is.na(testDF$Ont), ]
-  GOIDv <- NULL
-  GO_OL_Matchv <- NULL
+  GO_OL_Matchv <- GOIDv <- NULL
   while (sum(testDF$test == 0) > 0) {
     clusterv <- NULL
     test <- as.vector(testDF[, 1])
     for (j in 1:length(test)) {
       if (gocat == "MF") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOMFOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOMFOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOMFOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOMFOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOMFOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOMFOFFSPRING)[[test[j]]])
         }
       }
       if (gocat == "BP") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOBPOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOBPOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOBPOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOBPOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOBPOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOBPOFFSPRING)[[test[j]]])
         }
       }
       if (gocat == "CC") {
-        mymatch <- sum(unique(na.omit(c(test[j], as.list(GOCCOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GOCCOFFSPRING)[[test[1]]]))))
+        mymatch <- sum(unique(na.omit(c(test[j], as.list(GO.db::GOCCOFFSPRING)[[test[j]]])) %in% na.omit(c(test[1], as.list(GO.db::GOCCOFFSPRING)[[test[1]]]))))
         if (mymatch == 1) {
-          mymatch <- length(as.list(GOCCOFFSPRING)[[test[j]]])
+          mymatch <- length(as.list(GO.db::GOCCOFFSPRING)[[test[j]]])
         }
       }
       clusterv <- c(clusterv, mymatch)

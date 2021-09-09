@@ -1,6 +1,6 @@
 ## IMPORTS
 import(GenomicRanges, GenomicFeatures, Rsamtools,
-       Biostrings, ShortRead, GO.db, VariantAnnotation)
+       Biostrings, ShortRead, VariantAnnotation)
 importFrom("assertthat", "assert_that")
 importFrom("assertthat", "is.count")
 importFrom("assertthat", "is.writeable")
