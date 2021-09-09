@@ -26,7 +26,7 @@ Thomas Girke
 }
 \examples{
 ## Sample Data Sets
-grq <- GRanges(seqnames = Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)), ranges = IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)), strand = Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
+grq <- GRanges(seqnames = Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)), ranges = IRanges::IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)), strand = Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
 grs <- shift(grq[c(2,5,6)], 5)
 ## Run olRanges function
 olRanges(query=grq, subject=grs, output="df") 

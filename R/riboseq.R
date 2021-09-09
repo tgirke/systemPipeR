@@ -316,7 +316,7 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
                 gr <- grl[[i]]
                 counter <- which(feature==i)
                 ## Non-strand-specific counts
-                alignssub <- subsetByOverlaps(aligns, gr, ignore.strand=TRUE)
+                alignssub <- IRanges::subsetByOverlaps(aligns, gr, ignore.strand=TRUE)
                 if(singleEnd==TRUE) {
                     if(is.null(readlength[1])) {
                         counts <- length(alignssub)
@@ -345,7 +345,7 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
                     myMA["N_total_aligned",] <- myMA["N_total_aligned",] + totalcounts
                 }
                 ## Strand-specific counts
-                alignssub <- subsetByOverlaps(aligns, gr, ignore.strand=FALSE)
+                alignssub <- IRanges::subsetByOverlaps(aligns, gr, ignore.strand=FALSE)
                 if(singleEnd==TRUE) {
                     if(is.null(readlength[1])) {
                         sensecounts <- length(alignssub)
@@ -578,10 +578,10 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
         ## Compute coverage 
         if(is.numeric(resizereads[1])) {
             cov <- coverage(resize(granges(aligns), resizereads[1]))
-            cov_pos <- coverage(resize(granges(subsetByOverlaps(aligns, gr, ignore.strand=FALSE)), resizereads[1]))
+            cov_pos <- coverage(resize(granges(IRanges::subsetByOverlaps(aligns, gr, ignore.strand=FALSE)), resizereads[1]))
         } else if(is.null(resizereads)) {
             cov <- coverage(aligns)
-            cov_pos <- coverage(subsetByOverlaps(aligns, gr, ignore.strand=FALSE))
+            cov_pos <- coverage(IRanges::subsetByOverlaps(aligns, gr, ignore.strand=FALSE))
         } else {
             stop("'resizereads' needs to be assigned NULL or positive integer of length 1.")   
         }
@@ -1069,6 +1069,8 @@ predORF <- function(x, n=1, type="grl", mode="orf", strand="sense", longest_disj
 ## (e.g. between exons of transcribed regions) that are absent in 
 ## the query ranges, but present in the corresponding subject ranges.
 scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
+    pkg <- c("IRanges")
+    checkPkg(pkg, quietly = FALSE)
     ## Both input objects need to be of class GRangesList
     if(!is(subject, "GRangesList") | !is(query, "GRangesList")) stop("Both subject and query need to be GRangesList objects.")
     ## All names(query) need to be present in names(subject)

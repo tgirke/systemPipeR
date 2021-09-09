@@ -210,6 +210,8 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
 ###########################################################
 ##  Identify Range Overlaps 
 olRanges <- function(query, subject, output="gr") {
+  pkg <- c("IRanges")
+  checkPkg(pkg, quietly = FALSE)
   ## Input check
   if(!((class(query)=="GRanges" & class(subject)=="GRanges") | (class(query)=="IRanges" & class(subject)=="IRanges"))) {
     stop("Query and subject need to be of same class, either GRanges or IRanges!")
@@ -267,7 +269,7 @@ olRanges <- function(query, subject, output="gr") {
       elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
     }
     if(class(query)=="IRanges") {
-      query <- GRanges(seqnames = Rle(rep("dummy", length(query))), ranges = IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = Rle(strand(rep("+", length(query)))), oldf)
+      query <- GRanges(seqnames = Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = Rle(strand(rep("+", length(query)))), oldf)
     }
     return(query)
   }

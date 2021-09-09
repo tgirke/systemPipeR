@@ -10,10 +10,10 @@ Description: R package for building and running automated end-to-end analysis wo
 Depends: Rsamtools (>= 1.31.2), Biostrings, ShortRead (>= 1.37.1), methods
 Imports: GenomicRanges, GenomicFeatures (>= 1.31.3), SummarizedExperiment, 
             VariantAnnotation (>= 1.25.11), ggplot2, batchtools, 
-            yaml, stringr, assertthat, magrittr, IRanges, S4Vectors, crayon, BiocGenerics, htmlwidgets
+            yaml, stringr, assertthat, magrittr, S4Vectors, crayon, BiocGenerics, htmlwidgets
 Suggests: BiocStyle, knitr, rmarkdown, systemPipeRdata, GenomicAlignments, grid, 
             dplyr, testthat, rjson, annotate, AnnotationDbi, kableExtra, GO.db, GenomeInfoDb, DT, rtracklayer,
-             limma, edgeR, DESeq2
+             limma, edgeR, DESeq2, IRanges
 VignetteBuilder: knitr
 SystemRequirements: systemPipeR can be used to run external 
         command-line software (e.g. short read aligners), but the 
