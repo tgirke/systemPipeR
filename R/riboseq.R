@@ -15,7 +15,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     GenomeInfoDb::seqinfo(featuresGRl) <- GenomeInfoDb::seqinfo(txdb)
     ## Empty GRanges object for feature types that don't exist
     gr_empty <- GRanges()
-    mcols(gr_empty) <- DataFrame(feature_by=character(), featuretype_id=character(), featuretype=character())
+    mcols(gr_empty) <- S4Vectors::DataFrame(feature_by=character(), featuretype_id=character(), featuretype=character())
     GenomeInfoDb::seqinfo(gr_empty) <- GenomeInfoDb::seqinfo(txdb)
     ## Gene/transcript id mappings (required for some features)
     ids <- mcols(GenomicFeatures::transcripts(txdb,  columns=c("tx_id", "tx_name", "gene_id")))
@@ -35,12 +35,12 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                     tmp <- reduce(split(tmp, as.character(mcols(tmp)$gene_id))) 
                     tmp <- unlist(tmp)
                     feature_id <- paste(names(tmp), ":", tx_type[i], "_red", sep="")
-                    mcols(tmp) <- DataFrame(feature_by=names(tmp), featuretype_id=feature_id, featuretype=paste0(tx_type[i], "_red"))
+                    mcols(tmp) <- S4Vectors::DataFrame(feature_by=names(tmp), featuretype_id=feature_id, featuretype=paste0(tx_type[i], "_red"))
                     names(tmp) <- seq_along(tmp)
                     featuresGRl <- c(featuresGRl, GRangesList(tmp=tmp))
                     names(featuresGRl)[length(featuresGRl)] <- paste0(tx_type[i], "_red")
                 } else {
-                    mcols(tmp) <- DataFrame(feature_by=mcols(tmp)$gene_id, featuretype_id=mcols(tmp)$tx_name, featuretype=tx_type[i])
+                    mcols(tmp) <- S4Vectors::DataFrame(feature_by=mcols(tmp)$gene_id, featuretype_id=mcols(tmp)$tx_name, featuretype=tx_type[i])
                     featuresGRl <- c(tmp=featuresGRl, GRangesList(tmp=tmp))
                     names(tmp) <- seq_along(tmp)
                     names(featuresGRl)[length(featuresGRl)] <- tx_type[i]
@@ -59,13 +59,13 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 mypromoters <- suppressWarnings(unlist(reduce(promoters(GenomicFeatures::transcriptsBy(txdb, "gene"), upstream, downstream))))
                 mypromoters <- trim(mypromoters)
                 feature_id <- paste0(names(mypromoters), ":P_red")
-                mcols(mypromoters) <- DataFrame(feature_by=names(mypromoters), featuretype_id=feature_id, featuretype="promoter_red")
+                mcols(mypromoters) <- S4Vectors::DataFrame(feature_by=names(mypromoters), featuretype_id=feature_id, featuretype="promoter_red")
                 names(mypromoters) <- seq_along(mypromoters)
                 featuresGRl <- c(featuresGRl, GRangesList("promoter_red"=mypromoters))
             } else {
                 mypromoters <- suppressWarnings(promoters(txdb, upstream, downstream, columns=c("tx_name", "gene_id", "tx_type")))
                 mypromoters <- trim(mypromoters)
-                mcols(mypromoters) <- DataFrame(feature_by=as(mcols(mypromoters)$gene_id, "CharacterList"), featuretype_id=mcols(mypromoters)$tx_name, featuretype="promoter")
+                mcols(mypromoters) <- S4Vectors::DataFrame(feature_by=as(mcols(mypromoters)$gene_id, "CharacterList"), featuretype_id=mcols(mypromoters)$tx_name, featuretype="promoter")
                 featuresGRl <- c(featuresGRl, GRangesList("promoter"=mypromoters))
             }
             if(verbose==TRUE) cat("Created feature ranges: promoter", "\n")
@@ -92,7 +92,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_intron <- rep(names(intron_red_count), intron_red_count)
                 feature_id <- paste(ge_id_red_intron, sprintf("I%03d_red", unlist(sapply(as.integer(intron_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 myintrons <- unlist(myintrons) 
-                mcols(myintrons) <- DataFrame(feature_by=ge_id_red_intron, featuretype_id=feature_id, featuretype="intron_red")
+                mcols(myintrons) <- S4Vectors::DataFrame(feature_by=ge_id_red_intron, featuretype_id=feature_id, featuretype="intron_red")
                 names(myintrons) <- seq_along(myintrons)
                 featuresGRl <- c(featuresGRl, GRangesList("intron_red"=myintrons))
             } else {
@@ -100,7 +100,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_intron <- rep(names(intron_red_count), intron_red_count)
                 feature_id <- paste(ge_id_red_intron, sprintf("I%03d", unlist(sapply(as.integer(intron_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 myintrons <- unlist(myintrons) 
-                mcols(myintrons) <- DataFrame(feature_by=as(ge_id_red_intron, "CharacterList"), featuretype_id=feature_id, featuretype="intron")
+                mcols(myintrons) <- S4Vectors::DataFrame(feature_by=as(ge_id_red_intron, "CharacterList"), featuretype_id=feature_id, featuretype="intron")
                 names(myintrons) <- seq_along(myintrons)
                 featuresGRl <- c(featuresGRl, GRangesList("intron"=myintrons))
             }
@@ -120,7 +120,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_exon <- rep(names(exon_red_count), exon_red_count)
                 feature_id <- paste(ge_id_red_exon, sprintf("E%03d_red", unlist(sapply(as.integer(exon_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 myexons <- unlist(myexons) 
-                mcols(myexons) <- DataFrame(feature_by=ge_id_red_exon, featuretype_id=feature_id, featuretype="exon_red")
+                mcols(myexons) <- S4Vectors::DataFrame(feature_by=ge_id_red_exon, featuretype_id=feature_id, featuretype="exon_red")
                 names(myexons) <- seq_along(myexons)
                 featuresGRl <- c(featuresGRl, GRangesList("exon_red"=myexons))
             } else {
@@ -128,7 +128,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_exon <- rep(names(exon_red_count), exon_red_count)
                 feature_id <- paste(ge_id_red_exon, sprintf("E%03d", unlist(sapply(as.integer(exon_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 myexons <- unlist(myexons) 
-                mcols(myexons) <- DataFrame(feature_by=as(ge_id_red_exon, "CharacterList"), featuretype_id=feature_id, featuretype="exon")
+                mcols(myexons) <- S4Vectors::DataFrame(feature_by=as(ge_id_red_exon, "CharacterList"), featuretype_id=feature_id, featuretype="exon")
                 names(myexons) <- seq_along(myexons)
                 featuresGRl <- c(featuresGRl, GRangesList("exon"=myexons))
             
@@ -149,7 +149,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_cds <- rep(names(cds_red_count), cds_red_count)
                 feature_id <- paste(ge_id_red_cds, sprintf("CDS%03d_red", unlist(sapply(as.integer(cds_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 mycds <- unlist(mycds) 
-                mcols(mycds) <- DataFrame(feature_by=ge_id_red_cds, featuretype_id=feature_id, featuretype="cds_red")
+                mcols(mycds) <- S4Vectors::DataFrame(feature_by=ge_id_red_cds, featuretype_id=feature_id, featuretype="cds_red")
                 names(mycds) <- seq_along(mycds)
                 featuresGRl <- c(featuresGRl, GRangesList("cds_red"=mycds))
             } else {
@@ -157,7 +157,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_cds <- rep(names(cds_red_count), cds_red_count)
                 feature_id <- paste(ge_id_red_cds, sprintf("CDS%03d", unlist(sapply(as.integer(cds_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 mycds <- unlist(mycds) 
-                mcols(mycds) <- DataFrame(feature_by=as(ge_id_red_cds, "CharacterList"), featuretype_id=feature_id, featuretype="cds")
+                mcols(mycds) <- S4Vectors::DataFrame(feature_by=as(ge_id_red_cds, "CharacterList"), featuretype_id=feature_id, featuretype="cds")
                 names(mycds) <- seq_along(mycds)
                 featuresGRl <- c(featuresGRl, GRangesList("cds"=mycds))
             }
@@ -185,7 +185,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
                 feature_id <- paste(ge_id_red_utr, sprintf("fiveUTR%03d_red", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 myfiveutr <- unlist(myfiveutr) 
-                mcols(myfiveutr) <- DataFrame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="fiveUTR_red")
+                mcols(myfiveutr) <- S4Vectors::DataFrame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="fiveUTR_red")
                 names(myfiveutr) <- seq_along(myfiveutr)
                 featuresGRl <- c(featuresGRl, GRangesList("fiveUTR_red"=myfiveutr))
             } else {
@@ -193,7 +193,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
                 feature_id <- paste(ge_id_red_utr, sprintf("fiveUTR%03d", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 myfiveutr <- unlist(myfiveutr) 
-                mcols(myfiveutr) <- DataFrame(feature_by=as(ge_id_red_utr, "CharacterList"), featuretype_id=feature_id, featuretype="fiveUTR")
+                mcols(myfiveutr) <- S4Vectors::DataFrame(feature_by=as(ge_id_red_utr, "CharacterList"), featuretype_id=feature_id, featuretype="fiveUTR")
                 names(myfiveutr) <- seq_along(myfiveutr)
                 featuresGRl <- c(featuresGRl, GRangesList("fiveUTR"=myfiveutr))
             }    
@@ -221,7 +221,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
                 feature_id <- paste(ge_id_red_utr, sprintf("threeUTR%03d_red", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 mythreeutr <- unlist(mythreeutr) 
-                mcols(mythreeutr) <- DataFrame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="threeUTR_red")
+                mcols(mythreeutr) <- S4Vectors::DataFrame(feature_by=ge_id_red_utr, featuretype_id=feature_id, featuretype="threeUTR_red")
                 names(mythreeutr) <- seq_along(mythreeutr)
                 featuresGRl <- c(featuresGRl, GRangesList("threeUTR_red"=mythreeutr))
             } else {
@@ -229,7 +229,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 ge_id_red_utr <- rep(names(utr_red_count), utr_red_count)
                 feature_id <- paste(ge_id_red_utr, sprintf("threeUTR%03d", unlist(sapply(as.integer(utr_red_count), function(x) seq(from=1, to=x)))), sep=":")
                 mythreeutr <- unlist(mythreeutr) 
-                mcols(mythreeutr) <- DataFrame(feature_by=as(ge_id_red_utr, "CharacterList"), featuretype_id=feature_id, featuretype="threeUTR")
+                mcols(mythreeutr) <- S4Vectors::DataFrame(feature_by=as(ge_id_red_utr, "CharacterList"), featuretype_id=feature_id, featuretype="threeUTR")
                 names(mythreeutr) <- seq_along(mythreeutr)
                 featuresGRl <- c(featuresGRl, GRangesList("threeUTR"=mythreeutr))
             }
@@ -257,9 +257,9 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
             index <- findOverlaps(ge, myintergenics, maxgap=0L, minoverlap=0L) # change necessary since default in IRanges changed from maxgap=0L to maxgap=-1L
             myids <- tapply(myids[as.matrix(index)[,1]], as.matrix(index)[,2], paste, collapse="__")
             if(reduce_ranges==TRUE) {
-                mcols(myintergenics) <- DataFrame(feature_by=sprintf("INTER%08d", seq_along(myids)), featuretype_id=as.character(myids), featuretype="intergenic")
+                mcols(myintergenics) <- S4Vectors::DataFrame(feature_by=sprintf("INTER%08d", seq_along(myids)), featuretype_id=as.character(myids), featuretype="intergenic")
             } else {
-                mcols(myintergenics) <- DataFrame(feature_by=as(sprintf("INTER%08d", seq_along(myids)), "CharacterList"), featuretype_id=as.character(myids), featuretype="intergenic")
+                mcols(myintergenics) <- S4Vectors::DataFrame(feature_by=as(sprintf("INTER%08d", seq_along(myids)), "CharacterList"), featuretype_id=as.character(myids), featuretype="intergenic")
             }
             names(myintergenics) <- seq_along(myintergenics)
             GenomeInfoDb::seqinfo(myintergenics) <- myseqinfo
@@ -330,10 +330,10 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
                         counts <- length(alignssub)
                         if(counter==1) totalcounts <- length(aligns)
                     } else {
-                        mywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(alignssub)) + GenomicAlignments::qwidth(first(alignssub)))/2)
+                        mywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(alignssub)) + GenomicAlignments::qwidth(S4Vectors::first(alignssub)))/2)
                         counts <- table(mywidth)[colnames(myMA)]
                         if(counter==1) { 
-                            totalmywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(aligns)) + GenomicAlignments::qwidth(first(aligns)))/2)
+                            totalmywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(aligns)) + GenomicAlignments::qwidth(S4Vectors::first(aligns)))/2)
                             totalcounts <- table(totalmywidth)[colnames(myMA)]
                         }
                     } 
@@ -359,10 +359,10 @@ featuretypeCounts <- function(bfl, grl, singleEnd=TRUE, readlength=NULL, type="d
                         sensecounts <- length(alignssub)
                         if(counter==1) totalsensecounts <- length(aligns[strand(aligns)=="+"])
                     } else {
-                        mywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(alignssub)) + GenomicAlignments::qwidth(first(alignssub)))/2)
+                        mywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(alignssub)) + GenomicAlignments::qwidth(S4Vectors::first(alignssub)))/2)
                         sensecounts <- table(mywidth)[colnames(myMA)]
                         if(counter==1) { 
-                            totalmywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(aligns)) + GenomicAlignments::qwidth(first(aligns)))/2)
+                            totalmywidth <- round((GenomicAlignments::qwidth(GenomicAlignments::last(aligns)) + GenomicAlignments::qwidth(S4Vectors::first(aligns)))/2)
                             totalsensecounts <- table(totalmywidth)[colnames(myMA)]
                         }
                     } 
@@ -604,7 +604,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
             for(j in names(mystrand[mystrand=="+"])) {
                 myview <- cov_posreg[[i]][names(cov_posreg[[i]]) %in% j]
                 if(length(myview)!=0) {
-                    cov_posList[[j]] <- Rle(as.numeric(na.omit(as.vector(t(as.matrix(myview))))))
+                    cov_posList[[j]] <- S4Vectors::Rle(as.numeric(na.omit(as.vector(t(as.matrix(myview))))))
                 }
             }
         }
@@ -613,7 +613,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
             for(j in names(mystrand[mystrand=="-"])) {
                 myview <- cov_posreg[[i]][names(cov_posreg[[i]]) %in% j]
                 if(length(myview)!=0) {
-                    cov_posList[[j]] <- Rle(as.numeric(na.omit(as.vector(t(as.matrix(reverse(myview)))))))
+                    cov_posList[[j]] <- S4Vectors::Rle(as.numeric(na.omit(as.vector(t(as.matrix(reverse(myview)))))))
                 }
             }
         }
@@ -624,7 +624,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
             for(j in names(mystrand[mystrand=="+"])) {
                 myview <- cov_negreg[[i]][names(cov_negreg[[i]]) %in% j]
                 if(length(myview)!=0) {
-                    cov_negList[[j]] <- Rle(as.numeric(na.omit(as.vector(t(as.matrix(myview))))))
+                    cov_negList[[j]] <- S4Vectors::Rle(as.numeric(na.omit(as.vector(t(as.matrix(myview))))))
                 }
             }
         }
@@ -633,7 +633,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
             for(j in names(mystrand[mystrand=="-"])) {
                 myview <- cov_negreg[[i]][names(cov_negreg[[i]]) %in% j]
                 if(length(myview)!=0) {
-                    cov_negList[[j]] <- Rle(as.numeric(na.omit(as.vector(t(as.matrix(reverse(myview)))))))
+                    cov_negList[[j]] <- S4Vectors::Rle(as.numeric(na.omit(as.vector(t(as.matrix(reverse(myview)))))))
                 }
             }
         }
@@ -731,7 +731,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
     gr <- unlist(grl)    
     if(!all(names(grl) %in% unique(names(gr)))) stop("None or not all components in grl are named.")
     ## Add sort_index
-    mcols(gr) <- DataFrame(mcols(gr), sort_index=seq_along(gr))
+    mcols(gr) <- S4Vectors::DataFrame(mcols(gr), sort_index=seq_along(gr))
     ## Ranges on + strand
     gr_pos <- gr[strand(gr)=="+" | strand(gr)=="*"] # Note: treats unstranded * the same as pos +
     if(component_resort==TRUE) {
@@ -1131,7 +1131,7 @@ scaleRanges <- function(subject, query, type="custom", verbose=TRUE) {
     ## If loop gets interrupted, output only completed results!
     mylist <- mylist[1:i] 
     gr <- makeGRangesFromDataFrame(do.call("rbind", mylist), keep.extra.columns=FALSE)
-    mcols(gr) <- DataFrame(feature_by=as(rep(names(mylist), sapply(mylist, nrow)), "CharacterList"), featuretype_id=names(gr), featuretype=type)
+    mcols(gr) <- S4Vectors::DataFrame(feature_by=as(rep(names(mylist), sapply(mylist, nrow)), "CharacterList"), featuretype_id=names(gr), featuretype=type)
     names(gr) <- NULL
     grl <- split(gr, as.character(mcols(gr)$feature_by))
     return(grl)

@@ -14,7 +14,7 @@
 ##################################################################
 setGeneric(name = "addAssay", def = function(x, ...) standardGeneric("addAssay"))
 setMethod(f = "addAssay", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
-    listSE <- SimpleList()
+    listSE <- S4Vectors::SimpleList()
     for (i in seq_along(SummarizedExperiment::assays(x))) {
         listSE[[i]] <- SummarizedExperiment::assays(x)[[i]]
     }
@@ -30,11 +30,11 @@ setMethod(f = "addAssay", signature = "SummarizedExperiment", definition = funct
 setGeneric(name = "addMetadata", def = function(x, ...) standardGeneric("addMetadata"))
 setMethod(f = "addMetadata", signature = "SummarizedExperiment", definition = function(x, value, xName = NULL) {
     listSE <- list()
-    for (i in seq_along(metadata(x))) {
-        listSE[[i]] <- metadata(x)[[i]]
+    for (i in seq_along(S4Vectors::metadata(x))) {
+        listSE[[i]] <- S4Vectors::metadata(x)[[i]]
     }
     listSE[[length(listSE) + 1]] <- value
-    names(listSE) <- c(names(metadata(x)), xName)
+    names(listSE) <- c(names(S4Vectors::metadata(x)), xName)
     SummarizedExperiment::metadata(x) <- listSE
     return(x)
 })
@@ -42,11 +42,11 @@ setMethod(f = "addMetadata", signature = "SummarizedExperiment", definition = fu
 ##############
 ## SPRdata ##
 ##############
-SPRdata <- function(counts = SimpleList(), rowData = NULL, rowRanges = GRangesList(),
+SPRdata <- function(counts = S4Vectors::SimpleList(), rowData = NULL, rowRanges = GRangesList(),
                     cmp = FALSE, targetspath = NULL, SEobj = NULL, SEobjName = "default") {
     if (is.null(SEobj)) {
         if (is.null(targetspath)) {
-            targets <- DataFrame()
+            targets <- S4Vectors::DataFrame()
         } else {
             targets <- read.delim(targetspath, comment.char = "#")
         }

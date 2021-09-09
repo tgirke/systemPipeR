@@ -267,10 +267,10 @@ olRanges <- function(query, subject, output="gr") {
   }
   if(output=="gr") {
     if(class(query)=="GRanges") {
-      elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
+      S4Vectors::elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
     }
     if(class(query)=="IRanges") {
-      query <- GRanges(seqnames = Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = Rle(strand(rep("+", length(query)))), oldf)
+      query <- GRanges(seqnames = S4Vectors::Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = S4Vectors::Rle(strand(rep("+", length(query)))), oldf)
     }
     return(query)
   }
@@ -278,9 +278,9 @@ olRanges <- function(query, subject, output="gr") {
 
 ## Run olRanges function
 ## Sample Data Sets
-# grq <- GRanges(seqnames = Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)),
+# grq <- GRanges(seqnames = S4Vectors::Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)),
 #                ranges = IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)),
-#                strand = Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
+#                strand = S4Vectors::Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
 # grs <- shift(grq[c(2,5,6)], 5)
 # olRanges(query=grq, subject=grs, output="df")
 # olRanges(query=grq, subject=grs, output="gr")

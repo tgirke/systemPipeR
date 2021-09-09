@@ -691,7 +691,7 @@ read_SYSargsList <- function(sys.file) {
     for (i in df_slots) {
         steps_comp <- sapply(steps, function(x) list(NULL))
         for (j in steps) {
-            steps_comp[[j]] <- DataFrame(yaml::yaml.load(args_comp_yml[[i]][[j]]), check.names = FALSE)
+            steps_comp[[j]] <- S4Vectors::DataFrame(yaml::yaml.load(args_comp_yml[[i]][[j]]), check.names = FALSE)
         }
         args_comp[[i]] <- steps_comp
     }
@@ -778,7 +778,7 @@ writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE){
     }
   }
   ## Metadata
-  yaml::write_yaml(metadata(SE), file.path(path, paste0("metadata.yml")))
+  yaml::write_yaml(S4Vectors::metadata(SE), file.path(path, paste0("metadata.yml")))
   ## colData
   write.table(SummarizedExperiment::colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
               col.names = NA, sep = "\t")
@@ -805,12 +805,12 @@ readSE <- function(dir.path, dir.name){
   ## Counts
   files_counts <- list.files(path, pattern = "counts")
   if(length(files_counts) > 0) {
-    counts_ls <- SimpleList(NULL)
+    counts_ls <- S4Vectors::SimpleList(NULL)
     for (i in files_counts){
       counts_ls <- as.matrix(read.table(file.path(path, i), check.names = FALSE, header = TRUE))
     } 
   }  else {
-    counts_ls <- SimpleList()
+    counts_ls <- S4Vectors::SimpleList()
   }
   ## Metadata
   metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
@@ -841,7 +841,7 @@ readSE <- function(dir.path, dir.name){
 #                      feature_id=sprintf("ID%03d", 1:200))
 # colData <- DataFrame(Treatment=rep(c("ChIP", "Input"), 3),
 #                      row.names=LETTERS[1:6])
-# rse <- SummarizedExperiment::SummarizedExperiment(assays=SimpleList(counts=counts),
+# rse <- SummarizedExperiment::SummarizedExperiment(assays=S4Vectors::SimpleList(counts=counts),
 #                             rowRanges=rowRanges, colData=colData)
 # rse
 # writeSE(rse, dir.path = getwd(), dir.name = "seobj")
