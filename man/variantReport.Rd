@@ -61,6 +61,7 @@ args <- systemArgs(sysma=param, mytargets=targets)
 sysargs(args)[1]
 
 \dontrun{
+library(VariantAnnotation)
 system("bwa index -a bwtsw ./data/tair10.fasta")
 bampaths <- runCommandline(args=args)
 

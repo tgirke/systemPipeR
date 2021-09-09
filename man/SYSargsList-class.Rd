@@ -62,6 +62,7 @@
 \alias{cmdlist,SYSargsList-method}
 % Replacement Methods
 \alias{[[<-,SYSargsList,ANY,ANY,ANY-method}
+\alias{[[<-,SYSargsList,ANY,ANY-method}
 \alias{dependency<-}
 \alias{dependency<-,SYSargsList-method}
 \alias{appendStep<-}
