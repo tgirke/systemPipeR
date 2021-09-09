@@ -638,7 +638,7 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
     ## SE slot
     path <- file.path(.getPath(sys.file), "SE")
     if(!dir.exists(path)) {
-      dir.create(path)
+      dir.create(path, recursive = TRUE)
     }
     steps_comp <- sapply(steps, function(x) list(NULL))
     for (j in steps) {

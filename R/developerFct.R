@@ -22,15 +22,13 @@
 ## (C) Extract 100,000 reads from each fastq file mapping to the truncated regions in reference
 ## Step (C) is performed with the following function
 .subsetReadsByMappingRegion <- function(args) {
-  ## global functions or variables
-  readGAlignments <- seqlengths <- NULL
 	chromosomelength <- 100000
 	mydir <- getwd()
 	setwd("./data/SRP010938_sub") # outdir
 	for(i in seq(along=outpaths(args))) {
 		fl <- outpaths(args)[i]
-		si <- seqinfo(BamFile(fl))                                                                                                                                                                                                                 
-		gr <- GRanges(seqnames(si), IRanges(100, seqlengths(si)-100))                                                                                                                                                                                
+		si <- GenomeInfoDb::seqinfo(BamFile(fl))                                                                                                                                                                                                                 
+		gr <- GenomicRanges::GRanges(seqnames(si), IRanges(100, GenomeInfoDb::seqlengths(si)-100))                                                                                                                                                                                
 		aligns <- readGAlignments(fl, param=ScanBamParam(which=gr), use.names=TRUE)
 		keepids <- names(aligns[start(aligns) < chromosomelength]) # Return read ids mapping in first 100000 nucleotides of chromosomes
 		myN <- sample(90000:100000, 1) # Keep number of random sampled reads between 90-100K
@@ -38,12 +36,12 @@
 		reads1 <- readFastq(infile1(args)[i]) # Reads in a FASTQ file from the current folder
 		index <- gsub(" .*", "", as.vector(id(reads1))) %in% keepids
 		reads1 <- reads1[index] # subset by keepids
-		writeFastq(reads1, gsub("^.*/", "", infile1(args)[i]), full=TRUE) # writes ShortReadQ object to output file
+		ShortRead::writeFastq(reads1, gsub("^.*/", "", infile1(args)[i]), full=TRUE) # writes ShortReadQ object to output file
 		rm(reads1); gc() # Clean up memory
 		reads2 <- readFastq(infile2(args)[i]) 
 		index <- gsub(" .*", "", as.vector(id(reads2))) %in% keepids
 		reads2 <- reads2[index] 
-		writeFastq(reads2, gsub("^.*/", "", infile2(args)[i]), full=TRUE) 
+		ShortRead::writeFastq(reads2, gsub("^.*/", "", infile2(args)[i]), full=TRUE) 
 		rm(reads2); gc() # Clean up memory
 		print(i)
 	}

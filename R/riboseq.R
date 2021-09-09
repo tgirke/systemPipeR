@@ -10,12 +10,12 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
 	
     ## Empty GRangesList to store results
     featuresGRl <- GRangesList()
-    seqinfo(featuresGRl) <- seqinfo(txdb)
+    GenomeInfoDb::seqinfo(featuresGRl) <- GenomeInfoDb::seqinfo(txdb)
     
     ## Empty GRanges object for feature types that don't exist
     gr_empty <- GRanges()
     mcols(gr_empty) <- DataFrame(feature_by=character(), featuretype_id=character(), featuretype=character())
-    seqinfo(gr_empty) <- seqinfo(txdb)
+    GenomeInfoDb::seqinfo(gr_empty) <- GenomeInfoDb::seqinfo(txdb)
 
     ## Gene/transcript id mappings (required for some features)
     ids <- mcols(transcripts(txdb,  columns=c("tx_id", "tx_name", "gene_id")))
@@ -251,8 +251,8 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
         if(length(ge)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("intergenic"=gr_empty))
         } else {
-            myseqinfo <- seqinfo(ge)
-            seqlengths(ge) <- NA # Note: the following ignores chromosome end ranges on the right end
+            myseqinfo <- GenomeInfoDb::seqinfo(ge)
+            GenomeInfoDb::seqlengths(ge) <- NA # Note: the following ignores chromosome end ranges on the right end
             mynames <- names(ge)
             strand(ge) <- "*"
             ge <- reduce(ge, with.revmap=TRUE)
@@ -270,7 +270,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
                 mcols(myintergenics) <- DataFrame(feature_by=as(sprintf("INTER%08d", seq_along(myids)), "CharacterList"), featuretype_id=as.character(myids), featuretype="intergenic")
             }
             names(myintergenics) <- seq_along(myintergenics)
-            seqinfo(myintergenics) <- myseqinfo
+            GenomeInfoDb::seqinfo(myintergenics) <- myseqinfo
             featuresGRl <- c(featuresGRl, GRangesList("intergenic"=myintergenics))
             if(verbose==TRUE) cat("Created feature ranges: intergenic", "\n")
 	    }
