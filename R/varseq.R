@@ -86,7 +86,9 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 
 ## Report for predictCoding() where data for each variant if collapsed to one line.
 .codingReport <- function(x, txdb) {
-  txids <- values(transcripts(txdb))$tx_name; names(txids) <- values(transcripts(txdb))$tx_id
+  pkg <- c("GenomicFeatures")
+  checkPkg(pkg, quietly = FALSE)
+  txids <- values(GenomicFeatures::transcripts(txdb))$tx_name; names(txids) <- values(GenomicFeatures::transcripts(txdb))$tx_id
   #myf <- as.factor(names(values(x)$CDSLOC))
   myf <- as.factor(names(x))
   if(length(myf)>0) {

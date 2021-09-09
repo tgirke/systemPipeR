@@ -1,10 +1,6 @@
 ## IMPORTS
-import(GenomicRanges, GenomicFeatures, Rsamtools,
+import(GenomicRanges, Rsamtools,
        Biostrings, VariantAnnotation)
-importFrom("assertthat", "assert_that")
-importFrom("assertthat", "is.count")
-importFrom("assertthat", "is.writeable")
-importFrom("assertthat", "not_empty")
 
 importFrom("BiocGenerics", "end<-")
 importFrom("BiocGenerics", "start<-")

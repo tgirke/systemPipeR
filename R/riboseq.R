@@ -18,12 +18,12 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     mcols(gr_empty) <- DataFrame(feature_by=character(), featuretype_id=character(), featuretype=character())
     GenomeInfoDb::seqinfo(gr_empty) <- GenomeInfoDb::seqinfo(txdb)
     ## Gene/transcript id mappings (required for some features)
-    ids <- mcols(transcripts(txdb,  columns=c("tx_id", "tx_name", "gene_id")))
+    ids <- mcols(GenomicFeatures::transcripts(txdb,  columns=c("tx_id", "tx_name", "gene_id")))
     ge_id <- unstrsplit(ids$gene_id)
     names(ge_id) <- ids$tx_id
     ## Transcript ranges: each 'tx_type' as separate GRanges object (reduced by gene)
     if("tx_type" %in% featuretype) {
-        tx <- transcripts(txdb, columns=c("tx_name", "gene_id", "tx_type"))
+        tx <- GenomicFeatures::transcripts(txdb, columns=c("tx_name", "gene_id", "tx_type"))
         if(length(tx)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("transcript"=gr_empty))
         } else {
@@ -51,12 +51,12 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     }
     ## Create promoter ranges reduced by gene
 	if("promoter" %in% featuretype) {
-        mycheck <- suppressWarnings(promoters(transcriptsBy(txdb, "gene"), upstream, downstream))
+        mycheck <- suppressWarnings(promoters(GenomicFeatures::transcriptsBy(txdb, "gene"), upstream, downstream))
         if(length(mycheck)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("promoter"=gr_empty))
         } else {
             if(reduce_ranges==TRUE) {
-                mypromoters <- suppressWarnings(unlist(reduce(promoters(transcriptsBy(txdb, "gene"), upstream, downstream))))
+                mypromoters <- suppressWarnings(unlist(reduce(promoters(GenomicFeatures::transcriptsBy(txdb, "gene"), upstream, downstream))))
                 mypromoters <- trim(mypromoters)
                 feature_id <- paste0(names(mypromoters), ":P_red")
                 mcols(mypromoters) <- DataFrame(feature_by=names(mypromoters), featuretype_id=feature_id, featuretype="promoter_red")
@@ -74,7 +74,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create intron ranges reduced by gene
 	if("intron" %in% featuretype) {
         ## Introns by transcript
-		myintrons <- intronsByTranscript(txdb)
+		myintrons <- GenomicFeatures::intronsByTranscript(txdb)
         if(length(myintrons)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("intron"=gr_empty))
         } else {
@@ -110,7 +110,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create exon ranges reduced by gene 
 	if("exon" %in% featuretype) {
         ## exons by gene
-		myexons <- exonsBy(txdb, "gene")
+		myexons <- GenomicFeatures::exonsBy(txdb, "gene")
         if(length(myexons)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("exon"=gr_empty))
         } else {
@@ -139,7 +139,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create CDS ranges reduced by gene 
 	if("cds" %in% featuretype) {
         ## CDS by gene
-		mycds <- cdsBy(txdb, "gene")
+		mycds <- GenomicFeatures::cdsBy(txdb, "gene")
         if(length(mycds)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("cds"=gr_empty))
         } else {
@@ -167,7 +167,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create 5'UTR ranges reduced by gene
 	if("fiveUTR" %in% featuretype) {
         ## 5'UTRs by transcript
-		myfiveutr <- fiveUTRsByTranscript(txdb)
+		myfiveutr <- GenomicFeatures::fiveUTRsByTranscript(txdb)
         if(length(myfiveutr)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("fiveUTR"=gr_empty))
         } else {
@@ -203,7 +203,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create 3'UTR ranges reduced by gene
 	if("threeUTR" %in% featuretype) {
         ## 3'UTRs by transcript
-		mythreeutr <- threeUTRsByTranscript(txdb)
+		mythreeutr <- GenomicFeatures::threeUTRsByTranscript(txdb)
         if(length(mythreeutr)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("threeUTR"=gr_empty))
         } else {
@@ -239,7 +239,7 @@ genFeatures <- function(txdb, featuretype="all", reduce_ranges, upstream=1000, d
     ## Create intergenic ranges
 	if("intergenic" %in% featuretype) {
         # if(verbose==TRUE & any(is.na(seqlengths(txdb)))) warning("seqlengths missing for: ", paste(head(names(seqlengths(txdb))[is.na(seqlengths(txdb))]), collapse=", "), ". Thus, corresponding chromosome end ranges will be missing in intergenic results.")
-        ge <- genes(txdb)
+        ge <- GenomicFeatures::genes(txdb)
         if(length(ge)==0) { # If range set is empty, append 'gr_empty'.
             featuresGRl <- c(featuresGRl, GRangesList("intergenic"=gr_empty))
         } else {
@@ -719,7 +719,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
     }
 }
 ## Usage:
-# grl <- cdsBy(txdb, "tx", use.names=TRUE)
+# grl <- GenomicFeatures::cdsBy(txdb, "tx", use.names=TRUE)
 # fcov <- featureCoverage(bfl=BamFileList(outpaths[1]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
 
 ## Helper function to extend single and multi component ranges
@@ -873,7 +873,7 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
 }
 
 ## Usage:
-# grl <- cdsBy(txdb, "tx", use.names=TRUE)
+# grl <- GenomicFeatures::cdsBy(txdb, "tx", use.names=TRUE)
 # fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizereads=NULL, readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/zzz.xls", overwrite=TRUE)
 # plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", extendylim=2, scale_count_val=10^6)
 

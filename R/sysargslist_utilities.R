@@ -1156,10 +1156,10 @@ renderLogs <- function(sysargs,
 subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile = NULL, save_Rmd = TRUE) {
     . <- NULL
     # function start, check inputs
-    assertthat::assert_that(file.exists(Rmd))
-    if (assertthat::not_empty(input_steps)) assertthat::assert_that(assertthat::is.string(input_steps))
-    if (assertthat::not_empty(Rmd_outfile)) assertthat::assert_that(file.exists(dirname(Rmd_outfile)))
-    if (assertthat::not_empty(exclude_steps)) assertthat::assert_that(assertthat::is.string(exclude_steps))
+    if (!file.exists(Rmd) == TRUE) stop("Provide valid 'Rmd' file.")
+    # if (assertthat::not_empty(input_steps)) assertthat::assert_that(assertthat::is.string(input_steps))
+    # if (assertthat::not_empty(Rmd_outfile)) assertthat::assert_that(file.exists(dirname(Rmd_outfile)))
+    # if (assertthat::not_empty(exclude_steps)) assertthat::assert_that(assertthat::is.string(exclude_steps))
     # default out behavior, in ISO 8601 time format
     if (is.null(Rmd_outfile)) Rmd_outfile <- paste0("new", format(Sys.time(), "%Y%m%d_%H%M%S"), basename(Rmd))
     # read file
@@ -1236,7 +1236,8 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
     rmd_df$link_to <- NA
     rmd_df$link_to[1:(nrow(rmd_df) - 1)] <- rmd_df$t_number[2:nrow(rmd_df)]
     # list all steps if no input_steps
-    if (!assertthat::not_empty(input_steps)) {
+    # if (!assertthat::not_empty(input_steps)) {
+    if(!is.null(input_steps)) {
         cat("No input_steps is given, list all sections and exit\n")
         cat("This file contains following sections\n")
         stringr::str_replace(t_text, "^", paste0(strrep("    ", (t_lvl - 1)), names(t_lvl), " ")) %>%
@@ -1503,7 +1504,7 @@ evalCode <- function(infile, eval = TRUE, output) {
         x <- normalizePath(x)
     }
     for (i in seq_along(x)) {
-        path_un <- unlist(strsplit(x[i], "/"))
+        path_un <- unlist(strsplit(x[i], "/|\\\\"))
         path <- path_un[path_un != basename(x[i])]
         x[i] <- paste0(path, collapse = "/")
     }
