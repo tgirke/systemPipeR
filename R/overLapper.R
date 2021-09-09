@@ -486,8 +486,8 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 olBarplot <- function(x, mincount=0, complexity="default", myxlabel="default", myylabel="Counts", mytitle="default", ...) {
 	## Check validity of inputs 
 	if(!any(c("VENNset", "INTERSECTset") %in% class(x))) stop("x needs to be of class VENNset or INTERSECTset")
-    ## global functions or variables
-    Intersect_Sets <- Counts <- Level <- NULL
+  ## global functions or variables
+  Intersect_Sets <- Counts <- Level <- NULL
 	## Generate counts 
 	if(class(x)=="VENNset") counts <- sapply(vennlist(x), length)
 	if(class(x)=="INTERSECTset") counts <- sapply(intersectlist(x), length)

@@ -68,7 +68,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                     outfile1=outfile_names,
                     sysargs=sysargs(args_sub), 
                     outpaths=outfile_names)
-    args_sub_out <- methods::as(syslist, "SYSargs")
+    args_sub_out <- as(syslist, "SYSargs")
     ## SYSargs2 class  
   } else if (class(args) == "SYSargs2"){
     out <- sapply(names(outfile_names), function(x) list(outfile_names[[x]]), simplify = F)
@@ -133,8 +133,6 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ## Convenience function to perform read counting over serveral different
 ## range sets, e.g. peak ranges or feature types
 countRangeset <- function(bfl, args, format="tabular", ...) {
-  pkg <- c("GenomicAlignments", "rtracklayer")
-  checkPkg(pkg, quietly = FALSE)
   ## Input validity checks
   if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
   if(all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
@@ -212,8 +210,6 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
 ###########################################################
 ##  Identify Range Overlaps 
 olRanges <- function(query, subject, output="gr") {
-  pkg <- c("GenomeInfoDb", "IRanges")
-  checkPkg(pkg, quietly = FALSE)
   ## Input check
   if(!((class(query)=="GRanges" & class(subject)=="GRanges") | (class(query)=="IRanges" & class(subject)=="IRanges"))) {
     stop("Query and subject need to be of same class, either GRanges or IRanges!")
@@ -271,7 +267,7 @@ olRanges <- function(query, subject, output="gr") {
       elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
     }
     if(class(query)=="IRanges") {
-      query <- GRanges(seqnames = Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = Rle(strand(rep("+", length(query)))), oldf)
+      query <- GRanges(seqnames = Rle(rep("dummy", length(query))), ranges = IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = Rle(strand(rep("+", length(query)))), oldf)
     }
     return(query)
   }
@@ -280,7 +276,7 @@ olRanges <- function(query, subject, output="gr") {
 ## Run olRanges function
 ## Sample Data Sets
 # grq <- GRanges(seqnames = Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)), 
-#                ranges = IRanges::IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)), 
+#                ranges = IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)), 
 #                strand = Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
 # grs <- shift(grq[c(2,5,6)], 5)
 # olRanges(query=grq, subject=grs, output="df") 

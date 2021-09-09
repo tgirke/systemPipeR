@@ -156,16 +156,14 @@ Thomas Girke
 }
 \examples{
 \dontrun{
-library(biomaRt)
+
 ## Obtain annotations from BioMart
-listMarts()  # To choose BioMart database
-listMarts(host = "plants.ensembl.org")
-m <- useMart("plants_mart", host = "plants.ensembl.org")
-listDatasets(m)
-m <- useMart("plants_mart", dataset = "athaliana_eg_gene", 
-host = "plants.ensembl.org")
-listAttributes(m)  # Choose data types you want to download
-go <- getBM(attributes = c("go_id", "tair_locus", "namespace_1003"), mart = m)
+listMarts() # To choose BioMart database
+m <- useMart("ENSEMBL_MART_PLANT"); listDatasets(m) 
+m <- useMart("ENSEMBL_MART_PLANT", dataset="athaliana_eg_gene")
+listAttributes(m) # Choose data types you want to download
+go <- getBM(attributes=c("go_accession", "tair_locus", 
+            "go_namespace_1003"), mart=m)
 go <- go[go[,3]!="",]; go[,3] <- as.character(go[,3])
 write.table(go, "GOannotationsBiomart_mod.txt", quote=FALSE, 
             row.names=FALSE, col.names=FALSE, sep="\t")
@@ -176,7 +174,8 @@ catdb <- makeCATdb(myfile="GOannotationsBiomart_mod.txt", lib=NULL, org="",
 catdb
 
 ## Create catDB from Bioconductor annotation package
-# catdb <- makeCATdb(myfile=NULL, lib="ath1121501.db", org="", colno=c(1,2,3), idconv=NULL)
+# catdb <- makeCATdb(myfile=NULL, lib="ath1121501.db", org="", 
+                    colno=c(1,2,3), idconv=NULL)
 
 ## AffyID-to-GeneID mappings when working with AffyIDs 
 # affy2locusDF <- systemPipeR:::.AffyID2GeneID(map = "ftp://ftp.arabidopsis.org/home/tair/Microarrays/Affymetrix/affy_ATH1_array_elements-2010-12-20.txt",
@@ -200,7 +199,7 @@ GOHyperGAll_Subset(catdb, GOHyperGAll_result, sample=test_sample, type="goSlim")
 
 ## Reduce GO term redundancy in 'GOHyperGAll_results'
 simplifyDF <- GOHyperGAll_Simplify(GOHyperGAll_result, gocat="MF", 
-                                    cutoff=0.9, correct=TRUE)
+                                    cutoff=0.001, correct=T)
 # Returns the redundancy reduced data set. 
 data.frame(GOHyperGAll_result[GOHyperGAll_result[,1] %in% simplifyDF[,1], -8], GO_OL_Match=simplifyDF[,2])
 
