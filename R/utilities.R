@@ -623,10 +623,10 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
       }
       ## Run preprocessor function with FastqStreamer
       counter <- 0
-      f <- FastqStreamer(infile1(args)[i], batchsize)
-      while (length(fq <- yield(f))) {
+      f <- ShortRead::FastqStreamer(infile1(args)[i], batchsize)
+      while (length(fq <- ShortRead::yield(f))) {
         fqtrim <- eval(parse(text = Fct))
-        writeFastq(fqtrim, outfile, mode = "a", ...)
+        ShortRead::writeFastq(fqtrim, outfile, mode = "a", ...)
         counter <- counter + length(fqtrim)
         cat(counter, "processed reads written to file:", outfile, "\n")
       }
@@ -656,30 +656,30 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
       ## Run preprocessor function with FastqStreamer
       counter1 <- 0
       counter2 <- 0
-      f1 <- FastqStreamer(p1, batchsize)
-      f2 <- FastqStreamer(p2, batchsize)
-      while (length(fq1 <- yield(f1))) {
-        fq2 <- yield(f2)
+      f1 <- ShortRead::FastqStreamer(p1, batchsize)
+      f2 <- ShortRead::FastqStreamer(p2, batchsize)
+      while (length(fq1 <- ShortRead::yield(f1))) {
+        fq2 <- ShortRead::yield(f2)
         if (length(fq1) != length(fq2)) stop("Paired end files cannot have different read numbers.")
         ## Process p1
         fq <- fq1 # for simplicity in eval
         fq1trim <- eval(parse(text = Fct))
         ## Index for p1
-        index1 <- as.character(id(fq1)) %in% as.character(id(fq1trim))
+        index1 <- as.character(ShortRead::id(fq1)) %in% as.character(ShortRead::id(fq1trim))
         names(index1) <- seq(along = index1)
         index1 <- names(index1[index1])
         ## Process p2
         fq <- fq2 # for simplicity in eval
         fq2trim <- eval(parse(text = Fct))
         ## Index for p1
-        index2 <- as.character(id(fq2)) %in% as.character(id(fq2trim))
+        index2 <- as.character(ShortRead::id(fq2)) %in% as.character(ShortRead::id(fq2trim))
         names(index2) <- seq(along = index2)
         index2 <- names(index2[index2])
         ## Export to processed paired files
         indexpair1 <- index1 %in% index2
-        writeFastq(fq1trim[indexpair1], p1out, mode = "a", ...)
+        ShortRead::writeFastq(fq1trim[indexpair1], p1out, mode = "a", ...)
         indexpair2 <- index2 %in% index1
-        writeFastq(fq2trim[indexpair2], p2out, mode = "a", ...)
+        ShortRead::writeFastq(fq2trim[indexpair2], p2out, mode = "a", ...)
         counter1 <- counter1 + sum(indexpair1)
         cat(counter1, "processed reads written to file:", p1out, "\n")
         counter2 <- counter2 + sum(indexpair2)
@@ -760,7 +760,7 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
   fqpaths <- fqpaths[bamexists]
   bampaths <- bampaths[bamexists]
   ## Obtain total read number from FASTQ files
-  Nreads <- countLines(fqpaths) / 4
+  Nreads <- ShortRead::countLines(fqpaths) / 4
   names(Nreads) <- names(fqpaths)
   ## If reads are PE multiply by 2 as a rough approximation
   if(pairEnd) Nreads <- Nreads * 2

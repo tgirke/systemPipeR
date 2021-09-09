@@ -20,8 +20,8 @@ seeFastq <- function(fastq, batchsize, klength=8) {
     ## Processing of single fastq file
     seeFastqSingle <- function(fastq, batchsize, klength) {
         ## Random sample N reads from fastq file (N=batchsize)
-        f <- FastqSampler(fastq, batchsize)
-        fq <- yield(f)
+        f <- ShortRead::FastqSampler(fastq, batchsize)
+        fq <- ShortRead::yield(f)
         nReads <- f$status()[["total"]] # Total number of reads in fastq file
         close(f)
         
@@ -29,7 +29,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
         ## N/NA values and of dimensions N_rows = number_of_reads and N_columns = length_of_longest_read. 
         if(length(unique(width(fq))) == 1) {
             q <- as.matrix(PhredQuality(quality(fq))) 
-            s <- as.matrix(sread(fq))
+            s <- as.matrix(ShortRead::sread(fq))
         } else {
             mymin <- min(width(fq)); mymax <- max(width(fq))
             s <- matrix("N", length(fq), mymax)
@@ -37,7 +37,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
             for(i in mymin:mymax) {
                 index <- width(fq)==i
                 if(any(index)) {
-                    s[index, 1:i] <- as.matrix(DNAStringSet(sread(fq)[index], start=1, end=i))
+                    s[index, 1:i] <- as.matrix(DNAStringSet(ShortRead::sread(fq)[index], start=1, end=i))
                     q[index, 1:i] <- as.matrix(PhredQuality(quality(fq))[index]) 
                 }
             }
@@ -77,7 +77,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
         cstats[,3] <- factor(cstats[,3], levels=unique(cstats[,3]), ordered=TRUE) 
 
         ## (D) Relative K-mer Diversity 
-        dna <- sread(fq)
+        dna <- ShortRead::sread(fq)
         loopv <- 1:(min(width(dna)) - (klength-1))
         kcount <- sapply(loopv, function(x) length(unique(DNAStringSet(start=x, end=x+klength-1, dna))))    
         reldiv <- kcount/(5^klength) # 5 instead of 4 because of Ns
@@ -112,7 +112,7 @@ seeFastq <- function(fastq, batchsize, klength=8) {
         gstats[,1] <- factor(gstats[,1], levels=unique(gstats[,1]), ordered=TRUE)
 
         ## (H) Read occurrence distribution
-        qa1 <- qa(fq, basename(fastq))
+        qa1 <- ShortRead::qa(fq, basename(fastq))
         hstats <- qa1[["sequenceDistribution"]][,1:2]
         hstats <- data.frame(nOccurrences=hstats[,1], Percent=hstats[,1] * hstats[,2] / batchsize * 100)
         hstats[,1] <- factor(hstats[,1], levels=unique(hstats[,1]), ordered=TRUE)

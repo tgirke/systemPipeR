@@ -7,7 +7,6 @@ skip_on_ci()
 genWorkenvir("rnaseq", mydirname = file.path(tempdir(), "chipseq"))
 setwd(file.path(tempdir(), "chipseq"))
 
-
 test_that("check_chipSeq_fnc", {
     dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-idx", package = "systemPipeR")
     idx <- loadWorkflow(targets = NULL, wf_file = "bowtie2-index.cwl", 

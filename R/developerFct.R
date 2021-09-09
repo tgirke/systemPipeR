@@ -35,13 +35,13 @@
 		keepids <- names(aligns[start(aligns) < chromosomelength]) # Return read ids mapping in first 100000 nucleotides of chromosomes
 		myN <- sample(90000:100000, 1) # Keep number of random sampled reads between 90-100K
 		keepids <- sample(unique(keepids), myN) # random sample x reads
-		reads1 <- readFastq(infile1(args)[i]) # Reads in a FASTQ file from the current folder
-		index <- gsub(" .*", "", as.vector(id(reads1))) %in% keepids
+		reads1 <- ShortRead::readFastq(infile1(args)[i]) # Reads in a FASTQ file from the current folder
+		index <- gsub(" .*", "", as.vector(ShortRead::id(reads1))) %in% keepids
 		reads1 <- reads1[index] # subset by keepids
 		ShortRead::writeFastq(reads1, gsub("^.*/", "", infile1(args)[i]), full=TRUE) # writes ShortReadQ object to output file
 		rm(reads1); gc() # Clean up memory
-		reads2 <- readFastq(infile2(args)[i]) 
-		index <- gsub(" .*", "", as.vector(id(reads2))) %in% keepids
+		reads2 <- ShortRead::readFastq(infile2(args)[i]) 
+		index <- gsub(" .*", "", as.vector(ShortRead::id(reads2))) %in% keepids
 		reads2 <- reads2[index] 
 		ShortRead::writeFastq(reads2, gsub("^.*/", "", infile2(args)[i]), full=TRUE) 
 		rm(reads2); gc() # Clean up memory
