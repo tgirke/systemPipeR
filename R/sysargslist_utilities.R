@@ -161,7 +161,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             } else {
                 sal$targetsWF <- list(as(sysargs, "DataFrame"))
                 row.names(sal$targetsWF) <- sal$targetsWF[ ,sysargs$files$id]
-                sal$SE <- list(SummarizedExperiment(
+                sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
                   colData = sal$targetsWF,
                   metadata = sysargs$targetsheader))
             }
@@ -253,7 +253,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
                 row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][ ,sal$stepsWF[[1]]$files$id]
-                sal$SE <- list(SummarizedExperiment(
+                sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
                   colData = sal$targetsWF,
                   metadata = sal$stepsWF[[1]]$targetsheader))
             } else {
@@ -435,7 +435,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
         "## Code: ",
         "```{r, eval=FALSE} ",
-        capture.output(codeLine(args)),
+        utils::capture.output(codeLine(args)),
         "```", "\n",
         "## Stdout: ",
         "```{r, eval=FALSE}"
@@ -453,7 +453,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         ## Running the code
         stdout <- .tryRcode(args$codeLine, envir = envir)
         ## save stdout to file
-        capture.output(stdout$stdout, file = file_log, append = TRUE)
+        utils::capture.output(stdout$stdout, file = file_log, append = TRUE)
         ## save error and warning messages
         if (!is.null(stdout$error)) {
             cat("## Error", file = file_log, sep = "\n", append = TRUE)
@@ -472,7 +472,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         step_status[["status.time"]] <- time_status
         args[["status"]] <- step_status
     }
-    setTxtProgressBar(pb, length(args))
+    utils::setTxtProgressBar(pb, length(args))
     ## close R chunk
     cat("``` \n", file = file_log, sep = "\n", append = TRUE)
     close(pb)
@@ -638,7 +638,7 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
     ## SE slot
     path <- file.path(.getPath(sys.file), "SE")
     if(!dir.exists(path)) {
-      dir.create(path)
+      dir.create(path, recursive = TRUE)
     }
     steps_comp <- sapply(steps, function(x) list(NULL))
     for (j in steps) {
@@ -691,7 +691,7 @@ read_SYSargsList <- function(sys.file) {
     for (i in df_slots) {
         steps_comp <- sapply(steps, function(x) list(NULL))
         for (j in steps) {
-            steps_comp[[j]] <- DataFrame(yaml::yaml.load(args_comp_yml[[i]][[j]]), check.names = FALSE)
+            steps_comp[[j]] <- S4Vectors::DataFrame(yaml::yaml.load(args_comp_yml[[i]][[j]]), check.names = FALSE)
         }
         args_comp[[i]] <- steps_comp
     }
@@ -771,20 +771,20 @@ writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE){
   }
   path <- file.path(dir.path, dir.name)
   ## Counts
-  if(length(assays(SE)) > 0) {
-    for (i in length(assays(SE))){
-      write.table(assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")), quote = FALSE, row.names = FALSE,
+  if(length(SummarizedExperiment::assays(SE)) > 0) {
+    for (i in length(SummarizedExperiment::assays(SE))){
+      write.table(SummarizedExperiment::assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")), quote = FALSE, row.names = FALSE,
                   col.names = TRUE, sep = "\t")
     }
   }
   ## Metadata
-  yaml::write_yaml(metadata(SE), file.path(path, paste0("metadata.yml")))
+  yaml::write_yaml(S4Vectors::metadata(SE), file.path(path, paste0("metadata.yml")))
   ## colData
-  write.table(colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
+  write.table(SummarizedExperiment::colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
               col.names = NA, sep = "\t")
   ## RowRanges
-  if(!is.null(rowRanges(SE))){
-    write.table(as.data.frame(rowRanges(SE)), file=file.path(path, paste0("rowRanges.csv")),
+  if(!is.null(SummarizedExperiment::rowRanges(SE))){
+    write.table(as.data.frame(SummarizedExperiment::rowRanges(SE)), file=file.path(path, paste0("rowRanges.csv")),
                 sep="\t", quote = FALSE, row.names = FALSE)
   }
   ## Final message
@@ -805,12 +805,12 @@ readSE <- function(dir.path, dir.name){
   ## Counts
   files_counts <- list.files(path, pattern = "counts")
   if(length(files_counts) > 0) {
-    counts_ls <- SimpleList(NULL)
+    counts_ls <- S4Vectors::SimpleList(NULL)
     for (i in files_counts){
       counts_ls <- as.matrix(read.table(file.path(path, i), check.names = FALSE, header = TRUE))
     } 
   }  else {
-    counts_ls <- SimpleList()
+    counts_ls <- S4Vectors::SimpleList()
   }
   ## Metadata
   metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
@@ -824,7 +824,7 @@ readSE <- function(dir.path, dir.name){
   } else {
     rowRanges = GRangesList()
   }
-  SE <- SummarizedExperiment(
+  SE <- SummarizedExperiment::SummarizedExperiment(
     assays=counts_ls,
     #rowData=NULL, 
     rowRanges=rowRanges,
@@ -836,12 +836,12 @@ readSE <- function(dir.path, dir.name){
 # nrows <- 200; ncols <- 6
 # counts <- matrix(runif(nrows * ncols, 1, 1e4), nrows)
 # rowRanges <- GRanges(rep(c("chr1", "chr2"), c(50, 150)),
-#                      IRanges::IRanges(floor(runif(200, 1e5, 1e6)), width=100),
+#                      IRanges(floor(runif(200, 1e5, 1e6)), width=100),
 #                      strand=sample(c("+", "-"), 200, TRUE),
 #                      feature_id=sprintf("ID%03d", 1:200))
 # colData <- DataFrame(Treatment=rep(c("ChIP", "Input"), 3),
 #                      row.names=LETTERS[1:6])
-# rse <- SummarizedExperiment(assays=SimpleList(counts=counts),
+# rse <- SummarizedExperiment::SummarizedExperiment(assays=S4Vectors::SimpleList(counts=counts),
 #                             rowRanges=rowRanges, colData=colData)
 # rse
 # writeSE(rse, dir.path = getwd(), dir.name = "seobj")
@@ -950,7 +950,7 @@ readSE <- function(dir.path, dir.name){
 ## .outputTargets function ##
 #############################
 .outputTargets <- function(args, fromStep, index = 1, toStep, replace = c("FileName")) {
-    if (!is(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
+    if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
     outputfiles <- outfiles(args[fromStep])[[1]]
     if (length(targetsWF(args)[[fromStep]]) > 0) {
         df <- targetsWF(args)[[fromStep]]
@@ -964,8 +964,8 @@ readSE <- function(dir.path, dir.name){
 ########################
 configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALSE, ...) {
     ## Validations
-    if (class(x) != "SYSargsList") stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
-    capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") ## TODO: refazer
+    if (!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
+    utils::capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") ## TODO: refazer
     if ("ALL" %in% input_steps) {
         input_steps <- paste0(steps_all$t_number[1], ":", steps_all$t_number[length(steps_all$t_number)])
         save_rmd <- FALSE
@@ -980,7 +980,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
         )
         Rmd_path <- Rmd_outfile
     }
-    capture.output(steps_all <- subsetRmd(
+    utils::capture.output(steps_all <- subsetRmd(
         Rmd = x$sysconfig$script$path, input_steps = input_steps,
         exclude_steps = exclude_steps, save_Rmd = save_rmd, Rmd_outfile = Rmd_outfile
     ), file = ".NULL") ## TODO: refazer
@@ -1026,7 +1026,6 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
 ###########################
 ## type: c("pdf_document", "html_document")
 renderReport <- function(sysargslist, type = c("html_document"), silent = FALSE) {
-    checkPkg("rmarkdown", quietly = FALSE)
     file <- sysargslist$sysconfig$script$path
     if (!file.exists(file) == TRUE) stop("Provide valid 'sysargslist' object. Check the initialization of the project.")
     evalCode(infile = file, eval = FALSE, output = file)
@@ -1052,7 +1051,6 @@ renderLogs <- function(sysargs,
                        fileName = "default",
                        silent = FALSE,
                        open_file = TRUE) {
-    checkPkg("rmarkdown", quietly = FALSE)
     if (!inherits(sysargs, "SYSargsList")) stop("`sysargs` must be a 'SYSargsList' object.")
     type <- match.arg(type, c("html_document", "pdf_document"))
     stopifnot(is.character(fileName) && length(fileName) == 1)
@@ -1108,7 +1106,7 @@ renderLogs <- function(sysargs,
     sysargs <- as(sysargs, "list")
     sysargs$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep = "."))
     if (!silent) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep = "."), "\n")
-    if (open_file) try(browseURL(file.path(file_path, paste(file_out, ext, sep = "."))), TRUE)
+    if (open_file) try(utils::browseURL(file.path(file_path, paste(file_out, ext, sep = "."))), TRUE)
     return(as(sysargs, "SYSargsList"))
 }
 
@@ -1158,10 +1156,10 @@ renderLogs <- function(sysargs,
 subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile = NULL, save_Rmd = TRUE) {
     . <- NULL
     # function start, check inputs
-    assertthat::assert_that(file.exists(Rmd))
-    if (assertthat::not_empty(input_steps)) assertthat::assert_that(assertthat::is.string(input_steps))
-    if (assertthat::not_empty(Rmd_outfile)) assertthat::assert_that(file.exists(dirname(Rmd_outfile)))
-    if (assertthat::not_empty(exclude_steps)) assertthat::assert_that(assertthat::is.string(exclude_steps))
+    if (!file.exists(Rmd) == TRUE) stop("Provide valid 'Rmd' file.")
+    # if (assertthat::not_empty(input_steps)) assertthat::assert_that(assertthat::is.string(input_steps))
+    # if (assertthat::not_empty(Rmd_outfile)) assertthat::assert_that(file.exists(dirname(Rmd_outfile)))
+    # if (assertthat::not_empty(exclude_steps)) assertthat::assert_that(assertthat::is.string(exclude_steps))
     # default out behavior, in ISO 8601 time format
     if (is.null(Rmd_outfile)) Rmd_outfile <- paste0("new", format(Sys.time(), "%Y%m%d_%H%M%S"), basename(Rmd))
     # read file
@@ -1238,7 +1236,8 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
     rmd_df$link_to <- NA
     rmd_df$link_to[1:(nrow(rmd_df) - 1)] <- rmd_df$t_number[2:nrow(rmd_df)]
     # list all steps if no input_steps
-    if (!assertthat::not_empty(input_steps)) {
+    # if (!assertthat::not_empty(input_steps)) {
+    if(!is.null(input_steps)) {
         cat("No input_steps is given, list all sections and exit\n")
         cat("This file contains following sections\n")
         stringr::str_replace(t_text, "^", paste0(strrep("    ", (t_lvl - 1)), names(t_lvl), " ")) %>%
@@ -1505,7 +1504,7 @@ evalCode <- function(infile, eval = TRUE, output) {
         x <- normalizePath(x)
     }
     for (i in seq_along(x)) {
-        path_un <- unlist(strsplit(x[i], "/"))
+        path_un <- unlist(strsplit(x[i], "/|\\\\"))
         path <- path_un[path_un != basename(x[i])]
         x[i] <- paste0(path, collapse = "/")
     }
@@ -1522,7 +1521,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 ###############################
 ## Function to return the extension of the file. The argument 'x' is a character vector or an object containing the file PATH.
 .getExt <- function(x) {
-    ext <- strsplit(basename(x), split = "\\.")[[1]]
+    ext <- Biostrings::strsplit(basename(x), split = "\\.")[[1]]
     ext <- ext[[length(ext)]]
     return(ext)
 }
@@ -1537,7 +1536,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## [x] A character vector or an object containing file File name without extension, simmilar with 'basename'
 .getFileName <- function(x) {
     #  if (!file.exists(x)) warning("No such file or directory. Check the file PATH.")
-    filename <- strsplit(basename(x), split = "\\.")[[1]]
+    filename <- Biostrings::strsplit(basename(x), split = "\\.")[[1]]
     filename <- filename[[-2]]
     return(filename)
 }

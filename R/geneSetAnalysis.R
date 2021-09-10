@@ -6,23 +6,23 @@
 ## Class and Method Definitions for catDB ##
 ############################################
 ## Define catDB class
-methods::setClass("catDB", methods::representation(catmap = "list", catlist = "list", idconv = "ANY"))
+setClass("catDB", representation(catmap = "list", catlist = "list", idconv = "ANY"))
 ## Methods to return catDB components as lists
-methods::setGeneric(name = "catmap", def = function(x) standardGeneric("catmap"))
-methods::setMethod(f = "catmap", signature = "catDB", definition = function(x) {
+setGeneric(name = "catmap", def = function(x) standardGeneric("catmap"))
+setMethod(f = "catmap", signature = "catDB", definition = function(x) {
   return(x@catmap)
 })
-methods::setGeneric(name = "catlist", def = function(x) standardGeneric("catlist"))
-methods::setMethod(f = "catlist", signature = "catDB", definition = function(x) {
+setGeneric(name = "catlist", def = function(x) standardGeneric("catlist"))
+setMethod(f = "catlist", signature = "catDB", definition = function(x) {
   return(x@catlist)
 })
-methods::setGeneric(name = "idconv", def = function(x) standardGeneric("idconv"))
-methods::setMethod(f = "idconv", signature = "catDB", definition = function(x) {
+setGeneric(name = "idconv", def = function(x) standardGeneric("idconv"))
+setMethod(f = "idconv", signature = "catDB", definition = function(x) {
   return(x@idconv)
 })
 ## Constructor methods
 ## List to catDB with: as(mylist, "catDB")
-methods::setAs(
+setAs(
   from = "list", to = "catDB",
   def = function(from) {
     new("catDB",
@@ -33,7 +33,7 @@ methods::setAs(
   }
 )
 ## Define print behavior for catDB
-methods::setMethod(
+setMethod(
   f = "show", signature = "catDB",
   definition = function(object) {
     cat("An instance of '", class(object), "' containing:", "\n\t",
@@ -49,7 +49,7 @@ methods::setMethod(
 setMethod(
   f = "names", signature = "catDB",
   definition = function(x) {
-    return(methods::slotNames(x))
+    return(slotNames(x))
   }
 )
 
@@ -98,13 +98,11 @@ setMethod(
   checkPkg(pkg, quietly = FALSE)
   require(lib, character.only = TRUE)
   mylibbase <- gsub(".db", "", lib)
-  env <- new.env()
-  env$GO <- get(paste(mylibbase, "GO", sep = ""))
-  GOMF <- eapply(env, annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
+  GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
   GO_MF_DF <- data.frame(GOID = unlist(GOMF), GeneID = rep(names(GOMF), as.vector(sapply(GOMF, length))), Count = rep(as.vector(sapply(GOMF, length)), as.vector(sapply(GOMF, length))))
-  GOBP <- eapply(env, annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
+  GOBP <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
   GO_BP_DF <- data.frame(GOID = unlist(GOBP), GeneID = rep(names(GOBP), as.vector(sapply(GOBP, length))), Count = rep(as.vector(sapply(GOBP, length)), as.vector(sapply(GOBP, length))))
-  GOCC <- eapply(env, annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
+  GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
   GO_CC_DF <- data.frame(GOID = unlist(GOCC), GeneID = rep(names(GOCC), as.vector(sapply(GOCC, length))), Count = rep(as.vector(sapply(GOCC, length)), as.vector(sapply(GOCC, length))))
   ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
   go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
@@ -119,7 +117,6 @@ setMethod(
 ## (A.2) Generate list containing gene-to-GO-OFFSPRING associations including assiged nodes
 ## This is slow (3 minutes), but needs to be done only once!
 .gene2GOlist <- function(catdf, rootUK = FALSE) { # If the argument 'rootUK' is set to TRUE then the root nodes are treated as terminal nodes to account for the new unknown terms
-  checkPkg("GO.db", quietly = FALSE)
   ## Import required data frames
   GO_MF_DF <- catdf$D_MF
   GO_BP_DF <- catdf$D_BP
@@ -184,7 +181,7 @@ setMethod(
     my_list <- apply(affy2locus[, -c(3)], 1, list)
     my_list <- lapply(my_list, unlist)
     my_list <- lapply(my_list, function(x) as.vector(x[-1]))
-    my_list <- lapply(my_list, Biostrings::strsplit, ";")
+    my_list <- lapply(my_list, strsplit, ";")
     my_list <- lapply(my_list, unlist)
     affy2locusDF <- data.frame(unlist(my_list))
     affy2locusDF <- data.frame(rep(names(unlist(lapply(my_list, length))), as.vector(unlist(lapply(my_list, length)))), affy2locusDF)
@@ -369,8 +366,7 @@ GOHyperGAll_Simplify <- function(GOHyperGAll_result, gocat = "MF", cutoff = 0.00
   testDF <- GOHyperGAll_result[GOHyperGAll_result$Padj <= cutoff, ]
   testDF <- data.frame(testDF, test = rep(0, times = length(testDF[, 1])))
   testDF <- testDF[!is.na(testDF$Ont), ]
-  GOIDv <- NULL
-  GO_OL_Matchv <- NULL
+  GO_OL_Matchv <- GOIDv <- NULL
   while (sum(testDF$test == 0) > 0) {
     clusterv <- NULL
     test <- as.vector(testDF[, 1])
@@ -555,14 +551,14 @@ goBarplot <- function(GOBatchResult, gocat) {
   x[, "Term"] <- term
   ontnames <- c(CC = "Cellular Component", BP = "Biological Process", MF = "Molecular Function")
   x[, 2] <- factor(x[, 2], levels = unique(x[, 2]), ordered = TRUE) # Defines plotting order of bars!!!
-  p <- ggplot(x, aes(Term, SampleMatch, fill = Sample)) +
-    geom_bar(position = "dodge", stat = "identity") +
-    coord_flip() +
-    theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
-    xlab("GO Term") +
-    ylab("Gene Count") +
-    ylim(0, max(x$SampleMatch)) +
-    ggtitle(ontnames[gocat])
+  p <- ggplot2::ggplot(x, ggplot2::aes(Term, SampleMatch, fill = Sample)) +
+    ggplot2::geom_bar(position = "dodge", stat = "identity") +
+    ggplot2::coord_flip() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 0, hjust = 1)) +
+    ggplot2::xlab("GO Term") +
+    ggplot2::ylab("Gene Count") +
+    ggplot2::ylim(0, max(x$SampleMatch)) +
+    ggplot2::ggtitle(ontnames[gocat])
   print(p)
 }
 ## Usage:

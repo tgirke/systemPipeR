@@ -66,8 +66,8 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
-          install.packages(c("BiocManager", "ape", "knitcitations", "DOT", "V8", "kableExtra", "docopt"))
-          BiocManager::install("tgirke/systemPipeR")
+          install.packages(c("BiocManager", "knitcitations", "docopt"))
+          BiocManager::install("tgirke/systemPipeR", dependencies=TRUE)
           BiocManager::install("tgirke/systemPipeRdata")
         shell: Rscript {0}
 

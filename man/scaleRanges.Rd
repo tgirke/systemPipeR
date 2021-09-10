@@ -48,8 +48,8 @@ Thomas Girke
 \examples{
 library(IRanges)
 ## Usage for simple example
-subject <- GRanges(seqnames="Chr1", IRanges::IRanges(c(5,15,30),c(10,25,40)), strand="+") 
-query <- GRanges(seqnames="myseq", IRanges::IRanges(1, 9), strand="+")
+subject <- GRanges(seqnames="Chr1", IRanges(c(5,15,30),c(10,25,40)), strand="+") 
+query <- GRanges(seqnames="myseq", IRanges(1, 9), strand="+")
 scaleRanges(GRangesList(myid1=subject), GRangesList(myid1=query), type="test")
 
 \dontrun{

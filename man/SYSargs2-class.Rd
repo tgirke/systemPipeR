@@ -6,7 +6,6 @@
 % Subsetting and Quick access
 \alias{[,SYSargs2,ANY,ANY,ANY-method}
 \alias{[[,SYSargs2,ANY,missing-method}
-\alias{[[,SYSargs2,ANY,ANY-method}
 \alias{[[<-,SYSargs2,ANY,ANY,ANY-method}
 \alias{[[<-,SYSargs2,ANY,ANY-method}
 \alias{$,SYSargs2-method}
