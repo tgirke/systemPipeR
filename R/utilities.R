@@ -1038,11 +1038,11 @@ filterDEGs <- function(degDF, filter, plot = TRUE) {
   if (plot == TRUE) {
     mytitle <- paste("DEG Counts (", names(filter)[1], ": ", filter[1], " & ", names(filter)[2], ": ", filter[2], "%)", sep = "")
     df_plot <- data.frame(Comparisons = rep(as.character(df$Comparisons), 2), Counts = c(df$Counts_Up, df$Counts_Down), Type = rep(c("Up", "Down"), each = length(df[, 1])))
-    p <- ggplot(df_plot, aes(Comparisons, Counts, fill = Type)) +
-      geom_bar(position = "stack", stat = "identity") +
-      coord_flip() +
-      theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
-      ggtitle(mytitle)
+    p <- ggplot2::ggplot(df_plot, ggplot2::aes(Comparisons, Counts, fill = Type)) +
+      ggplot2::geom_bar(position = "stack", stat = "identity") +
+      ggplot2::coord_flip() +
+      ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 0, hjust = 1)) +
+      ggplot2::ggtitle(mytitle)
     print(p)
   }
   return(resultlist)

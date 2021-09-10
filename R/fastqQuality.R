@@ -136,61 +136,61 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
         ## (A) Per cycle quality box plot
         astats <- x[[1]][["astats"]]
         a <- ggplot2::ggplot(astats, ggplot2::aes(x = Cycle, ymin = min, lower = low, middle = mid, upper = top, ymax = max)) + 
-                    geom_boxplot(stat = "identity", color="#606060", fill="#56B4E9") +
-                    scale_x_discrete(breaks=c(1, seq(0, length(astats[,1]), by=10)[-1])) + 
-                    ylab("Quality") + 
-                    theme(legend.position = "none", plot.title = element_text(size = 12)) +
-                    ggtitle(names(x))
+            ggplot2::geom_boxplot(stat = "identity", color="#606060", fill="#56B4E9") +
+            ggplot2::scale_x_discrete(breaks=c(1, seq(0, length(astats[,1]), by=10)[-1])) + 
+            ggplot2::ylab("Quality") + 
+            ggplot2::theme(legend.position = "none", plot.title = ggplot2::element_text(size = 12)) +
+            ggplot2::ggtitle(names(x))
             
         ## (B) Per cycle base proportion
         bstats <- x[[1]][["bstats"]]
         b <- ggplot2::ggplot(bstats, ggplot2::aes(x=Cycle, y=Frequency, fill=Base), color="black") + 
-                    scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
-                    geom_bar(stat="identity") + 
-                    theme(legend.position="top", legend.key.size=unit(0.2, "cm")) + 
-                    ylab("Proportion")  
+            ggplot2::scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
+            ggplot2::geom_bar(stat="identity") + 
+            ggplot2::theme(legend.position="top", legend.key.size=ggplot2::unit(0.2, "cm")) + 
+            ggplot2::ylab("Proportion")  
             
         ## (C) Per cycle average quality of each base type
         cstats <- x[[1]][["cstats"]]
         c <- ggplot2::ggplot(cstats, ggplot2::aes(x=Cycle, y=Quality, group=Base, color=Base)) + 
-                    geom_line() + 
-                    scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
-                    theme(legend.position = "none")
+            ggplot2::geom_line() + 
+            ggplot2::scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
+            ggplot2::theme(legend.position = "none")
             
         ## (D) Relative K-mer Diversity 
         dstats <- x[[1]][["dstats"]]
         d <- ggplot2::ggplot(dstats, ggplot2::aes(x=Cycle, y=RelDiv, group=Method, color=Method)) + 
-                    geom_line() + 
-                    scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
-                    ylab(paste("k", x[[1]][["fqstats"]][["klength"]], "-mer Div", sep="")) +
-                    theme(legend.position = "none")
+            ggplot2::geom_line() + 
+            ggplot2::scale_x_discrete(breaks=c(1, seq(0, length(unique(bstats$Cycle)), by=10)[-1])) + 
+            ggplot2::ylab(paste("k", x[[1]][["fqstats"]][["klength"]], "-mer Div", sep="")) +
+            ggplot2::theme(legend.position = "none")
                 
         ## (E) Number of reads where all Phred scores are above a minimum cutoff
         estats <- x[[1]][["estats"]]
         e <- ggplot2::ggplot(estats, ggplot2::aes(x=minQuality, y=Percent, fill = Outliers)) +
-                    geom_bar(position="dodge", stat="identity") +
-                    theme(legend.position="top", legend.key.size=unit(0.2, "cm")) + 
-                    xlab("All Bases Above Min Quality") +
-                    ylab("% Reads")
+            ggplot2::geom_bar(position="dodge", stat="identity") +
+            ggplot2::theme(legend.position="top", legend.key.size=ggplot2::unit(0.2, "cm")) + 
+            ggplot2::xlab("All Bases Above Min Quality") +
+            ggplot2::ylab("% Reads")
         
         ## (F) Distribution of mean quality of reads
         fstats <- x[[1]][["fstats"]]
         f <- ggplot2::ggplot(fstats, ggplot2::aes(x=Quality, y=Percent)) +
-                    geom_bar(fill="#0072B2", stat="identity") +
-                    theme(legend.position = "none", plot.title = element_text(size = 9)) +
-                    ggtitle(paste(formatC(x[[1]][["fqstats"]][["batchsize"]], big.mark = ",", format="f", digits=0), "of", formatC(x[[1]][["fqstats"]][["nReads"]], big.mark = ",", format="f", digits=0), "Reads")) + 
-                    scale_x_discrete(breaks=c(0, seq(0, length(unique(fstats$Quality)), by=5)[-1])) +
-                    xlab("Mean Quality") +
-                    ylab("% Reads")
+            ggplot2::geom_bar(fill="#0072B2", stat="identity") +
+            ggplot2::theme(legend.position = "none", plot.title = ggplot2::element_text(size = 9)) +
+            ggplot2::ggtitle(paste(formatC(x[[1]][["fqstats"]][["batchsize"]], big.mark = ",", format="f", digits=0), "of", formatC(x[[1]][["fqstats"]][["nReads"]], big.mark = ",", format="f", digits=0), "Reads")) + 
+            ggplot2::scale_x_discrete(breaks=c(0, seq(0, length(unique(fstats$Quality)), by=5)[-1])) +
+            ggplot2::xlab("Mean Quality") +
+            ggplot2::ylab("% Reads")
         
         ## (G) Read length distribution
         gstats <- x[[1]][["gstats"]]
         g <- ggplot2::ggplot(gstats, ggplot2::aes(x=Cycle, y=Percent)) +
-                    geom_bar(fill="#0072B2", stat="identity") +
-                    theme(legend.position = "none") +
-                    scale_x_discrete(breaks=c(1, seq(0, length(unique(gstats$Cycle)), by=10)[-1])) +
-                    xlab("Read Length") +
-                    ylab("% Reads")
+            ggplot2::geom_bar(fill="#0072B2", stat="identity") +
+            ggplot2::theme(legend.position = "none") +
+            ggplot2::scale_x_discrete(breaks=c(1, seq(0, length(unique(gstats$Cycle)), by=10)[-1])) +
+            ggplot2::xlab("Read Length") +
+            ggplot2::ylab("% Reads")
                 
         ## (H) Read occurrence distribution
         hstats <- x[[1]][["hstats"]] 
@@ -199,10 +199,10 @@ seeFastqPlot <- function(fqlist, arrange=c(1,2,3,4,5,8,6,7), ...) {
         hstats <- data.frame(labels=myintervals[,1], Percent=iv)
         hstats[,1] <- factor(hstats[,1], levels=unique(hstats[,1]), ordered=TRUE)
         h <- ggplot2::ggplot(hstats, ggplot2::aes(x=labels, y=Percent)) +
-                    geom_bar(fill="#0072B2", stat="identity") +
-                    theme(legend.position = "none") +
-                    xlab("Read Occurrence") +
-                    ylab("% Reads")
+            ggplot2::geom_bar(fill="#0072B2", stat="identity") +
+            ggplot2::theme(legend.position = "none") +
+            ggplot2::xlab("Read Occurrence") +
+            ggplot2::ylab("% Reads")
 
         ## Assemble results in list
         return(list(a=a, b=b, c=c, d=d, g=g, e=e, f=f, h=h))

@@ -551,14 +551,14 @@ goBarplot <- function(GOBatchResult, gocat) {
   x[, "Term"] <- term
   ontnames <- c(CC = "Cellular Component", BP = "Biological Process", MF = "Molecular Function")
   x[, 2] <- factor(x[, 2], levels = unique(x[, 2]), ordered = TRUE) # Defines plotting order of bars!!!
-  p <- ggplot(x, aes(Term, SampleMatch, fill = Sample)) +
-    geom_bar(position = "dodge", stat = "identity") +
-    coord_flip() +
-    theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
-    xlab("GO Term") +
-    ylab("Gene Count") +
-    ylim(0, max(x$SampleMatch)) +
-    ggtitle(ontnames[gocat])
+  p <- ggplot2::ggplot(x, ggplot2::aes(Term, SampleMatch, fill = Sample)) +
+    ggplot2::geom_bar(position = "dodge", stat = "identity") +
+    ggplot2::coord_flip() +
+    ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 0, hjust = 1)) +
+    ggplot2::xlab("GO Term") +
+    ggplot2::ylab("Gene Count") +
+    ggplot2::ylim(0, max(x$SampleMatch)) +
+    ggplot2::ggtitle(ontnames[gocat])
   print(p)
 }
 ## Usage:
