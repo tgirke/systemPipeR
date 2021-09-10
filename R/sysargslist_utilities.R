@@ -435,7 +435,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
         "## Code: ",
         "```{r, eval=FALSE} ",
-        capture.output(codeLine(args)),
+        utils::capture.output(codeLine(args)),
         "```", "\n",
         "## Stdout: ",
         "```{r, eval=FALSE}"
@@ -453,7 +453,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         ## Running the code
         stdout <- .tryRcode(args$codeLine, envir = envir)
         ## save stdout to file
-        capture.output(stdout$stdout, file = file_log, append = TRUE)
+        utils::capture.output(stdout$stdout, file = file_log, append = TRUE)
         ## save error and warning messages
         if (!is.null(stdout$error)) {
             cat("## Error", file = file_log, sep = "\n", append = TRUE)
@@ -472,7 +472,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         step_status[["status.time"]] <- time_status
         args[["status"]] <- step_status
     }
-    setTxtProgressBar(pb, length(args))
+    utils::setTxtProgressBar(pb, length(args))
     ## close R chunk
     cat("``` \n", file = file_log, sep = "\n", append = TRUE)
     close(pb)
@@ -965,7 +965,7 @@ readSE <- function(dir.path, dir.name){
 configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALSE, ...) {
     ## Validations
     if (!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
-    capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") ## TODO: refazer
+    utils::capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") ## TODO: refazer
     if ("ALL" %in% input_steps) {
         input_steps <- paste0(steps_all$t_number[1], ":", steps_all$t_number[length(steps_all$t_number)])
         save_rmd <- FALSE
@@ -980,7 +980,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
         )
         Rmd_path <- Rmd_outfile
     }
-    capture.output(steps_all <- subsetRmd(
+    utils::capture.output(steps_all <- subsetRmd(
         Rmd = x$sysconfig$script$path, input_steps = input_steps,
         exclude_steps = exclude_steps, save_Rmd = save_rmd, Rmd_outfile = Rmd_outfile
     ), file = ".NULL") ## TODO: refazer
@@ -1106,7 +1106,7 @@ renderLogs <- function(sysargs,
     sysargs <- as(sysargs, "list")
     sysargs$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep = "."))
     if (!silent) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep = "."), "\n")
-    if (open_file) try(browseURL(file.path(file_path, paste(file_out, ext, sep = "."))), TRUE)
+    if (open_file) try(utils::browseURL(file.path(file_path, paste(file_out, ext, sep = "."))), TRUE)
     return(as(sysargs, "SYSargsList"))
 }
 
@@ -1521,7 +1521,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 ###############################
 ## Function to return the extension of the file. The argument 'x' is a character vector or an object containing the file PATH.
 .getExt <- function(x) {
-    ext <- strsplit(basename(x), split = "\\.")[[1]]
+    ext <- Biostrings::strsplit(basename(x), split = "\\.")[[1]]
     ext <- ext[[length(ext)]]
     return(ext)
 }
@@ -1536,7 +1536,7 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## [x] A character vector or an object containing file File name without extension, simmilar with 'basename'
 .getFileName <- function(x) {
     #  if (!file.exists(x)) warning("No such file or directory. Check the file PATH.")
-    filename <- strsplit(basename(x), split = "\\.")[[1]]
+    filename <- Biostrings::strsplit(basename(x), split = "\\.")[[1]]
     filename <- filename[[-2]]
     return(filename)
 }

@@ -111,7 +111,7 @@ runCommandline <- function(args, runid="01",
     if(length(wf(args)$steps)==0){
       cwl.wf <- gsub( "[[:space:]]", "_", paste(baseCommand(args), collapse = "_"), perl=TRUE)
     } else {
-      cwl.wf <- strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
+      cwl.wf <- Biostrings::strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
     }
     ## Check if "results" folders exists...
     if(!dir.exists(file.path(yamlinput(args)$results_path$path)))
@@ -139,7 +139,7 @@ runCommandline <- function(args, runid="01",
     sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
     ## Progress bar
-    pb <- txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
+    pb <- utils::txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
     ## Check input
     if(length(args$inputvars) >= 1){
       inpVar <- args$inputvars
@@ -159,7 +159,7 @@ runCommandline <- function(args, runid="01",
     }
     
     for(i in input_targets){
-      setTxtProgressBar(pb, i)
+      utils::setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
       ## Time
       time_status$time_start[i] <- Sys.time()
@@ -246,7 +246,7 @@ runCommandline <- function(args, runid="01",
             for(j in seq_along(output(args)[[i]])){
             for(k in seq_along(output(args)[[i]][[j]])){
               if(file.exists(output(args)[[i]][[j]])){
-                name <- strsplit(output(args)[[i]][[j]][[k]], split="\\/")[[1]]
+                name <- Biostrings::strsplit(output(args)[[i]][[j]][[k]], split="\\/")[[1]]
                 name <- name[length(name)]
                 file.rename(from=output(args)[[i]][[j]][[k]], to=file.path(logdir, dir.name, name))
                 #outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
@@ -260,7 +260,7 @@ runCommandline <- function(args, runid="01",
         } else if(length(output(args)[[i]]) == 1){
           for(j in seq_along(output(args)[[i]][[1]])){
             if(file.exists(output(args)[[i]][[1]][[j]])){
-              name <- strsplit(output(args)[[i]][[1]][[j]], split="\\/")[[1]]
+              name <- Biostrings::strsplit(output(args)[[i]][[1]][[j]], split="\\/")[[1]]
               name <- name[length(name)]
               file.rename(from=output(args)[[i]][[1]][[j]], to=file.path(logdir, dir.name, name))
               # outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
@@ -451,7 +451,7 @@ runCommandline <- function(args, runid="01",
       ## Conditional postprocessing of results
       if(make_bam==TRUE) {
         if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
-          asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
+          Rsamtools::asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
           if(del_sam==TRUE){
             unlink(outfile1(args)[i])
           } else if(del_sam==FALSE){
@@ -460,8 +460,8 @@ runCommandline <- function(args, runid="01",
         } else if(grepl("vcf$|bcf$|xls$|bed$", outpaths(args)[i])) {
           dump <- "do nothing"
         } else { # If output is unindexed *.bam file (e.g. Tophat2)
-          sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
-          indexBam(names(completed[i]))
+          Rsamtools::sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
+          Rsamtools::indexBam(names(completed[i]))
         }
       }
     }
@@ -767,10 +767,10 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
   ## Obtain total number of alignments from BAM files
   bfl <- BamFileList(bampaths, yieldSize = 50000, index = character())
   param <- ScanBamParam(flag = scanBamFlag(isUnmappedQuery = FALSE))
-  Nalign <- countBam(bfl, param = param)
+  Nalign <- Rsamtools::countBam(bfl, param = param)
   ## Obtain number of primary alignments from BAM files
-  param <- ScanBamParam(flag = scanBamFlag(isSecondaryAlignment = FALSE, isUnmappedQuery = FALSE))
-  Nalignprim <- countBam(bfl, param = param)
+  param <- Rsamtools::ScanBamParam(flag = Rsamtools::scanBamFlag(isSecondaryAlignment = FALSE, isUnmappedQuery = FALSE))
+  Nalignprim <- Rsamtools::countBam(bfl, param = param)
   statsDF <- data.frame(
     FileName = names(Nreads),
     Nreads = Nreads,
@@ -864,7 +864,7 @@ readComp <- function(file, format = "vector", delim = "-") {
     return(comp)
   }
   if (format == "matrix") {
-    return(sapply(names(comp), function(x) do.call("rbind", strsplit(comp[[x]], "-")), simplify = FALSE))
+    return(sapply(names(comp), function(x) do.call("rbind", Biostrings::strsplit(comp[[x]], "-")), simplify = FALSE))
   }
 }
 ## Usage:

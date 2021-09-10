@@ -1,7 +1,7 @@
 ######################
 ## Filter VCF files ##
 ######################
-filterVars <- function (files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
+filterVars <- function(files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
   pkg <- c("VariantAnnotation")
   checkPkg(pkg, quietly = FALSE)
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
@@ -95,7 +95,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   myf <- as.factor(names(x))
   if(length(myf)>0) {
     df <- data.frame(VARID=tapply(as.character(myf), myf, unique),
-                     Strand=tapply(as.character(strand(x)), myf, unique),
+                     Strand=tapply(as.character(BiocGenerics::strand(x)), myf, unique),
                      Consequence=tapply(as.character(values(x)$CONSEQUENCE), myf, function(i) paste(unique(i), collapse=" ")),
                      Codon=tapply(paste(start(values(x)$CDSLOC), "_", as.character(values(x)$REFCODON), "/", as.character(values(x)$VARCODON), sep=""), myf, paste, collapse=" "),
                      AA=tapply(paste(sapply(values(x)$PROTEINLOC, paste, collapse="_"), "_", as.character(values(x)$REFAA), "/", as.character(values(x)$VARAA), sep=""), myf, paste, collapse=" "),

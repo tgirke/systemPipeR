@@ -224,7 +224,7 @@ olRanges <- function(query, subject, output="gr") {
     GenomeInfoDb::seqlengths(query) <- rep(NA, length(GenomeInfoDb::seqlengths(query)))
     GenomeInfoDb::seqlengths(subject) <- rep(NA, length(GenomeInfoDb::seqlengths(subject)))
   }
-  olindex <- as.matrix(findOverlaps(query, subject))
+  olindex <- as.matrix(GenomicRanges::findOverlaps(query, subject))
   query <- query[olindex[,1]]
   subject <- subject[olindex[,2]]
   olma <- cbind(Qstart=start(query), Qend=end(query), Sstart=start(subject), Send=end(subject))
@@ -272,7 +272,7 @@ olRanges <- function(query, subject, output="gr") {
       S4Vectors::elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
     }
     if(class(query)=="IRanges") {
-      query <- GRanges(seqnames = S4Vectors::Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = S4Vectors::Rle(strand(rep("+", length(query)))), oldf)
+      query <- GRanges(seqnames = S4Vectors::Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = S4Vectors::Rle(BiocGenerics::strand(rep("+", length(query)))), oldf)
     }
     return(query)
   }
@@ -282,7 +282,7 @@ olRanges <- function(query, subject, output="gr") {
 ## Sample Data Sets
 # grq <- GRanges(seqnames = S4Vectors::Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)),
 #                ranges = IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)),
-#                strand = S4Vectors::Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
+#                strand = S4Vectors::Rle(BiocGenerics::strand(c("-", "+", "-")), c(1, 7, 2)))
 # grs <- shift(grq[c(2,5,6)], 5)
 # olRanges(query=grq, subject=grs, output="df")
 # olRanges(query=grq, subject=grs, output="gr")

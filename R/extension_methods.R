@@ -42,7 +42,7 @@ setMethod(f = "addMetadata", signature = "SummarizedExperiment", definition = fu
 ##############
 ## SPRdata ##
 ##############
-SPRdata <- function(counts = S4Vectors::SimpleList(), rowData = NULL, rowRanges = GRangesList(),
+SPRdata <- function(counts = S4Vectors::SimpleList(), rowData = NULL, rowRanges = GenomicRanges::GRangesList(),
                     cmp = FALSE, targetspath = NULL, SEobj = NULL, SEobjName = "default") {
     if (is.null(SEobj)) {
         if (is.null(targetspath)) {
@@ -51,10 +51,10 @@ SPRdata <- function(counts = S4Vectors::SimpleList(), rowData = NULL, rowRanges 
             targets <- read.delim(targetspath, comment.char = "#")
         }
         if (cmp == FALSE) {
-            metadata <- list(version = packageVersion("systemPipeR"))
+            metadata <- list(version = utils::packageVersion("systemPipeR"))
         } else {
             cmpMA <- systemPipeR::readComp(file = targetspath, format = "matrix", delim = "-")
-            metadata <- list(version = packageVersion("systemPipeR"), comparison = cmpMA)
+            metadata <- list(version = utils::packageVersion("systemPipeR"), comparison = cmpMA)
         }
         se <- SummarizedExperiment::SummarizedExperiment(
             assays = counts,
