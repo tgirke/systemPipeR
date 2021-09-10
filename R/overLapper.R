@@ -248,26 +248,23 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 			}
 		}
 		## Plot venn shapes
-		symbols(x=c(4, 6), y = c(6, 6), circles=c(2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="",  xaxt="n", yaxt="n", bty="n", fg=lines, ...); 
-		
+	    graphics::symbols(x=c(4, 6), y = c(6, 6), circles=c(2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="",  xaxt="n", yaxt="n", bty="n", fg=lines, ...); 
 		## Add counts
 		for(i in seq(along=counts)) {
 			olDF <- data.frame(x=c(3.1, 7.0, 5.0), 
                                            y=c(6.0, 6.0, 6.0), 
                                            counts=counts[[i]])
-                        if(colmode==1) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
-                        if(colmode==2) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) } # For coloring several numbers per intersect differently. ccol can needs to be list to color each field differently..
+                        if(colmode==1) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
+                        if(colmode==2) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) } # For coloring several numbers per intersect differently. ccol can needs to be list to color each field differently..
 		}
-                
 		## Add sample labels
 		if(length(setlabels)==1 & setlabels[1]=="default") { 
 			setlabels <- names(counts[[1]][1:2])
 		} else {
 			setlabels <- setlabels
 		}
-		text(c(2.0, 8.0), c(8.8, 8.8), labels=setlabels, col=lcol, cex=lcex, ...)	
+		graphics::text(c(2.0, 8.0), c(8.8, 8.8), labels=setlabels, col=lcol, cex=lcex, ...)	
 	}
- 
 	## 3-way Venn diagram
 	if(length(counts[[1]])==7) { 
 		## Define subtitle
@@ -290,25 +287,22 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 			}
 		}
 		## Plot venn shapes
-		symbols(x=c(4, 6, 5), y=c(6, 6, 4), circles=c(2, 2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="", xaxt="n", yaxt="n", bty="n", fg=lines, ...)
-		
+		graphics::symbols(x=c(4, 6, 5), y=c(6, 6, 4), circles=c(2, 2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="", xaxt="n", yaxt="n", bty="n", fg=lines, ...)
 		## Add counts
 		for(i in seq(along=counts)) {
 			olDF <- data.frame(x=c(3.0, 7.0, 5.0, 5.0, 3.8, 6.3, 5.0), 
                                            y=c(6.5, 6.5, 3.0, 7.0, 4.6, 4.6, 5.3), 
                                            counts=counts[[i]])
-	        	 if(colmode==1) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
-                         if(colmode==2) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) }
-
+	        	 if(colmode==1) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
+                         if(colmode==2) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) }
 		}
-
                 ## Add sample labels
 		if(length(setlabels)==1 & setlabels[1]=="default") { 
 			setlabels <- names(counts[[1]][1:3])
 		} else {
 			setlabels <- setlabels
 		}
-		text(c(2.0, 8.0, 6.0), c(8.8, 8.8, 1.1), labels=setlabels, col=lcol, cex=lcex, ...)	
+		graphics::text(c(2.0, 8.0, 6.0), c(8.8, 8.8, 1.1), labels=setlabels, col=lcol, cex=lcex, ...)	
 	}
 	
 	## 4-way Venn diagram with ellipses
@@ -343,21 +337,21 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 		}
 		## Plot ellipse as 4-way venn diagram
 		ellipseVenn <- function(...) {
-			split.screen(c(1,1))
+		    graphics::split.screen(c(1,1))
 			plotellipse(center=c(3.5,3.6), radius=c(2,4), rotate=-35, segments=360, xlab="", ylab="", col=lines[1], axes=FALSE, main=mymain, sub=mysub, lwd=mylwd, ...)
-			screen(1, new=FALSE)
+			graphics::screen(1, new=FALSE)
 			plotellipse(center=c(4.7,4.4), radius=c(2,4), rotate=-35, segments=360, xlab="", ylab="", col=lines[2], axes=FALSE, lwd=mylwd, ...)
-			screen(1, new=FALSE)
+			graphics::screen(1, new=FALSE)
 			plotellipse(center=c(5.3,4.4), radius=c(2,4), rotate=35, segments=360, xlab="", ylab="", col=lines[3], axes=FALSE, lwd=mylwd, ...)
-			screen(1, new=FALSE)
+			graphics::screen(1, new=FALSE)
 			plotellipse(center=c(6.5,3.6), radius=c(2,4), rotate=35, segments=360, xlab="", ylab="", col=lines[4], axes=FALSE, lwd=mylwd, ...)
 			## Add counts
 			for(i in seq(along=counts)) {
 				olDF <- data.frame(x=c(1.5, 3.5, 6.5, 8.5, 2.9, 3.1, 5.0, 5.0, 6.9, 7.1, 3.6, 5.8, 4.2, 6.4, 5.0), 
                                                    y=c(4.8, 7.2, 7.2, 4.8, 5.9, 2.2, 0.7, 6.0, 2.2, 5.9, 4.0, 1.4, 1.4, 4.0, 2.8), 
                                                    counts=counts[[i]])
-	        	        if(colmode==1) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
-                                if(colmode==2) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) }
+	        	        if(colmode==1) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
+                                if(colmode==2) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) }
 			}
 			## Add sample labels
 			if(length(setlabels)==1 & setlabels[1]=="default") { 
@@ -365,8 +359,8 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 			} else {
 				setlabels <- setlabels
 			}
-			text(c(0.4, 2.8, 7.5, 9.4), c(7.3, 8.3, 8.3, 7.3), labels=setlabels, col=lcol, cex=lcex, ...)
-			close.screen(all.screens=TRUE) 
+			graphics::text(c(0.4, 2.8, 7.5, 9.4), c(7.3, 8.3, 8.3, 7.3), labels=setlabels, col=lcol, cex=lcex, ...)
+			graphics::close.screen(all.screens=TRUE) 
 		}
 		ellipseVenn(...)
 	} 
@@ -393,16 +387,16 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 			}
 		}
 		## Plot venn shapes
-		symbols(x=c(4, 5.5, 4, 5.5), y = c(6, 6, 4.5, 4.5), circles=c(2, 2, 2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="", xaxt="n", yaxt="n", bty="n", fg=lines, ...)
+		graphics::symbols(x=c(4, 5.5, 4, 5.5), y = c(6, 6, 4.5, 4.5), circles=c(2, 2, 2, 2), xlim=c(0, 10), ylim=c(0, 10), inches=FALSE, main=mymain, sub=mysub, lwd=mylwd, xlab="", ylab="", xaxt="n", yaxt="n", bty="n", fg=lines, ...)
 		
 		## Add counts
 		for(i in seq(along=counts)) {
 		        olDF <- data.frame(x=c(3.0, 6.5, 3.0, 6.5, 4.8, 3.0, 4.8, 4.8, 6.5, 4.8, 3.9, 5.7, 3.9, 5.7, 4.8), 
                                            y=c(7.2, 7.2, 3.2, 3.2, 7.2, 5.2, 0.4, 0.4, 5.2, 3.2, 6.3, 6.3, 4.2, 4.2, 5.2), 
                                            counts=counts[[i]])
-			 if(colmode==1) { text(olDF$x[-c(7,8)], olDF$y[-c(7,8)] + yoffset[i], olDF$counts[-c(7,8)], col=ccol, cex=ccex, ...) } # rows 14-15 of olDF are printed in next step
-			 if(colmode==2) { text(olDF$x[-c(7,8)], olDF$y[-c(7,8)] + yoffset[i], olDF$counts[-c(7,8)], col=ccol[[i]], cex=ccex[i], ...) }
-			 text(c(4.8), c(0.8) + yoffset[i], paste("Only in ", names(counts[[1]][1]), " & ", names(counts[[1]][4]), ": ", olDF$counts[7], "; Only in ", names(counts[[1]][2]), " & ", names(counts[[1]][3]), ": ", olDF$counts[8], sep=""), col=diacol, cex=ccex, ...)
+			 if(colmode==1) { graphics::text(olDF$x[-c(7,8)], olDF$y[-c(7,8)] + yoffset[i], olDF$counts[-c(7,8)], col=ccol, cex=ccex, ...) } # rows 14-15 of olDF are printed in next step
+			 if(colmode==2) { graphics::text(olDF$x[-c(7,8)], olDF$y[-c(7,8)] + yoffset[i], olDF$counts[-c(7,8)], col=ccol[[i]], cex=ccex[i], ...) }
+			 graphics::text(c(4.8), c(0.8) + yoffset[i], paste("Only in ", names(counts[[1]][1]), " & ", names(counts[[1]][4]), ": ", olDF$counts[7], "; Only in ", names(counts[[1]][2]), " & ", names(counts[[1]][3]), ": ", olDF$counts[8], sep=""), col=diacol, cex=ccex, ...)
 		}
 
                 ## Add sample labels
@@ -411,7 +405,7 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 			} else {
 				setlabels <- setlabels
 			}
-		text(c(2.0, 7.5, 2.0, 7.5), c(8.3, 8.3, 2.0, 2.0), labels=setlabels, col=lcol, cex=lcex, ...)
+		graphics::text(c(2.0, 7.5, 2.0, 7.5), c(8.3, 8.3, 2.0, 2.0), labels=setlabels, col=lcol, cex=lcex, ...)
 	} 
 	
 	## 5-way Venn diagram
@@ -446,16 +440,16 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 		}
 		## Plot ellipse as 5-way venn diagram
 		ellipseVenn <- function(...) {
-			split.screen(c(1,1))
-			screen(1, new=FALSE)
+			graphics::split.screen(c(1,1))
+		    graphics::screen(1, new=FALSE)
 			plotellipse(center=c(4.83,6.2), radius=c(1.43,4.11), rotate=0, segments=360, xlab="", ylab="", col=lines[1], axes=FALSE, main=mymain, sub=mysub, lwd=mylwd, ...)
-			screen(1, new=FALSE)
+			graphics::screen(1, new=FALSE)
 			plotellipse(center=c(6.25,5.4), radius=c(1.7,3.6), rotate=66, segments=360, xlab="", ylab="", col=lines[2], axes=FALSE, lwd=mylwd, ...)
-			screen(1, new=FALSE)
+			graphics::screen(1, new=FALSE)
 			plotellipse(center=c(6.1,3.5), radius=c(1.55,3.9), rotate=150, segments=360, xlab="", ylab="", col=lines[3], axes=FALSE, lwd=mylwd, ...)
-			screen(1, new=FALSE)
+			graphics::screen(1, new=FALSE)
 			plotellipse(center=c(4.48,3.15), radius=c(1.55,3.92), rotate=210, segments=360, xlab="", ylab="", col=lines[4], axes=FALSE, lwd=mylwd, ...)
-			screen(1, new=FALSE)
+			graphics::screen(1, new=FALSE)
 			plotellipse(center=c(3.7,4.8), radius=c(1.7,3.6), rotate=293.5, segments=360, xlab="", ylab="", col=lines[5], axes=FALSE, lwd=mylwd, ...)
 
 			## Add counts
@@ -463,8 +457,8 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 				olDF <- data.frame(x=c(4.85, 8.0, 7.1, 3.5, 2.0, 5.90, 4.4, 4.60, 3.60, 7.1, 6.5, 3.2, 5.4, 6.65, 3.40, 5.00, 6.02, 3.60, 5.20, 4.03, 4.20, 6.45, 6.8, 3.39, 6.03, 5.74, 4.15, 3.95, 5.2, 6.40, 5.1), 
                                                    y=c(8.30, 6.2, 1.9, 1.6, 5.4, 6.85, 6.6, 2.45, 6.40, 4.3, 6.0, 4.6, 2.1, 3.40, 3.25, 6.43, 6.38, 5.10, 2.49, 6.25, 3.08, 5.30, 4.0, 3.80, 3.20, 5.95, 5.75, 3.75, 3.0, 4.50, 4.6),
 					counts=counts[[i]]) 
-	        	        if(colmode==1) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
-                                if(colmode==2) { text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) }
+	        	        if(colmode==1) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol, cex=ccex, ...) }
+                                if(colmode==2) { graphics::text(olDF$x, olDF$y + yoffset[i], olDF$counts, col=ccol[[i]], cex=ccex[i], ...) }
 			}
 			## Add sample labels
 			if(length(setlabels)==1 & setlabels[1]=="default") { 
@@ -472,8 +466,8 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 			} else {
 				setlabels <- setlabels
 			}
-			text(c(5.7, 7.9, 8.5, 4.2, 0.8), c(9.9, 7.9, 1.9, 0.0, 7.3), adj=c(0, 0.5), labels=setlabels, col=lcol, cex=lcex, ...)
-			close.screen(all.screens=TRUE) 
+			graphics::text(c(5.7, 7.9, 8.5, 4.2, 0.8), c(9.9, 7.9, 1.9, 0.0, 7.3), adj=c(0, 0.5), labels=setlabels, col=lcol, cex=lcex, ...)
+			graphics::close.screen(all.screens=TRUE) 
 		}
 		ellipseVenn(...)
 	} 
@@ -486,54 +480,45 @@ vennPlot <- function(x, mymain="Venn Diagram", mysub="default", setlabels="defau
 olBarplot <- function(x, mincount=0, complexity="default", myxlabel="default", myylabel="Counts", mytitle="default", ...) {
 	## Check validity of inputs 
 	if(!any(c("VENNset", "INTERSECTset") %in% class(x))) stop("x needs to be of class VENNset or INTERSECTset")
-    ## global functions or variables
-    Intersect_Sets <- Counts <- Level <- NULL
+  ## global functions or variables
+  Intersect_Sets <- Counts <- Level <- NULL
 	## Generate counts 
 	if(class(x)=="VENNset") counts <- sapply(vennlist(x), length)
 	if(class(x)=="INTERSECTset") counts <- sapply(intersectlist(x), length)
-	
 	## Complexity filter
 	if(complexity[1]!="default") {
 		complfilter <- complexitylevels(x) %in% complexity
 	} else {
 		complfilter <- complexitylevels(x) %in% complexitylevels(x)
 	}
-
 	## Min count filter
 	mincountfilter <- counts >= mincount
-	
 	## Apply filters
 	myfilter <- complfilter & mincountfilter
 	counts <- counts[myfilter]
-	
 	## Color bars by default by complexity levels 
 	mycol <- complexitylevels(x)
 	mycol <- mycol[myfilter] 
-
 	## Define x-axis label
 	if(myxlabel=="default") {
 		myxlabel <- paste("Intersect Sets (min count cutoff = ", mincount, ")", sep="")
 	} else {
 		myxlabel <- myxlabel
 	}
-	
 	## Define main title
 	if(mytitle=="default") {
 		mytitle <- paste("Intersect Plot of", class(x), "Object")
 	} else {
 		mytitle < mytitle	
 	}
-	
 	## Generate bar plot with ggplot2
 	df_plot <- data.frame(Intersect_Sets=names(counts), Counts=counts, Level=as.character(mycol))
 	df_plot[,1] <- factor(df_plot[,1], levels=unique(df_plot[,1]), ordered=TRUE) # Defines plotting order of bars!!!	
-	ggplot(df_plot, aes(Intersect_Sets, Counts, fill = Level)) + 
-		geom_bar(position="stack", stat="identity", ...) + 
-		coord_flip() + 
-		theme(legend.position="none") +
-		theme(axis.text.y=element_text(angle=0, hjust=1)) + 
-		labs(x = myxlabel, y = myylabel) +
-		ggtitle(mytitle) 
+	ggplot2::ggplot(df_plot, ggplot2::aes(Intersect_Sets, Counts, fill = Level)) + 
+	    ggplot2::geom_bar(position="stack", stat="identity", ...) + 
+	    ggplot2::coord_flip() + 
+	    ggplot2::theme(legend.position="none") +
+	    ggplot2::theme(axis.text.y=ggplot2::element_text(angle=0, hjust=1)) + 
+	    ggplot2::labs(x = myxlabel, y = myylabel) +
+	    ggplot2::ggtitle(mytitle) 
 }
-
-

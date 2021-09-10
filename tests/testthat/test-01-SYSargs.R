@@ -5,8 +5,8 @@ skip_on_ci()
 library(systemPipeR)
 library(systemPipeRdata)
 
-genWorkenvir("chipseq", mydirname = file.path(tempdir(), "chipseq"))
-setwd(file.path(tempdir(), "chipseq"))
+genWorkenvir("riboseq", mydirname = file.path(tempdir(), "riboseq"))
+setwd(file.path(tempdir(), "riboseq"))
 
 test_that("check_SYSargs", {
     ## build instance 

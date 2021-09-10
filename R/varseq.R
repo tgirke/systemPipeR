@@ -1,7 +1,7 @@
 ######################
 ## Filter VCF files ##
 ######################
-filterVars <- function (files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
+filterVars <- function(files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
   pkg <- c("VariantAnnotation")
   checkPkg(pkg, quietly = FALSE)
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
@@ -41,7 +41,6 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   out_paths
 }
 ## Usage for GATK:
-# library(VariantAnnotation)
 # filter <- "totalDepth(vr) >= 20 & (altDepth(vr) / totalDepth(vr) >= 0.8) & rowSums(softFilterMatrix(vr))==6"
 # filterVars(args, filter, varcaller="gatk", organism="Pinfest")
 ## Usage for BCFtools:
@@ -53,7 +52,9 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 #################
 ## Report for locatVariants() where data for each variant is collapsed to a single line.
 .allAnnot <- function(x, vcf) {
-  rd <- rowRanges(vcf)
+  pkg <- c("GenomeInfoDb")
+  checkPkg(pkg, quietly = FALSE)
+  rd <- SummarizedExperiment::rowRanges(vcf)
   ## Make variant calls in rd unique by collapsing duplicated ones
   VARID <- VARID <- unique(names(rd))
   REF <- tapply(as.character(values(rd)$REF), factor(names(rd)), function(i) paste(unique(i), collapse=" "))
@@ -63,7 +64,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   ## fix names field in x if incomplete
   if(any(names(x)=="")) {
     index <- unique(names(rd)); names(index) <- gsub("_.*", "", index)
-    names(x) <- index[paste(as.character(seqnames(x)), ":", start(x), sep="")]
+    names(x) <- index[paste(as.character(GenomeInfoDb::seqnames(x)), ":", start(x), sep="")]
   }
 
   ## Make annotated variant calls in x unique by collapsing duplicated ones
@@ -94,7 +95,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
   myf <- as.factor(names(x))
   if(length(myf)>0) {
     df <- data.frame(VARID=tapply(as.character(myf), myf, unique),
-                     Strand=tapply(as.character(strand(x)), myf, unique),
+                     Strand=tapply(as.character(BiocGenerics::strand(x)), myf, unique),
                      Consequence=tapply(as.character(values(x)$CONSEQUENCE), myf, function(i) paste(unique(i), collapse=" ")),
                      Codon=tapply(paste(start(values(x)$CDSLOC), "_", as.character(values(x)$REFCODON), "/", as.character(values(x)$VARCODON), sep=""), myf, paste, collapse=" "),
                      AA=tapply(paste(sapply(values(x)$PROTEINLOC, paste, collapse="_"), "_", as.character(values(x)$REFAA), "/", as.character(values(x)$VARAA), sep=""), myf, paste, collapse=" "),
@@ -113,7 +114,7 @@ filterVars <- function (files, args=files, filter, varcaller="gatk", organism, o
 ## Variant Report ##
 ####################
 variantReport <- function (files, args=files, txdb, fa, organism, out_dir="results") {
-  pkg <- c("VariantAnnotation")
+  pkg <- c("VariantAnnotation", "GenomeInfoDb")
   checkPkg(pkg, quietly = FALSE)
   if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
     return(warning('variantReport: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
@@ -136,7 +137,7 @@ variantReport <- function (files, args=files, txdb, fa, organism, out_dir="resul
     coding <- VariantAnnotation::predictCoding(vcf, txdb, seqSource = fa)
     codereport <- .codingReport(coding, txdb)
     vr <- as(vcf, "VRanges")
-    varid <- paste(as.character(seqnames(vr)), ":", start(vr),
+    varid <- paste(as.character(GenomeInfoDb::seqnames(vr)), ":", start(vr),
                    "_", VariantAnnotation::ref(vr), "/", VariantAnnotation::alt(vr), sep = "")
     vrdf <- data.frame(row.names = varid, as.data.frame(vr))
     vrdf <- vrdf[, c("totalDepth", "refDepth", "altDepth")]

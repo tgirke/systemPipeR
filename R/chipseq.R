@@ -68,7 +68,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                     outfile1=outfile_names,
                     sysargs=sysargs(args_sub), 
                     outpaths=outfile_names)
-    args_sub_out <- methods::as(syslist, "SYSargs")
+    args_sub_out <- as(syslist, "SYSargs")
     ## SYSargs2 class  
   } else if (class(args) == "SYSargs2"){
     out <- sapply(names(outfile_names), function(x) list(outfile_names[[x]]), simplify = F)
@@ -88,6 +88,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                      files=files(args_sub), 
                      inputvars=inputvars(args_sub), 
                      cmdToCwl=list(), 
+                     status = data.frame(),
                      internal_outfiles=list()) 
     args_sub_out <- as(sys2list, "SYSargs2")
   }
@@ -133,7 +134,7 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ## Convenience function to perform read counting over serveral different
 ## range sets, e.g. peak ranges or feature types
 countRangeset <- function(bfl, args, format="tabular", ...) {
-  pkg <- c("GenomicAlignments", "rtracklayer")
+  pkg <- c("GenomeInfoDb")
   checkPkg(pkg, quietly = FALSE)
   ## Input validity checks
   if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
@@ -157,10 +158,10 @@ countRangeset <- function(bfl, args, format="tabular", ...) {
     } else {
       stop("Input file format not supported.")
     }
-    names(peaks) <- paste0(as.character(seqnames(peaks)), "_", start(peaks), "-", end(peaks))
+    names(peaks) <- paste0(as.character(GenomeInfoDb::seqnames(peaks)), "_", start(peaks), "-", end(peaks))
     peaks <- split(peaks, names(peaks))
     countDF <- GenomicAlignments::summarizeOverlaps(peaks, bfl, ...)
-    countDF <- assays(countDF)$counts
+    countDF <- SummarizedExperiment::assays(countDF)$counts
     write.table(countDF, countDFnames[i], col.names=NA, quote=FALSE, sep="\t")
     cat("Wrote count result", i, "to", basename(countDFnames[i]), "\n")
   }
@@ -212,7 +213,7 @@ runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
 ###########################################################
 ##  Identify Range Overlaps 
 olRanges <- function(query, subject, output="gr") {
-  pkg <- c("GenomeInfoDb", "IRanges")
+  pkg <- c("IRanges", "GenomeInfoDb")
   checkPkg(pkg, quietly = FALSE)
   ## Input check
   if(!((class(query)=="GRanges" & class(subject)=="GRanges") | (class(query)=="IRanges" & class(subject)=="IRanges"))) {
@@ -223,7 +224,7 @@ olRanges <- function(query, subject, output="gr") {
     GenomeInfoDb::seqlengths(query) <- rep(NA, length(GenomeInfoDb::seqlengths(query)))
     GenomeInfoDb::seqlengths(subject) <- rep(NA, length(GenomeInfoDb::seqlengths(subject)))
   }
-  olindex <- as.matrix(findOverlaps(query, subject))
+  olindex <- as.matrix(GenomicRanges::findOverlaps(query, subject))
   query <- query[olindex[,1]]
   subject <- subject[olindex[,2]]
   olma <- cbind(Qstart=start(query), Qend=end(query), Sstart=start(subject), Send=end(subject))
@@ -261,17 +262,17 @@ olRanges <- function(query, subject, output="gr") {
   ## Output type
   oldf <- data.frame(Qindex=olindex[,1], Sindex=olindex[,2], olma, OLstart, OLend, OLlength, OLpercQ, OLpercS, OLtype)
   if(class(query) == "GRanges") {
-    oldf <- cbind(space=as.character(seqnames(query)), oldf)
+    oldf <- cbind(space=as.character(GenomeInfoDb::seqnames(query)), oldf)
   }
   if(output=="df") {
     return(oldf)
   }
   if(output=="gr") {
     if(class(query)=="GRanges") {
-      elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
+      S4Vectors::elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
     }
     if(class(query)=="IRanges") {
-      query <- GRanges(seqnames = Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = Rle(strand(rep("+", length(query)))), oldf)
+      query <- GRanges(seqnames = S4Vectors::Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start=oldf[,"Qstart"], end=oldf[,"Qend"]), strand = S4Vectors::Rle(BiocGenerics::strand(rep("+", length(query)))), oldf)
     }
     return(query)
   }
@@ -279,9 +280,9 @@ olRanges <- function(query, subject, output="gr") {
 
 ## Run olRanges function
 ## Sample Data Sets
-# grq <- GRanges(seqnames = Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)), 
-#                ranges = IRanges::IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)), 
-#                strand = Rle(strand(c("-", "+", "-")), c(1, 7, 2)))
+# grq <- GRanges(seqnames = S4Vectors::Rle(c("chr1", "chr2", "chr1", "chr3"), c(1, 3, 2, 4)),
+#                ranges = IRanges(seq(1, 100, by=10), end = seq(30, 120, by=10)),
+#                strand = S4Vectors::Rle(BiocGenerics::strand(c("-", "+", "-")), c(1, 7, 2)))
 # grs <- shift(grq[c(2,5,6)], 5)
-# olRanges(query=grq, subject=grs, output="df") 
-# olRanges(query=grq, subject=grs, output="gr") 
+# olRanges(query=grq, subject=grs, output="df")
+# olRanges(query=grq, subject=grs, output="gr")

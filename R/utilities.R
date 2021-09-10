@@ -111,7 +111,7 @@ runCommandline <- function(args, runid="01",
     if(length(wf(args)$steps)==0){
       cwl.wf <- gsub( "[[:space:]]", "_", paste(baseCommand(args), collapse = "_"), perl=TRUE)
     } else {
-      cwl.wf <- strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
+      cwl.wf <- Biostrings::strsplit(basename(files(args)$cwl), split="\\.")[[1]][1]
     }
     ## Check if "results" folders exists...
     if(!dir.exists(file.path(yamlinput(args)$results_path$path)))
@@ -139,7 +139,7 @@ runCommandline <- function(args, runid="01",
     sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
     ## Progress bar
-    pb <- txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
+    pb <- utils::txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
     ## Check input
     if(length(args$inputvars) >= 1){
       inpVar <- args$inputvars
@@ -159,7 +159,7 @@ runCommandline <- function(args, runid="01",
     }
     
     for(i in input_targets){
-      setTxtProgressBar(pb, i)
+      utils::setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
       ## Time
       time_status$time_start[i] <- Sys.time()
@@ -246,7 +246,7 @@ runCommandline <- function(args, runid="01",
             for(j in seq_along(output(args)[[i]])){
             for(k in seq_along(output(args)[[i]][[j]])){
               if(file.exists(output(args)[[i]][[j]])){
-                name <- strsplit(output(args)[[i]][[j]][[k]], split="\\/")[[1]]
+                name <- Biostrings::strsplit(output(args)[[i]][[j]][[k]], split="\\/")[[1]]
                 name <- name[length(name)]
                 file.rename(from=output(args)[[i]][[j]][[k]], to=file.path(logdir, dir.name, name))
                 #outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
@@ -260,7 +260,7 @@ runCommandline <- function(args, runid="01",
         } else if(length(output(args)[[i]]) == 1){
           for(j in seq_along(output(args)[[i]][[1]])){
             if(file.exists(output(args)[[i]][[1]][[j]])){
-              name <- strsplit(output(args)[[i]][[1]][[j]], split="\\/")[[1]]
+              name <- Biostrings::strsplit(output(args)[[i]][[1]][[j]], split="\\/")[[1]]
               name <- name[length(name)]
               file.rename(from=output(args)[[i]][[1]][[j]], to=file.path(logdir, dir.name, name))
               # outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
@@ -451,7 +451,7 @@ runCommandline <- function(args, runid="01",
       ## Conditional postprocessing of results
       if(make_bam==TRUE) {
         if(grepl(".sam$", outfile1(args)[i])) { # If output is *.sam file (e.g. Bowtie2)
-          asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
+          Rsamtools::asBam(file=outfile1(args)[i], destination=gsub("\\.sam$", "", outfile1(args)[i]), overwrite=TRUE, indexDestination=TRUE)
           if(del_sam==TRUE){
             unlink(outfile1(args)[i])
           } else if(del_sam==FALSE){
@@ -460,8 +460,8 @@ runCommandline <- function(args, runid="01",
         } else if(grepl("vcf$|bcf$|xls$|bed$", outpaths(args)[i])) {
           dump <- "do nothing"
         } else { # If output is unindexed *.bam file (e.g. Tophat2)
-          sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
-          indexBam(names(completed[i]))
+          Rsamtools::sortBam(file=names(completed[i]), destination=gsub("\\.bam$", "", names(completed[i])))
+          Rsamtools::indexBam(names(completed[i]))
         }
       }
     }
@@ -623,10 +623,10 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
       }
       ## Run preprocessor function with FastqStreamer
       counter <- 0
-      f <- FastqStreamer(infile1(args)[i], batchsize)
-      while (length(fq <- yield(f))) {
+      f <- ShortRead::FastqStreamer(infile1(args)[i], batchsize)
+      while (length(fq <- ShortRead::yield(f))) {
         fqtrim <- eval(parse(text = Fct))
-        writeFastq(fqtrim, outfile, mode = "a", ...)
+        ShortRead::writeFastq(fqtrim, outfile, mode = "a", ...)
         counter <- counter + length(fqtrim)
         cat(counter, "processed reads written to file:", outfile, "\n")
       }
@@ -656,30 +656,30 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
       ## Run preprocessor function with FastqStreamer
       counter1 <- 0
       counter2 <- 0
-      f1 <- FastqStreamer(p1, batchsize)
-      f2 <- FastqStreamer(p2, batchsize)
-      while (length(fq1 <- yield(f1))) {
-        fq2 <- yield(f2)
+      f1 <- ShortRead::FastqStreamer(p1, batchsize)
+      f2 <- ShortRead::FastqStreamer(p2, batchsize)
+      while (length(fq1 <- ShortRead::yield(f1))) {
+        fq2 <- ShortRead::yield(f2)
         if (length(fq1) != length(fq2)) stop("Paired end files cannot have different read numbers.")
         ## Process p1
         fq <- fq1 # for simplicity in eval
         fq1trim <- eval(parse(text = Fct))
         ## Index for p1
-        index1 <- as.character(id(fq1)) %in% as.character(id(fq1trim))
+        index1 <- as.character(ShortRead::id(fq1)) %in% as.character(ShortRead::id(fq1trim))
         names(index1) <- seq(along = index1)
         index1 <- names(index1[index1])
         ## Process p2
         fq <- fq2 # for simplicity in eval
         fq2trim <- eval(parse(text = Fct))
         ## Index for p1
-        index2 <- as.character(id(fq2)) %in% as.character(id(fq2trim))
+        index2 <- as.character(ShortRead::id(fq2)) %in% as.character(ShortRead::id(fq2trim))
         names(index2) <- seq(along = index2)
         index2 <- names(index2[index2])
         ## Export to processed paired files
         indexpair1 <- index1 %in% index2
-        writeFastq(fq1trim[indexpair1], p1out, mode = "a", ...)
+        ShortRead::writeFastq(fq1trim[indexpair1], p1out, mode = "a", ...)
         indexpair2 <- index2 %in% index1
-        writeFastq(fq2trim[indexpair2], p2out, mode = "a", ...)
+        ShortRead::writeFastq(fq2trim[indexpair2], p2out, mode = "a", ...)
         counter1 <- counter1 + sum(indexpair1)
         cat(counter1, "processed reads written to file:", p1out, "\n")
         counter2 <- counter2 + sum(indexpair2)
@@ -698,13 +698,13 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
 ##################################################################
 symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".bai"), urlbase, urlfile) {
   ## Create URL file
-  if(all(is(sysargs, "SYSargs") & is(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+  if(all(inherits(sysargs, "SYSargs") & inherits(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
   ## SYSargs class
-  if(is(sysargs, "SYSargs")) {
+  if(inherits(sysargs, "SYSargs")) {
     bampaths <- outpaths(sysargs)
     symname <- SampleName(sysargs)
     ## SYSargs2 class ##
-  } else if (is(sysargs, "SYSargs2")) {
+  } else if (inherits(sysargs, "SYSargs2")) {
     bampaths <- normalizePath(subsetWF(args = sysargs, slot = "output", subset = 1, index = 1))
     symname <- names(targets(sysargs))
   }
@@ -760,17 +760,17 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
   fqpaths <- fqpaths[bamexists]
   bampaths <- bampaths[bamexists]
   ## Obtain total read number from FASTQ files
-  Nreads <- countLines(fqpaths) / 4
+  Nreads <- ShortRead::countLines(fqpaths) / 4
   names(Nreads) <- names(fqpaths)
   ## If reads are PE multiply by 2 as a rough approximation
   if(pairEnd) Nreads <- Nreads * 2
   ## Obtain total number of alignments from BAM files
   bfl <- BamFileList(bampaths, yieldSize = 50000, index = character())
   param <- ScanBamParam(flag = scanBamFlag(isUnmappedQuery = FALSE))
-  Nalign <- countBam(bfl, param = param)
+  Nalign <- Rsamtools::countBam(bfl, param = param)
   ## Obtain number of primary alignments from BAM files
-  param <- ScanBamParam(flag = scanBamFlag(isSecondaryAlignment = FALSE, isUnmappedQuery = FALSE))
-  Nalignprim <- countBam(bfl, param = param)
+  param <- Rsamtools::ScanBamParam(flag = Rsamtools::scanBamFlag(isSecondaryAlignment = FALSE, isUnmappedQuery = FALSE))
+  Nalignprim <- Rsamtools::countBam(bfl, param = param)
   statsDF <- data.frame(
     FileName = names(Nreads),
     Nreads = Nreads,
@@ -864,7 +864,7 @@ readComp <- function(file, format = "vector", delim = "-") {
     return(comp)
   }
   if (format == "matrix") {
-    return(sapply(names(comp), function(x) do.call("rbind", strsplit(comp[[x]], "-")), simplify = FALSE))
+    return(sapply(names(comp), function(x) do.call("rbind", Biostrings::strsplit(comp[[x]], "-")), simplify = FALSE))
   }
 }
 ## Usage:
@@ -1038,11 +1038,11 @@ filterDEGs <- function(degDF, filter, plot = TRUE) {
   if (plot == TRUE) {
     mytitle <- paste("DEG Counts (", names(filter)[1], ": ", filter[1], " & ", names(filter)[2], ": ", filter[2], "%)", sep = "")
     df_plot <- data.frame(Comparisons = rep(as.character(df$Comparisons), 2), Counts = c(df$Counts_Up, df$Counts_Down), Type = rep(c("Up", "Down"), each = length(df[, 1])))
-    p <- ggplot(df_plot, aes(Comparisons, Counts, fill = Type)) +
-      geom_bar(position = "stack", stat = "identity") +
-      coord_flip() +
-      theme(axis.text.y = element_text(angle = 0, hjust = 1)) +
-      ggtitle(mytitle)
+    p <- ggplot2::ggplot(df_plot, ggplot2::aes(Comparisons, Counts, fill = Type)) +
+      ggplot2::geom_bar(position = "stack", stat = "identity") +
+      ggplot2::coord_flip() +
+      ggplot2::theme(axis.text.y = ggplot2::element_text(angle = 0, hjust = 1)) +
+      ggplot2::ggtitle(mytitle)
     print(p)
   }
   return(resultlist)
