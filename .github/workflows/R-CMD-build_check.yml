@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - master
-      - spr_dep_clean
   pull_request:
     branches:
       - master
@@ -25,7 +24,7 @@ jobs:
         config:
           - {os: ubuntu-20.04, r: '4.1.1', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: macOS-latest, r: '4.1.1'}
-          - {os: windows-latest, r: '4.1.0'}  
+          - {os: windows-latest, r: '4.1.1'}  
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -68,7 +67,7 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
           install.packages(c("BiocManager", "knitcitations", "docopt"))
-          BiocManager::install("tgirke/systemPipeR")
+          BiocManager::install("tgirke/systemPipeR", dependencies=TRUE)
           BiocManager::install("tgirke/systemPipeRdata")
         shell: Rscript {0}
 
