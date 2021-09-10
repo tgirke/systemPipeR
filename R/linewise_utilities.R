@@ -2,7 +2,7 @@
 ## LineWise function ##
 #######################
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
-                     rmdPath = character(), dependency = "", 
+                     rmdPath = character(), dependency = "",
                      run_step = "mandatory",
                      run_session = "rsession") {
     ## used in `importWF`
@@ -21,7 +21,7 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
     dependency <- list(dependency)
     names(dependency) <- step_name
     ## RunInfo
-    runInfo <- list(runOption = list(list(directory = FALSE, run_step = run_step, 
+    runInfo <- list(runOption = list(list(directory = FALSE, run_step = run_step,
                                           run_session = run_session)))
     names(runInfo$runOption) <- step_name
     ## status
@@ -43,7 +43,7 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
         stepName = step_name,
         dependency = dependency,
         status = step_status,
-        files = list(rmdPath = rmdPath), 
+        files = list(rmdPath = rmdPath),
         runInfo = runInfo
     )
     return(as(line, "LineWise"))
@@ -144,7 +144,7 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     for (i in seq_along(chunk_start)[-length(chunk_end)]) {
         if (chunk_start[i + 1] <= chunk_end[i]) {
             stop(paste(
-                "A code chunk does not end: chunk line",
+                "A code chunk does not end, chunk line:\n",
                 chunk_start[i + 1]
             ))
         }
@@ -158,6 +158,8 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
         dep = NA,
         code = NA,
         spr = NA,
+        req = NA,
+        session = NA,
         has_run = FALSE,
         success = FALSE,
         sample_pass = 0,
@@ -201,7 +203,7 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     # update chunk name
     df$step_name <- chunk_names
     df$opt_text <- opt_text
-    # get spr chunks
+    # get spr option
     if (verbose) message("Checking chunk SPR option")
     opt_spr <- stringr::str_match(df$opt_text, "spr[ ]{0,}=[ ]{0,}(['\"]\\w+['\"])")[, 2] %>% stringr::str_remove_all('\'|"')
     ## update df
@@ -213,8 +215,48 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     if (any(bad_spr)) {
         stop(
             "Bad SPR option for chunk at line:\n",
-            paste(df$chunk_start[bad_spr], df$spr[bad_spr], collapse = ", "),
+            paste(df$start[bad_spr], df$spr[bad_spr], collapse = ", "),
             "\nOnly 'sysargs' or 'r' allowed"
+        )
+    }
+    # get reqiurement options
+    if (verbose) message("Checking chunk spr.req option")
+    spr_req <- stringr::str_match(df$opt_text, "spr\\.req[ ]{0,}=[ ]{0,}['\"]((\\w+[;]{0,}[ ]{0,})+)['\"]")[, 2] %>%
+        stringr::str_remove_all('\'|"') %>%
+        stringr::str_remove_all("^spr\\.req[ ]{0,}=[ ]{0,}")
+    ## update df
+    spr_req[is.na(spr_req)] <- "mandatory"
+    spr_req[spr_req == "m"] <- "mandatory"
+    spr_req[spr_req == "o"] <- "optional"
+
+    df$req <- spr_req
+    ## enforce sysarg or r option only for spr
+    bad_req <- !df$req %in% c("mandatory", "optional")
+    if (any(bad_req)) {
+        stop(
+            "Bad spr.req option for chunk at line:\n",
+            paste(df$start[bad_req], collapse = ", "),
+            "\nOnly 'm' or 'o' allowed"
+        )
+    }
+    # get session options
+    if (verbose) message("Checking chunk spr.ses option")
+    spr_ses <- stringr::str_match(df$opt_text, "spr\\.ses[ ]{0,}=[ ]{0,}['\"]((\\w+[;]{0,}[ ]{0,})+)['\"]")[, 2] %>%
+        stringr::str_remove_all('\'|"') %>%
+        stringr::str_remove_all("^spr\\.ses[ ]{0,}=[ ]{0,}")
+    ## update df
+    spr_ses[is.na(spr_ses)] <- "rsession"
+    spr_ses[spr_ses == "r"] <- "rsession"
+    spr_ses[spr_ses == "c"] <- "cluster"
+
+    df$session <- spr_ses
+    ## enforce sysarg or r option only for spr
+    bad_ses <- !df$session %in% c("rsession", "cluster")
+    if (any(bad_ses)) {
+        stop(
+            "Bad spr.req option for chunk at line:\n",
+            paste(df$start[bad_ses], collapse = ", "),
+            "\nOnly 'c' or 'r' allowed"
         )
     }
     # get eval

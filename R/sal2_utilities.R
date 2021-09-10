@@ -57,21 +57,23 @@ sal2rmd <- function(
   step_names <- names(sal$stepsWF)
   deps <- sal$dependency
   t_connects <- sal$targets_connection
-  dirs <- sal$runInfo$runOption
+  opts <- sal$runInfo$runOption
 
   for(i in seq_along(sal$stepsWF)) {
     if(verbose) message(crayon::blue$bold("Now writing step", i, step_names[i]))
-    if (inherits(sal$stepsWF[[i]], "LineWise")) .sal2rmd_rstep(sal, con, i, step_names[i], deps[[i]])
-    else .sal2rmd_sysstep(sal, con, i, step_names[i], deps[[i]], dirs[[i]]$directory, t_connects[[i]])
+    if (inherits(sal$stepsWF[[i]], "LineWise")) .sal2rmd_rstep(sal, con, i, step_names[i], deps[[i]], opts[[i]]$run_step, opts[[i]]$run_session)
+    else .sal2rmd_sysstep(sal, con, i, step_names[i], deps[[i]], opts[[i]]$directory, opts[[i]]$run_step, opts[[i]]$run_session, t_connects[[i]])
   }
 
   if(verbose) message(crayon::green$bold("Success! File created at", out_path))
 }
 
-.sal2rmd_rstep <- function(sal, con, i, step_name, dep){
+.sal2rmd_rstep <- function(sal, con, i, step_name, dep, req, session){
   header <- paste0(
     "```{r ", step_name, ", eval=FALSE, spr='r'",
     if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
+    if (req == "optional") paste0(", spr.req='optional'") else "",
+    if (session == "cluster") paste0(", spr.ses='cluster'") else "",
     "}",
     collapse = ""
   )
@@ -82,15 +84,18 @@ sal2rmd <- function(
       paste0("## step", i, " ", step_name, collapse = ""),
       header,
       as.character(sal$stepsWF[[i]]$codeLine),
+      paste0("run_session=", session),
       "```\n\n"
     )
   )
 }
 
-.sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, t_con){
+.sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, req, session, t_con){
   header <- paste0(
     "```{r ", step_name, ", eval=FALSE, spr='sysargs'",
     if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
+    if (req == "optional") paste0(", spr.req='optional'") else "",
+    if (session == "cluster") paste0(", spr.ses='cluster'") else "",
     "}",
     collapse = ""
   )
@@ -112,7 +117,7 @@ sal2rmd <- function(
     paste('c("', paste(t_con[['rm_targets_col']][[1]], collapse = '", "'), '"),')
   } else NULL
 
-  dir_path <- if(is.na(sal$stepsWF[[i]]$files$dir_path[1])) NULL 
+  dir_path <- if(is.na(sal$stepsWF[[i]]$files$dir_path[1])) NULL
   else paste0('    dir_path="', sal$stepsWF[[i]]$files$dir_path[1], '",')
   wf_file <- paste0('    wf_file="', sal$stepsWF[[i]]$files$cwl[1], '",')
   input_file <- paste0('    input_file="', sal$stepsWF[[i]]$files$yml[1], '",')
@@ -143,7 +148,7 @@ sal2bash <- function(sal, out_dir=".", bash_path="/bin/bash", stop_on_error=TRUE
   supp_dir <- file.path(out_dir, "spr_bash")
   if(!dir.exists(supp_dir)) dir.create(supp_dir, recursive = TRUE)
   if(!dir.exists(supp_dir)) stop("Can't create", supp_dir, "check permissions")
-  
+
   out_path <- file.path(out_dir, "spr_wf.sh")
   on.exit(try(close(con), silent = TRUE))
   con <- file(out_path)
@@ -162,7 +167,7 @@ sal2bash <- function(sal, out_dir=".", bash_path="/bin/bash", stop_on_error=TRUE
       r_code <- .bashRStep(sal, chunk$step)
       r_path <- paste0("rscript_step", paste0(chunk$step, collapse = "_"), ".R")
       .writeRscript(r_code, file.path(supp_dir, r_path), supp_dir)
-      
+
       writeLines(con = con, paste0("Rscript ", file.path(supp_dir, r_path)))
       writeLines(con = con, "\n")
     }
@@ -187,7 +192,7 @@ sal2bash <- function(sal, out_dir=".", bash_path="/bin/bash", stop_on_error=TRUE
       step = 1
     )
   )
-  
+
   for(i in as.numeric(names(steps[-1]))) {
     if(is.na(steps[i])) {
       list_item <- list_item + 1
