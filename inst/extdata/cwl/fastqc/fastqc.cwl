@@ -6,20 +6,35 @@ inputs:
     type: File
     inputBinding:
       prefix: ~
+  fq2:
+    type: File
+    inputBinding:
+      prefix: ~
   outdir:
-    type: Directory
+    type: string
     inputBinding:
       prefix: --outdir
   threads:
     type: string
     inputBinding:
       prefix: --threads
+  results_path:
+    label: "Path to the results directory"
+    type: Directory
 outputs:
   out_1:
     type: File
     outputBinding:
-      glob: $(inputs.results_path)/$(inputs.outdir)/$(inputs.fq1.basename)_fastqc.html
+      glob: $(inputs.outdir.path)/$(inputs.fq1.basename)_fastqc.html
   out_2:
     type: File
     outputBinding:
-      glob: $(inputs.results_path)/$(inputs.outdir)/$(inputs.fq1.basename)_fastqc.zip
+      glob: $(inputs.outdir.path)/$(inputs.fq1.basename)_fastqc.zip
+  out_3:
+    type: File
+    outputBinding:
+      glob: $(inputs.outdir.path)/$(inputs.fq2.basename)_fastqc.html
+  out_4:
+    type: File
+    outputBinding:
+      glob: $(inputs.outdir.path)/$(inputs.fq2.basename)_fastqc.zip

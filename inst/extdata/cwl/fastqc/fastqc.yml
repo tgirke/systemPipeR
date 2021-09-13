@@ -1,6 +1,9 @@
 fq1:
   class: File
   path: _FASTQ_PATH1_
+fq2:
+  class: File
+  path: _FASTQ_PATH2_
 outdir:
   class: Directory
   path: ./results/fastqc

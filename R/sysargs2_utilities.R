@@ -261,15 +261,19 @@ check.outfiles <- check.output
     if(length(WF$targets)!=0){
       targets <- colnames(targets.as.df(WF$targets))
       if (!all(names(inputvars) %in% targets)) {
-        stop("names of the inputvars are not matching with targets colnames.", 
+        stop("names of the inputvars are not matching with targets colnames.", "\n",
+             "Names available are:", "\n",
+             paste(targets, collapse = " | "),
              call. = FALSE)
       }
     }
     input <- unlist(WF$yamlinput)
     if (!all(inputvars %in% input)) {
         stop(
-            "inputvars elements are not matching with input variables. ",
-            "To check, please use `yamlinput(WF)`", call. = FALSE
+            "inputvars elements are not matching with input variables. ", "\n",
+            "To check variable names, please see:", "\n",
+            file.path(WF$files$dir_path, WF$files$yml), 
+            call. = FALSE
         )
     }
 }
@@ -297,7 +301,7 @@ pathInstance <- function(pathvar, input, altinput) {
     pathvar <- gsub("(^.*\\)).*", "\\1", pathvar)
     pathvar <- gsub("\\$|\\(|\\)", "", pathvar)
     pathvarlist <- strsplit(pathvar, "\\.")
-    filenametype <- unlist(lapply(seq_along(pathvarlist), function(x) pathvarlist[[x]][pathvarlist[[x]] %in% c("basename", "nameroot")]))
+    filenametype <- unlist(lapply(seq_along(pathvarlist), function(x) pathvarlist[[x]][pathvarlist[[x]] %in% c("basename", "nameroot", "path")]))
     filenametype <- sapply(seq_along(pathvarlist), function(x) filenametype[x]) # In case of empty filenamelist NA are returned instead
     filenametype <- ifelse(is.na(filenametype), "NA", filenametype)
     myvalue_list <- sapply((pathvarlist), function(x) list(NULL), simplify = FALSE)
@@ -326,7 +330,8 @@ pathInstance <- function(pathvar, input, altinput) {
                 vec_input <- myvalue_list[[i]][[j]]$path
             }
             if (!is.null(vec_input)) {
-                vec <- sapply(seq_along(filenametype), function(x) pathUtils(vec_input[x], type = filenametype[x]))
+                # # vec <- sapply(seq_along(filenametype), function(x) pathUtils(vec_input[x], type = filenametype[x]))
+                vec <- sapply(seq_along(vec_input), function(x) pathUtils(vec_input[x], type = filenametype[i]))
                 mypathvec <- c(mypathvec, list(vec))
             }
         }
@@ -379,6 +384,8 @@ pathUtils <- function(x, type, dropdir = TRUE) {
         mypath <- basename(x)
     } else if (type == "nameroot") {
         mypath <- gsub("(^.*)\\..*$", "\\1", basename(x))
+    } else if(type == "path"){
+      mypath <- x
     } else {
         mypath <- x # Return unchanged input if 'type' is not one the above three values
         # warning("Argument 'type' needs to be assigned one of: 'dirname', 'basename', 'nameroot'")
