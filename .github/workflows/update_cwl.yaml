@@ -1,0 +1,26 @@
+name: Triggered cwl files update
+on:
+  repository_dispatch:
+    types: [cwl-updated]
+
+jobs:
+  hugobuild:
+    name: pull new cwls
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update hash
+        run: |
+          bash .github/bash/update_cwl.sh https://github.com/systemPipeR/cwl_collection.git inst/extdata/cwl
+      - name: Update github
+        run: |
+          git config --local user.name "Github Action Bot"
+          git config --local user.email "danicassol@gmail.com"
+          git add -A
+          git commit -m "Bot build site" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
