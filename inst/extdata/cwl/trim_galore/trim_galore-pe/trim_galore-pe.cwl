@@ -2,14 +2,15 @@
 ##                     Trim_Galore.cwl                        ##
 ################################################################
 
-cwlVersion: v1.0
+cwlVersion: v1.2.0
 class: CommandLineTool
 doc: "[TRIM_GALORE](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)"
+label: Last updated 09/2021
 hints:
   SoftwareRequirement:
     packages:
     - package: trim_galore
-      version: [ 0.6.4 ]
+      version: [ 0.6.7 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
@@ -74,11 +75,11 @@ outputs:
   trim_galore_1:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.SampleName)_R1_val_1.fq.gz
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)_1_val_1.fq.gz
   trim_galore_2:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.SampleName)_R2_val_2.fq.gz
+      glob: $(inputs.results_path.path)/$(inputs.SampleName)_2_val_2.fq.gz
   trim_galore_report:
     type: File
     outputBinding:
