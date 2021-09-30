@@ -1,0 +1,10 @@
+#############################
+##       BLAST.yml         ##
+#############################
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+  module1: ncbi-blast

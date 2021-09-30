@@ -1,0 +1,14 @@
+######################
+##    test.yml     ##
+######################
+
+results_path:
+  class: Directory
+  path: ./results
+
+ModulesToLoad: 
+
+rscript_test:
+  class: File
+  path: ./param/docopt.R/test/test.doc.R
+
