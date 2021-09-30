@@ -1,5 +1,0 @@
-message: _STRING_
-SampleName: _SAMPLE_ 
-results_path:
-  class: Directory
-  path: ./results

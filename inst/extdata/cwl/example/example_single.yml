@@ -1,5 +1,0 @@
-message: "Hello World!"
-SampleName: M1
-results_path:
-  class: Directory
-  path: ./results
