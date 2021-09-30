@@ -21,6 +21,6 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.SPS_WF }}
-          branch: ${{ github.ref }}
+          github_token: ${{ secrets.cwl }}
+          branch: ${{ github.master }}
 
