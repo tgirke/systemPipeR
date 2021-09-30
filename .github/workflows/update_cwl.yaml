@@ -14,7 +14,7 @@ jobs:
           bash .github/bash/update_cwl.sh https://github.com/systemPipeR/cwl_collection.git inst/extdata/cwl
       - name: Update github
         run: |
-          git config --local user.name "Github Action Bot"
+          git config --local user.name "dcassol"
           git config --local user.email "danicassol@gmail.com"
           git add -A
           git commit -m "Bot build site" -a
