@@ -46,10 +46,20 @@ sal2rmd <- function(
   writeLines(c(
     "---",
     paste0('title: "', rmd_title, '"'),
+    paste0('author: "', rmd_author, '"'),
     paste0('date: "', rmd_date, '"'),
-    paste0('output: ', rmd_output),
+    paste0('output: '),
+    paste0("  ", rmd_output, ":"),
+    "    number_sections: false",
+    "    theme: flatly",
+    "    toc: true",
+    "    toc_float:",
+    "      collapsed: true",
+    "      smooth_scroll: false",
+    "package: systemPipeR",
+    "fontsize: 14pt",
     "---\n",
-    "# About this template",
+    "# About this template \n",
     desc,
     "\n# Workflow Steps\n"
   ), con)
@@ -68,7 +78,7 @@ sal2rmd <- function(
   if(verbose) message(crayon::green$bold("Success! File created at", out_path))
 }
 
-.sal2rmd_rstep <- function(sal, con, i, step_name, dep, req, session){
+.sal2rmd_rstep <- function(sal, con, i, step_name, dep, req, session, return="write"){
   header <- paste0(
     "```{r ", step_name, ", eval=FALSE, spr='r'",
     if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
@@ -77,17 +87,23 @@ sal2rmd <- function(
     "}",
     collapse = ""
   )
-
-  writeLines(
-    con = con,
-    c(
-      paste0("## step", i, " ", step_name, collapse = ""),
-      header,
-      as.character(sal$stepsWF[[i]]$codeLine),
-      paste0("run_session=", session),
-      "```\n\n"
-    )
+  rcode <- c(
+    paste0("## step", i, " ", step_name, collapse = ""),
+    header,
+    as.character(sal$stepsWF[[i]]$codeLine),
+    paste0("run_session=", session),
+    "```\n\n"
   )
+  if(return=="write"){
+    writeLines(
+      con = con,
+      rcode
+    )
+  } else if(return=="object"){
+    obj <- c(header, rcode)
+    return(obj)
+  }
+
 }
 
 .sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, req, session, t_con){

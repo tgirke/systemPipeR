@@ -61,17 +61,23 @@ targets
 
 # SYSargsList example
 
+```{r}
+sal <- SPRproject(overwrite = T)
+```
+
 ```{r quality, eval=TRUE, spr='sysargs'}
 targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
-appendStep(sal) <- SYSargsList(targets=targetspath, 
+appendStep(sal) <- SYSargsList(step_name = "quality",
+                               targets=targetspath, 
                    wf_file = "trimmomatic/workflow_trimmomatic-pe.cwl", 
                    input_file = "trimmomatic/trimmomatic-pe.yml",
                    dir_path=system.file("extdata/cwl", package = "systemPipeR"),
-                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"), )
+                   inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
 ```{r index, eval=TRUE, spr='sysargs'}
-appendStep(sal) <- SYSargsList(dir = FALSE,
+appendStep(sal) <- SYSargsList(step_name = "index",
+                               dir = FALSE,
                                targets=NULL, 
                                wf_file = "hisat2/workflow_hisat2-index.cwl",
                                input_file="hisat2/hisat2-index.yml",

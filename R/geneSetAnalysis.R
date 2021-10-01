@@ -95,7 +95,7 @@ setMethod(
 ## (A.1.2) Obtain mappings from BioC
 .sampleDFgene2GO <- function(lib) {
   pkg <- c("GO.db", "annotate", "AnnotationDbi")
-  checkPkg(pkg, quietly = FALSE)
+  #checkPkg(pkg, quietly = FALSE)
   require(lib, character.only = TRUE)
   mylibbase <- gsub(".db", "", lib)
   GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
