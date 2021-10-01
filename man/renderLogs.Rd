@@ -8,7 +8,7 @@ Render the logs report file to the specified output format using pandoc.
 }
 \usage{
 renderLogs(sysargs, type = c("html_document", "pdf_document"), 
-            fileName = "default", silent = FALSE, 
+            fileName = "default", quiet = FALSE, 
             open_file = TRUE)
 }
 \arguments{
@@ -22,7 +22,7 @@ renderLogs(sysargs, type = c("html_document", "pdf_document"),
   \item{fileName}{
   haracter string naming a file output. Default is \code{"logs_<date>.Rmd"}.
 }
-  \item{silent}{
+  \item{quiet}{
 If set to \code{TRUE}, all messages returned by the function will be suppressed.
 }
   \item{open_file}{

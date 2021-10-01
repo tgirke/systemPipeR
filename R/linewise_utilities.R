@@ -99,7 +99,9 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
             sal_imp$SE[df$step_name[i]] <- list(NULL)
             sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
             sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
-            sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(list(directory = FALSE, run_step = "mandatory", run_session = "rsession"))
+            sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(
+                list(directory = FALSE, run_step = df$req[i], run_session = df$session[i], 
+                     rmd_line = paste(df[i,2:3], collapse = ":")))
         } else if (df$spr[i] == "sysargs") {
             options(spr_importing = TRUE)
             options(importwf_options = c(df$step_name[i], df$dep[i]))
@@ -110,9 +112,11 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
             if (!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
             appendStep(sal_imp) <- args
             sal_imp <- as(sal_imp, "list")
+            sal_imp$runInfo[["runOption"]][[df$step_name[i]]][['rmd_line']] <- paste(df[i,2:3], collapse = ":")
         }
     }
     sal_imp[["projectInfo"]]$rmd_file <- file_path
+    # sal_imp[["projectInfo"]]$rmd_lines <- df[,1:3]
     sal_imp <- as(sal_imp, "SYSargsList")
     sysargslist <- file.path(sal_imp$projectInfo$project, sal_imp$projectInfo$sysargslist)
     write_SYSargsList(sal_imp, sysargslist, silent = TRUE)

@@ -636,7 +636,7 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
     }
     args_comp[["stepsWF"]] <- steps_comp
     ## SE slot
-    path <- file.path(.getPath(sys.file), "SE")
+    path <- file.path(.getPath(sys.file, full_path = FALSE), "SE")
     if(!dir.exists(path)) {
       dir.create(path, recursive = TRUE)
     }
@@ -648,7 +648,7 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
       } else {
         steps_comp[j]  <- yaml::as.yaml(args2[["SE"]][j])
       }
-  }
+    }
     args_comp[["SE"]] <- steps_comp
     ## Save file
     yaml::write_yaml(args_comp, sys.file)
@@ -671,6 +671,9 @@ read_SYSargsList <- function(sys.file) {
     yaml_slots <- c("projectInfo")
     for (i in yaml_slots) {
         args_comp[[i]] <- yaml::yaml.load(args_comp_yml[i])
+        if(!is.null(args_comp[[i]]$rmd_lines)){
+          args_comp[[i]]$rmd_lines <- data.frame(args_comp[[i]]$rmd_lines, check.names = FALSE)
+        }
     }
     ## runInfo yaml slots
     yaml_slots <- c("runInfo")
@@ -1043,20 +1046,20 @@ renderReport <- function(sysargslist, type = c("html_document"), silent = FALSE)
 ## Usage
 # renderReport(sysargslist)
 
+
 ###########################
 ## renderLogs function ##
 ###########################
 renderLogs <- function(sysargs,
                        type = c("html_document", "pdf_document"),
                        fileName = "default",
-                       silent = FALSE,
+                       quiet = FALSE,
                        open_file = TRUE) {
     if (!inherits(sysargs, "SYSargsList")) stop("`sysargs` must be a 'SYSargsList' object.")
     type <- match.arg(type, c("html_document", "pdf_document"))
     stopifnot(is.character(fileName) && length(fileName) == 1)
-    stopifnot(is.logical(silent) && length(silent) == 1)
+    stopifnot(is.logical(quiet) && length(quiet) == 1)
     stopifnot(is.logical(open_file) && length(open_file) == 1)
-
     wd <- getwd()
     if (wd != projectInfo(sysargs)$project) {
         setwd(projectInfo(sysargs)$project)
@@ -1067,17 +1070,17 @@ renderLogs <- function(sysargs,
     dir_log <- projectInfo(sysargs)$logsDir
     if (!file.exists(dir_log) == TRUE) stop("Provide valid 'SYSargsList' object. Check the initialization of the project.")
     if (is.null(projectInfo(sysargs)$logsFile)) {
-        stop("Log files not found. Please run the workflow to generate some logs.")
+      log <- ""
     } else {
         file <- projectInfo(sysargs)$logsFile
+        log <- readLines(file)
     }
     if (fileName == "default") {
         fileName <- file.path(projectInfo(sysargs)$project, paste0("logs_", format(Sys.time(), "%b%d%Y_%H%M"), ".Rmd"))
     } else {
-        fileName <- fileName
+        fileName <- file.path(paste0(fileName, ".Rmd")) 
     }
-    log <- readLines(file)
-    if (type == "html_document") plot_path <- .prepareRmdPlot(sysargs, dir_log)
+    if (type == "html_document") plot_path <- normalizePath(.prepareRmdPlot(sysargs, dir_log))
     writeLines(c(
         "---",
         if (type == "html_document") "title: '&nbsp;'" else "title: 'SPR Workflow Technical Report'",
@@ -1090,6 +1093,7 @@ renderLogs <- function(sysargs,
         "    toc: true",
         "    toc_float:",
         "      collapsed: true",
+        "      smooth_scroll: false",
         "package: systemPipeR",
         "fontsize: 14pt",
         "---",
@@ -1105,7 +1109,7 @@ renderLogs <- function(sysargs,
     ext <- if (type == "html_document") "html" else "pdf"
     sysargs <- as(sysargs, "list")
     sysargs$projectInfo[["Report_Logs"]] <- file.path(file_path, paste(file_out, ext, sep = "."))
-    if (!silent) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep = "."), "\n")
+    if (!quiet) cat("Written content of 'Report' to file:", "\n", paste(file_out, ext, sep = "."), "\n")
     if (open_file) try(utils::browseURL(file.path(file_path, paste(file_out, ext, sep = "."))), TRUE)
     return(as(sysargs, "SYSargsList"))
 }
@@ -1125,7 +1129,7 @@ renderLogs <- function(sysargs,
     plot_content <- readLines(out_path)
     writeLines(c(
         plot_content[seq(13)],
-        "<h1>SPS Workflow Log Report</h1>",
+        "<h1>SPR Workflow Log Report</h1>",
         plot_content[seq(14, length(plot_content))]
     ), con = out_path)
     out_path
@@ -1502,11 +1506,17 @@ evalCode <- function(infile, eval = TRUE, output) {
     }
     if (full_path) {
         x <- normalizePath(x)
-    }
-    for (i in seq_along(x)) {
+        for (i in seq_along(x)) {
+          path_un <- unlist(strsplit(x[i], "/|\\\\"))
+          path <- path_un[path_un != basename(x[i])]
+          x[i] <- paste0(path, collapse = "/")
+        }
+    } else {
+      for (i in seq_along(x)) {
         path_un <- unlist(strsplit(x[i], "/|\\\\"))
         path <- path_un[path_un != basename(x[i])]
-        x[i] <- paste0(path, collapse = "/")
+        x[i] <- paste0(path[length(path)], collapse = "/")
+      }
     }
     return(x)
 }
