@@ -1,4 +1,7 @@
 changelog
+    version 1.27.27
+        - After SPRproject(resume=TRUE), spr_importing option
+        
     version 1.27.26
         - accepting 'input.results.path' to cwl description file
         
