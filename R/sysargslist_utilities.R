@@ -129,7 +129,10 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                         run_session = "rsession",
                         silent = FALSE, projPath = getOption("projPath", getwd())) {
     ## step_name and dependency from importWF
-    on.exit(options(importwf_options = NULL))
+    on.exit({
+      options(spr_importing = FALSE)
+      options(importwf_options = NULL)
+    })
     if (!is.null(getOption("importwf_options"))) {
         step_name <- getOption("importwf_options")[[1]]
         .checkSpecialChar(step_name)
