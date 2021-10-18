@@ -1,7 +1,7 @@
 input_file:
   class: File
   path: ./data/human.1.protein.faa
-database_name: ./data/human.1.protein.faa
+database_name: human.1.protein.faa
 molecule_type: prot
 results_path:
   class: Directory
