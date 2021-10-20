@@ -1,4 +1,7 @@
 changelog
+    version 1.99.28
+        - Update package version
+
     version 1.27.27
         - After SPRproject(resume=TRUE), spr_importing option
         
