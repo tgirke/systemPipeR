@@ -96,7 +96,7 @@ SYSargsList(sysargs = NULL, step_name = "default",
             targets = NULL, wf_file = NULL, input_file = NULL, dir_path = ".", 
             id = "SampleName",
             inputvars = NULL, rm_targets_col = NULL, 
-            dir = TRUE, dependency = "", 
+            dir = TRUE, dependency = NA, 
             run_step = "mandatory",
             run_session = "rsession",
             silent = FALSE, 
@@ -187,7 +187,7 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   \item{dependency}{
   character. Dependency tree, required when appending this step to 
   the workflow. Character name of a previous step in the workflow. 
-  Default is empty string \code{""}.
+  Default is \code{NA}.
 }
   \item{run_step}{
   character. If the step has "mandatory" or "optional" flag for the execution.

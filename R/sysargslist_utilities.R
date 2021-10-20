@@ -124,7 +124,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                         inputvars = NULL,
                         rm_targets_col = NULL,
                         dir = TRUE,
-                        dependency = "",
+                        dependency = NA,
                         run_step = "mandatory",
                         run_session = "rsession",
                         silent = FALSE, projPath = getOption("projPath", getwd())) {
@@ -293,7 +293,7 @@ runWF <- function(sysargs, steps = NULL, force = FALSE, saveEnv = TRUE,
     sysproj <- projectInfo(sysargs)$logsDir
     ## check dependency
     for (i in seq_along(dependency(sysargs))) {
-        if (all(!dependency(sysargs)[[i]] == "")) {
+        if (all(!is.na(dependency(sysargs)[[i]]))) {
             dep_names <- unlist(dependency(sysargs)[[i]])
             if (any(!dep_names %in% names(stepsWF(sysargs)))) {
                   stop(
@@ -313,7 +313,7 @@ runWF <- function(sysargs, steps = NULL, force = FALSE, saveEnv = TRUE,
     for (i in seq_along(stepsWF(args2))) {
         if (i %in% steps) {
             ## check single dependency
-            if (all(!dependency(args2)[[i]] == "")) {
+            if (all(!is.na(dependency(args2)[[i]]))) {
                 dep_single <- sapply(dependency(args2)[[i]], function(x) args2$statusWF[[x]]$status.summary)
                 if ("Pending" %in% dep_single) {
                     message("Previous steps:", "\n", paste0(names(dep_single), collapse = " AND "), "\n", "have been not executed yet.")
