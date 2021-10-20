@@ -745,9 +745,9 @@ targetsWF(sal_rmd)
 To include a particular code chunk from the R Markdown file in the workflow
 analysis, please use the following code chunk options:
 
-    -   `spr='r'`: for code chunks with R code lines;
-    -   `spr='sysargs'`: for code chunks with an `SYSargsList` object;
-    -   `spr.dep=<StepName>`: for specify the previous dependency.
+    - `spr='r'`: for code chunks with R code lines;
+    - `spr='sysargs'`: for code chunks with an `SYSargsList` object;
+    - `spr.dep=<StepName>`: for specify the previous dependency.
 
 For example: 
 

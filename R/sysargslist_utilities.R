@@ -163,7 +163,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 sal$SE <- list()
             } else {
                 sal$targetsWF <- list(as(sysargs, "DataFrame"))
-                row.names(sal$targetsWF) <- sal$targetsWF[ ,sysargs$files$id]
+                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][ ,sysargs$files$id]
                 sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
                   colData = sal$targetsWF,
                   metadata = sysargs$targetsheader))
@@ -207,12 +207,18 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             input_file = input_file,
             dir_path = dir_path, id = id
         )
+        ## Relative Path for targets and dir_path when these files are in the project folder, 
+        ## otherwise, keep the full path
         ## targets_path to projPath
-        if (!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
-        if (grepl("^/", WF@files$targets)) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        if(!grepl(projPath,WF$files$targets)){
+          if (!is.na(WF@files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
+          if (grepl("^/", WF@files$targets)) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        }
+        if(!grepl(projPath,WF$files$dir_path)){
         ## dir_path
-        if (!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(getOption("projPath"), "", WF$files$dir_path)
+        if (!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(projPath, "", WF$files$dir_path)
         if (all(!is.fullPath(dir_path) && grepl("^/", WF@files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$dir_path)
+        }
         WF <- renderWF(WF, inputvars = inputvars)
         if (step_name == "default") {
             step_name <- "Step_x"
@@ -278,7 +284,10 @@ runWF <- function(sysargs, steps = NULL, force = FALSE, saveEnv = TRUE,
     # Validations
     if (!inherits(sysargs, "SYSargsList")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList'")
     if (length(sysargs) == 0) message("Workflow has no steps. Please add a step before trying to execute the workflow.")
-    if (is.null(projectInfo(sysargs)$project)) stop("Project was not initialized with the 'SPRproject' function.")
+    if (is.null(projectInfo(sysargs)$project)) 
+      stop("'SYSargsList' instance was not initialized with the 'SPRproject' function
+           and therefore there is missing the 'projectInfo' slot information.
+           Please check 'SPRproject' help file.")
     if (!dir.exists(projectInfo(sysargs)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
     sysproj <- projectInfo(sysargs)$logsDir
@@ -1494,6 +1503,53 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## Usage:
 # file <- system.file("extdata/workflows/rnaseq/", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 # evalCode(infile=file, eval=FALSE, output="test.Rmd")
+
+###################################
+## Update CWL description files  ##
+###################################
+cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE){
+  tempDir <- tempdir()
+  download.file(url="https://raw.githubusercontent.com/systemPipeR/cwl_collection/master/cwl/repo_version.txt", 
+                file.path(tempDir, "repo_version_new.txt"))
+  ## option for old vertions
+  if(force){
+    download.file(url="https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip", 
+                  file.path(tempDir, "cwl_collection-master.zip"))
+    unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
+    file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), to= file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+    file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), to= file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+    if(verbose) {
+      cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
+    }
+  } else {
+    ## Get version
+    new <- readLines(file.path(tempDir, "repo_version_new.txt"))
+    if(!file.exists(file.path(destdir, "cwl", "repo_version.txt"))){
+      if(verbose) cat(crayon::magenta("We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"), 
+                                      "\n", "OR please use the argument `force = TRUE`."))
+    } else {
+      current <- readLines(file.path(destdir, "cwl", "repo_version.txt"))
+      ## Dowload CWL repo
+      if (gsub(".*(\\d{1}).*", "\\1", current) < gsub(".*(\\d{1}).*", "\\1", new)){
+        if(verbose) cat(crayon::magenta("We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"), 
+                                        "\n", "Please update the param files for the latest version of systemPipeR."))
+        download.file(url="https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip", 
+                      file.path(tempDir, "cwl_collection-master.zip"))
+        unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
+        file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), 
+                  to = file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+        file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), 
+                  to = file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+        if(verbose) {
+          cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
+        }
+      }
+    }
+  }
+}
+## Usage
+# destdir <- "param/"
+# cwlFilesUpdate(destdir)
 
 #################################
 ## Unexported helper functions ##
