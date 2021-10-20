@@ -1504,6 +1504,53 @@ evalCode <- function(infile, eval = TRUE, output) {
 # file <- system.file("extdata/workflows/rnaseq/", "systemPipeRNAseq.Rmd", package="systemPipeRdata")
 # evalCode(infile=file, eval=FALSE, output="test.Rmd")
 
+###################################
+## Update CWL description files  ##
+###################################
+cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE){
+  tempDir <- tempdir()
+  download.file(url="https://raw.githubusercontent.com/systemPipeR/cwl_collection/master/cwl/repo_version.txt", 
+                file.path(tempDir, "repo_version_new.txt"))
+  ## option for old vertions
+  if(force){
+    download.file(url="https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip", 
+                  file.path(tempDir, "cwl_collection-master.zip"))
+    unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
+    file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), to= file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+    file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), to= file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+    if(verbose) {
+      cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
+    }
+  } else {
+    ## Get version
+    new <- readLines(file.path(tempDir, "repo_version_new.txt"))
+    if(!file.exists(file.path(destdir, "cwl", "repo_version.txt"))){
+      if(verbose) cat(crayon::magenta("We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"), 
+                                      "\n", "OR please use the argument `force = TRUE`."))
+    } else {
+      current <- readLines(file.path(destdir, "cwl", "repo_version.txt"))
+      ## Dowload CWL repo
+      if (gsub(".*(\\d{1}).*", "\\1", current) < gsub(".*(\\d{1}).*", "\\1", new)){
+        if(verbose) cat(crayon::magenta("We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"), 
+                                        "\n", "Please update the param files for the latest version of systemPipeR."))
+        download.file(url="https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip", 
+                      file.path(tempDir, "cwl_collection-master.zip"))
+        unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
+        file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), 
+                  to = file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+        file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), 
+                  to = file.path(destdir), overwrite = TRUE, recursive = TRUE) 
+        if(verbose) {
+          cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
+        }
+      }
+    }
+  }
+}
+## Usage
+# destdir <- "param/"
+# cwlFilesUpdate(destdir)
+
 #################################
 ## Unexported helper functions ##
 #################################

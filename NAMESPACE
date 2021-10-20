@@ -123,6 +123,8 @@ importFrom("utils", "setTxtProgressBar")
 importFrom("utils", "txtProgressBar")
 importFrom("utils", "head")
 importFrom("utils", "tail")
+importFrom("utils", "download.file")
+importFrom("utils", "unzip")
 importFrom("yaml", "as.yaml")
 importFrom("yaml", "read_yaml")
 importFrom("yaml", "write_yaml")
@@ -180,7 +182,7 @@ export(
     "preprocessReads", "filterVars", "variantReport", "combineVarReports",
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts",
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
-    "scaleRanges", "olRanges", "showDF",
+    "scaleRanges", "olRanges", "showDF", "cwlFilesUpdate",
     ## SYSargs2
     "loadWorkflow", "loadWF", "renderWF", "updateWF", "check.output",
     "subsetWF", "output_update",
