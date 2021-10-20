@@ -207,12 +207,18 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             input_file = input_file,
             dir_path = dir_path, id = id
         )
+        ## Relative Path for targets and dir_path when these files are in the project folder, 
+        ## otherwise, keep the full path
         ## targets_path to projPath
-        if (!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
-        if (grepl("^/", WF@files$targets)) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        if(!grepl(projPath,WF$files$targets)){
+          if (!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
+          if (grepl("^/", WF@files$targets)) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        }
+        if(!grepl(projPath,WF$files$dir_path)){
         ## dir_path
         if (!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(getOption("projPath"), "", WF$files$dir_path)
         if (all(!is.fullPath(dir_path) && grepl("^/", WF@files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$dir_path)
+        }
         WF <- renderWF(WF, inputvars = inputvars)
         if (step_name == "default") {
             step_name <- "Step_x"
