@@ -10,7 +10,7 @@ inputs:
     inputBinding:
       prefix: -in
   database_name:
-    type: string
+    type: File
     inputBinding:
       prefix: -out
   molecule_type:
