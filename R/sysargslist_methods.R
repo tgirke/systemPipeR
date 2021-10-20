@@ -478,14 +478,14 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     after <- after
     if (stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
     ## Dependency
-    if(after>0){
-    if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
-      stop("'dependency' argument is required to append a step in the workflow.")
-      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% ""] %in% stepName(x))) 
-        stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
-                    paste0(stepName(x), collapse = ", ")))
-    }
-    #if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+    # if(after > 0){
+    # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
+    #   stop("'dependency' argument is required to append a step in the workflow.")
+    #   if(any(!value$dependency[[1]][!value$dependency[[1]] %in% ""] %in% stepName(x))) 
+    #     stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
+    #                 paste0(stepName(x), collapse = ", ")))
+    # }
+    if (dependency(value) == "") value[["dependency"]][[1]] <- NA
     ## Append
     if (inherits(value, "SYSargsList")) {
         value <- .validationStepConn(x, value)
@@ -667,7 +667,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     if (inherits(value, "SYSargs2")) {
         value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
     }
-    if (all(!dependency(value) == "" && !getOption("spr_importing"))) {
+    if (all(!is.na(dependency(value)) && !getOption("spr_importing"))) {
         dep <- dependency(value)[[1]]
         if (inherits(dep, "character")) {
             if (all(!dep %in% names(stepsWF(x)))) {
@@ -819,11 +819,11 @@ setReplaceMethod(
         on.exit(options(appendPlus = FALSE))
         ## Dependency
         if (step > 1) {
-            #if (dependency(value) == "") value[["dependency"]][[1]] <- NA
-            if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) {
-                stop("'dependency' argument is required to replace a step in the workflow.")
-            }
-            if (any(!value$dependency[[1]][!value$dependency[[1]] %in% ""] %in% stepName(x))) {
+            if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+            # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) {
+            #     stop("'dependency' argument is required to replace a step in the workflow.")
+            # }
+            if (any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x))) {
                 stop(paste0(
                     "Dependency value needs to be present in the Workflow. ", "Options are: ", "\n",
                     paste0(stepName(x)[1:step - 1], collapse = ", ")
@@ -831,7 +831,7 @@ setReplaceMethod(
             }
         } else if (step == 1) {
             ## first step usually is ""
-            if (!value$dependency[[1]] == "") {
+            if (!is.na(dependency(value))) {
                 if (!value$dependency[[1]] %in% stepName(x)) {
                     stop("Usually, the first step is empty string, without dependencies. Also, the dependency step specify is not in the Workflow. Please check the dependency tree.")
                 }
@@ -839,7 +839,7 @@ setReplaceMethod(
         }
         ## Update connections
         if(inherits(value, "SYSargsList")) value <- .validationStepConn(x[-c(step)], value)
-        if (is.na(dependency(value))) value[["dependency"]][[1]] <- ""
+        # if (is.na(dependency(value))) value[["dependency"]][[1]] <- ""
         ## replace
         x <- sysargslist(x)
         if (inherits(value, "SYSargsList")) {

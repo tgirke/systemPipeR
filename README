@@ -1,4 +1,7 @@
 changelog
+    version 1.99.30
+        - allowing multiple steps dependency == NA
+        
     version 1.99.29
         - cwlFilesUpdate function 
 
