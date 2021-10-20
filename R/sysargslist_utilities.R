@@ -163,7 +163,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 sal$SE <- list()
             } else {
                 sal$targetsWF <- list(as(sysargs, "DataFrame"))
-                row.names(sal$targetsWF) <- sal$targetsWF[ ,sysargs$files$id]
+                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][ ,sysargs$files$id]
                 sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
                   colData = sal$targetsWF,
                   metadata = sysargs$targetsheader))
@@ -211,12 +211,12 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
         ## otherwise, keep the full path
         ## targets_path to projPath
         if(!grepl(projPath,WF$files$targets)){
-          if (!is.na(WF@files$targets)) WF@files$targets <- gsub(getOption("projPath"), "", WF$files$targets)
+          if (!is.na(WF@files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
           if (grepl("^/", WF@files$targets)) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
         }
         if(!grepl(projPath,WF$files$dir_path)){
         ## dir_path
-        if (!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(getOption("projPath"), "", WF$files$dir_path)
+        if (!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(projPath, "", WF$files$dir_path)
         if (all(!is.fullPath(dir_path) && grepl("^/", WF@files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$dir_path)
         }
         WF <- renderWF(WF, inputvars = inputvars)
@@ -284,7 +284,10 @@ runWF <- function(sysargs, steps = NULL, force = FALSE, saveEnv = TRUE,
     # Validations
     if (!inherits(sysargs, "SYSargsList")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList'")
     if (length(sysargs) == 0) message("Workflow has no steps. Please add a step before trying to execute the workflow.")
-    if (is.null(projectInfo(sysargs)$project)) stop("Project was not initialized with the 'SPRproject' function.")
+    if (is.null(projectInfo(sysargs)$project)) 
+      stop("'SYSargsList' instance was not initialized with the 'SPRproject' function
+           and therefore there is missing the 'projectInfo' slot information.
+           Please check 'SPRproject' help file.")
     if (!dir.exists(projectInfo(sysargs)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
     sysproj <- projectInfo(sysargs)$logsDir

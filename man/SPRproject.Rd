@@ -74,8 +74,13 @@ and image/plot files.
   if set to TRUE, existing logs files or directory of same name will be overwritten.
 }
   \item{silent}{
-if set to TRUE, all messages returned by the function will be suppressed.
+  if set to TRUE, all messages returned by the function will be suppressed.
 }
+}
+\details{
+  If an \code{SYSargsList} instance was created before or independent of the 
+  project initialization, it is possible to append this instance after the 
+  project is created. Please see check  \code{appendStep<-} function.  
 }
 \value{
 \code{SPRproject} will return a \code{SYSargsList} object.
