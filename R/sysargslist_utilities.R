@@ -130,6 +130,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                         silent = FALSE, projPath = getOption("projPath", getwd())) {
     ## step_name and dependency from importWF
     on.exit({
+      options(replace_step = FALSE)
       options(spr_importing = FALSE)
       options(importwf_options = NULL)
     })

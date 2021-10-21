@@ -61,7 +61,6 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
 ## importRmd function ##
 ########################
 importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
-    # also make sure in importing func these options are turned off in the end.
     on.exit({
         options(linewise_importing = FALSE)
         options(spr_importing = FALSE)
