@@ -16,24 +16,24 @@ renderLogs(sysargs, type = c("html_document", "pdf_document"),
   object of class \code{SYSargsList}.
 }
   \item{type}{
-  	The R Markdown output format to convert to. Default is \code{"ALL"}.The option 
-  	can be the name of a format (e.g. \code{"pdf_document"} or \code{"html_document"}).
+  The R Markdown output format to convert to. The option 
+  can be the name of a format (e.g. \code{"pdf_document"} or \code{"html_document"}).
 }
   \item{fileName}{
-  haracter string naming a file output. Default is \code{"logs_<date>.Rmd"}.
+  character string naming a file output. Default is \code{"logs_<date>.Rmd"}.
 }
   \item{quiet}{
-If set to \code{TRUE}, all messages returned by the function will be suppressed.
+  If set to \code{TRUE}, all messages returned by the function will be suppressed.
 }
   \item{open_file}{
-Default is \code{TRUE}. 
+  Default is \code{TRUE}. 
 }
 }
 \value{
 It will return an \code{SYSargsList} updated.
 }
 \author{
-Daniela Cassol and Thomas Girke
+Daniela Cassol
 }
 \seealso{
 See also as \code{SYSargsList-class}.
@@ -54,9 +54,7 @@ appendStep(sal) <- LineWise(code = {
                             }, 
                             step_name = "R_read", 
                             dependency = "echo")
-\dontrun{
 sal <- runWF(sal)
-sal <- renderLogs(sal)
-}
+sal <- renderLogs(sal, open_file = FALSE)
 }
 \keyword{ utilities }

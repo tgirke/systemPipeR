@@ -1041,24 +1041,109 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
 ## renderReport function ##
 ###########################
 ## type: c("pdf_document", "html_document")
-renderReport <- function(sysargslist, type = c("html_document"), silent = FALSE) {
-    file <- sysargslist$sysconfig$script$path
-    if (!file.exists(file) == TRUE) stop("Provide valid 'sysargslist' object. Check the initialization of the project.")
-    evalCode(infile = file, eval = FALSE, output = file)
-    # rmarkdown::render(input = file, c(paste0("BiocStyle::", type)), quiet = TRUE, envir = new.env())
-    rmarkdown::render(input = file, c(paste0(type)), quiet = TRUE, envir = new.env())
-    file_path <- .getPath(file)
-    file_out <- .getFileName(file)
-    ext <- strsplit(basename(type), split = "\\_")[[1]][1]
-    sysargslist <- as(sysargslist, "list")
-    sysargslist$projectInfo[["Report"]] <- file.path(file_path, paste(file_out, ext, sep = "."))
-    if (silent != TRUE) cat("\t", "Written content of 'Report' to file:", paste0(file_out, ".", ext), "\n")
-    return(as(sysargslist, "SYSargsList"))
+renderReport <- function(sysargs, 
+                          fileName ="spr_report",
+                          rmd_title = "SPR workflow Template - Report",
+                          rmd_author = "Author",
+                          rmd_date= "Last update: `r format(Sys.time(), '%d %B, %Y')`",
+                          type = c("html_document"),
+                          desc = "This is a workflow template.",
+                          quiet = FALSE, 
+                          open_file = TRUE) {
+  out_path <- file.path(paste0(fileName, ".Rmd")) 
+  ext <- sub("_.*", "", type)
+  out_path <- file.path(paste0(fileName, ".", ext)) 
+  out_path_rmd <- file.path(paste0(fileName, ".Rmd")) 
+  if(is.null(sysargs$projectInfo$rmd_file)) {
+    sal2rmd(sysargs, out_path=out_path_rmd,
+            rmd_title = rmd_title,
+            rmd_author = rmd_author,
+            rmd_date = rmd_date,
+            rmd_output = type,
+            desc = desc,
+            verbose = quiet)
+  } else if(!is.null(sysargs$projectInfo$rmd_file)) {
+    file_path <- sysargs$projectInfo$rmd_file
+    lines <- readLines(file_path) ## original file
+    ## get info from sysargs
+    step_names <- names(sysargs$stepsWF)
+    deps <- sysargs$dependency
+    t_connects <- sysargs$targets_connection
+    opts <- sysargs$runInfo$runOption
+    ## get the first line
+    chunk_start <- lines %>% stringr::str_which("^```\\{.*\\}.*")
+    firstLine <- chunk_start[lines[lines %>% stringr::str_which("^```\\{.*\\}.*")] %>% stringr::str_detect("spr")][1]
+    # firstLine <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[1]]$rmd_line))
+    newLines <- lines[1:firstLine-1]
+    ## We need to consider if append step after=0, in this case it's appending before the first R chunk but not before the text...
+    ## TODO ##
+    for(i in seq_along(sysargs$stepsWF)){
+      if(length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 1){
+        if(exists("last_line")){
+          new_last <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line))-1
+          new_first <- as.numeric(last_line) + 1
+          newLines <- append(newLines, lines[new_first:new_last])
+        }
+        first_line <- gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)
+        last_line <- gsub(".*:", "", sysargs$runInfo$runOption[[i]]$rmd_line)
+        if (inherits(sysargs$stepsWF[[i]], "LineWise")){
+          print("a")
+          appStep <- .sal2rmd_rstep(sysargs, con=NULL, i=i, step_name = step_names[i], 
+                                    dep = deps[[i]], req = opts[[i]]$run_step, 
+                                    session = opts[[i]]$run_session, return = "object")[-1]
+          newLines <- append(newLines, appStep)
+        } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")){
+          print("b")
+          appStep <- .sal2rmd_sysstep(sysargs, con=NULL, i=i,
+                                      step_name=step_names[i],
+                                      dep = deps[[i]], 
+                                      dir = opts[[i]]$directory, 
+                                      req = opts[[i]]$run_step,
+                                      session = opts[[i]]$run_session, 
+                                      t_con= t_connects[[i]], return = "object")[-1]
+          newLines <- append(newLines, appStep)
+        }
+      } else if(length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 0){
+        if (inherits(sysargs$stepsWF[[i]], "LineWise")){
+          appStep <- .sal2rmd_rstep(sysargs, con=NULL, i=i, step_name = step_names[i], 
+                                    dep = deps[[i]], req = opts[[i]]$run_step, 
+                                    session = opts[[i]]$run_session, return = "object")
+          newLines <- append(newLines, appStep)
+        } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")){
+          print("CC")
+          appStep <- .sal2rmd_sysstep(sysargs, con=NULL, i=i,
+                                      step_name=step_names[i],
+                                      dep = deps[[i]], 
+                                      dir = opts[[i]]$directory, 
+                                      req = opts[[i]]$run_step,
+                                      session = opts[[i]]$run_session, 
+                                      t_con= t_connects[[i]], return = "object")
+          newLines <- append(newLines, appStep)
+        }
+      }
+    }
+    writeLines(newLines, out_path_rmd)
+  }
+  rmarkdown::render(input = out_path_rmd, c(paste0("BiocStyle::", type)), quiet = quiet, envir = new.env())
+  detach("package:BiocStyle", unload=TRUE)
+  if(!quiet) message(crayon::green$bold("Success! Report created at", out_path))
+  sysargs <- as(sysargs, "list")
+  sysargs$projectInfo[["Report"]] <- normalizePath(file.path(out_path))
+  if (open_file) try(utils::browseURL(file.path(out_path)), TRUE)
+  return(as(sysargs, "SYSargsList"))
 }
 
-## Usage
-# renderReport(sysargslist)
-
+## Usage:
+# sal <- SPRproject(overwrite = TRUE)
+# file_path <- system.file("extdata", "spr_simple_wf.Rmd", package = "systemPipeR")
+# sal <- importWF(sal, file_path = file_path, verbose = FALSE)
+# targetspath <- system.file("extdata/cwl/example/targets_example.txt", package = "systemPipeR")
+# appendStep(sal) <- SYSargsList(step_name = "echo", 
+#                               targets = targetspath, dir = TRUE,
+#                               wf_file = "example/workflow_example.cwl", input_file = "example/example.yml", 
+#                               dir_path = system.file("extdata/cwl", package = "systemPipeR"),
+#                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
+# sal <- renderReport(sal)
 
 ###########################
 ## renderLogs function ##
