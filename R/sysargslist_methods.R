@@ -189,6 +189,7 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
     x@dependency <- x@dependency[i]
     x@targets_connection <- x@targets_connection[names(x@targets_connection) %in% names_tc]
     x@projectInfo <- x@projectInfo
+    x@runInfo$env <- x@runInfo$env
     x@runInfo$runOption <- x@runInfo$runOption[i]
     # x <- .check_write_SYSargsList(x)
     return(x)
@@ -476,7 +477,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     ## append position
     lengx <- length(x)
     after <- after
-    if (stepName(value) %in% stepName(x)) stop("Steps Names need to be unique.")
+    if (any(stepName(value) %in% stepName(x))) stop("Steps Names need to be unique.")
     ## Dependency
     # if(after > 0){
     # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
@@ -488,7 +489,8 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     if (dependency(value) == "") value[["dependency"]][[1]] <- NA
     ## Append
     if (inherits(value, "SYSargsList")) {
-        value <- .validationStepConn(x, value)
+      if (length(value) > 1) stop("One step can be appended in each operation.", call. = FALSE)
+      value <- .validationStepConn(x, value)
         x <- sysargslist(x)
         if (names(value$stepsWF) == "Step_x") {
             step_name <- paste0("Step_", after + 1L)
@@ -614,7 +616,10 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
 
 .validationStepConn <- function(x, value) {
     ## used in `importWF`
-    on.exit(options(spr_importing = FALSE))
+    on.exit({
+      
+      options(spr_importing = FALSE)
+    }) 
     targetsCon <- value$targets_connection[[1]]
     ## Check outfiles names
     value_out <- targetsCon[[1]][[1]]
@@ -667,7 +672,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     if (inherits(value, "SYSargs2")) {
         value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
     }
-    if (all(!is.na(dependency(value)) && !getOption("spr_importing"))) {
+    if (all(!is.na(dependency(value)) && !getOption("spr_importing") && !getOption("replace_step"))) {
         dep <- dependency(value)[[1]]
         if (inherits(dep, "character")) {
             if (all(!dep %in% names(stepsWF(x)))) {
@@ -687,10 +692,10 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
             }
         }
     }
-    ## runInfo
-    if ("env" %in% names(value$runInfo)) {
-        value[["runInfo"]] <- value$runInfo$runOption
-    }
+    # ## runInfo
+    # if ("env" %in% names(value$runInfo)) {
+    #     value[["runInfo"]] <- value$runInfo$runOption
+    # }
     return(value)
 }
 
@@ -797,6 +802,11 @@ setReplaceMethod(
 setReplaceMethod(
     f = "replaceStep", signature = c("SYSargsList"),
     definition = function(x, step, step_name = "default", value) {
+        on.exit({
+          options(spr_importing = FALSE)
+          options(replace_step = FALSE)
+          options(appendPlus = FALSE)
+        })
         if (any(!inherits(value, "SYSargsList") && !inherits(value, "LineWise"))) {
             stop("Argument 'value' needs to be assigned an object of class 'SYSargsList' or 'LineWise'.")
         }
@@ -813,10 +823,6 @@ setReplaceMethod(
             }
             step <- grep(step, stepName(x))
         }
-        ## used in `importWF`
-        on.exit(options(spr_importing = FALSE))
-        ## used in `+.SYSargsList`
-        on.exit(options(appendPlus = FALSE))
         ## Dependency
         if (step > 1) {
             if (dependency(value) == "") value[["dependency"]][[1]] <- NA
@@ -833,11 +839,12 @@ setReplaceMethod(
             ## first step usually is ""
             if (!is.na(dependency(value))) {
                 if (!value$dependency[[1]] %in% stepName(x)) {
-                    stop("Usually, the first step is empty string, without dependencies. Also, the dependency step specify is not in the Workflow. Please check the dependency tree.")
+                    warning("The dependency step specify is not in the Workflow. Please check the dependency tree.")
                 }
             }
         }
         ## Update connections
+        options(replace_step = TRUE)
         if(inherits(value, "SYSargsList")) value <- .validationStepConn(x[-c(step)], value)
         # if (is.na(dependency(value))) value[["dependency"]][[1]] <- ""
         ## replace
@@ -859,7 +866,7 @@ setReplaceMethod(
             x$SE[step] <- list(NULL)
             x$dependency[[step]] <- value$dependency[[1]]
             x$targets_connection[[step]] <- list(NULL)
-            x$runInfo[["runOption"]][[step]] <- list(FALSE)
+            x$runInfo[["runOption"]][[step]] <- list(NULL)
         }
         x <- as(x, "SYSargsList")
         ## rename
@@ -869,7 +876,6 @@ setReplaceMethod(
                 renameStep(x, step) <- paste0("Step_", step)
                 cat(paste0("Index name of x", "[", step, "]", " was rename to ", paste0("Step_", step), " to avoid duplications."))
             } else {
-              ##TODO: check if the name is already in x
                 renameStep(x, step) <- stepName(value)
             }
         } else {
