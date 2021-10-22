@@ -22,16 +22,16 @@ sal2rmd(sal, out_path = "spr_template.Rmd", rmd_title = "SPR workflow template",
    string, output file name.
 }
   \item{rmd_title}{
-  string, title of the Rmd
+  string, title of the Rmd.
 }
   \item{rmd_author}{
-  string, author(s) of the Rmd, put all authors in a single character string
+  string, author(s) of the Rmd, put all authors in a single character string.
 }
   \item{rmd_date}{
-  string, date header of Rmd
+  string, date header of Rmd.
 }
   \item{rmd_output}{
-  string, output format of Rmd, used in header
+  string, output format of Rmd, used in header.
 }
   \item{desc}{
   string, or character vector of strings, some description text in format 
@@ -40,8 +40,8 @@ sal2rmd(sal, out_path = "spr_template.Rmd", rmd_title = "SPR workflow template",
   each item is one line.
 }
   \item{verbose}{
-  bool, open verbose mode? This will show you more information as 
-  the function runs 
+  logical. If \code{TRUE} will show you more information as 
+  the function runs.
 }
 }
 \value{

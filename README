@@ -1,8 +1,11 @@
 changelog
+    version 1.99.31
+        - Updated renderReport function
+
     version 1.99.30
         - allowing multiple steps dependency == NA
         - Fixed replaceStep
-        
+
     version 1.99.29
         - cwlFilesUpdate function 
 
@@ -11,13 +14,13 @@ changelog
 
     version 1.27.27
         - After SPRproject(resume=TRUE), spr_importing option
-        
+
     version 1.27.26
         - accepting 'input.results.path' to cwl description file
-        
+
     version 1.27.24/1.27.25
         - Dependencies and global variables fixed
-    
+
     version 1.27.23
         - Added new method: updateStatus<-
         - Added new slot to LineWise Class - runInfo
@@ -27,12 +30,12 @@ changelog
         - Updated write_SYSargsList and read_SYSargsList
         - Removed LineWise slot: rmdPath. Info can be found on the files slot or still using the method 
         - Added random numbers to log files names + collect each R code steps logs
-        
+
     version 1.27.22
         - slot runInfo updated
         - Updates Documentation
         - Minor fixes
-        
+
     version 1.27.20/21
         - Updates Documentation
         - Minor fixes

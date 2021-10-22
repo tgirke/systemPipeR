@@ -59,7 +59,7 @@ sal2rmd <- function(
     "package: systemPipeR",
     "fontsize: 14pt",
     "---\n",
-    "# About this template \n",
+    "# About this Report \n",
     desc,
     "\n# Workflow Steps\n"
   ), con)
@@ -82,16 +82,16 @@ sal2rmd <- function(
   header <- paste0(
     "```{r ", step_name, ", eval=FALSE, spr='r'",
     if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
-    if (req == "optional") paste0(", spr.req='optional'") else "",
-    if (session == "cluster") paste0(", spr.ses='cluster'") else "",
+    if (req == "optional") paste0(", spr.req='optional'") else paste0(", spr.req='mandatory'"),
+    if (session == "cluster") paste0(", spr.ses='cluster'") else paste0(", spr.ses='rsession'"),
     "}",
     collapse = ""
   )
   rcode <- c(
-    paste0("## step", i, " ", step_name, collapse = ""),
+    paste0("# Step", i, " ", step_name, collapse = ""),
     header,
     as.character(sal$stepsWF[[i]]$codeLine),
-    paste0("run_session=", session),
+    #paste0("run_session=", session),
     "```\n\n"
   )
   if(return=="write"){
@@ -100,13 +100,13 @@ sal2rmd <- function(
       rcode
     )
   } else if(return=="object"){
-    obj <- c(header, rcode)
+    obj <- c(rcode)
     return(obj)
   }
 
 }
 
-.sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, req, session, t_con){
+.sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, req, session, t_con, return="write"){
   header <- paste0(
     "```{r ", step_name, ", eval=FALSE, spr='sysargs'",
     if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
@@ -137,10 +137,27 @@ sal2rmd <- function(
   else paste0('    dir_path="', sal$stepsWF[[i]]$files$dir_path[1], '",')
   wf_file <- paste0('    wf_file="', sal$stepsWF[[i]]$files$cwl[1], '",')
   input_file <- paste0('    input_file="', sal$stepsWF[[i]]$files$yml[1], '",')
-  writeLines(
-    con = con,
-    c(
-      paste0("## step", i, " ", step_name, collapse = ""),
+  
+  if(return=="write"){
+    writeLines(
+      con = con,
+      c(
+        paste0("# Step", i, " ", step_name, collapse = ""),
+        header,
+        "appendStep(sal) <- SYSargsList(",
+        targets_text,
+        dir_path,
+        wf_file,
+        input_file,
+        in_var,
+        rm_col,
+        if(dir) "    dir=TRUE" else "    dir=FALSE",
+        ")\n```\n\n"
+      )
+    )
+  } else if(return=="object"){
+    obj <- c(
+      paste0("# Step", i, " ", step_name, collapse = ""),
       header,
       "appendStep(sal) <- SYSargsList(",
       targets_text,
@@ -152,7 +169,8 @@ sal2rmd <- function(
       if(dir) "    dir=TRUE" else "    dir=FALSE",
       ")\n```\n\n"
     )
-  )
+    return(obj)
+  }
 }
 
 #' @param parallel TODO
