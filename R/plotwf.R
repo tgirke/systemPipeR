@@ -38,6 +38,7 @@
 #' links of steps to the corresponding log sections.
 #' @param verbose bool, turn on verbose mode will give you more information
 #' @param exit_point numeric, for advanced debugging only, see details
+#' @param show_warns bool, print the warning messages on console and on the plot?
 #' @export
 #' @return see `out_format` and `exit_point`
 #' @details
@@ -75,16 +76,18 @@ plotWF <- function(sysargs,
                    out_format = "plot",
                    out_path = NULL,
                    show_legend = TRUE,
-                   mark_main_branch = TRUE,
+                   mark_main_branch = FALSE,
                    rstudio = FALSE,
                    in_log = FALSE,
                    rmarkdown = "detect",
                    verbose = FALSE,
+                   show_warns = TRUE,
                    exit_point = 0) {
     if (!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
     if (!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
     stopifnot(is.logical(responsive) && length(responsive) == 1)
     stopifnot(is.logical(rstudio) && length(rstudio) == 1)
+    stopifnot(is.logical(show_warns) && length(show_warns) == 1)
     stopifnot(is.character(rmarkdown) || is.logical(rmarkdown) && length(rmarkdown) == 1)
     out_format <- match.arg(out_format, c("plot", "html", "dot", "dot_print"))
     if (!out_format %in% c("plot", "dot_print")) stopifnot(is.character(out_path) && length(out_path) == 1)
@@ -118,7 +121,8 @@ plotWF <- function(sysargs,
     if (verbose) message("Translating to DOT format...")
     dot_vector <- makeDot(
         df, branch_method, branch_no, layout, show_legend,
-        mark_main_branch, in_log, verbose, exit_point, msg
+        mark_main_branch, in_log, verbose, exit_point, msg,
+        show_warns
     )
     dot <- dot_vector[1]
     msg <- dot_vector[2]
@@ -219,7 +223,8 @@ makeDot <- function(df,
                     in_log = FALSE,
                     verbose = FALSE,
                     exit_point = 0,
-                    msg = "") {
+                    msg = "",
+                    show_warns = TRUE) {
     # check
     stopifnot(is.logical(verbose) && length(verbose) == 1)
     stopifnot(is.logical(show_legend) && length(show_legend) == 1)
@@ -242,7 +247,7 @@ makeDot <- function(df,
     step_names <- df$step_name
     deps <- df$dep
     if (sum(starting_root <- df$dep == "") > 1) {
-        message(
+        if(show_warns) message(
             "More than 1 step has no dependency. They all will be treated as starting point:\n",
             paste0(names(df$dep)[starting_root], collapse = ", ")
         )
@@ -271,11 +276,11 @@ makeDot <- function(df,
     } else if (branch_method == "choose" && interactive()) {
         branch_no <- as.numeric(menu(paste("Branch", seq_along(tree)), title = "Choose a main branch to plot workflow"))
     } else {
-        branch_no <- .recommendBranch(tree, df$step_name, verbose)
+        branch_no <- .recommendBranch(tree, df$step_name, verbose, show_warns)
         branch_msg <- names(branch_no)[1]
-        if(stringr::str_starts(branch_msg, "Workflow's first step is")) {
+        if(stringr::str_starts(branch_msg, "Workflow's first step is") && show_warns) {
             msg <- branch_msg
-            df <- df[df$step_name %in% tree[[branch_no]], ]
+            # df <- df[df$step_name %in% tree[[branch_no]], ]
         }
     }
     if (verbose) message("Build the workflow tree ...")
@@ -360,7 +365,7 @@ makeDot <- function(df,
 #'
 #' @param tree list, tree return from [.findBranch]
 #' @param steps string vector, step names
-.recommendBranch <- function(tree, steps, verbose) {
+.recommendBranch <- function(tree, steps, verbose, show_warns) {
     branch_complete <- lapply(tree, function(x) {
         all(c(steps[1], steps[length(steps)]) %in% x)
     }) %>%
@@ -368,7 +373,7 @@ makeDot <- function(df,
         which()
     if (length(branch_complete) == 0) {
         msg <- "Workflow's first step is not connected to the last step, something wrong? Unconnected steps will not be plotted."
-        warning(msg)
+        if (show_warns) warning(msg)
         return(structure(c(1), .Names = msg))
     } else {
         if (verbose) cat("**********\n")
@@ -537,14 +542,16 @@ makeDot <- function(df,
 #' @param show_main show main steps legend?
 .addDotLegend <- function(show_main = TRUE) {
     paste0(
-        '    subgraph cluster_legend {
+        '        subgraph cluster_legend {
         rankdir=TB;
         color="#eeeeee";
         style=filled;
-        node [style=filled];
+        ranksep =1
+        node [style=filled, fontsize=10];
+         {rank=same; legend_rstep; legend_mandatory; legend_rsession}
         {rank=same; legend_sysargs_step; legend_optional; legend_cluster}
-        legend_main_branch -> legend_sysargs_step -> legend_optional -> legend_cluster[color="#eeeeee"]
-        legend_main_branch[label="Main branch/Mandatory/R step/R session" color="dodgerblue", style="filled", fillcolor="#d3d6eb"];
+        legend_rstep -> legend_mandatory -> legend_rsession ->legend_sysargs_step -> legend_optional -> legend_cluster[color="#EEEEEEE"]
+
         legend_cluster -> step_state[color="#eeeeee"];
         step_state[style="filled", shape="box" color=white, label =<
             <table>
@@ -554,9 +561,12 @@ makeDot <- function(df,
             >];
         label="Legends";
         fontsize = 30;
-        legend_sysargs_step[label="Sysargs step" style="rounded, filled", shape="box", fillcolor="#d3d6eb"];
-        legend_optional[label="Optional" style="rounded, filled", fillcolor=white];
-        legend_cluster[label="cluster" style="filled, dashed", fillcolor="#d3d6eb"];
+        legend_rstep[label=<<b>    R step    </b>>, style="filled", fillcolor="#EEEEEE"];
+        legend_mandatory[label=<<b>Mandatory</b>>, style="filled", fillcolor="#d3d6eb"];
+        legend_rsession[label=<<b>R session</b>>, style="filled", fillcolor="#EEEEEE"];
+        legend_sysargs_step[label=<<b>sysargs step</b>> style="rounded, filled", shape="box", fillcolor="#EEEEEE"];
+        legend_optional[label=<<b>Optional</b>> style="rounded, filled", fillcolor=white];
+        legend_cluster[label=<<b>cluster</b>> style="filled, dashed", fillcolor="#EEEEEE"];
     }\n'
     )
 }
