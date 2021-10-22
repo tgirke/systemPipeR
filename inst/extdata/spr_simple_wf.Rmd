@@ -20,16 +20,29 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Build the Workflow 
 
+- Load `systemPipeR` library:
+
+```{r load_library, eval=TRUE, spr='r'}
+appendStep(sal) <- LineWise(code={
+ library(systemPipeR)
+  }, 
+  step_name = "load_library", 
+  dependency = NA)
+```
+
 ## Export dataset to file
 
 - Add first step as `LineWise`
 
 ```{r export_iris, eval=TRUE, spr='r'}
-mapply(
-  function(x, y) write.csv(x, y),
-  split(iris, factor(iris$Species)),
-  file.path("results", paste0(names(split(iris, factor(iris$Species))), ".csv"))
-)
+appendStep(sal) <- LineWise(code={
+ mapply(
+   function(x, y) write.csv(x, y),
+   split(iris, factor(iris$Species)),
+   file.path("results", paste0(names(split(iris, factor(iris$Species))), ".csv")))
+  }, 
+  step_name = "export_iris", 
+  dependency = NA)
 ```
 
 ## Compress data
@@ -61,16 +74,20 @@ appendStep(sal) <- SYSargsList(step_name = "gunzip",
 ## Import data to R and perform statistical analysis and visualization 
 
 ```{r stats, eval=TRUE, spr='r', spr.dep='gunzip'}
-df <- lapply(getColumn(sal, step="gunzip", 'outfiles'), function(x) read.delim(x, sep=",")[-1])
-df <- do.call(rbind, df)
-
-stats <- data.frame(cbind(mean=apply(df[,1:4], 2, mean),
-               sd=apply(df[,1:4], 2, sd)))
-stats$species <- rownames(stats)
-
-plot <- ggplot2::ggplot(stats, ggplot2::aes(x=species, y=mean, fill=species)) + 
-  ggplot2::geom_bar(stat = "identity", color="black", position=ggplot2::position_dodge()) +
-  ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-sd, ymax=mean+sd), width=.2, position=ggplot2::position_dodge(.9)) 
+appendStep(sal) <- LineWise(code={
+  df <- lapply(getColumn(sal, step="gunzip", 'outfiles'), function(x) read.delim(x, sep=",")[-1])
+  df <- do.call(rbind, df)
+  stats <- data.frame(cbind(mean=apply(df[,1:4], 2, mean),
+                            sd=apply(df[,1:4], 2, sd)))
+  stats$species <- rownames(stats)
+  
+  plot <- ggplot2::ggplot(stats, ggplot2::aes(x=species, y=mean, fill=species)) + 
+    ggplot2::geom_bar(stat = "identity", color="black", position=ggplot2::position_dodge()) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                           position=ggplot2::position_dodge(.9)) 
+  }, 
+  step_name = "stats", 
+  dependency = "gunzip")
 ```
 
 

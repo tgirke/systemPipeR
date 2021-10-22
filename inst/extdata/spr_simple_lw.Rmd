@@ -23,16 +23,24 @@ knitr::opts_chunk$set(echo = TRUE)
 - Add first step
 
 ```{r firstStep, eval=TRUE, spr='r'}
-mapply(function(x, y) write.csv(x, y),
-       split(iris, factor(iris$Species)),
-       file.path("results", paste0(names(split(iris, factor(iris$Species))), ".csv")))
-
+appendStep(sal) <- LineWise(code={
+ mapply(
+   function(x, y) write.csv(x, y),
+   split(iris, factor(iris$Species)),
+   file.path("results", paste0(names(split(iris, factor(iris$Species))), ".csv")))
+  }, 
+  step_name = "firstStep", 
+  dependency = NA)
 ```
 
 - Add second step
 
 ```{r secondStep, eval=TRUE, spr='r'}
-setosa <- read.delim("results/setosa.csv", sep = ",")
-versicolor <- read.delim("results/versicolor.csv", sep = ",")
-virginica <- read.delim("results/virginica.csv", sep = ",")
+appendStep(sal) <- LineWise(code={
+ setosa <- read.delim("results/setosa.csv", sep = ",")
+ versicolor <- read.delim("results/versicolor.csv", sep = ",")
+ virginica <- read.delim("results/virginica.csv", sep = ",")
+  }, 
+  step_name = "secondStep", 
+  dependency = "firstStep")
 ```
