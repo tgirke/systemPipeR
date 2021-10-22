@@ -11,17 +11,17 @@ test_that("check_LineWise_test", {
       x <- 1+1; y <- 100
     })
     ## build instance from Rmd
-    rmdPath <- system.file("extdata", "SPRtest.Rmd", package="systemPipeR")
+    rmdPath <- system.file("extdata", "spr_simple_wf.Rmd", package="systemPipeR")
     sal <- SPRproject(overwrite = TRUE)
     sal <- importWF(sal, rmdPath)
     lw <- stepsWF(sal[2])[[1]]
     show(lw)
     ## Class
     expect_s4_class(sal, "SYSargsList")
-    expect_length(sal, 6)
+    expect_length(sal, 5)
     expect_s4_class(lw, "LineWise")
-    expect_length(lw, 3)
-    expect_length(lw$codeLine, 3)
+    expect_length(lw, 1)
+    expect_length(lw$codeLine, 1)
     ## Methods
      expect_type(names(lw), "character")
      expect_type(length(lw), "integer")
@@ -37,14 +37,15 @@ test_that("check_LineWise_test", {
      expect_s4_class(LineWise({1+1}), "LineWise")
      ## Subset 
      expect_length(lw[2], 1)
-     expect_length(lw[-2], 2)
+     lw <- stepsWF(sal[5])[[1]]
+     expect_length(lw[-2], 4)
     ## Replacements LineWise
-    replaceCodeLine(lw, line=2) <- "5+5"
+    replaceCodeLine(lw, line = 2) <- "5+5"
     expect_equal(as.character(lw[2]$codeLine), "5 + 5")
     appendCodeLine(lw) <- "6+7"
-    expect_equal(as.character(lw[4]$codeLine), "6 + 7")
+    expect_equal(as.character(lw[6]$codeLine), "6 + 7")
    ## Error
-    expect_error(codeLine(sal, step=4))
+    expect_error(codeLine(sal, step=6))
     ## Replacements SYSargsList
     replaceCodeLine(sal, step=1, line=1) <- LineWise(code={
                                                         5+5
