@@ -211,14 +211,14 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
         ## Relative Path for targets and dir_path when these files are in the project folder, 
         ## otherwise, keep the full path
         ## targets_path to projPath
-        if(!grepl(projPath,WF$files$targets)){
-          if (!is.na(WF@files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
-          if (grepl("^/", WF@files$targets)) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        if(!grepl(projPath, WF$files$targets)){
+          if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
+          if (all(!is.fullPath( WF$files$targets) && grepl("^/", WF$files$targets)))  WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
         }
         if(!grepl(projPath,WF$files$dir_path)){
         ## dir_path
-        if (!is.na(WF@files$dir_path)) WF@files$dir_path <- gsub(projPath, "", WF$files$dir_path)
-        if (all(!is.fullPath(dir_path) && grepl("^/", WF@files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$dir_path)
+        if (!is.na(WF$files$dir_path)) WF@files$dir_path <- gsub(projPath, "", WF$files$dir_path)
+        if (all(!is.fullPath(dir_path) && grepl("^/", WF$files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$dir_path)
         }
         WF <- renderWF(WF, inputvars = inputvars)
         if (step_name == "default") {
@@ -1087,13 +1087,11 @@ renderReport <- function(sysargs,
         first_line <- gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)
         last_line <- gsub(".*:", "", sysargs$runInfo$runOption[[i]]$rmd_line)
         if (inherits(sysargs$stepsWF[[i]], "LineWise")){
-          print("a")
           appStep <- .sal2rmd_rstep(sysargs, con=NULL, i=i, step_name = step_names[i], 
                                     dep = deps[[i]], req = opts[[i]]$run_step, 
                                     session = opts[[i]]$run_session, return = "object")[-1]
           newLines <- append(newLines, appStep)
         } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")){
-          print("b")
           appStep <- .sal2rmd_sysstep(sysargs, con=NULL, i=i,
                                       step_name=step_names[i],
                                       dep = deps[[i]], 
@@ -1110,7 +1108,6 @@ renderReport <- function(sysargs,
                                     session = opts[[i]]$run_session, return = "object")
           newLines <- append(newLines, appStep)
         } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")){
-          print("CC")
           appStep <- .sal2rmd_sysstep(sysargs, con=NULL, i=i,
                                       step_name=step_names[i],
                                       dep = deps[[i]], 
@@ -1138,9 +1135,9 @@ renderReport <- function(sysargs,
 # file_path <- system.file("extdata", "spr_simple_wf.Rmd", package = "systemPipeR")
 # sal <- importWF(sal, file_path = file_path, verbose = FALSE)
 # targetspath <- system.file("extdata/cwl/example/targets_example.txt", package = "systemPipeR")
-# appendStep(sal) <- SYSargsList(step_name = "echo", 
+# appendStep(sal) <- SYSargsList(step_name = "echo",
 #                               targets = targetspath, dir = TRUE,
-#                               wf_file = "example/workflow_example.cwl", input_file = "example/example.yml", 
+#                               wf_file = "example/workflow_example.cwl", input_file = "example/example.yml",
 #                               dir_path = system.file("extdata/cwl", package = "systemPipeR"),
 #                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 # sal <- renderReport(sal)
