@@ -25,11 +25,6 @@ word-wrap: initial !important;
 }
 ```
 
-<!--
-- Compile from command-line
-Rscript -e "rmarkdown::render('systemPipeR_workflow.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeR_workflow.Rmd', tangle=TRUE)"; Rscript ../md2jekyll.R systemPipeR.knit.md 2; Rscript -e "rmarkdown::render('systemPipeR_workflow.Rmd', c('BiocStyle::pdf_document'))"
--->
-
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
 options(width=80, max.print=1000)
@@ -52,7 +47,7 @@ Backman, T.W.H and Girke, T. (2016). _`systemPipeR`_: NGS Workflow and Report Ge
 
 # Workflow templates
 
-The intended way of running _`sytemPipeR`_ workflows is via _`*.Rmd`_ files, which 
+The intended way of running _`systemPipeR`_ workflows is via _`*.Rmd`_ files, which 
 can be executed either line-wise in interactive mode or with a single command from 
 R or the command-line. This way comprehensive and reproducible analysis reports 
 can be generated in PDF or HTML format in a fully automated manner by making use 
@@ -119,9 +114,15 @@ genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
 ```
 
-## Run workflow
+## Create the workflow interactively
 
-Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.Rmd)) by executing from the command-line _`make -B`_ within the _`rnaseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively.
+This template provides some common steps for a `RNAseq` workflow. One can add, remove, modify 
+workflow steps by operating on the `sal` object. 
+
+```{r project_rnaseq, eval=FALSE}
+sal <- SPRproject() 
+sal <- importWF(sal, file_path = "systemPipeRNAseq.Rmd", verbose = FALSE)
+```
 
 **Workflow includes following steps:**
 
@@ -135,6 +136,25 @@ Next, run the chosen sample workflow _`systemPipeRNAseq`_ ([.Rmd](http://www.bio
 6. Analysis of differentially expressed genes (DEGs)
 7. GO term enrichment analysis
 8. Gene-wise clustering
+
+## Run workflow
+
+```{r run_rnaseq, eval=FALSE}
+sal <- runWF(sal)
+```
+
+## Workflow visualization 
+
+```{r plot_rnaseq, eval=FALSE}
+plotWF(sal, rstudio = TRUE)
+```
+
+## Report generation
+
+```{r report_rnaseq, eval=FALSE}
+sal <- renderReport(sal)
+sal <- renderLogs(sal)
+```
 
 # ChIP-Seq Workflow
 
