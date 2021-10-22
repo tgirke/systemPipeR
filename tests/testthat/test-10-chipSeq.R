@@ -15,7 +15,7 @@ test_that("check_chipSeq_fnc", {
 
     ## Run in single machine
     runCommandline(idx, make_bam = FALSE, dir=FALSE)
-    
+
     targets <- system.file("extdata", "targetsPE_chip.txt", package = "systemPipeR")
     dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-pe", package = "systemPipeR")
     args <- loadWF(targets = targets, wf_file = "bowtie2-mapping-pe.cwl", 
@@ -25,7 +25,7 @@ test_that("check_chipSeq_fnc", {
     args <- args[1:4]
     args
     args <- runCommandline(args, make_bam = TRUE, dir=FALSE, force = F)
-    
+
     writeTargetsout(x = args, file = "targets_bam.txt", step = 1, 
                     new_col = "FileName", new_col_output_index = 1, overwrite = TRUE, 
                     remove = TRUE)

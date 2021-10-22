@@ -45,25 +45,14 @@ The `systemPipeR` package needs to be loaded to perform the analysis steps shown
 this report [@H_Backman2016-bt].
 
 ```{r load_systempiper, eval=TRUE, message=FALSE, spr='r'}
-library(systemPipeR)
-```
-
-## Experiment definition provided by `targets` file
-
-The `targets` file defines all FASTQ files and sample
-comparisons of the analysis workflow.
-
-```{r load_targets, eval=TRUE, spr='r'}
-targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")
-targets <- read.delim(targetspath, comment.char = "#")[,1:4]
-targets
+appendStep(sal) <- LineWise(code={
+  library(systemPipeR)
+  },
+  step_name = "load_systempiper", 
+  dependency = NA)
 ```
 
 # SYSargsList example
-
-```{r}
-sal <- SPRproject(overwrite = T)
-```
 
 ```{r quality, eval=TRUE, spr='sysargs'}
 targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
@@ -100,7 +89,11 @@ appendStep(sal) <- SYSargsList(targets="quality",
 # Version Information
 
 ```{r sessionInfo, spr='r'}
-sessionInfo()
+appendStep(sal) <- LineWise(code={
+  sessionInfo()
+  },
+  step_name = "sessionInfo", 
+  dependency = "Mapping")
 ```
 
 # Funding

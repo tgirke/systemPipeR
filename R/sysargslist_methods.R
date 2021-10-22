@@ -486,7 +486,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     #     stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
     #                 paste0(stepName(x), collapse = ", ")))
     # }
-    if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+    if (all(dependency(value) %in% "")) value[["dependency"]][[1]] <- NA
     ## Append
     if (inherits(value, "SYSargsList")) {
       if (length(value) > 1) stop("One step can be appended in each operation.", call. = FALSE)
@@ -825,7 +825,7 @@ setReplaceMethod(
         }
         ## Dependency
         if (step > 1) {
-            if (dependency(value) == "") value[["dependency"]][[1]] <- NA
+          if (all(dependency(value) %in% "")) value[["dependency"]][[1]] <- NA
             # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus")) {
             #     stop("'dependency' argument is required to replace a step in the workflow.")
             # }
