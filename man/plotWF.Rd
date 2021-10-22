@@ -18,11 +18,12 @@ plotWF(
   out_format = "plot",
   out_path = NULL,
   show_legend = TRUE,
-  mark_main_branch = TRUE,
+  mark_main_branch = FALSE,
   rstudio = FALSE,
   in_log = FALSE,
   rmarkdown = "detect",
   verbose = FALSE,
+  show_warns = TRUE,
   exit_point = 0
 )
 
@@ -95,8 +96,6 @@ can force it to be \code{TRUE} or \code{FALSE}}
 
 \item{verbose}{bool, turn on verbose mode will give you more information}
 
-\item{exit_point}{numeric, for advanced debugging only, see details}
-  
 \item{outputId}{string, shiny output ID}
   
 \item{expr}{An expression that generates a plotwf, like \code{plotWF(sal)}}
@@ -105,6 +104,10 @@ can force it to be \code{TRUE} or \code{FALSE}}
   
 \item{quoted}{Is \code{expr} a quoted expression (with \code{quote()})? 
 This is useful if you want to save an expression in a variable.}
+
+\item{show_warns}{bool, print the warning messages on console and on the plot?.}
+
+\item{exit_point}{numeric, for advanced debugging only, see details}
 }
 \value{
 see \code{out_format} and \code{exit_point}
