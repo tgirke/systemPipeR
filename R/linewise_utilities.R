@@ -33,8 +33,8 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
     ## codeLine
     if (!getOption("linewise_importing", TRUE)) {
         codeLine <- parse(text = gsub("^\\{|\\}$", "", deparse(substitute(code))))
-    } else {
-        codeLine <- parse(text = code)
+    } else if(getOption("linewise_importing", TRUE)) {
+        codeLine <- parse(text = gsub("^\\{|\\}$", "", deparse(substitute(code))))
     }
     line <- list(
         codeLine = codeLine,
@@ -82,37 +82,37 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
     ## adding steps
     for (i in seq_along(df$spr)) {
         if (verbose) cat(crayon::blue$bold("Now importing step '", df$step_name[i], "' \n", sep = ""))
-        if (df$spr[i] == "r") {
-            options(linewise_importing = TRUE)
-            line_obj <- LineWise(code = df$code[i], step_name = df$step_name[i],
-                                 codeChunkStart = df$start[i], rmdPath = file_path,
-                                 dependency = df$dep[[i]])
-            sal_imp$stepsWF[[df$step_name[i]]] <- line_obj
-            sal_imp$statusWF[[df$step_name[i]]] <- list(
-                status.summary = "Pending",
-                status.completed = data.frame(Step = df$step_name[i], status.summary = "Pending"),
-                status.time = data.frame()
-            )
-            sal_imp$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
-            sal_imp$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
-            sal_imp$SE[df$step_name[i]] <- list(NULL)
-            sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
-            sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
-            sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(
-                list(directory = FALSE, run_step = df$req[i], run_session = df$session[i], 
-                     rmd_line = paste(df[i,2:3], collapse = ":")))
-        } else if (df$spr[i] == "sysargs") {
+        # if (df$spr[i] == "r") {
+        #     options(linewise_importing = TRUE)
+        #     line_obj <- LineWise(code = df$code[i], step_name = df$step_name[i],
+        #                          codeChunkStart = df$start[i], rmdPath = file_path,
+        #                          dependency = df$dep[[i]])
+        #     sal_imp$stepsWF[[df$step_name[i]]] <- line_obj
+        #     sal_imp$statusWF[[df$step_name[i]]] <- list(
+        #         status.summary = "Pending",
+        #         status.completed = data.frame(Step = df$step_name[i], status.summary = "Pending"),
+        #         status.time = data.frame()
+        #     )
+        #     sal_imp$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
+        #     sal_imp$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
+        #     sal_imp$SE[df$step_name[i]] <- list(NULL)
+        #     sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
+        #     sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
+        #     sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(
+        #         list(directory = FALSE, run_step = df$req[i], run_session = df$session[i], 
+        #              rmd_line = paste(df[i,2:3], collapse = ":")))
+        # } else if (df$spr[i] == "sysargs") {
             options(spr_importing = TRUE)
             options(importwf_options = c(df$step_name[i], df$dep[i]))
             sal_imp <- as(sal_imp, "SYSargsList")
             salname <- sub("[\\)].*", "", sub(".*(appendStep\\()", "", df$code[i]))
             assign(salname, sal_imp, sysargs_env)
             args <- eval(parse(text = df$code[i]), envir = sysargs_env)
-            if (!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
+          #  if (!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
             appendStep(sal_imp) <- args
             sal_imp <- as(sal_imp, "list")
             sal_imp$runInfo[["runOption"]][[df$step_name[i]]][['rmd_line']] <- paste(df[i,2:3], collapse = ":")
-        }
+        #}
     }
     sal_imp[["projectInfo"]]$rmd_file <- file_path
     # sal_imp[["projectInfo"]]$rmd_lines <- df[,1:3]
