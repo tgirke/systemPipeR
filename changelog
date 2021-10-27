@@ -1,4 +1,7 @@
 changelog
+    version 2.1.1
+        - runCommandline function: Fixed status/file.exists dataframe. 
+        
     version 1.99.32
         - Updated importWF, sal2bash and sal2rmd functions
         - Updated plotWF function
