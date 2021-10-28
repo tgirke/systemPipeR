@@ -37,10 +37,10 @@ test_that("check_SYSargsList_test", {
     expect_length(sal, 1)
     expect_length(cmdlist(sal)[[1]], 3)
     ## runWF()
-    # sal <- runWF(sal)
-    # expect_setequal(sal$statusWF[[1]]$status.summary, "Success")
-    # check <- check.output(sal)
-    # expect_setequal(check$example$Existing_Files, "1")
+    sal <- runWF(sal)
+    expect_setequal(sal$statusWF[[1]]$status.summary, "Success")
+    check <- check.output(sal)
+    expect_setequal(check$example$Existing_Files, "1")
     ## replacement methods
     renameStep(sal, 1) <- "newStep"
     expect_error(appendStep(sal) <- sal)
@@ -54,6 +54,8 @@ test_that("check_SYSargsList_test", {
     ## `+` method
     sal <- sal[1] + sal[2]
     expect_length(sal, 2)
+    sal <- runWF(sal)
+    expect_setequal(sal$statusWF[[2]]$status.summary, "Warning")
 })
 
 # requires trimmomatic/Hisat2 installed...
@@ -95,11 +97,11 @@ test_that("check_sal_hisat2", {
     sal2 <- subset(sal2, subset_steps = c(1, 3), input_targets = 1:4, keep_steps = TRUE)
     expect_s4_class(sal2, "SYSargsList")
     ## Replacement Methods
-    yamlinput(sal2, step = 1, paramName = "thread") <- 5L
-    expect_equal(yamlinput(sal2, 1)$thread, 5)
+    yamlinput(sal2, step = 1, paramName = "thread") <- 3L
+    expect_equal(yamlinput(sal2, 1)$thread, 3)
     ## Run alignment
     ## runWF() // check.output()
-    sal2 <- runWF(sal2)
+    sal2 <- runWF(sal2, targets = 1)
     out <- check.output(sal2)
-    expect_equal(sum(out$Quality$Existing_Files), 16)
+    expect_equal(sum(out$Quality$Existing_Files[1]), 4)
 })

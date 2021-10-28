@@ -87,7 +87,8 @@ appendStep(sal) <- LineWise(code={
                            position=ggplot2::position_dodge(.9)) 
   }, 
   step_name = "stats", 
-  dependency = "gunzip")
+  dependency = "gunzip", 
+  run_step = "optional")
 ```
 
 

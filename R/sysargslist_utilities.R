@@ -130,9 +130,9 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                         silent = FALSE, projPath = getOption("projPath", getwd())) {
     ## step_name and dependency from importWF
     on.exit({
-      options(replace_step = FALSE)
-      options(spr_importing = FALSE)
-      options(importwf_options = NULL)
+        options(replace_step = FALSE)
+        options(spr_importing = FALSE)
+        options(importwf_options = NULL)
     })
     if (!is.null(getOption("importwf_options"))) {
         step_name <- getOption("importwf_options")[[1]]
@@ -164,10 +164,11 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 sal$SE <- list()
             } else {
                 sal$targetsWF <- list(as(sysargs, "DataFrame"))
-                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][ ,sysargs$files$id]
+                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][, sysargs$files$id]
                 sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
-                  colData = sal$targetsWF,
-                  metadata = sysargs$targetsheader))
+                    colData = sal$targetsWF,
+                    metadata = sysargs$targetsheader
+                ))
             }
             ## Status
             if (length(status(sysargs)) == 0) {
@@ -179,11 +180,11 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             sal$outfiles <- list(.outList2DF(sysargs))
             sal$targets_connection <- list(NULL)
             sal$runInfo <- list(runOption = list(list(directory = dir, run_step = run_step, run_session = run_session)))
-            names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <-  names(sal$SE) <- step_name
+            names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <- names(sal$SE) <- step_name
         } else {
             stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2'.")
         }
-      ## Build the instance from files ##
+        ## Build the instance from files ##
     } else if (all(!is.null(wf_file) && !is.null(input_file))) {
         ## targets
         if (is.null(targets)) {
@@ -208,17 +209,17 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             input_file = input_file,
             dir_path = dir_path, id = id
         )
-        ## Relative Path for targets and dir_path when these files are in the project folder, 
+        ## Relative Path for targets and dir_path when these files are in the project folder,
         ## otherwise, keep the full path
         ## targets_path to projPath
-        if(!grepl(projPath, WF$files$targets)){
-          if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
-          if (all(!is.fullPath( WF$files$targets) && grepl("^/", WF$files$targets)))  WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        if (!grepl(projPath, WF$files$targets)) {
+            if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
+            if (all(!is.fullPath(WF$files$targets) && grepl("^/", WF$files$targets))) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
         }
-        if(!grepl(projPath,WF$files$dir_path)){
-        ## dir_path
-        if (!is.na(WF$files$dir_path)) WF@files$dir_path <- gsub(projPath, "", WF$files$dir_path)
-        if (all(!is.fullPath(dir_path) && grepl("^/", WF$files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$dir_path)
+        if (!grepl(projPath, WF$files$dir_path)) {
+            ## dir_path
+            if (!is.na(WF$files$dir_path)) WF@files$dir_path <- gsub(projPath, "", WF$files$dir_path)
+            if (all(!is.fullPath(dir_path) && grepl("^/", WF$files$dir_path))) WF@files$dir_path <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$dir_path)
         }
         WF <- renderWF(WF, inputvars = inputvars)
         if (step_name == "default") {
@@ -262,10 +263,11 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             ## targets
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
-                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][ ,sal$stepsWF[[1]]$files$id]
+                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
                 sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
-                  colData = sal$targetsWF,
-                  metadata = sal$stepsWF[[1]]$targetsheader))
+                    colData = sal$targetsWF,
+                    metadata = sal$stepsWF[[1]]$targetsheader
+                ))
             } else {
                 sal$targetsWF <- list(S4Vectors::DataFrame())
                 sal$SE <- list(NULL)
@@ -280,45 +282,86 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
 ####################
 ## runWF function ##
 #####################
-runWF <- function(sysargs, steps = NULL, force = FALSE, saveEnv = TRUE,
+runWF <- function(sysargs, steps = NULL, targets = NULL,
+                  force = FALSE, saveEnv = TRUE,
+                  run_step = "ALL", ignore.dep = FALSE,
                   warning.stop = FALSE, error.stop = TRUE, silent = FALSE, ...) {
     # Validations
     if (!inherits(sysargs, "SYSargsList")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList'")
     if (length(sysargs) == 0) message("Workflow has no steps. Please add a step before trying to execute the workflow.")
-    if (is.null(projectInfo(sysargs)$project)) 
-      stop("'SYSargsList' instance was not initialized with the 'SPRproject' function
+    if (is.null(projectInfo(sysargs)$project)) {
+          stop("'SYSargsList' instance was not initialized with the 'SPRproject' function
            and therefore there is missing the 'projectInfo' slot information.
            Please check 'SPRproject' help file.")
+      }
     if (!dir.exists(projectInfo(sysargs)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
     sysproj <- projectInfo(sysargs)$logsDir
+    ## Check steps
+    if (inherits(steps, "numeric")) {
+        if (!all(steps %in% seq_along(sysargs))) {
+              stop(
+                  "Please select the 'steps' number accordingly, options are: ", "\n",
+                  "        ", paste0(seq_along(sysargs), collapse = ", ")
+              )
+          }
+    } else if (inherits(steps, "character")) {
+        if (!all(steps %in% stepName(sysargs))) {
+              stop(
+                  "Please select the 'steps' name accordingly, options are: ", "\n",
+                  "        ", paste0(stepName(sysargs), collapse = ", ")
+              )
+          }
+        steps <- which(stepName(sysargs) %in% steps)
+    }
     ## check dependency
     for (i in seq_along(dependency(sysargs))) {
         if (all(!is.na(dependency(sysargs)[[i]]))) {
             dep_names <- unlist(dependency(sysargs)[[i]])
             if (any(!dep_names %in% names(stepsWF(sysargs)))) {
-                  stop(
-                      "'sysargs' has dependency on the following steps:", "\n",
-                      paste0("      ", paste0(dep_names, collapse = " AND ")), "\n",
-                      "Please make sure that this step is present."
-                  )
-              }
+                if (length(dep_names) == 1) {
+                    stop(
+                        "'sysargs' has a dependency on the following step:", "\n",
+                        paste0("      ", paste0(dep_names)), "\n",
+                        "However, this step is not available in the workflow."
+                    )
+                } else if (length(dep_names) > 1) {
+                    stop(
+                        "'sysargs' has dependencies on the following steps::", "\n",
+                        paste0("      ", paste0(dep_names, collapse = " AND ")), "\n",
+                        "However, these steps are not available in the workflow."
+                    )
+                }
+            }
         }
     }
     ## Logs
     file_log <- file.path(sysproj, paste0("_logWF_", format(Sys.time(), "%b%d%Y_%H%M"), "_", paste(sample(0:9, 4), collapse = "")))
     sysargs[["projectInfo"]]$logsFile <- file_log
-    ## steps loop
+    ## Select steps for the loop based on the steps argument
     args2 <- sysargs
     if (is.null(steps)) steps <- 1:length(args2)
+    ## Select steps for the loop based on the run_step
+    if (run_step != "ALL") {
+        run_step_wf <- sapply(sysargs$runInfo$runOption, function(x) x$run_step)[steps]
+        run_step_names <- names(run_step_wf[run_step_wf %in% run_step])
+        if (length(run_step_names) == 0) {
+            stop("No step was selected. Please check 'steps', 'run_step' arguments.")
+        } else {
+            steps <- which(stepName(sysargs) %in% run_step_names)
+        }
+    }
+    ## Selecting
     for (i in seq_along(stepsWF(args2))) {
         if (i %in% steps) {
             ## check single dependency
-            if (all(!is.na(dependency(args2)[[i]]))) {
-                dep_single <- sapply(dependency(args2)[[i]], function(x) args2$statusWF[[x]]$status.summary)
-                if ("Pending" %in% dep_single) {
-                    message("Previous steps:", "\n", paste0(names(dep_single), collapse = " AND "), "\n", "have been not executed yet.")
-                    break()
+            if (!ignore.dep) {
+                if (all(!is.na(dependency(args2)[[i]]))) {
+                    dep_single <- sapply(dependency(args2)[[i]], function(x) args2$statusWF[[x]]$status.summary)
+                    if ("Pending" %in% dep_single) {
+                        message("Previous steps:", "\n", paste0(names(dep_single), collapse = " AND "), "\n", "have been not executed yet.")
+                        break()
+                    }
                 }
             }
             ## Printing step name
@@ -332,9 +375,34 @@ runWF <- function(sysargs, steps = NULL, force = FALSE, saveEnv = TRUE,
                 ## runC arguments
                 dir <- args2$runInfo$runOption[[i]]$directory
                 dir.name <- single.step
+                ## check targets
+                ## Targets input
+                if (!is.null(targets)) {
+                  if(inherits(targets, c("numeric", "integer"))){
+                        if (!all(targets %in% seq_along(cmdlist(args.run)))) {
+                              stop(
+                                  "Please select the 'targets' number accordingly, options are: ", "\n",
+                                  "        ", paste0(seq_along(cmdlist(args.run)), collapse = ", ")
+                              )
+                          }
+                    } else if (inherits(targets, "character")) {
+                        if (!all(targets %in% SampleName(args.run))) {
+                              stop(
+                                  "Please select the 'targets' name accordingly, options are: ", "\n",
+                                  "        ", paste0(SampleName(args.run), collapse = ", ")
+                              )
+                          }
+                        targets <- which(SampleName(args.run) %in% targets)
+                    }
+                    targets <- targets
+                } else {
+                    targets <- seq_along(cmdlist(args.run))
+                }
+                ## RUN
                 args.run <- runCommandline(args.run,
                     dir = dir, dir.name = dir.name,
-                    force = force, ...
+                    force = force, input_targets = targets,
+                    ...
                 )
                 cat(readLines(args.run$files$log),
                     file = file_log, sep = "\n",
@@ -650,17 +718,17 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
     args_comp[["stepsWF"]] <- steps_comp
     ## SE slot
     path <- file.path(.getPath(sys.file, full_path = FALSE), "SE")
-    if(!dir.exists(path)) {
-      dir.create(path, recursive = TRUE)
+    if (!dir.exists(path)) {
+        dir.create(path, recursive = TRUE)
     }
     steps_comp <- sapply(steps, function(x) list(NULL))
     for (j in steps) {
-      if(!is.null(args2[["SE"]][[j]])){
-        writeSE(args2[["SE"]][[j]], dir.path = path, dir.name = j, overwrite = TRUE, silent = TRUE)
-        steps_comp[[j]] <- yaml::as.yaml(list(dir.path=path, dir.name=j))
-      } else {
-        steps_comp[j]  <- yaml::as.yaml(args2[["SE"]][j])
-      }
+        if (!is.null(args2[["SE"]][[j]])) {
+            writeSE(args2[["SE"]][[j]], dir.path = path, dir.name = j, overwrite = TRUE, silent = TRUE)
+            steps_comp[[j]] <- yaml::as.yaml(list(dir.path = path, dir.name = j))
+        } else {
+            steps_comp[j] <- yaml::as.yaml(args2[["SE"]][j])
+        }
     }
     args_comp[["SE"]] <- steps_comp
     ## Save file
@@ -684,8 +752,8 @@ read_SYSargsList <- function(sys.file) {
     yaml_slots <- c("projectInfo")
     for (i in yaml_slots) {
         args_comp[[i]] <- yaml::yaml.load(args_comp_yml[i])
-        if(!is.null(args_comp[[i]]$rmd_lines)){
-          args_comp[[i]]$rmd_lines <- data.frame(args_comp[[i]]$rmd_lines, check.names = FALSE)
+        if (!is.null(args_comp[[i]]$rmd_lines)) {
+            args_comp[[i]]$rmd_lines <- data.frame(args_comp[[i]]$rmd_lines, check.names = FALSE)
         }
     }
     ## runInfo yaml slots
@@ -751,22 +819,22 @@ read_SYSargsList <- function(sys.file) {
         }
         args_comp[[i]] <- steps_comp
     }
-    
-    
+
+
     ## SE slot
-      steps_comp <- sapply(steps, function(x) list(NULL))
-      for (j in steps) {
+    steps_comp <- sapply(steps, function(x) list(NULL))
+    for (j in steps) {
         steps_comp[[j]] <- yaml::yaml.load(args_comp_yml[["SE"]][[j]])
-        if(!is.null(steps_comp[[j]][[1]])){
-          dir.path <- steps_comp[[j]][[1]]
-          dir.name <- steps_comp[[j]][[2]]
-          SE <- readSE(dir.path = dir.path, dir.name = dir.name)
-          steps_comp[[j]] <- list(SE)
-          } else {
-            steps_comp[[j]] <-  steps_comp[[j]]
-          }
+        if (!is.null(steps_comp[[j]][[1]])) {
+            dir.path <- steps_comp[[j]][[1]]
+            dir.name <- steps_comp[[j]][[2]]
+            SE <- readSE(dir.path = dir.path, dir.name = dir.name)
+            steps_comp[[j]] <- list(SE)
+        } else {
+            steps_comp[[j]] <- steps_comp[[j]]
         }
-      args_comp[["SE"]] <- sapply(steps_comp, function(x) x[[1]])
+    }
+    args_comp[["SE"]] <- sapply(steps_comp, function(x) x[[1]])
     return(as(args_comp, "SYSargsList"))
 }
 
@@ -777,76 +845,83 @@ read_SYSargsList <- function(sys.file) {
 ################################
 ## writeSE function ##
 ################################
-writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE){
-  # Validations
-  if (!inherits(SE, "SummarizedExperiment")) stop("Argument 'SE' needs to be assigned an object of class 'SummarizedExperiment'")
-  if (!dir.exists(dir.path)) stop("'dir.path' doesn't exist.")
-  if (all(dir.exists(file.path(dir.path, dir.name)) & overwrite == FALSE)) stop(paste("'dir.name' directory already exist. Please delete existing directory:", dir.name, "or set 'overwrite=TRUE'"))
-  if(!dir.exists(file.path(dir.path, dir.name))){
-    dir.create(file.path(dir.path, dir.name))
-  }
-  path <- file.path(dir.path, dir.name)
-  ## Counts
-  if(length(SummarizedExperiment::assays(SE)) > 0) {
-    for (i in length(SummarizedExperiment::assays(SE))){
-      write.table(SummarizedExperiment::assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")), quote = FALSE, row.names = FALSE,
-                  col.names = TRUE, sep = "\t")
+writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE) {
+    # Validations
+    if (!inherits(SE, "SummarizedExperiment")) stop("Argument 'SE' needs to be assigned an object of class 'SummarizedExperiment'")
+    if (!dir.exists(dir.path)) stop("'dir.path' doesn't exist.")
+    if (all(dir.exists(file.path(dir.path, dir.name)) & overwrite == FALSE)) stop(paste("'dir.name' directory already exist. Please delete existing directory:", dir.name, "or set 'overwrite=TRUE'"))
+    if (!dir.exists(file.path(dir.path, dir.name))) {
+        dir.create(file.path(dir.path, dir.name))
     }
-  }
-  ## Metadata
-  yaml::write_yaml(S4Vectors::metadata(SE), file.path(path, paste0("metadata.yml")))
-  ## colData
-  write.table(SummarizedExperiment::colData(SE), file.path(path, paste0("colData.csv")), quote = FALSE, row.names = TRUE,
-              col.names = NA, sep = "\t")
-  ## RowRanges
-  if(!is.null(SummarizedExperiment::rowRanges(SE))){
-    write.table(as.data.frame(SummarizedExperiment::rowRanges(SE)), file=file.path(path, paste0("rowRanges.csv")),
-                sep="\t", quote = FALSE, row.names = FALSE)
-  }
-  ## Final message
-  if(silent != TRUE) cat("\t", "Written content of 'SE' to directory:", path, "\n")
+    path <- file.path(dir.path, dir.name)
+    ## Counts
+    if (length(SummarizedExperiment::assays(SE)) > 0) {
+        for (i in length(SummarizedExperiment::assays(SE))) {
+            write.table(SummarizedExperiment::assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")),
+                quote = FALSE, row.names = FALSE,
+                col.names = TRUE, sep = "\t"
+            )
+        }
+    }
+    ## Metadata
+    yaml::write_yaml(S4Vectors::metadata(SE), file.path(path, paste0("metadata.yml")))
+    ## colData
+    write.table(SummarizedExperiment::colData(SE), file.path(path, paste0("colData.csv")),
+        quote = FALSE, row.names = TRUE,
+        col.names = NA, sep = "\t"
+    )
+    ## RowRanges
+    if (!is.null(SummarizedExperiment::rowRanges(SE))) {
+        write.table(as.data.frame(SummarizedExperiment::rowRanges(SE)),
+            file = file.path(path, paste0("rowRanges.csv")),
+            sep = "\t", quote = FALSE, row.names = FALSE
+        )
+    }
+    ## Final message
+    if (silent != TRUE) cat("\t", "Written content of 'SE' to directory:", path, "\n")
 }
 
 # writeSE(rse, dir.path = getwd(), dir.name = "seobj")
-# 
+#
 # dir.path <- getwd()
 # dir.name <- "seobj"
 
 ################################
 ## readSE function ##
 ################################
-readSE <- function(dir.path, dir.name){
-  path <- file.path(dir.path, dir.name)
-  if (!dir.exists(path)) stop("'dir.path' doesn't exist.")
-  ## Counts
-  files_counts <- list.files(path, pattern = "counts")
-  if(length(files_counts) > 0) {
-    counts_ls <- S4Vectors::SimpleList(NULL)
-    for (i in files_counts){
-      counts_ls <- as.matrix(read.table(file.path(path, i), check.names = FALSE, header = TRUE))
-    } 
-  }  else {
-    counts_ls <- S4Vectors::SimpleList()
-  }
-  ## Metadata
-  metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
-  ## colData
-  colData <- read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t")
-  ## rowRanges
-  files_counts <- list.files(path, pattern = "rowRanges")
-  if(length(files_counts) > 0) {
-  rowRanges_df <- read.table(file.path(path, paste0("rowRanges.csv")), check.names = FALSE, header = TRUE)
-  rowRanges <- makeGRangesFromDataFrame(rowRanges_df, keep.extra.columns=TRUE)
-  } else {
-    rowRanges = GRangesList()
-  }
-  SE <- SummarizedExperiment::SummarizedExperiment(
-    assays=counts_ls,
-    #rowData=NULL, 
-    rowRanges=rowRanges,
-    colData=colData,
-    metadata=metadata)
-  return(SE)
+readSE <- function(dir.path, dir.name) {
+    path <- file.path(dir.path, dir.name)
+    if (!dir.exists(path)) stop("'dir.path' doesn't exist.")
+    ## Counts
+    files_counts <- list.files(path, pattern = "counts")
+    if (length(files_counts) > 0) {
+        counts_ls <- S4Vectors::SimpleList(NULL)
+        for (i in files_counts) {
+            counts_ls <- as.matrix(read.table(file.path(path, i), check.names = FALSE, header = TRUE))
+        }
+    } else {
+        counts_ls <- S4Vectors::SimpleList()
+    }
+    ## Metadata
+    metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
+    ## colData
+    colData <- read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t")
+    ## rowRanges
+    files_counts <- list.files(path, pattern = "rowRanges")
+    if (length(files_counts) > 0) {
+        rowRanges_df <- read.table(file.path(path, paste0("rowRanges.csv")), check.names = FALSE, header = TRUE)
+        rowRanges <- makeGRangesFromDataFrame(rowRanges_df, keep.extra.columns = TRUE)
+    } else {
+        rowRanges <- GRangesList()
+    }
+    SE <- SummarizedExperiment::SummarizedExperiment(
+        assays = counts_ls,
+        # rowData=NULL,
+        rowRanges = rowRanges,
+        colData = colData,
+        metadata = metadata
+    )
+    return(SE)
 }
 
 # nrows <- 200; ncols <- 6
@@ -1041,93 +1116,103 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
 ## renderReport function ##
 ###########################
 ## type: c("pdf_document", "html_document")
-renderReport <- function(sysargs, 
-                          fileName ="spr_report",
-                          rmd_title = "SPR workflow Template - Report",
-                          rmd_author = "Author",
-                          rmd_date= "Last update: `r format(Sys.time(), '%d %B, %Y')`",
-                          type = c("html_document"),
-                          desc = "This is a workflow template.",
-                          quiet = FALSE, 
-                          open_file = TRUE) {
-  out_path <- file.path(paste0(fileName, ".Rmd")) 
-  ext <- sub("_.*", "", type)
-  out_path <- file.path(paste0(fileName, ".", ext)) 
-  out_path_rmd <- file.path(paste0(fileName, ".Rmd")) 
-  if(is.null(sysargs$projectInfo$rmd_file)) {
-    sal2rmd(sysargs, out_path=out_path_rmd,
+renderReport <- function(sysargs,
+                         fileName = "spr_report",
+                         rmd_title = "SPR workflow Template - Report",
+                         rmd_author = "Author",
+                         rmd_date = "Last update: `r format(Sys.time(), '%d %B, %Y')`",
+                         type = c("html_document"),
+                         desc = "This is a workflow template.",
+                         quiet = FALSE,
+                         open_file = TRUE) {
+    out_path <- file.path(paste0(fileName, ".Rmd"))
+    ext <- sub("_.*", "", type)
+    out_path <- file.path(paste0(fileName, ".", ext))
+    out_path_rmd <- file.path(paste0(fileName, ".Rmd"))
+    if (is.null(sysargs$projectInfo$rmd_file)) {
+        sal2rmd(sysargs,
+            out_path = out_path_rmd,
             rmd_title = rmd_title,
             rmd_author = rmd_author,
             rmd_date = rmd_date,
             rmd_output = type,
             desc = desc,
-            verbose = quiet)
-  } else if(!is.null(sysargs$projectInfo$rmd_file)) {
-    file_path <- sysargs$projectInfo$rmd_file
-    lines <- readLines(file_path) ## original file
-    ## get info from sysargs
-    step_names <- names(sysargs$stepsWF)
-    deps <- sysargs$dependency
-    t_connects <- sysargs$targets_connection
-    opts <- sysargs$runInfo$runOption
-    ## get the first line
-    chunk_start <- lines %>% stringr::str_which("^```\\{.*\\}.*")
-    firstLine <- chunk_start[lines[lines %>% stringr::str_which("^```\\{.*\\}.*")] %>% stringr::str_detect("spr")][1]
-    # firstLine <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[1]]$rmd_line))
-    newLines <- lines[1:firstLine-1]
-    ## We need to consider if append step after=0, in this case it's appending before the first R chunk but not before the text...
-    ## TODO ##
-    for(i in seq_along(sysargs$stepsWF)){
-      if(length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 1){
-        if(exists("last_line")){
-          new_last <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line))-1
-          new_first <- as.numeric(last_line) + 1
-          newLines <- append(newLines, lines[new_first:new_last])
+            verbose = quiet
+        )
+    } else if (!is.null(sysargs$projectInfo$rmd_file)) {
+        file_path <- sysargs$projectInfo$rmd_file
+        lines <- readLines(file_path) ## original file
+        ## get info from sysargs
+        step_names <- names(sysargs$stepsWF)
+        deps <- sysargs$dependency
+        t_connects <- sysargs$targets_connection
+        opts <- sysargs$runInfo$runOption
+        ## get the first line
+        chunk_start <- lines %>% stringr::str_which("^```\\{.*\\}.*")
+        firstLine <- chunk_start[lines[lines %>% stringr::str_which("^```\\{.*\\}.*")] %>% stringr::str_detect("spr")][1]
+        # firstLine <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[1]]$rmd_line))
+        newLines <- lines[1:firstLine - 1]
+        ## We need to consider if append step after=0, in this case it's appending before the first R chunk but not before the text...
+        ## TODO ##
+        for (i in seq_along(sysargs$stepsWF)) {
+            if (length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 1) {
+                if (exists("last_line")) {
+                    new_last <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) - 1
+                    new_first <- as.numeric(last_line) + 1
+                    newLines <- append(newLines, lines[new_first:new_last])
+                }
+                first_line <- gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)
+                last_line <- gsub(".*:", "", sysargs$runInfo$runOption[[i]]$rmd_line)
+                if (inherits(sysargs$stepsWF[[i]], "LineWise")) {
+                    appStep <- .sal2rmd_rstep(sysargs,
+                        con = NULL, i = i, step_name = step_names[i],
+                        dep = deps[[i]], req = opts[[i]]$run_step,
+                        session = opts[[i]]$run_session, return = "object"
+                    )[-1]
+                    newLines <- append(newLines, appStep)
+                } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")) {
+                    appStep <- .sal2rmd_sysstep(sysargs,
+                        con = NULL, i = i,
+                        step_name = step_names[i],
+                        dep = deps[[i]],
+                        dir = opts[[i]]$directory,
+                        req = opts[[i]]$run_step,
+                        session = opts[[i]]$run_session,
+                        t_con = t_connects[[i]], return = "object"
+                    )[-1]
+                    newLines <- append(newLines, appStep)
+                }
+            } else if (length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 0) {
+                if (inherits(sysargs$stepsWF[[i]], "LineWise")) {
+                    appStep <- .sal2rmd_rstep(sysargs,
+                        con = NULL, i = i, step_name = step_names[i],
+                        dep = deps[[i]], req = opts[[i]]$run_step,
+                        session = opts[[i]]$run_session, return = "object"
+                    )
+                    newLines <- append(newLines, appStep)
+                } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")) {
+                    appStep <- .sal2rmd_sysstep(sysargs,
+                        con = NULL, i = i,
+                        step_name = step_names[i],
+                        dep = deps[[i]],
+                        dir = opts[[i]]$directory,
+                        req = opts[[i]]$run_step,
+                        session = opts[[i]]$run_session,
+                        t_con = t_connects[[i]], return = "object"
+                    )
+                    newLines <- append(newLines, appStep)
+                }
+            }
         }
-        first_line <- gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)
-        last_line <- gsub(".*:", "", sysargs$runInfo$runOption[[i]]$rmd_line)
-        if (inherits(sysargs$stepsWF[[i]], "LineWise")){
-          appStep <- .sal2rmd_rstep(sysargs, con=NULL, i=i, step_name = step_names[i], 
-                                    dep = deps[[i]], req = opts[[i]]$run_step, 
-                                    session = opts[[i]]$run_session, return = "object")[-1]
-          newLines <- append(newLines, appStep)
-        } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")){
-          appStep <- .sal2rmd_sysstep(sysargs, con=NULL, i=i,
-                                      step_name=step_names[i],
-                                      dep = deps[[i]], 
-                                      dir = opts[[i]]$directory, 
-                                      req = opts[[i]]$run_step,
-                                      session = opts[[i]]$run_session, 
-                                      t_con= t_connects[[i]], return = "object")[-1]
-          newLines <- append(newLines, appStep)
-        }
-      } else if(length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 0){
-        if (inherits(sysargs$stepsWF[[i]], "LineWise")){
-          appStep <- .sal2rmd_rstep(sysargs, con=NULL, i=i, step_name = step_names[i], 
-                                    dep = deps[[i]], req = opts[[i]]$run_step, 
-                                    session = opts[[i]]$run_session, return = "object")
-          newLines <- append(newLines, appStep)
-        } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")){
-          appStep <- .sal2rmd_sysstep(sysargs, con=NULL, i=i,
-                                      step_name=step_names[i],
-                                      dep = deps[[i]], 
-                                      dir = opts[[i]]$directory, 
-                                      req = opts[[i]]$run_step,
-                                      session = opts[[i]]$run_session, 
-                                      t_con= t_connects[[i]], return = "object")
-          newLines <- append(newLines, appStep)
-        }
-      }
+        writeLines(newLines, out_path_rmd)
     }
-    writeLines(newLines, out_path_rmd)
-  }
-  rmarkdown::render(input = out_path_rmd, c(paste0("BiocStyle::", type)), quiet = quiet, envir = new.env())
-  detach("package:BiocStyle", unload=TRUE)
-  if(!quiet) message(crayon::green$bold("Success! Report created at", out_path))
-  sysargs <- as(sysargs, "list")
-  sysargs$projectInfo[["Report"]] <- normalizePath(file.path(out_path))
-  if (open_file) try(utils::browseURL(file.path(out_path)), TRUE)
-  return(as(sysargs, "SYSargsList"))
+    rmarkdown::render(input = out_path_rmd, c(paste0("BiocStyle::", type)), quiet = quiet, envir = new.env())
+    detach("package:BiocStyle", unload = TRUE)
+    if (!quiet) message(crayon::green$bold("Success! Report created at", out_path))
+    sysargs <- as(sysargs, "list")
+    sysargs$projectInfo[["Report"]] <- normalizePath(file.path(out_path))
+    if (open_file) try(utils::browseURL(file.path(out_path)), TRUE)
+    return(as(sysargs, "SYSargsList"))
 }
 
 ## Usage:
@@ -1165,7 +1250,7 @@ renderLogs <- function(sysargs,
     dir_log <- projectInfo(sysargs)$logsDir
     if (!file.exists(dir_log) == TRUE) stop("Provide valid 'SYSargsList' object. Check the initialization of the project.")
     if (is.null(projectInfo(sysargs)$logsFile)) {
-      log <- ""
+        log <- ""
     } else {
         file <- projectInfo(sysargs)$logsFile
         log <- readLines(file)
@@ -1173,7 +1258,7 @@ renderLogs <- function(sysargs,
     if (fileName == "default") {
         fileName <- file.path(projectInfo(sysargs)$project, paste0("logs_", format(Sys.time(), "%b%d%Y_%H%M"), ".Rmd"))
     } else {
-        fileName <- file.path(paste0(fileName, ".Rmd")) 
+        fileName <- file.path(paste0(fileName, ".Rmd"))
     }
     if (type == "html_document") plot_path <- normalizePath(.prepareRmdPlot(sysargs, dir_log))
     writeLines(c(
@@ -1336,7 +1421,7 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
     rmd_df$link_to[1:(nrow(rmd_df) - 1)] <- rmd_df$t_number[2:nrow(rmd_df)]
     # list all steps if no input_steps
     # if (!assertthat::not_empty(input_steps)) {
-    if(!is.null(input_steps)) {
+    if (!is.null(input_steps)) {
         cat("No input_steps is given, list all sections and exit\n")
         cat("This file contains following sections\n")
         stringr::str_replace(t_text, "^", paste0(strrep("    ", (t_lvl - 1)), names(t_lvl), " ")) %>%
@@ -1417,10 +1502,10 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
         args1 <- as(args1, "list")
         args1$yamlinput <- input
         if ("ModulesToLoad" %in% names(param)) {
-              for (i in seq_along(param$ModulesToLoad)) {
-                  args1$modules[names(param$ModulesToLoad[i])] <- param$ModulesToLoad[[i]]
-              }
-          }
+            for (i in seq_along(param$ModulesToLoad)) {
+                args1$modules[names(param$ModulesToLoad[i])] <- param$ModulesToLoad[[i]]
+            }
+        }
         args1 <- out_obj <- as(args1, "SYSargs2")
         out_msg <- c("yamlinput(args1)")
         path_file <- files(input_file)[["yml"]]
@@ -1511,8 +1596,8 @@ SYScreate <- function(class) {
         )
         return(as(SYS.empty, "SYSargsList"))
     } else if (!class %in% c("SYSargs2", "SYSargsList")) {
-          stop("Argument 'args' needs to be assigned an character 'SYSargs2' OR 'SYSargsList'")
-      }
+        stop("Argument 'args' needs to be assigned an character 'SYSargs2' OR 'SYSargsList'")
+    }
 }
 ## Usage:
 # list <- SYScreate("SYSargsList")
@@ -1534,11 +1619,11 @@ tryCMD <- function(command, silent = FALSE) {
         warning = function(w) {
             if (silent) invisible(return("error"))
             if (!silent) {
-                  cat(paste0(
-                      "ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
-                      "Please make sure to configure your PATH environment variable according to the software in use."
-                  ), "\n")
-              }
+                cat(paste0(
+                    "ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
+                    "Please make sure to configure your PATH environment variable according to the software in use."
+                ), "\n")
+            }
         }
     )
 }
@@ -1590,45 +1675,61 @@ evalCode <- function(infile, eval = TRUE, output) {
 ###################################
 ## Update CWL description files  ##
 ###################################
-cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE){
-  tempDir <- tempdir()
-  download.file(url="https://raw.githubusercontent.com/systemPipeR/cwl_collection/master/cwl/repo_version.txt", 
-                file.path(tempDir, "repo_version_new.txt"))
-  ## option for old vertions
-  if(force){
-    download.file(url="https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip", 
-                  file.path(tempDir, "cwl_collection-master.zip"))
-    unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
-    file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), to= file.path(destdir), overwrite = TRUE, recursive = TRUE) 
-    file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), to= file.path(destdir), overwrite = TRUE, recursive = TRUE) 
-    if(verbose) {
-      cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
-    }
-  } else {
-    ## Get version
-    new <- readLines(file.path(tempDir, "repo_version_new.txt"))
-    if(!file.exists(file.path(destdir, "cwl", "repo_version.txt"))){
-      if(verbose) cat(crayon::magenta("We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"), 
-                                      "\n", "OR please use the argument `force = TRUE`."))
-    } else {
-      current <- readLines(file.path(destdir, "cwl", "repo_version.txt"))
-      ## Dowload CWL repo
-      if (gsub(".*(\\d{1}).*", "\\1", current) < gsub(".*(\\d{1}).*", "\\1", new)){
-        if(verbose) cat(crayon::magenta("We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"), 
-                                        "\n", "Please update the param files for the latest version of systemPipeR."))
-        download.file(url="https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip", 
-                      file.path(tempDir, "cwl_collection-master.zip"))
+cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
+    tempDir <- tempdir()
+    download.file(
+        url = "https://raw.githubusercontent.com/systemPipeR/cwl_collection/master/cwl/repo_version.txt",
+        file.path(tempDir, "repo_version_new.txt")
+    )
+    ## option for old vertions
+    if (force) {
+        download.file(
+            url = "https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip",
+            file.path(tempDir, "cwl_collection-master.zip")
+        )
         unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
-        file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), 
-                  to = file.path(destdir), overwrite = TRUE, recursive = TRUE) 
-        file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), 
-                  to = file.path(destdir), overwrite = TRUE, recursive = TRUE) 
-        if(verbose) {
-          cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
+        file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
+        file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
+        if (verbose) {
+            cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
         }
-      }
+    } else {
+        ## Get version
+        new <- readLines(file.path(tempDir, "repo_version_new.txt"))
+        if (!file.exists(file.path(destdir, "cwl", "repo_version.txt"))) {
+            if (verbose) {
+                cat(crayon::magenta(
+                    "We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"),
+                    "\n", "OR please use the argument `force = TRUE`."
+                ))
+            }
+        } else {
+            current <- readLines(file.path(destdir, "cwl", "repo_version.txt"))
+            ## Dowload CWL repo
+            if (gsub(".*(\\d{1}).*", "\\1", current) < gsub(".*(\\d{1}).*", "\\1", new)) {
+                if (verbose) {
+                    cat(crayon::magenta(
+                        "We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"),
+                        "\n", "Please update the param files for the latest version of systemPipeR."
+                    ))
+                }
+                download.file(
+                    url = "https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip",
+                    file.path(tempDir, "cwl_collection-master.zip")
+                )
+                unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
+                file.copy(file.path(tempDir, "cwl_collection-master", "cwl"),
+                    to = file.path(destdir), overwrite = TRUE, recursive = TRUE
+                )
+                file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"),
+                    to = file.path(destdir), overwrite = TRUE, recursive = TRUE
+                )
+                if (verbose) {
+                    cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
+                }
+            }
+        }
     }
-  }
 }
 ## Usage
 # destdir <- "param/"
@@ -1649,16 +1750,16 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE){
     if (full_path) {
         x <- normalizePath(x)
         for (i in seq_along(x)) {
-          path_un <- unlist(strsplit(x[i], "/|\\\\"))
-          path <- path_un[path_un != basename(x[i])]
-          x[i] <- paste0(path, collapse = "/")
+            path_un <- unlist(strsplit(x[i], "/|\\\\"))
+            path <- path_un[path_un != basename(x[i])]
+            x[i] <- paste0(path, collapse = "/")
         }
     } else {
-      for (i in seq_along(x)) {
-        path_un <- unlist(strsplit(x[i], "/|\\\\"))
-        path <- path_un[path_un != basename(x[i])]
-        x[i] <- paste0(path[length(path)], collapse = "/")
-      }
+        for (i in seq_along(x)) {
+            path_un <- unlist(strsplit(x[i], "/|\\\\"))
+            path <- path_un[path_un != basename(x[i])]
+            x[i] <- paste0(path[length(path)], collapse = "/")
+        }
     }
     return(x)
 }
@@ -1763,9 +1864,10 @@ is.fullPath <- function(x) {
         dash_step <- unlist(stringr::str_split(input_steps[i], ":"))
         dash_parse <- unlist(lapply(dash_step, function(x) {
             which(t_lvl_name %in% x) %>% ifelse(length(.) > 0, ., stop(paste("Step", x, "is not found")))
-        })) %>% {
-            t_lvl_name[.[1]:.[2]]
-        }
+        })) %>%
+            {
+                t_lvl_name[.[1]:.[2]]
+            }
         dash_list <- append(dash_list, dash_parse)
     }
     # merge

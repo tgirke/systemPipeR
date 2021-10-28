@@ -136,7 +136,8 @@ runCommandline <- function(args, runid="01",
                                          format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
                           paste(sample(0:9, 4), collapse = "")))
     ## Sample status and Time
-    sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
+    sample_status <- sapply(names(cmdlist(args)), function(x) list(
+      sapply(args$files$steps, function(x) list(NULL))))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
     ## Check input
     if(length(args$inputvars) >= 1){
@@ -151,6 +152,16 @@ runCommandline <- function(args, runid="01",
     ## LOOP
     ## Targets input
     if (!is.null(input_targets)){
+      if(inherits(input_targets, c("numeric", "integer"))){
+        if(!all(input_targets %in% seq_along(cmdlist(args)))) 
+          stop("Please select the 'input_targets' number accordingly, options are: ", "\n",
+               "        ", paste0(seq_along(cmdlist(args)), collapse = ", "), call. = FALSE)
+      } else if(inherits(input_targets, "character")){
+        if(!all(input_targets %in% SampleName(args))) 
+          stop("Please select the 'input_targets' name accordingly, options are: ", "\n",
+               "        ", paste0(SampleName(args), collapse = ", "), call. = FALSE)
+        input_targets <- which(SampleName(args) %in% input_targets)
+      }
       input_targets <- input_targets
     } else {
       input_targets <- seq_along(cmdlist(args))
@@ -261,7 +272,7 @@ runCommandline <- function(args, runid="01",
       #args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
     ## Status and log.files
-    sample_status <- lapply(sample_status, function(x) if(is.null(x)) x <- "Pending" else x)
+    sample_status <- lapply(sample_status, function(x) lapply(x, function(y) if(is.null(y)) y <- "Pending" else y)) 
     df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
     colnames(df.status) <- files(args.return)$steps
     if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE,
