@@ -1,4 +1,10 @@
 changelog
+    version 2.1.1
+        - runCommandline function: 
+            - Fixed status/file.exists dataframe;
+            - input_targets improved.
+        - runWF function: run_step, ignore.dep and targets arguments added.
+        
     version 1.99.32
         - Updated importWF, sal2bash and sal2rmd functions
         - Updated plotWF function

@@ -136,10 +136,9 @@ runCommandline <- function(args, runid="01",
                                          format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
                           paste(sample(0:9, 4), collapse = "")))
     ## Sample status and Time
-    sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
+    sample_status <- sapply(names(cmdlist(args)), function(x) list(
+      sapply(args$files$steps, function(x) list(NULL))))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
-    ## Progress bar
-    pb <- utils::txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
     ## Check input
     if(length(args$inputvars) >= 1){
       inpVar <- args$inputvars
@@ -153,11 +152,22 @@ runCommandline <- function(args, runid="01",
     ## LOOP
     ## Targets input
     if (!is.null(input_targets)){
+      if(inherits(input_targets, c("numeric", "integer"))){
+        if(!all(input_targets %in% seq_along(cmdlist(args)))) 
+          stop("Please select the 'input_targets' number accordingly, options are: ", "\n",
+               "        ", paste0(seq_along(cmdlist(args)), collapse = ", "), call. = FALSE)
+      } else if(inherits(input_targets, "character")){
+        if(!all(input_targets %in% SampleName(args))) 
+          stop("Please select the 'input_targets' name accordingly, options are: ", "\n",
+               "        ", paste0(SampleName(args), collapse = ", "), call. = FALSE)
+        input_targets <- which(SampleName(args) %in% input_targets)
+      }
       input_targets <- input_targets
     } else {
       input_targets <- seq_along(cmdlist(args))
     }
-    
+    ## Progress bar
+    pb <- utils::txtProgressBar(min = 0, max = length(input_targets), style = 3)
     for(i in input_targets){
       utils::setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
@@ -199,8 +209,6 @@ runCommandline <- function(args, runid="01",
             cat(stdout$warning, file=file_log, sep = "\n", append=TRUE)
             sample_status[[i]][[args$files$steps[j]]] <- "Warning"
           } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
-            ## TODO: add here, if the file is not created, keep pending status
-            ## only if the files exists, replace to success
             sample_status[[i]][[args$files$steps[j]]] <- "Success"
           }
           ## close R chunk
@@ -211,20 +219,9 @@ runCommandline <- function(args, runid="01",
       }
       time_status$time_end[i] <- Sys.time()
     }
-    ## Status and log.files
-    df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
-    colnames(df.status) <- files(args.return)$steps
-    if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, force=force, dir.name=dir.name, del_sam = del_sam)$args_complete
-    check <- check.output(args)
-    df.status.f <- cbind(check, df.status)
-    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
     ## time
     time_status$time_start <- as.POSIXct(time_status$time_end, origin="1970-01-01")
     time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
-    ## updating object
-    args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
-    args.return[["status"]]$status.completed <- df.status.f
-    args.return[["status"]]$status.time <- time_status
     args.return[["files"]][["log"]] <- file_log
     ## Create recursive the subfolders
     if(dir==TRUE){
@@ -274,6 +271,20 @@ runCommandline <- function(args, runid="01",
       }
       #args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
+    ## Status and log.files
+    sample_status <- lapply(sample_status, function(x) lapply(x, function(y) if(is.null(y)) y <- "Pending" else y)) 
+    df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
+    colnames(df.status) <- files(args.return)$steps
+    if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE,
+                                              force=force, dir.name=dir.name, 
+                                              del_sam = del_sam)$args_complete
+    check <- check.output(args.return)
+    df.status.f <- cbind(check, df.status)
+    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
+    ## updating object
+    args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
+    args.return[["status"]]$status.completed <- df.status.f
+    args.return[["status"]]$status.time <- time_status
     ## double check output file
     cat("\n")
     cat(crayon::blue("---- Summary ----"), "\n")

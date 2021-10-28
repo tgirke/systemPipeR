@@ -8,9 +8,9 @@ test_that("check_catDB", {
     library("biomaRt")
     listMarts()  # To choose BioMart database
     listMarts(host = "plants.ensembl.org")
-    m <- useMart("plants_mart", host = "plants.ensembl.org")
+    m <- useMart("plants_mart", host = "https://plants.ensembl.org")
     listDatasets(m)
-    m <- useMart("plants_mart", dataset = "athaliana_eg_gene", host = "plants.ensembl.org")
+    m <- useMart("plants_mart", dataset = "athaliana_eg_gene", host = "https://plants.ensembl.org")
     listAttributes(m)  # Choose data types you want to download
     go <- getBM(attributes = c("go_id", "tair_locus", "namespace_1003"), mart = m)
     go <- go[go[, 3] != "", ]
@@ -35,3 +35,4 @@ test_that("check_catDB", {
      expect_type(catlist(catdb), "list")
      expect_type(idconv(catdb), "NULL")
 })
+

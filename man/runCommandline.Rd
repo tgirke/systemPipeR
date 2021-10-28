@@ -36,19 +36,19 @@ runCommandline(args, runid = "01", make_bam = FALSE, del_sam=TRUE, dir = TRUE,
     object of class \code{SYSargs2}.
 }
   \item{dir.name}{
-   Name of the workflow directory. Default is \code{dir.name=FALSE}. Note: This 
-   argument is required when the \code{dir=TRUE}.
+    Name of the workflow directory. Default is \code{dir.name=FALSE}. Note: This 
+    argument is required when the \code{dir=TRUE}.
 }
   \item{force}{
-   Internally, the function checks if the expected \code{output} files exist, 
-   and it skips the command lines when the respective files exist. If the 
-   argument \code{force} is set to \code{TRUE}, the command line will be 
-   executed and the files overwrite. Default is \code{force=FALSE}. 
+    Internally, the function checks if the expected \code{output} files exist, 
+    and it skips the command lines when the respective files exist. If the 
+    argument \code{force} is set to \code{TRUE}, the command line will be 
+    executed and the files overwrite. Default is \code{force=FALSE}. 
 }
   \item{input_targets}{
-    This option allows the selection of each sample that should be executed. 
-    Default is \code{NULL}, in which all the samples will be executed.
-
+    This option allows selecting which targets file and, by consequence which
+    command line will be executed. Default is \code{NULL}, in which all command 
+    lines will be executed.
 }
   \item{\dots}{
     Additional arguments to pass on to \code{runCommandline()}.
