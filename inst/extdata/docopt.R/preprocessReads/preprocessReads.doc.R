@@ -37,3 +37,4 @@ preprocessReads(FileName1 = opts$FileName1,
                 compress = compress)
 
 print("preprocessReads executed successfully")
+
