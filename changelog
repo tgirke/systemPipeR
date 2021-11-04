@@ -1,5 +1,8 @@
 changelog
     version 2.1.1
+        - preprocessReads updates
+        
+    version 2.1.1
         - runCommandline function: 
             - Fixed status/file.exists dataframe;
             - input_targets improved.
