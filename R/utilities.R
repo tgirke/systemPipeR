@@ -609,22 +609,54 @@ clusterRun <- function(args,
 ########################
 ## Read preprocessing ##
 ########################
-preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...) {
-  if (all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+preprocessReads <- function(args = NULL,
+                            FileName1 = NULL, FileName2 = NULL, 
+                            outfile1 = NULL, outfile2 = NULL, 
+                            Fct, batchsize = 100000, overwrite = TRUE, ...) {
+  ## Checking input either args or individual files
+  if(all(is.null(args) && is.null(FileName1) && is.null(outfile1)))
+    stop("At least one argument must be provided, either 'args' or 'FileName1' and 'outfile1'.")
+  ## Checking the function argument
   if (class(Fct) != "character") stop("Argument 'Fct' needs to be of class character")
-  if (class(args) == "SYSargs") {
-    colnames_args <- colnames(targetsout(args)) # SYSargs
-    outpaths <- outpaths(args) # SYSargs
-    targets_in <- targetsin(args)
-  } else if (class(args) == "SYSargs2") {
-    colnames_args <- colnames(targets.as.df(args$targets)) # SYSargs2
-    outpaths <- subsetWF(args = args, slot = "output", subset = 1, index = 1)
-    targets_in <- targets.as.df(args$targets)
+  if(!is.null(args)){
+    if (all(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+    if (class(args) == "SYSargs") {
+      colnames_args <- colnames(targetsout(args)) # SYSargs
+      targets_in <- targetsin(args)
+      if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
+        outpaths <- outpaths(args) # SYSargs
+      } else {
+        outpaths1 <- as.character(targetsout(args)$FileName1[i])
+        outpaths2 <- as.character(targetsout(args)$FileName2[i])
+      }
+    } else if (class(args) == "SYSargs2") {
+      colnames_args <- colnames(targets.as.df(args$targets)) # SYSargs2
+      targets_in <- targets.as.df(args$targets)
+      if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
+        outpaths <- subsetWF(args = args, slot = "output", subset = 1, index = 1)
+      } else {
+        outpaths1 <- subsetWF(args = args, slot = "output", subset = 1, index = 1)
+        outpaths2 <- subsetWF(args = args, slot = "output", subset = 1, index = 2)
+      }
+    }
+  } else if(!is.null(FileName1)){
+    if(!is.null(FileName2)){
+      colnames_args <- c("FileName1", "FileName2")
+      targets_in <- data.frame(FileName1, FileName2) 
+      if(is.null(outfile1) | is.null(outfile2)) stop("'outfile1' and 'outfile2' are required.")
+      outpaths1 <- outfile1
+      outpaths2 <- outfile2
+    } else {
+      colnames_args <- c("FileName")
+      targets_in <- data.frame(FileName1)
+      if(is.null(outfile1)) stop("'outfile1' is required.")
+      outpaths <- outfile1
+    }
   }
   ## Run function in loop over all fastq files
   ## Single end fastq files
   if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
-    for (i in seq(along = args)) {
+    for (i in seq(along = outpaths)) {
       outfile <- outpaths[i]
       ## Delete existing fastq files with same names, since writeFastq will append to them
       if (overwrite == TRUE) {
@@ -632,9 +664,9 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
       } else {
         if (any(file.exists(outfile))) stop(paste("File", outfile, "exists. Please delete file first or set overwrite=TRUE."))
       }
-      ## Run preprocessor function with FastqStreamer
+      ## Run preprocessor function with FastqStreamer 
       counter <- 0
-      f <- ShortRead::FastqStreamer(infile1(args)[i], batchsize)
+      f <- ShortRead::FastqStreamer(normalizePath(targets_in$FileName[i]), batchsize)
       while (length(fq <- ShortRead::yield(f))) {
         fqtrim <- eval(parse(text = Fct))
         ShortRead::writeFastq(fqtrim, outfile, mode = "a", ...)
@@ -646,16 +678,11 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
   }
   ## Paired end fastq files
   if (all(c("FileName1", "FileName2") %in% colnames_args)) {
-    for (i in seq(along = args)) {
+    for (i in seq(along = outpaths1)) {
       p1 <- as.character(targets_in$FileName1[i])
       p2 <- as.character(targets_in$FileName2[i])
-      if (class(args) == "SYSargs") {
-        p1out <- as.character(targetsout(args)$FileName1[i])
-        p2out <- as.character(targetsout(args)$FileName2[i])
-      } else if (class(args) == "SYSargs2") {
-        p1out <- args$output[[i]][[1]][[1]]
-        p2out <- args$output[[i]][[1]][[2]]
-      }
+      p1out <- as.character(outpaths1[i])
+      p2out <- as.character(outpaths2[i])
       ## Delete existing fastq files with same names, since writeFastq will append to them
       if (overwrite == TRUE) {
         if (any(file.exists(p1out))) unlink(p1out)
@@ -702,7 +729,14 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
   }
 }
 ## Usage:
-# preprocessReads(args=args, Fct="trimLRPatterns(Rpattern="GCCCGGGTAA", subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+# preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+# preprocessReads(FileName1 = "data/SRR446027_1.fastq.gz", FileName2 = NULL, 
+#                  outfile1 = "results/SRR446027_1.fastq_trim.gz", outfile2 = NULL, 
+#                  Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+# 
+# preprocessReads(FileName1 = "data/SRR446027_1.fastq.gz", FileName2 = "data/SRR446027_2.fastq.gz",
+#                  outfile1 = "results/SRR446027_1.fastq_trim.gz", outfile2 = "results/SRR446027_2.fastq_trim.gz",
+#                  Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
 
 ##################################################################
 ## Function to create sym links to bam files for viewing in IGV ##

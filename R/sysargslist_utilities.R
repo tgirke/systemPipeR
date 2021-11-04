@@ -101,7 +101,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
             "\n",
             "For accurate location of the files and running the Workflow, please set the working directory to ",
             "\n",
-            paste0("'setwd(", projPath, ")'")
+            paste0("'setwd('", projPath, "')'")
         ))
     }
     return(init)
