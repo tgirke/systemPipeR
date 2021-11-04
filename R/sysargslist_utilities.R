@@ -1679,9 +1679,9 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
     tempDir <- tempdir()
     download.file(
         url = "https://raw.githubusercontent.com/systemPipeR/cwl_collection/master/cwl/repo_version.txt",
-        file.path(tempDir, "repo_version_new.txt")
+        file.path(tempDir, "repo_version_new.txt"), quiet = TRUE
     )
-    ## option for old vertions
+    ## option for old versions
     if (force) {
         download.file(
             url = "https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip",
@@ -1705,17 +1705,11 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
             }
         } else {
             current <- readLines(file.path(destdir, "cwl", "repo_version.txt"))
-            ## Dowload CWL repo
-            if (gsub(".*(\\d{1}).*", "\\1", current) < gsub(".*(\\d{1}).*", "\\1", new)) {
-                if (verbose) {
-                    cat(crayon::magenta(
-                        "We expect a file called:", file.path(destdir, "cwl", "repo_version.txt"),
-                        "\n", "Please update the param files for the latest version of systemPipeR."
-                    ))
-                }
+            ## Download CWL repo
+            if (as.numeric(sub(".*\\.", "", current)) < as.numeric(sub(".*\\.", "", new))) {
                 download.file(
                     url = "https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip",
-                    file.path(tempDir, "cwl_collection-master.zip")
+                    file.path(tempDir, "cwl_collection-master.zip"), quiet = TRUE
                 )
                 unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
                 file.copy(file.path(tempDir, "cwl_collection-master", "cwl"),
@@ -1725,8 +1719,13 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
                     to = file.path(destdir), overwrite = TRUE, recursive = TRUE
                 )
                 if (verbose) {
-                    cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
+                    cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!", "\n", 
+                                        new))
                 }
+            } else {
+              if (verbose) {
+                cat(crayon::magenta("Already up to date.", "\n", new))
+              }
             }
         }
     }
