@@ -1,0 +1,25 @@
+##########################################
+##   preprocessReads-Single_end.yml    ##
+#########################################
+results_path:
+  class: Directory
+  path: ./results
+
+rscript_preprocessReads:
+  class: File
+  path: ./param/docopt.R/preprocessReads/preprocessReads.doc.R
+
+fq1:
+  class: File
+  path: _FASTQ_PATH1_
+  
+SampleName: _SampleName_
+
+Fct: '''trimLRPatterns(Rpattern="GCCCGGGTAA", subject=fq)'''
+
+batchsize: 100000
+
+overwrite: TRUE
+
+compress: TRUE
+
