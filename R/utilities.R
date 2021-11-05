@@ -136,10 +136,9 @@ runCommandline <- function(args, runid="01",
                                          format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
                           paste(sample(0:9, 4), collapse = "")))
     ## Sample status and Time
-    sample_status <- sapply(names(cmdlist(args)), function(x) list(NULL))
+    sample_status <- sapply(names(cmdlist(args)), function(x) list(
+      sapply(args$files$steps, function(x) list(NULL))))
     time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
-    ## Progress bar
-    pb <- utils::txtProgressBar(min = 0, max = length(cmdlist(args)), style = 3)
     ## Check input
     if(length(args$inputvars) >= 1){
       inpVar <- args$inputvars
@@ -153,11 +152,22 @@ runCommandline <- function(args, runid="01",
     ## LOOP
     ## Targets input
     if (!is.null(input_targets)){
+      if(inherits(input_targets, c("numeric", "integer"))){
+        if(!all(input_targets %in% seq_along(cmdlist(args)))) 
+          stop("Please select the 'input_targets' number accordingly, options are: ", "\n",
+               "        ", paste0(seq_along(cmdlist(args)), collapse = ", "), call. = FALSE)
+      } else if(inherits(input_targets, "character")){
+        if(!all(input_targets %in% SampleName(args))) 
+          stop("Please select the 'input_targets' name accordingly, options are: ", "\n",
+               "        ", paste0(SampleName(args), collapse = ", "), call. = FALSE)
+        input_targets <- which(SampleName(args) %in% input_targets)
+      }
       input_targets <- input_targets
     } else {
       input_targets <- seq_along(cmdlist(args))
     }
-    
+    ## Progress bar
+    pb <- utils::txtProgressBar(min = 0, max = length(input_targets), style = 3)
     for(i in input_targets){
       utils::setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
@@ -199,8 +209,6 @@ runCommandline <- function(args, runid="01",
             cat(stdout$warning, file=file_log, sep = "\n", append=TRUE)
             sample_status[[i]][[args$files$steps[j]]] <- "Warning"
           } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
-            ## TODO: add here, if the file is not created, keep pending status
-            ## only if the files exists, replace to success
             sample_status[[i]][[args$files$steps[j]]] <- "Success"
           }
           ## close R chunk
@@ -211,20 +219,9 @@ runCommandline <- function(args, runid="01",
       }
       time_status$time_end[i] <- Sys.time()
     }
-    ## Status and log.files
-    df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
-    colnames(df.status) <- files(args.return)$steps
-    if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, force=force, dir.name=dir.name, del_sam = del_sam)$args_complete
-    check <- check.output(args)
-    df.status.f <- cbind(check, df.status)
-    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
     ## time
     time_status$time_start <- as.POSIXct(time_status$time_end, origin="1970-01-01")
     time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
-    ## updating object
-    args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
-    args.return[["status"]]$status.completed <- df.status.f
-    args.return[["status"]]$status.time <- time_status
     args.return[["files"]][["log"]] <- file_log
     ## Create recursive the subfolders
     if(dir==TRUE){
@@ -274,6 +271,20 @@ runCommandline <- function(args, runid="01",
       }
       #args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
     }
+    ## Status and log.files
+    sample_status <- lapply(sample_status, function(x) lapply(x, function(y) if(is.null(y)) y <- "Pending" else y)) 
+    df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
+    colnames(df.status) <- files(args.return)$steps
+    if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE,
+                                              force=force, dir.name=dir.name, 
+                                              del_sam = del_sam)$args_complete
+    check <- check.output(args.return)
+    df.status.f <- cbind(check, df.status)
+    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
+    ## updating object
+    args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
+    args.return[["status"]]$status.completed <- df.status.f
+    args.return[["status"]]$status.time <- time_status
     ## double check output file
     cat("\n")
     cat(crayon::blue("---- Summary ----"), "\n")
@@ -598,22 +609,54 @@ clusterRun <- function(args,
 ########################
 ## Read preprocessing ##
 ########################
-preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...) {
-  if (all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+preprocessReads <- function(args = NULL,
+                            FileName1 = NULL, FileName2 = NULL, 
+                            outfile1 = NULL, outfile2 = NULL, 
+                            Fct, batchsize = 100000, overwrite = TRUE, ...) {
+  ## Checking input either args or individual files
+  if(all(is.null(args) && is.null(FileName1) && is.null(outfile1)))
+    stop("At least one argument must be provided, either 'args' or 'FileName1' and 'outfile1'.")
+  ## Checking the function argument
   if (class(Fct) != "character") stop("Argument 'Fct' needs to be of class character")
-  if (class(args) == "SYSargs") {
-    colnames_args <- colnames(targetsout(args)) # SYSargs
-    outpaths <- outpaths(args) # SYSargs
-    targets_in <- targetsin(args)
-  } else if (class(args) == "SYSargs2") {
-    colnames_args <- colnames(targets.as.df(args$targets)) # SYSargs2
-    outpaths <- subsetWF(args = args, slot = "output", subset = 1, index = 1)
-    targets_in <- targets.as.df(args$targets)
+  if(!is.null(args)){
+    if (all(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+    if (class(args) == "SYSargs") {
+      colnames_args <- colnames(targetsout(args)) # SYSargs
+      targets_in <- targetsin(args)
+      if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
+        outpaths <- outpaths(args) # SYSargs
+      } else {
+        outpaths1 <- as.character(targetsout(args)$FileName1[i])
+        outpaths2 <- as.character(targetsout(args)$FileName2[i])
+      }
+    } else if (class(args) == "SYSargs2") {
+      colnames_args <- colnames(targets.as.df(args$targets)) # SYSargs2
+      targets_in <- targets.as.df(args$targets)
+      if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
+        outpaths <- subsetWF(args = args, slot = "output", subset = 1, index = 1)
+      } else {
+        outpaths1 <- subsetWF(args = args, slot = "output", subset = 1, index = 1)
+        outpaths2 <- subsetWF(args = args, slot = "output", subset = 1, index = 2)
+      }
+    }
+  } else if(!is.null(FileName1)){
+    if(!is.null(FileName2)){
+      colnames_args <- c("FileName1", "FileName2")
+      targets_in <- data.frame(FileName1, FileName2) 
+      if(is.null(outfile1) | is.null(outfile2)) stop("'outfile1' and 'outfile2' are required.")
+      outpaths1 <- outfile1
+      outpaths2 <- outfile2
+    } else {
+      colnames_args <- c("FileName")
+      targets_in <- data.frame(FileName1)
+      if(is.null(outfile1)) stop("'outfile1' is required.")
+      outpaths <- outfile1
+    }
   }
   ## Run function in loop over all fastq files
   ## Single end fastq files
   if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
-    for (i in seq(along = args)) {
+    for (i in seq(along = outpaths)) {
       outfile <- outpaths[i]
       ## Delete existing fastq files with same names, since writeFastq will append to them
       if (overwrite == TRUE) {
@@ -621,9 +664,9 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
       } else {
         if (any(file.exists(outfile))) stop(paste("File", outfile, "exists. Please delete file first or set overwrite=TRUE."))
       }
-      ## Run preprocessor function with FastqStreamer
+      ## Run preprocessor function with FastqStreamer 
       counter <- 0
-      f <- ShortRead::FastqStreamer(infile1(args)[i], batchsize)
+      f <- ShortRead::FastqStreamer(normalizePath(targets_in$FileName[i]), batchsize)
       while (length(fq <- ShortRead::yield(f))) {
         fqtrim <- eval(parse(text = Fct))
         ShortRead::writeFastq(fqtrim, outfile, mode = "a", ...)
@@ -635,16 +678,11 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
   }
   ## Paired end fastq files
   if (all(c("FileName1", "FileName2") %in% colnames_args)) {
-    for (i in seq(along = args)) {
+    for (i in seq(along = outpaths1)) {
       p1 <- as.character(targets_in$FileName1[i])
       p2 <- as.character(targets_in$FileName2[i])
-      if (class(args) == "SYSargs") {
-        p1out <- as.character(targetsout(args)$FileName1[i])
-        p2out <- as.character(targetsout(args)$FileName2[i])
-      } else if (class(args) == "SYSargs2") {
-        p1out <- args$output[[i]][[1]][[1]]
-        p2out <- args$output[[i]][[1]][[2]]
-      }
+      p1out <- as.character(outpaths1[i])
+      p2out <- as.character(outpaths2[i])
       ## Delete existing fastq files with same names, since writeFastq will append to them
       if (overwrite == TRUE) {
         if (any(file.exists(p1out))) unlink(p1out)
@@ -691,7 +729,14 @@ preprocessReads <- function(args, Fct, batchsize = 100000, overwrite = TRUE, ...
   }
 }
 ## Usage:
-# preprocessReads(args=args, Fct="trimLRPatterns(Rpattern="GCCCGGGTAA", subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+# preprocessReads(args=args, Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+# preprocessReads(FileName1 = "data/SRR446027_1.fastq.gz", FileName2 = NULL, 
+#                  outfile1 = "results/SRR446027_1.fastq_trim.gz", outfile2 = NULL, 
+#                  Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
+# 
+# preprocessReads(FileName1 = "data/SRR446027_1.fastq.gz", FileName2 = "data/SRR446027_2.fastq.gz",
+#                  outfile1 = "results/SRR446027_1.fastq_trim.gz", outfile2 = "results/SRR446027_2.fastq_trim.gz",
+#                  Fct="trimLRPatterns(Rpattern='GCCCGGGTAA', subject=fq)", batchsize=100000, overwrite=TRUE, compress=TRUE)
 
 ##################################################################
 ## Function to create sym links to bam files for viewing in IGV ##

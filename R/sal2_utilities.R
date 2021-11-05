@@ -120,13 +120,13 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
         "```{r ", step_name, ", eval=FALSE, spr='r'",
         if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
         if (req == "optional") paste0(", spr.req='optional'") else paste0(", spr.req='mandatory'"),
-        if (session == "cluster") paste0(", spr.ses='cluster'") else paste0(", spr.ses='rsession'"),
+        if (session == "remote") paste0(", spr.ses='remote'") else paste0(", spr.ses='local'"),
         "}",
         collapse = ""
     )
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
     rep_code <- if (req == "optional") paste0("    run_step = c('optional'),") else paste0("    run_step = c('mandatory'),")
-    ses_code <- if (session == "cluster") paste0("    run_session = c('cluster'),") else paste0("    run_session = c('rsession'))")
+    ses_code <- if (session == "remote") paste0("    run_session = c('remote'),") else paste0("    run_session = c('local'))")
     rcode <- c(
         paste0("# Step", i, " ", step_name, collapse = ""),
         header,
@@ -158,14 +158,14 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
         "```{r ", step_name, ", eval=FALSE, spr='sysargs'",
         if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
         if (req == "optional") paste0(", spr.req='optional'") else paste0(", spr.req='mandatory'"),
-        if (session == "cluster") paste0(", spr.ses='cluster'") else paste0(", spr.ses='rsession'"),
+        if (session == "remote") paste0(", spr.ses='remote'") else paste0(", spr.ses='local'"),
         "}",
         collapse = ""
     )
     name_code <- paste0("    step_name = '", step_name, "',")
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
     rep_code <- if (req == "optional") paste0("    run_step = c('optional'),") else paste0("    run_step = c('mandatory'),")
-    ses_code <- if (session == "cluster") paste0("    run_session = c('cluster'),") else paste0("    run_session = c('rsession')")
+    ses_code <- if (session == "remote") paste0("    run_session = c('remote'),") else paste0("    run_session = c('local')")
     targets_text <- if (!is.na(sal$stepsWF[[i]]$files$targets)) {
         paste0('    targets = "', sal$stepsWF[[i]]$files$targets, '",')
     } else if (!is.null(t_con)) {
