@@ -542,17 +542,17 @@ makeDot <- function(df,
 #' @param show_main show main steps legend?
 .addDotLegend <- function(show_main = TRUE) {
     paste0(
-        '        subgraph cluster_legend {
+        '        subgraph remote_legend {
         rankdir=TB;
         color="#eeeeee";
         style=filled;
         ranksep =1
         node [style=filled, fontsize=10];
-         {rank=same; legend_rstep; legend_mandatory; legend_rsession}
-        {rank=same; legend_sysargs_step; legend_optional; legend_cluster}
-        legend_rstep -> legend_mandatory -> legend_rsession ->legend_sysargs_step -> legend_optional -> legend_cluster[color="#EEEEEEE"]
+         {rank=same; legend_rstep; legend_mandatory; legend_local}
+        {rank=same; legend_sysargs_step; legend_optional; legend_remote}
+        legend_rstep -> legend_mandatory -> legend_local ->legend_sysargs_step -> legend_optional -> legend_remote[color="#EEEEEEE"]
 
-        legend_cluster -> step_state[color="#eeeeee"];
+        legend_remote -> step_state[color="#eeeeee"];
         step_state[style="filled", shape="box" color=white, label =<
             <table>
             <tr><td><b>Step Colors</b></td></tr>
@@ -563,10 +563,10 @@ makeDot <- function(df,
         fontsize = 30;
         legend_rstep[label=<<b>    R step    </b>>, style="filled", fillcolor="#EEEEEE"];
         legend_mandatory[label=<<b>Mandatory</b>>, style="filled", fillcolor="#d3d6eb"];
-        legend_rsession[label=<<b>R session</b>>, style="filled", fillcolor="#EEEEEE"];
+        legend_local[label=<<b>R session</b>>, style="filled", fillcolor="#EEEEEE"];
         legend_sysargs_step[label=<<b>sysargs step</b>> style="rounded, filled", shape="box", fillcolor="#EEEEEE"];
         legend_optional[label=<<b>Optional</b>> style="rounded, filled", fillcolor=white];
-        legend_cluster[label=<<b>cluster</b>> style="filled, dashed", fillcolor="#EEEEEE"];
+        legend_remote[label=<<b>remote</b>> style="filled, dashed", fillcolor="#EEEEEE"];
     }\n'
     )
 }
@@ -585,7 +585,7 @@ makeDot <- function(df,
 #' @param time_start POSIXct, step starting time
 #' @param time_end POSIXct, step ending time
 #' @param req one of mandatory or optional
-#' @param session one of rsession, or cluster
+#' @param session one of local, or remote
 #' @param in_log bool, if this plot is used in log file
 .addNodeDecor <- function(
     steps, has_run, success, spr, sample_pass, sample_warn,
@@ -599,9 +599,9 @@ makeDot <- function(df,
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
             if(req[i] == "mandatory") 'fillcolor="#d3d6eb" ' else "",
-            if(req[i] == "mandatory" && session[i] == "cluster") 'style="filled, dashed" '
-            else if(req[i] == "mandatory" && session[i] != "cluster") 'style="filled, '
-            else if(req[i] != "mandatory" && session[i] == "cluster") 'style="dashed, '
+            if(req[i] == "mandatory" && session[i] == "remote") 'style="filled, dashed" '
+            else if(req[i] == "mandatory" && session[i] != "remote") 'style="filled, '
+            else if(req[i] != "mandatory" && session[i] == "remote") 'style="dashed, '
             else 'style="solid, ',
             if(spr[i] == "sysargs") 'rounded" ' else '"',
             "label=<<b>",
@@ -657,7 +657,7 @@ makeDot <- function(df,
             dep = NA,
             spr = "sysargs",
             req = "mandatory",
-            session = "rsession",
+            session = "local",
             has_run = FALSE,
             success = FALSE,
             sample_pass = 0,

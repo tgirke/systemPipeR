@@ -126,7 +126,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                         dir = TRUE,
                         dependency = NA,
                         run_step = "mandatory",
-                        run_session = "rsession",
+                        run_session = "local",
                         silent = FALSE, projPath = getOption("projPath", getwd())) {
     ## step_name and dependency from importWF
     on.exit({
@@ -141,7 +141,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
     }
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
-    run_session <- match.arg(run_session, c("rsession", "cluster"))
+    run_session <- match.arg(run_session, c("local", "remote"))
     sal <- as(SYScreate("SYSargsList"), "list")
     ## Empty container
     if (all(is.null(sysargs) && is.null(wf_file) && is.null(input_file))) {
