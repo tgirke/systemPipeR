@@ -10,7 +10,7 @@ hints:
   SoftwareRequirement:
     packages:
     - package: trim_galore
-      version: [ 0.6.7 ]
+      version: [ 0.6.5 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
