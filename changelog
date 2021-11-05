@@ -1,5 +1,8 @@
 changelog
-    version 2.1.1
+    version 2.1.3
+        - yamlinput methods update
+        
+    version 2.1.2
         - preprocessReads updates
         
     version 2.1.1
