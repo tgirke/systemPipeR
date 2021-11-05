@@ -264,8 +264,12 @@ setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, ste
 })
 
 setMethod(f = "yamlinput", signature = "SYSargsList", definition = function(x, step) {
-    if (length(step) > 1) stop("Please provide one step at a time.", call. = FALSE)
-    if(!step %in% seq_along(x)) stop("'step' cannot be found in the workflow", call. = FALSE)
+  if (length(step) > 1) stop("Please provide one step at a time.", call. = FALSE)
+    if(inherits(step, "character")){
+      if(!step %in% stepName(x)) stop("'step' cannot be found in the workflow", call. = FALSE)
+    } else if(inherits(step, "numeric")){
+      if(!step %in% seq_along(x)) stop("'step' cannot be found in the workflow", call. = FALSE)
+    }
     if (inherits(stepsWF(x)[[step]], "LineWise")) stop("Provide a step with a 'SYSargs2' class instance", call. = FALSE)
     stepsWF(x)[[step]]$yamlinput
 })
