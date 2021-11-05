@@ -98,7 +98,7 @@ SYSargsList(sysargs = NULL, step_name = "default",
             inputvars = NULL, rm_targets_col = NULL, 
             dir = TRUE, dependency = NA, 
             run_step = "mandatory",
-            run_session = "rsession",
+            run_session = "local",
             silent = FALSE, 
             projPath = getOption("projPath", getwd()))
 
@@ -193,7 +193,7 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   character. If the step has "mandatory" or "optional" flag for the execution.
 }
   \item{run_session}{
-  character. If the step has "rsession" or "cluster" flag for the execution.
+  character. If the step has "local" or "remote" flag for the execution.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
