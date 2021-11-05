@@ -404,6 +404,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     force = force, input_targets = targets,
                     ...
                 )
+                targets <- NULL
                 cat(readLines(args.run$files$log),
                     file = file_log, sep = "\n",
                     append = TRUE
