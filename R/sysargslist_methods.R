@@ -1095,11 +1095,11 @@ setReplaceMethod(
     }
 )
 
-# setReplaceMethod(
-# 	f = "runInfo", signature = c("SYSargsList"),
-# 	definition = function(x, step, param, ..., value) {
-# 		x@runInfo$runOption[[step]]$param <- value
-# 		x <- .check_write_SYSargsList(x)
-# 		x
-# 	}
-# )
+setReplaceMethod(
+	f = "runInfo", signature = c("SYSargsList"),
+	definition = function(x, step, param, ..., value) {
+		x@runInfo$runOption[[step]]$param <- value
+		x <- .check_write_SYSargsList(x)
+		x
+	}
+)
