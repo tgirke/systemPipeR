@@ -485,6 +485,9 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     return(args2)
 }
 
+###########################
+## status_color function ##
+##########################
 status_color <- function(x) {
     switch(x,
         "Pending" = crayon::bgBlue,
