@@ -223,6 +223,10 @@ runCommandline <- function(args, runid="01",
     time_status$time_start <- as.POSIXct(time_status$time_end, origin="1970-01-01")
     time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
     args.return[["files"]][["log"]] <- file_log
+    ## In the case of make_bam=TRUE
+    if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE,
+                                              force=force, dir.name=dir.name, 
+                                              del_sam = del_sam)$args_complete
     ## Create recursive the subfolders
     if(dir==TRUE){
       for(i in seq_along(names(cmdlist(args)))){
@@ -275,9 +279,6 @@ runCommandline <- function(args, runid="01",
     sample_status <- lapply(sample_status, function(x) lapply(x, function(y) if(is.null(y)) y <- "Pending" else y)) 
     df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
     colnames(df.status) <- files(args.return)$steps
-    if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE,
-                                              force=force, dir.name=dir.name, 
-                                              del_sam = del_sam)$args_complete
     check <- check.output(args.return)
     df.status.f <- cbind(check, df.status)
     df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
