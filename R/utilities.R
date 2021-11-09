@@ -220,7 +220,7 @@ runCommandline <- function(args, runid="01",
       time_status$time_end[i] <- Sys.time()
     }
     ## time
-    time_status$time_start <- as.POSIXct(time_status$time_end, origin="1970-01-01")
+    time_status$time_start <- as.POSIXct(time_status$time_start, origin="1970-01-01")
     time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
     args.return[["files"]][["log"]] <- file_log
     ## In the case of make_bam=TRUE
@@ -281,7 +281,9 @@ runCommandline <- function(args, runid="01",
     colnames(df.status) <- files(args.return)$steps
     check <- check.output(args.return)
     df.status.f <- cbind(check, df.status)
-    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)],as.numeric)
+    df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)], as.numeric)
+    df.status.f[c(5:ncol(df.status.f))] <- sapply(df.status.f[c(5:ncol(df.status.f))], as.character)
+    rownames(df.status.f) <- df.status.f$Targets
     ## updating object
     args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
     args.return[["status"]]$status.completed <- df.status.f

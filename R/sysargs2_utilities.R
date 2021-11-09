@@ -40,7 +40,6 @@ loadWorkflow <- function(targets = NULL, wf_file, input_file, dir_path = "param/
     if (tolower(wf$class) == "workflow") {
         steps <- names(wf$steps)
         cwlfiles$steps <- steps
-        # cltpaths <- sapply(seq_along(steps), function(x) normalizePath(file.path(dir_path, wf$steps[[steps[x]]]$run)))
         cltpaths <- sapply(seq_along(steps), function(x) file.path(dir_path, wf$steps[[steps[x]]]$run))
         names(cltpaths) <- strsplit(basename(cltpaths), ".cwl")
         cwlfiles$cltpaths <- cltpaths

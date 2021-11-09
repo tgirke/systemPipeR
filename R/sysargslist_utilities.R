@@ -648,7 +648,7 @@ output.as.df <- function(x) {
 #############################
 .statusSummary <- function(args) {
     if (inherits(args, "SYSargs2")) {
-        step.status.summary <- args$status$status
+        step.status.summary <- args$status$status.completed
     } else if (inherits(args, "data.frame")) {
         step.status.summary <- args[5:ncol(args)]
     } else {
@@ -1000,25 +1000,33 @@ readSE <- function(dir.path, dir.name) {
 #############################
 .statusPending <- function(args) {
     status.pending <- check.output(args)
+    ## function
+    .statusSYSargs2 <- function(args, status.pending){
+    	pending <- sapply(args$files$steps, function(x) list(x = "Pending"))
+      pending <- data.frame(matrix(unlist(pending), ncol = length(pending), byrow = TRUE), stringsAsFactors = TRUE)
+    	colnames(pending) <- args$files$steps
+    	status.pending <- cbind(status.pending, pending)
+    	rownames(status.pending) <- status.pending$Targets
+    	status.pending[c(2:4)] <- sapply(status.pending[c(2:4)], as.numeric)
+    	status.pending[c(5:ncol(status.pending))] <- sapply(status.pending[c(5:ncol(status.pending))], as.character)
+    	pendingList <- list(
+    		status.summary = .statusSummary(status.pending),
+    		status.completed = status.pending, status.time = data.frame()
+    	)
+    }
     if (inherits(args, "SYSargsList")) {
         for (i in seq_along(status.pending)) {
-            pending <- sapply(stepsWF(args)[[i]]$files$steps, function(x) list(x = "Pending"))
-            pending <- data.frame(matrix(unlist(pending), ncol = length(pending), byrow = TRUE), stringsAsFactors = TRUE)
-            colnames(pending) <- stepsWF(args)[[i]]$files$steps
-            status.pending[[i]] <- cbind(status.pending[[i]], pending)
+        	print(i)
+        	if(inherits(args$stepsWF[[i]], "SYSargs2")){
+        		status.pending[[i]] <- .statusSYSargs2(args$stepsWF[[i]], status.pending[[i]])
+        		print(status.pending[[i]])
+        	}
         }
+    	pendingList <- status.pending
     } else if (inherits(args, "SYSargs2")) {
-        pending <- sapply(args$files$steps, function(x) list(x = "Pending"))
-        pending <- data.frame(matrix(unlist(pending), ncol = length(pending), byrow = TRUE), stringsAsFactors = TRUE)
-        colnames(pending) <- args$files$steps
-        status.pending <- cbind(status.pending, pending)
+    	pendingList <- .statusSYSargs2(args, status.pending)
     }
-    status.pending[c(2:4)] <- sapply(status.pending[c(2:4)], as.numeric)
-    pendingList <- list(
-        status.summary = .statusSummary(status.pending),
-        status.completed = status.pending, status.time = data.frame()
-    )
-    return(pendingList)
+   return(pendingList)
 }
 
 ##########################
