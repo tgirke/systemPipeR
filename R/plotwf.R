@@ -542,7 +542,7 @@ makeDot <- function(df,
 #' @param show_main show main steps legend?
 .addDotLegend <- function(show_main = TRUE) {
     paste0(
-        '        subgraph remote_legend {
+        '        subgraph cluster_legend {
         rankdir=TB;
         color="#eeeeee";
         style=filled;
@@ -563,10 +563,10 @@ makeDot <- function(df,
         fontsize = 30;
         legend_rstep[label=<<b>    R step    </b>>, style="filled", fillcolor="#EEEEEE"];
         legend_mandatory[label=<<b>Mandatory</b>>, style="filled", fillcolor="#d3d6eb"];
-        legend_local[label=<<b>R session</b>>, style="filled", fillcolor="#EEEEEE"];
+        legend_local[label=<<b>Local</b>>, style="filled", fillcolor="#EEEEEE"];
         legend_sysargs_step[label=<<b>sysargs step</b>> style="rounded, filled", shape="box", fillcolor="#EEEEEE"];
         legend_optional[label=<<b>Optional</b>> style="rounded, filled", fillcolor=white];
-        legend_remote[label=<<b>remote</b>> style="filled, dashed", fillcolor="#EEEEEE"];
+        legend_remote[label=<<b>Remote</b>> style="filled, dashed", fillcolor="#EEEEEE"];
     }\n'
     )
 }
@@ -599,7 +599,7 @@ makeDot <- function(df,
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
             if(req[i] == "mandatory") 'fillcolor="#d3d6eb" ' else "",
-            if(req[i] == "mandatory" && session[i] == "remote") 'style="filled, dashed" '
+            if(req[i] == "mandatory" && session[i] == "remote") 'style="filled, dashed, '
             else if(req[i] == "mandatory" && session[i] != "remote") 'style="filled, '
             else if(req[i] != "mandatory" && session[i] == "remote") 'style="dashed, '
             else 'style="solid, ',
