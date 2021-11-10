@@ -51,6 +51,8 @@
 \alias{targetsheader,SYSargsList-method}
 \alias{yamlinput}
 \alias{yamlinput,SYSargsList-method}
+\alias{addResources}
+\alias{addResources,SYSargsList-method}
 % Methods LineWise
 \alias{codeLine}
 \alias{codeLine,SYSargsList-method}

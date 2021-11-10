@@ -157,7 +157,7 @@ exportMethods(
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SE",
     "dependency", "projectInfo", "runInfo",
     "sysargslist", "subset", "stepName", "getColumn", "updateColumn<-",
-    "SampleName", "viewEnvir", "copyEnvir",
+    "SampleName", "viewEnvir", "copyEnvir", "addResources",
     "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
     "updateStatus<-", "runInfo<-",
     ## LineWise
