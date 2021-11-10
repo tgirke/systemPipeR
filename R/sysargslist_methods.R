@@ -28,6 +28,10 @@ setMethod(f = "runInfo", signature = "SYSargsList", definition = function(x) {
     return(x@runInfo)
 })
 
+#####################################
+## Coerce Methods for SYSargsList ##
+#####################################
+
 ## Coerce back to list: as(SYSargsList, "list")
 setMethod(f = "sysargslist", signature = "SYSargsList", definition = function(x) {
     sysargslist <- list(
@@ -69,6 +73,10 @@ setAs(
         sysargslist(from)
 })
 
+#####################################
+## Generic Methods for SYSargsList ##
+#####################################
+
 ## Define print behavior for SYSargsList
 setMethod(
     f = "show", signature = "SYSargsList",
@@ -85,6 +93,7 @@ setMethod(
         )
 })
 
+## Internal function
 .showHelper <- function(object) {
     status_1 <- as.character()
     for (i in seq_along(object@stepsWF)) {
@@ -412,6 +421,7 @@ setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x, st
     }
 })
 
+## Internak function
 .StepClass <- function(x, class = c("SYSargs2", "LineWise"), step) {
     x_class <- sapply(stepsWF(x), function(y) class(y))
     if (any(class(step) == c("numeric", "integer"))) {
@@ -426,14 +436,15 @@ setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x, st
     }
 }
 
-## viewEnvir() methods for SYSargslist
+## viewEnvir() methods for SYSargsList
 setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x) {
     print(x@runInfo$env)
     print(ls(x@runInfo$env, all.names = TRUE))
 })
 
-## copyEnvir() methods for SYSargslist
-setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, list = character(), new.env = globalenv(), silent=FALSE) {
+## copyEnvir() methods for SYSargsList
+setMethod(f = "copyEnvir", signature = "SYSargsList", 
+					definition = function(x, list = character(), new.env = globalenv(), silent=FALSE) {
     envir <- x@runInfo$env
     if(!silent) print(envir)
     if (length(list) == 0) {
@@ -446,6 +457,52 @@ setMethod(f = "copyEnvir", signature = "SYSargsList", definition = function(x, l
     }
     if(!silent) cat(paste0("Copying to 'new.env': ", "\n", paste0(list, collapse = ", ")))
 })
+
+## addResources() methods for SYSargsList
+setMethod(f = "addResources", signature = "SYSargsList", 
+					definition = function(x, steps, resources) {
+	# Validations
+	if (!inherits(x, "SYSargsList")) 
+		stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
+	## Check steps
+	if (inherits(steps, "numeric")) {
+		if (!all(steps %in% seq_along(x))) {
+			stop(
+				"Please select the 'steps' number accordingly, options are: ", "\n",
+				"        ", paste0(seq_along(x), collapse = ", ")
+			)
+		}
+	} else if (inherits(steps, "character")) {
+		if (!all(steps %in% stepName(x))) {
+			stop(
+				"Please select the 'steps' name accordingly, options are: ", "\n",
+				"        ", paste0(stepName(x), collapse = ", ")
+			)
+		}
+		steps <- which(stepName(x) %in% steps)
+	}
+	## Check resources
+	if (!inherits(resources, "list")) 
+		stop("Argument 'resources' needs to be assigned an object of class 'named list', please check 'help(clusterRun)'")
+	if(!any(c("conffile", "template") %in% names(resources)))
+		stop("'resources' list should contain 'conffile' and 'template' file paths.")
+	if(!file.exists(resources$conffile)) stop("'", resources$conffile, "' doesn't exist. Please provid a valid PATH.")
+	if(!file.exists(resources$template)) stop("'", resources$template, "' doesn't exist. Please provid a valid PATH.")
+	## for each steps
+	for(i in steps){
+		x@runInfo$runOption[[i]]$'run_remote_resources' <- resources
+		if(!x@runInfo$runOption[[i]]$run_session == "remote"){
+			runInfo(x, step=i, param="run_session") <- "remote"
+			message("Please note that the '", stepName(x)[i], "' step option '", x@runInfo$runOption[[i]]$run_session, "' was replaced to 'remote'.")
+		} 
+	}
+	x <- .check_write_SYSargsList(x)
+	return(x)
+})
+
+#########################################
+## Replacement Methods for SYSargsList ##
+#########################################
 
 ## Replacement method for SYSargsList using "[[" operator
 setReplaceMethod(f = "[[", signature = "SYSargsList", definition = function(x, i, j, value) {
@@ -620,6 +677,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     }
 }
 
+## Internal functions ##
 .validationStepConn <- function(x, value) {
     ## used in `importWF`
     on.exit({
@@ -705,6 +763,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     return(value)
 }
 
+## Internal functions ##
 .cbindTargetsOutfiles <- function(sal, targets_con, new_targets_col, rm_targets_con = NULL) {
   . <- print_targets <- NULL
   ## handle outfiles
@@ -791,6 +850,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
 # appendStep(sal, after=0) <- SYSargsList(WF)
 # appendStep(sal, after=0, step_index="test_11") <- SYSargsList(WF)
 
+## Replacement method
 setReplaceMethod(
     f = "yamlinput", signature = c("SYSargsList"),
     definition = function(x, step, paramName, value) {
@@ -802,9 +862,9 @@ setReplaceMethod(
         x <- as(x, "SYSargsList")
         x <- .check_write_SYSargsList(x)
         x
-    }
-)
+})
 
+## Replacement method
 setReplaceMethod(
     f = "replaceStep", signature = c("SYSargsList"),
     definition = function(x, step, step_name = "default", value) {
@@ -889,9 +949,9 @@ setReplaceMethod(
         }
         x <- .check_write_SYSargsList(x)
         x
-    }
-)
+})
 
+## Replacement method
 setReplaceMethod(
   f = "updateStatus", signature = c("SYSargsList"),
   definition = function(x, step, value) {
@@ -939,9 +999,9 @@ setReplaceMethod(
     }
     x <- .check_write_SYSargsList(x)
     x
-  }
-)
+})
 
+## Replacement method
 setReplaceMethod(
     f = "renameStep", signature = c("SYSargsList"),
     definition = function(x, step, ..., value) {
@@ -1002,6 +1062,7 @@ setReplaceMethod(
     }
 )
 
+## Replacement method
 setReplaceMethod(
     f = "dependency", signature = c("SYSargsList"),
     definition = function(x, step, ..., value) {
@@ -1027,6 +1088,7 @@ setReplaceMethod(
     }
 )
 
+## Replacement method
 setReplaceMethod(
     f = "replaceCodeLine", signature = c("SYSargsList"),
     definition = function(x, step, line, value) {
@@ -1051,6 +1113,7 @@ setReplaceMethod(
     }
 )
 
+## Replacement method
 setReplaceMethod(
     f = "appendCodeLine", signature = c("SYSargsList"),
     definition = function(x, step, after = NULL, value) {
@@ -1077,6 +1140,7 @@ setReplaceMethod(
     }
 )
 
+## Replacement method
 setReplaceMethod(
     f = "stepsWF", signature = c("SYSargsList"),
     definition = function(x, step, ..., value) {
@@ -1086,6 +1150,7 @@ setReplaceMethod(
     }
 )
 
+## Replacement method
 setReplaceMethod(
     f = "statusWF", signature = c("SYSargsList"),
     definition = function(x, step, ..., value) {
@@ -1095,10 +1160,11 @@ setReplaceMethod(
     }
 )
 
+## Replacement method
 setReplaceMethod(
 	f = "runInfo", signature = c("SYSargsList"),
 	definition = function(x, step, param, ..., value) {
-		x@runInfo$runOption[[step]]$param <- value
+		x@runInfo$runOption[[step]][[param]] <- value
 		x <- .check_write_SYSargsList(x)
 		x
 	}
