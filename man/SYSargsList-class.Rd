@@ -81,6 +81,8 @@
 \alias{updateColumn<-,SYSargsList-method}
 \alias{updateStatus<-}
 \alias{updateStatus<-,SYSargsList-method}
+\alias{runInfo<-}
+\alias{runInfo<-,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
@@ -130,8 +132,6 @@ viewEnvir(x)
 subset(x, ...)
 getColumn(x, step, position = c("outfiles", "targetsWF"), column = 1, 
           names = SampleName(x, step))
-
-
 
 ## Replacement
 
