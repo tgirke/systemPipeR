@@ -172,7 +172,7 @@ runCommandline <- function(args, runid="01",
       utils::setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
       ## Time
-      time_status$time_start[i] <- Sys.time()
+      time_status$time_start[i] <- as.POSIXct(Sys.time(), origin="1970-01-01")
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
         if(all(force==FALSE && all(as.logical(completed[[i]][[j]])))) {
@@ -217,7 +217,7 @@ runCommandline <- function(args, runid="01",
         ## converting sam to bam using Rsamtools package
         .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
-      time_status$time_end[i] <- Sys.time()
+      time_status$time_end[i] <- as.POSIXct(Sys.time(), origin="1970-01-01")
     }
     ## time
     time_status$time_start <- as.POSIXct(time_status$time_start, origin="1970-01-01")
