@@ -1,0 +1,10 @@
+################################################################
+#                     Trinity-stats.cwl                        #
+################################################################
+reference:
+  class: File
+  path: ./results/results_trinity/Trinity.fasta
+
+results_path:
+  class: Directory
+  path: ./results/results_trinity

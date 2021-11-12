@@ -2,14 +2,14 @@
 ##                  Trinity.cwl                               ##
 ################################################################
 
-cwlVersion: v1.1
+cwlVersion: v1.2
 class: CommandLineTool
-label: Last updated 07/2021
+label: Last updated 11/2021
 hints:
   SoftwareRequirement:
     packages:
     - package: trinity-rnaseq
-      version: [ 2.11.0 ]
+      version: [ 2.12.0 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
@@ -20,8 +20,6 @@ baseCommand: [Trinity]
 requirements:
   InitialWorkDirRequirement:
     listing: [ $(inputs.results_path) ]
-
-arguments:
 
 
 ################################################################
@@ -50,7 +48,9 @@ inputs:
     inputBinding:
       prefix: --output
   ss_lib_type:
-    type: string?
+    type: string
+    inputBinding:
+      prefix: --SS_lib_type
   trimmomatic:
     type: string
     inputBinding:
@@ -61,3 +61,4 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.results_path)/Trinity.fasta
+

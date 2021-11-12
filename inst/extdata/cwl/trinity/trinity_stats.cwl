@@ -1,15 +1,15 @@
 ################################################################
-##                  Trinity-Paired_end.cwl                     ##
+##                  Trinity-stats.cwl                         ##
 ################################################################
 
-cwlVersion: v1.1
+cwlVersion: v1.2
 class: CommandLineTool
-label: Last updated 07/2021
+label: Last updated 11/2021
 hints:
   SoftwareRequirement:
     packages:
     - package: trinity-rnaseq
-      version: [ 2.11.0 ]
+      version: [ 2.12.0 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
@@ -34,7 +34,7 @@ inputs:
   results_path:
     type: Directory
 
-stdout: $(input.results_path)/assembly_Statistic.txt
+stdout: $(input.results_path)/N50_assembly_Statistic.txt
 
 outputs:
   trinity_stats:
