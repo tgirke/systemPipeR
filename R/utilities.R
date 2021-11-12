@@ -284,6 +284,7 @@ runCommandline <- function(args, runid="01",
     df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)], as.numeric)
     df.status.f[c(5:ncol(df.status.f))] <- sapply(df.status.f[c(5:ncol(df.status.f))], as.character)
     rownames(df.status.f) <- df.status.f$Targets
+    rownames(time_status) <- time_status$Targets
     ## updating object
     args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
     args.return[["status"]]$status.completed <- df.status.f

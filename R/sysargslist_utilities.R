@@ -1009,9 +1009,11 @@ readSE <- function(dir.path, dir.name) {
     	rownames(status.pending) <- status.pending$Targets
     	status.pending[c(2:4)] <- sapply(status.pending[c(2:4)], as.numeric)
     	status.pending[c(5:ncol(status.pending))] <- sapply(status.pending[c(5:ncol(status.pending))], as.character)
+    	status.time <- data.frame(matrix(, nrow=nrow(status.pending), ncol=0))
+    	rownames(status.time) <- status.pending$Targets
     	pendingList <- list(
     		status.summary = .statusSummary(status.pending),
-    		status.completed = status.pending, status.time = data.frame()
+    		status.completed = status.pending, status.time = status.time
     	)
     }
     if (inherits(args, "SYSargsList")) {
@@ -1039,11 +1041,14 @@ readSE <- function(dir.path, dir.name) {
         for (i in seq_along(stepsWF(args))) {
             l_out <- output(stepsWF(args)[[i]])
             out[[i]] <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
+            #out <- S4Vectors::DataFrame(as.data.frame(do.call(rbind, l_out)))
             colnames(out[[i]]) <- stepsWF(args)[[i]]$files$output_names
         }
     } else if (inherits(args, "SYSargs2")) {
         l_out <- output(args)
+        # sapply(l_out, function(x) length(x))
         out <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
+        #out <- S4Vectors::DataFrame(as.data.frame(do.call(rbind, l_out)))
         colnames(out) <- args$files$output_names
     }
     return(out)
