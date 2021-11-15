@@ -520,23 +520,26 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
 ## .clusterRunResults function ##
 ################################
 .clusterRunResults <- function(sysargs, reg, nTargets){
-    logdir <- reg$file.dir
-    file_log <- file.path(logdir, paste0("sysargs2_log_", 
-                                         format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
-                                         paste(sample(0:9, 4), collapse = "")))
-    for(i in seq_along(1:nTargets)){
-        ## ind object created by the batchtools
-        newsysargs <- batchtools::loadResult(reg=reg, id=i)
-        id_sysargs <- SampleName(newsysargs)
-        ## update output slot
-        sysargs@output[id_sysargs] <- newsysargs$output[id_sysargs]
-        ## Update status slot
-        sysargs@status$status.completed[id_sysargs, ] <- newsysargs$status$status.completed[id_sysargs,]
-        sysargs@status$status.time[id_sysargs, ] <- newsysargs$status$status.time[id_sysargs,]
-        ## Update files logs --> combining 
-        logs <- readLines(newsysargs$files$log)
-        write(logs, file_log, append=TRUE, sep="\n")
-    }
+	logdir <- reg$file.dir
+	file_log <- file.path(logdir, paste0("sysargs2_log_", 
+																			 format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
+																			 paste(sample(0:9, 4), collapse = "")))
+	for(i in seq_along(1:nTargets)){
+		## ind object created by the batchtools
+		newsysargs <- batchtools::loadResult(reg=reg, id=i)
+		id_sysargs <- SampleName(newsysargs)
+		## update output slot
+		sysargs@output[id_sysargs] <- newsysargs$output[id_sysargs]
+		## Update status slot
+		sysargs@status$status.completed[id_sysargs, ] <- newsysargs$status$status.completed[id_sysargs,]
+		sysargs@status$status.time[id_sysargs, ] <- newsysargs$status$status.time[id_sysargs,]
+		## Update files logs --> combining 
+		logs <- readLines(newsysargs$files$log)
+		write(logs, file_log, append=TRUE, sep="\n")
+	}
+	sysargs@status$status.summary <-.statusSummary(sysargs)
+	sysargs@files$logs <- file_log
+	return(sysargs)
 }
 
 ###########################
