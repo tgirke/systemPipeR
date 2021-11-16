@@ -252,10 +252,8 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
         }
         sal$dependency <- list(dependency)
         sal$statusWF <- list(.statusPending(WF))
-        # sal$runInfo <- list(directory=list(dir))
         sal$runInfo <- list(runOption = list(list(directory = dir, run_step = run_step, run_session = run_session)))
         ## names
-        # names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo[[1]]) <- step_name
         names(sal$statusWF) <- names(sal$dependency) <- names(sal$runInfo$runOption) <- step_name
         ## outfiles
         if (length(sal$stepsWF) > 0) {
@@ -1066,8 +1064,11 @@ readSE <- function(dir.path, dir.name) {
     	rownames(status.pending) <- status.pending$Targets
     	status.pending[c(2:4)] <- sapply(status.pending[c(2:4)], as.numeric)
     	status.pending[c(5:ncol(status.pending))] <- sapply(status.pending[c(5:ncol(status.pending))], as.character)
-    	status.time <- data.frame(matrix(, nrow=nrow(status.pending), ncol=0))
-    	rownames(status.time) <- status.pending$Targets
+    	# status.time <- data.frame(matrix(, nrow=nrow(status.pending),  ncol = length(pending)))
+    	status.time <- status.pending[ , 1, drop=FALSE]
+    	# status.time <- cbind(status.time)
+    	status.time <- cbind(status.time, time_start=NA, time_end=NA)
+    	# rownames(status.time) <- status.pending$Targets
     	pendingList <- list(
     		status.summary = .statusSummary(status.pending),
     		status.completed = status.pending, status.time = status.time

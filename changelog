@@ -1,6 +1,7 @@
 changelog
     version 2.1.6
         - Allows targets subset with runWF 
+        - Improved running time when targets subset
 
     version 2.1.5
         - runWF remote option added
