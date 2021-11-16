@@ -293,25 +293,25 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
           stop("'SYSargsList' instance was not initialized with the 'SPRproject' function
            and therefore there is missing the 'projectInfo' slot information.
            Please check 'SPRproject' help file.")
-      }
+    }
     if (!dir.exists(projectInfo(sysargs)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
     sysproj <- projectInfo(sysargs)$logsDir
     ## Check steps
     if (inherits(steps, "numeric")) {
         if (!all(steps %in% seq_along(sysargs))) {
-              stop(
-                  "Please select the 'steps' number accordingly, options are: ", "\n",
-                  "        ", paste0(seq_along(sysargs), collapse = ", ")
-              )
-          }
+            stop(
+                "Please select the 'steps' number accordingly, options are: ", "\n",
+                "        ", paste0(seq_along(sysargs), collapse = ", ")
+            )
+        }
     } else if (inherits(steps, "character")) {
         if (!all(steps %in% stepName(sysargs))) {
-              stop(
-                  "Please select the 'steps' name accordingly, options are: ", "\n",
-                  "        ", paste0(stepName(sysargs), collapse = ", ")
-              )
-          }
+            stop(
+                "Please select the 'steps' name accordingly, options are: ", "\n",
+                "        ", paste0(stepName(sysargs), collapse = ", ")
+            )
+        }
         steps <- which(stepName(sysargs) %in% steps)
     }
     ## check dependency
@@ -351,6 +351,8 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
             steps <- which(stepName(sysargs) %in% run_step_names)
         }
     }
+    ## targets selection
+    run_targets <- targets
     ## Selecting
     for (i in seq_along(stepsWF(args2))) {
         if (i %in% steps) {
@@ -375,40 +377,67 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 ## runC arguments
                 dir <- args2$runInfo$runOption[[i]]$directory
                 dir.name <- single.step
-                ## check targets
-                ## Targets input
-                if (!is.null(targets)) {
-                  if(inherits(targets, c("numeric", "integer"))){
-                        if (!all(targets %in% seq_along(cmdlist(args.run)))) {
-                              stop(
-                                  "Please select the 'targets' number accordingly, options are: ", "\n",
-                                  "        ", paste0(seq_along(cmdlist(args.run)), collapse = ", ")
-                              )
-                          }
-                    } else if (inherits(targets, "character")) {
-                        if (!all(targets %in% SampleName(args.run))) {
-                              stop(
-                                  "Please select the 'targets' name accordingly, options are: ", "\n",
-                                  "        ", paste0(SampleName(args.run), collapse = ", ")
-                              )
-                          }
-                        targets <- which(SampleName(args.run) %in% targets)
+                run_location <- args2$runInfo$runOption[[i]]$run_session
+                run_resorces <- args2$runInfo$runOption[[i]]$run_remote_resources
+                ## check run_targets
+                run_targets <- targets
+                ## run_targets input
+                if (!is.null(run_targets)) {
+                    if(inherits(run_targets, c("numeric", "integer"))){
+                        if (!all(run_targets %in% seq_along(cmdlist(args.run)))) {
+                            stop(
+                                "Please select the 'targets' number accordingly, options are: ", "\n",
+                                "        ", paste0(seq_along(cmdlist(args.run)), collapse = ", ")
+                            )
+                        }
+                    } else if (inherits(run_targets, "character")) {
+                        if (!all(run_targets %in% SampleName(args.run))) {
+                            stop(
+                                "Please select the 'targets' name accordingly, options are: ", "\n",
+                                "        ", paste0(SampleName(args.run), collapse = ", ")
+                            )
+                        }
+                        run_targets <- which(SampleName(args.run) %in% run_targets)
                     }
-                    targets <- targets
+                    run_targets <- run_targets
                 } else {
-                    targets <- seq_along(cmdlist(args.run))
+                    run_targets <- seq_along(cmdlist(args.run))
                 }
-                ## RUN
-                args.run <- runCommandline(args.run,
-                    dir = dir, dir.name = dir.name,
-                    force = force, input_targets = targets,
-                    ...
-                )
-                targets <- NULL
-                cat(readLines(args.run$files$log),
-                    file = file_log, sep = "\n",
-                    append = TRUE
-                )
+                if(run_location == "local"){
+                    cat(crayon::bgMagenta(paste0("Running Session: Local")), "\n")
+                    # RUN
+                    args.run <- runCommandline(args.run,
+                                               dir = dir, dir.name = dir.name,
+                                               runid = paste0("_", dir.name),
+                                               force = force, input_targets = run_targets, ...)
+                } else if(run_location == "remote"){
+                    cat(crayon::bgMagenta(paste0("Running Session: Remote")), "\n")
+                    if(is.null(run_resorces)) stop("Resources are not available for this step.")
+                    reg <- clusterRun(args.run[c(run_targets)], FUN = runCommandline,
+                                      more.args = list(args = args.run[c(run_targets)], dir = dir, dir.name = dir.name, 
+                                                       runid = paste0("_", dir.name),
+                                                       force = force, ...),
+                                      conffile=run_resorces$conffile,
+                                      template=run_resorces$template,
+                                      Njobs=run_resorces$Njobs, runid=paste0("_", dir.name), resourceList=run_resorces)
+                    batchtools::waitForJobs()
+                    args.run <-.clusterRunResults(args.run, reg, nTargets = length(run_targets))
+                    cat(readLines(args.run$files$log),
+                        file = file_log, sep = "\n",
+                        append = TRUE
+                    )
+                    ## moving file #reg$file.dir to new directory
+                    output_path_args <- .getPath(args.run$output[[run_targets[1]]][[1]][1])
+                    output_path_reg <- .getPath(reg$file.dir)
+                    if(!identical(output_path_args, output_path_reg)){
+                        file.copy(reg$file.dir, file.path(output_path_args, "_logs"), recursive = TRUE)
+                        message("Moving registry to '", file.path(output_path_args, "_logs"), "'.")
+                        unlink(reg$file.dir, recursive = TRUE)
+                        message("Jobs completed successfully!")
+                        args.run@files$logs <- file.path(output_path_args, "_logs", basename(reg$file.dir))
+                    }
+                }
+                run_targets <- NULL
                 ## update object
                 step.status.summary <- status(args.run)$status.summary
                 statusWF(args2, i) <- args.run$status
@@ -440,8 +469,8 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 }
                 file_log_Rcode <- file.path(sysproj, "Rsteps", paste0("_logRstep_", single.step, "_", format(Sys.time(), "%b%d%Y_%H%M%S")))
                 args.run <- runRcode(args.run,
-                    step = single.step, file_log = file_log_Rcode,
-                    envir = envir, force = force
+                                     step = single.step, file_log = file_log_Rcode,
+                                     envir = envir, force = force
                 )
                 assign(
                     "args2", get(as.character(as.list(match.call())$sysargs), envir),
@@ -483,6 +512,34 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     }
     args2 <- .check_write_SYSargsList(args2, TRUE)
     return(args2)
+}
+## Usage:
+## runWF(sal)
+
+#################################
+## .clusterRunResults function ##
+################################
+.clusterRunResults <- function(sysargs, reg, nTargets){
+	logdir <- reg$file.dir
+	file_log <- file.path(logdir, paste0("sysargs2_log_", 
+																			 format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
+																			 paste(sample(0:9, 4), collapse = "")))
+	for(i in seq_along(1:nTargets)){
+		## ind object created by the batchtools
+		newsysargs <- batchtools::loadResult(reg=reg, id=i)
+		id_sysargs <- SampleName(newsysargs)
+		## update output slot
+		sysargs@output[id_sysargs] <- newsysargs$output[id_sysargs]
+		## Update status slot
+		sysargs@status$status.completed[id_sysargs, ] <- newsysargs$status$status.completed[id_sysargs,]
+		sysargs@status$status.time[id_sysargs, ] <- newsysargs$status$status.time[id_sysargs,]
+		## Update files logs --> combining 
+		logs <- readLines(newsysargs$files$log)
+		write(logs, file_log, append=TRUE, sep="\n")
+	}
+	sysargs@status$status.summary <-.statusSummary(sysargs)
+	sysargs@files$logs <- file_log
+	return(sysargs)
 }
 
 ###########################
