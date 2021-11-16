@@ -492,8 +492,8 @@ setMethod(f = "addResources", signature = "SYSargsList",
 	for(i in steps){
 		x@runInfo$runOption[[i]]$'run_remote_resources' <- resources
 		if(!x@runInfo$runOption[[i]]$run_session == "remote"){
-			runInfo(x, step=i, param="run_session") <- "remote"
 			message("Please note that the '", stepName(x)[i], "' step option '", x@runInfo$runOption[[i]]$run_session, "' was replaced to 'remote'.")
+			runInfo(x, step=i, param="run_session") <- "remote"
 		} 
 	}
 	x <- .check_write_SYSargsList(x)

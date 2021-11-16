@@ -702,9 +702,9 @@ makeDot <- function(df,
             } else if (all(sample_df$Missing_Files > 0 && sal_temp$statusWF[[i]]$status.summary == "Error")) {
                 df$sample_error[i] <- sample_df$Missing_Files
             }
-            if (length(sal_temp$statusWF[[i]]$status.time) > 0) {
-                df$time_start[i] <- sal_temp$statusWF[[i]]$status.time$time_start[1]
-                df$time_end[i] <- sal_temp$statusWF[[i]]$status.time$time_end[length(sal_temp$statusWF[[i]]$status.time$time_end)]
+            if (!is.null(sal_temp$statusWF[[i]]$total.time)) {
+                df$time_start[i] <- sal_temp$statusWF[[i]]$total.time$time_start
+                df$time_end[i] <- sal_temp$statusWF[[i]]$total.time$time_end
             }
         } else if (inherits(stepsWF(sal_temp)[[i]], "LineWise")) {
             df$sample_total[i] <- 1

@@ -100,7 +100,6 @@ runCommandline <- function(args, runid="01",
     ## SYSargs2 class ##
     ## Check if the command is in the PATH
     if(!baseCommand(args) == c("bash")){
-      #tryCatch(system(baseCommand(args), ignore.stdout = TRUE, ignore.stderr = TRUE), warning=function(w) message("\n", paste0("ERROR: ", "\n", baseCommand(args), ": command not found. ", '\n', "Please make sure to configure your PATH environment variable according to the software in use."), "\n"))
       cmd_test <- tryCMD(command=baseCommand(args), silent=TRUE)
       if(cmd_test == "error"){
         stop(paste0("\n", baseCommand(args), ": command not found. ", 
@@ -135,10 +134,6 @@ runCommandline <- function(args, runid="01",
     file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", 
                                          format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
                           paste(sample(0:9, 4), collapse = "")))
-    ## Sample status and Time
-    sample_status <- sapply(names(cmdlist(args)), function(x) list(
-      sapply(args$files$steps, function(x) list(NULL))))
-    time_status <- data.frame(Targets=names(cmdlist(args)), time_start=NA, time_end=NA)
     ## Check input
     if(length(args$inputvars) >= 1){
       inpVar <- args$inputvars
@@ -166,9 +161,15 @@ runCommandline <- function(args, runid="01",
     } else {
       input_targets <- seq_along(cmdlist(args))
     }
+    ## Sample status and Time
+    sample_status <- sapply(names(cmdlist(args)), function(x) list(
+    	sapply(args$files$steps, function(x) list(NULL))))
+    sample_status <- sample_status[input_targets]
+    time_status <- args$status$status.time
     ## Progress bar
     pb <- utils::txtProgressBar(min = 0, max = length(input_targets), style = 3)
     for(i in input_targets){
+    	ii <- names(cmdlist(args)[i])
       utils::setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
       ## Time
@@ -177,7 +178,7 @@ runCommandline <- function(args, runid="01",
         ## Run the commandline only for samples for which no output file is available.
         if(all(force==FALSE && all(as.logical(completed[[i]][[j]])))) {
           cat("The expected output file(s) already exist", "\n", file=file_log, fill=TRUE, append=TRUE)
-          sample_status[[i]][[args$files$steps[j]]] <- "Success"
+          sample_status[[ii]][[args$files$steps[j]]] <- "Success"
           next()
         } else {
           ## Add_command file at log file
@@ -203,13 +204,13 @@ runCommandline <- function(args, runid="01",
           if(!is.null(stdout$error)) {
             cat("## Error", file=file_log, sep = "\n", append=TRUE)
             cat(stdout$error, file=file_log, sep = "\n", append=TRUE)
-            sample_status[[i]][[args$files$steps[j]]] <- "Error"
+            sample_status[[ii]][[args$files$steps[j]]] <- "Error"
           } else if(!is.null(stdout$warning)) {
             cat("## Warning", file=file_log, sep = "\n", append=TRUE)
             cat(stdout$warning, file=file_log, sep = "\n", append=TRUE)
-            sample_status[[i]][[args$files$steps[j]]] <- "Warning"
+            sample_status[[ii]][[args$files$steps[j]]] <- "Warning"
           } else if(all(is.null(stdout$error) && is.null(stdout$warning))){
-            sample_status[[i]][[args$files$steps[j]]] <- "Success"
+            sample_status[[ii]][[args$files$steps[j]]] <- "Success"
           }
           ## close R chunk
           cat("```", file=file_log, sep = "\n", append=TRUE)
@@ -219,9 +220,6 @@ runCommandline <- function(args, runid="01",
       }
       time_status$time_end[i] <- as.POSIXct(Sys.time(), origin="1970-01-01")
     }
-    ## time
-    time_status$time_start <- as.POSIXct(time_status$time_start, origin="1970-01-01")
-    time_status$time_end <- as.POSIXct(time_status$time_end, origin="1970-01-01")
     args.return[["files"]][["log"]] <- file_log
     ## In the case of make_bam=TRUE
     if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE,
@@ -264,9 +262,6 @@ runCommandline <- function(args, runid="01",
               name <- Biostrings::strsplit(output(args)[[i]][[1]][[j]], split="\\/")[[1]]
               name <- name[length(name)]
               file.rename(from=output(args)[[i]][[1]][[j]], to=file.path(logdir, dir.name, name))
-              # outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
-              #file.rename(from=output(args.return)[[i]][[1]][[j]], to=file.path(logdir, dir.name, names(output(args.return)[i]), name))
-              # outputList_new <- c(outputList_new, file.path(logdir, dir.name, names(output(args.return)[i]), name))
             } else if(!file.exists(output(args)[[i]][[1]][[j]])){
               dump <- "No such file or directory"
             }
@@ -279,21 +274,26 @@ runCommandline <- function(args, runid="01",
     sample_status <- lapply(sample_status, function(x) lapply(x, function(y) if(is.null(y)) y <- "Pending" else y)) 
     df.status <- data.frame(matrix(do.call("c", sample_status), nrow=length(sample_status), byrow=TRUE))
     colnames(df.status) <- files(args.return)$steps
-    check <- check.output(args.return)
+    check <- check.output(args.return)[input_targets,]
     df.status.f <- cbind(check, df.status)
     df.status.f[c(2:4)] <- sapply(df.status.f[c(2:4)], as.numeric)
     df.status.f[c(5:ncol(df.status.f))] <- sapply(df.status.f[c(5:ncol(df.status.f))], as.character)
     rownames(df.status.f) <- df.status.f$Targets
-    rownames(time_status) <- time_status$Targets
     ## updating object
     args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
-    args.return[["status"]]$status.completed <- df.status.f
+    args.return[["status"]]$status.completed[match(df.status.f$Targets, args.return[["status"]]$status.completed$Targets), ] <- df.status.f
     args.return[["status"]]$status.time <- time_status
+    ## time
+    args.return[["status"]]$status.time$time_start <- as.POSIXct(args.return[["status"]]$status.time$time_start, origin="1970-01-01")
+    args.return[["status"]]$status.time$time_end <- as.POSIXct(args.return[["status"]]$status.time$time_end, origin="1970-01-01")
+    # registering total time
+    newTimeDF <- args.return[["status"]]$status.time[input_targets,]
+    args.return[["status"]]$total.time <- list(time_start = newTimeDF$time_start[1], time_end = newTimeDF$time_end[length(newTimeDF$time_end)])
     ## double check output file
     cat("\n")
     cat(crayon::blue("---- Summary ----"), "\n")
     print(df.status.f)
-    #print(S4Vectors::DataFrame(df.status.f))
+    # print(S4Vectors::DataFrame(df.status.f))
     close(pb)
     return(args.return)
   }
