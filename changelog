@@ -1,4 +1,10 @@
 changelog
+    version 2.1.6
+        - Allows targets subset with runWF 
+        
+    version 2.1.5
+        - runWF remote option added
+        
     version 2.1.4
         - runInfo Replacement method update
         
