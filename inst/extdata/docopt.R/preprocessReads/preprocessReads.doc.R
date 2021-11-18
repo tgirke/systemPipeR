@@ -15,8 +15,8 @@ Options:
     ' -> doc
 
 library(docopt)
-library(systemPipeR)
-library(ShortRead)
+suppressPackageStartupMessages(library(systemPipeR))
+suppressPackageStartupMessages(library(ShortRead))
 opts <- docopt(doc)
 
 print(opts$FileName1)
