@@ -1,4 +1,7 @@
 changelog
+    version 2.1.7
+        - R code can be submitted to compute node - internal function
+        
     version 2.1.6
         - Allows targets subset with runWF 
         - Improved running time when targets subset
