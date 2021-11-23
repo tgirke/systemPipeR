@@ -117,58 +117,52 @@ runCommandline <- function(args, runid = "01",
         if (!dir.exists(file.path(yamlinput(args)$results_path$path))) {
               stop("Please check our current directory ('getwd()').
            The PATH defined at `yamlinput(args)` was not found and it is required.")
-          }
+        }
+        logdir <- file.path(yamlinput(args)$results_path$path)
         if (is.null(dir.name)) {
-            logdir <- file.path(yamlinput(args)$results_path$path)
             dir.name <- cwl.wf
         } else {
-            logdir <- file.path(yamlinput(args)$results_path$path)
             dir.name <- dir.name
         }
         ## Check if expected files exists or not
-        ## Important, this happen in the new location in the case of dir=TRUE
+        ## Important: this happen in the new location in the case of dir=TRUE
         return <- .checkOutArgs2(args,
-            make_bam = make_bam, dir = dir, dir.name = dir.name,
-            force = force, del_sam = del_sam
-        )
+                                 make_bam = make_bam, dir = dir, dir.name = dir.name,
+                                 force = force, del_sam = del_sam)
         args.return <- return$args_complete
         completed <- return$completed
         args <- return$args
-        ## Check if the command is in the PATH
+        ## Check if the command line is exported
         if (!baseCommand(args) == c("bash")) {
             cmd_test <- tryCMD(command = baseCommand(args), silent = TRUE)
             if (cmd_test == "error") {
                 stop(paste0(
                     "\n", baseCommand(args), ": command not found. ",
                     "\n", "Please make sure to configure your PATH environment variable according to the software in use."
-                ))
+                ), call. = FALSE)
             }
         }
         ## Create log files
-        file_log <- file.path(logdir, paste0(
-            "submitargs", runid, "_", dir.name, "_log_",
-            format(Sys.time(), "%b%d%Y_%H%Ms%S"),
-            paste(sample(0:9, 4), collapse = "")
-        ))
+        file_log <- file.path(logdir, paste0("submitargs", runid, "_", 
+                                             dir.name, "_log_",
+                                             format(Sys.time(), "%b%d%Y_%H%Ms%S"),
+                                             paste(sample(0:9, 4), collapse = "")))
         ## Check input
         if (length(args$inputvars) >= 1) {
             inpVar <- args$inputvars
             check.inp <- colSums(sapply(inpVar, function(y) sapply(yamlinput(args), function(x) x["path"] %in% y)))
-            check.inp[check.inp > 0]
             df.targets <- targets.as.df(args$targets)[check.inp[check.inp > 0]]
             inp_targets2 <- FALSE
         } else {
             inp_targets2 <- TRUE
         }
-        ## LOOP
         ## Targets input
         if (!is.null(input_targets)) {
             if (inherits(input_targets, c("numeric", "integer"))) {
                 if (!all(input_targets %in% seq_along(cmdlist(args)))) {
                       stop("Please select the 'input_targets' number accordingly, options are: ", "\n",
                           "        ", paste0(seq_along(cmdlist(args)), collapse = ", "),
-                          call. = FALSE
-                      )
+                          call. = FALSE)
                   }
             } else if (inherits(input_targets, "character")) {
                 if (!all(input_targets %in% SampleName(args))) {
@@ -185,14 +179,13 @@ runCommandline <- function(args, runid = "01",
         }
         ## Sample status and Time
         sample_status <- sapply(names(cmdlist(args)), function(x) {
-            list(
-                sapply(args$files$steps, function(x) list(NULL))
-            )
+          list(sapply(args$files$steps, function(x) list(NULL)))
         })
         sample_status <- sample_status[input_targets]
         time_status <- args$status$status.time
         ## Progress bar
         pb <- utils::txtProgressBar(min = 0, max = length(input_targets), style = 3)
+        ## LOOP
         for (i in input_targets) {
             ii <- names(cmdlist(args)[i])
             utils::setTxtProgressBar(pb, i)
@@ -200,22 +193,22 @@ runCommandline <- function(args, runid = "01",
             ## Time
             time_status[ii, ]$time_start <- as.POSIXct(Sys.time(), origin = "1970-01-01")
             for (j in seq_along(cmdlist(args)[[i]])) {
-                ## Run the commandline only for samples for which no output file is available.
+                ## Add_command file at log file
+                cat(c(
+                  paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
+                  "### Code: ",
+                  "```{r, eval=FALSE} ",
+                  cmdlist(args)[[i]][[j]][[1]],
+                  "```", "\n",
+                  "### Stdout: ",
+                  "```{r, eval=FALSE}"
+                  ), file = file_log, sep = "\n", append = TRUE)
+                ## Run the commandline only for samples for which no output file is available OR force == TRUE
                 if (all(force == FALSE && all(as.logical(completed[[i]][[j]])))) {
                     cat("The expected output file(s) already exist", "\n", file = file_log, fill = TRUE, append = TRUE)
                     sample_status[[ii]][[args$files$steps[j]]] <- "Success"
                     next()
                 } else {
-                    ## Add_command file at log file
-                    cat(c(
-                        paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
-                        "### Code: ",
-                        "```{r, eval=FALSE} ",
-                        cmdlist(args)[[i]][[j]][[1]],
-                        "```", "\n",
-                        "### Stdout: ",
-                        "```{r, eval=FALSE}"
-                    ), file = file_log, sep = "\n", append = TRUE)
                     ## Create an object for executable
                     command <- gsub(" .*", "", as.character(cmdlist(args)[[i]][[j]]))
                     commandargs <- gsub("^.*? ", "", as.character(cmdlist(args)[[i]][[j]]))
@@ -225,10 +218,10 @@ runCommandline <- function(args, runid = "01",
                     } else {
                         stdout <- list(
                             stdout = paste(paste0(as.character(df.targets[i, ])[!inp_targets], collapse = ", "), "\n are missing"),
-                            warning = "", error = "We have an error because target(s) file doesn't exit"
-                        )
+                            warning = "", error = "We have an error because target(s) file doesn't exit")
                     }
                     cat(stdout$stdout, file = file_log, sep = "\n", append = TRUE)
+                    ## report status
                     if (!is.null(stdout$error)) {
                         cat("## Error", file = file_log, sep = "\n", append = TRUE)
                         cat(stdout$error, file = file_log, sep = "\n", append = TRUE)
@@ -251,11 +244,9 @@ runCommandline <- function(args, runid = "01",
         args.return[["files"]][["log"]] <- file_log
         ## In the case of make_bam=TRUE
         if (make_bam == TRUE) {
-            args <- .checkOutArgs2(args,
-                make_bam = make_bam, dir = FALSE,
-                force = force, dir.name = dir.name,
-                del_sam = del_sam
-            )$args_complete
+            args <- .checkOutArgs2(args, make_bam = make_bam, dir = FALSE,
+                                   force = force, dir.name = dir.name,
+                                   del_sam = del_sam)$args_complete
         }
         ## Create recursive the subfolders
         if (dir == TRUE) {
@@ -272,7 +263,6 @@ runCommandline <- function(args, runid = "01",
             file.rename(from = file_log, to = file.path(logdir, dir.name, "_logs", basename(file_log)))
             args.return[["files"]][["log"]] <- file.path(logdir, dir.name, "_logs", basename(file_log))
             ## output FILES
-            # if(make_bam==TRUE) args <- .checkOutArgs2(args, make_bam=make_bam, dir=FALSE, force=force, dir.name=dir.name, del_sam = del_sam)$args_complete
             for (i in seq_along(output(args))) {
                 if (length(output(args)[[i]]) > 1) {
                     for (j in seq_along(output(args)[[i]])) {
@@ -281,9 +271,6 @@ runCommandline <- function(args, runid = "01",
                                 name <- Biostrings::strsplit(output(args)[[i]][[j]][[k]], split = "\\/")[[1]]
                                 name <- name[length(name)]
                                 file.rename(from = output(args)[[i]][[j]][[k]], to = file.path(logdir, dir.name, name))
-                                # outputList_new <- c(outputList_new, file.path(logdir, dir.name, name))
-                                # file.rename(from=output(args.return)[[i]][[j]][[k]], to=file.path(logdir, dir.name, names(output(args.return)[i]), name))
-                                # outputList_new <- c(outputList_new, file.path(logdir, dir.name, names(output(args.return)[i]), name))
                             } else if (!file.exists(output(args.return)[[i]][[j]][[k]])) {
                                 dump <- "No such file or directory"
                             }
@@ -301,7 +288,6 @@ runCommandline <- function(args, runid = "01",
                     }
                 }
             }
-            # args.return <- output_update(args.return, dir=TRUE, dir.name=dir.name, replace=FALSE)
         }
         ## Status and log.files
         sample_status <- lapply(sample_status, function(x) lapply(x, function(y) if (is.null(y)) y <- "Pending" else y))
@@ -315,7 +301,6 @@ runCommandline <- function(args, runid = "01",
         ## updating object
         args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
         args.return[["status"]]$status.completed[match(df.status.f$Targets, args.return[["status"]]$status.completed$Targets), ] <- df.status.f
-        # args.return[["status"]]$status.time[match(time_status$Targets, args.return[["status"]]$status.time$Targets), ] <- time_status
         args.return[["status"]]$status.time <- time_status
         ## time
         args.return[["status"]]$status.time$time_start <- as.POSIXct(args.return[["status"]]$status.time$time_start, origin = "1970-01-01")
@@ -327,7 +312,6 @@ runCommandline <- function(args, runid = "01",
         cat("\n")
         cat(crayon::blue("---- Summary ----"), "\n")
         print(df.status.f)
-        # print(S4Vectors::DataFrame(df.status.f))
         close(pb)
         return(args.return)
     }
