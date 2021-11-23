@@ -81,7 +81,7 @@ plotWF <- function(sysargs,
                    in_log = FALSE,
                    rmarkdown = "detect",
                    verbose = FALSE,
-                   show_warns = TRUE,
+                   show_warns = FALSE,
                    exit_point = 0) {
     if (!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
     if (!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
@@ -373,7 +373,7 @@ makeDot <- function(df,
         which()
     if (length(branch_complete) == 0) {
         msg <- "Workflow's first step is not connected to the last step, something wrong? Unconnected steps will not be plotted."
-        if (show_warns) warning(msg)
+        warning(msg)
         return(structure(c(1), .Names = msg))
     } else {
         if (verbose) cat("**********\n")
