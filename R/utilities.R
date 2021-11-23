@@ -98,14 +98,6 @@ runCommandline <- function(args, runid="01",
     .sysargsrunCommandline(args=args, runid=runid, make_bam=make_bam, del_sam=del_sam)
   } else if(class(args)=="SYSargs2") {
     ## SYSargs2 class ##
-    ## Check if the command is in the PATH
-    if(!baseCommand(args) == c("bash")){
-      cmd_test <- tryCMD(command=baseCommand(args), silent=TRUE)
-      if(cmd_test == "error"){
-        stop(paste0("\n", baseCommand(args), ": command not found. ", 
-                          '\n', "Please make sure to configure your PATH environment variable according to the software in use."))
-      }
-    }
     ## Workflow Name (Workflow OR CommandLineTool class)
     if(length(wf(args)$steps)==0){
       cwl.wf <- gsub( "[[:space:]]", "_", paste(baseCommand(args), collapse = "_"), perl=TRUE)
@@ -128,8 +120,17 @@ runCommandline <- function(args, runid="01",
     return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, 
                              force=force, del_sam = del_sam)
     args.return <- return$args_complete
+    #on.exit(return(args.return), add = TRUE)
     completed <- return$completed
     args <- return$args
+    ## Check if the command is in the PATH
+    if(!baseCommand(args) == c("bash")){
+        cmd_test <- tryCMD(command=baseCommand(args), silent=TRUE)
+        if(cmd_test == "error"){
+            stop(paste0("\n", baseCommand(args), ": command not found. ", 
+                        '\n', "Please make sure to configure your PATH environment variable according to the software in use."))
+        }
+    }
     ## Create log files
     file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", 
                                          format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
@@ -173,7 +174,7 @@ runCommandline <- function(args, runid="01",
       utils::setTxtProgressBar(pb, i)
       cat("## ", names(cmdlist(args)[i]), "\n", file=file_log, fill=TRUE, append=TRUE)
       ## Time
-      time_status$time_start[i] <- as.POSIXct(Sys.time(), origin="1970-01-01")
+      time_status[ii,]$time_start <- as.POSIXct(Sys.time(), origin="1970-01-01")
       for(j in seq_along(cmdlist(args)[[i]])){
         ## Run the commandline only for samples for which no output file is available.
         if(all(force==FALSE && all(as.logical(completed[[i]][[j]])))) {
@@ -218,7 +219,7 @@ runCommandline <- function(args, runid="01",
         ## converting sam to bam using Rsamtools package
         .makeBam(output(args)[[i]][[j]], make_bam=make_bam, del_sam=del_sam)
       }
-      time_status$time_end[i] <- as.POSIXct(Sys.time(), origin="1970-01-01")
+      time_status[ii,]$time_end <- as.POSIXct(Sys.time(), origin="1970-01-01")
     }
     args.return[["files"]][["log"]] <- file_log
     ## In the case of make_bam=TRUE
@@ -282,6 +283,7 @@ runCommandline <- function(args, runid="01",
     ## updating object
     args.return[["status"]]$status.summary <- .statusSummary(df.status.f)
     args.return[["status"]]$status.completed[match(df.status.f$Targets, args.return[["status"]]$status.completed$Targets), ] <- df.status.f
+    #args.return[["status"]]$status.time[match(time_status$Targets, args.return[["status"]]$status.time$Targets), ] <- time_status
     args.return[["status"]]$status.time <- time_status
     ## time
     args.return[["status"]]$status.time$time_start <- as.POSIXct(args.return[["status"]]$status.time$time_start, origin="1970-01-01")

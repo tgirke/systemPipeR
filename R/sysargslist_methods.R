@@ -437,9 +437,13 @@ setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x, st
 }
 
 ## viewEnvir() methods for SYSargsList
-setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x) {
-    print(x@runInfo$env)
-    print(ls(x@runInfo$env, all.names = TRUE))
+setMethod(f = "viewEnvir", signature = "SYSargsList", definition = function(x, silent=FALSE) {
+	  if(!silent){
+	  	print(x@runInfo$env)
+	  	print(ls(x@runInfo$env, all.names = TRUE))
+	  } else {
+	  	return(ls(x@runInfo$env, all.names = TRUE))
+	  }
 })
 
 ## copyEnvir() methods for SYSargsList
@@ -492,7 +496,7 @@ setMethod(f = "addResources", signature = "SYSargsList",
 	for(i in steps){
 		x@runInfo$runOption[[i]]$'run_remote_resources' <- resources
 		if(!x@runInfo$runOption[[i]]$run_session == "remote"){
-			message("Please note that the '", stepName(x)[i], "' step option '", x@runInfo$runOption[[i]]$run_session, "' was replaced to 'remote'.")
+			message("Please note that the '", stepName(x)[i], "' step option '", x@runInfo$runOption[[i]]$run_session, "' was replaced with 'remote'.")
 			runInfo(x, step=i, param="run_session") <- "remote"
 		} 
 	}
