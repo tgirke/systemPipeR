@@ -98,14 +98,6 @@ runCommandline <- function(args, runid="01",
     .sysargsrunCommandline(args=args, runid=runid, make_bam=make_bam, del_sam=del_sam)
   } else if(class(args)=="SYSargs2") {
     ## SYSargs2 class ##
-    ## Check if the command is in the PATH
-    if(!baseCommand(args) == c("bash")){
-      cmd_test <- tryCMD(command=baseCommand(args), silent=TRUE)
-      if(cmd_test == "error"){
-        stop(paste0("\n", baseCommand(args), ": command not found. ", 
-                          '\n', "Please make sure to configure your PATH environment variable according to the software in use."))
-      }
-    }
     ## Workflow Name (Workflow OR CommandLineTool class)
     if(length(wf(args)$steps)==0){
       cwl.wf <- gsub( "[[:space:]]", "_", paste(baseCommand(args), collapse = "_"), perl=TRUE)
@@ -128,8 +120,17 @@ runCommandline <- function(args, runid="01",
     return <- .checkOutArgs2(args, make_bam=make_bam, dir=dir, dir.name=dir.name, 
                              force=force, del_sam = del_sam)
     args.return <- return$args_complete
+    #on.exit(return(args.return), add = TRUE)
     completed <- return$completed
     args <- return$args
+    ## Check if the command is in the PATH
+    if(!baseCommand(args) == c("bash")){
+        cmd_test <- tryCMD(command=baseCommand(args), silent=TRUE)
+        if(cmd_test == "error"){
+            stop(paste0("\n", baseCommand(args), ": command not found. ", 
+                        '\n', "Please make sure to configure your PATH environment variable according to the software in use."))
+        }
+    }
     ## Create log files
     file_log <- file.path(logdir, paste0("submitargs", runid, "_", dir.name, "_log_", 
                                          format(Sys.time(), "%b%d%Y_%H%Ms%S"), 
