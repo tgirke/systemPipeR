@@ -371,7 +371,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     sysargs[["projectInfo"]]$logsFile <- file_log
     ## Select steps for the loop based on the steps argument
     args2 <- sysargs
-    #on.exit(return(args2, add = TRUE))
+    on.exit(return(args2))
     if (is.null(steps)) steps <- 1:length(args2)
     ## Select steps for the loop based on the run_step
     if (run_step != "ALL") {
@@ -435,6 +435,15 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     run_targets <- run_targets
                 } else {
                     run_targets <- seq_along(cmdlist(args.run))
+                }
+                ## Checking "results" PATH. Requirement: sysargs2$projectInfo$results == yamlinput(args.run)$results_path$path
+                ## Note: All the cwl/yml requires the results_path input. 
+                if (normalizePath(file.path(yamlinput(args.run)$results_path$path)) != normalizePath(args2$projectInfo$results)) {
+                    stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '", 
+                         normalizePath(file.path(yamlinput(args.run)$results_path$path)), "' \n",
+                         "while the project points to another location: '", 
+                         normalizePath(args2$projectInfo$results), "' \n",
+                         "**Both PATHS are required to be the same.**")
                 }
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
@@ -592,7 +601,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
         args2[["projectInfo"]][["envir"]] <- envPath
     }
     args2 <- .check_write_SYSargsList(args2, TRUE)
-    return(args2)
+    #return(args2)
 }
 ## Usage:
 ## runWF(sal)
