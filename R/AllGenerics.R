@@ -56,9 +56,9 @@ setGeneric(name = "runInfo", def = function(x) standardGeneric("runInfo"))
 ## Accessors
 setGeneric(name = "stepName", def = function(x) standardGeneric("stepName"))
 setGeneric(name = "getColumn", def = function(x, step, position = c("outfiles", "targetsWF"), column = 1, names = SampleName(x, step)) standardGeneric("getColumn"))
-# setGeneric(name = "updateColumn", def = function(x, step, df, position = c("outfiles", "targetsWF")) standardGeneric("updateColumn"))
-setGeneric(name = "viewEnvir", def = function(x) standardGeneric("viewEnvir"))
-setGeneric(name = "copyEnvir", def = function(x, list = character(), new.env = globalenv(), silent=FALSE) standardGeneric("copyEnvir"))
+setGeneric(name = "addResources", def = function(x, steps, resources) standardGeneric("addResources"))
+setGeneric(name = "viewEnvir", def = function(x, silent = FALSE) standardGeneric("viewEnvir"))
+setGeneric(name = "copyEnvir", def = function(x, list = character(), new.env = globalenv(), silent = FALSE) standardGeneric("copyEnvir"))
 ## Coerce back to list: as(SYSargsList, "list")
 setGeneric(name = "sysargslist", def = function(x) standardGeneric("sysargslist"))
 ## Replacement methods
@@ -70,6 +70,7 @@ setGeneric(name = "renameStep<-", def = function(x, step, ..., value) standardGe
 setGeneric(name = "statusWF<-", def = function(x, step, ..., value) standardGeneric("statusWF<-"))
 setGeneric(name = "dependency<-", def = function(x, step, ..., value) standardGeneric("dependency<-"))
 setGeneric(name = "updateStatus<-", def = function(x, step, ..., value) standardGeneric("updateStatus<-"))
+setGeneric(name = "runInfo<-", def = function(x, step, param, ..., value) standardGeneric("runInfo<-"))
 
 ######################################
 ## Generic Definitions for LineWise ##

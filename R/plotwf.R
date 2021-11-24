@@ -81,7 +81,7 @@ plotWF <- function(sysargs,
                    in_log = FALSE,
                    rmarkdown = "detect",
                    verbose = FALSE,
-                   show_warns = TRUE,
+                   show_warns = FALSE,
                    exit_point = 0) {
     if (!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
     if (!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
@@ -373,7 +373,7 @@ makeDot <- function(df,
         which()
     if (length(branch_complete) == 0) {
         msg <- "Workflow's first step is not connected to the last step, something wrong? Unconnected steps will not be plotted."
-        if (show_warns) warning(msg)
+        warning(msg)
         return(structure(c(1), .Names = msg))
     } else {
         if (verbose) cat("**********\n")
@@ -542,7 +542,7 @@ makeDot <- function(df,
 #' @param show_main show main steps legend?
 .addDotLegend <- function(show_main = TRUE) {
     paste0(
-        '        subgraph remote_legend {
+        '        subgraph cluster_legend {
         rankdir=TB;
         color="#eeeeee";
         style=filled;
@@ -563,10 +563,10 @@ makeDot <- function(df,
         fontsize = 30;
         legend_rstep[label=<<b>    R step    </b>>, style="filled", fillcolor="#EEEEEE"];
         legend_mandatory[label=<<b>Mandatory</b>>, style="filled", fillcolor="#d3d6eb"];
-        legend_local[label=<<b>R session</b>>, style="filled", fillcolor="#EEEEEE"];
+        legend_local[label=<<b>Local</b>>, style="filled", fillcolor="#EEEEEE"];
         legend_sysargs_step[label=<<b>sysargs step</b>> style="rounded, filled", shape="box", fillcolor="#EEEEEE"];
         legend_optional[label=<<b>Optional</b>> style="rounded, filled", fillcolor=white];
-        legend_remote[label=<<b>remote</b>> style="filled, dashed", fillcolor="#EEEEEE"];
+        legend_remote[label=<<b>Remote</b>> style="filled, dashed", fillcolor="#EEEEEE"];
     }\n'
     )
 }
@@ -599,7 +599,7 @@ makeDot <- function(df,
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
             if(req[i] == "mandatory") 'fillcolor="#d3d6eb" ' else "",
-            if(req[i] == "mandatory" && session[i] == "remote") 'style="filled, dashed" '
+            if(req[i] == "mandatory" && session[i] == "remote") 'style="filled, dashed, '
             else if(req[i] == "mandatory" && session[i] != "remote") 'style="filled, '
             else if(req[i] != "mandatory" && session[i] == "remote") 'style="dashed, '
             else 'style="solid, ',
@@ -702,9 +702,9 @@ makeDot <- function(df,
             } else if (all(sample_df$Missing_Files > 0 && sal_temp$statusWF[[i]]$status.summary == "Error")) {
                 df$sample_error[i] <- sample_df$Missing_Files
             }
-            if (length(sal_temp$statusWF[[i]]$status.time) > 0) {
-                df$time_start[i] <- sal_temp$statusWF[[i]]$status.time$time_start[1]
-                df$time_end[i] <- sal_temp$statusWF[[i]]$status.time$time_end[length(sal_temp$statusWF[[i]]$status.time$time_end)]
+            if (!is.null(sal_temp$statusWF[[i]]$total.time)) {
+                df$time_start[i] <- sal_temp$statusWF[[i]]$total.time$time_start
+                df$time_end[i] <- sal_temp$statusWF[[i]]$total.time$time_end
             }
         } else if (inherits(stepsWF(sal_temp)[[i]], "LineWise")) {
             df$sample_total[i] <- 1
