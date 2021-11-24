@@ -20,7 +20,7 @@ HTMLWidgets.widget({
         var viz = new Viz();
         var legendSrc = document.querySelector('head link[id*="plotwf_legend"]').attributes.href.value;
         var dotStr = x.dot.replace('plotwf_legend-src\.png', legendSrc);
-        console.log(dotStr)
+        // console.log(dotStr)
         viz[x.plot_method](dotStr, {images: [{path: legendSrc, width: '450px', height: '250px'}]})
         .then(function(plot_el) {
           plot_el.id = x.plotid;
