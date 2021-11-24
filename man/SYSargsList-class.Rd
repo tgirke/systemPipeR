@@ -51,6 +51,8 @@
 \alias{targetsheader,SYSargsList-method}
 \alias{yamlinput}
 \alias{yamlinput,SYSargsList-method}
+\alias{addResources}
+\alias{addResources,SYSargsList-method}
 % Methods LineWise
 \alias{codeLine}
 \alias{codeLine,SYSargsList-method}
@@ -81,6 +83,8 @@
 \alias{updateColumn<-,SYSargsList-method}
 \alias{updateStatus<-}
 \alias{updateStatus<-,SYSargsList-method}
+\alias{runInfo<-}
+\alias{runInfo<-,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
@@ -99,6 +103,7 @@ SYSargsList(sysargs = NULL, step_name = "default",
             dir = TRUE, dependency = NA, 
             run_step = "mandatory",
             run_session = "local",
+            run_remote_resources = NULL,
             silent = FALSE, 
             projPath = getOption("projPath", getwd()))
 
@@ -123,15 +128,13 @@ yamlinput(x, ...)
 cmdlist(x, ...)
 codeLine(x, ...)
 copyEnvir(x, list = character(), new.env = globalenv(), silent = FALSE)
-viewEnvir(x)
+viewEnvir(x, silent = FALSE)
 
 ## Subset Methods
 
 subset(x, ...)
 getColumn(x, step, position = c("outfiles", "targetsWF"), column = 1, 
           names = SampleName(x, step))
-
-
 
 ## Replacement
 
@@ -194,6 +197,12 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
 }
   \item{run_session}{
   character. If the step has "local" or "remote" flag for the execution.
+} 
+  \item{run_remote_resources}{
+  \code{List} for reserving for each cluster job sufficient computing resources
+  including memory (Megabyte), number of nodes, CPU cores, walltime (minutes),
+  etc. For more details, one can consult the template file for each 
+  queueing/scheduling system.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
