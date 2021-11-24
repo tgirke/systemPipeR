@@ -2,11 +2,11 @@
 ## Trinity.yml ##
 ###########################
 seqType: fq
-    
+
 samples_file:
   class: File
   path: targets_trinity.txt
-  
+
 results_path:
   class: Directory
   path: ./results/results_trinity
@@ -17,5 +17,5 @@ ss_lib_type: RF
 
 trimmomatic: '''SLIDINGWINDOW:4:5 LEADING:5 TRAILING:5 MINLEN:35'''
 
-ModulesToLoad: 
-  module1: trinity-rnaseq/2.11.0
+ModulesToLoad:
+  module1: trinity-rnaseq/2.12.0
