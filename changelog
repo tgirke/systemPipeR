@@ -1,4 +1,11 @@
 changelog
+   version 2.0.2
+        - runInfo Replacement method update
+        - runWF remote option added
+        - Allows targets subset with runWF 
+        - Improved running time when targets subset
+        - R code can be submitted to compute node
+        
    version 2.0.1
         - yamlinput methods update
         - preprocessReads updated
