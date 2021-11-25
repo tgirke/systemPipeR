@@ -44,6 +44,8 @@ HTMLWidgets.widget({
 
           if(x.responsive) makeResponsive(x.plotid);
           document.dispatchEvent(new Event('wf_plot_created'));
+
+          return el;
         })
         .catch(e => {
           var p = document.createElement("pre");
@@ -52,6 +54,27 @@ HTMLWidgets.widget({
           p.innerText = e;
           el.appendChild(p);
         });
+
+        function addControl(el) {
+          var dti = document.createElement("script");
+          dti.src = "https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"
+          document.querySelector('head').append(dti)
+          var dti = document.createElement("script");
+          dti.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"
+          document.querySelector('head').append(dti)
+
+          var ctrGroup = document.createElement("div")
+          ctrGroup.className = "wfplot-ctr"
+          ctrGroup.innerHTML = "<button>Apple</button><button>Samsung</button><button>Sony</button>"
+          console.log(el)
+          console.log(ctrGroup)
+          //document.querySelector('el').append(ctrGroup);
+          el.appendChild(ctrGroup);
+
+          return true
+        }
+
+        addControl(el)
       },
       resize: function(width, height) {
         // TODO: code to re-render the widget with a new size
