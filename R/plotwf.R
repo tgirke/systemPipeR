@@ -38,7 +38,7 @@
 #' links of steps to the corresponding log sections.
 #' @param verbose bool, turn on verbose mode will give you more information
 #' @param exit_point numeric, for advanced debugging only, see details
-#' @param show_warns bool, print the warning messages on console and on the plot?
+#' @param show_warns bool, print the warning messages on the plot?
 #' @export
 #' @return see `out_format` and `exit_point`
 #' @details
@@ -546,27 +546,21 @@ makeDot <- function(df,
         rankdir=TB;
         color="#eeeeee";
         style=filled;
-        ranksep =1
+        ranksep =1;
+        label="Legends";
+        fontsize = 30;
         node [style=filled, fontsize=10];
-         {rank=same; legend_rstep; legend_mandatory; legend_local}
-        {rank=same; legend_sysargs_step; legend_optional; legend_remote}
-        legend_rstep -> legend_mandatory -> legend_local ->legend_sysargs_step -> legend_optional -> legend_remote[color="#EEEEEEE"]
+        legend_img-> step_state[color="#eeeeee"];
 
-        legend_remote -> step_state[color="#eeeeee"];
+        legend_img[shape=none, image="plotwf_legend-src.png", label = " ", height=1, width=3, style=""];
+
         step_state[style="filled", shape="box" color=white, label =<
             <table>
             <tr><td><b>Step Colors</b></td></tr>
             <tr><td><font color="black">Pending steps</font>; <font color="#5cb85c">Successful steps</font>; <font color="#d9534f">Failed steps</font></td></tr>
             <tr><td><b>Targets Files / Code Chunk </b></td></tr><tr><td><font color="#5cb85c">0 (pass) </font> | <font color="#f0ad4e">0 (warning) </font> | <font color="#d9534f">0 (error) </font> | <font color="blue">0 (total)</font>; Duration</td></tr></table>
             >];
-        label="Legends";
-        fontsize = 30;
-        legend_rstep[label=<<b>    R step    </b>>, style="filled", fillcolor="#EEEEEE"];
-        legend_mandatory[label=<<b>Mandatory</b>>, style="filled", fillcolor="#d3d6eb"];
-        legend_local[label=<<b>Local</b>>, style="filled", fillcolor="#EEEEEE"];
-        legend_sysargs_step[label=<<b>sysargs step</b>> style="rounded, filled", shape="box", fillcolor="#EEEEEE"];
-        legend_optional[label=<<b>Optional</b>> style="rounded, filled", fillcolor=white];
-        legend_remote[label=<<b>Remote</b>> style="filled, dashed", fillcolor="#EEEEEE"];
+
     }\n'
     )
 }
