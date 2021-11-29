@@ -1,0 +1,30 @@
+
+
+.wfplot-ctr {
+    position: absolute;
+    top: 0;
+    opacity: 0.3;
+}
+
+.wfplot-ctr:hover {
+    opacity:1;
+}
+
+.wfplot-ctr button{
+  background-color: #EEEEEE;
+  border: 1px solid #666;
+  color: white;
+  padding: 10px 24px;
+  cursor: pointer;
+  float: left;
+}
+
+.wfplot-ctr button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+.wfplot-ctr:after {
+  content: "";
+  clear: both;
+  display: table;
+}
