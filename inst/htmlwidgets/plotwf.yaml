@@ -7,6 +7,11 @@ dependencies:
     - viz.js
     - full.render.js
   stylesheet: plotwf.css
+- name: dom_to_image
+  version: 2.6
+  src: htmlwidgets/lib/plotwf
+  script: 
+    - dom_to_image.js
 - name: plotwf_legend
   version: 1
   src: htmlwidgets/

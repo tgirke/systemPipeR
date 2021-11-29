@@ -39,6 +39,10 @@
 #' @param verbose bool, turn on verbose mode will give you more information
 #' @param exit_point numeric, for advanced debugging only, see details
 #' @param show_warns bool, print the warning messages on the plot?
+#' @param plot_ctr bool, add the plot control panel to the plot? This requires you
+#' to have internet connection. It will download some additional javascript libraries,
+#' and allow you to save the plot as png, jpg, svg, pdf or graphiz directly from the
+#' browser.
 #' @export
 #' @return see `out_format` and `exit_point`
 #' @details
@@ -82,12 +86,14 @@ plotWF <- function(sysargs,
                    rmarkdown = "detect",
                    verbose = FALSE,
                    show_warns = FALSE,
+                   plot_ctr = TRUE,
                    exit_point = 0) {
     if (!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
     if (!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
     stopifnot(is.logical(responsive) && length(responsive) == 1)
     stopifnot(is.logical(rstudio) && length(rstudio) == 1)
     stopifnot(is.logical(show_warns) && length(show_warns) == 1)
+    stopifnot(is.logical(plot_ctr) && length(plot_ctr) == 1)
     stopifnot(is.character(rmarkdown) || is.logical(rmarkdown) && length(rmarkdown) == 1)
     out_format <- match.arg(out_format, c("plot", "html", "dot", "dot_print"))
     if (!out_format %in% c("plot", "dot_print")) stopifnot(is.character(out_path) && length(out_path) == 1)
@@ -151,7 +157,8 @@ plotWF <- function(sysargs,
         height = height,
         plot_method = plot_method,
         rmd = rmarkdown,
-        msg = msg
+        msg = msg,
+        plot_ctr = plot_ctr
     )
     # create widget
     grviz <- htmlwidgets::createWidget(

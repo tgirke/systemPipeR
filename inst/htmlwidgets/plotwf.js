@@ -19,23 +19,48 @@ HTMLWidgets.widget({
             window.saveAs(blob, 'plotwf.png');
       });
     }
-    function toJpg(plot_el){
-      //domtoimage.toBlob(plot_el)
-      //  .then(function (blob) {
-      //      window.saveAs(blob, 'plotwf.png');
-      //});
+
+    function toJpg(){
+      let plot_el = el.querySelector('svg');
+        domtoimage.toJpeg(plot_el, { quality: 1 })
+    .then(function (dataUrl) {
+        var link = document.createElement('a');
+        link.download = 'plotwf.jpeg';
+        link.href = dataUrl;
+        link.click();
+    });
     }
-    function toSvg(plot_el){
-      //domtoimage.toBlob(plot_el)
-      //  .then(function (blob) {
-      //      window.saveAs(blob, 'plotwf.png');
-      //});
+
+    function toSvg(){
+      let plot_el = el.querySelector('svg');
+      domtoimage.toSvg(plot_el)
+      .then(function (dataUrl) {
+        var link = document.createElement('a');
+        link.download = 'plotwf.svg';
+        link.href = dataUrl;
+        link.click();
+      });
     }
-    function toPdf(plot_el){
-      //domtoimage.toBlob(plot_el)
-      //  .then(function (blob) {
-      //      window.saveAs(blob, 'plotwf.png');
-      //});
+    //function toSvg(){
+    //  let plot_el = el.querySelector('svg');
+    //  var file = new File([plot_el.outerHTML], "plotwf.svg", {type: "text/plain;charset=utf-8"});
+    //  saveAs(file);
+    //}
+
+    function toPdf(){
+      let plot_el = el.querySelector('svg');
+      domtoimage.toPng(plot_el)
+      .then(function(dataurl) {
+          var orientation = window.innerHeight >= window.innerWidth ? "portrait" : "landscape";
+          const doc = new jspdf.jsPDF({unit: "px", orientation: orientation, format: [window.innerHeight, window.innerWidth], compress: true});
+          doc.addImage(dataurl, "PNG", 0, 0, window.innerWidth, window.innerHeight);
+          doc.save("plotwf.pdf");
+      });
+    }
+
+    function toDot(dotStr){
+      var file = new File([dotStr], "plotwf.dot", {type: "text/plain;charset=utf-8"});
+      saveAs(file);
     }
 
     async function load_scripts(script_urls) {
@@ -62,35 +87,39 @@ HTMLWidgets.widget({
     }
     load_scripts.loaded = new Set();
 
-    function addControl(el) {
-      var ctrGroup = document.createElement("div")
-      ctrGroup.className = "wfplot-ctr"
-      ctrGroup.innerHTML =
-      `
-      <button data-for="png">PNG</button>
-      <button data-for="jpg">JPG</button>
-      <button data-for="svg">SVG</button>
-      <button data-for="pdf">PDF</button>
-      <p class="error-msg"></p>
-      `
-      el.appendChild(ctrGroup);
+    function addControl(el, dotStr) {
       (async () => {
       await load_scripts([
-        'https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js'
         ]);
 
+        var ctrGroup = document.createElement("div")
+        ctrGroup.className = "wfplot-ctr"
+
         if(!domtoimage || !jspdf || !saveAs) {
-          document.querySelector('.wfplot-ctr .error-msg').innerHTML =
-          "JS libraries not loaded, check your Internet";
+          ctrGroup.innerHTML = `<p class="error-msg">JS libraries not loaded, check your Internet</p>`;
+          el.appendChild(ctrGroup);
           return false;
+        } else {
+
         }
 
+
+        ctrGroup.innerHTML =
+        `
+        <button data-for="png">PNG</button>
+        <button data-for="jpg">JPG</button>
+        <button data-for="svg">SVG</button>
+        <button data-for="pdf">PDF</button>
+        <button data-for="dot">Graphiz</button>
+        `
+        el.appendChild(ctrGroup);
         ctrGroup.querySelector('button[data-for="png"]').addEventListener('click', toPng)
         ctrGroup.querySelector('button[data-for="jpg"]').addEventListener('click', toJpg)
         ctrGroup.querySelector('button[data-for="svg"]').addEventListener('click', toSvg)
         ctrGroup.querySelector('button[data-for="pdf"]').addEventListener('click', toPdf)
+        ctrGroup.querySelector('button[data-for="dot"]').addEventListener('click', ()=>{toDot(dotStr)})
       })();
 
       return el
@@ -140,7 +169,7 @@ HTMLWidgets.widget({
           el.appendChild(p);
         });
 
-        addControl(el)
+        if(x.plot_ctr) addControl(el, dotStr);
 
       },
       resize: function(width, height) {
