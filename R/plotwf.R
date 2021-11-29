@@ -41,7 +41,7 @@
 #' @param show_warns bool, print the warning messages on the plot?
 #' @param plot_ctr bool, add the plot control panel to the plot? This requires you
 #' to have internet connection. It will download some additional javascript libraries,
-#' and allow you to save the plot as png, jpg, svg, pdf or graphiz directly from the
+#' and allow you to save the plot as png, jpg, svg, pdf or graphviz directly from the
 #' browser.
 #' @export
 #' @return see `out_format` and `exit_point`

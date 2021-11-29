@@ -31,21 +31,22 @@ HTMLWidgets.widget({
     });
     }
 
-    function toSvg(){
+    function toSvgFull(){
       let plot_el = el.querySelector('svg');
       domtoimage.toSvg(plot_el)
       .then(function (dataUrl) {
         var link = document.createElement('a');
-        link.download = 'plotwf.svg';
+        link.download = 'plotwf_full_size.svg';
         link.href = dataUrl;
         link.click();
       });
     }
-    //function toSvg(){
-    //  let plot_el = el.querySelector('svg');
-    //  var file = new File([plot_el.outerHTML], "plotwf.svg", {type: "text/plain;charset=utf-8"});
-    //  saveAs(file);
-    //}
+
+    function toSvgMin(){
+      let plot_el = el.querySelector('svg');
+      var file = new File([plot_el.outerHTML], "plotwf_min_size.svg", {type: "text/plain;charset=utf-8"});
+      saveAs(file);
+    }
 
     function toPdf(){
       let plot_el = el.querySelector('svg');
@@ -71,7 +72,8 @@ HTMLWidgets.widget({
                 } else {
                     var script = document.createElement('script');
                     script.onload = resolve;
-                    script.src = script_url
+                    script.src = script_url;
+                    script.addEventListener('load', ()=>load_scripts.loaded.add(script_url))
                     document.head.appendChild(script);
                 }
             });
@@ -80,44 +82,56 @@ HTMLWidgets.widget({
         for (const script_url of script_urls) {
             promises.push(load(script_url));
         }
-        await Promise.all(promises);
-        for (const script_url of script_urls) {
-            load_scripts.loaded.add(script_url);
-        }
+        await Promise.allSettled(promises);
     }
     load_scripts.loaded = new Set();
 
+    function ctrInernetErr(ctrGroup, el) {
+      let errMsg = "Some JS libraries not loaded, check your Internet";
+      ctrGroup.innerHTML = `<p class='error-msg'>${errMsg}</p>`;
+      el.appendChild(ctrGroup);
+      throw new Error(errMsg);
+    }
+
     function addControl(el, dotStr) {
       (async () => {
-      await load_scripts([
-        'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js'
-        ]);
+        var ctrGroup = document.createElement("div");
+        ctrGroup.className = "wfplot-ctr";
 
-        var ctrGroup = document.createElement("div")
-        ctrGroup.className = "wfplot-ctr"
+        if(typeof jspdf === "undefined" || typeof saveAs === "undefined") {
+          if(!window.navigator.onLine) ctrInernetErr(ctrGroup, el);
 
-        if(!domtoimage || !jspdf || !saveAs) {
-          ctrGroup.innerHTML = `<p class="error-msg">JS libraries not loaded, check your Internet</p>`;
-          el.appendChild(ctrGroup);
-          return false;
-        } else {
-
+          await load_scripts([
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js'
+          ]);
+          var timeCount = 0;
+          let checkLoaded = setInterval(()=>{
+            if(load_scripts.loaded.size === 2 && timeCount <= 5000) {
+              clearInterval(checkLoaded)
+            } else if (timeCount <= 5000){
+              timeCount += 500
+            } else {
+              clearInterval(checkLoaded);
+              ctrInernetErr(ctrGroup, el);
+            }
+          }, 500);
         }
-
 
         ctrGroup.innerHTML =
         `
         <button data-for="png">PNG</button>
         <button data-for="jpg">JPG</button>
-        <button data-for="svg">SVG</button>
+        <button data-for="svg_full">SVG (full)</button>
+        <button data-for="svg_min">SVG (min)</button>
         <button data-for="pdf">PDF</button>
-        <button data-for="dot">Graphiz</button>
+        <button data-for="dot">Graphviz</button>
         `
         el.appendChild(ctrGroup);
         ctrGroup.querySelector('button[data-for="png"]').addEventListener('click', toPng)
         ctrGroup.querySelector('button[data-for="jpg"]').addEventListener('click', toJpg)
-        ctrGroup.querySelector('button[data-for="svg"]').addEventListener('click', toSvg)
+        ctrGroup.querySelector('button[data-for="svg_full"]').addEventListener('click', toSvgFull)
+        ctrGroup.querySelector('button[data-for="svg_min"]').addEventListener('click', toSvgMin)
         ctrGroup.querySelector('button[data-for="pdf"]').addEventListener('click', toPdf)
         ctrGroup.querySelector('button[data-for="dot"]').addEventListener('click', ()=>{toDot(dotStr)})
       })();
