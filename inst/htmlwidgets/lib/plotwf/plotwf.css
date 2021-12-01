@@ -11,3 +11,15 @@
 .wfplot-ctr .error-msg {
   color: red;
 }
+
+.panzoom-error {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: red;
+  opacity: 0.3;
+}
+
+.panzoom-error:hover {
+    opacity:1;
+}

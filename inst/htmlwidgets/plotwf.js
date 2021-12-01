@@ -64,16 +64,16 @@ HTMLWidgets.widget({
       saveAs(file);
     }
 
-    async function load_scripts(script_urls) {
+    async function load_scripts(script_urls, scripts_loaded) {
         function load(script_url) {
             return new Promise(function(resolve, reject) {
-                if (load_scripts.loaded.has(script_url)) {
+                if (scripts_loaded.has(script_url)) {
                     resolve();
                 } else {
                     var script = document.createElement('script');
                     script.onload = resolve;
                     script.src = script_url;
-                    script.addEventListener('load', ()=>load_scripts.loaded.add(script_url))
+                    script.addEventListener('load', ()=>scripts_loaded.add(script_url))
                     document.head.appendChild(script);
                 }
             });
@@ -84,12 +84,18 @@ HTMLWidgets.widget({
         }
         await Promise.allSettled(promises);
     }
-    load_scripts.loaded = new Set();
 
     function ctrInernetErr(ctrGroup, el) {
       let errMsg = "Some JS libraries not loaded, check your Internet";
       ctrGroup.innerHTML = `<p class='error-msg'>${errMsg}</p>`;
       el.appendChild(ctrGroup);
+      throw new Error(errMsg);
+    }
+
+    function panZoomInernetErr(panErr, el) {
+      let errMsg = "Pan-zoom is not loaded, check your Internet";
+      panErr.innerHTML = `<p class='error-msg'>${errMsg}</p>`;
+      el.appendChild(panErr);
       throw new Error(errMsg);
     }
 
@@ -100,22 +106,25 @@ HTMLWidgets.widget({
 
         if(typeof jspdf === "undefined" || typeof saveAs === "undefined") {
           if(!window.navigator.onLine) ctrInernetErr(ctrGroup, el);
-
+          var scripts_loaded = new Set();
           await load_scripts([
             'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js',
             'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js'
-          ]);
+          ], scripts_loaded);
           var timeCount = 0;
-          let checkLoaded = setInterval(()=>{
-            if(load_scripts.loaded.size === 2 && timeCount <= 5000) {
-              clearInterval(checkLoaded)
-            } else if (timeCount <= 5000){
-              timeCount += 500
-            } else {
-              clearInterval(checkLoaded);
-              ctrInernetErr(ctrGroup, el);
-            }
-          }, 500);
+          await new Promise(resolve => {
+            let checkLoaded = setInterval(()=>{
+              if(scripts_loaded.size === 2 && timeCount <= 5000) {
+                resolve("loaded");
+                clearInterval(checkLoaded);
+              } else if (timeCount <= 5000){
+                timeCount += 500;
+              } else {
+                clearInterval(checkLoaded);
+                ctrInernetErr(ctrGroup, el);
+              }
+            }, 500);
+          })
         }
 
         ctrGroup.innerHTML =
@@ -135,9 +144,42 @@ HTMLWidgets.widget({
         ctrGroup.querySelector('button[data-for="pdf"]').addEventListener('click', toPdf)
         ctrGroup.querySelector('button[data-for="dot"]').addEventListener('click', ()=>{toDot(dotStr)})
       })();
-
-      return el
+      return el;
     }
+
+     function addPanZoom(el) {
+      (async () => {
+        var panError = document.createElement("div");
+        panError.className = "panzoom-error";
+
+        if(typeof svgPanZoom === "undefined") {
+          if(!window.navigator.onLine) panZoomInernetErr(panError, el);
+          var scripts_loaded = new Set();
+          await load_scripts([
+            'https://cdn.jsdelivr.net/npm/svg-pan-zoom/dist/svg-pan-zoom.min.js'
+          ], scripts_loaded);
+          var timeCount = 0;
+          await new Promise(resolve => {
+            let checkLoaded = setInterval(()=>{
+              if(scripts_loaded.size === 1 && timeCount <= 5000) {
+                resolve("loaded");
+                clearInterval(checkLoaded);
+              } else if (timeCount <= 5000){
+                timeCount += 500;
+              } else {
+                clearInterval(checkLoaded);
+                panZoomInernetErr(panError, el);
+              }
+            }, 500);
+          });
+
+        }
+        svgPanZoom(el.querySelector('svg'), {controlIconsEnabled: true});
+      })();
+
+
+      return el;
+     }
     /**************/
 
     return {
@@ -173,8 +215,11 @@ HTMLWidgets.widget({
 
           if(x.responsive) makeResponsive(plot_el);
           document.dispatchEvent(new Event('wf_plot_created'));
-
           return el;
+        })
+        .then(el=>{
+          if(x.plot_ctr) addControl(el, dotStr);
+          if(x.pan_zoom) addPanZoom(el);
         })
         .catch(e => {
           var p = document.createElement("pre");
@@ -182,8 +227,6 @@ HTMLWidgets.widget({
           p.innerText = e;
           el.appendChild(p);
         });
-
-        if(x.plot_ctr) addControl(el, dotStr);
 
       },
       resize: function(width, height) {

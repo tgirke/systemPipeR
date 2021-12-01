@@ -43,6 +43,11 @@
 #' to have internet connection. It will download some additional javascript libraries,
 #' and allow you to save the plot as png, jpg, svg, pdf or graphviz directly from the
 #' browser.
+#' @param pan_zoom bool, allow panning and zooming of the plot? Use mouse wheel
+#' or touch pad to zoom in and out of the plot. You need to have
+#' internet connection, additional javascript libraries will be loaded automatically
+#' online. Cannot be used with `responsive = TRUE` together. If both `TRUE`,
+#' `responsive` will be automatically set to `FALSE`.
 #' @export
 #' @return see `out_format` and `exit_point`
 #' @details
@@ -87,6 +92,7 @@ plotWF <- function(sysargs,
                    verbose = FALSE,
                    show_warns = FALSE,
                    plot_ctr = TRUE,
+                   pan_zoom = FALSE,
                    exit_point = 0) {
     if (!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
     if (!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
@@ -94,6 +100,7 @@ plotWF <- function(sysargs,
     stopifnot(is.logical(rstudio) && length(rstudio) == 1)
     stopifnot(is.logical(show_warns) && length(show_warns) == 1)
     stopifnot(is.logical(plot_ctr) && length(plot_ctr) == 1)
+    stopifnot(is.logical(pan_zoom) && length(pan_zoom) == 1)
     stopifnot(is.character(rmarkdown) || is.logical(rmarkdown) && length(rmarkdown) == 1)
     out_format <- match.arg(out_format, c("plot", "html", "dot", "dot_print"))
     if (!out_format %in% c("plot", "dot_print")) stopifnot(is.character(out_path) && length(out_path) == 1)
@@ -149,6 +156,10 @@ plotWF <- function(sysargs,
     if (rmarkdown == "detect") rmarkdown <- isTRUE(getOption("knitr.in.progress"))
     # forward options using x
     if (verbose) message("Making the plot...")
+    if (pan_zoom && responsive) {
+        warning("Pan-zoom and responsive cannot be used together. Pan-zoom has priority, now `responsive` has set to FALSE")
+        responsive <- FALSE
+    }
     x <- list(
         dot = dot,
         plotid = paste0("sprwf-", paste0(sample(8), collapse = "")),
@@ -158,7 +169,8 @@ plotWF <- function(sysargs,
         plot_method = plot_method,
         rmd = rmarkdown,
         msg = msg,
-        plot_ctr = plot_ctr
+        plot_ctr = plot_ctr,
+        pan_zoom = pan_zoom
     )
     # create widget
     grviz <- htmlwidgets::createWidget(
