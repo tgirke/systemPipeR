@@ -151,7 +151,7 @@ runCommandline <- function(args, runid = "01",
         if (length(args$inputvars) >= 1) {
             inpVar <- args$inputvars
             check.inp <- colSums(sapply(inpVar, function(y) sapply(yamlinput(args), function(x) x["path"] %in% y)))
-            df.targets <- targets.as.df(args$targets)[check.inp[check.inp > 0]]
+            df.targets <- targets.as.df(args$targets)[names(check.inp[check.inp > 0])]
             inp_targets2 <- FALSE
         } else {
             inp_targets2 <- TRUE
