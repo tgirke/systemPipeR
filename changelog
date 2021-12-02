@@ -1,4 +1,8 @@
 changelog
+    version 2.1.8
+        - plotWF panel control options
+        - runCommnadline bug fixed
+        
     version 2.1.7
         - R code can be submitted to compute node - internal function
         

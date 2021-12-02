@@ -1074,7 +1074,6 @@ run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE, lfcShrink = F
         for (i in seq(along = mycmp[, 1])) {
             ## Extracts DEG results for specific contrasts from DESeqDataSet object
             res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
-
             ## lfcShrink
             if (lfcShrink == FALSE) {
                 res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
