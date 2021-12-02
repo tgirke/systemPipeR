@@ -1,6 +1,11 @@
 #' Visualize SPR workflow and status
 #'
-#' @param df The workflow structure dataframe
+#' @param sysargs object of class `SYSargsList`.
+#' @param width string, a valid CSS string for width, like "500px", "100%"
+#' @param height string, a valid CSS string for height, like "500px", "100%"
+#' @param elementId string, optional ID value for the plot
+#' @param responsive bool, should the plot be responsive? useful in Rstudio built-in
+#' viewer, Rmarkdown, Shiny or embed it into other web pages.
 #' @param branch_method string, one of "auto", "choose". How to determine the
 #' main branch of the workflow. "auto" will be determined by internal alrgothrim:
 #' Branches connecting the frist and last step and/or the longest will be favored.
@@ -9,8 +14,11 @@
 #' branch number to be the main branch instead of choosing from the prompt. This
 #' option can be good if you are in a non-interactive mode, e.g. rendering Rmd.
 #' @param layout string, one of "compact", "vertical", "horizontal", "execution"
+#' @param no_plot bool, if you want to assgin the plot to a variable and do not want
+#' to see it interactively, change this to `FALSE`
+#' @param plot_method string, one of "svg", "png", how to make plot, use svg or png
+#' to embed the plot.
 #' @param out_format string, one of "plot", "html", "dot", "dot_print"
-#'
 #' - plot: directly open your viewer or browser of the plot
 #' - html: save the plot to a html file
 #' - dot: save the plot in DOT language, need a dot engine to remake the plot
@@ -19,26 +27,26 @@
 #' provide a path of where to save the plot.
 #' @param show_legend bool, show plot legend?
 #' @param mark_main_branch bool, color the main branch on the plot?
-#' @param width string, a valid CSS string for width, like "500px", "100%"
-#' @param height string, a valid CSS string for height, like "500px", "100%"
-#' @param elementId string, optional ID value for the plot
-#' @param responsive bool, should the plot be responsive? useful in Rstudio built-in
-#' viewer, Rmarkdown, Shiny or embed it into other web pages.
-#' @param no_plot bool, if you want to assgin the plot to a variable and do not want
-#' to see it interactively, change this to `FALSE`
-#' @param plot_method string, one of "svg", "png", how to make plot, use svg or png
-#' to embed the plot.
 #' @param rstudio bool, if you are using Rstudio, open the built-in viewer to see the
 #' plot? Default is no, open the browser tab to see it plot. The default viewer is
-#' too small to see the full plot clearly, so we recommend to use the broswer tab.
+#' too small to see the full plot clearly, so we recommend to use the browser tab.
+#' @param in_log bool, is this plot been made in a SPR log file? If `TRUE` will add
+#' links of steps to the corresponding log sections.
 #' @param rmarkdown are you rendering this plot in a Rmarkdown document? default value is
 #'  "detect", this function will determine based on current R environment, or you
 #' can force it to be `TRUE` or `FALSE`
-#' @param in_log bool, is this plot been made in a SPR log file? If `TRUE` will add
-#' links of steps to the corresponding log sections.
 #' @param verbose bool, turn on verbose mode will give you more information
+#' @param show_warns bool, print the warning messages on the plot?
+#' @param plot_ctr bool, add the plot control panel to the plot? This requires you
+#' to have internet connection. It will download some additional javascript libraries,
+#' and allow you to save the plot as png, jpg, svg, pdf or graphviz directly from the
+#' browser.
+#' @param pan_zoom bool, allow panning and zooming of the plot? Use mouse wheel
+#' or touch pad to zoom in and out of the plot. You need to have
+#' internet connection, additional javascript libraries will be loaded automatically
+#' online. Cannot be used with `responsive = TRUE` together. If both `TRUE`,
+#' `responsive` will be automatically set to `FALSE`.
 #' @param exit_point numeric, for advanced debugging only, see details
-#' @param show_warns bool, print the warning messages on console and on the plot?
 #' @export
 #' @return see `out_format` and `exit_point`
 #' @details
@@ -82,12 +90,16 @@ plotWF <- function(sysargs,
                    rmarkdown = "detect",
                    verbose = FALSE,
                    show_warns = FALSE,
+                   plot_ctr = TRUE,
+                   pan_zoom = FALSE,
                    exit_point = 0) {
     if (!is.null(width)) stopifnot(is.character(width) && length(width) == 1)
     if (!is.null(height)) stopifnot(is.character(height) && length(height) == 1)
     stopifnot(is.logical(responsive) && length(responsive) == 1)
     stopifnot(is.logical(rstudio) && length(rstudio) == 1)
     stopifnot(is.logical(show_warns) && length(show_warns) == 1)
+    stopifnot(is.logical(plot_ctr) && length(plot_ctr) == 1)
+    stopifnot(is.logical(pan_zoom) && length(pan_zoom) == 1)
     stopifnot(is.character(rmarkdown) || is.logical(rmarkdown) && length(rmarkdown) == 1)
     out_format <- match.arg(out_format, c("plot", "html", "dot", "dot_print"))
     if (!out_format %in% c("plot", "dot_print")) stopifnot(is.character(out_path) && length(out_path) == 1)
@@ -143,6 +155,10 @@ plotWF <- function(sysargs,
     if (rmarkdown == "detect") rmarkdown <- isTRUE(getOption("knitr.in.progress"))
     # forward options using x
     if (verbose) message("Making the plot...")
+    if (pan_zoom && responsive) {
+        warning("Pan-zoom and responsive cannot be used together. Pan-zoom has priority, now `responsive` has set to FALSE")
+        responsive <- FALSE
+    }
     x <- list(
         dot = dot,
         plotid = paste0("sprwf-", paste0(sample(8), collapse = "")),
@@ -151,7 +167,9 @@ plotWF <- function(sysargs,
         height = height,
         plot_method = plot_method,
         rmd = rmarkdown,
-        msg = msg
+        msg = msg,
+        plot_ctr = plot_ctr,
+        pan_zoom = pan_zoom
     )
     # create widget
     grviz <- htmlwidgets::createWidget(
@@ -546,27 +564,21 @@ makeDot <- function(df,
         rankdir=TB;
         color="#eeeeee";
         style=filled;
-        ranksep =1
+        ranksep =1;
+        label="Legends";
+        fontsize = 30;
         node [style=filled, fontsize=10];
-         {rank=same; legend_rstep; legend_mandatory; legend_local}
-        {rank=same; legend_sysargs_step; legend_optional; legend_remote}
-        legend_rstep -> legend_mandatory -> legend_local ->legend_sysargs_step -> legend_optional -> legend_remote[color="#EEEEEEE"]
+        legend_img-> step_state[color="#eeeeee"];
 
-        legend_remote -> step_state[color="#eeeeee"];
+        legend_img[shape=none, image="plotwf_legend-src.png", label = " ", height=1, width=3, style=""];
+
         step_state[style="filled", shape="box" color=white, label =<
             <table>
             <tr><td><b>Step Colors</b></td></tr>
             <tr><td><font color="black">Pending steps</font>; <font color="#5cb85c">Successful steps</font>; <font color="#d9534f">Failed steps</font></td></tr>
             <tr><td><b>Targets Files / Code Chunk </b></td></tr><tr><td><font color="#5cb85c">0 (pass) </font> | <font color="#f0ad4e">0 (warning) </font> | <font color="#d9534f">0 (error) </font> | <font color="blue">0 (total)</font>; Duration</td></tr></table>
             >];
-        label="Legends";
-        fontsize = 30;
-        legend_rstep[label=<<b>    R step    </b>>, style="filled", fillcolor="#EEEEEE"];
-        legend_mandatory[label=<<b>Mandatory</b>>, style="filled", fillcolor="#d3d6eb"];
-        legend_local[label=<<b>Local</b>>, style="filled", fillcolor="#EEEEEE"];
-        legend_sysargs_step[label=<<b>sysargs step</b>> style="rounded, filled", shape="box", fillcolor="#EEEEEE"];
-        legend_optional[label=<<b>Optional</b>> style="rounded, filled", fillcolor=white];
-        legend_remote[label=<<b>Remote</b>> style="filled, dashed", fillcolor="#EEEEEE"];
+
     }\n'
     )
 }

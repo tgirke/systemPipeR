@@ -1,5 +1,5 @@
 dependencies:
-- name: plotwf
+- name: vizjs
   version: 2.1.2
   src: htmlwidgets/lib/plotwf
 # fullrender.js must come after viz.js
@@ -7,3 +7,13 @@ dependencies:
     - viz.js
     - full.render.js
   stylesheet: plotwf.css
+- name: dom_to_image
+  version: 2.6
+  src: htmlwidgets/lib/plotwf
+  script: 
+    - dom_to_image.js
+- name: plotwf_legend
+  version: 1
+  src: htmlwidgets/
+  attachment:
+    - plotwf_legend.svg

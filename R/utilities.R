@@ -151,7 +151,7 @@ runCommandline <- function(args, runid = "01",
         if (length(args$inputvars) >= 1) {
             inpVar <- args$inputvars
             check.inp <- colSums(sapply(inpVar, function(y) sapply(yamlinput(args), function(x) x["path"] %in% y)))
-            df.targets <- targets.as.df(args$targets)[check.inp[check.inp > 0]]
+            df.targets <- targets.as.df(args$targets)[names(check.inp[check.inp > 0])]
             inp_targets2 <- FALSE
         } else {
             inp_targets2 <- TRUE
@@ -1074,7 +1074,6 @@ run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE, lfcShrink = F
         for (i in seq(along = mycmp[, 1])) {
             ## Extracts DEG results for specific contrasts from DESeqDataSet object
             res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))
-
             ## lfcShrink
             if (lfcShrink == FALSE) {
                 res <- DESeq2::results(dds, contrast = c("condition", mycmp[i, ]))

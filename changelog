@@ -1,4 +1,8 @@
 changelog
+   version 2.0.3
+   	- plotWF panel control options
+        - runCommnadline bug fixed
+   	
    version 2.0.2
         - runInfo Replacement method update
         - runWF remote option added
