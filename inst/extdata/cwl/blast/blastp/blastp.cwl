@@ -1,33 +1,29 @@
-################################################################
-##                           blastp                           ##
-################################################################
-
 cwlVersion: v1.0
 class: CommandLineTool
-doc: "[bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml): Fast and sensitive read alignment"
-label: Last updated 09/2019
-hints:
-  SoftwareRequirement:
-    packages:
-    - package: bowtie2
-      version: [ ]
-      
-################################################################
-##           baseCommand and arguments definitions            ##
-################################################################
-
 baseCommand: blastp
-
-requirements:
-  InitialWorkDirRequirement:
-    listing: [ $(inputs.results_path) ]
-
-
-################################################################
-##               Inputs and Outputs Settings                  ##
-################################################################
-
 inputs:
-
+  query:
+    type: File
+    inputBinding:
+      prefix: -query
+  database_name:
+    type: File
+    inputBinding:
+      prefix: -db
+  evalue:
+    type: int
+    inputBinding:
+      prefix: -evalue
+  outfmt:
+    type: int
+    inputBinding:
+      prefix: -outfmt
+  out:
+    type: File
+    inputBinding:
+      prefix: -out
 outputs:
-
+  out:
+    type: File
+    outputBinding:
+      glob: $(inputs.out)
