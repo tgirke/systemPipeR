@@ -438,13 +438,13 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 }
                 ## Checking "results" PATH. Requirement: sysargs2$projectInfo$results == yamlinput(args.run)$results_path$path
                 ## Note: All the cwl/yml requires the results_path input. 
-                if (normalizePath(file.path(yamlinput(args.run)$results_path$path)) != normalizePath(args2$projectInfo$results)) {
-                    stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '", 
-                         normalizePath(file.path(yamlinput(args.run)$results_path$path)), "' \n",
-                         "while the project points to another location: '", 
-                         normalizePath(args2$projectInfo$results), "' \n",
-                         "**Both PATHS are required to be the same.**")
-                }
+                # if (normalizePath(file.path(yamlinput(args.run)$results_path$path)) != normalizePath(args2$projectInfo$results)) {
+                #     stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '", 
+                #          normalizePath(file.path(yamlinput(args.run)$results_path$path)), "' \n",
+                #          "while the project points to another location: '", 
+                #          normalizePath(args2$projectInfo$results), "' \n",
+                #          "**Both PATHS are required to be the same.**")
+                # }
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
                 if (run_location == "local") {

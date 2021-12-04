@@ -1,4 +1,7 @@
 changelog
+   version 2.0.4
+        - Bug fixed pathInstance and runWF
+        
    version 2.0.3
    	- plotWF panel control options
         - runCommnadline bug fixed

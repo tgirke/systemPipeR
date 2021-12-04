@@ -26,4 +26,4 @@ outputs:
   out:
     type: File
     outputBinding:
-      glob: $(inputs.results_path)/$(inputs.out)
+      glob: $(inputs.out)
