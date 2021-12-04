@@ -18,6 +18,10 @@ inputs:
     inputBinding:
       prefix: -dbtype
 outputs:
+  out.pdb:
+    type: File
+    outputBinding:
+      glob: $(inputs.results_path)/$(inputs.database_name.basename).pdb
   out.phd:
     type: File
     outputBinding:
@@ -25,7 +29,7 @@ outputs:
   out.phi:
     type: File
     outputBinding:
-      glob: $(inputs.results_path)/$(inputs.database_name.basename).phd
+      glob: $(inputs.results_path)/$(inputs.database_name.basename).phi
   out.phr:
     type: File
     outputBinding:
@@ -38,15 +42,23 @@ outputs:
     type: File
     outputBinding:
       glob: $(inputs.results_path)/$(inputs.database_name.basename).pog
-  out.psd:
+  out.pos:
     type: File
     outputBinding:
-      glob: $(inputs.results_path)/$(inputs.database_name.basename).psd
-  out.psi:
+      glob: $(inputs.results_path)/$(inputs.database_name.basename).pos
+  out.pot:
     type: File
     outputBinding:
-      glob: $(inputs.results_path)/$(inputs.database_name.basename).psi
+      glob: $(inputs.results_path)/$(inputs.database_name.basename).pot
   out.psq:
     type: File
     outputBinding:
       glob: $(inputs.results_path)/$(inputs.database_name.basename).psq
+  out.ptf:
+    type: File
+    outputBinding:
+      glob: $(inputs.results_path)/$(inputs.database_name.basename).ptf
+  out.pto:
+    type: File
+    outputBinding:
+      glob: $(inputs.results_path)/$(inputs.database_name.basename).pto

@@ -8,7 +8,7 @@ evalue: 1e-6
 outfmt: 6
 out:
   class: File
-  path: blastp.tab
+  path: ./results/blastp.tab
 results_path:
   class: Directory
   path: ./results

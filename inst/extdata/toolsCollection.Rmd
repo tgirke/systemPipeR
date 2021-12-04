@@ -619,9 +619,9 @@ identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ## CommandLineTool
 
 ```{r, spr='sysargs'}
-args <- loadWF(targets = targetspath, wf_file = "fastqc/fastqc.cwl", 
-    input_file = "fastqc/fastqc.yml", dir_path = dir_path)
-args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
+args <- loadWF(targets = targetspath, wf_file = "fastqc/fastqc-se.cwl", 
+    input_file = "fastqc/fastqc-se.yml", dir_path = dir_path)
+args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_"))
 cmdlist(args[1])
 output(args[1])
 ```
@@ -629,11 +629,11 @@ output(args[1])
 ## Workflow
 
 ```{r, spr='sysargs'}
-WF <- loadWF(targets = targetspath, wf_file = "fastqc/workflow_fastqc.cwl", 
-    input_file = "fastqc/fastqc.yml", dir_path = dir_path)
-WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName = "_SampleName_"))
-cmdlist(WF[1])
-output(WF[1])
+# WF <- loadWF(targets = targetspath, wf_file = "fastqc/workflow_fastqc-.cwl", 
+#     input_file = "fastqc/fastqc.yml", dir_path = dir_path)
+# WF <- renderWF(WF, inputvars = c(FileName = "_FASTQ_PATH1_"))
+# cmdlist(WF[1])
+# output(WF[1])
 ```
 
 ### Check

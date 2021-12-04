@@ -300,9 +300,12 @@ pathInstance <- function(pathvar, input, altinput) {
     pathvar <- gsub("(^.*\\)).*", "\\1", pathvar)
     pathvar <- gsub("\\$|\\(|\\)", "", pathvar)
     pathvarlist <- strsplit(pathvar, "\\.")
-    filenametype <- unlist(lapply(seq_along(pathvarlist), function(x) pathvarlist[[x]][pathvarlist[[x]] %in% c("basename", "nameroot", "path")]))
-    filenametype <- sapply(seq_along(pathvarlist), function(x) filenametype[x]) # In case of empty filenamelist NA are returned instead
+    filenametype <- lapply(seq_along(pathvarlist), function(x) pathvarlist[[x]][pathvarlist[[x]] %in% c("basename", "nameroot", "path")])
+    filenametype <- unlist(lapply(filenametype, function(x) ifelse(length(x)==0, NA, x)))
     filenametype <- ifelse(is.na(filenametype), "NA", filenametype)
+    # filenametype <- unlist(lapply(seq_along(pathvarlist), function(x) pathvarlist[[x]][pathvarlist[[x]] %in% c("basename", "nameroot", "path")]))
+    # filenametype <- sapply(seq_along(pathvarlist), function(x) filenametype[x]) # In case of empty filenamelist NA are returned instead
+    # filenametype <- ifelse(is.na(filenametype), "NA", filenametype)
     myvalue_list <- sapply((pathvarlist), function(x) list(NULL), simplify = FALSE)
     for (i in seq_along(pathvarlist)) {
         myvalue <- NULL
@@ -385,6 +388,8 @@ pathUtils <- function(x, type, dropdir = TRUE) {
         mypath <- gsub("(^.*)\\..*$", "\\1", basename(x))
     } else if(type == "path"){
       mypath <- x
+    } else if(type == "NA"){
+        mypath <- x 
     } else {
         mypath <- x # Return unchanged input if 'type' is not one the above three values
         # warning("Argument 'type' needs to be assigned one of: 'dirname', 'basename', 'nameroot'")
