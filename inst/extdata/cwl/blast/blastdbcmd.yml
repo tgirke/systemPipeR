@@ -1,14 +1,9 @@
-query:
-  class: File
-  path: ./data/mouse_select.fasta
 database_name:
   class: File
   path: ./data/human.1.protein.faa
-evalue: 1e-6
-outfmt: 6
-out:
+entry_batch:
   class: File
-  path: ./results/blastp.out
+  path: ./results/top_hits
 results_path:
   class: Directory
   path: ./results

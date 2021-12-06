@@ -1,0 +1,8 @@
+out:
+  class: File
+  path: ./results/blastp/blastp.out
+results_path:
+  class: Directory
+  path: ./results
+ModulesToLoad:
+  module1: ncbi-blast
