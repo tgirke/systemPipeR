@@ -189,7 +189,7 @@ HTMLWidgets.widget({
         var plot = document.querySelector(`#${x.plotid}`);
 
         var viz = new Viz();
-        var legendSrc = document.querySelector('head link[id*="plotwf_legend"]').attributes.href.value;
+        var legendSrc = document.querySelector('link[id*="plotwf_legend"]').attributes.href.value;
         var dotStr = x.dot.replace('plotwf_legend-src\.png', legendSrc);
         [...el.children].forEach(e => e.remove()); //clear all children before attach
 
@@ -198,7 +198,7 @@ HTMLWidgets.widget({
           plot_el.id = x.plotid;
           el.style.width = x.width ? x.width: "100%";
           el.style.height = x.height ? x.height: "100%";
-          el.style.overflow = "auto";
+          el.classList.add("wfplot");
 
           if(x.msg !== "") {
             let msgNode = document.createElement("h4");
