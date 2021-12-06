@@ -30,6 +30,8 @@
 #' @param rstudio bool, if you are using Rstudio, open the built-in viewer to see the
 #' plot? Default is no, open the browser tab to see it plot. The default viewer is
 #' too small to see the full plot clearly, so we recommend to use the browser tab.
+#' However, if you are using this plot in Shiny apps, always turn
+#' `rstudio = TRUE`.
 #' @param in_log bool, is this plot been made in a SPR log file? If `TRUE` will add
 #' links of steps to the corresponding log sections.
 #' @param rmarkdown are you rendering this plot in a Rmarkdown document? default value is
@@ -224,6 +226,8 @@ plotwfOutput <- function(outputId, width = "100%", height = "400px") {
 
 #' @rdname plotwf-shiny
 #' @export
+#' @details
+#' To use `plotWF` in `renderPlotwf` in Shiny apps, always turn on the option `rstudio = TRUE`.
 renderPlotwf <- function(expr, env = parent.frame(), quoted = FALSE) {
     if (!quoted) {
         expr <- substitute(expr)

@@ -1,3 +1,8 @@
+.wfplot {
+  overflow: auto;
+  position: relative;
+}
+
 .wfplot-ctr {
     position: absolute;
     top: 0;
