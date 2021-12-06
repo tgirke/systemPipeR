@@ -4,7 +4,6 @@ HTMLWidgets.widget({
   factory: function(el, width, height) {
     // TODO: define shared variables for this instance
     /*functions */
-
     function makeResponsive(plot){
      if (plot) {
       if (plot.width) {plot.removeAttribute("width")}
@@ -190,9 +189,7 @@ HTMLWidgets.widget({
         var plot = document.querySelector(`#${x.plotid}`);
 
         var viz = new Viz();
-        var legendSrc = x.legend_uri === "" ?
-          document.querySelector('link[id*="plotwf_legend"]').attributes.href.value :
-          x.legend_uri;
+        var legendSrc = document.querySelector('link[id*="plotwf_legend"]').attributes.href.value;
         var dotStr = x.dot.replace('plotwf_legend-src\.png', legendSrc);
         [...el.children].forEach(e => e.remove()); //clear all children before attach
 
@@ -214,7 +211,7 @@ HTMLWidgets.widget({
           var singlePage = document.querySelector(`#htmlwidget_container`);
           if(singlePage) document.querySelector('body').style.padding = '0';
 
-          if (x.rmd) plot_el.removeAttribute('height width');
+          if (x.rmd) $(plot_el).removeAttr('height width');
 
           if(x.responsive) makeResponsive(plot_el);
           document.dispatchEvent(new Event('wf_plot_created'));
@@ -239,6 +236,4 @@ HTMLWidgets.widget({
   }
 });
 
-/*
 
-*/
