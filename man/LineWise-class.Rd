@@ -56,7 +56,7 @@ will store the R Markdown file path.
 LineWise(code, step_name = "default", codeChunkStart = integer(), 
             rmdPath = character(), dependency="", 
             run_step = "mandatory",
-            run_session = "local") 
+            run_session = "management") 
         
 }
 \arguments{
@@ -84,7 +84,7 @@ LineWise(code, step_name = "default", codeChunkStart = integer(),
   character. If the step has "mandatory" or "optional" flag for the execution.
 }
   \item{run_session}{
-  character. If the step has "local" or "remote" flag for the execution.
+  character. If the step has "management" or "compute" flag for the execution.
 }
 }
 \section{Objects from the Class}{
