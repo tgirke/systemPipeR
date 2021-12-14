@@ -609,7 +609,7 @@ makeDot <- function(df,
 #' @param time_start POSIXct, step starting time
 #' @param time_end POSIXct, step ending time
 #' @param req one of mandatory or optional
-#' @param session one of local, or remote
+#' @param session one of management, or compute
 #' @param in_log bool, if this plot is used in log file
 .addNodeDecor <- function(
     steps, has_run, success, spr, sample_pass, sample_warn,
@@ -623,9 +623,9 @@ makeDot <- function(df,
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
             if(req[i] == "mandatory") 'fillcolor="#d3d6eb" ' else "",
-            if(req[i] == "mandatory" && session[i] == "remote") 'style="filled, dashed, '
-            else if(req[i] == "mandatory" && session[i] != "remote") 'style="filled, '
-            else if(req[i] != "mandatory" && session[i] == "remote") 'style="dashed, '
+            if(req[i] == "mandatory" && session[i] == "compute") 'style="filled, dashed, '
+            else if(req[i] == "mandatory" && session[i] != "compute") 'style="filled, '
+            else if(req[i] != "mandatory" && session[i] == "compute") 'style="dashed, '
             else 'style="solid, ',
             if(spr[i] == "sysargs") 'rounded" ' else '"',
             "label=<<b>",
@@ -681,7 +681,7 @@ makeDot <- function(df,
             dep = NA,
             spr = "sysargs",
             req = "mandatory",
-            session = "local",
+            session = "management",
             has_run = FALSE,
             success = FALSE,
             sample_pass = 0,

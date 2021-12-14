@@ -126,7 +126,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                         dir = TRUE,
                         dependency = NA,
                         run_step = "mandatory",
-                        run_session = "local",
+                        run_session = "management",
                         run_remote_resources = NULL,
                         silent = FALSE, projPath = getOption("projPath", getwd())) {
     ## step_name and dependency from importWF
@@ -142,7 +142,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
     }
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
-    run_session <- match.arg(run_session, c("local", "remote"))
+    run_session <- match.arg(run_session, c("management", "compute"))
     if (!is.null(run_remote_resources)) {
         if (!inherits(run_remote_resources, "list")) {
               stop("Argument 'run_remote_resources' needs to be assigned an object of class 'list'")
@@ -192,9 +192,9 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 run_session = run_session
             )))
             if (!is.null(run_remote_resources)) {
-                if (run_session == "local") {
-                    message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'remote' because run_remote_resources was available.")
-                    run_session <- "remote"
+                if (run_session == "management") {
+                    message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'compute' because run_remote_resources was available.")
+                    run_session <- "compute"
                 }
             }
             names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <- names(sal$SE) <- step_name
@@ -275,9 +275,9 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             run_session = run_session
         )))
         if (!is.null(run_remote_resources)) {
-            if (run_session == "local") {
-                message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'remote' because run_remote_resources was available.")
-                run_session <- "remote"
+            if (run_session == "management") {
+                message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'compute' because run_remote_resources was available.")
+                run_session <- "compute"
             }
             sal$runInfo <- list(runOption = list(list(
                 directory = dir,
@@ -447,16 +447,16 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 # }
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
-                if (run_location == "local") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Local")), "\n")
+                if (run_location == "management") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Management")), "\n")
                     # RUN
                     args.run <- runCommandline(args.run,
                         dir = dir, dir.name = dir.name,
                         runid = paste0("_", dir.name),
                         force = force, input_targets = run_targets, ...
                     )
-                } else if (run_location == "remote") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Remote")), "\n")
+                } else if (run_location == "compute") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Compute Session")), "\n")
                     if (is.null(run_resorces)) stop("Resources are not available for this step.")
                     reg <- clusterRun(args.run[c(run_targets)],
                         FUN = runCommandline,
@@ -526,15 +526,15 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     dir.create(file.path(sysproj, "Rsteps"))
                 }
                 file_log_Rcode <- file.path(sysproj, "Rsteps", paste0("_logRstep_", single.step, "_", format(Sys.time(), "%b%d%Y_%H%M%S")))
-                if (run_location == "local") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Local")), "\n")
+                if (run_location == "management") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Management")), "\n")
                     # RUN
                     args.run <- runRcode(args.run,
                         step = single.step, file_log = file_log_Rcode,
                         envir = envir, force = force
                     )
-                } else if (run_location == "remote") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Remote")), "\n")
+                } else if (run_location == "compute") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Compute Session")), "\n")
                     loaded_pkgs <- .packages()
                     tempImage <- file.path(sysproj, "Rsteps", "step_envir.RData")
                     save(list = viewEnvir(args2, silent = TRUE), file = tempImage, envir = envir)

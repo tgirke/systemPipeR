@@ -4,12 +4,12 @@
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
                      rmdPath = character(), dependency = "",
                      run_step = "mandatory",
-                     run_session = "local") {
+                     run_session = "management") {
     ## used in `importWF`
     on.exit({options(linewise_importing = FALSE)})
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
-    run_session <- match.arg(run_session, c("local", "remote"))
+    run_session <- match.arg(run_session, c("management", "compute"))
     ## Step name
     if (step_name == "default") {
         step_name <- "Step_x"
@@ -248,13 +248,13 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
         stringr::str_remove_all('\'|"') %>%
         stringr::str_remove_all("^spr\\.ses[ ]{0,}=[ ]{0,}")
     ## update df
-    spr_ses[is.na(spr_ses)] <- "local"
-    spr_ses[spr_ses == "r"] <- "local"
-    spr_ses[spr_ses == "c"] <- "remote"
+    spr_ses[is.na(spr_ses)] <- "management"
+    spr_ses[spr_ses == "r"] <- "management"
+    spr_ses[spr_ses == "c"] <- "compute"
 
     df$session <- spr_ses
     ## enforce sysarg or r option only for spr
-    bad_ses <- !df$session %in% c("local", "remote")
+    bad_ses <- !df$session %in% c("management", "compute")
     if (any(bad_ses)) {
         stop(
             "Bad spr.req option for chunk at line:\n",
