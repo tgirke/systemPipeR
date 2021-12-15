@@ -51,10 +51,10 @@ SPRdata <- function(counts = S4Vectors::SimpleList(), rowData = NULL, rowRanges 
             targets <- read.delim(targetspath, comment.char = "#")
         }
         if (cmp == FALSE) {
-            metadata <- list(version = utils::packageVersion("systemPipeR"))
+            metadata <- list(SPRversion = utils::packageVersion("systemPipeR"))
         } else {
             cmpMA <- systemPipeR::readComp(file = targetspath, format = "matrix", delim = "-")
-            metadata <- list(version = utils::packageVersion("systemPipeR"), comparison = cmpMA)
+            metadata <- list(SPRversion = utils::packageVersion("systemPipeR"), comparison = cmpMA)
         }
         se <- SummarizedExperiment::SummarizedExperiment(
             assays = counts,

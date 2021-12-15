@@ -153,7 +153,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
     ## Empty container
     if (all(is.null(sysargs) && is.null(wf_file) && is.null(input_file))) {
         sal <- sal ## This will not create a SPRproject.
-        message("Please consider to use 'SPRproject()' function instead")
+        message("Please consider to use 'SPRproject()' function first")
         ## sal container based on a SYSargs2 container ##
     } else if (!is.null(sysargs)) {
         if (inherits(sysargs, "SYSargs2")) {
@@ -211,11 +211,21 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 targets <- targets
             } else if (all(all(file.exists(file.path(projPath, targets))) && length(targets) == 1)) {
                 targets <- file.path(projPath, targets)
-            } else {
+            } else { ## connection with previous steps
                 targets_step <- targets
                 targets <- NULL
             }
+        } else if(inherits(targets, "SummarizedExperiment")) {
+            se <- targets
+            if(sum(dim(colData(targets))) == 0){
+                targets <- NULL
+            } else {
+                targets <- targets
+            }
+        } else {
+            stop("Argument 'targets' needs to be assigned an object of class 'SummarizedExperiment', 'NULL' or 'character' PATH to tabular file.")
         }
+        ## check param path
         if (is.fullPath(dir_path)) {
             dir_path <- dir_path
         } else {
@@ -229,9 +239,11 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
         ## Relative Path for targets and dir_path when these files are in the project folder,
         ## otherwise, keep the full path
         ## targets_path to projPath
-        if (!grepl(projPath, WF$files$targets)) {
-            if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
-            if (all(!is.fullPath(WF$files$targets) && grepl("^/", WF$files$targets))) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        if(!is.null( WF$files$targets)){
+            if (!grepl(projPath, WF$files$targets)) {
+                if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
+                if (all(!is.fullPath(WF$files$targets) && grepl("^/", WF$files$targets))) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+            }
         }
         if (!grepl(projPath, WF$files$dir_path)) {
             ## dir_path
@@ -295,13 +307,23 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
                 row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
-                sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
-                    colData = sal$targetsWF,
-                    metadata = sal$stepsWF[[1]]$targetsheader
-                ))
+                if (exists("se", inherits = FALSE)) {
+                    colData(se) <- sal$targetsWF[[1]]
+                    metadata(se) <- list(metadata=metadata(se), SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)
+                    sal$SE <- list(se)
+                } else {
+                    sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
+                        colData = sal$targetsWF[[1]],
+                        metadata = list(SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)))
+                }
             } else {
                 sal$targetsWF <- list(S4Vectors::DataFrame())
-                sal$SE <- list(NULL)
+                if (exists("se", inherits = FALSE)) {
+                    sal$SE <- list(se)
+                } else {
+                    sal$SE <- list(SummarizedExperiment::SummarizedExperiment())
+                }
+                
             }
         }
         names(sal$targetsWF) <- names(sal$SE) <- step_name
