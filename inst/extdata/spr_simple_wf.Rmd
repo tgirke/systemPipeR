@@ -52,9 +52,9 @@ appendStep(sal) <- LineWise(code={
 ```{r gzip, eval=TRUE, spr='sysargs', spr.dep='export_iris'}
 targetspath <- system.file("extdata/cwl/gunzip", "targets_gunzip.txt", package="systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "gzip", 
-                      targets=targetspath, dir=TRUE,
-                      wf_file="gunzip/workflow_gzip.cwl", input_file="gunzip/gzip.yml",
-                      dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                      targets = targetspath, dir=TRUE,
+                      wf_file = "gunzip/workflow_gzip.cwl", input_file = "gunzip/gzip.yml",
+                      dir_path = system.file("extdata/cwl", package = "systemPipeR"),
                       inputvars = c(FileName = "_FILE_PATH_", SampleName = "_SampleName_"), 
                       dependency = "export_iris")
 ```

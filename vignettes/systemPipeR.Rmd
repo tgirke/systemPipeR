@@ -327,17 +327,19 @@ The following parameter files are included in each workflow template:
     + *`.batchtools.conf.R`*: defines the type of scheduler for *`batchtools`* pointing to template file of cluster, and located in user's home directory
     + *`batchtools.*.tmpl`*: specifies parameters of scheduler used by a system, *e.g.* Torque, SGE, Slurm, etc.
 
-## Structure of initial _`targets`_ file
+## Structure of initial _`targets`_ data
 
-The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
-comparisons of an analysis workflow. The following shows the format of a sample 
-_`targets`_ file included in the package. It also can be viewed and downloaded 
-from _`systemPipeR`_'s GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). 
-In a target file with a single type of input files, here FASTQ files of 
-single-end (SE) reads, the first column describe the path and the second column
-represents a unique id name for each sample. The third column called `Factor` 
-represents the biological replicates. All subsequent columns are additional 
-information, and any number of extra columns can be added as needed.
+The _`targets`_ data defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
+comparisons of an analysis workflow. It can, also, store any number of descriptive 
+information for each sample used in the workflow. 
+
+The following shows the format of a sample _`targets`_ file included in the
+package. It also can be viewed and downloaded 
+from _`systemPipeR`'s_ GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). 
+Please note that here it is represented a tabular file, however _`systemPipeR`_ can 
+import the inputs information from a `YAML` and `Google Sheets` files, as well as 
+`SummarizedExperiment` object. For more details on how to create custom `targets`, 
+please find here. 
 
 Users should note here, the usage of targets files is optional when using
 _`systemPipeR's`_ new workflow management interface. They can be replaced by a standard YAML
@@ -346,6 +348,12 @@ files are extremely useful and user-friendly. Thus, we encourage users to keep u
 them. 
 
 ### Structure of _`targets`_ file for single-end (SE) samples
+
+In a target file with a single type of input files, here FASTQ files of 
+single-end (SE) reads, the first column describe the path and the second column
+represents a unique `id` name for each sample. The third column called `Factor` 
+represents the biological replicates. All subsequent columns are additional 
+information, and any number of extra columns can be added as needed.
 
 ```{r targetsSE, eval=TRUE}
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR") 
