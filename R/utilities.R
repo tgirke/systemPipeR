@@ -367,9 +367,10 @@ runCommandline <- function(args, runid = "01",
     ## Environment Modules section
     if (any(nchar(gsub(" {1,}", "", modules(args))) > 0)) {
         ## Check if "Environment Modules" is in the PATH
-        try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
-            silent = TRUE
-        )
+        # try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
+        #     silent = TRUE
+        # )
+        modulecmd_path <- suppressMessages(is.modules.avail())
         ## "Environment Modules" is not available
         if (length(modulecmd_path) == 0) {
             dump <- "do nothing"

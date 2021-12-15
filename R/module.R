@@ -137,13 +137,7 @@ setReplaceMethod(f = "[[", signature = "EnvModules", definition = function(x, i,
 #################################
 module <- function(action_type, module_name = NULL) {
     # Find path for module command
-    modulecmd_path <- Sys.getenv("LMOD_CMD")
-    if (length(modulecmd_path) > 0) {
-        try(
-            suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
-            silent = TRUE
-        )
-    }
+    modulecmd_path <- is.modules.avail()
     # Only initialize module system if it has not yet been initialized and the module command exists
     if (Sys.getenv("MODULEPATH") == "" && length(modulecmd_path) > 0) {
         list <- module.Clear.Init("init", modulecmd_path)
@@ -152,19 +146,19 @@ module <- function(action_type, module_name = NULL) {
     }
     mymodules <- list(
         available_modules = list(),
-        loaded_modules = list(),
+        loaded_modules = module.List.Avail("list", is.modules.avail()),
         default_modules = default_modules <- myEnvModules(),
         modulecmd = modulecmd_path <- is.modules.avail()
     )
     ## Action
     switch(action_type,
-        "load"   = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
-        "unload" = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
-        "list"   = mymodules$loaded_modules <- print(module.List.Avail(action_type, mymodules$modulecmd)),
-        "avail"  = mymodules$available_modules <- module.List.Avail(action_type, mymodules$modulecmd),
-        "clear"  = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
-        "init"   = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
-        stop("That action is not supported.")
+           "load"   = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+           "unload" = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+           "list"   = mymodules$loaded_modules <- print(module.List.Avail(action_type, mymodules$modulecmd)),
+           "avail"  = mymodules$available_modules <- module.List.Avail(action_type, mymodules$modulecmd),
+           "clear"  = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
+           "init"   = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
+           stop("That action is not supported.")
     )
     return(as(mymodules, "EnvModules"))
 }
@@ -256,10 +250,14 @@ moduleClear <- function() {
 is.modules.avail <- function() {
     ## Find path for module command
     modulecmd_path <- Sys.getenv("LMOD_CMD")
-    if (modulecmd_path == "") {
-        try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
-            silent = TRUE
-        )
+    if(Sys.info()[['sysname']] == "Windows"){
+        modulecmd_path <- NULL
+    } else {
+        if (modulecmd_path == "") {
+            try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
+                silent = TRUE
+            )
+        }
     }
     ## "Environment Modules" is not available
     if (length(modulecmd_path) == 0) {
@@ -368,18 +366,15 @@ module.Load.Unload <- function(action_type, module_name = "", modulecmd_path) {
 module.List.Avail <- function(action_type, modulecmd_path) {
     try(module_vars <- system2(modulecmd_path, paste("bash", action_type, "-t"), stdout = TRUE, stderr = TRUE))
     ## Return only the module names
-    # module_l <- as.character()
-    # module_vars <- gsub(".*:|\\(.*?\\)", "", module_vars) ## remove "Currently Loaded Modulefiles:" and "(default)"
-    # module_vars <- strsplit(module_vars, " ")
-    # for(i in seq_along(module_vars)){
-    # 	for(j in seq_along(module_vars[[i]])){
-    # 		module_vars[[i]][j] <-  gsub("[(].*|.*[)]|^---.*", "", module_vars[[i]][j])
-    # 		if(nchar(module_vars[[i]][j]) > 0){
-    # 			module_l <- c(module_l, module_vars[[i]][j])
-    # 		}
-    # 	}
-    # }
     module_l <- module_vars[-grep(":$", module_vars)]
+    for(i in seq_along(module_l)){
+        if(grepl("\033\\[0m", module_l[i])){
+            module_l[i] <- gsub("*\033\\[0m", "", module_l[i])
+            module_l[i] <- gsub("\033\\[4m", "", module_l[i])
+            module_l[i] <- gsub("\033\\[4;90;47", "", module_l[i])
+            module_l[i] <- gsub("\033\\[90;47", "", module_l[i])
+        }
+    }
     module_l <- list(module_l)
     names(module_l) <- action_type
     return(module_l)
