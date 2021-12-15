@@ -137,13 +137,7 @@ setReplaceMethod(f = "[[", signature = "EnvModules", definition = function(x, i,
 #################################
 module <- function(action_type, module_name = NULL) {
     # Find path for module command
-    modulecmd_path <- Sys.getenv("LMOD_CMD")
-    if (length(modulecmd_path) > 0) {
-        try(
-            suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
-            silent = TRUE
-        )
-    }
+    modulecmd_path <- is.modules.avail()
     # Only initialize module system if it has not yet been initialized and the module command exists
     if (Sys.getenv("MODULEPATH") == "" && length(modulecmd_path) > 0) {
         list <- module.Clear.Init("init", modulecmd_path)
@@ -256,10 +250,14 @@ moduleClear <- function() {
 is.modules.avail <- function() {
     ## Find path for module command
     modulecmd_path <- Sys.getenv("LMOD_CMD")
-    if (modulecmd_path == "") {
-        try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
-            silent = TRUE
-        )
+    if(Sys.info()[['sysname']] == "Windows"){
+        modulecmd_path <- NULL
+    } else {
+        if (modulecmd_path == "") {
+            try(suppressWarnings(modulecmd_path <- system("which modulecmd", intern = TRUE, ignore.stderr = TRUE)),
+                silent = TRUE
+            )
+        }
     }
     ## "Environment Modules" is not available
     if (length(modulecmd_path) == 0) {
