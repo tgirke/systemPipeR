@@ -133,13 +133,13 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
     on.exit({
         options(replace_step = FALSE)
         options(spr_importing = FALSE)
-        options(importwf_options = NULL)
+        # options(importwf_options = NULL)
     })
-    if (!is.null(getOption("importwf_options"))) {
-        step_name <- getOption("importwf_options")[[1]]
-        .checkSpecialChar(step_name)
-        dependency <- getOption("importwf_options")[[2]]
-    }
+    # if (!is.null(getOption("importwf_options"))) {
+    #     step_name <- getOption("importwf_options")[[1]]
+    #     .checkSpecialChar(step_name)
+    #     dependency <- getOption("importwf_options")[[2]]
+    # }
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
     run_session <- match.arg(run_session, c("management", "compute"))
@@ -459,11 +459,11 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     run_targets <- seq_along(cmdlist(args.run))
                 }
                 ## Checking "results" PATH. Requirement: sysargs2$projectInfo$results == yamlinput(args.run)$results_path$path
-                ## Note: All the cwl/yml requires the results_path input. 
+                ## Note: All the cwl/yml requires the results_path input.
                 # if (normalizePath(file.path(yamlinput(args.run)$results_path$path)) != normalizePath(args2$projectInfo$results)) {
-                #     stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '", 
+                #     stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '",
                 #          normalizePath(file.path(yamlinput(args.run)$results_path$path)), "' \n",
-                #          "while the project points to another location: '", 
+                #          "while the project points to another location: '",
                 #          normalizePath(args2$projectInfo$results), "' \n",
                 #          "**Both PATHS are required to be the same.**")
                 # }
@@ -752,7 +752,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
     ), file = file_log, sep = "\n", append = TRUE)
     ## Check status of step
     if (all(args$status$status.summary == "Success" && force == FALSE)) {
-        args[["status"]]$status.time$time_start <- Sys.time() 
+        args[["status"]]$status.time$time_start <- Sys.time()
         cat("The step status is 'Success' and it was skipped.", file = file_log, fill = TRUE, append = TRUE, sep = "\n")
         args[["status"]]$status.time$time_end <- Sys.time()
     } else {
