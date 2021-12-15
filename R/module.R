@@ -146,19 +146,19 @@ module <- function(action_type, module_name = NULL) {
     }
     mymodules <- list(
         available_modules = list(),
-        loaded_modules = list(),
+        loaded_modules = module.List.Avail("list", is.modules.avail()),
         default_modules = default_modules <- myEnvModules(),
         modulecmd = modulecmd_path <- is.modules.avail()
     )
     ## Action
     switch(action_type,
-        "load"   = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
-        "unload" = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
-        "list"   = mymodules$loaded_modules <- print(module.List.Avail(action_type, mymodules$modulecmd)),
-        "avail"  = mymodules$available_modules <- module.List.Avail(action_type, mymodules$modulecmd),
-        "clear"  = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
-        "init"   = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
-        stop("That action is not supported.")
+           "load"   = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+           "unload" = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+           "list"   = mymodules$loaded_modules <- print(module.List.Avail(action_type, mymodules$modulecmd)),
+           "avail"  = mymodules$available_modules <- module.List.Avail(action_type, mymodules$modulecmd),
+           "clear"  = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
+           "init"   = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
+           stop("That action is not supported.")
     )
     return(as(mymodules, "EnvModules"))
 }
