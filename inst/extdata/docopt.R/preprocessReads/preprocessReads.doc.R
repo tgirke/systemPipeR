@@ -1,4 +1,4 @@
-'preprocessReads_se
+'preprocessReads
 
 Usage:
       preprocessReads_se.doc.R [--FileName1 <file>] [--FileName2 <file>] [--outfile1 <file>] [--outfile2 <file>] [--Fct <string>] [--batchsize <int>] [--overwrite <logical>] [--compress <logical>]

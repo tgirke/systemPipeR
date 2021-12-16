@@ -1,6 +1,6 @@
-####################################
-## preprocessReads-Single_end.yml ##
-####################################
+################################
+## preprocessReads-PE_end.yml ##
+################################
 
 cwlVersion: v1.2
 class: CommandLineTool
