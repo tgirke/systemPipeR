@@ -775,6 +775,8 @@ appendStep(sal) <- SYSargsList(step_name = "Example",
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 ```
 
+OR 
+
 ```{r fromFile_example_rules_r, eval=FALSE}
 appendStep(sal) <- LineWise(code = {
                               library(systemPipeR)
