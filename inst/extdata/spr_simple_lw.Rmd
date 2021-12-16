@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 - Add first step
 
-```{r firstStep, eval=TRUE, spr='r'}
+```{r firstStep, eval=TRUE, spr=TRUE}
 appendStep(sal) <- LineWise(code={
  mapply(
    function(x, y) write.csv(x, y),
@@ -35,7 +35,7 @@ appendStep(sal) <- LineWise(code={
 
 - Add second step
 
-```{r secondStep, eval=TRUE, spr='r'}
+```{r secondStep, eval=TRUE, spr=TRUE}
 appendStep(sal) <- LineWise(code={
  setosa <- read.delim("results/setosa.csv", sep = ",")
  versicolor <- read.delim("results/versicolor.csv", sep = ",")

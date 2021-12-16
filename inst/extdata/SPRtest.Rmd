@@ -44,7 +44,7 @@ This is a test template.
 The `systemPipeR` package needs to be loaded to perform the analysis steps shown in
 this report [@H_Backman2016-bt].
 
-```{r load_systempiper, eval=TRUE, message=FALSE, spr='r'}
+```{r load_systempiper, eval=TRUE, message=FALSE, spr=TRUE}
 appendStep(sal) <- LineWise(code={
   library(systemPipeR)
   },
@@ -54,7 +54,7 @@ appendStep(sal) <- LineWise(code={
 
 # SYSargsList example
 
-```{r quality, eval=TRUE, spr='sysargs'}
+```{r quality, eval=TRUE, spr=TRUE}
 targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "quality",
                                targets=targetspath, 
@@ -64,7 +64,7 @@ appendStep(sal) <- SYSargsList(step_name = "quality",
                    inputvars=c(FileName1="_FASTQ_PATH1_", FileName2="_FASTQ_PATH2_", SampleName="_SampleName_"))
 ```
 
-```{r index, eval=TRUE, spr='sysargs'}
+```{r index, eval=TRUE, spr=TRUE}
 appendStep(sal) <- SYSargsList(step_name = "index",
                                dir = FALSE,
                                targets=NULL, 
@@ -74,7 +74,7 @@ appendStep(sal) <- SYSargsList(step_name = "index",
                                dependency = "quality")
 ```
 
-```{r Mapping, spr='sysargs', spr.dep="index", eval=TRUE}
+```{r Mapping, spr=TRUE, eval=TRUE}
 appendStep(sal) <- SYSargsList(targets="quality",
                                dir=TRUE, 
                                wf_file = "workflow-hisat2/workflow_hisat2-pe.cwl",
@@ -88,7 +88,7 @@ appendStep(sal) <- SYSargsList(targets="quality",
 
 # Version Information
 
-```{r sessionInfo, spr='r'}
+```{r sessionInfo, spr=TRUE}
 appendStep(sal) <- LineWise(code={
   sessionInfo()
   },
