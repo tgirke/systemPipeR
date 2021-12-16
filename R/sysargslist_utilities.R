@@ -899,7 +899,8 @@ output.as.df <- function(x) {
 ################################
 write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml", silent = TRUE) {
     ## check logDir folder
-    ## TODO
+    logDir <- .getPath(sys.file, warning = FALSE, normalizePath = FALSE)
+     if(!file.exists(logDir)) stop("'logs.dir': No such file or directory. Check the file PATH.")
     if (!inherits(sysargs, "SYSargsList")) stop("sysargs needs to be object of class 'SYSargsList'.")
     args2 <- sysargslist(sysargs)
     args_comp <- sapply(args2, function(x) list(NULL))
@@ -947,7 +948,7 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
     }
     args_comp[["stepsWF"]] <- steps_comp
     ## SE slot
-    path <- file.path(.getPath(sys.file, full_path = FALSE), "SE")
+    path <- file.path(.getPath(sys.file, full_path = TRUE), "SE")
     if (!dir.exists(path)) {
         dir.create(path, recursive = TRUE)
     }
@@ -1991,12 +1992,14 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
 ## Return the path of the file  ##
 ##################################
 ## [x] A character vector or an object containing file PATH.
-.getPath <- function(x, full_path = TRUE, warning = TRUE) {
+.getPath <- function(x, normalizePath = TRUE, full_path = TRUE, warning = TRUE) {
     if (warning) {
         if (!any(file.exists(x))) warning("No such file or directory. Check the file PATH.")
     }
-    if (full_path) {
+    if (normalizePath) {
         x <- normalizePath(x)
+    }
+    if (full_path) {
         for (i in seq_along(x)) {
             path_un <- unlist(strsplit(x[i], "/|\\\\"))
             path <- path_un[path_un != basename(x[i])]
