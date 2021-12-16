@@ -495,9 +495,9 @@ setMethod(f = "addResources", signature = "SYSargsList",
 	## for each steps
 	for(i in steps){
 		x@runInfo$runOption[[i]]$'run_remote_resources' <- resources
-		if(!x@runInfo$runOption[[i]]$run_session == "remote"){
-			message("Please note that the '", stepName(x)[i], "' step option '", x@runInfo$runOption[[i]]$run_session, "' was replaced with 'remote'.")
-			runInfo(x, step=i, param="run_session") <- "remote"
+		if(!x@runInfo$runOption[[i]]$run_session == "compute"){
+			message("Please note that the '", stepName(x)[i], "' step option '", x@runInfo$runOption[[i]]$run_session, "' was replaced with 'compute'.")
+			runInfo(x, step=i, param="run_session") <- "compute"
 		} 
 	}
 	x <- .check_write_SYSargsList(x)
@@ -1017,6 +1017,10 @@ setReplaceMethod(
         } else {
             stop("Replace value needs to be assigned an 'character' name for the workflow step.")
         }
+      ## if the replace has the same name
+      if (any(value %in% stepName(x)[step])){
+          return(x)
+      }
       ## step_name duplication
       if (any(value %in% stepName(x))) stop("Steps Names need to be unique.")
       ## Check step name or index on x
@@ -1075,7 +1079,7 @@ setReplaceMethod(
       ## Check step name or index on x
       if (inherits(step, "numeric")) {
         if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
-        if (any(!value %in% stepName(x)[step:1])) stop("Dependency name cannot be found in the workflow.")
+        if (all(any(!value %in% stepName(x)[step:1]) && !is.na(value))) stop("Dependency name cannot be found in the workflow.")
       } else if (inherits(step, "character")) {
         if (!step %in% stepName(x)) {
           stop(paste0(
@@ -1084,8 +1088,8 @@ setReplaceMethod(
           ))
         }
         step <- grep(step, stepName(x))
-        if (any(!value %in% stepName(x)[step:1])) stop("Dependency name cannot be found in the workflow.")
-      }
+        if (all(any(!value %in% stepName(x)[step:1]) && !is.na(value))) stop("Dependency name cannot be found in the workflow.")
+      } 
         x@dependency[[step]] <- value
         x <- .check_write_SYSargsList(x)
         x

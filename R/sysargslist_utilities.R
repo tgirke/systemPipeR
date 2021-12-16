@@ -126,23 +126,23 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                         dir = TRUE,
                         dependency = NA,
                         run_step = "mandatory",
-                        run_session = "local",
+                        run_session = "management",
                         run_remote_resources = NULL,
                         silent = FALSE, projPath = getOption("projPath", getwd())) {
     ## step_name and dependency from importWF
     on.exit({
         options(replace_step = FALSE)
         options(spr_importing = FALSE)
-        options(importwf_options = NULL)
+        # options(importwf_options = NULL)
     })
-    if (!is.null(getOption("importwf_options"))) {
-        step_name <- getOption("importwf_options")[[1]]
-        .checkSpecialChar(step_name)
-        dependency <- getOption("importwf_options")[[2]]
-    }
+    # if (!is.null(getOption("importwf_options"))) {
+    #     step_name <- getOption("importwf_options")[[1]]
+    #     .checkSpecialChar(step_name)
+    #     dependency <- getOption("importwf_options")[[2]]
+    # }
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
-    run_session <- match.arg(run_session, c("local", "remote"))
+    run_session <- match.arg(run_session, c("management", "compute"))
     if (!is.null(run_remote_resources)) {
         if (!inherits(run_remote_resources, "list")) {
               stop("Argument 'run_remote_resources' needs to be assigned an object of class 'list'")
@@ -153,7 +153,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
     ## Empty container
     if (all(is.null(sysargs) && is.null(wf_file) && is.null(input_file))) {
         sal <- sal ## This will not create a SPRproject.
-        message("Please consider to use 'SPRproject()' function instead")
+        message("Please consider to use 'SPRproject()' function first")
         ## sal container based on a SYSargs2 container ##
     } else if (!is.null(sysargs)) {
         if (inherits(sysargs, "SYSargs2")) {
@@ -192,9 +192,9 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 run_session = run_session
             )))
             if (!is.null(run_remote_resources)) {
-                if (run_session == "local") {
-                    message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'remote' because run_remote_resources was available.")
-                    run_session <- "remote"
+                if (run_session == "management") {
+                    message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'compute' because run_remote_resources was available.")
+                    run_session <- "compute"
                 }
             }
             names(sal$stepsWF) <- names(sal$targetsWF) <- names(sal$statusWF) <- names(sal$dependency) <- names(sal$outfiles) <- names(sal$targets_connection) <- names(sal$runInfo$runOption) <- names(sal$SE) <- step_name
@@ -211,11 +211,21 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 targets <- targets
             } else if (all(all(file.exists(file.path(projPath, targets))) && length(targets) == 1)) {
                 targets <- file.path(projPath, targets)
-            } else {
+            } else { ## connection with previous steps
                 targets_step <- targets
                 targets <- NULL
             }
+        } else if(inherits(targets, "SummarizedExperiment")) {
+            se <- targets
+            if(sum(dim(colData(targets))) == 0){
+                targets <- NULL
+            } else {
+                targets <- targets
+            }
+        } else {
+            stop("Argument 'targets' needs to be assigned an object of class 'SummarizedExperiment', 'NULL' or 'character' PATH to tabular file.")
         }
+        ## check param path
         if (is.fullPath(dir_path)) {
             dir_path <- dir_path
         } else {
@@ -229,9 +239,11 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
         ## Relative Path for targets and dir_path when these files are in the project folder,
         ## otherwise, keep the full path
         ## targets_path to projPath
-        if (!grepl(projPath, WF$files$targets)) {
-            if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
-            if (all(!is.fullPath(WF$files$targets) && grepl("^/", WF$files$targets))) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+        if(!is.null( WF$files$targets)){
+            if (!grepl(projPath, WF$files$targets)) {
+                if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
+                if (all(!is.fullPath(WF$files$targets) && grepl("^/", WF$files$targets))) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
+            }
         }
         if (!grepl(projPath, WF$files$dir_path)) {
             ## dir_path
@@ -275,9 +287,9 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             run_session = run_session
         )))
         if (!is.null(run_remote_resources)) {
-            if (run_session == "local") {
-                message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'remote' because run_remote_resources was available.")
-                run_session <- "remote"
+            if (run_session == "management") {
+                message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'compute' because run_remote_resources was available.")
+                run_session <- "compute"
             }
             sal$runInfo <- list(runOption = list(list(
                 directory = dir,
@@ -295,13 +307,23 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
                 row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
-                sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
-                    colData = sal$targetsWF,
-                    metadata = sal$stepsWF[[1]]$targetsheader
-                ))
+                if (exists("se", inherits = FALSE)) {
+                    colData(se) <- sal$targetsWF[[1]]
+                    metadata(se) <- list(metadata=metadata(se), SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)
+                    sal$SE <- list(se)
+                } else {
+                    sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
+                        colData = sal$targetsWF[[1]],
+                        metadata = list(SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)))
+                }
             } else {
                 sal$targetsWF <- list(S4Vectors::DataFrame())
-                sal$SE <- list(NULL)
+                if (exists("se", inherits = FALSE)) {
+                    sal$SE <- list(se)
+                } else {
+                    sal$SE <- list(SummarizedExperiment::SummarizedExperiment())
+                }
+                
             }
         }
         names(sal$targetsWF) <- names(sal$SE) <- step_name
@@ -437,26 +459,26 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     run_targets <- seq_along(cmdlist(args.run))
                 }
                 ## Checking "results" PATH. Requirement: sysargs2$projectInfo$results == yamlinput(args.run)$results_path$path
-                ## Note: All the cwl/yml requires the results_path input. 
+                ## Note: All the cwl/yml requires the results_path input.
                 # if (normalizePath(file.path(yamlinput(args.run)$results_path$path)) != normalizePath(args2$projectInfo$results)) {
-                #     stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '", 
+                #     stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '",
                 #          normalizePath(file.path(yamlinput(args.run)$results_path$path)), "' \n",
-                #          "while the project points to another location: '", 
+                #          "while the project points to another location: '",
                 #          normalizePath(args2$projectInfo$results), "' \n",
                 #          "**Both PATHS are required to be the same.**")
                 # }
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
-                if (run_location == "local") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Local")), "\n")
+                if (run_location == "management") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Management")), "\n")
                     # RUN
                     args.run <- runCommandline(args.run,
                         dir = dir, dir.name = dir.name,
                         runid = paste0("_", dir.name),
                         force = force, input_targets = run_targets, ...
                     )
-                } else if (run_location == "remote") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Remote")), "\n")
+                } else if (run_location == "compute") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Compute Session")), "\n")
                     if (is.null(run_resorces)) stop("Resources are not available for this step.")
                     reg <- clusterRun(args.run[c(run_targets)],
                         FUN = runCommandline,
@@ -526,15 +548,15 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     dir.create(file.path(sysproj, "Rsteps"))
                 }
                 file_log_Rcode <- file.path(sysproj, "Rsteps", paste0("_logRstep_", single.step, "_", format(Sys.time(), "%b%d%Y_%H%M%S")))
-                if (run_location == "local") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Local")), "\n")
+                if (run_location == "management") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Management")), "\n")
                     # RUN
                     args.run <- runRcode(args.run,
                         step = single.step, file_log = file_log_Rcode,
                         envir = envir, force = force
                     )
-                } else if (run_location == "remote") {
-                    cat(crayon::bgMagenta(paste0("Running Session: Remote")), "\n")
+                } else if (run_location == "compute") {
+                    cat(crayon::bgMagenta(paste0("Running Session: Compute Session")), "\n")
                     loaded_pkgs <- .packages()
                     tempImage <- file.path(sysproj, "Rsteps", "step_envir.RData")
                     save(list = viewEnvir(args2, silent = TRUE), file = tempImage, envir = envir)
@@ -730,7 +752,7 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
     ), file = file_log, sep = "\n", append = TRUE)
     ## Check status of step
     if (all(args$status$status.summary == "Success" && force == FALSE)) {
-        args[["status"]]$status.time$time_start <- Sys.time() 
+        args[["status"]]$status.time$time_start <- Sys.time()
         cat("The step status is 'Success' and it was skipped.", file = file_log, fill = TRUE, append = TRUE, sep = "\n")
         args[["status"]]$status.time$time_end <- Sys.time()
     } else {

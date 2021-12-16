@@ -327,17 +327,19 @@ The following parameter files are included in each workflow template:
     + *`.batchtools.conf.R`*: defines the type of scheduler for *`batchtools`* pointing to template file of cluster, and located in user's home directory
     + *`batchtools.*.tmpl`*: specifies parameters of scheduler used by a system, *e.g.* Torque, SGE, Slurm, etc.
 
-## Structure of initial _`targets`_ file
+## Structure of initial _`targets`_ data
 
-The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
-comparisons of an analysis workflow. The following shows the format of a sample 
-_`targets`_ file included in the package. It also can be viewed and downloaded 
-from _`systemPipeR`_'s GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). 
-In a target file with a single type of input files, here FASTQ files of 
-single-end (SE) reads, the first column describe the path and the second column
-represents a unique id name for each sample. The third column called `Factor` 
-represents the biological replicates. All subsequent columns are additional 
-information, and any number of extra columns can be added as needed.
+The _`targets`_ data defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
+comparisons of an analysis workflow. It can, also, store any number of descriptive 
+information for each sample used in the workflow. 
+
+The following shows the format of a sample _`targets`_ file included in the
+package. It also can be viewed and downloaded 
+from _`systemPipeR`'s_ GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). 
+Please note that here it is represented a tabular file, however _`systemPipeR`_ can 
+import the inputs information from a `YAML` and `Google Sheets` files, as well as 
+`SummarizedExperiment` object. For more details on how to create custom `targets`, 
+please find here. 
 
 Users should note here, the usage of targets files is optional when using
 _`systemPipeR's`_ new workflow management interface. They can be replaced by a standard YAML
@@ -346,6 +348,12 @@ files are extremely useful and user-friendly. Thus, we encourage users to keep u
 them. 
 
 ### Structure of _`targets`_ file for single-end (SE) samples
+
+In a target file with a single type of input files, here FASTQ files of 
+single-end (SE) reads, the first column describe the path and the second column
+represents a unique `id` name for each sample. The third column called `Factor` 
+represents the biological replicates. All subsequent columns are additional 
+information, and any number of extra columns can be added as needed.
 
 ```{r targetsSE, eval=TRUE}
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR") 
@@ -745,33 +753,47 @@ targetsWF(sal_rmd)
 To include a particular code chunk from the R Markdown file in the workflow
 analysis, please use the following code chunk options:
 
-    - `spr='r'`: for code chunks with R code lines;
-    - `spr='sysargs'`: for code chunks with an `SYSargsList` object;
-    - `spr.dep=<StepName>`: for specify the previous dependency.
+    - `spr=TRUE'`: for code chunks with step workflow. 
 
 For example: 
 
-> *```{r step_1, eval=TRUE, spr='r', spr.dep='step_0'}*
+> *```{r step_1, eval=TRUE, spr=TRUE}*
 
-> *```{r step_2, eval=TRUE, spr='sysargs', spr.dep='step_1'}*
+> *```{r step_2, eval=FALSE, spr=TRUE}*
 
-For `spr = 'sysargs'`, the last object assigned must to be the `SYSargsList`, for example:
+`ImportWF` function can ignore `eval` option in code chunk, and in this case, 
+both of the examples steps above would be incorporated in the workflow. 
 
-```{r fromFile_example_rules, eval=TRUE, spr='sysargs'}
+For `spr = TRUE`, the last object assigned must to be the `SYSargsList`, for example:
+
+```{r fromFile_example_rules_cmd, eval=FALSE}
 targetspath <- system.file("extdata/cwl/example/targets_example.txt", package = "systemPipeR")
-HW_mul <- SYSargsList(step_name = "Example", 
+appendStep(sal) <- SYSargsList(step_name = "Example", 
                       targets = targetspath, 
                       wf_file = "example/example.cwl", input_file = "example/example.yml", 
                       dir_path = system.file("extdata/cwl", package = "systemPipeR"), 
                       inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
 ```
 
+OR 
+
+```{r fromFile_example_rules_r, eval=FALSE}
+appendStep(sal) <- LineWise(code = {
+                              library(systemPipeR)
+                            },
+                            step_name = "load_lib")
+```
+
 Also, note that all the required files or objects to generate one particular 
 command-line step must be defined in a R code chunk imported. 
 The motivation for this is that when R Markdown files are imported, the 
-`spr = 'sysargs'` R chunk will be evaluated and stored in the workflow control 
-class as the `SYSargsList` object, while the R code based (`spr = 'r'`) is not 
-evaluated, and until the workflow is executed it will be store as an expression.
+`spr = TRUE` R chunk will be evaluated and append and stored in the workflow control 
+class as the `SYSargsList` object. 
+
+The workflow object name used in the R Markdown (e.g. `appendStep(sal)`) needs to 
+be the same used for the `importWF` function. It is important to keep consistency. 
+If different object names are used, when running the workflow, you can see a error, 
+like *Error: <objectName> object not found.*.
 
 # Running the workflow
 

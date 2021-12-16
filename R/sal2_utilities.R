@@ -60,7 +60,7 @@ sal2rmd <- function(sal,
     }
     if (verbose) message(crayon::green$bold("Success! File created at", out_path))
 }
-## Usage: 
+## Usage:
 # file_path <- system.file("extdata", "spr_simple_wf.Rmd", package="systemPipeR")
 # sal <- SPRproject(overwrite = TRUE)
 # sal <- importWF(sal, file_path)
@@ -103,7 +103,7 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
     save(list = c(as.character(match.call()$sal), ".loaded_pkgs"), file = file.path(supp_dir, "spr_wf.RData"), envir = environment())
     message(crayon::green$bold("Success: Make sure the script 'spr_wf.sh' and directory", supp_dir, "is there before executing."))
 }
-## Usage: 
+## Usage:
 # file_path <- system.file("extdata", "spr_simple_wf.Rmd", package="systemPipeR")
 # sal <- SPRproject(overwrite = TRUE)
 # sal <- importWF(sal, file_path)
@@ -116,22 +116,15 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
 ## .sal2rmd_rstep ##
 #####################
 .sal2rmd_rstep <- function(sal, con, i, step_name, dep, req, session, return = "write") {
-    header <- paste0(
-        "```{r ", step_name, ", eval=FALSE, spr='r'",
-        if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
-        if (req == "optional") paste0(", spr.req='optional'") else paste0(", spr.req='mandatory'"),
-        if (session == "remote") paste0(", spr.ses='remote'") else paste0(", spr.ses='local'"),
-        "}",
-        collapse = ""
-    )
+    header <- header <- paste0("```{r ", step_name, ", eval=FALSE, spr=TRUE}", collapse = "")
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
     rep_code <- if (req == "optional") paste0("    run_step = c('optional'),") else paste0("    run_step = c('mandatory'),")
-    ses_code <- if (session == "remote") paste0("    run_session = c('remote'),") else paste0("    run_session = c('local'))")
+    ses_code <- if (session == "compute") paste0("    run_session = c('compute'),") else paste0("    run_session = c('management')\n)")
     rcode <- c(
         paste0("# Step", i, " ", step_name, collapse = ""),
         header,
-        "appendStep(sal) <- LineWise(code={",
-        paste0("    ", as.character(sal$stepsWF[[i]]$codeLine)),
+        "appendStep(sal) <- LineWise(\n    code={",
+        paste0("        ", as.character(sal$stepsWF[[i]]$codeLine)) %>% stringr::str_replace_all("\n", "\n        "),
         "    },",
         paste0("    step_name = '", step_name, "',"),
         dep_code,
@@ -154,18 +147,11 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
 ## .sal2rmd_sysstep ##
 ######################
 .sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, req, session, t_con, return = "write") {
-    header <- paste0(
-        "```{r ", step_name, ", eval=FALSE, spr='sysargs'",
-        if (!is.na(dep[1])) paste0(", spr.dep='", paste0(dep, collapse = ";"), "'") else "",
-        if (req == "optional") paste0(", spr.req='optional'") else paste0(", spr.req='mandatory'"),
-        if (session == "remote") paste0(", spr.ses='remote'") else paste0(", spr.ses='local'"),
-        "}",
-        collapse = ""
-    )
+    header <- paste0("```{r ", step_name, ", eval=FALSE, spr=TRUE}", collapse = "")
     name_code <- paste0("    step_name = '", step_name, "',")
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
     rep_code <- if (req == "optional") paste0("    run_step = c('optional'),") else paste0("    run_step = c('mandatory'),")
-    ses_code <- if (session == "remote") paste0("    run_session = c('remote'),") else paste0("    run_session = c('local')")
+    ses_code <- if (session == "compute") paste0("    run_session = c('compute'),") else paste0("    run_session = c('management')")
     targets_text <- if (!is.na(sal$stepsWF[[i]]$files$targets)) {
         paste0('    targets = "', sal$stepsWF[[i]]$files$targets, '",')
     } else if (!is.null(t_con)) {

@@ -1,4 +1,12 @@
 changelog
+   version 2.0.5
+        - Bug fixed plotWF
+        - management and compute running option names
+        - Fixing message moduleload() windows system
+        - renameStep accepts the same name
+        - dependency replacement method accepts NA
+        - SYSargsList accepts `targets = SE` object
+        
    version 2.0.4
         - Bug fixed pathInstance and runWF
         

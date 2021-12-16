@@ -102,7 +102,7 @@ SYSargsList(sysargs = NULL, step_name = "default",
             inputvars = NULL, rm_targets_col = NULL, 
             dir = TRUE, dependency = NA, 
             run_step = "mandatory",
-            run_session = "local",
+            run_session = "management",
             run_remote_resources = NULL,
             silent = FALSE, 
             projPath = getOption("projPath", getwd()))
@@ -196,7 +196,7 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   character. If the step has "mandatory" or "optional" flag for the execution.
 }
   \item{run_session}{
-  character. If the step has "local" or "remote" flag for the execution.
+  character. If the step has "management" or "compute" flag for the execution.
 } 
   \item{run_remote_resources}{
   \code{List} for reserving for each cluster job sufficient computing resources

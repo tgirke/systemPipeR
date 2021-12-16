@@ -74,8 +74,10 @@ loadWorkflow <- function(targets = NULL, wf_file, input_file, dir_path = "param/
     if (!is.null(targets)) {
         if (inherits(targets, "SummarizedExperiment")) {
             mytargets <- as.data.frame(SummarizedExperiment::colData(targets))
+            mytargets <- targets.as.list(mytargets, id)
             targetsheader <- S4Vectors::metadata(targets)
-            WF$files$id <- colnames(targets)
+            WF$files["id"] <- id
+            #WF$files$id <- colnames(targets)
             WF <- c(list(targets = mytargets, targetsheader = targetsheader), WF)
         } else {
             if (!file.exists(file.path(targets)) == TRUE) stop("Provide valid 'targets' file. Check the file PATH.")

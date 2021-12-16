@@ -94,7 +94,8 @@ renderPlotwf(
   
   \item{rstudio}{bool, if you are using Rstudio, open the built-in viewer to see the
   plot? Default is no, open the browser tab to see it plot. The default viewer is
-  too small to see the full plot clearly, so we recommend to use the browser tab.}
+  too small to see the full plot clearly, so we recommend to use the browser tab.
+  However, if you are using this plot in Shiny apps, always turn \code{rstudio = TRUE}.}
   
   \item{in_log}{bool, is this plot been made in a SPR log file? If \code{TRUE} will add
   links of steps to the corresponding log sections.}

@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 - Load `systemPipeR` library:
 
-```{r load_library, eval=TRUE, spr='r'}
+```{r load_library, eval=TRUE, spr=TRUE}
 appendStep(sal) <- LineWise(code={
  library(systemPipeR)
   }, 
@@ -34,7 +34,7 @@ appendStep(sal) <- LineWise(code={
 
 - Add first step as `LineWise`
 
-```{r export_iris, eval=TRUE, spr='r'}
+```{r export_iris, eval=TRUE, spr=TRUE}
 appendStep(sal) <- LineWise(code={
  mapply(
    function(x, y) write.csv(x, y),
@@ -49,19 +49,19 @@ appendStep(sal) <- LineWise(code={
 
 - Adding the second step, as `SYSargs2` 
 
-```{r gzip, eval=TRUE, spr='sysargs', spr.dep='export_iris'}
+```{r gzip, eval=TRUE, spr=TRUE, spr.dep=TRUE}
 targetspath <- system.file("extdata/cwl/gunzip", "targets_gunzip.txt", package="systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "gzip", 
-                      targets=targetspath, dir=TRUE,
-                      wf_file="gunzip/workflow_gzip.cwl", input_file="gunzip/gzip.yml",
-                      dir_path = system.file("extdata/cwl", package="systemPipeR"),
+                      targets = targetspath, dir=TRUE,
+                      wf_file = "gunzip/workflow_gzip.cwl", input_file = "gunzip/gzip.yml",
+                      dir_path = system.file("extdata/cwl", package = "systemPipeR"),
                       inputvars = c(FileName = "_FILE_PATH_", SampleName = "_SampleName_"), 
                       dependency = "export_iris")
 ```
 
 ## Decompress data
 
-```{r gunzip, eval=TRUE, spr='sysargs', spr.dep='gzip'}
+```{r gunzip, eval=TRUE, spr=TRUE}
 appendStep(sal) <- SYSargsList(step_name = "gunzip", 
                       targets = "gzip", dir = TRUE,
                       wf_file = "gunzip/workflow_gunzip.cwl", input_file = "gunzip/gunzip.yml",
@@ -73,7 +73,7 @@ appendStep(sal) <- SYSargsList(step_name = "gunzip",
 
 ## Import data to R and perform statistical analysis and visualization 
 
-```{r stats, eval=TRUE, spr='r', spr.dep='gunzip'}
+```{r stats, eval=TRUE, spr=TRUE}
 appendStep(sal) <- LineWise(code={
   df <- lapply(getColumn(sal, step="gunzip", 'outfiles'), function(x) read.delim(x, sep=",")[-1])
   df <- do.call(rbind, df)
