@@ -4,6 +4,7 @@ changelog
         - renameStep accepts the same name
         - dependency replacement method accepts NA
         - SYSargsList accepts `targets = SE` object
+        - Fixed log/SE path
         
     version 2.1.10
         - management and compute running option names
