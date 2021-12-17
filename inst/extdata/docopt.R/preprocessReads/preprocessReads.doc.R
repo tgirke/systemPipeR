@@ -28,6 +28,10 @@ batchsize <- as.integer(opts$batchsize)
 overwrite <- as.logical(opts$overwrite)
 compress <- as.logical(opts$compress)
 
+if(file.exists("./param/customFCT.RData")){
+    load('./param/customFCT.RData')
+}
+
 preprocessReads(FileName1 = opts$FileName1,
                 FileName2 = opts$FileName2,
                 outfile1 = opts$outfile1,
