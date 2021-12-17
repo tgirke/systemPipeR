@@ -546,13 +546,17 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     after <- after
     if (any(stepName(value) %in% stepName(x))) stop("Steps Names need to be unique.")
     ## Dependency
-    # if(after > 0){
-    # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
-    #   stop("'dependency' argument is required to append a step in the workflow.")
-    #   if(any(!value$dependency[[1]][!value$dependency[[1]] %in% ""] %in% stepName(x))) 
-    #     stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
-    #                 paste0(stepName(x), collapse = ", ")))
-    # }
+    if(after > 0){
+   # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
+    #  stop("'dependency' argument is required to append a step in the workflow.")
+      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x)))
+        stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n",
+                    paste0(paste0(stepName(x), collapse = ", "), ", OR NA")))
+    } else if (after == 0){
+        if(!is.na(dependency(value))){
+            stop("This is the first step, and there is no previous step in the Workflow. Please select NA.")
+        }
+    }
     if (all(dependency(value) %in% "")) value[["dependency"]][[1]] <- NA
     ## Append
     if (inherits(value, "SYSargsList")) {

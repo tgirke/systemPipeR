@@ -2,7 +2,7 @@
 ## LineWise function ##
 #######################
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
-                     rmdPath = character(), dependency = "",
+                     rmdPath = character(), dependency = NA,
                      run_step = "mandatory",
                      run_session = "management") {
     ## used in `importWF`
@@ -31,10 +31,18 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
         status.time = data.frame()
     )
     ## codeLine
-    if (!getOption("linewise_importing", TRUE)) {
-        codeLine <- parse(text = gsub("^\\{|\\}$", "", deparse(substitute(code))))
-    } else if(getOption("linewise_importing", TRUE)) {
-        codeLine <- parse(text = gsub("^\\{|\\}$", "", deparse(substitute(code))))
+    if(length(deparse(substitute(code))) == 1){
+        #if (!getOption("linewise_importing", TRUE)) {
+            codeLine <- parse(text = sub("^\\{|\\}$", "", deparse(substitute(code))))
+        #} else if(getOption("linewise_importing", TRUE)) {
+          #  codeLine <- parse(text = sub("^\\{|\\}$", "", deparse(substitute(code))))
+        #}
+    } else {
+        codeLine <- deparse(substitute(code))
+        codeLine[1] <- sub("^\\{", "",codeLine[1])
+        codeLine[length(codeLine)] <- sub("\\}$", "", codeLine[length(codeLine)])
+        print(codeLine)
+        codeLine <- parse(text = codeLine)
     }
     line <- list(
         codeLine = codeLine,
