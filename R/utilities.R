@@ -431,7 +431,9 @@ runCommandline <- function(args, runid = "01",
         if (any(grepl("samtools", names(clt(args_complete))))) {
             stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'", call. = FALSE)
         }
-        args_complete <- output_update(args_complete, dir = dir, dir.name = dir.name, replace = TRUE, extension = c(".sam", ".bam"), make_bam = make_bam, del_sam = del_sam)
+        if(any(grepl(".bam", args_complete$output[[1]][[1]]))){
+            args_complete <- output_update(args_complete, dir = dir, dir.name = dir.name, replace = TRUE, extension = c(".sam", ".bam"), make_bam = make_bam, del_sam = del_sam)
+        }
     }
     if (dir == TRUE) {
         args_complete <- output_update(args_complete, dir = dir, dir.name = dir.name)

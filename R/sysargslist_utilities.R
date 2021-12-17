@@ -1041,12 +1041,16 @@ read_SYSargsList <- function(sys.file) {
         steps_comp <- sapply(steps, function(x) list(NULL))
         for (j in steps) {
             steps_comp[j] <- yaml::yaml.load(args_comp_yml[[i]][j])
-            if (length(steps_comp[[j]]$status.time) != 0) {
-                steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
-                steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
-            }
-            steps_comp[j][[1]][[2]] <- data.frame(steps_comp[j][[1]][[2]], check.names = FALSE)
-            steps_comp[j][[1]][[3]] <- data.frame(steps_comp[j][[1]][[3]])
+            # if (length(steps_comp[[j]]$status.time) != 0) {
+            #     steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
+            #     steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
+            # }
+            steps_comp[[j]]$status.completed <- data.frame(steps_comp[[j]]$status.completed, check.names = FALSE)
+            steps_comp[[j]]$status.time <- data.frame(steps_comp[[j]]$status.time)
+            steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
+            steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
+            steps_comp[[j]]$total.time$time_start <- .POSIXct(steps_comp[[j]]$total.time$time_start)
+            steps_comp[[j]]$total.time$time_end <- .POSIXct(steps_comp[[j]]$total.time$time_end)
         }
         args_comp[[i]] <- steps_comp
     }
@@ -1240,6 +1244,8 @@ readSE <- function(dir.path, dir.name) {
         status.time <- status.pending[, 1, drop = FALSE]
         # status.time <- cbind(status.time)
         status.time <- cbind(status.time, time_start = NA, time_end = NA)
+        status.time$time_start <- .POSIXct(status.time$time_start)
+        status.time$time_end <- .POSIXct(status.time$time_end)
         # rownames(status.time) <- status.pending$Targets
         pendingList <- list(
             status.summary = .statusSummary(status.pending),
