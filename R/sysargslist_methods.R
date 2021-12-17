@@ -719,7 +719,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         ## check new_targets_col
         all_names <- unlist(append(lapply(outfiles(x), function(y) names(y)), 
                                    unique(unlist(lapply(targetsWF(x)[step], function(y) names(y))))))
-        if(!all(targetsCon[[2]][[1]] %in% all_names)) stop("Invalid `inputVars`.")
+        if(!all(targetsCon[[2]][[1]] %in% all_names)) stop("Invalid `inputVars`.", call. = FALSE)
         new_targets_col <- targetsCon[[2]][[1]][!targetsCon[[2]][[1]] %in% unlist(lapply(targetsWF(x)[step], function(y) names(y)))]
         new_targets <- .cbindTargetsOutfiles(x, step, new_targets_col, targetsCon[[3]][[1]])
         new_targetsheader <- sapply(step, function(y) targetsheader(x, y))

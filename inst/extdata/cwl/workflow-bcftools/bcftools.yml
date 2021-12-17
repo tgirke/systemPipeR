@@ -16,7 +16,7 @@ results_path:
 
 bam:
   class: File
-  path: _SAM_
+  path: _bwasam_
 
 thread: 4
 

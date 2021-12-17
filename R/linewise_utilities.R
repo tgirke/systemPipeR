@@ -41,7 +41,6 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
         codeLine <- deparse(substitute(code))
         codeLine[1] <- sub("^\\{", "",codeLine[1])
         codeLine[length(codeLine)] <- sub("\\}$", "", codeLine[length(codeLine)])
-        print(codeLine)
         codeLine <- parse(text = codeLine)
     }
     line <- list(
