@@ -1047,10 +1047,14 @@ read_SYSargsList <- function(sys.file) {
             # }
             steps_comp[[j]]$status.completed <- data.frame(steps_comp[[j]]$status.completed, check.names = FALSE)
             steps_comp[[j]]$status.time <- data.frame(steps_comp[[j]]$status.time)
+            if (length(steps_comp[[j]]$status.time) != 0) {
             steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
             steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
+            }
+            if (length(steps_comp[[j]]$total.time) != 0) {
             steps_comp[[j]]$total.time$time_start <- .POSIXct(steps_comp[[j]]$total.time$time_start)
             steps_comp[[j]]$total.time$time_end <- .POSIXct(steps_comp[[j]]$total.time$time_end)
+            }
         }
         args_comp[[i]] <- steps_comp
     }
