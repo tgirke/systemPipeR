@@ -1,5 +1,8 @@
 changelog
     version 2.1.11
+        - Fixing time when resume=TRUE
+        
+    version 2.1.11
         - Fixing message moduleload() windows system
         - renameStep accepts the same name
         - dependency replacement method accepts NA

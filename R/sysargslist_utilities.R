@@ -306,7 +306,8 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             ## targets
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
-                row.names(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
+                rownames(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
+                rownames(sal$outfiles[[1]]) <-  sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
                 if (exists("se", inherits = FALSE)) {
                     colData(se) <- sal$targetsWF[[1]]
                     metadata(se) <- list(metadata=metadata(se), SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)
@@ -816,16 +817,17 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
 ## .updateAfterRunC function ##
 ###############################
 .updateAfterRunC <- function(args, step) {
-    conList <- args$targets_connection[lengths(args$targets_connection) != 0]
+    args2 <- args
+    conList <- args2$targets_connection[lengths(args2$targets_connection) != 0]
     conList_step <- sapply(conList, "[[", 1)
     for (l in seq_along(conList_step)) {
         if (step %in% conList_step[[l]]) {
             requiredUP <- names(conList)[[l]]
             for (s in requiredUP) {
-                WF <- args[s]
+                WF <- args2[s]
                 WFstep <- names(stepsWF(WF))
                 new_targets <- WF$targetsWF[[1]]
-                col_out <- lapply(outfiles(args), function(x) colnames(x))
+                col_out <- lapply(outfiles(args2), function(x) colnames(x))
                 col_out_l <- sapply(names(col_out), function(x) list(NULL))
                 for (i in names(col_out)) {
                     col_out_l[[i]] <- col_out[[i]][col_out[[i]] %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
@@ -833,11 +835,11 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
                 col_out_l <- col_out_l[lapply(col_out_l, length) > 0]
 
                 if (all(sapply(col_out_l, function(x) length(x) == 1))) {
-                    col_out_df <- lapply(names(col_out_l), function(x) getColumn(args, step = x, position = "outfiles", column = col_out_l[[x]]))
+                    col_out_df <- lapply(names(col_out_l), function(x) getColumn(args2, step = x, position = "outfiles", column = col_out_l[[x]]))
                     names(col_out_df) <- col_out_l
                     new_targets[as.character(col_out_l)] <- col_out_df
                 } else {
-                    col_out_df <- data.frame(args[step]$outfiles[[step]][, col_out_l[[1]]])
+                    col_out_df <- data.frame(args2[step]$outfiles[[step]][, col_out_l[[1]]])
                     names(col_out_df) <- col_out_l[[1]]
                     new_targets[as.character(col_out_l[[1]])] <- col_out_df
                 }
@@ -845,18 +847,22 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
                 WF2 <- updateWF(WF2, new_targets = targets.as.list(data.frame(new_targets)), inputvars = WF2$inputvars, write.yaml = FALSE)
                 ## Preserve outfiles
                 WF2[["output"]] <- WF$stepsWF[[s]]$output
-                args <- sysargslist(args)
-                args$stepsWF[[WFstep]] <- WF2
-                args$targetsWF[[WFstep]] <- as(WF2, "DataFrame")
-                args$outfiles[[WFstep]] <- output.as.df(WF2)
-                args$statusWF[[WFstep]] <- WF2$status
-                args <- as(args, "SYSargsList")
+                args2 <- sysargslist(args2)
+                args2$stepsWF[[WFstep]] <- WF2
+                args2$targetsWF[[WFstep]] <- as(WF2, "DataFrame")
+                rownames(args2$targetsWF[[WFstep]]) <- rownames(args$targetsWF[[WFstep]])
+                args2$outfiles[[WFstep]] <- output.as.df(WF2)
+                rownames(args2$outfiles[[WFstep]]) <- rownames(args$outfiles[[WFstep]])
+                args2$statusWF[[WFstep]] <- WF2$status
+                rownames(args2$statusWF[[WFstep]]$status.completed) <- rownames(args$outfiles[[WFstep]])
+                rownames(args2$statusWF[[WFstep]]$status.time) <- rownames(args$outfiles[[WFstep]])
+                args2 <- as(args2, "SYSargsList")
             }
         } else {
             do <- "donothing"
         }
     }
-    return(args)
+    return(args2)
 }
 
 #############################
@@ -1001,15 +1007,6 @@ read_SYSargsList <- function(sys.file) {
         }
         args_comp[[i]] <- steps_comp
     }
-    ## targetsWF Slots
-    df_slots <- c("targetsWF", "outfiles")
-    for (i in df_slots) {
-        steps_comp <- sapply(steps, function(x) list(NULL))
-        for (j in steps) {
-            steps_comp[[j]] <- S4Vectors::DataFrame(yaml::yaml.load(args_comp_yml[[i]][[j]]), check.names = FALSE)
-        }
-        args_comp[[i]] <- steps_comp
-    }
     ## SYSargs2 and LineWise
     if (length(args_comp_yml$stepsWF) >= 1) {
         steps_comp <- sapply(steps, function(x) list(NULL))
@@ -1027,13 +1024,24 @@ read_SYSargsList <- function(sys.file) {
             } else {
                 args <- yaml::yaml.load(args_comp_yml[["stepsWF"]][[j]])
                 args[["status"]][[2]] <- data.frame(args[["status"]][[2]], check.names = FALSE)
+                rownames(args[["status"]][[2]]) <- names(args$targets)
                 args[["status"]][[3]] <- data.frame(args[["status"]][[3]])
+                rownames(args[["status"]][[3]]) <- names(args$targets)
                 steps_comp[[j]] <- as(args, "SYSargs2")
             }
             args_comp[["stepsWF"]] <- steps_comp
         }
     } else if (length(args_comp_yml$stepsWF) >= 0) {
         args_comp[["stepsWF"]] <- list()
+    }
+    ## targetsWF Slots
+    df_slots <- c("targetsWF", "outfiles")
+    for (i in df_slots) {
+        steps_comp <- sapply(steps, function(x) list(NULL))
+        for (j in steps) {
+            steps_comp[[j]] <- S4Vectors::DataFrame(yaml::yaml.load(args_comp_yml[[i]][[j]]), check.names = FALSE)
+        }
+        args_comp[[i]] <- steps_comp
     }
     ## status
     yaml_slots_Status <- c("statusWF")
@@ -1058,8 +1066,15 @@ read_SYSargsList <- function(sys.file) {
         }
         args_comp[[i]] <- steps_comp
     }
-
-
+    ## rownames
+    for (j in steps) {
+        if(inherits(args_comp$stepsWF[[j]], "SYSargs2")){
+            rownames(args_comp$targetsWF[[j]]) <- args_comp$targetsWF[[j]][[args_comp$stepsWF[[j]]$files$id]]
+            rownames(args_comp$outfiles[[j]]) <- args_comp$targetsWF[[j]][[args_comp$stepsWF[[j]]$files$id]]
+            rownames(args_comp$statusWF[[j]]$status.completed) <- args_comp$targetsWF[[j]][[args_comp$stepsWF[[j]]$files$id]]
+            rownames(args_comp$statusWF[[j]]$status.time) <- args_comp$targetsWF[[j]][[args_comp$stepsWF[[j]]$files$id]]
+        }
+    }
     ## SE slot
     steps_comp <- sapply(steps, function(x) list(NULL))
     for (j in steps) {
@@ -1251,7 +1266,6 @@ readSE <- function(dir.path, dir.name) {
         status.time$time_start <- .POSIXct(status.time$time_start)
         status.time$time_end <- .POSIXct(status.time$time_end)
         rownames(status.time) <- status.pending$Targets
-        # rownames(status.time) <- status.pending$Targets
         pendingList <- list(
             status.summary = .statusSummary(status.pending),
             status.completed = status.pending, status.time = status.time
@@ -1259,10 +1273,10 @@ readSE <- function(dir.path, dir.name) {
     }
     if (inherits(args, "SYSargsList")) {
         for (i in seq_along(status.pending)) {
-            print(i)
+            # print(i)
             if (inherits(args$stepsWF[[i]], "SYSargs2")) {
                 status.pending[[i]] <- .statusSYSargs2(args$stepsWF[[i]], status.pending[[i]])
-                print(status.pending[[i]])
+                # print(status.pending[[i]])
             }
         }
         pendingList <- status.pending
