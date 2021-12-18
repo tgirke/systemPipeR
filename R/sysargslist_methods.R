@@ -732,13 +732,16 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         value$stepsWF[[1]] <- WF2
         value$targetsWF[[1]] <- as(WF2, "DataFrame")
         ## SE object update
-        row.names(value$targetsWF[[1]]) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
+        rownames(value$targetsWF[[1]]) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
         value$SE <- list(SummarizedExperiment::SummarizedExperiment(
           colData = value$targetsWF,
           metadata = value$stepsWF[[1]]$targetsheader))
         names(value$SE) <- names( value$targetsWF)
         value$outfiles[[1]] <- output.as.df(WF2)
         value$statusWF[[1]] <- WF2$status
+        rownames(value$outfiles[[1]]) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
+        rownames(value$statusWF[[1]]$status.completed) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
+        rownames(value$statusWF[[1]]$status.time) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
         value <- as(value, "SYSargsList")
     }
     if (inherits(value, "SYSargs2")) {
