@@ -740,8 +740,8 @@ makeDot <- function(df,
                 df$sample_error[i] <- 1
             }
             if (length(sal_temp$statusWF[[i]]$status.time) > 0) {
-                df$time_start[i] <- sal_temp$statusWF[[i]]$status.time$time_start
-                df$time_end[i] <- sal_temp$statusWF[[i]]$status.time$time_end
+                df$time_start[i] <- sal_temp$statusWF[[i]]$total.time$time_start
+                df$time_end[i] <- sal_temp$statusWF[[i]]$total.time$time_end
             }
         }
     }

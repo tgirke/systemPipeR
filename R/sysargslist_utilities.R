@@ -1250,6 +1250,7 @@ readSE <- function(dir.path, dir.name) {
         status.time <- cbind(status.time, time_start = NA, time_end = NA)
         status.time$time_start <- .POSIXct(status.time$time_start)
         status.time$time_end <- .POSIXct(status.time$time_end)
+        rownames(status.time) <- status.pending$Targets
         # rownames(status.time) <- status.pending$Targets
         pendingList <- list(
             status.summary = .statusSummary(status.pending),
