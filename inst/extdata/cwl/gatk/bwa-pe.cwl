@@ -31,7 +31,7 @@ arguments:
     position: 2
 
   - prefix: -t
-    valueFrom: $(inputs.bwa_threads)
+    valueFrom: $(inputs.thread)
     position: 3
 
   - prefix:
@@ -63,7 +63,7 @@ inputs:
     label: "Comma-separated list of files containing mate 2s to be aligned"
     type: File
 
-  bwa_threads:
+  thread:
     label: "Launch NTHREADS parallel search threads"
     type: int
 
