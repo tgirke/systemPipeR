@@ -116,17 +116,18 @@ loadWF <- loadWorkflow
 ## Render WF for all samples in targets slot ##
 ###############################################
 renderWF <- function(WF, inputvars = NULL) {
-    if (!is.null(inputvars)) .checkInputVars(WF, inputvars)
+    if (!is.null(inputvars)) {
+        .checkInputVars(WF, inputvars)
+    }
+    if (length(targets(WF)) == 0) {
+        if (!is.null(inputvars)) stop("names of the 'inputvars' are not matching with targets colnames.", "\n",
+                                      " No 'targets' was provided. Please review 'targets' argument.", call. = FALSE)
+    }
     if (any(length(cmdlist(WF)[[1]]) != 0)) stop("Argument 'WF' needs to be assigned an object of class 'SYSargs2' and an object created by the 'loadWorkflow' function")
     ids <- names(targets(WF))
     if (length(ids) == 0) ids <- "defaultid"
     bucket <- sapply(ids, function(x) "", simplify = FALSE)
     bucketlist <- list(cmd = bucket, input = bucket, output = bucket)
-    if (length(targets(WF)) == 0) {
-        if (!is.null(inputvars)) {
-
-        }
-    }
     for (i in ids) {
         tmplist <- .renderWFsingle(WF = WF, id = i, inputvars = inputvars)
         bucketlist[["cmd"]][[i]] <- tmplist[["cmd"]]

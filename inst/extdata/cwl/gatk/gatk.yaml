@@ -33,7 +33,7 @@ scripts_path:
   path: param/cwl/gatk
 
 bwa_threads: 4
-
+thread: 4
 ## Step2
 ubam:
   class: File
