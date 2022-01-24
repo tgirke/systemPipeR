@@ -4,12 +4,18 @@
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
                      rmdPath = character(), dependency = NA,
                      run_step = "mandatory",
-                     run_session = "management") {
+                     run_session = "management", 
+                     run_remote_resources = NULL) {
     ## used in `importWF`
     on.exit({options(linewise_importing = FALSE)})
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
     run_session <- match.arg(run_session, c("management", "compute"))
+    if (!is.null(run_remote_resources)) {
+        if (!inherits(run_remote_resources, "list")) {
+            stop("Argument 'run_remote_resources' needs to be assigned an object of class 'list'")
+        }
+    }
     ## Step name
     if (step_name == "default") {
         step_name <- "Step_x"
@@ -21,8 +27,15 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
     dependency <- list(dependency)
     names(dependency) <- step_name
     ## RunInfo
+    if (!is.null(run_remote_resources)) {
+        if (run_session == "management") {
+            message("Please note that the '", step_name, "' run_session option '", run_session, "' was replaced with 'compute' because run_remote_resources was available.")
+            run_session <- "compute"
+        }
+    }
     runInfo <- list(runOption = list(list(directory = FALSE, run_step = run_step,
-                                          run_session = run_session)))
+                                          run_session = run_session, 
+                                          run_remote_resources = run_remote_resources)))
     names(runInfo$runOption) <- step_name
     ## status
     step_status <- list(

@@ -201,8 +201,16 @@ updateColumn(x, step, position = c("outfiles", "targetsWF")) <- value
   \item{run_remote_resources}{
   \code{List} for reserving for each cluster job sufficient computing resources
   including memory (Megabyte), number of nodes, CPU cores, walltime (minutes),
-  etc. For more details, one can consult the template file for each 
-  queueing/scheduling system.
+  etc. It is necessary two aditional files: \code{conffile} and \code{template}. 
+  \code{conffile} is the path to conf file (default location 
+  \code{./.batchtools.conf.R}). This file contains in its simplest form just one 
+  command, such as this line for the Slurm scheduler: 
+  \code{cluster.functions <- makeClusterFunctionsSlurm(template="batchtools.slurm.tmpl")}. 
+  For more detailed information visit this page: https://mllg.github.io/batchtools/index.html
+  \code{template} The template files for a specific queueing/scheduling systems 
+  can be downloaded from here: 
+  https://github.com/mllg/batchtools/tree/master/inst/templates. Slurm, 
+  PBS/Torque, and Sun Grid Engine (SGE) templates are provided.
 }
   \item{silent}{
   If set to \code{TRUE}, all messages returned by the function will be suppressed.
