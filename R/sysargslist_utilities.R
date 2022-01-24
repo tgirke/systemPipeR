@@ -394,7 +394,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     sysargs[["projectInfo"]]$logsFile <- file_log
     ## Select steps for the loop based on the steps argument
     args2 <- sysargs
-    on.exit(return(args2))
+    #on.exit(return(args2))
     if (is.null(steps)) steps <- 1:length(args2)
     ## Select steps for the loop based on the run_step
     if (run_step != "ALL") {
@@ -526,6 +526,11 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 stepsWF(args2, single.step) <- args.run
                 args2[["outfiles"]][[single.step]] <- .outList2DF(args.run)
                 args2 <- .updateAfterRunC(args2, single.step)
+                ## logs
+                cat(readLines(args2[["stepsWF"]][[single.step]]$files$log),
+                file = file_log, sep = "\n",
+                append = TRUE
+                )
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
                 ## Stop workflow
@@ -541,6 +546,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     }
                 }
                 cat(status_color(step.status.summary)(paste0("Step Status: ", step.status.summary), "\n"))
+            ## LineWise
             } else if (inherits(args.run, "LineWise")) {
                 if (!is.null(targets)) message("'targets' argument has been ignored since this step is 'LineWise' instance.")
                 ## assign to the envir
@@ -629,12 +635,17 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
 ## Usage:
 ## runWF(sal)
 
+############################
+## clusterRCode function ##
+############################
 clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, loaded_pkgs, resources) {
     checkPkg("batchtools", quietly = FALSE)
     if (!file.exists(tempImage)) stop("Something went wrong, temporary 'image' doesn't exist.", call. = FALSE)
     if (all(args.run$status$status.summary == "Success" && !force)) {
         ## file_log information about skipping this step
         cat("The expected output file(s) already exist", "\n", file = file_log, fill = TRUE, append = TRUE)
+        ## close R chunk
+        cat("```", file = file_log, sep = "\n", append = TRUE)
         list_return <- list(args = args.run, loaded_pkgs = loaded_pkgs, tempImage = tempImage)
         return(list_return)
     }
@@ -977,7 +988,6 @@ write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml",
 # ## Usage:
 # write_SYSargsList(sal, sys.file, silent=FALSE)
 
-
 ################################
 ## read_SYSargsList function ##
 ################################
@@ -1198,6 +1208,28 @@ readSE <- function(dir.path, dir.name) {
 # SE <- readSE(dir.path = getwd(), dir.name = "seobj")
 # library(diffobj)
 # diffPrint(target=SE, current=rse)
+
+
+###########################
+## writeTargets function ##
+###########################
+writeTargets <- function(sysargs, step, file = "default", silent = FALSE, overwrite = FALSE){
+    if (all(!inherits(sysargs, "SYSargsList"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList")
+    if(!step %in% stepName(sal)) stop("It was not possible to find the 'step' name in the 'sysargs' object")
+    ## Workflow and Step Name
+    if (file == "default") {
+        file <- paste("targets_", step, ".txt", sep = "")
+    } else {
+        file <- file
+    }
+    ## SYSargsList class
+    if (file.exists(file) & overwrite == FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
+    targets <- targetsWF(sysargs)[[step]]
+    targetslines <- c(paste(colnames(targets), collapse = "\t"), apply(targets, 1, paste, collapse = "\t"))
+    headerlines <- sal$stepsWF[[step]][["targetsheader"]]
+    writeLines(c(headerlines$targetsheader, targetslines), file)
+    if (silent != TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
+}
 
 ################################
 ## .dirProject function ##

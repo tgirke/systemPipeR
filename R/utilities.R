@@ -206,6 +206,8 @@ runCommandline <- function(args, runid = "01",
                 ## Run the commandline only for samples for which no output file is available OR force == TRUE
                 if (all(force == FALSE && all(as.logical(completed[[i]][[j]])))) {
                     cat("The expected output file(s) already exist", "\n", file = file_log, fill = TRUE, append = TRUE)
+                    ## close R chunk
+                    cat("```", file = file_log, sep = "\n", append = TRUE)
                     sample_status[[ii]][[args$files$steps[j]]] <- "Success"
                     next()
                 } else {

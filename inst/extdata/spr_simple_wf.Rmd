@@ -50,9 +50,9 @@ appendStep(sal) <- LineWise(code={
 - Adding the second step, as `SYSargs2` 
 
 ```{r gzip, eval=TRUE, spr=TRUE, spr.dep=TRUE}
-targetspath <- system.file("extdata/cwl/gunzip", "targets_gunzip.txt", package="systemPipeR")
+targetspath <- system.file("extdata/cwl/gunzip", "targets_gunzip.txt", package = "systemPipeR")
 appendStep(sal) <- SYSargsList(step_name = "gzip", 
-                      targets = targetspath, dir=TRUE,
+                      targets = targetspath, dir = TRUE,
                       wf_file = "gunzip/workflow_gzip.cwl", input_file = "gunzip/gzip.yml",
                       dir_path = system.file("extdata/cwl", package = "systemPipeR"),
                       inputvars = c(FileName = "_FILE_PATH_", SampleName = "_SampleName_"), 
@@ -67,7 +67,7 @@ appendStep(sal) <- SYSargsList(step_name = "gunzip",
                       wf_file = "gunzip/workflow_gunzip.cwl", input_file = "gunzip/gunzip.yml",
                       dir_path = system.file("extdata/cwl", package = "systemPipeR"),
                       inputvars = c(gzip_file = "_FILE_PATH_", SampleName = "_SampleName_"), 
-                       rm_targets_col = "FileName", 
+                      rm_targets_col = "FileName", 
                       dependency = "gzip")
 ```
 
