@@ -166,10 +166,8 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     }
     for (i in seq_along(chunk_start)[-length(chunk_end)]) {
         if (chunk_start[i + 1] <= chunk_end[i]) {
-            stop(paste(
-                "A code chunk does not end, chunk line:\n",
-                chunk_start[i + 1]
-            ))
+            stop("A code chunk does not end, chunk line:\n",
+                chunk_start[i + 1])
         }
     }
     # create df
