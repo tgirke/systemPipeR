@@ -1,5 +1,11 @@
 changelog
-    version 2.1.11
+    version 2.1.13
+        - Update SYSargsList man page
+        - Exported 'addResources' method
+        - Fixed a small bug yamlinput replacement method
+        - Unexported "updateStatus<-" and "runInfo<-"
+        
+    version 2.1.12
         - Fixing time when resume=TRUE
         
     version 2.1.11
