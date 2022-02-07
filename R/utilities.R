@@ -22,22 +22,19 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
         ## SYSargs2 class
     } else if (class(x) == "SYSargs2") {
         if (is.null(step)) {
-              stop(paste(
-                  "Argument 'step' needs to be assigned one of the following values:",
-                  paste(names(x$clt), collapse = ", "), "OR the corresponding position"
-              ))
+              stop("Argument 'step' needs to be assigned one of the following values: ",
+                  paste(names(x$clt), collapse = ", "), " OR the corresponding position"
+              )
           }
         if (all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step))) {
-              stop(paste(
-                  "Argument 'step' can only be assigned one of the following values:",
-                  paste(names(x$clt), collapse = ", "), "OR the corresponding position"
-              ))
+              stop("Argument 'step' can only be assigned one of the following values: ",
+                  paste(names(x$clt), collapse = ", "), " OR the corresponding position"
+              )
           }
         if (all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step))) {
-              stop(paste(
-                  "Argument 'step' can only be assigned one of the following position:",
-                  paste(seq_along(names(x$clt)), collapse = ", "), "OR the corresponding names"
-              ))
+              stop("Argument 'step' can only be assigned one of the following position: ",
+                  paste(seq_along(names(x$clt)), collapse = ", "), " OR the corresponding names"
+              )
           }
         targets <- targets.as.df(targets(x))
         if (remove == TRUE) {
@@ -54,7 +51,7 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
             }
         } else if (!is.null(new_col) & !is.null(new_col_output_index)) {
             if (any(length(output(x)[[1]][[step]]) < new_col_output_index) | any(new_col_output_index < 1)) {
-                stop(paste0("'new_col_output_index' argument needs to be equal or bigger than 1 and smaller than ", length(output(x)[[1]][[1]]), ", the maximum number of outputs files."))
+                stop("'new_col_output_index' argument needs to be equal or bigger than 1 and smaller than ", length(output(x)[[1]][[1]]), ", the maximum number of outputs files.")
             }
             if (length(new_col) != length(new_col_output_index)) {
                 stop("'new_col' should have the same length as 'new_col_output_index'")
@@ -79,7 +76,7 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
         }
         headerlines <- targetsheader(x)[[1]]
     }
-    if (file.exists(file) & overwrite == FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
+    if (file.exists(file) & overwrite == FALSE) stop("I am not allowed to overwrite files; please delete existing file: ", file, " or set 'overwrite=TRUE'")
     names <- c(new_col, colnames(targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))]))
     targets <- cbind(targets[, new_col], targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))])
     colnames(targets) <- names
@@ -136,10 +133,10 @@ runCommandline <- function(args, runid = "01",
         if (!baseCommand(args) == c("bash")) {
             cmd_test <- tryCMD(command = baseCommand(args), silent = TRUE)
             if (cmd_test == "error") {
-                stop(paste0(
+                stop(
                     "\n", baseCommand(args), ": command not found. ",
-                    "\n", "Please make sure to configure your PATH environment variable according to the software in use."
-                ), call. = FALSE)
+                    "\n", "Please make sure to configure your PATH environment variable according to the software in use.",
+                    call. = FALSE)
             }
         }
         ## Create log files
@@ -559,11 +556,10 @@ clusterRun <- function(args,
           stop("'more.args' needs to be object of class 'list'.")
       }
     if (any(!names(more.args) %in% names(as.list(formals(FUN))))) {
-          stop(paste(
-              "The list of arguments assigned to 'more.args' can only be the ",
+          stop("The list of arguments assigned to 'more.args' can only be the ",
               "following arguments defined in the function 'FUN':",
               paste(names(as.list(formals(FUN))), collapse = ", ")
-          ))
+          )
       }
     if (grepl("slurm", template)) {
         if (!grepl("slurm", Sys.getenv("PATH"))) {
@@ -711,7 +707,7 @@ preprocessReads <- function(args = NULL,
             if (overwrite == TRUE) {
                 if (any(file.exists(outfile))) unlink(outfile)
             } else {
-                if (any(file.exists(outfile))) stop(paste("File", outfile, "exists. Please delete file first or set overwrite=TRUE."))
+                if (any(file.exists(outfile))) stop("File ", outfile, " exists. Please delete file first or set overwrite=TRUE.")
             }
             ## Run preprocessor function with FastqStreamer
             counter <- 0
@@ -737,8 +733,10 @@ preprocessReads <- function(args = NULL,
                 if (any(file.exists(p1out))) unlink(p1out)
                 if (any(file.exists(p2out))) unlink(p2out)
             } else {
-                if (any(file.exists(p1out))) stop(paste("File", p1out, "exists. Please delete file first or set overwrite=TRUE."))
-                if (any(file.exists(p2out))) stop(paste("File", p2out, "exists. Please delete file first or set overwrite=TRUE."))
+                if (any(file.exists(p1out))) 
+                    stop("File ", p1out, " exists. Please delete file first or set overwrite=TRUE.")
+                if (any(file.exists(p2out))) 
+                    stop("File ", p2out, " exists. Please delete file first or set overwrite=TRUE.")
             }
             ## Run preprocessor function with FastqStreamer
             counter1 <- 0
@@ -747,7 +745,8 @@ preprocessReads <- function(args = NULL,
             f2 <- ShortRead::FastqStreamer(p2, batchsize)
             while (length(fq1 <- ShortRead::yield(f1))) {
                 fq2 <- ShortRead::yield(f2)
-                if (length(fq1) != length(fq2)) stop("Paired end files cannot have different read numbers.")
+                if (length(fq1) != length(fq2)) 
+                    stop("Paired end files cannot have different read numbers.")
                 ## Process p1
                 fq <- fq1 # for simplicity in eval
                 fq1trim <- eval(parse(text = Fct))
@@ -948,7 +947,7 @@ readComp <- function(file, format = "vector", delim = "-") {
     } else {
         all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
     }
-    if (any(!checkvalues %in% all)) stop(paste("The following samples are not present in Factor column of targets file:", paste(checkvalues[!checkvalues %in% all], collapse = ", ")))
+    if (any(!checkvalues %in% all)) stop("The following samples are not present in Factor column of targets file: ", paste(checkvalues[!checkvalues %in% all], collapse = ", "))
     ## Generate outputs
     allindex <- sapply(names(comp), function(x) any(grepl("ALL", comp[[x]])))
     if (any(allindex)) for (i in which(allindex)) comp[[i]] <- combn(all, m = 2, FUN = paste, collapse = delim)
@@ -1172,7 +1171,7 @@ checkPkg <- function(pkg, quietly = TRUE) {
     if (!inherits(pkg, "character")) stop("Argument 'pkg' needs to be assigned an object of class 'character'")
     for (i in pkg) {
         if (!requireNamespace(i, quietly = quietly)) {
-            stop(paste0("Package '", i, "' should be installed.", "\n"), call. = FALSE)
+            stop("Package '", i, "' should be installed.", "\n", call. = FALSE)
         }
     }
 }
