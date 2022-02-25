@@ -254,13 +254,14 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
 setReplaceMethod("yamlinput", c("SYSargs2"), function(x, paramName, value) {
     x <- as(x, "list")
     ## Check paramName
-    if (!paramName %in% names(x$yamlinput)) stop(paste0("'paramName' argument must be one of the following:", "\n",
-                                                        paste0(names(x$yamlinput), collapse = ", ")))
+    if (!paramName %in% names(x$yamlinput))
+        stop("'paramName' argument must be one of the following: ", "\n",
+             paste0(names(x$yamlinput), collapse = ", "))
     ## Check class of value
     if (!identical(class(x$yamlinput[[paramName]]), class(value))) 
-        stop(paste0("'value' argument must be the same class of the 'paramName':", "\n",
-                    class(x$yamlinput[[paramName]])))
-    x$yamlinput[[paramName]] <- value
+        stop("'value' argument must be the same class of the 'paramName': ", "\n",
+                    class(x$yamlinput[[paramName]]))
+    x$yamlinput[paramName] <- value
     x <- as(x, "SYSargs2")
     x <- updateWF(x)
     x

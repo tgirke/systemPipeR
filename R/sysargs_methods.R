@@ -151,7 +151,8 @@ systemArgs <- function(sysma, mytargets, type = "SYSargs") {
     if (length(mytargets$FileName2) == 0) mytargets <- data.frame(FileName1 = mytargets$FileName1, FileName2 = "", mytargets[, !colnames(mytargets) %in% "FileName1"])
     ## Check name:value violations in arglist
     check <- sapply(names(arglist), function(x) sum(grepl("^n", names(arglist[[x]]))) == sum(grepl("^n", names(arglist[[x]]))))
-    if (any(!check)) stop(paste("Name:Value violation in arglist component(s):", paste(names(check[check]), collapse = ", ")))
+    if (any(!check)) stop("Name:Value violation in arglist component(s): ", 
+                          paste(names(check[check]), collapse = ", "))
     ## Modify arglist object as specified in arglist and mytargets
     ## Remove module component and store values in separate container
     modules <- as.character(arglist$modules[grepl("v", names(arglist$modules))])
