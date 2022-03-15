@@ -48,8 +48,9 @@ SYSargsList(sysargs = NULL, step_name = "default",
   of the samples. It is required to be unique.
 }
   \item{inputvars}{
-  variables list defined in the \code{input} file that matches the column names 
-  defined in the \code{targets} file.
+  Each vector element is required to be defined in the \code{input} file, and the 
+  names of the elements are needed to match the column names defined in the 
+  \code{targets} file.
 }
   \item{rm_targets_col}{
   targets file colunms to be removed.

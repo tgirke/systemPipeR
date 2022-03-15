@@ -204,7 +204,8 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
 \section{Slots}{
   \describe{
     \item{\code{stepsWF}:}{Object of class \code{"list"} storing all the 
-    steps objects of the workflow. }
+    steps objects of the workflow. Each step can either be \code{SYSargs2} or
+    \code{LineWise}. }
     \item{\code{statusWF}:}{Object of class \code{"list"} storing all the 
     success and failure of each step in the workflow. }
     \item{\code{targetsWF}:}{Object of class \code{"list"} storing all the 

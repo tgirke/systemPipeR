@@ -57,13 +57,13 @@ and image/plot files.
   Another option is to use \code{globalenv()}.
 }
   \item{restart}{
-  if set to TRUE, existing \code{SYSargsList} save in the directory will be used to restart the 
-  workflow. This option requires \code{overwrite=TRUE}. 
+  if set to TRUE, existing \code{SYSargsList} save in the directory will be 
+  used to restart the workflow. This option requires \code{overwrite=TRUE}. 
   All the log will be deleted. 
 }
   \item{resume}{
-  if set to TRUE, existing SYSargsList save in the directory will be used to resume the 
-  workflow.
+  if set to TRUE, existing \code{SYSargsList} save in the directory will be 
+  used to resume the workflow.
 }
   \item{load.envir}{
   after running the workflow, the environment can be saved on disk. This argument 
