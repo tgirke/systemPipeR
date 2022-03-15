@@ -115,12 +115,12 @@ combined with the overview of all the common analysis steps of NGS experiments.
 ## New workflow management interface
 
 _`systemPipeR`_ allows creation (multi-step analyses) and execution of workflow 
-entirely for R, with control, flexibility, and scalability of the all process. 
-The execution of the workflow can be sent to a HPC, can be parallelizes, 
-accelerating results acquisition. 
+entirely for R, with control, flexibility, and scalability of all processes.
+Furthermore, the execution of the workflow can be sent to a HPC, can be 
+parallelized, accelerating results acquisition. 
 
 The flexibility of _`systemPipeR's`_ new interface workflow management class is
-the driving factor behind the use of as many steps necessary for the analysis,
+the driving factor behind the use of as many steps necessary for the analysis
 as well as the connection between command-line- or R-based software. The
 connectivity among all workflow steps is achieved by the `SYSargsList` workflow
 management class.
