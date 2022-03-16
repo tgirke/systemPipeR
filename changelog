@@ -1,10 +1,13 @@
 changelog
+    version 2.1.13
+        - Reorganized `SPRproject` function internal execution 
+        
     version 2.1.12
         - Update SYSargsList man page
         - Exported 'addResources' method
         - Fixed a small bug yamlinput replacement method
         - Unexported "updateStatus<-" and "runInfo<-"
-        - Fixing time when resume=TRUE
+        - Fixing time when `resume = TRUE`
         
     version 2.1.11
         - Fixing message moduleload() windows system
