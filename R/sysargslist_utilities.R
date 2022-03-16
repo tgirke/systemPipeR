@@ -348,7 +348,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
            and therefore there is missing the 'projectInfo' slot information.
            Please check 'SPRproject' help file.")
     }
-    if (projectInfo(sysargs)$project != getwd()) {
+    if (projectInfo(sysargs)$project != normalizePath(getwd())) {
         stop("Your current working directory is different from the directory chosen for the Project Workflow.",
              "\n",
              "For accurate location of the files and running the Workflow, please set the working directory to ",
