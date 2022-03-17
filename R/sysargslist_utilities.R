@@ -1583,14 +1583,11 @@ renderLogs <- function(sysargs,
         if (type == "html_document") "title: '&nbsp;'" else "title: 'SPR Workflow Technical Report'",
         paste0("date: 'Last update: ", format(Sys.time(), "%d %B, %Y"), "'"),
         "output:",
-        paste0("  ", type, ":"),
+        paste0("  BiocStyle::", type, ":"),
         if (type == "html_document") paste0("    includes:\n      before_body: ", plot_path),
-        "    number_sections: false",
-        "    theme: flatly",
         "    toc: true",
-        "    toc_float:",
-        "      collapsed: true",
-        "      smooth_scroll: false",
+        "    toc_float: true",
+        "    code_folding: show",
         "package: systemPipeR",
         "fontsize: 14pt",
         "---",
@@ -1599,8 +1596,9 @@ renderLogs <- function(sysargs,
     ),
     con = fileName
     )
-    rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
-    # rmarkdown::render(input = fileName, c('BiocStyle::html_document'), quiet = TRUE, envir = new.env())
+    #rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
+    rmarkdown::render(input = fileName, c(paste0("BiocStyle::", type)), quiet = TRUE, envir = new.env())
+    detach("package:BiocStyle", unload = TRUE)
     file_path <- .getPath(fileName)
     file_out <- .getFileName(fileName)
     ext <- if (type == "html_document") "html" else "pdf"
