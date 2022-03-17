@@ -26,6 +26,7 @@ setMethod(f = "files", signature = "LineWise", definition = function(x) {
 setMethod(f = "runInfo", signature = "LineWise", definition = function(x) {
     return(x@runInfo)
 })
+
 #######################################
 ## Constructor Methods for LineWise ##
 #######################################

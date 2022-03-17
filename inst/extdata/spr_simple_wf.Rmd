@@ -42,7 +42,7 @@ appendStep(sal) <- LineWise(code={
    file.path("results", paste0(names(split(iris, factor(iris$Species))), ".csv")))
   }, 
   step_name = "export_iris", 
-  dependency = NA)
+  dependency = "load_library")
 ```
 
 ## Compress data

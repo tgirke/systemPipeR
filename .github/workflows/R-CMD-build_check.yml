@@ -67,7 +67,7 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
           install.packages(c("BiocManager", "knitcitations", "docopt"))
-          remotes::install_github("HenrikBengtsson/matrixStats", ref="develop")
+          remotes::install_github("HenrikBengtsson/matrixStats", ref="develop") ## temp fix - 03/15/22 
           BiocManager::install("tgirke/systemPipeR", dependencies=TRUE)
           BiocManager::install("tgirke/systemPipeRdata")
         shell: Rscript {0}
