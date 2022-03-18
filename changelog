@@ -1,4 +1,7 @@
 changelog
+    version 2.1.14
+        - renderLogs: small fix for the Title
+        
     version 2.1.13
         - Reorganized `SPRproject` function internal execution 
         
