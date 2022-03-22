@@ -1580,7 +1580,8 @@ renderLogs <- function(sysargs,
     if (type == "html_document") plot_path <- normalizePath(.prepareRmdPlot(sysargs, dir_log))
     writeLines(c(
         "---",
-        if (type == "html_document") "title: '&nbsp;'" else "title: 'SPR Workflow Technical Report'",
+        #if (type == "html_document") "title: '&nbsp;'" else "title: 'SPR Workflow Technical Report'",]
+        "title: SPR Workflow Technical Report",
         paste0("date: 'Last update: ", format(Sys.time(), "%d %B, %Y"), "'"),
         "output:",
         paste0("  BiocStyle::", type, ":"),
@@ -1618,15 +1619,16 @@ renderLogs <- function(sysargs,
 ########################
 .prepareRmdPlot <- function(sysargs, dir_log) {
     out_path <- file.path(dir_log, "log_plot.html")
-    plotWF(sysargs, out_format = "html", out_path = out_path, rmarkdown = TRUE, in_log = TRUE, rstudio = TRUE)
+    plotWF(sysargs, out_format = "html", out_path = out_path, rmarkdown = TRUE, 
+           in_log = TRUE, rstudio = TRUE, plot_ctr = FALSE)
     # modify HTML content
     if (!file.exists(out_path)) stop("Cannot create the workflow plot for logs at\n", out_path)
     plot_content <- readLines(out_path)
-    writeLines(c(
-        plot_content[seq(13)],
-        "<h1>SPR Workflow Log Report</h1>",
-        plot_content[seq(14, length(plot_content))]
-    ), con = out_path)
+    # writeLines(c(
+    #     plot_content[seq(13)],
+    #     "<h1>SPR Workflow Log Report</h1>",
+    #     plot_content[seq(14, length(plot_content))]
+    # ), con = out_path)
     out_path
 }
 
