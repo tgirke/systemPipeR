@@ -10,7 +10,7 @@ an internally generated \code{VRanges} object and then writes the results to a
 new VCF file.
 }
 \usage{
-filterVars(files, args=files, filter, varcaller="gatk", organism,
+filterVars(files, filter, varcaller="gatk", organism,
             out_dir="results")
 }
 \arguments{
