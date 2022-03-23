@@ -23,7 +23,6 @@ varSummary(files)
 }
 \arguments{
   \item{files}{
-  \item{files}{
 	\code{named character vector} with paths of the input VCF files.
 }
   \item{txdb}{
