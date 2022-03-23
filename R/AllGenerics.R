@@ -49,7 +49,7 @@ setGeneric(name = "stepsWF", def = function(x) standardGeneric("stepsWF"))
 setGeneric(name = "statusWF", def = function(x) standardGeneric("statusWF"))
 setGeneric(name = "targetsWF", def = function(x) standardGeneric("targetsWF"))
 setGeneric(name = "outfiles", def = function(x) standardGeneric("outfiles"))
-setGeneric(name = "SE", def = function(x) standardGeneric("SE"))
+setGeneric(name = "SE", def = function(x, ...) standardGeneric("SE"))
 setGeneric(name = "dependency", def = function(x) standardGeneric("dependency"))
 setGeneric(name = "projectInfo", def = function(x) standardGeneric("projectInfo"))
 setGeneric(name = "runInfo", def = function(x) standardGeneric("runInfo"))
@@ -71,6 +71,7 @@ setGeneric(name = "statusWF<-", def = function(x, step, ..., value) standardGene
 setGeneric(name = "dependency<-", def = function(x, step, ..., value) standardGeneric("dependency<-"))
 setGeneric(name = "updateStatus<-", def = function(x, step, ..., value) standardGeneric("updateStatus<-"))
 setGeneric(name = "runInfo<-", def = function(x, step, param, ..., value) standardGeneric("runInfo<-"))
+setGeneric(name = "SE<-", def = function(x, step, ..., value) standardGeneric("SE<-"))
 
 ######################################
 ## Generic Definitions for LineWise ##

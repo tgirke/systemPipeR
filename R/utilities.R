@@ -75,11 +75,11 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
             file <- file
         }
         headerlines <- targetsheader(x)[[1]]
+        names <- c(new_col, colnames(targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))]))
+        targets <- cbind(targets[, new_col], targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))])
+        colnames(targets) <- names
     }
     if (file.exists(file) & overwrite == FALSE) stop("I am not allowed to overwrite files; please delete existing file: ", file, " or set 'overwrite=TRUE'")
-    names <- c(new_col, colnames(targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))]))
-    targets <- cbind(targets[, new_col], targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))])
-    colnames(targets) <- names
     targetslines <- c(paste(colnames(targets), collapse = "\t"), apply(targets, 1, paste, collapse = "\t"))
     writeLines(c(headerlines, targetslines), file, ...)
     if (silent != TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
@@ -790,8 +790,8 @@ preprocessReads <- function(args = NULL,
 ## Function to create sym links to bam files for viewing in IGV ##
 ##################################################################
 symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".bai"), urlbase, urlfile) {
-    ## Create URL file
-    if (all(inherits(sysargs, "SYSargs") & inherits(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+
+    if (!any(inherits(sysargs, "SYSargs"), inherits(sysargs, "SYSargs2"), inherits(sysargs, "character"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2 OR 'named character vector'")
     ## SYSargs class
     if (inherits(sysargs, "SYSargs")) {
         bampaths <- outpaths(sysargs)
@@ -800,16 +800,25 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
     } else if (inherits(sysargs, "SYSargs2")) {
         bampaths <- normalizePath(subsetWF(args = sysargs, slot = "output", subset = 1, index = 1))
         symname <- names(targets(sysargs))
+    } else if (inherits(sysargs, "character")) {
+        if (is.null(names(sysargs))) stop("Please provide a named character vector, where the names elements should be the sampleID")
+        bampaths <- sysargs
+        symname <- names(sysargs)
     }
+    ## Create URL file
     urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep = "")
     writeLines(urls, urlfile)
-    ## Creat correspoding sym links
-    dir.create(paste(htmldir, collapse = ""))
+    ## Check directory and Create corresponding sym links
+    if (!dir.exists(paste(htmldir, collapse = ""))) {
+        dir.create(paste(htmldir, collapse = ""), recursive = TRUE)
+        message(paste(htmldir, collapse = ""), "directory was created successfully!")
+        }
     symname <- rep(symname, each = 2)
     symname <- paste(symname, c(ext[1], paste(ext, collapse = "")), sep = "")
     bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep = ""))))
     symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse = ""), symname, sep = "")
     for (i in symcommands) system(i)
+    message("Symbolic links were created successfully!")
 }
 ## Usage:
 # symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt")
@@ -820,9 +829,7 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
 alignStats <- function(args, fqpaths, pairEnd = TRUE,
                        output_index = 1,
                        subset = "FileName1") {
-    # if (class(args) %in% c("SYSargs", "SYSargs2")) {
-    pairEnd <- pairEnd
-    #   ## SYSargs class
+    ## SYSargs class
     if (class(args) == "SYSargs") {
         fqpaths <- infile1(args)
         bampaths <- outpaths(args)
@@ -844,7 +851,7 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
         names(bampaths) <- names(output.all)
         if (!nchar(infile2(args))[1] > 0) pairEnd <- FALSE
     } else if (class(args) == "character") {
-        if (missing(fqpaths)) stop("Please provide fqpaths! It must be a named vector, names will be used as sample names")
+        if (missing(fqpaths)) stop("Please provide fqpaths argument! It must be a named character vector, where the names elements should be the sampleID")
         bampaths <- args
         fqpaths <- fqpaths
     }
@@ -873,29 +880,6 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
     )
     if (pairEnd) colnames(statsDF)[which(colnames(statsDF) == "Nreads")] <- "Nreads2x"
     return(statsDF)
-    # } else {
-    #     stopifnot(is.character(args))
-    #     stopifnot(is.character(out_dir) && length(out_dir) == 1)
-    #     if(is.null(names(args))) stop("args must be a named vector, names will be used as sample names")
-    #     if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-    #     if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
-    #     if(!all(check_args <- file.exists(args))) stop("Some args are missing:\n", paste0(args[!check_args], collapse = ",\n"))
-    #     if(!all(check_ext <- stringr::str_detect(args, "\\.bam$"))) stop("alignStats: All args need to end with .bam\n", paste0(args[!check_ext], collapse = ",\n"))
-    #
-    #     file_base <- basename(args)
-    #     out_args <- file.path(out_dir, gsub("\\.bam$", "_bam_stats.csv", file_base))
-    #     samplenames <- names(args)
-    #     bam_df <- data.frame(Sample= samplenames, File= file_base, Mapped = NA, Unmapped = NA)
-    #     for (i in seq_along(args)) {
-    #         bam_stats <- Rsamtools::idxstatsBam(args[i])
-    #         message("Write bam stats for ", samplenames[i], " to ", basename(out_args[i]))
-    #         write.csv(bam_stats, out_args[i], row.names = FALSE)
-    #         map_info <- colSums(bam_stats[, c(3, 4)])
-    #         bam_df[i, c(3, 4)] <- map_info
-    #     }
-    #     bam_df$Perc_Mapped <- round(bam_df$Mapped/(bam_df$Mapped + bam_df$Unmapped), 3) * 100
-    #     return(bam_df)
-    # }
 }
 ## Usage:
 # read_statsDF <- alignStats(args=args)

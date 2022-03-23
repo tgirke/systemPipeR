@@ -15,9 +15,14 @@ setMethod(f = "targetsWF", signature = "SYSargsList", definition = function(x) {
 setMethod(f = "outfiles", signature = "SYSargsList", definition = function(x) {
     return(x@outfiles)
 })
-setMethod(f = "SE", signature = "SYSargsList", definition = function(x) {
-    return(x@SE)
+setMethod(f = "SE", signature = "SYSargsList", definition = function(x, step = NULL) {
+    if(is.null(step)) {
+        return(x@SE)
+    } else {
+        return(x@SE[[step]])
+    }
 })
+
 setMethod(f = "dependency", signature = "SYSargsList", definition = function(x) {
     return(x@dependency)
 })
@@ -1189,4 +1194,18 @@ setReplaceMethod(
 		x <- .check_write_SYSargsList(x)
 		x
 	}
+)
+
+## Replacement method
+setReplaceMethod(
+    f = "SE", signature = c("SYSargsList"),
+    definition = function(x, step, ..., value) {
+        if(is.numeric(step)){
+            step <- stepName(sal)[step]
+        }
+        if (!inherits(value, "SummarizedExperiment")) stop("Provide 'SummarizedExperiment' class object")
+        x@SE[[step]] <- value
+        x <- .check_write_SYSargsList(x)
+        x
+    }
 )
