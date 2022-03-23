@@ -4,33 +4,39 @@
 Filter VCF files
 }
 \description{
-Convenience function for filtering VCF files based on user definable quality parameters. The function imports each VCF file into R, applies the filtering on an internally generated \code{VRanges} object and then writes the results to a new VCF file.
+Convenience function for filtering VCF files based on user definable quality 
+parameters. The function imports each VCF file into R, applies the filtering on 
+an internally generated \code{VRanges} object and then writes the results to a 
+new VCF file.
 }
 \usage{
-filterVars(files, args=files, filter, varcaller="gatk", organism, out_dir="results")
+filterVars(files, args=files, filter, varcaller="gatk", organism,
+            out_dir="results")
 }
 \arguments{
   \item{files}{
-	Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
-}
-  \item{args}{
-	Deprecated. Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
+	\code{named character vector} with paths of the input VCF files.
 }
   \item{filter}{
-	Character vector of length one specifying the filter syntax that will be applied to the internally created \code{VRanges} object.
+	Character vector of length one specifying the filter syntax that will be 
+	applied to the internally created \code{VRanges} object.
 }
   \item{varcaller}{
-	Character vector of length one specifying the variant caller used for generating the input VCFs. Currently, this argument can be assigned 'gatk', 'bcftools' or 'vartools'.
+	Character vector of length one specifying the variant caller used for 
+	generating the input VCFs. Currently, this argument can be assigned 'gatk', 
+	'bcftools' or 'vartools'.
 }
   \item{organism}{
 	Character vector specifying the organism name of the reference genome.
 }
   \item{out_dir}{
-	Character vector of a \code{results} directory name. Default is \code{results}. 
+	Character vector of a \code{results} directory name. 
+	Default is \code{results}. 
 }
 }
 \value{
-	Output files in VCF format. Their paths can be obtained with \code{outpaths(args)} or \code{output(args)}. 
+	Output files in VCF format. Their paths can be obtained with 
+	\code{outpaths(args)} or \code{output(args)}. 
 }
 \author{
 Thomas Girke

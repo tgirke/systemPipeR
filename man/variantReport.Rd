@@ -6,42 +6,56 @@
 Generate Variant Report
 }
 \description{
-Functions for generating tabular variant reports including genomic context annotations and confidence statistics of variants. The annotations are obtained with utilities provided by the \code{VariantAnnotation} package and the variant statistics are retrieved from the input VCF files.
+Functions for generating tabular variant reports including genomic context 
+annotations and confidence statistics of variants. The annotations are 
+obtained with utilities provided by the \code{VariantAnnotation} package and 
+the variant statistics are retrieved from the input VCF files.
 }
 \usage{
 ## Variant report
-variantReport(files, args=files, txdb, fa, organism, out_dir = "results")
+variantReport(files, txdb, fa, organism, out_dir = "results")
 
 ## Combine variant reports
-combineVarReports(files, args=files, filtercol, ncol = 15)
+combineVarReports(files, filtercol, ncol = 15)
 
 ## Create summary statistics of variants
-varSummary(files, args=files)
+varSummary(files)
 }
 \arguments{
   \item{files}{
-	Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
-}
-  \item{args}{
-	Deprecated. Object of class \code{SYSargs} or  \code{SYSargs2}. The paths of the input VCF files are specified under \code{infile1(args)} and the paths of the output files under \code{outfile1(args)} or \code{output(args)}.
+  \item{files}{
+	\code{named character vector} with paths of the input VCF files.
 }
   \item{txdb}{
-	Annotation data stored as \code{TranscriptDb} object, which can be obtained from GFF/GTF files, BioMart, Bioc Annotation packages, UCSC, etc. For details see the vignette of the \code{GenomicFeatures} package. It is important to use here matching versions of the \code{txdb} and \code{fa} objects. The latter is the genome sequence used for read mapping and variant calling.  
+	Annotation data stored as \code{TranscriptDb} object, which can be obtained 
+	from GFF/GTF files, BioMart, Bioc Annotation packages, UCSC, etc. 
+	For details see the vignette of the \code{GenomicFeatures} package.
+	It is important to use here matching versions of the \code{txdb} and 
+	\code{fa} objects. The latter is the genome sequence used for read mapping 
+	and variant calling.  
 }
   \item{fa}{
-	\code{FaFile} object pointing to the sequence file of the corresponding reference genome stored in FASTA format or a \code{BSgenome} instance.
+	\code{FaFile} object pointing to the sequence file of the corresponding r
+	eference genome stored in FASTA format or a \code{BSgenome} instance.
 }
   \item{organism}{
 	Character vector specifying the organism name of the reference genome.
 }
   \item{filtercol}{
-	Named character vector containing in the name field the column titles to filter on, and in the data field the corresponding values to include in the report. For instance, the setting \code{filtercol=c(Consequence="nonsynonymous")} will include only nonsysynonymous variances listed in the \code{Consequence} column. To omit the filtering step, one can use the setting \code{filtercol="All"}. 
+	Named character vector containing in the name field the column titles to 
+	filter on, and in the data field the corresponding values to include in 
+	the report. For instance, the setting \code{filtercol=c(Consequence="nonsynonymous")} 
+	will include only nonsysynonymous variances listed in the \code{Consequence} 
+	column. To omit the filtering step, one can use the setting 
+	\code{filtercol="All"}. 
 }
   \item{ncol}{
-	Integer specifying the number of columns in the tabular input files. Default is set to 15.
+	Integer specifying the number of columns in the tabular input files. 
+	Default is set to 15.
 }
   \item{out_dir}{
-	Character vector of a \code{results} directory name. Default is \code{results}. 
+	Character vector of a \code{results} directory name. 
+	Default is \code{results}. 
 }
 }
 \value{
