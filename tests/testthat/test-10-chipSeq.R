@@ -91,7 +91,7 @@ test_that("check_chipSeq_fnc", {
         df <- data.frame(as.data.frame(annotatedPeak), as.data.frame(values(ge[values(annotatedPeak)$feature, 
         ])))
         outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
-        write.table(df, outpaths[i], quote = FALSE, row.names = FALSE, 
+        write.table(as.matrix(df), outpaths[i], quote = FALSE, row.names = FALSE, 
                     sep = "\t")
     }
     writeTargetsout(x = args, file = "targets_peakanno.txt", step = 1, 

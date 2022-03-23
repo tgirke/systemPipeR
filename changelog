@@ -1,4 +1,10 @@
 changelog
+    version 2.1.15
+        - varseq functions argument deprecated
+        - Added SE Replacement method (SYSargsList)
+        - writeTargetsout and alignStats: small fix
+        - symLink2bam: added named character vector alternative as input
+        
     version 2.1.14
         - renderLogs: small fix for the Title
         
