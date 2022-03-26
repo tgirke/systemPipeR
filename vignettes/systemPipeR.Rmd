@@ -51,7 +51,7 @@ suppressPackageStartupMessages({
 # Introduction
 
 [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) 
-provides flexible utilities for designing, building, and running automated nd-to-end analysis 
+provides flexible utilities for designing, building, and running automated end-to-end analysis 
 workflows for a wide range of research applications, including next-generation 
 sequencing (NGS) experiments [@H_Backman2016-bt]. Important features include a 
 uniform workflow interface across different data analysis applications, automated 
