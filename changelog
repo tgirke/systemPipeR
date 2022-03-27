@@ -1,4 +1,7 @@
 changelog
+    version 2.1.16
+        - Added a new argument to mergeBamByFactor function
+        
     version 2.1.15
         - varseq functions argument deprecated
         - Added SE Replacement method (SYSargsList)

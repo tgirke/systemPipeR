@@ -709,6 +709,7 @@ makeDot <- function(df,
     df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal_temp)[[x]], "SYSargs2")), "sysargs", "r")
     df$req <- sapply(df$step_name, function(x) sal_temp$runInfo$runOption[[x]]$run_step)
     df$session <- sapply(df$step_name, function(x) sal_temp$runInfo$runOption[[x]]$run_session)
+    df$status_summary <- sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary)
     df$has_run <- ifelse(!sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Pending", TRUE, FALSE)
     df$success <- ifelse(sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Success", TRUE, FALSE)
     df <- cbind(df, data.frame(

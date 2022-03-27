@@ -4,28 +4,40 @@
 ## Useful prior to peak calling in ChIP-Seq or miRNA gene prediction experiments
 ## where pooling of replicates maximizes depth of read coverage.
 ## Note: default factor is "Factor"
-mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent=FALSE, ...) {
-  if(all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+mergeBamByFactor <- function(args, targetsDF=NULL, mergefactor="Factor",
+                             overwrite=FALSE, silent=FALSE, ...) {
+  if(!any(inherits(args, "SYSargs"), inherits(args, "SYSargs2"), inherits(args, "character"))) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2 OR named character vector")
   ## SYSargs class
-  if(class(args) == "SYSargs") {
+  if(inherits(args, "SYSargs")) {
     mergefactor <- targetsin(args)[[mergefactor]] 
     targetsin <- targetsin(args)
+    bampaths <- infile1(args)
+    if(!"FileName" %in% colnames(targetsin)) stop("Name of one column in 'targetsin(arg)' is expected to be 'FileName'.")
     ## SYSargs2 class  
-  } else if (class(args) == "SYSargs2"){
+  } else if (inherits(args, "SYSargs2")){
     mergefactor <- targets.as.df(targets(args))[[mergefactor]]
     targetsin <- targets.as.df(targets(args))
+    bampaths <- infile1(args)
+    if(!"FileName" %in% colnames(targetsin)) stop("Name of one column in 'targetsin(arg)' is expected to be 'FileName'.")
+  } else if (inherits(args, "character")){
+      if(is.null(names(args))) stop("Please provide a named character vector, where the names elements should be the sampleID")
+      bampaths <- args
+      if(is.null(targetsDF)) stop("'targets argument is required when a named character vector is provided for 'args' argument'.")
+      if(!inherits(targetsDF, "DFrame")) stop("Argument 'targets' needs to be assigned an object of class 'DFrame'")
+      targetsDF <- as.data.frame(targetsDF)
+      mergefactor <- targetsDF[[mergefactor]]
+      targetsin <- targetsDF
   }
   ## Check validity of input
-  allbam <- !grepl("\\.bam$|\\.BAM", infile1(args))
-  if(any(allbam)) stop("The following files lack the extension '.bam': ", paste(basename(infile1(args)[allbam]), collapse=", "))
-  if(!"FileName" %in% colnames(targetsin)) stop("Name of one column in 'targetsin(arg)' is expected to be 'FileName'.")
+  allbam <- !grepl("\\.bam$|\\.BAM", bampaths)
+  if(any(allbam)) stop("The following files lack the extension '.bam': ", paste(basename(bampaths[allbam]), collapse=", "))
   ## Unique values in Factor column of targetsin(args) 
-  sample_index <- !duplicated(as.character(mergefactor)); names(sample_index) <- names(infile1(args))
+  sample_index <- !duplicated(as.character(mergefactor)); names(sample_index) <- names(bampaths)
   uniorder <- unique(mergefactor) 
   unifreq <- table(mergefactor)[uniorder] # Important: in order of targetsin(args)!
   if(!any(unifreq >= 2)) warning("Values in Factor column are all unique. Thus, there are no BAM files to merge.")
   ## Store BAM file paths in a list that have >=2 identical values (replicates) in Factor column of targets file
-  filelist <- tapply(targetsin$FileName, factor(mergefactor), as.character)
+  filelist <- tapply(bampaths, factor(mergefactor), as.character)
   filelist <- filelist[names(unifreq)] # Assures original order
   ## Create vector containing paths of output BAM files 
   filelist_merge <- filelist[names(unifreq[unifreq>=2])] # Merge only those with >= files
@@ -50,7 +62,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
   outfile_names <- unlist(filelist) 
   args_sub <- args[sample_index]
   ## SYSargs class
-  if(class(args) == "SYSargs") {
+  if(inherits(args, "SYSargs")) {
     targets_out <- targetsout(args_sub)
     targets_out[,"FileName"] <- outfile_names
     rownames(targets_out) <- NULL
@@ -70,7 +82,7 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                     outpaths=outfile_names)
     args_sub_out <- as(syslist, "SYSargs")
     ## SYSargs2 class  
-  } else if (class(args) == "SYSargs2"){
+  } else if(inherits(args, "SYSargs2")){
     out <- sapply(names(outfile_names), function(x) list(outfile_names[[x]]), simplify = F)
     for(i in seq_along(out)){
       names(out[[i]]) <- files(args)$step
@@ -91,6 +103,11 @@ mergeBamByFactor <- function(args, mergefactor="Factor", overwrite=FALSE, silent
                      status = data.frame(),
                      internal_outfiles=list()) 
     args_sub_out <- as(sys2list, "SYSargs2")
+  }  else if(inherits(args, "character")){
+      targetsDF <- targetsDF[, -which(colnames(targetsDF) %in% c("FileName1", "FileName2", "FileName"))]
+      targetsDF <- targetsDF[sample_index, ]
+      # a <- file.path(.getPath(filelist_merge[[1]]), outfile_names)
+      args_sub_out <- cbind(FileName = outname_vec, targetsDF)
   }
   return(args_sub_out)
 }
