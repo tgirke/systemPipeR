@@ -9,4 +9,4 @@ results_path:
   class: Directory
   path: ./data
 ModulesToLoad:
-  module1: sratoolkit/2.10.8
+  module1: sratoolkit/3.0.0

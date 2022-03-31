@@ -26,5 +26,5 @@ results_path:
 thread: 1
 
 ModulesToLoad:
-  module1: STAR/2.5.3a
+  module1: star/2.7.10a
 
