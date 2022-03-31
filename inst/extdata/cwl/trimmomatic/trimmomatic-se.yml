@@ -13,7 +13,7 @@ results_path:
   path: ./results
 
 ModulesToLoad: 
-  module1: trimmomatic/0.36
+  module1: trimmomatic/0.39
 minlen: "MINLEN:35"
 
 thread: 4

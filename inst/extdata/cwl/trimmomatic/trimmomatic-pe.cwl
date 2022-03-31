@@ -5,12 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[TRIMMOMATIC](http://www.usadellab.org/cms/?page=trimmomatic)"
-label: Last updated 09/2019
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: trimmomatic
-      version: [ 0.0.36 ]
+      version: [ 0.39 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##

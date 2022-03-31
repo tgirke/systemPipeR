@@ -4,12 +4,12 @@
 
 cwlVersion: v1.2
 class: CommandLineTool
-label: Last updated 11/2021
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: trinity-rnaseq
-      version: [ 2.12.0 ]
+      version: [ 2.13.2 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##

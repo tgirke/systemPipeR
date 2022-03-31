@@ -24,6 +24,6 @@ results_path:
 thread: 4
 
 ModulesToLoad: 
-  module1: bowtie2/2.3.4.1
-  module2: samtools/1.9
+  module1: bowtie2/2.4.5
+  module2: samtools/1.14
 
