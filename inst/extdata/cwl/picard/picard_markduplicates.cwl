@@ -5,11 +5,11 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[picard](http://broadinstitute.github.io/picard/): Identifies duplicate reads"
-label: Last updated 09/2019
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
-      - package: picard/2.18.3
+      - package: picard/2.26.11
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
