@@ -5,12 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[STAR](https://github.com/alexdobin/STAR): Spliced Transcripts Alignment to a Reference"
-label: Last updated 09/2019
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: STAR
-      version: [ 2.5.3a ]
+      version: [ 2.7.10a ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##

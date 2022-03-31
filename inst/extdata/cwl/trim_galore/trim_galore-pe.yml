@@ -17,7 +17,7 @@ results_path:
   path: ./results
 
 ModulesToLoad: 
-  module1: trim_galore/0.6.5
+  module1: trim_galore/0.6.7
   
 length: 25
 
