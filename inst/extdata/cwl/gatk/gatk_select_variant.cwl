@@ -12,7 +12,7 @@ hints:
   SoftwareRequirement:
     packages:
     - package: bcftools
-      version: [ 1.9 ]
+      version: [ 1.15 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##

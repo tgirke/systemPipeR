@@ -5,12 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: ""
-label: Last updated 10/1019
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: samtools
-      version: [ 1.9 ]
+      version: [ 1.14 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
