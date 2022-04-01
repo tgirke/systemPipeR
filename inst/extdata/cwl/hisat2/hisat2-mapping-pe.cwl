@@ -10,7 +10,7 @@ hints:
   SoftwareRequirement:
     packages:
     - package: hisat2
-      version: [ 2.2.1  ]
+      version: [ 2.1.0 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
