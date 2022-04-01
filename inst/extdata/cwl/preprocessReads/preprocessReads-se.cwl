@@ -1,5 +1,5 @@
 ################################
-## preprocessReads-PE_end.yml ##
+## preprocessReads-SE_end.yml ##
 ################################
 
 cwlVersion: v1.2
