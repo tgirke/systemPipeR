@@ -1,4 +1,7 @@
 changelog
+    version 2.1.17
+        - small fix for read_SYSargsList
+        
     version 2.1.16
         - Added a new argument to mergeBamByFactor function
         
