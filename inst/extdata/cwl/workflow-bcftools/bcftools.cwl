@@ -5,13 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: ""
-label: Last updated 10/2019
-
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: bcftools
-      version: [ 1.9 ]
+      version: [ 1.15 ]
 
 requirements:
   InitialWorkDirRequirement:

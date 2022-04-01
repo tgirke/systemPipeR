@@ -5,7 +5,7 @@
 #PBS -l walltime=<%= resources$walltime %>,nodes=1:ppn=<%=resources$ncpus %>,mem=<%= resources$memory %>
 #PBS -j oe
 
-module load R/3.5.0
+module load R/4.1.2
 
 <%= sprintf("export OMP_NUM_THREADS=%i", resources$omp.threads) -%>
 <%= sprintf("export OPENBLAS_NUM_THREADS=%i", resources$blas.threads) -%>

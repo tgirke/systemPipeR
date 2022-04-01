@@ -18,4 +18,4 @@ ss_lib_type: RF
 trimmomatic: '''SLIDINGWINDOW:4:20 LEADING:5 TRAILING:5 MINLEN:35'''
 
 ModulesToLoad:
-  module1: trinity-rnaseq/2.12.0
+  module1: trinity-rnaseq/2.13.2
