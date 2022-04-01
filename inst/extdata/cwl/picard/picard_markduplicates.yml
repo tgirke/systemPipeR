@@ -13,4 +13,4 @@ results_path:
   path: ./results
 
 ModulesToLoad: 
-  module1: picard/2.18.3
+  module1: picard

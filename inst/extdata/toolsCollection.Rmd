@@ -765,7 +765,7 @@ identical(cmdlist(args[1])[[1]][[1]], cmdlist(WF[1])[[1]][[1]])
 ```{r, spr='sysargs'}
 args <- loadWF(targets = targetspath, wf_file = "gunzip/gunzip.cwl", 
     input_file = "gunzip/gunzip.yml", dir_path = dir_path)
-args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_",
+args <- renderWF(args, inputvars = c(FileName = "_FILE_PATH_",
                                      SampleName = "_SampleName_"))
 cmdlist(args[1])
 output(args[1])

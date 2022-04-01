@@ -1,6 +1,6 @@
-##########################################
-##   preprocessReads-Single_end.yml    ##
-#########################################
+#####################################
+##   preprocessReads-PE_end.yml    ##
+#####################################
 results_path:
   class: Directory
   path: ./results

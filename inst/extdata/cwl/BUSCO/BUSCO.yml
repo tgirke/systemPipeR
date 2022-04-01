@@ -16,7 +16,7 @@ results_path:
   class: Directory
   path: ./results
 
-cpu: 34
+cpu: 15
 
 ModulesToLoad: 
-  module1: busco/3.0.2
+  module1: busco/5.3.0

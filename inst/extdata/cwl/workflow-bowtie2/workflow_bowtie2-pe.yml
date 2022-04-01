@@ -1,5 +1,5 @@
 ###########################
-## Hisat2-Paired_end.yml ##
+## Bowtie2-Paired_end.yml ##
 ###########################
 
 idx_basedir:
@@ -24,6 +24,6 @@ results_path:
 thread: 4
 
 ModulesToLoad: 
-  module1: hisat2/2.2.1
+  module1: bowtie2/2.4.5
   module2: samtools/1.14
 

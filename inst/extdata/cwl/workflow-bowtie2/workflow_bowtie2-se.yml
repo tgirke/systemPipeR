@@ -1,6 +1,6 @@
-###########################
-## Hisat2-Paired_end.yml ##
-###########################
+#############################
+## Bowtie2-Single_Read.yml ##
+#############################
 
 idx_basedir:
   class: Directory
@@ -11,9 +11,6 @@ idx_basename: tair10.fasta
 fq1:
   class: File
   path: _FASTQ_PATH1_
-fq2:
-  class: File
-  path: _FASTQ_PATH2_
   
 SampleName: _SampleName_
 
@@ -26,4 +23,3 @@ thread: 4
 ModulesToLoad: 
   module1: hisat2/2.2.1
   module2: samtools/1.14
-

@@ -4,12 +4,12 @@
 
 cwlVersion: v1.0
 class: CommandLineTool
-label: Last updated 09/2019
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: kallisto
-      version: [ 0.46.0 ]
+      version: [ 0.46.1 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##

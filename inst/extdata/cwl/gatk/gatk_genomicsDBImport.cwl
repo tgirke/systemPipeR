@@ -34,7 +34,7 @@ arguments:
     position: 2
 
   - prefix:
-    valueFrom: $(inputs.results_path.path)
+    valueFrom: $(inputs.results_path.path)/hap_caller
     position: 3
 
   - prefix:

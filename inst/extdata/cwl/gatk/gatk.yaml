@@ -25,15 +25,15 @@ results_path:
 ModulesToLoad: 
   module1: gatk/4.1.1.0
   module2: bwa/0.7.17
-  module3: samtools/1.9
-  module4: bcftools/1.9
+  module3: samtools/1.14
+  module4: bcftools/1.15
 
 scripts_path:
   class: Directory
   path: param/cwl/gatk
 
 bwa_threads: 4
-
+thread: 4
 ## Step2
 ubam:
   class: File

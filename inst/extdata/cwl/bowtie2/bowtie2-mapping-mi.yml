@@ -25,4 +25,4 @@ mismatches: 0
 k: 50 
 
 ModulesToLoad: 
-  module1: bowtie2/2.3.4.1
+  module1: bowtie2/2.4.5

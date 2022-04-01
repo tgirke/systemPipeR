@@ -12,5 +12,5 @@ results_path:
   path: ./results
   
 ModulesToLoad: 
-  module1: MACS2
+  module1: macs2
 

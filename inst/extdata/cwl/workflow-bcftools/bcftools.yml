@@ -16,12 +16,12 @@ results_path:
 
 bam:
   class: File
-  path: _SAM_
+  path: _bwasam_
 
 thread: 4
 
 ModulesToLoad: 
-  module1: samtools/1.9
-  module2: bcftools/1.9
+  module1: samtools/1.14
+  module2: bcftools/1.15
 
 ## when run with cwltool, add following: --relax-path-checks --leave-outputs

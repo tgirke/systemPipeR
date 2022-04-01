@@ -1,18 +1,31 @@
+#######################################
+## Workflow_Bowtie2-Paired-end-Reads ##
+#######################################
+
 class: Workflow
 cwlVersion: v1.0
+
+################################################################
+##              Inputs and Outputs Settings                   ##
+################################################################
+
+requirements:
+  InitialWorkDirRequirement:
+    listing: [ $(inputs.results_path) ]
+
 inputs:
-  data_path: Directory
-  ref_name: string
   fq1: File
   fq2: File
-  thread: int
+  idx_basedir: Directory
+  idx_basename: string
   SampleName: string
+  thread: int
   results_path: Directory
+
 outputs:
-  bwa_men_sam:
-    outputSource:
-    - bwa/bwa_men_sam
-    type: stdout
+  Bowtie2:
+    outputSource: bowtie2/bowtie2_sam
+    type: File
   samtools-view:
     outputSource: samtools-view/samtools_bam
     type: File
@@ -22,21 +35,27 @@ outputs:
   samtools-index:
     outputSource: samtools-index/samtools_index
     type: File
+
+################################################################
+##                Workflow Steps Definitions                  ##
+################################################################
+
 steps:
-  bwa_mem:
+  bowtie2:
     in:
-      data_path: data_path
-      ref_name: ref_name
       fq1: fq1
       fq2: fq2
-      thread: thread
+      idx_basedir: idx_basedir
+      idx_basename: idx_basename
       SampleName: SampleName
+      thread: thread
       results_path: results_path
-    out: '[bwa_men_sam]'
-    run: gatk/bwa-pe.cwl
+    out: [bowtie2_sam]
+    run: bowtie2/bowtie2-mapping-pe.cwl
+    
   samtools-view:
     in:
-      samtools_sam: bwa_mem/bwa_men_sam
+      samtools_sam: bowtie2/bowtie2_sam
       SampleName: SampleName
       results_path: results_path
     out: [samtools_bam]
@@ -58,4 +77,4 @@ steps:
       results_path: results_path
     out: [samtools_index]
     run: samtools/samtools-index.cwl
-   
+    

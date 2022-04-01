@@ -1,4 +1,4 @@
-'preprocessReads_se
+'preprocessReads
 
 Usage:
       preprocessReads_se.doc.R [--FileName1 <file>] [--FileName2 <file>] [--outfile1 <file>] [--outfile2 <file>] [--Fct <string>] [--batchsize <int>] [--overwrite <logical>] [--compress <logical>]
@@ -27,6 +27,10 @@ print(opts$Fct)
 batchsize <- as.integer(opts$batchsize)
 overwrite <- as.logical(opts$overwrite)
 compress <- as.logical(opts$compress)
+
+if(file.exists("./param/customFCT.RData")){
+    load('./param/customFCT.RData')
+}
 
 preprocessReads(FileName1 = opts$FileName1,
                 FileName2 = opts$FileName2,

@@ -33,4 +33,4 @@ fragment_length: 200
 std_dev: 20
 
 ModulesToLoad: 
-  module1: kallisto/0.46.0
+  module1: kallisto/0.46.1

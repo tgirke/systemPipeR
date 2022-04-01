@@ -5,12 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: 
-label: Last updated 10/2019
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: macs2
-      version: [ 2.2.4 ]
+      version: [ 2.2.6 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
