@@ -5,12 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: "[bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml): Fast and sensitive read alignment"
-label: Last updated 02/2020
+label: Last updated 03/2022
 hints:
   SoftwareRequirement:
     packages:
     - package: bowtie2
-      version: [ 2.3.4.1 ]
+      version: [ 2.4.5 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
