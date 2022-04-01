@@ -357,7 +357,7 @@ runCommandline <- function(args, runid = "01",
 
 ## Usage:
 # .tryRunC("ls", "la")
-
+# .tryRunC("ls", "-la")
 
 ###########################################################################
 ## .moduleload function: internal function to module load <modules> ##

@@ -1047,9 +1047,14 @@ read_SYSargsList <- function(sys.file) {
             } else {
                 args <- yaml::yaml.load(args_comp_yml[["stepsWF"]][[j]])
                 args[["status"]][[2]] <- data.frame(args[["status"]][[2]], check.names = FALSE)
-                rownames(args[["status"]][[2]]) <- names(args$targets)
                 args[["status"]][[3]] <- data.frame(args[["status"]][[3]])
-                rownames(args[["status"]][[3]]) <- names(args$targets)
+                if (length(names(args$targets)) != 0){
+                    df_rownames <- names(args$targets)
+                } else {
+                    df_rownames <- args[["status"]][[3]]$Targets
+                }
+                rownames(args[["status"]][[2]]) <- df_rownames
+                rownames(args[["status"]][[3]]) <- df_rownames
                 steps_comp[[j]] <- as(args, "SYSargs2")
             }
             args_comp[["stepsWF"]] <- steps_comp
@@ -1182,7 +1187,9 @@ readSE <- function(dir.path, dir.name) {
     ## Metadata
     metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
     ## colData
-    colData <- read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t")
+    colData <- tryCatch(read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t", header = TRUE), 
+             error=function(e) NULL)
+    if(is.null(colData)) colData <- data.frame()
     ## rowRanges
     files_counts <- list.files(path, pattern = "rowRanges")
     if (length(files_counts) > 0) {
