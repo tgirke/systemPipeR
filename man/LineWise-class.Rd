@@ -56,7 +56,8 @@ will store the R Markdown file path.
 LineWise(code, step_name = "default", codeChunkStart = integer(), 
             rmdPath = character(), dependency="", 
             run_step = "mandatory",
-            run_session = "management") 
+            run_session = "management", 
+            run_remote_resources = NULL) 
         
 }
 \arguments{
@@ -64,16 +65,16 @@ LineWise(code, step_name = "default", codeChunkStart = integer(),
   R code separated either by a semi-colon (\code{\;}), or by a newline, and 
   enclosed by braces (\code{\{ \}}).
 }
+  \item{step_name}{
+  character. Step name needs to be unique and is required when appending this
+  step to the workflow.
+}
   \item{codeChunkStart}{
   integer. R Markdown code chunk line start. This element will be populated when
   the object is built by \code{\link{importWF}}.
 }
   \item{rmdPath}{
   character. Path of R Markdown file used by \code{\link{importWF}}.
-}
-  \item{step_name}{
-  character. Step name needs to be unique and is required when appending this
-  step to the workflow.
 }
   \item{dependency}{
   character. Dependency tree, required when appending this step to 
@@ -86,6 +87,20 @@ LineWise(code, step_name = "default", codeChunkStart = integer(),
   \item{run_session}{
   character. If the step has "management" or "compute" flag for the execution.
 }
+  \item{run_remote_resources}{
+  \code{List} for reserving for each cluster job sufficient computing resources
+  including memory (Megabyte), number of nodes, CPU cores, walltime (minutes),
+  etc. It is necessary two aditional files: \code{conffile} and \code{template}. 
+  \code{conffile} is the path to conf file (default location 
+  \code{./.batchtools.conf.R}). This file contains in its simplest form just one 
+  command, such as this line for the Slurm scheduler: 
+  \code{cluster.functions <- makeClusterFunctionsSlurm(template="batchtools.slurm.tmpl")}. 
+  For more detailed information visit this page: https://mllg.github.io/batchtools/index.html
+  \code{template} The template files for a specific queueing/scheduling systems 
+  can be downloaded from here: 
+  https://github.com/mllg/batchtools/tree/master/inst/templates. Slurm, 
+  PBS/Torque, and Sun Grid Engine (SGE) templates are provided
+  }
 }
 \section{Objects from the Class}{
   Objects can be created by calls of the form \code{new("LineWise", ...)}.

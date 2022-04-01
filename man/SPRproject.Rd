@@ -7,7 +7,7 @@ Workflow Project Initiation
 Function to construct \code{SYSargsList} workflow control environment (S4 object). 
 This function creates and checks the directory structure. If the expected directories
 are not available, it is possible to create those. 
-The project directory structure expected is: 
+The project directory default structure expected is: 
 
 \itemize{
   \item{\code{SPRproject/}}
@@ -17,7 +17,8 @@ The project directory structure expected is:
       \item{\code{results/}}
   }
 }
-The project working directory default structure of the project directories can be modified here. 
+The project working directory names can be modified, but users need to edit
+the code accordingly.   
 }
 \usage{
 SPRproject(projPath = getwd(), data = "data", param = "param", results = "results",
@@ -36,7 +37,7 @@ SPRproject(projPath = getwd(), data = "data", param = "param", results = "result
 This subdirectory in the project stores all the raw data, reference, and annotation files.
 }
   \item{param}{
-  a character vector of a \code{param} directory  name. Default is \code{param}.
+  a character vector of a \code{param} directory name. Default is \code{param}.
 This subdirectory in the project stores all the parameter and configuration files.
 }
   \item{results}{
@@ -49,29 +50,35 @@ and image/plot files.
   a character vector of a \code{logs} directory name. Default is \code{.SPRproject}.
 }
   \item{sys.file}{
-  name and path of the SYSargsList file which will store all the project configuration 
-  information. Default is \code{.SPRproject/SYSargsList.yml}.
+  a character vector of \code{SYSargsList} file name which will store all the 
+  project configuration information. 
+  Default is \code{SYSargsList.yml} and it will be save in the \code{logs.dir}
+  folder.
 }
   \item{envir}{
-  the environment in which expr is to be evaluated. Default will create a \code{new.env()}.
-  Another option is to use \code{globalenv()}.
+  the environment in which workflow will be evaluated. Default will create
+  a \code{new.env()}. 
 }
   \item{restart}{
-  if set to TRUE, existing \code{SYSargsList} save in the directory will be used to restart the 
-  workflow. This option requires \code{overwrite=TRUE}. 
-  All the log will be deleted. 
+  if set to \code{TRUE}, existing \code{SYSargsList} object saved in the 
+  \code{logs.dir} directory will be used to restart the workflow. This option
+  will delete all the log files. 
 }
   \item{resume}{
-  if set to TRUE, existing SYSargsList save in the directory will be used to resume the 
-  workflow.
+  if set to \code{TRUE}, existing \code{SYSargsList} object saved in the 
+  \code{logs.dir} directory will be used to resume the workflow.
 }
   \item{load.envir}{
-  after running the workflow, the environment can be saved on disk. This argument 
-  allows to load the environment and recover all the objects. This argument can be set
-  as \code{TRUE} when \code{restart = TRUE}.
+  This argument allows to load the environment and recover all the objects saved
+  during the workflow execution (please check \code{runWF} function for more 
+  details). This argument can be set as \code{TRUE} when \code{restart = TRUE} 
+  or \code{resume = TRUE} are used.
 }
   \item{overwrite}{
-  if set to TRUE, existing logs files or directory of same name will be overwritten.
+  if set to \code{TRUE}, existing \code{logs.dir} directory and all the content,
+  as logs files and \code{SYSargsList} file will be removed, and a new and 
+  empty \code{SYSargsList} object will be created. 
+  This option should be used with caution!
 }
   \item{silent}{
   if set to TRUE, all messages returned by the function will be suppressed.
@@ -80,7 +87,7 @@ and image/plot files.
 \details{
   If an \code{SYSargsList} instance was created before or independent of the 
   project initialization, it is possible to append this instance after the 
-  project is created. Please see check  \code{appendStep<-} function.  
+  project is created. Please see check \code{appendStep<-} function.
 }
 \value{
 \code{SPRproject} will return a \code{SYSargsList} object.

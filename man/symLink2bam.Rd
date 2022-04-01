@@ -11,7 +11,8 @@ symLink2bam(sysargs, command="ln -s", htmldir, ext = c(".bam", ".bai"), urlbase,
 }
 \arguments{
   \item{sysargs}{
-	Object of class \code{SYSargs} or \code{SYSargs2}
+	Object of class \code{SYSargs} or \code{SYSargs2} or \code{named character vector} 
+	with BAM files PATH and the elements names should be the sampleID.
 }
   \item{command}{
 	Shell command, defaults to "ln -s"

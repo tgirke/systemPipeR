@@ -13,25 +13,25 @@ alignStats(args, fqpaths, pairEnd = TRUE, output_index = 1, subset="FileName1")
 }
 \arguments{
   \item{args}{
-	Object of class \code{SYSargs} or \code{SYSargs2} or \code{named character} 
-	with BAM files PATH and the names should be the sampleID. 
+    Object of class \code{SYSargs} or \code{SYSargs2} or \code{named character vector} 
+    with BAM files PATH and the elements names should be the sampleID. 
 }
   \item{fqpaths}{
-  \code{named vector} with raw FASTQ files PATH and the names should be the sampleID. 
-  Required when \code{class(args)} is "character".
+    \code{named character vector} with raw FASTQ files PATH and the names should be the sampleID. 
+    Required when \code{class(args)} is "character".
 }
   \item{pairEnd}{
-  logical. For pair-end libraries, select \code{TRUE}.
+    logical. For pair-end libraries, select \code{TRUE}.
 }
   \item{output_index}{
-  A numeric index positions of the file in \code{SYSargs2} object, slot \code{output}. Default is \code{output_index=1}.
+    A numeric index positions of the file in \code{SYSargs2} object, slot \code{output}. Default is \code{output_index=1}.
 }
   \item{subset}{
-  \code{subset} are the variables defined in the \code{param.yml} file, for example "FileName1".
+    \code{subset} are the variables defined in the \code{param.yml} file, for example "FileName1".
 }
 }
 \value{
-	\code{data.frame} with alignment statistics.
+    \code{data.frame} with alignment statistics.
 }
 \seealso{
 \code{clusterRun} and \code{runCommandline} and \code{output_update}
