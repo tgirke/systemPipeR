@@ -1,5 +1,5 @@
 #############################
-## Hisat2-Single_Read.yml ##
+##    Bowtie2-Index.yml    ##
 #############################
 
 idx_basedir:
@@ -8,19 +8,11 @@ idx_basedir:
 
 idx_basename: tair10.fasta
 
-fq1:
-  class: File
-  path: _FASTQ_PATH1_
-  
-SampleName: _SampleName_
-
 results_path:
   class: Directory
-  path: ./results
+  path: ./data
 
 thread: 4
 
 ModulesToLoad: 
-  module1: hisat2/2.1.0
-  module2: samtools/1.14
-
+  module1: bowtie2/2.4.5

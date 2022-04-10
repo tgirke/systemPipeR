@@ -15,5 +15,5 @@ results_path:
 thread: 4
 
 ModulesToLoad: 
-  module1: hisat2/2.2.0
+  module1: hisat2/2.1.0
 

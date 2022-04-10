@@ -11,29 +11,39 @@ counts generated for different genomic feature types. The function also returns
 the filtering results and plots from \code{filterDEGs}. 
 }
 \usage{
-runDiff(args, diffFct, targets, cmp, dbrfilter, ...)
+runDiff(args, outfiles=NULL, diffFct, targets, cmp, dbrfilter, ...)
 }
 \arguments{
   \item{args}{
-Object of class \code{SYSargs} or \code{SYSargs2} where \code{infile1(args)} specifies the
-paths to the tabular read count data files and \code{outputs} files to
-the result files. 
+    An instance of \code{SYSargs} or \code{SYSargs2} constructed from a
+    \code{targets} file where the first column (\code{targetsin(args)} or 
+    \code{targets.as.df(targets(args))}) contains the paths to the  tabular 
+    read count data files. Another possibily is \code{named character vector}
+    with the paths to the tabular range data files and the elements names should
+    be the sampleID.
+}
+  \item{outfile}{
+    Default is \code{NULL}. When \code{args} is an object of \code{named 
+    character vector} class, \code{outfile} argument is required. 
+    \code{Named character vector} with the paths to the resulting count tables
+    and the elements names should be the sampleID.
 }
   \item{diffFct}{
-Defines which function should be used for the differential abundance analysis.
-Can be \code{diffFct=run_edgeR} or \code{diffFct=run_DESeq2}.
+    Defines which function should be used for the differential abundance analysis.
+    Can be \code{diffFct=run_edgeR} or \code{diffFct=run_DESeq2}.
 }
   \item{targets}{
-	targets \code{data.frame}
+    targets \code{data.frame}
 }
   \item{cmp}{
-	\code{character matrix} where comparisons are defined in two columns. This matrix should be generated with \code{readComp()} from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
+    code{character matrix} where comparisons are defined in two columns. This matrix should be generated with \code{readComp()} from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
 }
   \item{dbrfilter}{
-	Named vector with filter cutoffs of format \code{c(Fold=2, FDR=1)} where \code{Fold} refers to the fold change cutoff (unlogged) and \code{FDR} to the p-value cutoff. Those values are passed on to the \code{filterDEGs} function.
+    Named vector with filter cutoffs of format \code{c(Fold=2, FDR=1)} where \code{Fold} refers to the fold change cutoff (unlogged) and \code{FDR} to the p-value cutoff. Those values are passed on to the \code{filterDEGs} function.
 }
   \item{\dots}{
-Arguments to be passed on to the internally used \code{run_edgeR} or \code{run_DESeq2} function.
+    Arguments to be passed on to the internally used \code{run_edgeR} or 
+    \code{run_DESeq2} function.
 }
 }
 \value{

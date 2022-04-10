@@ -1,6 +1,13 @@
 #############################
-##        MACS2.yml        ##
+## Bowtie2-Paired_end.yml ##
 #############################
+
+idx_basedir:
+  class: Directory
+  path: ./data
+
+idx_basename: tair10.fasta
+
 fq1:
   class: File
   path: _FASTQ_PATH1_
@@ -15,12 +22,8 @@ results_path:
   class: Directory
   path: ./results
 
-format: BAM
-
-gsize: 120000000
-
-qvalue: 0.01
+thread: 4
 
 ModulesToLoad: 
-  module1: macs2
+  module1: bowtie2/2.4.5
 

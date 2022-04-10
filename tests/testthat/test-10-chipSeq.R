@@ -14,7 +14,7 @@ test_that("check_chipSeq_fnc", {
     idx <- renderWF(idx)
 
     ## Run in single machine
-    runCommandline(idx, make_bam = FALSE, dir=FALSE)
+    runCommandline(idx, make_bam = FALSE, dir  = FALSE)
 
     targets <- system.file("extdata", "targetsPE_chip.txt", package = "systemPipeR")
     dir_path <- system.file("extdata/cwl/bowtie2/bowtie2-pe", package = "systemPipeR")
@@ -44,9 +44,9 @@ test_that("check_chipSeq_fnc", {
                     step = 1, new_col = "FileName", new_col_output_index = 1, 
                     overwrite = TRUE, remove = TRUE)
     
-    dir_path <- system.file("extdata/cwl/MACS2/MACS2-noinput/", package = "systemPipeR")
-    args <- loadWF(targets = "targets_mergeBamByFactor.txt", wf_file = "macs2.cwl", 
-                   input_file = "macs2.yml", dir_path = dir_path)
+    dir_path <- system.file("extdata/cwl/MACS2/", package = "systemPipeR")
+    args <- loadWF(targets = "targets_mergeBamByFactor.txt", wf_file = "macs2-noinput.cwl", 
+                   input_file = "macs2-noinput.yml", dir_path = dir_path)
     args <- renderWF(args, inputvars = c(FileName = "_FASTQ_PATH1_", 
                                          SampleName = "_SampleName_"))
     
@@ -58,9 +58,9 @@ test_that("check_chipSeq_fnc", {
     
     writeTargetsRef(infile = "targets_mergeBamByFactor.txt", outfile = "targets_bam_ref.txt", 
                     silent = FALSE, overwrite = TRUE)
-    dir_path <- system.file("extdata/cwl/MACS2/MACS2-input/", package = "systemPipeR")
+    dir_path <- system.file("extdata/cwl/MACS2/", package = "systemPipeR")
     args_input <- loadWF(targets = "targets_bam_ref.txt", wf_file = "macs2-input.cwl", 
-                         input_file = "macs2.yml", dir_path = dir_path)
+                         input_file = "macs2-input.yml", dir_path = dir_path)
     args_input <- renderWF(args_input, inputvars = c(FileName1 = "_FASTQ_PATH1_", 
                                                      FileName2 = "_FASTQ_PATH2_", SampleName = "_SampleName_"))
     cmdlist(args_input)[1]
