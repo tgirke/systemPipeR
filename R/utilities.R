@@ -904,14 +904,14 @@ returnRPKM <- function(counts, ranges) {
 ## All possible comparisons can be specified with 'CMPset: ALL'.
 readComp <- function(file, format = "vector", delim = "-") {
     if (!format %in% c("vector", "matrix")) stop("Argument format can only be assigned: vector or matrix!")
-    if (class(file) == "SYSargs") {
+    if (inherits(file, "SYSargs")) {
         if (length(targetsheader(file)) == 0) stop("Input has no targets header lines.")
         comp <- targetsheader(file)
         ## SYSargs2 class
-    } else if (class(file) == "SYSargs2") {
+    } else if (inherits(file, "SYSargs2")) {
         if (length(targetsheader(file))[[1]] == 0) stop("Input has no targets header lines.")
         comp <- targetsheader(file)[[1]]
-    } else {
+    }  else {
         comp <- readLines(file)
     }
     comp <- comp[grepl("<CMP>", comp)]
@@ -924,9 +924,9 @@ readComp <- function(file, format = "vector", delim = "-") {
     ## Check whether all samples are present in Factor column of targets file
     checkvalues <- unique(unlist(strsplit(unlist(comp), "-")))
     checkvalues <- checkvalues[checkvalues != "ALL"]
-    if (class(file) == "SYSargs") {
+    if (inherits(file,"SYSargs")) {
         all <- unique(as.character(targetsin(file)$Factor))
-    } else if (class(file) == "SYSargs2") {
+    } else if (inherits(file, "SYSargs2")) {
         all <- unique(as.character(targets.as.df(targets(file))$Factor))
     } else {
         all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
