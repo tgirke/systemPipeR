@@ -116,17 +116,14 @@ loadWF <- loadWorkflow
 ## Render WF for all samples in targets slot ##
 ###############################################
 renderWF <- function(WF, inputvars = NULL) {
-    if (!is.null(inputvars)) .checkInputVars(WF, inputvars)
+    if (!is.null(inputvars)) {
+        .checkInputVars(WF, inputvars)
+    }
     if (any(length(cmdlist(WF)[[1]]) != 0)) stop("Argument 'WF' needs to be assigned an object of class 'SYSargs2' and an object created by the 'loadWorkflow' function")
     ids <- names(targets(WF))
     if (length(ids) == 0) ids <- "defaultid"
     bucket <- sapply(ids, function(x) "", simplify = FALSE)
     bucketlist <- list(cmd = bucket, input = bucket, output = bucket)
-    if (length(targets(WF)) == 0) {
-        if (!is.null(inputvars)) {
-
-        }
-    }
     for (i in ids) {
         tmplist <- .renderWFsingle(WF = WF, id = i, inputvars = inputvars)
         bucketlist[["cmd"]][[i]] <- tmplist[["cmd"]]
@@ -896,8 +893,13 @@ subsetWF <- function(args, slot, subset = NULL, index = NULL, delete = FALSE) {
     ## slot input
     if (slot %in% "input") {
         ## Check the subset
-        if (all(!is.null(subset) & is.character(subset) & !any(names(inputvars(args)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(inputvars(args)), collapse = ", "), "OR the corresponding position OR NULL"))
-        if (all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(args))) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(inputvars(args))), collapse = ", "), "OR the names OR NULL"))
+        if (all(!is.null(subset) & is.character(subset) & !any(names(inputvars(args)) %in% subset))) 
+            stop("For the ", slot, " slot, can only be assigned one of the following values in the subset argument: ", 
+                 paste(names(inputvars(args)), collapse = ", "), 
+                 " OR the corresponding position OR NULL")
+        if (all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(inputvars(args))) %in% subset)))
+            stop("For the ", slot, " slot, can only be assigned one of the following position in the subset argument: ",
+                 paste(seq_along(names(inputvars(args))), collapse = ", "), " OR the names OR NULL")
         subset_input <- input(args)
         subset_sample <- sapply(names(subset_input), function(x) list(NULL))
         if (!is.null(subset)) {
@@ -911,12 +913,19 @@ subsetWF <- function(args, slot, subset = NULL, index = NULL, delete = FALSE) {
     ## slot output
     if (slot %in% "output") {
         ## Check the subset
-        if (all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse = ", "), "OR the corresponding position OR NULL"))
-        if (all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse = ", "), "OR the names OR NULL"))
+        if (all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) 
+            stop("For the ", slot, " slot, can only be assigned one of the following values in the subset argument:", 
+                 paste(names(args$clt), collapse = ", "), 
+                 " OR the corresponding position OR NULL")
+        if (all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset)))
+            stop("For the ", slot, " slot, can only be assigned one of the following position in the subset argument: ", 
+                       paste(seq_along(names(args$clt)), collapse = ", "), 
+                       " OR the names OR NULL")
         if (!is.null(subset)) {
-            if (!any(seq_along(output(args)[[1]][[subset]]) %in% index)) stop(paste("For the 'index' argument, can only be assigned one of the following position:", paste(seq_along(output(args)[[1]][[subset]]), collapse = ", ")))
+            if (!any(seq_along(output(args)[[1]][[subset]]) %in% index))
+                stop("For the 'index' argument, can only be assigned one of the following position: ",
+                     paste(seq_along(output(args)[[1]][[subset]]), collapse = ", "))
         }
-
         subset_output <- output(args)
         subset_sample <- as.character()
         if (all(!is.null(subset) & !is.null(index))) {
@@ -932,8 +941,14 @@ subsetWF <- function(args, slot, subset = NULL, index = NULL, delete = FALSE) {
     ## slot step
     if (slot %in% "step") {
         ## Check the subset
-        if (all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following values in the subset argument:", paste(names(args$clt), collapse = ", "), "OR the corresponding position OR NULL"))
-        if (all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) stop(paste("For the", slot, "slot, can only be assigned one of the following position in the subset argument:", paste(seq_along(names(args$clt)), collapse = ", "), "OR the names OR NULL"))
+        if (all(!is.null(subset) & is.character(subset) & !any(names(args$clt) %in% subset))) 
+            stop("For the ", slot, " slot, can only be assigned one of the following values in the subset argument: ", 
+                 paste(names(args$clt), collapse = ", "), 
+                 " OR the corresponding position OR NULL")
+        if (all(!is.null(subset) & is.numeric(subset) & !any(seq_along(names(args$clt)) %in% subset))) 
+            stop("For the ", slot, " slot, can only be assigned one of the following position in the subset argument: ", 
+                 paste(seq_along(names(args$clt)), collapse = ", "), 
+                 " OR the names OR NULL")
         subset_step <- cmdlist(args)
         subset_sample <- sapply(names(subset_step), function(x) list(NULL))
         if (!is.null(subset)) {
@@ -954,7 +969,7 @@ subsetWF <- function(args, slot, subset = NULL, index = NULL, delete = FALSE) {
     if (delete == TRUE) {
         ## delete option only works if the subset is define
         if (!is.character(subset_sample)) {
-            stop(paste("Please define the 'subset' to be deleted in the subset argument"))
+            stop("Please define the 'subset' to be deleted in the subset argument")
         }
         if (all(file.exists(subset_sample))) {
             del <- file.remove(subset_sample)
@@ -1073,7 +1088,8 @@ createWF <- function(targets = NULL, commandLine, results_path = "./results", mo
     } else {
         for (i in seq_along(file)) {
             extension <- sub(".*\\.", "", file[[i]])
-            if (!c("cwl") %in% extension & !c("yml") %in% extension) stop("Argument 'file' needs to be assigned as a character vector with the names of the two param file. For example, 'test.cwl' and 'test.yml'.")
+            if (!c("cwl") %in% extension & !c("yml") %in% extension) 
+                stop("Argument 'file' needs to be assigned as a character vector with the names of the two param file. For example, 'test.cwl' and 'test.yml'.")
             if (c("yml") %in% extension) {
                 file.yml <- file[[i]]
             } else if (c("cwl") %in% extension) {
@@ -1082,16 +1098,14 @@ createWF <- function(targets = NULL, commandLine, results_path = "./results", mo
         }
     }
     if (file.exists(file.cwl) & overwrite == FALSE) {
-          stop(paste(
-              "I am not allowed to overwrite files; please delete existing file:",
-              file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
-          ))
+          stop("I am not allowed to overwrite files; please delete existing file: ",
+              file, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
+          )
       }
     if (file.exists(file.yml) & overwrite == FALSE) {
-          stop(paste(
-              "I am not allowed to overwrite files; please delete existing file:",
-              file, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
-          ))
+          stop("I am not allowed to overwrite files; please delete existing file: ",
+              file,  "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
+          )
       }
     ## class("CommandLineTool", "Workflow")
     # WF.temp <- SYScreate("SYSargs2")

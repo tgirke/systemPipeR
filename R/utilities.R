@@ -22,22 +22,19 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
         ## SYSargs2 class
     } else if (class(x) == "SYSargs2") {
         if (is.null(step)) {
-              stop(paste(
-                  "Argument 'step' needs to be assigned one of the following values:",
-                  paste(names(x$clt), collapse = ", "), "OR the corresponding position"
-              ))
+              stop("Argument 'step' needs to be assigned one of the following values: ",
+                  paste(names(x$clt), collapse = ", "), " OR the corresponding position"
+              )
           }
         if (all(!is.null(step) & is.character(step) & !any(names(x$clt) %in% step))) {
-              stop(paste(
-                  "Argument 'step' can only be assigned one of the following values:",
-                  paste(names(x$clt), collapse = ", "), "OR the corresponding position"
-              ))
+              stop("Argument 'step' can only be assigned one of the following values: ",
+                  paste(names(x$clt), collapse = ", "), " OR the corresponding position"
+              )
           }
         if (all(!is.null(step) & is.numeric(step) & !any(seq_along(names(x$clt)) %in% step))) {
-              stop(paste(
-                  "Argument 'step' can only be assigned one of the following position:",
-                  paste(seq_along(names(x$clt)), collapse = ", "), "OR the corresponding names"
-              ))
+              stop("Argument 'step' can only be assigned one of the following position: ",
+                  paste(seq_along(names(x$clt)), collapse = ", "), " OR the corresponding names"
+              )
           }
         targets <- targets.as.df(targets(x))
         if (remove == TRUE) {
@@ -54,7 +51,7 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
             }
         } else if (!is.null(new_col) & !is.null(new_col_output_index)) {
             if (any(length(output(x)[[1]][[step]]) < new_col_output_index) | any(new_col_output_index < 1)) {
-                stop(paste0("'new_col_output_index' argument needs to be equal or bigger than 1 and smaller than ", length(output(x)[[1]][[1]]), ", the maximum number of outputs files."))
+                stop("'new_col_output_index' argument needs to be equal or bigger than 1 and smaller than ", length(output(x)[[1]][[1]]), ", the maximum number of outputs files.")
             }
             if (length(new_col) != length(new_col_output_index)) {
                 stop("'new_col' should have the same length as 'new_col_output_index'")
@@ -78,11 +75,11 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
             file <- file
         }
         headerlines <- targetsheader(x)[[1]]
+        names <- c(new_col, colnames(targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))]))
+        targets <- cbind(targets[, new_col], targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))])
+        colnames(targets) <- names
     }
-    if (file.exists(file) & overwrite == FALSE) stop(paste("I am not allowed to overwrite files; please delete existing file:", file, "or set 'overwrite=TRUE'"))
-    names <- c(new_col, colnames(targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))]))
-    targets <- cbind(targets[, new_col], targets[, -c(which(grepl(paste(new_col, collapse = "|"), colnames(targets))))])
-    colnames(targets) <- names
+    if (file.exists(file) & overwrite == FALSE) stop("I am not allowed to overwrite files; please delete existing file: ", file, " or set 'overwrite=TRUE'")
     targetslines <- c(paste(colnames(targets), collapse = "\t"), apply(targets, 1, paste, collapse = "\t"))
     writeLines(c(headerlines, targetslines), file, ...)
     if (silent != TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
@@ -136,10 +133,10 @@ runCommandline <- function(args, runid = "01",
         if (!baseCommand(args) == c("bash")) {
             cmd_test <- tryCMD(command = baseCommand(args), silent = TRUE)
             if (cmd_test == "error") {
-                stop(paste0(
+                stop(
                     "\n", baseCommand(args), ": command not found. ",
-                    "\n", "Please make sure to configure your PATH environment variable according to the software in use."
-                ), call. = FALSE)
+                    "\n", "Please make sure to configure your PATH environment variable according to the software in use.",
+                    call. = FALSE)
             }
         }
         ## Create log files
@@ -206,6 +203,8 @@ runCommandline <- function(args, runid = "01",
                 ## Run the commandline only for samples for which no output file is available OR force == TRUE
                 if (all(force == FALSE && all(as.logical(completed[[i]][[j]])))) {
                     cat("The expected output file(s) already exist", "\n", file = file_log, fill = TRUE, append = TRUE)
+                    ## close R chunk
+                    cat("```", file = file_log, sep = "\n", append = TRUE)
                     sample_status[[ii]][[args$files$steps[j]]] <- "Success"
                     next()
                 } else {
@@ -431,7 +430,9 @@ runCommandline <- function(args, runid = "01",
         if (any(grepl("samtools", names(clt(args_complete))))) {
             stop("argument 'make_bam' should be 'FALSE' when using the workflow with 'SAMtools'", call. = FALSE)
         }
-        args_complete <- output_update(args_complete, dir = dir, dir.name = dir.name, replace = TRUE, extension = c(".sam", ".bam"), make_bam = make_bam, del_sam = del_sam)
+        if(any(grepl(".sam", args_complete$output[[1]][[1]]))){
+            args_complete <- output_update(args_complete, dir = dir, dir.name = dir.name, replace = TRUE, extension = c(".sam", ".bam"), make_bam = make_bam, del_sam = del_sam)
+        }
     }
     if (dir == TRUE) {
         args_complete <- output_update(args_complete, dir = dir, dir.name = dir.name)
@@ -555,11 +556,10 @@ clusterRun <- function(args,
           stop("'more.args' needs to be object of class 'list'.")
       }
     if (any(!names(more.args) %in% names(as.list(formals(FUN))))) {
-          stop(paste(
-              "The list of arguments assigned to 'more.args' can only be the ",
+          stop("The list of arguments assigned to 'more.args' can only be the ",
               "following arguments defined in the function 'FUN':",
               paste(names(as.list(formals(FUN))), collapse = ", ")
-          ))
+          )
       }
     if (grepl("slurm", template)) {
         if (!grepl("slurm", Sys.getenv("PATH"))) {
@@ -707,7 +707,7 @@ preprocessReads <- function(args = NULL,
             if (overwrite == TRUE) {
                 if (any(file.exists(outfile))) unlink(outfile)
             } else {
-                if (any(file.exists(outfile))) stop(paste("File", outfile, "exists. Please delete file first or set overwrite=TRUE."))
+                if (any(file.exists(outfile))) stop("File ", outfile, " exists. Please delete file first or set overwrite=TRUE.")
             }
             ## Run preprocessor function with FastqStreamer
             counter <- 0
@@ -733,8 +733,10 @@ preprocessReads <- function(args = NULL,
                 if (any(file.exists(p1out))) unlink(p1out)
                 if (any(file.exists(p2out))) unlink(p2out)
             } else {
-                if (any(file.exists(p1out))) stop(paste("File", p1out, "exists. Please delete file first or set overwrite=TRUE."))
-                if (any(file.exists(p2out))) stop(paste("File", p2out, "exists. Please delete file first or set overwrite=TRUE."))
+                if (any(file.exists(p1out))) 
+                    stop("File ", p1out, " exists. Please delete file first or set overwrite=TRUE.")
+                if (any(file.exists(p2out))) 
+                    stop("File ", p2out, " exists. Please delete file first or set overwrite=TRUE.")
             }
             ## Run preprocessor function with FastqStreamer
             counter1 <- 0
@@ -743,7 +745,8 @@ preprocessReads <- function(args = NULL,
             f2 <- ShortRead::FastqStreamer(p2, batchsize)
             while (length(fq1 <- ShortRead::yield(f1))) {
                 fq2 <- ShortRead::yield(f2)
-                if (length(fq1) != length(fq2)) stop("Paired end files cannot have different read numbers.")
+                if (length(fq1) != length(fq2)) 
+                    stop("Paired end files cannot have different read numbers.")
                 ## Process p1
                 fq <- fq1 # for simplicity in eval
                 fq1trim <- eval(parse(text = Fct))
@@ -787,8 +790,8 @@ preprocessReads <- function(args = NULL,
 ## Function to create sym links to bam files for viewing in IGV ##
 ##################################################################
 symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".bai"), urlbase, urlfile) {
-    ## Create URL file
-    if (all(inherits(sysargs, "SYSargs") & inherits(sysargs, "SYSargs2"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+
+    if (!any(inherits(sysargs, "SYSargs"), inherits(sysargs, "SYSargs2"), inherits(sysargs, "character"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2 OR 'named character vector'")
     ## SYSargs class
     if (inherits(sysargs, "SYSargs")) {
         bampaths <- outpaths(sysargs)
@@ -797,16 +800,25 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
     } else if (inherits(sysargs, "SYSargs2")) {
         bampaths <- normalizePath(subsetWF(args = sysargs, slot = "output", subset = 1, index = 1))
         symname <- names(targets(sysargs))
+    } else if (inherits(sysargs, "character")) {
+        if (is.null(names(sysargs))) stop("Please provide a named character vector, where the names elements should be the sampleID")
+        bampaths <- sysargs
+        symname <- names(sysargs)
     }
+    ## Create URL file
     urls <- paste(urlbase, htmldir[2], symname, ext[1], "\t", symname, sep = "")
     writeLines(urls, urlfile)
-    ## Creat correspoding sym links
-    dir.create(paste(htmldir, collapse = ""))
+    ## Check directory and Create corresponding sym links
+    if (!dir.exists(paste(htmldir, collapse = ""))) {
+        dir.create(paste(htmldir, collapse = ""), recursive = TRUE)
+        message(paste(htmldir, collapse = ""), "directory was created successfully!")
+        }
     symname <- rep(symname, each = 2)
     symname <- paste(symname, c(ext[1], paste(ext, collapse = "")), sep = "")
     bampaths2 <- as.vector(t(cbind(bampaths, paste(bampaths, ext[2], sep = ""))))
     symcommands <- paste(command, " ", bampaths2, " ", paste(htmldir, collapse = ""), symname, sep = "")
     for (i in symcommands) system(i)
+    message("Symbolic links were created successfully!")
 }
 ## Usage:
 # symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://cluster.hpcc.ucr.edu/~tgirke/", urlfile="IGVurl.txt")
@@ -817,9 +829,7 @@ symLink2bam <- function(sysargs, command = "ln -s", htmldir, ext = c(".bam", ".b
 alignStats <- function(args, fqpaths, pairEnd = TRUE,
                        output_index = 1,
                        subset = "FileName1") {
-    # if (class(args) %in% c("SYSargs", "SYSargs2")) {
-    pairEnd <- pairEnd
-    #   ## SYSargs class
+    ## SYSargs class
     if (class(args) == "SYSargs") {
         fqpaths <- infile1(args)
         bampaths <- outpaths(args)
@@ -841,7 +851,7 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
         names(bampaths) <- names(output.all)
         if (!nchar(infile2(args))[1] > 0) pairEnd <- FALSE
     } else if (class(args) == "character") {
-        if (missing(fqpaths)) stop("Please provide fqpaths! It must be a named vector, names will be used as sample names")
+        if (missing(fqpaths)) stop("Please provide fqpaths argument! It must be a named character vector, where the names elements should be the sampleID")
         bampaths <- args
         fqpaths <- fqpaths
     }
@@ -870,29 +880,6 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
     )
     if (pairEnd) colnames(statsDF)[which(colnames(statsDF) == "Nreads")] <- "Nreads2x"
     return(statsDF)
-    # } else {
-    #     stopifnot(is.character(args))
-    #     stopifnot(is.character(out_dir) && length(out_dir) == 1)
-    #     if(is.null(names(args))) stop("args must be a named vector, names will be used as sample names")
-    #     if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-    #     if(!dir.exists(out_dir)) stop("Cannot create output directory", out_dir)
-    #     if(!all(check_args <- file.exists(args))) stop("Some args are missing:\n", paste0(args[!check_args], collapse = ",\n"))
-    #     if(!all(check_ext <- stringr::str_detect(args, "\\.bam$"))) stop("alignStats: All args need to end with .bam\n", paste0(args[!check_ext], collapse = ",\n"))
-    #
-    #     file_base <- basename(args)
-    #     out_args <- file.path(out_dir, gsub("\\.bam$", "_bam_stats.csv", file_base))
-    #     samplenames <- names(args)
-    #     bam_df <- data.frame(Sample= samplenames, File= file_base, Mapped = NA, Unmapped = NA)
-    #     for (i in seq_along(args)) {
-    #         bam_stats <- Rsamtools::idxstatsBam(args[i])
-    #         message("Write bam stats for ", samplenames[i], " to ", basename(out_args[i]))
-    #         write.csv(bam_stats, out_args[i], row.names = FALSE)
-    #         map_info <- colSums(bam_stats[, c(3, 4)])
-    #         bam_df[i, c(3, 4)] <- map_info
-    #     }
-    #     bam_df$Perc_Mapped <- round(bam_df$Mapped/(bam_df$Mapped + bam_df$Unmapped), 3) * 100
-    #     return(bam_df)
-    # }
 }
 ## Usage:
 # read_statsDF <- alignStats(args=args)
@@ -944,7 +931,7 @@ readComp <- function(file, format = "vector", delim = "-") {
     } else {
         all <- unique(as.character(read.delim(file, comment.char = "#")$Factor))
     }
-    if (any(!checkvalues %in% all)) stop(paste("The following samples are not present in Factor column of targets file:", paste(checkvalues[!checkvalues %in% all], collapse = ", ")))
+    if (any(!checkvalues %in% all)) stop("The following samples are not present in Factor column of targets file: ", paste(checkvalues[!checkvalues %in% all], collapse = ", "))
     ## Generate outputs
     allindex <- sapply(names(comp), function(x) any(grepl("ALL", comp[[x]])))
     if (any(allindex)) for (i in which(allindex)) comp[[i]] <- combn(all, m = 2, FUN = paste, collapse = delim)
@@ -1168,7 +1155,7 @@ checkPkg <- function(pkg, quietly = TRUE) {
     if (!inherits(pkg, "character")) stop("Argument 'pkg' needs to be assigned an object of class 'character'")
     for (i in pkg) {
         if (!requireNamespace(i, quietly = quietly)) {
-            stop(paste0("Package '", i, "' should be installed.", "\n"), call. = FALSE)
+            stop("Package '", i, "' should be installed.", "\n", call. = FALSE)
         }
     }
 }

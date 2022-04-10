@@ -335,7 +335,7 @@ module.Load.Unload <- function(action_type, module_name = "", modulecmd_path) {
                     }
                     # Source environment
                     else if (length(grep("^ *source", evar[[1]][1])) > 0) {
-                        warning(paste0("Module uses a bash script to initialize, some software may not function as expected:\n\t", evar[[1]][1]))
+                        warning("Module uses a bash script to initialize, some software may not function as expected:\n\t", evar[[1]][1])
                     }
                     # Unset variables that need to be unset
                     else if (length(grep("^ *unset ", evar[[1]][1])) > 0) {

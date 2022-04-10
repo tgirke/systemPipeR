@@ -71,16 +71,14 @@ writeParamFiles <- function(sysargs, file = "default", overwrite = TRUE, silent 
         }
     }
     if (file.exists(file.cwl) & overwrite == FALSE) {
-          stop(paste(
-              "I am not allowed to overwrite files; please delete existing file:",
-              file.cwl, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
-          ))
+          stop("I am not allowed to overwrite files; please delete existing file: ",
+              file.cwl, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
+          )
       }
     if (file.exists(file.yml) & overwrite == FALSE) {
-          stop(paste(
-              "I am not allowed to overwrite files; please delete existing file:",
-              file.yml, "or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
-          ))
+          stop("I am not allowed to overwrite files; please delete existing file: ",
+              file.yml, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
+          )
       }
     args <- sysargs2(sysargs) ## TODO
     cwlVersion <- args$clt[[1]]$cwlVersion
