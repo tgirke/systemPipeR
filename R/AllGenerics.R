@@ -49,14 +49,14 @@ setGeneric(name = "stepsWF", def = function(x) standardGeneric("stepsWF"))
 setGeneric(name = "statusWF", def = function(x) standardGeneric("statusWF"))
 setGeneric(name = "targetsWF", def = function(x) standardGeneric("targetsWF"))
 setGeneric(name = "outfiles", def = function(x) standardGeneric("outfiles"))
-setGeneric(name = "SE", def = function(x) standardGeneric("SE"))
+setGeneric(name = "SE", def = function(x, ...) standardGeneric("SE"))
 setGeneric(name = "dependency", def = function(x) standardGeneric("dependency"))
 setGeneric(name = "projectInfo", def = function(x) standardGeneric("projectInfo"))
 setGeneric(name = "runInfo", def = function(x) standardGeneric("runInfo"))
 ## Accessors
 setGeneric(name = "stepName", def = function(x) standardGeneric("stepName"))
 setGeneric(name = "getColumn", def = function(x, step, position = c("outfiles", "targetsWF"), column = 1, names = SampleName(x, step)) standardGeneric("getColumn"))
-setGeneric(name = "addResources", def = function(x, steps, resources) standardGeneric("addResources"))
+setGeneric(name = "addResources", def = function(x, step, resources) standardGeneric("addResources"))
 setGeneric(name = "viewEnvir", def = function(x, silent = FALSE) standardGeneric("viewEnvir"))
 setGeneric(name = "copyEnvir", def = function(x, list = character(), new.env = globalenv(), silent = FALSE) standardGeneric("copyEnvir"))
 ## Coerce back to list: as(SYSargsList, "list")
@@ -71,6 +71,7 @@ setGeneric(name = "statusWF<-", def = function(x, step, ..., value) standardGene
 setGeneric(name = "dependency<-", def = function(x, step, ..., value) standardGeneric("dependency<-"))
 setGeneric(name = "updateStatus<-", def = function(x, step, ..., value) standardGeneric("updateStatus<-"))
 setGeneric(name = "runInfo<-", def = function(x, step, param, ..., value) standardGeneric("runInfo<-"))
+setGeneric(name = "SE<-", def = function(x, step, ..., value) standardGeneric("SE<-"))
 
 ######################################
 ## Generic Definitions for LineWise ##
