@@ -1,12 +1,13 @@
 ######################
 ## Filter VCF files ##
 ######################
-filterVars <- function(files, args=files, filter, varcaller="gatk", organism, out_dir="results") {
+filterVars <- function(files, filter, varcaller="gatk", organism, out_dir="results") {
   pkg <- c("VariantAnnotation")
   checkPkg(pkg, quietly = FALSE)
-  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    return(warning('filterVars: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
-                   'Use `getColumn` to get a vector of paths instead.'))
+  if (class(files) %in% c("SYSargs", "SYSargs2")) {
+    return(warning('filterVars: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
+                   'Use `getColumn` to get a vector of paths instead OR 
+                   provide a named character vector.'))
   }
   stopifnot(is.character(files))
   stopifnot(is.character(filter) && length(filter) == 1)
@@ -113,12 +114,13 @@ filterVars <- function(files, args=files, filter, varcaller="gatk", organism, ou
 ####################
 ## Variant Report ##
 ####################
-variantReport <- function (files, args=files, txdb, fa, organism, out_dir="results") {
+variantReport <- function(files, txdb, fa, organism, out_dir="results") {
   pkg <- c("VariantAnnotation", "GenomeInfoDb")
   checkPkg(pkg, quietly = FALSE)
-  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    return(warning('variantReport: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
-                   'Use `getColumn` to get a vector of paths instead.'))
+  if (class(files) %in% c("SYSargs", "SYSargs2")) {
+      return(warning('filterVars: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
+                     'Use `getColumn` to get a vector of paths instead OR 
+                     provide a named character vector.'))
   }
   stopifnot(is.character(files))
   stopifnot(is.character(organism) && length(organism) == 1)
@@ -160,16 +162,15 @@ variantReport <- function (files, args=files, txdb, fa, organism, out_dir="resul
 #############################
 ## Combine Variant Reports ##
 #############################
-combineVarReports <- function(files, args=files, filtercol, ncol=15) {
-  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    return(warning('combineVarReports: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
-                   'Use `getColumn` to get a vector of paths instead.'))
-  }
-
+combineVarReports <- function(files, filtercol, ncol=15) {
+    if (class(files) %in% c("SYSargs", "SYSargs2")) {
+        return(warning('filterVars: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
+                       'Use `getColumn` to get a vector of paths instead OR 
+                   provide a named character vector.'))
+    }
   stopifnot(is.character(files))
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
   if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("combineVarReports: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
-
   samples <- names(files)
   for(i in seq(along=samples)) {
     if(i==1) {
@@ -194,12 +195,12 @@ combineVarReports <- function(files, args=files, filtercol, ncol=15) {
 ###########################################
 ## Create summary statistics of variants ##
 ###########################################
-varSummary <- function(files, args=files) {
-  if (class(files) %in% c("SYSfiles", "SYSfiles2")) {
-    return(warning('varSummary: New version of SPR no longer accept "SYSfiles", "SYSfiles2" objects as inputs.\n',
-                   'Use `getColumn` to get a vector of paths instead.'))
-  }
-
+varSummary <- function(files) {
+    if (class(files) %in% c("SYSargs", "SYSargs2")) {
+        return(warning('filterVars: New version of SPR no longer accept "SYSargs", "SYSargs2" objects as inputs.\n',
+                       'Use `getColumn` to get a vector of paths instead OR 
+                   provide a named character vector.'))
+    }
   stopifnot(is.character(files))
   if(!all(check_files <- file.exists(files))) stop("Some files are missing:\n", paste0(files[!check_files], collapse = ",\n"))
   if(!all(check_ext <- stringr::str_detect(files, "(\\.tsv)$"))) stop("varSummary: All files need to end with .tsv\n", paste0(files[!check_ext], collapse = ",\n"))
