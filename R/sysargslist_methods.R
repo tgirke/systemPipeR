@@ -15,9 +15,14 @@ setMethod(f = "targetsWF", signature = "SYSargsList", definition = function(x) {
 setMethod(f = "outfiles", signature = "SYSargsList", definition = function(x) {
     return(x@outfiles)
 })
-setMethod(f = "SE", signature = "SYSargsList", definition = function(x) {
-    return(x@SE)
+setMethod(f = "SE", signature = "SYSargsList", definition = function(x, step = NULL) {
+    if(is.null(step)) {
+        return(x@SE)
+    } else {
+        return(x@SE[[step]])
+    }
 })
+
 setMethod(f = "dependency", signature = "SYSargsList", definition = function(x) {
     return(x@dependency)
 })
@@ -156,12 +161,11 @@ setMethod(f = "[", signature = "SYSargsList", definition = function(x, i, ..., d
     }
     if (inherits(i, "character")) {
         if (!all(i %in% stepName(x))) {
-            stop(paste0(
-                "\n",
+            stop("\n",
                 "Step name doesn't exist. Please subset accordingly with the 'stepName(x)'",
                 "\n",
                 paste0(stepName(x), collapse = ", ")
-            ))
+            )
         }
         i <- which(stepName(x) %in% i)
     }
@@ -285,7 +289,12 @@ setMethod(f = "yamlinput", signature = "SYSargsList", definition = function(x, s
 
 ## Behavior of "subset" method for SYSargsList
 setMethod(f = "subset", signature = "SYSargsList", definition = function(x, subset_steps, input_targets, keep_steps = TRUE) {
+    if (!hasArg(subset_steps)) stop("argument 'subset_steps' is missing")
+    if (!hasArg(input_targets)) stop("argument 'input_targets' is missing")
     x_sub <- x[subset_steps]
+    if(any(sapply(stepsWF(x_sub), function(y) class(y)) %in% "LineWise")){
+        stop("We cannot subset a 'LineWise' step. Please review the 'subset_steps' argument")
+    }
     ## check subset_steps length
     if (length(unique(sapply(stepsWF(x_sub), function(x) length(x)))) > 1) stop("All 'subset_steps' should contain the same length.")
     if (missing(input_targets)) {
@@ -349,11 +358,20 @@ setMethod("getColumn", signature = "SYSargsList", definition = function(x, step,
         if (!column %in% colnames(x[[position]][[step]])) stop("We can not find this column in the Workflow")
     }
     ## Check names
-    if (!length(names) == length(x[[position]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+    if(inherits(x$stepsWF[[step]], "SYSargs2")){
+        if (!length(names) == length(x[[position]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+    }
     ##
     if (!is.null(x[[position]][[step]][[column]])) {
         subset <- x[[position]][[step]][[column]]
-        names(subset) <- if (is.null(names)) names <- rep("", length(subset)) else names
+        if (is.null(names)){
+            if(is.null(rownames(x[[position]][[step]]))){
+                names <- rep("", length(subset))
+            } else {
+                names <- rownames(x[[position]][[step]])
+            }
+        }
+        names(subset) <- names
     } else {
         message("This step doesn't contain expected outfiles.")
     }
@@ -394,6 +412,7 @@ setReplaceMethod("updateColumn", signature = "SYSargsList", definition = functio
     # if(nrow(x[[position]][[step]]) == 0) {x[[position]][[step]] <- as(value, "DataFrame"); return(.updateSAL(x, sal_name))}
     if (nrow(x[[position]][[step]]) == 0) {
         x[[position]][[step]] <- as(value, "DataFrame")
+        rownames(x[[position]][[step]]) <- rownames(value)
         return(x)
     }
     ## if not empty
@@ -431,7 +450,7 @@ setMethod(f = "codeLine", signature = "SYSargsList", definition = function(x, st
     if (all(select %in% class)) {
         return(names(select))
     } else if (!all(select %in% class)) {
-        message(paste0(paste0(names(select[!select %in% class]), collapse = " AND "), " step have been dropped because it is not a ", class, " object."), "\n")
+        message(paste0(names(select[!select %in% class]), collapse = " AND "), " step have been dropped because it is not a ", class, " object.", "\n")
         return(names(select[select %in% class]))
     }
 }
@@ -464,26 +483,26 @@ setMethod(f = "copyEnvir", signature = "SYSargsList",
 
 ## addResources() methods for SYSargsList
 setMethod(f = "addResources", signature = "SYSargsList", 
-					definition = function(x, steps, resources) {
+					definition = function(x, step, resources) {
 	# Validations
 	if (!inherits(x, "SYSargsList")) 
 		stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
-	## Check steps
-	if (inherits(steps, "numeric")) {
-		if (!all(steps %in% seq_along(x))) {
+	## Check step
+	if (inherits(step, "numeric")) {
+		if (!all(step %in% seq_along(x))) {
 			stop(
-				"Please select the 'steps' number accordingly, options are: ", "\n",
+				"Please select the 'step' number accordingly, options are: ", "\n",
 				"        ", paste0(seq_along(x), collapse = ", ")
 			)
 		}
-	} else if (inherits(steps, "character")) {
-		if (!all(steps %in% stepName(x))) {
+	} else if (inherits(step, "character")) {
+		if (!all(step %in% stepName(x))) {
 			stop(
-				"Please select the 'steps' name accordingly, options are: ", "\n",
+				"Please select the 'step' name accordingly, options are: ", "\n",
 				"        ", paste0(stepName(x), collapse = ", ")
 			)
 		}
-		steps <- which(stepName(x) %in% steps)
+		step <- which(stepName(x) %in% step)
 	}
 	## Check resources
 	if (!inherits(resources, "list")) 
@@ -492,8 +511,8 @@ setMethod(f = "addResources", signature = "SYSargsList",
 		stop("'resources' list should contain 'conffile' and 'template' file paths.")
 	if(!file.exists(resources$conffile)) stop("'", resources$conffile, "' doesn't exist. Please provid a valid PATH.")
 	if(!file.exists(resources$template)) stop("'", resources$template, "' doesn't exist. Please provid a valid PATH.")
-	## for each steps
-	for(i in steps){
+	## for each step
+	for(i in step){
 		x@runInfo$runOption[[i]]$'run_remote_resources' <- resources
 		if(!x@runInfo$runOption[[i]]$run_session == "compute"){
 			message("Please note that the '", stepName(x)[i], "' step option '", x@runInfo$runOption[[i]]$run_session, "' was replaced with 'compute'.")
@@ -546,13 +565,17 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     after <- after
     if (any(stepName(value) %in% stepName(x))) stop("Steps Names need to be unique.")
     ## Dependency
-    # if(after > 0){
-    # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
-    #   stop("'dependency' argument is required to append a step in the workflow.")
-    #   if(any(!value$dependency[[1]][!value$dependency[[1]] %in% ""] %in% stepName(x))) 
-    #     stop(paste0("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n", 
-    #                 paste0(stepName(x), collapse = ", ")))
-    # }
+    if(after > 0){
+   # if (all(dependency(value) == "" && length(x) > 0) && !getOption("spr_importing") && !getOption("appendPlus"))
+    #  stop("'dependency' argument is required to append a step in the workflow.")
+      if(any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x)))
+        stop("Dependency value needs to be present in the Workflow. ", "Options are: ", "\n",
+                    paste0(paste0(stepName(x), collapse = ", "), ", OR NA"))
+    } else if (after == 0){
+        if(!is.na(dependency(value))){
+            stop("This is the first step, and there is no previous step in the Workflow. Please select NA.")
+        }
+    }
     if (all(dependency(value) %in% "")) value[["dependency"]][[1]] <- NA
     ## Append
     if (inherits(value, "SYSargsList")) {
@@ -706,16 +729,15 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
     if (!is.null(targetsCon[[1]])) {
         step <- targetsCon[[1]][[1]]
         if (any(!step %in% names(stepsWF(x)))) {
-            stop(paste0(
-                "'targets' argument needs to be assigned as valid targets file OR", "\n",
+            stop("'targets' argument needs to be assigned as valid targets file OR ", "\n",
                 "the names of a previous step, for example: ", "\n",
-                paste0(names(stepsWF(x)), collapse = " OR ")
-            ), call. = FALSE)
+                paste0(names(stepsWF(x)), collapse = " OR "),
+                call. = FALSE)
         }
         ## check new_targets_col
         all_names <- unlist(append(lapply(outfiles(x), function(y) names(y)), 
                                    unique(unlist(lapply(targetsWF(x)[step], function(y) names(y))))))
-        if(!all(targetsCon[[2]][[1]] %in% all_names)) stop("Invalid `inputVars`.")
+        if(!all(targetsCon[[2]][[1]] %in% all_names)) stop("Invalid `inputVars`.", call. = FALSE)
         new_targets_col <- targetsCon[[2]][[1]][!targetsCon[[2]][[1]] %in% unlist(lapply(targetsWF(x)[step], function(y) names(y)))]
         new_targets <- .cbindTargetsOutfiles(x, step, new_targets_col, targetsCon[[3]][[1]])
         new_targetsheader <- sapply(step, function(y) targetsheader(x, y))
@@ -728,13 +750,16 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
         value$stepsWF[[1]] <- WF2
         value$targetsWF[[1]] <- as(WF2, "DataFrame")
         ## SE object update
-        row.names(value$targetsWF[[1]]) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
+        rownames(value$targetsWF[[1]]) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
         value$SE <- list(SummarizedExperiment::SummarizedExperiment(
           colData = value$targetsWF,
           metadata = value$stepsWF[[1]]$targetsheader))
         names(value$SE) <- names( value$targetsWF)
         value$outfiles[[1]] <- output.as.df(WF2)
         value$statusWF[[1]] <- WF2$status
+        rownames(value$outfiles[[1]]) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
+        rownames(value$statusWF[[1]]$status.completed) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
+        rownames(value$statusWF[[1]]$status.time) <- value$targetsWF[[1]][ ,value$stepsWF[[1]]$files$id]
         value <- as(value, "SYSargsList")
     }
     if (inherits(value, "SYSargs2")) {
@@ -826,7 +851,7 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
       names(targets[[x]]) <- paste0(names(targets[[x]]), "_", names(targets[x]))
       targets[[x]]
     })
-    if(exists("print_targets")) message("columns in step ", print_targets, " has been renamed with `columnName_StepName`.")
+    if(exists("print_targets")) message("columns in step ", print_targets, " has been renamed with `<columnName>_<StepName>`.")
   }
   names <- unlist(lapply(targets, function(y) names(y)))
   targets <- do.call(cbind, targets)
@@ -858,8 +883,10 @@ setReplaceMethod(f = "appendStep", signature = c("SYSargsList"),
 setReplaceMethod(
     f = "yamlinput", signature = c("SYSargsList"),
     definition = function(x, step, paramName, value) {
+        if (length(step) > 1) stop("Only ONE step can be selected at the time")
         x_sub <- x[step]
         args <- x_sub@stepsWF[[1]]
+        if (!inherits(args, "SYSargs2")) stop("Please selected a 'SYSargs2' step")
         yamlinput(args, paramName) <- value
         x <- sysargslist(x)
         x$stepsWF[[step]] <- args
@@ -883,13 +910,13 @@ setReplaceMethod(
         if (all(inherits(value, "SYSargsList") && length(value) > 1)) stop("Argument 'value' cannot have 'length(value) > 1")
         ## Check step name or index on x
         if (inherits(step, "numeric")) {
-            if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
+            if (step > length(x))
+                stop("Argument 'step' cannot be greater than ", length(x))
         } else if (inherits(step, "character")) {
             if (!step %in% stepName(x)) {
-                stop(paste0(
-                    "Argument 'step' needs to be assigned one of the following: ",
+                stop("Argument 'step' needs to be assigned one of the following: ",
                     paste(stepName(x), collapse = " OR ")
-                ))
+                )
             }
             step <- grep(step, stepName(x))
         }
@@ -900,10 +927,9 @@ setReplaceMethod(
             #     stop("'dependency' argument is required to replace a step in the workflow.")
             # }
             if (any(!value$dependency[[1]][!value$dependency[[1]] %in% NA] %in% stepName(x))) {
-                stop(paste0(
-                    "Dependency value needs to be present in the Workflow. ", "Options are: ", "\n",
-                    paste0(stepName(x)[1:step - 1], collapse = ", ")
-                ))
+                stop("Dependency value needs to be present in the Workflow. ", 
+                     "Options are: ", "\n",
+                    paste0(stepName(x)[1:step - 1], collapse = ", "))
             }
         } else if (step == 1) {
             ## first step usually is ""
@@ -936,7 +962,7 @@ setReplaceMethod(
             x$SE[step] <- list(NULL)
             x$dependency[[step]] <- value$dependency[[1]]
             x$targets_connection[[step]] <- list(NULL)
-            x$runInfo[["runOption"]][[step]] <- list(NULL)
+            x$runInfo[["runOption"]][step] <- value$runInfo[["runOption"]]
         }
         x <- as(x, "SYSargsList")
         ## rename
@@ -966,19 +992,18 @@ setReplaceMethod(
     if (!all(stepName(value) %in% stepName(x))) stop("Argument 'value' are required to have the same stepName then x")
     ## Check step name or index on x
     if (inherits(step, "numeric")) {
-      if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
+      if (step > length(x)) stop("Argument 'step' cannot be greater than ", length(x))
       step <- stepName(x)[step]
     } else if (inherits(step, "character")) {
       if (!step %in% stepName(x)) {
-        stop(paste0(
-          "Argument 'step' needs to be assigned one of the following: ",
-          paste(stepName(x), collapse = " OR ")
-        ))
+        stop("Argument 'step' needs to be assigned one of the following: ",
+          paste(stepName(x), collapse = " OR "))
       }
       # step <- grep(step, stepName(x))
     }
     ## Dependency
-      if(!all(dependency(x)[[step]] == dependency(value)[[step]])) stop("'dependency' for 'x' and 'value' objects are required to have the same structure")
+      if(!all(dependency(x)[[step]] == dependency(value)[[step]])) 
+          stop("'dependency' for 'x' and 'value' objects are required to have the same structure")
     ## replace
     extra <- which(dependency(x) %in% stepName(x[step]))
     extra <- c(step, extra)
@@ -1025,13 +1050,12 @@ setReplaceMethod(
       if (any(value %in% stepName(x))) stop("Steps Names need to be unique.")
       ## Check step name or index on x
       if (inherits(step, "numeric")) {
-        if (length(step) > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
+        if (length(step) > length(x)) 
+            stop("Argument 'step' cannot be greater than ", length(x))
       } else if (inherits(step, "character")) {
         if (!all(step %in% stepName(x))) {
-          stop(paste0(
-            "Argument 'step' needs to be assigned one of the following: ",
-            paste(stepName(x), collapse = " OR ")
-          ))
+          stop("Argument 'step' needs to be assigned one of the following: ",
+            paste(stepName(x), collapse = " OR "))
         }
         step <- sapply(as.list(step), function(y) grep(y, stepName(x)))
       }
@@ -1078,17 +1102,19 @@ setReplaceMethod(
       if (length(step) > 1) stop("Dependency of one step at the time can be replaced...")
       ## Check step name or index on x
       if (inherits(step, "numeric")) {
-        if (step > length(x)) stop(paste0("Argument 'step' cannot be greater than ", length(x)))
-        if (all(any(!value %in% stepName(x)[step:1]) && !is.na(value))) stop("Dependency name cannot be found in the workflow.")
+        if (step > length(x)) 
+            stop("Argument 'step' cannot be greater than ", length(x))
+        if (all(any(!value %in% stepName(x)[step:1]) && !is.na(value))) 
+            stop("Dependency name cannot be found in the workflow.")
       } else if (inherits(step, "character")) {
         if (!step %in% stepName(x)) {
-          stop(paste0(
-            "Argument 'step' needs to be assigned one of the following: ",
+          stop("Argument 'step' needs to be assigned one of the following: ",
             paste(stepName(x), collapse = " OR ")
-          ))
+          )
         }
         step <- grep(step, stepName(x))
-        if (all(any(!value %in% stepName(x)[step:1]) && !is.na(value))) stop("Dependency name cannot be found in the workflow.")
+        if (all(any(!value %in% stepName(x)[step:1]) && !is.na(value))) 
+            stop("Dependency name cannot be found in the workflow.")
       } 
         x@dependency[[step]] <- value
         x <- .check_write_SYSargsList(x)
@@ -1100,9 +1126,11 @@ setReplaceMethod(
 setReplaceMethod(
     f = "replaceCodeLine", signature = c("SYSargsList"),
     definition = function(x, step, line, value) {
-      if (!inherits(value, "LineWise")) stop("The value argument needs to be assigned a 'LineWise' object")
+      if (!inherits(value, "LineWise")) 
+          stop("The value argument needs to be assigned a 'LineWise' object")
         y <- x$stepsWF[step][[1]]
-        if (!inherits(y, "LineWise")) stop("The step argument needs to be assigned a 'LineWise' object")
+        if (!inherits(y, "LineWise")) 
+            stop("The step argument needs to be assigned a 'LineWise' object")
         y <- as(y, "list")
         y$codeLine <- as.character(y$codeLine)
         if(missing(line)) {
@@ -1170,10 +1198,24 @@ setReplaceMethod(
 
 ## Replacement method
 setReplaceMethod(
-	f = "runInfo", signature = c("SYSargsList"),
-	definition = function(x, step, param, ..., value) {
-		x@runInfo$runOption[[step]][[param]] <- value
-		x <- .check_write_SYSargsList(x)
-		x
-	}
+    f = "runInfo", signature = c("SYSargsList"),
+    definition = function(x, step, param, ..., value) {
+        x@runInfo$runOption[[step]][[param]] <- value
+        x <- .check_write_SYSargsList(x)
+        x
+    }
+)
+
+## Replacement method
+setReplaceMethod(
+    f = "SE", signature = c("SYSargsList"),
+    definition = function(x, step, ..., value) {
+        if(is.numeric(step)){
+            step <- stepName(x)[step]
+        }
+        if (!inherits(value, "SummarizedExperiment")) stop("Provide 'SummarizedExperiment' class object")
+        x@SE[[step]] <- value
+        x <- .check_write_SYSargsList(x)
+        x
+    }
 )
