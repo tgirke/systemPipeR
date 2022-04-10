@@ -15,12 +15,6 @@ results_path:
   class: Directory
   path: ./results
 
-format: BAM
-
-gsize: 120000000
-
-qvalue: 0.01
-
 ModulesToLoad: 
-  module1: macs2
+  module1: MACS2
 

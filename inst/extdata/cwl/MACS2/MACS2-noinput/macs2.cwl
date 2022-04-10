@@ -5,12 +5,12 @@
 cwlVersion: v1.0
 class: CommandLineTool
 doc: 
-label: Last updated 03/2022
+label: Last updated 10/2019
 hints:
   SoftwareRequirement:
     packages:
     - package: macs2
-      version: [ 2.2.6 ]
+      version: [ 2.2.4 ]
 
 ################################################################
 ##           baseCommand and arguments definitions            ##
@@ -24,21 +24,19 @@ requirements:
 
 arguments:
   - prefix: -t
-    valueFrom: $(inputs.fq1)
-  - prefix: -c
-    valueFrom: $(inputs.fq2)
+    valueFrom: $(inputs.results_path.path)/$(inputs.fq1.basename)
   - prefix: -n
     valueFrom: $(inputs.fq1.basename)
   - prefix: --outdir
     valueFrom: $(inputs.results_path.path)
   - prefix: -f
-    valueFrom: $(inputs.format)
+    valueFrom: 'BAM'
   - prefix: -g
-    valueFrom: $(inputs.gsize)
+    valueFrom: '1.2e8'
   - prefix: -B
     valueFrom:
   - prefix: -q
-    valueFrom: $(inputs.qvalue)
+    valueFrom: '0.01'
   - prefix: --nomodel
     valueFrom: 
 
@@ -54,9 +52,6 @@ inputs:
     label: "Path to the results directory"
     type: Directory
   fq1:
-    label: "This is the only REQUIRED parameter for MACS. The file can be in any supported format specified by --format option."
-    type: File
-  fq2:
     label: "This is the only REQUIRED parameter for MACS. The file can be in any supported format specified by --format option."
     type: File
 

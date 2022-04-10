@@ -5,6 +5,10 @@ inputs:
   results_path: Directory
   fq1: File
   fq2: File
+  format: string
+  gsize: int
+  qvalue: int
+  
 outputs:
   peaks_xls:
     outputSource:
