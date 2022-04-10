@@ -127,7 +127,7 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
   if(!c("SampleReference") %in% colnames(targets)) stop("Targets file lacks SampleReference column")
   if(!c("FileName") %in% colnames(targets)) stop("Targets file lacks FileName column")
   if(all(c("FileName1", "FileName2") %in% colnames(targets))) stop("Targets file is expected to have only one FileName column")
-  if(file.exists(outfile) & overwrite==FALSE) 
+  if(file.exists(outfile) & overwrite == FALSE) 
       stop("I am not allowed to overwrite files; please delete existing file: ", 
            outfile, " or set 'overwrite=TRUE'")
   testv <- as.character(targets$SampleReference); testv <- testv[!is.na(testv)]; testv <- testv[testv!=""]
@@ -140,6 +140,7 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
   targets[,"FileName2"] <- myfiles[as.character(targets$SampleReference)]
   targets <- targets[!is.na(as.character(targets$SampleReference)), , drop=FALSE]
   targets <- targets[targets$SampleReference!="", , drop=FALSE]
+  targets <- targets[ , !(names(targets) %in% "FileName")]
   ## Export targets file including header lines
   headerlines <- headerlines[grepl("^#", headerlines)]
   targetslines <- c(paste(colnames(targets), collapse="\t"), apply(targets, 1, paste, collapse="\t"))
@@ -152,30 +153,38 @@ writeTargetsRef <- function(infile, outfile, silent=FALSE, overwrite=FALSE, ...)
 ########################################################
 ## Iterative read counting over different range files ##
 ########################################################
-## Convenience function to perform read counting over serveral different
+## Convenience function to perform read counting over several different
 ## range sets, e.g. peak ranges or feature types
-countRangeset <- function(bfl, args, format="tabular", ...) {
+countRangeset <- function(bfl, args, outfiles=NULL, format="tabular", ...) {
   pkg <- c("GenomeInfoDb")
   checkPkg(pkg, quietly = FALSE)
   ## Input validity checks
-  if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'.")
-  if(all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
-  absent_peak_file <- infile1(args)[!file.exists(infile1(args))]
-  if(length(absent_peak_file)!=0) stop("The following files assigned to 'infile1(args)' do not exist: ", paste(basename(absent_peak_file), collapse=", ")) 
-  ## Perform read counting for each peak set
-  ## SYSargs class
-  if(class(args) == "SYSargs") {
-    countDFnames <- outpaths(args)
-    ## SYSargs2 class  
-  } else if (class(args) == "SYSargs2"){
-    countDFnames <- subsetWF(args , slot="output", subset=1, index=1)
+  if(!inherits(bfl, "BamFileList")) stop("'bfl' needs to be of class 'BamFileList'.")
+  if(!any(inherits(args, "SYSargs"), inherits(args, "SYSargs2"), inherits(args, "character"))) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2 OR named character vector")
+  ## SYSargs or SYSargs2 class
+  if(inherits(args, "SYSargs") | inherits(args, "SYSargs2")) {
+      absent_peak_file <- infile1(args)[!file.exists(infile1(args))]
+      if(length(absent_peak_file)!=0) stop("The following files assigned to 'infile1(args)' do not exist: ", paste(basename(absent_peak_file), collapse=", ")) 
+      if(inherits(args, "SYSargs")) {
+          countDFnames <- outpaths(args)
+          ## SYSargs2 class  
+      } else if (inherits(args, "SYSargs2")){
+          countDFnames <- subsetWF(args , slot="output", subset=1, index=1)
+      }
+      ## named character vector class  
+  } else if (inherits(args, "character")){
+      if(is.null(names(args))) stop("Please provide a named character vector, where the names elements should be the sampleID")
+      absent_peak_file <- args
+      if(is.null(outfiles)) stop("Please provide a named character vector, where the names elements should be the sampleID and the outfiles names.")
+      if(!all(names(outfiles) %in% names(absent_peak_file))) stop("names of 'outfiles' argument should be find at names of 'args' argument.")
+      countDFnames <- outfiles
   }
-  for(i in seq(along=infile1(args))) {
+  for(i in seq(along=absent_peak_file)) {
     if(format=="tabular") {
-      df <- read.delim(infile1(args)[i],comment.char = "#")
+      df <- read.delim(absent_peak_file[i],comment.char = "#")
       peaks <- as(df, "GRanges")
     } else if(format=="bed") {
-      peaks <- rtracklayer::import.bed(infile1(args)[i])
+      peaks <- rtracklayer::import.bed(absent_peak_file[i])
     } else {
       stop("Input file format not supported.")
     }
@@ -186,7 +195,12 @@ countRangeset <- function(bfl, args, format="tabular", ...) {
     write.table(countDF, countDFnames[i], col.names=NA, quote=FALSE, sep="\t")
     cat("Wrote count result", i, "to", basename(countDFnames[i]), "\n")
   }
-  return(countDFnames)
+  if (inherits(args, "character")) {
+      names(countDFnames) <- names(args)
+      return(countDFnames)
+  } else {
+      return(countDFnames)
+  }
 }
 ## Usage:
 # countDFnames <- countRangeset(bfl, args, mode="Union", ignore.strand=TRUE)
@@ -196,20 +210,24 @@ countRangeset <- function(bfl, args, format="tabular", ...) {
 ################################################################################
 ## Convenience function to iterate over several count sets generated by
 ## countRangeset() or similar utilities 
-runDiff <- function(args, diffFct, targets, cmp, dbrfilter, ...) {
-  if(all(class(args) != "SYSargs" & class(args) != "SYSargs2")) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
-  countfiles <- infile1(args)
+runDiff <- function(args, outfiles=NULL, diffFct, targets, cmp, dbrfilter, ...) {
+    if(!any(inherits(args, "SYSargs"), inherits(args, "SYSargs2"), inherits(args, "character"))) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2 OR named character vector")
+    ## SYSargs class
+    if(inherits(args, "SYSargs")) {
+        countfiles <- infile1(args)
+        dbrDFnames <- outpaths(args)
+        ## SYSargs2 class  
+    } else if (inherits(args, "SYSargs2")){
+        countfiles <- infile1(args)
+        dbrDFnames <- subsetWF(args , slot="output", subset=1, index=1)
+    } else if (inherits(args, "character")){
+        countfiles <- args
+        dbrDFnames <- outfiles
+    }
   ## Input validity checks
   absent_count_files <- countfiles[!file.exists(countfiles)]
   if(length(absent_count_files)!=0) stop("The following files assigned to 'countfiles' do not exist: ", paste(basename(absent_count_files), collapse=", ")) 
   ## Perform differential analysis
-  ## SYSargs class
-  if(class(args) == "SYSargs") {
-    dbrDFnames <- outpaths(args)
-    ## SYSargs2 class  
-  } else if (class(args) == "SYSargs2"){
-    dbrDFnames <- subsetWF(args , slot="output", subset=1, index=1)
-  }
   dbrlists <- list()
   for(i in seq(along=dbrDFnames)) {
     countDF <- read.delim(countfiles[i], row.names=1)
