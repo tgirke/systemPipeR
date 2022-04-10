@@ -1,4 +1,16 @@
 changelog
+                
+   version 2.0.7       
+        - Added SE Replacement method (SYSargsList)
+        - writeTargetsout and alignStats: small fix
+        - symLink2bam: added named character vector alternative as input
+        - renderLogs: small fix for the Title
+        - Reorganized `SPRproject` function internal execution 
+        - Update SYSargsList man page
+        - Exported 'addResources' method
+        - Fixed a small bug yamlinput replacement method
+        - Fixing time when `resume = TRUE` 
+        
    version 2.0.5
         - Bug fixed plotWF
         - management and compute running option names
@@ -6,7 +18,16 @@ changelog
         - renameStep accepts the same name
         - dependency replacement method accepts NA
         - SYSargsList accepts `targets = SE` object
-        - Fixed log/SE path
+        - Fixed log/SE path        
+        - Added SE Replacement method (SYSargsList)
+        - writeTargetsout and alignStats: small fix
+        - symLink2bam: added named character vector alternative as input
+        - renderLogs: small fix for the Title
+        - Reorganized `SPRproject` function internal execution 
+        - Update SYSargsList man page
+        - Exported 'addResources' method
+        - Fixed a small bug yamlinput replacement method
+        - Fixing time when `resume = TRUE`
         
    version 2.0.4
         - Bug fixed pathInstance and runWF

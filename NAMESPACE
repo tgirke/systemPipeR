@@ -59,6 +59,7 @@ importFrom("htmlwidgets", "shinyWidgetOutput")
 importFrom("htmlwidgets", "shinyRenderWidget")
 importFrom("magrittr", "%>%")
 importFrom("methods", "as")
+importFrom("methods", "hasArg")
 importFrom("methods", "new")
 importFrom("methods", "slot")
 importFrom("methods", "slotNames")
@@ -157,10 +158,10 @@ exportMethods(
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SE",
     "dependency", "projectInfo", "runInfo",
-    "sysargslist", "subset", "stepName", "getColumn", "updateColumn<-",
+    "sysargslist", "subset", "stepName", "getColumn", 
     "SampleName", "viewEnvir", "copyEnvir", "addResources",
-    "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
-    "updateStatus<-", "runInfo<-",
+    "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-", 
+    "updateColumn<-",
     ## LineWise
     "codeLine", "codeChunkStart", "rmdPath", "linewise",
     "replaceCodeLine<-", "appendCodeLine<-"
