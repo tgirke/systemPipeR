@@ -538,7 +538,7 @@ featureCoverage <- function(bfl, grl, resizereads=NULL, readlengthrange=NULL, Nb
     checkPkg(pkg, quietly = FALSE)
     ## Input validity checks
     if(!is.null(outfile)) {
-        if(file.exists(outfile) & overwrite==FALSE) stop(paste("File", outfile, "exists. Delete it or set 'overwrite=TRUE'"))
+        if(file.exists(outfile) & overwrite==FALSE) stop("File ", outfile, " exists. Delete it or set 'overwrite=TRUE'")
         if(file.exists(outfile) & overwrite==TRUE) unlink(outfile)
     }
     if(class(bfl)!="BamFileList") stop("'bfl' needs to be of class 'BamFileList'")
@@ -776,7 +776,7 @@ plotfeatureCoverage <- function(covMA, method=mean, scales="fixed", extendylim=2
     ## Some input validity checks
     if(class(covMA) != "data.frame") stop("'covMA' needs to be assigned an object of class 'data.frame'.")
     expectedcol <- c("SampleName", "N_total_aligned", "IDs", "Strand")
-    if(any(!colnames(covMA)[1:4] %in% expectedcol)) stop(paste("The first 4 columns in 'covMA' need to be named:", paste(expectedcol, collapse=", ")))
+    if(any(!colnames(covMA)[1:4] %in% expectedcol)) stop("The first 4 columns in 'covMA' need to be named: ", paste(expectedcol, collapse=", "))
     ## global functions or variables
     Coverage <- Strand <- NULL
     ## Determine split type required for provided input 
