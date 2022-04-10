@@ -24,21 +24,21 @@ requirements:
 
 arguments:
   - prefix: -t
-    valueFrom: $(inputs.results_path.path)/$(inputs.fq1.basename)
+    valueFrom: $(inputs.fq1)
   - prefix: -c
-    valueFrom: $(inputs.results_path.path)/$(inputs.fq2.basename)
+    valueFrom: $(inputs.fq2)
   - prefix: -n
     valueFrom: $(inputs.fq1.basename)
   - prefix: --outdir
     valueFrom: $(inputs.results_path.path)
   - prefix: -f
-    valueFrom: 'BAM'
+    valueFrom: $(inputs.format)
   - prefix: -g
-    valueFrom: '1.2e8'
+    valueFrom: $(inputs.gsize)
   - prefix: -B
     valueFrom:
   - prefix: -q
-    valueFrom: '0.01'
+    valueFrom: $(inputs.qvalue)
   - prefix: --nomodel
     valueFrom: 
 

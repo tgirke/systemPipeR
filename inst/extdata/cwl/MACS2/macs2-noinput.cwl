@@ -24,19 +24,19 @@ requirements:
 
 arguments:
   - prefix: -t
-    valueFrom: $(inputs.results_path.path)/$(inputs.fq1.basename)
+    valueFrom: $(inputs.fq1)
   - prefix: -n
     valueFrom: $(inputs.fq1.basename)
   - prefix: --outdir
     valueFrom: $(inputs.results_path.path)
   - prefix: -f
-    valueFrom: 'BAM'
+    valueFrom: $(inputs.format)
   - prefix: -g
-    valueFrom: '1.2e8'
+    valueFrom: $(inputs.gsize)
   - prefix: -B
     valueFrom:
   - prefix: -q
-    valueFrom: '0.01'
+    valueFrom: $(inputs.qvalue)
   - prefix: --nomodel
     valueFrom: 
 
@@ -54,7 +54,13 @@ inputs:
   fq1:
     label: "This is the only REQUIRED parameter for MACS. The file can be in any supported format specified by --format option."
     type: File
-
+  format:
+    type: string
+  gsize:
+    type: int
+  qvalue:
+    type: int
+    
 outputs:
   peaks_xls:
     type: File
