@@ -22,7 +22,7 @@ runDiff(args, outfiles=NULL, diffFct, targets, cmp, dbrfilter, ...)
     with the paths to the tabular range data files and the elements names should
     be the sampleID.
 }
-  \item{outfile}{
+  \item{outfiles}{
     Default is \code{NULL}. When \code{args} is an object of \code{named 
     character vector} class, \code{outfile} argument is required. 
     \code{Named character vector} with the paths to the resulting count tables

@@ -1198,12 +1198,12 @@ setReplaceMethod(
 
 ## Replacement method
 setReplaceMethod(
-	f = "runInfo", signature = c("SYSargsList"),
-	definition = function(x, step, param, ..., value) {
-		x@runInfo$runOption[[step]][[param]] <- value
-		x <- .check_write_SYSargsList(x)
-		x
-	}
+    f = "runInfo", signature = c("SYSargsList"),
+    definition = function(x, step, param, ..., value) {
+        x@runInfo$runOption[[step]][[param]] <- value
+        x <- .check_write_SYSargsList(x)
+        x
+    }
 )
 
 ## Replacement method
@@ -1211,7 +1211,7 @@ setReplaceMethod(
     f = "SE", signature = c("SYSargsList"),
     definition = function(x, step, ..., value) {
         if(is.numeric(step)){
-            step <- stepName(sal)[step]
+            step <- stepName(x)[step]
         }
         if (!inherits(value, "SummarizedExperiment")) stop("Provide 'SummarizedExperiment' class object")
         x@SE[[step]] <- value

@@ -166,9 +166,11 @@ countRangeset <- function(bfl, args, outfiles=NULL, format="tabular", ...) {
       absent_peak_file <- infile1(args)[!file.exists(infile1(args))]
       if(length(absent_peak_file)!=0) stop("The following files assigned to 'infile1(args)' do not exist: ", paste(basename(absent_peak_file), collapse=", ")) 
       if(inherits(args, "SYSargs")) {
+          absent_peak_file <- infile1(args)
           countDFnames <- outpaths(args)
           ## SYSargs2 class  
       } else if (inherits(args, "SYSargs2")){
+          absent_peak_file <- infile1(args)
           countDFnames <- subsetWF(args , slot="output", subset=1, index=1)
       }
       ## named character vector class  

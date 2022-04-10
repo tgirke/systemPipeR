@@ -1,4 +1,9 @@
 changelog
+    version 2.1.18
+        - Added a new argument to countRangeset and runDiff functions
+        - small fix for writeTargetsRef
+        - small fix for getColumn and updateColumn
+        
     version 2.1.17
         - small fix for read_SYSargsList
         
