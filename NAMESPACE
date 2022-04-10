@@ -193,7 +193,7 @@ export(
     # SYSargsList
     "SPRproject", "SYSargsList", "runWF", "check.outfiles",  "plotWF", 
     "plotwfOutput", "renderPlotwf", "renderLogs", "sal2rmd", "sal2bash", 
-    "write_SYSargsList", "renderReport",
+    "write_SYSargsList", "renderReport", "writeTargets",
     ## cmd2cwl
     "createParamFiles", "createParam", "writeParamFiles", "printParam", 
     "subsetParam", "replaceParam", "renameParam",

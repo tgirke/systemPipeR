@@ -1235,7 +1235,7 @@ readSE <- function(dir.path, dir.name) {
 ###########################
 writeTargets <- function(sysargs, step, file = "default", silent = FALSE, overwrite = FALSE){
     if (all(!inherits(sysargs, "SYSargsList"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList")
-    if(!step %in% stepName(sal)) stop("It was not possible to find the 'step' name in the 'sysargs' object")
+    if(!step %in% stepName(sysargs)) stop("It was not possible to find the 'step' name in the 'sysargs' object")
     ## Workflow and Step Name
     if (file == "default") {
         file <- paste("targets_", step, ".txt", sep = "")
@@ -1246,7 +1246,7 @@ writeTargets <- function(sysargs, step, file = "default", silent = FALSE, overwr
     if (file.exists(file) & overwrite == FALSE) stop("I am not allowed to overwrite files; please delete existing file: ", file, " or set 'overwrite=TRUE'")
     targets <- targetsWF(sysargs)[[step]]
     targetslines <- c(paste(colnames(targets), collapse = "\t"), apply(targets, 1, paste, collapse = "\t"))
-    headerlines <- sal$stepsWF[[step]][["targetsheader"]]
+    headerlines <- sysargs$stepsWF[[step]][["targetsheader"]]
     writeLines(c(headerlines$targetsheader, targetslines), file)
     if (silent != TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
 }
@@ -1796,7 +1796,7 @@ subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile
 ###########################
 config.param <- function(input_file = NULL, param, file = "default", silent = FALSE) {
     ## In the case of 'input_file' == character (file)
-    if (class(input_file) == "character") {
+    if (inherits(input_file, "character")) {
         if (!file.exists(input_file)) {
             stop("Provide valid 'input_file' file. Check the file PATH.")
         }
@@ -1804,14 +1804,14 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
         input <- out_obj <- .replace(input = input, param = param)
         path_file <- normalizePath(input_file)
         out_msg <- c("input_file")
-    } else if (class(input_file) == "list") {
+    } else if (inherits(input_file, "list")) {
         if (is.null(names(param))) {
             stop("for each element of the 'param' list need to assign a name.")
         }
         input <- out_obj <- .replace(input = input_file, param = param)
-        path_file <- normalizePath(file) ## TODO find a better solution!
+        path_file <- normalizePath(file) 
         out_msg <- c("input_file")
-    } else if (class(input_file) == "SYSargs2") {
+    } else if (inherits(input_file, "SYSargs2")) {
         input <- .replace(input = yamlinput(input_file), param = param)
         dir_path <- .getPath(files(input_file)[["yml"]])
         if (is.na(files(input_file)[["targets"]])) {
@@ -1833,7 +1833,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
         args1 <- out_obj <- as(args1, "SYSargs2")
         out_msg <- c("yamlinput(args1)")
         path_file <- files(input_file)[["yml"]]
-    } else if (class(input_file) == "SYSargsList") { ## TODO
+    } else if (inherits(input_file, "SYSargsList")) { 
         input <- out_obj <- .replace(input = input_file$sysconfig, param = param)
         path_file <- input_file$projectInfo$project
         out_msg <- c("input_file")
@@ -1864,7 +1864,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
     ## Write YML file
     yaml::write_yaml(x = input, file = path)
     if (silent != TRUE) cat("\t", "All the new param + ", out_msg, "were written to:", "\n", path, "\n")
-    if (class(input_file) == "SYSargs2") {
+    if (inherits(input_file, "SYSargs2")) {
         args1 <- as(args1, "list")
         args1$files$yml <- path
         args1 <- as(args1, "SYSargs2")
