@@ -358,11 +358,20 @@ setMethod("getColumn", signature = "SYSargsList", definition = function(x, step,
         if (!column %in% colnames(x[[position]][[step]])) stop("We can not find this column in the Workflow")
     }
     ## Check names
-    if (!length(names) == length(x[[position]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+    if(inherits(x$stepsWF[[step]], "SYSargs2")){
+        if (!length(names) == length(x[[position]][[step]][[column]])) stop("'names' argument needs to have the same length of desired output")
+    }
     ##
     if (!is.null(x[[position]][[step]][[column]])) {
         subset <- x[[position]][[step]][[column]]
-        names(subset) <- if (is.null(names)) names <- rep("", length(subset)) else names
+        if (is.null(names)){
+            if(is.null(rownames(x[[position]][[step]]))){
+                names <- rep("", length(subset))
+            } else {
+                names <- rownames(x[[position]][[step]])
+            }
+        }
+        names(subset) <- names
     } else {
         message("This step doesn't contain expected outfiles.")
     }
@@ -403,6 +412,7 @@ setReplaceMethod("updateColumn", signature = "SYSargsList", definition = functio
     # if(nrow(x[[position]][[step]]) == 0) {x[[position]][[step]] <- as(value, "DataFrame"); return(.updateSAL(x, sal_name))}
     if (nrow(x[[position]][[step]]) == 0) {
         x[[position]][[step]] <- as(value, "DataFrame")
+        rownames(x[[position]][[step]]) <- rownames(value)
         return(x)
     }
     ## if not empty
@@ -952,7 +962,7 @@ setReplaceMethod(
             x$SE[step] <- list(NULL)
             x$dependency[[step]] <- value$dependency[[1]]
             x$targets_connection[[step]] <- list(NULL)
-            x$runInfo[["runOption"]][[step]] <- list(NULL)
+            x$runInfo[["runOption"]][step] <- value$runInfo[["runOption"]]
         }
         x <- as(x, "SYSargsList")
         ## rename
