@@ -2116,10 +2116,14 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
 ## [x] A character vector or an object containing file File name without extension, simmilar with 'basename'
 .getFileName <- function(x) {
     #  if (!file.exists(x)) warning("No such file or directory. Check the file PATH.")
-    filename <- Biostrings::strsplit(basename(x), split = "\\.")[[1]]
-    filename <- filename[[-2]]
+    filename <- Biostrings::strsplit(basename(x), split = ".([^.]*)$")[[1]]
+    #filename <- filename[[-2]]
     return(filename)
 }
+
+## Usage:
+# targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
+# .getFileName(targetspath)
 
 #################################################
 ## Return the logical, if the path is absolute ##
