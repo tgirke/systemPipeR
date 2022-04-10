@@ -396,7 +396,7 @@ makeDot <- function(df,
         unlist() %>%
         which()
     if (length(branch_complete) == 0) {
-        msg <- "Workflow's first step is not connected to the last step, something wrong? Unconnected steps will not be plotted."
+        msg <- "Workflow's first step is not connected to the last step, something wrong? This may cause workflow plot display issues"
         warning(msg)
         return(structure(c(1), .Names = msg))
     } else {
@@ -618,7 +618,10 @@ makeDot <- function(df,
     ) {
     node_text <- c()
     for (i in seq_along(steps)) {
-        step_color <- if (has_run[i] && success[i]) "#5cb85c" else if (has_run[i] && !success[i]) "#d9534f" else "black"
+        step_color <- if (has_run[i] && success[i]) "#5cb85c"
+                      else if (has_run[i] && sample_warn[i] > 0 && sample_error[i] < 1) "#f0ad4e"
+                      else if (has_run[i] && sample_error[i] > 0) "#d9534f"
+                      else "black"
         duration <- .stepDuration(time_start[i], time_end[i])
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
@@ -706,6 +709,7 @@ makeDot <- function(df,
     df$spr <- ifelse(sapply(df$step_name, function(x) inherits(stepsWF(sal_temp)[[x]], "SYSargs2")), "sysargs", "r")
     df$req <- sapply(df$step_name, function(x) sal_temp$runInfo$runOption[[x]]$run_step)
     df$session <- sapply(df$step_name, function(x) sal_temp$runInfo$runOption[[x]]$run_session)
+    df$status_summary <- sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary)
     df$has_run <- ifelse(!sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Pending", TRUE, FALSE)
     df$success <- ifelse(sapply(df$step_name, function(x) sal_temp$statusWF[[x]]$status.summary) == "Success", TRUE, FALSE)
     df <- cbind(df, data.frame(
@@ -740,8 +744,8 @@ makeDot <- function(df,
                 df$sample_error[i] <- 1
             }
             if (length(sal_temp$statusWF[[i]]$status.time) > 0) {
-                df$time_start[i] <- sal_temp$statusWF[[i]]$status.time$time_start
-                df$time_end[i] <- sal_temp$statusWF[[i]]$status.time$time_end
+                df$time_start[i] <- sal_temp$statusWF[[i]]$total.time$time_start
+                df$time_end[i] <- sal_temp$statusWF[[i]]$total.time$time_end
             }
         }
     }
