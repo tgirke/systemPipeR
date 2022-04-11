@@ -2801,66 +2801,79 @@ If no argument is provided, the basic plot will automatically detect width, heig
 plotWF(sal, show_legend = TRUE, width = "80%")
 ```
 
-## Running the workflow
+## Running workflow
 
-For running the workflow, `runWF` function will execute all the command lines store in the workflow container.
+### Interactive job submissions in a single machine
 
-```{r, eval=FALSE}
+For running the workflow, `runWF` function will execute all the steps store in 
+the workflow container. The execution will be on a single machine without 
+submitting to a queuing system of a computer cluster. 
+
+```{r runWF, eval=FALSE}
 sal <- runWF(sal)
 ```
 
-#### Interactive job submissions in a single machine
-
-To simplify the short read alignment execution for the user, the command-line 
-can be run with the *`runCommandline`* function.
-The execution will be on a single machine without submitting to a queuing system 
-of a computer cluster. This way, the input FASTQ files will be processed sequentially. 
-By default *`runCommandline`* auto detects SAM file outputs and converts them 
-to sorted and indexed BAM files, using internally the `Rsamtools` package 
-[@Rsamtools]. Besides, *`runCommandline`* allows the user to create a dedicated
-results folder for each workflow and a sub-folder for each sample 
-defined in the *targets* file. This includes all the output and log files for each 
-step. When these options are used, the output location will be updated by default 
-and can be assigned to the same object.
-
-If available, multiple CPU cores can be used for processing each file. The number
-of CPU cores (here 4) to use for each process is defined in the _`*.yml`_ file. 
-With _`yamlinput(args)['thread']`_ one can return this value from the _`SYSargs2`_ object. 
-
-
-#### Parallelization on clusters
+### Parallelization on clusters
 
 Alternatively, the computation can be greatly accelerated by processing many files 
 in parallel using several compute nodes of a cluster, where a scheduling/queuing
-system is used for load balancing. For this the *`clusterRun`* function submits 
-the computing requests to the scheduler using the run specifications
-defined by *`runCommandline`*. 
+system is used for load balancing. 
 
-To avoid over-subscription of CPU cores on the compute nodes, the value from 
-_`yamlinput(args)['thread']`_ is passed on to the submission command, here _`ncpus`_ 
-in the _`resources`_ list object. The number of independent parallel cluster 
-processes is defined under the _`Njobs`_ argument. The following example will run 
-18 processes in parallel using for each 4 CPU cores. If the resources available
-on a cluster allow running all 18 processes at the same time then the shown sample 
-submission will utilize in total 72 CPU cores. Note, *`clusterRun`* can be used
-with most queueing systems as it is based on utilities from the _`batchtools`_ 
-package which supports the use of template files (_`*.tmpl`_) for defining the 
-run parameters of different schedulers. To run the following code, one needs to 
-have both a conf file (see _`.batchtools.conf.R`_ samples [here](https://mllg.github.io/batchtools/)) 
-and a template file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) 
+The `resources` list object provides the number of independent parallel cluster 
+processes defined under the `Njobs` element in the list. The following example 
+will run 18 processes in parallel using each 4 CPU cores. 
+If the resources available on a cluster allow running all 18 processes at the 
+same time, then the shown sample submission will utilize in a total of 72 CPU cores.
+
+Note, `runWF` can be used with most queueing systems as it is based on utilities 
+from the `batchtools` package, which supports the use of template files (_`*.tmpl`_)
+for defining the run parameters of different schedulers. To run the following 
+code, one needs to have both a `conffile` (see _`.batchtools.conf.R`_ samples [here](https://mllg.github.io/batchtools/)) 
+and a `template` file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) 
 for the queueing available on a system. The following example uses the sample 
-conf and template files for the Slurm scheduler provided by this package. 
+`conffile` and `template` files for the Slurm scheduler provided by this package. 
 
-## Access the Previous Version
+The resources can be appended when the step is generated, or it is possible to 
+add these resources later, as the following example using the `addResources` 
+function:
 
-Please find [here](/sp/spr/steps_oldversion/) the previous version.
+```{r runWF_cluster, eval=FALSE}
+resources <- list(conffile=".batchtools.conf.R",
+                  template="batchtools.slurm.tmpl", 
+                  Njobs=18, 
+                  walltime=120, ## minutes
+                  ntasks=1,
+                  ncpus=4, 
+                  memory=1024, ## Mb
+                  partition = "short"
+                  )
+sal <- addResources(sal, c("hisat2_mapping"), resources = resources)
+sal <- runWF(sal)
+```
+
+### Checking workflow status
+
+To check the summary of the workflow, we can use:
+
+```{r statusWF, eval=FALSE}
+sal
+statusWF(sal)
+```
+
+### Accessing logs report
+
+_`systemPipeR`_ compiles all the workflow execution logs in one central location,
+making it easier to check any standard output (`stdout`) or standard error
+(`stderr`) for any command-line tools used on the workflow or the R code stdout.
+
+```{r logsWF, eval=FALSE}
+sal <- renderLogs(sal)
+```
 
 ```{r quiting, eval=TRUE, echo=FALSE}
 knitr::opts_knit$set(root.dir = '../')
 unlink("rnaseq", recursive = TRUE)
 ```
-
-
 
 # Version information
 
