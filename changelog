@@ -1,4 +1,7 @@
 changelog
+    version 2.1.19
+        - fix plotwf warning color 
+        
     version 2.1.18
         - Added a new argument to countRangeset and runDiff functions
         - small fix for writeTargetsRef
