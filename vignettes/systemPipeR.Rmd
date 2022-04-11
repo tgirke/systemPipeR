@@ -9,7 +9,7 @@ output:
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{SPR}
+  %\VignetteIndexEntry{systemPipeR}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
@@ -37,7 +37,7 @@ knitr::opts_chunk$set(
     tidy.opts = list(width.cutoff = 100), tidy = FALSE)
 ```
 
-```{r setting, echo=FALSE}
+```{r setting, eval=TRUE, echo=FALSE}
 if (file.exists("spr_project")) unlink("spr_project", recursive = TRUE)
 is_win <- Sys.info()[['sysname']] != "Windows"
 ```
@@ -77,7 +77,7 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 6. Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes
 6. Improves reproducibility by automating analyses and generation of analysis reports 
 
-```{r utilities, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A & B). Examples of *systemPipeR's* visualization functionalities are given under (C)."}
+```{r utilities, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A). Examples of `systemPipeR's` visualization functionalities are given under (B)."}
 knitr::include_graphics(system.file("extdata/images", "utilities.png", package = "systemPipeR"))
 ```
 
@@ -85,11 +85,13 @@ A central concept for designing workflows within the _`systemPipeR`_ environment
 is the use of workflow management containers. 
 Workflow management containers allow the automation of design, build, run and 
 scale different steps and tools in data analysis.
-_`systemPipeR`_ adopted the widely used community standard [Common Workflow Language](https://www.commonwl.org/) (CWL) 
+_`systemPipeR`_ adopted the widely used community standard [Common Workflow Language](https://www.commonwl.org/) (CWL)
 [@Amstutz2016-ka] for describing parameters analysis workflows in a generic and reproducible 
 manner. Using this community standard in _`systemPipeR`_
 has many advantages. For instance, the integration of CWL allows running _`systemPipeR`_
-workflows from a single specification instance either entirely from within R, from various command-line wrappers (e.g., *cwl-runner*) or from other languages (*, e.g.,* Bash or Python).
+workflows from a single specification instance either entirely from within R, 
+from various command-line wrappers (e.g., *cwl-runner*) or from other languages 
+(*, e.g.,* Bash or Python).
 _`systemPipeR`_ includes support for both command-line and R/Bioconductor software 
 as well as resources for containerization, parallel evaluations on computer clusters 
 along with the automated generation of interactive analysis reports.
@@ -116,8 +118,8 @@ combined with the overview of all the common analysis steps of NGS experiments.
 
 _`systemPipeR`_ allows creation (multi-step analyses) and execution of workflow 
 entirely for R, with control, flexibility, and scalability of all processes.
-Furthermore, the execution of the workflow can be sent to a HPC, can be 
-parallelized, accelerating results acquisition. 
+Furthermore, the workflow execution can be integrated with compute clusters 
+from R, accelerating results acquisition.
 
 The flexibility of _`systemPipeR's`_ new interface workflow management class is
 the driving factor behind the use of as many steps necessary for the analysis
@@ -148,86 +150,31 @@ robust design.
 knitr::include_graphics(system.file("extdata/images", "SPR_WF.png", package = "systemPipeR"))
 ```
 
-# Quick Start
+## Command-line software support
 
-This section will demonstrate how to build a basic workflow. The main features
-will be briefly illustrated here. In the next section, we will discuss all the 
-alternatives to design and build the workflow and all the support features 
-available in _`systemPipeR`_.
+_`systemPipeR`_ adopted the widely used community standard Common Workflow 
+Language (CWL) [@Amstutz2016-ka] for describing command-line tools and workflows
+in a declarative, generic, and reproducible manner. CWL specifications are 
+text-based files and can be structured using YAML (https://yaml.org/) syntax. 
+Therefore, the description files can be easily accessed and are readable. 
+The significant advantage of adopting CWL as a standard description of 
+command-line tools within \textit{systemPipeR} is the flexibility of workflow 
+reusability for different computing environments and workflow frameworks in the 
+community, improving reproducibility, portability, and shareability between
+collaborators and community.
 
-- Load sample data and directory structure
+Following the CWL Command Line Tool Description Specification 
+(https://www.commonwl.org/v1.2/CommandLineTool.html), the basic elements of the 
+CWL tool description are defined in two files. Figure \@ref(fig:sprandCWL)A-B illustrate 
+the “hello world” example. The main file contains all the information necessary 
+to build the command-line that will be executed, specifying the input, expected
+output files, and arguments for the command-line (Figure \@ref(fig:sprandCWL)A). 
+The second file is optional yet provides flexibility to assign values to 
+parameters required to make the input or output objects when building the command-line. 
 
-```{r genNew_wf, eval=TRUE}
-systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
-```
+```{r sprandCWL, warning=FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Example of 'Hello World' message using CWL syntax and demonstrating the connectivity with `systemPipeR`. (A) This file describes the command-line tool, here using 'echo' command. (B) This file describes all the parameters variables connected with the tool specification file. Here the reference value of the input parameter can be specific or can be filled dynamically, adding a variable that connects with the targets files from `systemPipeR`. (C) `SYSargsList` function provides the 'inputvars' arguments to build the connectivity between the CWL description of parameters and the targets files. The argument requires a named vector where each vector element is required to be defined in the CWL description of parameters file (B), and the names of the elements are needed to match the column names defined in the targets file (D). "}
 
-```{r, eval=FALSE, warning=FALSE}
-setwd("spr_project")
-```
-
-```{r setting_dir, include=FALSE, warning=FALSE}
-knitr::opts_knit$set(root.dir = 'spr_project')
-```
-
-- Create a project
-
-```{r SPRproject_ex, eval=TRUE}
-sal_wf <- SPRproject(logs.dir = ".SPRproject_wf") 
-```
-
-- Option 1: Build workflow from R Markdown
-
-```{r importwf_example, eval=TRUE}
-sal_wf <- importWF(sal_wf, 
-                    file_path = system.file("extdata", "spr_simple_wf.Rmd", package = "systemPipeR"),
-                    verbose = FALSE)
-```
-
-- Option 2: Build workflow interactive
-    + `Hello world!` example
-
-```{r firstStep, eval=TRUE}
-sal <- SPRproject(overwrite = TRUE) 
-targetspath <- system.file("extdata/cwl/example/targets_example.txt", package = "systemPipeR")
-appendStep(sal) <- SYSargsList(step_name = "echo", 
-                               targets = targetspath, dir = TRUE,
-                               wf_file = "example/workflow_example.cwl", input_file = "example/example.yml", 
-                               dir_path = system.file("extdata/cwl", package = "systemPipeR"),
-                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
-```
-
-- Adding a R step
-
-```{r secondStep_r, eval=TRUE}
-appendStep(sal) <- LineWise(code = {
-                            hello <- lapply(getColumn(sal, step = 1, 'outfiles'), function(x) yaml::read_yaml(x))
-                            }, 
-                            step_name = "R_getCol", 
-                            dependency = "echo")
-```
-
-- Running workflow
-
-```{r run_echo, eval=is_win}
-sal <- runWF(sal)
-```
-
-- Visualize workflow
-
-```{r plot_echo, eval=TRUE}
-plotWF(sal, width = "80%", rstudio = TRUE)
-```
-
-- Checking workflow status
-
-```{r status_echo, eval=TRUE}
-statusWF(sal)
-```
-
-- Accessing logs report
-
-```{r logs_echo, eval=FALSE}
-sal <- renderLogs(sal)
+knitr::include_graphics(system.file("extdata/images", "SPR_CWL_hello.png", package = "systemPipeR"))
 ```
 
 # Getting Started
@@ -422,7 +369,7 @@ and reproducibly.
 knitr::include_graphics(system.file("extdata/images", "targets_con.png", package = "systemPipeR"))  
 ```
 
-# Structure of the new parameters files
+## Structure of the new parameters files
 
 The parameters and configuration required for running command-line software are 
 provided by the widely used community standard [Common Workflow Language](https://www.commonwl.org/) (CWL) 
@@ -437,13 +384,124 @@ if (file.exists(".SPRproject")) unlink(".SPRproject", recursive = TRUE)
 ## NOTE: Removing previous project create in the quick starts section
 ```
 
+# Quick Start
+
+This section will demonstrate how to build a basic workflow. The main features 
+will be briefly illustrated here. The following section will discuss all the 
+alternatives to design and build the workflow and the support features available 
+in _`systemPipeR`_.
+
+- Load sample data and directory structure
+
+[*systemPipeRdata*](http://bioconductor.org/packages/release/data/experiment/html/systemPipeRdata.html) package is a helper package to generate a fully populated [*systemPipeR*](http://bioconductor.org/packages/release/bioc/html/systemPipeR.html)
+workflow environment in the current working directory with a single command. 
+All the instruction for generating the workflow are provide in the *systemPipeRdata* vignette [here](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#1_Introduction). 
+
+```{r genNew_wf, eval=TRUE}
+systemPipeRdata::genWorkenvir(workflow = "new", mydirname = "spr_project")
+```
+
+```{r, eval=FALSE, warning=FALSE}
+setwd("spr_project")
+```
+
+Typically, the user wants to record here the sources and versions of the
+reference genome sequence along with the corresponding annotations. In
+the provided sample data set all data inputs are stored in a `data`
+subdirectory and all results will be written to a separate `results` directory,
+while the `Rmarkdown` workflow file and the `targets` file are expected to be 
+located in the parent directory. 
+
+```{r setting_dir, include=FALSE, warning=FALSE}
+knitr::opts_knit$set(root.dir = 'spr_project')
+```
+
+- Create a project
+
+_`systemPipeR`_ workflows can be designed and built from start to finish with a 
+single command, importing from an R Markdown file or stepwise in interactive 
+mode from the R console. 
+
+To create a Workflow within _`systemPipeR`_, we can start by defining an empty
+container and checking the directory structure:
+
+```{r SPRproject_ex, eval=TRUE}
+sal <- SPRproject() 
+```
+
+- Build workflow from RMarkdown file
+
+The workflow can be created by adding all the analysis steps interact or importing 
+the steps from an R Markdown file.
+After initializing the project with `SPRproject` function, `importWF` function
+will scan and import all the R chunks from the R Markdown file and build all
+the workflow instances. Then, each R chuck in the file will be converted in a workflow step. 
+
+```{r importwf_example, eval=TRUE}
+sal <- importWF(sal, 
+                    file_path = system.file("extdata", "spr_simple_wf.Rmd", package = "systemPipeR"),
+                    verbose = FALSE)
+```
+
+This workflow contains five steps. First, it loads _`systemPipeR`_  library, then 
+exports `iris` data set, separating each species' data in a specific file. 
+In the third step, each one of those files will be compressed using `gzip` 
+command line, and later these files will be decompressed. Even though each step 
+is a straightforward process, it is a simple demonstration of the connectivity 
+between command-line and R-based analysis steps. Finally, the last step will
+calculate a mean for sepal length and width and petal length and width, respectively,
+and plot these statistics.
+
+- Running workflow
+
+Interactive job submissions in a single machine
+
+For running the workflow, `runWF` function will execute all the steps store in 
+the workflow container. The execution will be on a single machine without 
+submitting to a queuing system of a computer cluster. 
+
+```{r run_echo, eval=is_win}
+sal <- runWF(sal)
+```
+
+- Visualize workflow
+
+_`systemPipeR`_ workflows instances can be visualized with the `plotWF` function.
+
+```{r plot_echo, eval=TRUE}
+plotWF(sal, width = "80%", rstudio = TRUE)
+```
+
+- Checking workflow status
+
+To check the summary of the workflow, we can use:
+
+```{r status_echo, eval=TRUE}
+statusWF(sal)
+```
+
+- Accessing logs report
+
+_`systemPipeR`_ compiles all the workflow execution logs in one central location,
+making it easier to check any standard output (`stdout`) or standard error
+(`stderr`) for any command-line tools used on the workflow or the R code stdout.
+
+```{r logs_echo, eval=FALSE}
+sal <- renderLogs(sal)
+```
+
+```{r cleaning, eval=TRUE, include=FALSE}
+if (file.exists(".SPRproject")) unlink(".SPRproject", recursive = TRUE)
+## NOTE: Removing previous project create in the quick starts section
+```
+
 # Project initialization
 
 To create a Workflow within _`systemPipeR`_, we can start by defining an empty
 container and checking the directory structure:
 
 ```{r SPRproject, eval=TRUE}
-sal <- SPRproject(projPath = getwd()) 
+sal <- SPRproject(projPath = getwd(), overwrite = TRUE) 
 ```
 
 Internally, `SPRproject` function will create a hidden folder called `.SPRproject`,
@@ -497,8 +555,7 @@ _`systemPipeR`_ workflows can be designed and built from start to finish with a
 single command, importing from an R Markdown file or stepwise in interactive 
 mode from the R console. 
 In the [next section](#appendstep), we will demonstrate how to build the workflow in an
-interactive mode, and in the [following section](#importWF), we will show how to build from a 
-file. 
+interactive mode, and in the [following section](#importWF), we will show how to build from a file. 
 
 New workflows are constructed, or existing ones modified, by connecting each 
 step via `appendStep` method. Each `SYSargsList` instance contains instructions 
@@ -856,37 +913,40 @@ statusWF(sal)
 This section of the tutorial provides an introduction to the usage of the 
 _`systemPipeR`_ features on a cluster.
 
-The computation can be greatly accelerated by processing many files 
+Alternatively, the computation can be greatly accelerated by processing many files 
 in parallel using several compute nodes of a cluster, where a scheduling/queuing
-system is used for load balancing. For this the `clusterRun` function submits 
-the computing requests to the scheduler using the run specifications
-defined by `runWF`. 
+system is used for load balancing. 
 
-A named list provides the computational resources. By default, it can be defined
-the upper time limit in minutes for jobs before they get killed by the scheduler, 
-memory limit in Mb, number of `CPUs`, and number of tasks. 
+The `resources` list object provides the number of independent parallel cluster 
+processes defined under the `Njobs` element in the list. The following example 
+will run 18 processes in parallel using each 4 CPU cores. 
+If the resources available on a cluster allow running all 18 processes at the 
+same time, then the shown sample submission will utilize in a total of 72 CPU cores.
 
-The number of independent parallel cluster processes is defined under the
-`Njobs` argument. The following example will run one process in parallel using 
-for each 4 CPU cores. If the resources available on a cluster allow running all 
-the processes simultaneously, then the shown sample submission will utilize in 
-total four CPU cores (`NJobs * ncpus`). Note, `clusterRun` can be used
-with most queueing systems as it is based on utilities from the _`batchtools`_ 
-package which supports the use of template files (_`*.tmpl`_) for defining the 
-run parameters of different schedulers. To run the following code, one needs to 
-have both a `conf file` (see _`.batchtools.conf.R`_ samples [here](https://mllg.github.io/batchtools/)) 
-and a template file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) 
+Note, `runWF` can be used with most queueing systems as it is based on utilities 
+from the `batchtools` package, which supports the use of template files (_`*.tmpl`_)
+for defining the run parameters of different schedulers. To run the following 
+code, one needs to have both a `conffile` (see _`.batchtools.conf.R`_ samples [here](https://mllg.github.io/batchtools/)) 
+and a `template` file (see _`*.tmpl`_ samples [here](https://github.com/mllg/batchtools/tree/master/inst/templates)) 
 for the queueing available on a system. The following example uses the sample 
-`conf` and `template` files for the `Slurm` scheduler provided by this package.  
+`conffile` and `template` files for the Slurm scheduler provided by this package. 
 
-```{r clusterRun, eval=FALSE}
-library(batchtools)
-resources <- list(walltime=120, ntasks=1, ncpus=4, memory=1024)
-sal <- clusterRun(sal, FUN = runWF, 
-                  more.args = list(),
-                  conffile=".batchtools.conf.R", 
-                  template="batchtools.slurm.tmpl",
-                  Njobs=1, runid="01", resourceList=resources)
+The resources can be appended when the step is generated, or it is possible to 
+add these resources later, as the following example using the `addResources` 
+function:
+
+```{r runWF_cluster, eval=FALSE}
+resources <- list(conffile=".batchtools.conf.R",
+                  template="batchtools.slurm.tmpl", 
+                  Njobs=18, 
+                  walltime=120, ## minutes
+                  ntasks=1,
+                  ncpus=4, 
+                  memory=1024, ## Mb
+                  partition = "short"
+                  )
+sal <- addResources(sal, c("hisat2_mapping"), resources = resources)
+sal <- runWF(sal)
 ```
 
 Note: The example is submitting the jog to `short` partition. If you desire to 
@@ -963,10 +1023,9 @@ all the R scripts based on the workflow steps. Please note that this function wi
 If you desire to resume or restart a project that has been initialized in the past, 
 `SPRproject` function allows this operation.
 
-With the resume option, it is possible to load the `SYSargsList` object in R and 
+With the `resume` option, it is possible to load the `SYSargsList` object in R and 
 resume the analysis. Please, make sure to provide the `logs.dir` location, and the 
-corresponded `YAML` file name.
-The current working directory needs to be in the project root directory.
+corresponded `YAML` file name, if the default names were not used when the project was created.
 
 ```{r SPR_resume, eval=FALSE}
 sal <- SPRproject(resume = TRUE, logs.dir = ".SPRproject", 
@@ -991,17 +1050,17 @@ viewEnvir(sal)
 copyEnvir(sal, list="plot", new.env = globalenv())
 ```
 
-This option will keep all previous logs in the folder; however, if you desire to 
-clean the execution history and restart the workflow, the `restart=TRUE` option
-can be used.
+The `resume` option will keep all previous logs in the folder; however, if you desire to 
+clean the execution (delete all the log files) history and restart the workflow, 
+the `restart=TRUE` option can be used.
 
 ```{r restart_load, eval=FALSE}
-sal <- SPRproject(restart = TRUE, overwrite = TRUE, load.envir = FALSE) 
+sal <- SPRproject(restart = TRUE, load.envir = FALSE) 
 ```
 
-The last and more drastic option from `SYSproject` function is to overwrite the
-logs and the workflow. This option will delete the hidden folder and the 
-information on the `SYSargsList.yml` files. This will not delete any parameter
+The last and more drastic option from `SYSproject` function is to `overwrite` the
+logs and the `SYSargsList` object. This option will delete the hidden folder and the 
+information on the `SYSargsList.yml` file. This will not delete any parameter
 file nor any results it was created in previous runs. Please use with caution. 
 
 ```{r SPR_overwrite, eval=FALSE}
