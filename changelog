@@ -1,5 +1,7 @@
 changelog
-                
+    version 2.0.8
+        - fix plotwf warning color 
+        
    version 2.0.7       
         - Added SE Replacement method (SYSargsList)
         - writeTargetsout and alignStats: small fix

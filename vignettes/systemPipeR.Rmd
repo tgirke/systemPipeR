@@ -9,7 +9,7 @@ output:
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{SPR}
+  %\VignetteIndexEntry{systemPipeR}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
@@ -37,7 +37,7 @@ knitr::opts_chunk$set(
     tidy.opts = list(width.cutoff = 100), tidy = FALSE)
 ```
 
-```{r setting, echo=FALSE}
+```{r setting, eval=TRUE, echo=FALSE}
 if (file.exists("spr_project")) unlink("spr_project", recursive = TRUE)
 is_win <- Sys.info()[['sysname']] != "Windows"
 ```
@@ -51,7 +51,7 @@ suppressPackageStartupMessages({
 # Introduction
 
 [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) 
-provides flexible utilities for designing, building, and running automated end-to-end analysis 
+provides flexible utilities for designing, building, and running automated nd-to-end analysis 
 workflows for a wide range of research applications, including next-generation 
 sequencing (NGS) experiments [@H_Backman2016-bt]. Important features include a 
 uniform workflow interface across different data analysis applications, automated 
@@ -77,7 +77,7 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 6. Accelerates runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple compute nodes
 6. Improves reproducibility by automating analyses and generation of analysis reports 
 
-```{r utilities, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A & B). Examples of *systemPipeR's* visualization functionalities are given under (C)."}
+```{r utilities, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A). Examples of `systemPipeR's` visualization functionalities are given under (B)."}
 knitr::include_graphics(system.file("extdata/images", "utilities.png", package = "systemPipeR"))
 ```
 
@@ -89,7 +89,9 @@ _`systemPipeR`_ adopted the widely used community standard [Common Workflow Lang
 [@Amstutz2016-ka] for describing parameters analysis workflows in a generic and reproducible 
 manner. Using this community standard in _`systemPipeR`_
 has many advantages. For instance, the integration of CWL allows running _`systemPipeR`_
-workflows from a single specification instance either entirely from within R, from various command-line wrappers (e.g., *cwl-runner*) or from other languages (*, e.g.,* Bash or Python).
+workflows from a single specification instance either entirely from within R, 
+from various command-line wrappers (e.g., *cwl-runner*) or from other languages 
+(*, e.g.,* Bash or Python).
 _`systemPipeR`_ includes support for both command-line and R/Bioconductor software 
 as well as resources for containerization, parallel evaluations on computer clusters 
 along with the automated generation of interactive analysis reports.
@@ -115,12 +117,12 @@ combined with the overview of all the common analysis steps of NGS experiments.
 ## New workflow management interface
 
 _`systemPipeR`_ allows creation (multi-step analyses) and execution of workflow 
-entirely for R, with control, flexibility, and scalability of the all process. 
-The execution of the workflow can be sent to a HPC, can be parallelizes, 
-accelerating results acquisition. 
+entirely for R, with control, flexibility, and scalability of all processes.
+Furthermore, the workflow execution can be integrated with compute clusters 
+from R, accelerating results acquisition.
 
 The flexibility of _`systemPipeR's`_ new interface workflow management class is
-the driving factor behind the use of as many steps necessary for the analysis,
+the driving factor behind the use of as many steps necessary for the analysis
 as well as the connection between command-line- or R-based software. The
 connectivity among all workflow steps is achieved by the `SYSargsList` workflow
 management class.
@@ -150,10 +152,10 @@ knitr::include_graphics(system.file("extdata/images", "SPR_WF.png", package = "s
 
 # Quick Start
 
-This section will demonstrate how to build a basic workflow. The main features
-will be briefly illustrated here. In the next section, we will discuss all the 
-alternatives to design and build the workflow and all the support features 
-available in _`systemPipeR`_.
+This section will demonstrate how to build a basic workflow. The main features 
+will be briefly illustrated here. The following section will discuss all the 
+alternatives to design and build the workflow and the support features available 
+in _`systemPipeR`_.
 
 - Load sample data and directory structure
 
@@ -172,38 +174,15 @@ knitr::opts_knit$set(root.dir = 'spr_project')
 - Create a project
 
 ```{r SPRproject_ex, eval=TRUE}
-sal_wf <- SPRproject(logs.dir = ".SPRproject_wf") 
+sal <- SPRproject() 
 ```
 
-- Option 1: Build workflow from R Markdown
+- Build workflow from R Markdown file
 
 ```{r importwf_example, eval=TRUE}
-sal_wf <- importWF(sal_wf, 
+sal <- importWF(sal, 
                     file_path = system.file("extdata", "spr_simple_wf.Rmd", package = "systemPipeR"),
                     verbose = FALSE)
-```
-
-- Option 2: Build workflow interactive
-    + `Hello world!` example
-
-```{r firstStep, eval=TRUE}
-sal <- SPRproject(overwrite = TRUE) 
-targetspath <- system.file("extdata/cwl/example/targets_example.txt", package = "systemPipeR")
-appendStep(sal) <- SYSargsList(step_name = "echo", 
-                               targets = targetspath, dir = TRUE,
-                               wf_file = "example/workflow_example.cwl", input_file = "example/example.yml", 
-                               dir_path = system.file("extdata/cwl", package = "systemPipeR"),
-                               inputvars = c(Message = "_STRING_", SampleName = "_SAMPLE_"))
-```
-
-- Adding a R step
-
-```{r secondStep_r, eval=TRUE}
-appendStep(sal) <- LineWise(code = {
-                            hello <- lapply(getColumn(sal, step = 1, 'outfiles'), function(x) yaml::read_yaml(x))
-                            }, 
-                            step_name = "R_getCol", 
-                            dependency = "echo")
 ```
 
 - Running workflow
@@ -497,8 +476,7 @@ _`systemPipeR`_ workflows can be designed and built from start to finish with a
 single command, importing from an R Markdown file or stepwise in interactive 
 mode from the R console. 
 In the [next section](#appendstep), we will demonstrate how to build the workflow in an
-interactive mode, and in the [following section](#importWF), we will show how to build from a 
-file. 
+interactive mode, and in the [following section](#importWF), we will show how to build from a file. 
 
 New workflows are constructed, or existing ones modified, by connecting each 
 step via `appendStep` method. Each `SYSargsList` instance contains instructions 
@@ -963,10 +941,9 @@ all the R scripts based on the workflow steps. Please note that this function wi
 If you desire to resume or restart a project that has been initialized in the past, 
 `SPRproject` function allows this operation.
 
-With the resume option, it is possible to load the `SYSargsList` object in R and 
+With the `resume` option, it is possible to load the `SYSargsList` object in R and 
 resume the analysis. Please, make sure to provide the `logs.dir` location, and the 
-corresponded `YAML` file name.
-The current working directory needs to be in the project root directory.
+corresponded `YAML` file name, if the default names were not used when the project was created.
 
 ```{r SPR_resume, eval=FALSE}
 sal <- SPRproject(resume = TRUE, logs.dir = ".SPRproject", 
@@ -991,17 +968,17 @@ viewEnvir(sal)
 copyEnvir(sal, list="plot", new.env = globalenv())
 ```
 
-This option will keep all previous logs in the folder; however, if you desire to 
-clean the execution history and restart the workflow, the `restart=TRUE` option
-can be used.
+The `resume` option will keep all previous logs in the folder; however, if you desire to 
+clean the execution (delete all the log files) history and restart the workflow, 
+the `restart=TRUE` option can be used.
 
 ```{r restart_load, eval=FALSE}
-sal <- SPRproject(restart = TRUE, overwrite = TRUE, load.envir = FALSE) 
+sal <- SPRproject(restart = TRUE, load.envir = FALSE) 
 ```
 
-The last and more drastic option from `SYSproject` function is to overwrite the
-logs and the workflow. This option will delete the hidden folder and the 
-information on the `SYSargsList.yml` files. This will not delete any parameter
+The last and more drastic option from `SYSproject` function is to `overwrite` the
+logs and the `SYSargsList` object. This option will delete the hidden folder and the 
+information on the `SYSargsList.yml` file. This will not delete any parameter
 file nor any results it was created in previous runs. Please use with caution. 
 
 ```{r SPR_overwrite, eval=FALSE}
