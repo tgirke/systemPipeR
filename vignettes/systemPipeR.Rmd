@@ -2809,7 +2809,7 @@ For running the workflow, `runWF` function will execute all the steps store in
 the workflow container. The execution will be on a single machine without 
 submitting to a queuing system of a computer cluster. 
 
-```{r runWF, eval=FALSE}
+```{r runWF_steps, eval=FALSE}
 sal <- runWF(sal)
 ```
 
@@ -2837,7 +2837,7 @@ The resources can be appended when the step is generated, or it is possible to
 add these resources later, as the following example using the `addResources` 
 function:
 
-```{r runWF_cluster, eval=FALSE}
+```{r runWF_cluster_steps, eval=FALSE}
 resources <- list(conffile=".batchtools.conf.R",
                   template="batchtools.slurm.tmpl", 
                   Njobs=18, 
@@ -2855,7 +2855,7 @@ sal <- runWF(sal)
 
 To check the summary of the workflow, we can use:
 
-```{r statusWF, eval=FALSE}
+```{r statusWF_steps, eval=FALSE}
 sal
 statusWF(sal)
 ```
@@ -2866,7 +2866,7 @@ _`systemPipeR`_ compiles all the workflow execution logs in one central location
 making it easier to check any standard output (`stdout`) or standard error
 (`stderr`) for any command-line tools used on the workflow or the R code stdout.
 
-```{r logsWF, eval=FALSE}
+```{r logsWF_steps, eval=FALSE}
 sal <- renderLogs(sal)
 ```
 
