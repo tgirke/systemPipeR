@@ -332,7 +332,7 @@ makeDot <- function(df,
     }
     # add node decoration
     p_main <- paste0(p_main, .addNodeDecor(
-        df$step_name, df$has_run, df$success, df$spr, df$sample_pass,
+        df$step_name, df$status_summary, df$has_run, df$success, df$spr, df$sample_pass,
         df$sample_warn, df$sample_error, df$sample_total, df$log_path,
         df$time_start, df$time_end, df$req, df$session, in_log
     ))
@@ -551,7 +551,7 @@ makeDot <- function(df,
         steps_trans,
         "\n   }\n",
         .addNodeDecor(
-            df$step_name, df$has_run, df$success, df$spr, df$sample_pass,
+            df$step_name, df$status_summary, df$has_run, df$success, df$spr, df$sample_pass,
             df$sample_warn, df$sample_error, df$sample_total, df$log_path,
             df$time_start, df$time_end,  df$req, df$session, in_log
         ),
@@ -598,6 +598,7 @@ makeDot <- function(df,
 
 # add node colors, links -------
 #' @param steps step names
+#' @param status_summary string, one of "Success", "Warning", "Error", "Pending"
 #' @param has_run bool, steps has run?
 #' @param success bool, steps successful?
 #' @param spr string, SPR option, 'sys' or 'r'
@@ -612,16 +613,18 @@ makeDot <- function(df,
 #' @param session one of management, or compute
 #' @param in_log bool, if this plot is used in log file
 .addNodeDecor <- function(
-    steps, has_run, success, spr, sample_pass, sample_warn,
+    steps, status_summary, has_run, success, spr, sample_pass, sample_warn,
     sample_error, sample_total, log_path, time_start, time_end,
     req, session, in_log = FALSE
     ) {
     node_text <- c()
     for (i in seq_along(steps)) {
-        step_color <- if (has_run[i] && success[i]) "#5cb85c"
-                      else if (has_run[i] && sample_warn[i] > 0 && sample_error[i] < 1) "#f0ad4e"
-                      else if (has_run[i] && sample_error[i] > 0) "#d9534f"
-                      else "black"
+        step_color <- switch(status_summary[i],
+            "Success" = "#5cb85c",
+            "Warning" = "#f0ad4e",
+            "Error" = "#d9534f",
+            "black"
+        )
         duration <- .stepDuration(time_start[i], time_end[i])
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
