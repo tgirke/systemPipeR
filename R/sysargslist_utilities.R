@@ -1441,7 +1441,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
 ###########################
 ## type: c("pdf_document", "html_document")
 renderReport <- function(sysargs,
-                         fileName = "spr_report",
+                         fileName = "SPR_Report",
                          rmd_title = "SPR workflow Template - Report",
                          rmd_author = "Author",
                          rmd_date = "Last update: `r format(Sys.time(), '%d %B, %Y')`",

@@ -1,4 +1,7 @@
 changelog
+    version 2.1.20
+        - Added trimbatch
+        
     version 2.1.19
         - fix plotwf warning color 
         

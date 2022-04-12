@@ -1,8 +1,8 @@
 Package: systemPipeR
 Type: Package
 Title: systemPipeR: NGS workflow and report generation environment
-Version: 2.1.19
-Date: 2022-04-10
+Version: 2.1.20
+Date: 2022-04-11
 Author: Thomas Girke
 Maintainer: Thomas Girke <thomas.girke@ucr.edu>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, RiboSeq, ChIPSeq, MethylSeq, SNP, GeneExpression, Coverage, GeneSetEnrichment, Alignment, QualityControl, ImmunoOncology, ReportWriting, Workflow
@@ -19,4 +19,4 @@ SystemRequirements: systemPipeR can be used to run external
         command-line software (e.g. short read aligners), but the 
         corresponding tool needs to be installed on a system.  
 License: Artistic-2.0 
-URL: https://systempipe.org/
+URL: https://systempipe.org/, https://github.com/tgirke/systemPipeR
