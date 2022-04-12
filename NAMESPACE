@@ -184,7 +184,7 @@ export(
     "preprocessReads", "filterVars", "variantReport", "combineVarReports",
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts",
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
-    "scaleRanges", "olRanges", "showDF", "cwlFilesUpdate",
+    "trimbatch", "scaleRanges", "olRanges", "showDF", "cwlFilesUpdate",
     ## SYSargs2
     "loadWorkflow", "loadWF", "renderWF", "updateWF", "check.output",
     "subsetWF", "output_update",

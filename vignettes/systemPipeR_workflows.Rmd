@@ -52,16 +52,16 @@ can be executed either line-wise in interactive mode or with a single command fr
 R or the command-line. This way comprehensive and reproducible analysis reports 
 can be generated in PDF or HTML format in a fully automated manner by making use 
 of the highly functional reporting utilities available for R. 
-The following shows how to execute a workflow (*e.g.*, systemPipeRNAseq.Rmd)
-from the command-line.
 
-```{bash command-line, eval=FALSE}
-Rscript -e "rmarkdown::render('systemPipeRNAseq.Rmd')"
-```
-
-Templates for setting up custom project reports are provided as _`*.Rmd`_ files by the helper package _`systemPipeRdata`_ and in the vignettes subdirectory of _`systemPipeR`_. The corresponding HTML of these report templates are available here: [_`systemPipeRNAseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.html), [_`systemPipeRIBOseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html), [_`systemPipeChIPseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html) and [_`systemPipeVARseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html). To work with _`*.Rmd`_ files efficiently, basic knowledge of [_`knitr`_](http://yihui.name/knitr/) and [_`Latex`_](http://www.latex-project.org/) or [_`R Markdown v2`_](http://rmarkdown.rstudio.com/) is required. 
+Templates for setting up custom project reports are provided as _`*.Rmd`_ files 
+by the helper package _`systemPipeRdata`_ and in the vignettes subdirectory of
+_`systemPipeR`_. The corresponding HTML of these report templates are available here: [_`systemPipeRNAseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRNAseq.html), [_`systemPipeRIBOseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.html), [_`systemPipeChIPseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.html) and [_`systemPipeVARseq`_](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.html). To work with _`*.Rmd`_ files efficiently, basic knowledge of [_`knitr`_](http://yihui.name/knitr/) and [_`Latex`_](http://www.latex-project.org/) or [_`R Markdown v2`_](http://rmarkdown.rstudio.com/) is required. 
 
 ## Directory Structure
+
+```{r dir, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "*systemPipeR's* preconfigured directory structure."}
+knitr::include_graphics(system.file("extdata/images", "spr_project.png", package = "systemPipeR"))  
+```
 
 The working environment of the sample data loaded in the previous step contains
 the following pre-configured directory structure. Directory names are indicated
@@ -172,10 +172,6 @@ genWorkenvir(workflow="chipseq")
 setwd("chipseq")
 ```
 
-## Run workflow
-
-Next, run the chosen sample workflow _`systemPipeChIPseq`_ ([.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeChIPseq.Rmd)) by executing from the command-line _`make -B`_ within the _`chipseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
-
 **Workflow includes following steps:**
 
 1. Read preprocessing
@@ -188,6 +184,35 @@ Next, run the chosen sample workflow _`systemPipeChIPseq`_ ([.Rmd](http://www.bi
 6. Differential binding analysis
 7. GO term enrichment analysis
 8. Motif analysis
+
+## Create the workflow interactively
+
+This template provides some common steps for a `ChIPseq` workflow. One can add, remove, modify 
+workflow steps by operating on the `sal` object. 
+
+```{r project_chipseq, eval=FALSE}
+sal <- SPRproject() 
+sal <- importWF(sal, file_path = "systemPipeChIPseq.Rmd", verbose = FALSE)
+```
+
+## Run workflow
+
+```{r run_chipseq, eval=FALSE}
+sal <- runWF(sal)
+```
+
+## Workflow visualization 
+
+```{r plot_chipseq, eval=FALSE}
+plotWF(sal, rstudio = TRUE)
+```
+
+## Report generation
+
+```{r report_chipseq, eval=FALSE}
+sal <- renderReport(sal)
+sal <- renderLogs(sal)
+```
 
 # VAR-Seq Workflow 
 
@@ -205,10 +230,6 @@ genWorkenvir(workflow="varseq")
 setwd("varseq")
 ```
 
-## Run workflow
-
-Next, run the chosen sample workflow _`systemPipeVARseq`_ ([.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeVARseq.Rmd)) by executing from the command-line _`make -B`_ within the _`varseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
-
 **Workflow includes following steps:**
 
 1. Read preprocessing
@@ -220,6 +241,35 @@ Next, run the chosen sample workflow _`systemPipeVARseq`_ ([.Rmd](http://www.bio
 5. Variant annotation: _`VariantAnnotation`_
 6. Combine results from many samples
 7. Summary statistics of samples
+
+## Create the workflow interactively
+
+This template provides some common steps for a `VARseq` workflow. One can add, remove, modify 
+workflow steps by operating on the `sal` object. 
+
+```{r project_varseq, eval=FALSE}
+sal <- SPRproject() 
+sal <- importWF(sal, file_path = "systemPipeVARseq.Rmd", verbose = FALSE)
+```
+
+## Run workflow
+
+```{r run_varseq, eval=FALSE}
+sal <- runWF(sal)
+```
+
+## Workflow visualization 
+
+```{r plot_varseq, eval=FALSE}
+plotWF(sal, rstudio = TRUE)
+```
+
+## Report generation
+
+```{r report_varseq, eval=FALSE}
+sal <- renderReport(sal)
+sal <- renderLogs(sal)
+```
 
 # Ribo-Seq Workflow
 
@@ -238,10 +288,6 @@ genWorkenvir(workflow="riboseq")
 setwd("riboseq")
 ```
 
-## Run workflow
-
-Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([.Rmd](http://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRIBOseq.Rmd)) by executing from the command-line _`make -B`_ within the _`ribseq`_ directory. Alternatively, one can run the code from the provided _`*.Rmd`_ template file from within R interactively. 
-
 **Workflow includes following steps:**
 
 1. Read preprocessing
@@ -258,6 +304,35 @@ Next, run the chosen sample workflow _`systemPipeRIBOseq`_ ([.Rmd](http://www.bi
 10. GO term enrichment analysis
 11. Gene-wise clustering
 12. Differential ribosome binding (translational efficiency)
+
+## Create the workflow interactively
+
+This template provides some common steps for a `RIBOseq` workflow. One can add, remove, modify 
+workflow steps by operating on the `sal` object. 
+
+```{r project_riboseq, eval=FALSE}
+sal <- SPRproject() 
+sal <- importWF(sal, file_path = "systemPipeRIBOseq.Rmd", verbose = FALSE)
+```
+
+## Run workflow
+
+```{r run_riboseq, eval=FALSE}
+sal <- runWF(sal)
+```
+
+## Workflow visualization 
+
+```{r plot_riboseq, eval=FALSE}
+plotWF(sal, rstudio = TRUE)
+```
+
+## Report generation
+
+```{r report_riboseq, eval=FALSE}
+sal <- renderReport(sal)
+sal <- renderLogs(sal)
+```
 
 # Version information
 
