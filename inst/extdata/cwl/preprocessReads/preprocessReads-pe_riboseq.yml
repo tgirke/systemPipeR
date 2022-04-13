@@ -19,7 +19,7 @@ fq2:
   
 SampleName: _SampleName_
 
-Fct: '''trimbatch(fq, pattern="ACACGTCT internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)'''
+Fct: '''trimbatch(fq, pattern="ACACGTCT", internalmatch=FALSE, minpatternlength=6, Nnumber=1, polyhomo=50, minreadlength=16, maxreadlength=101)'''
 
 batchsize: 100000
 
