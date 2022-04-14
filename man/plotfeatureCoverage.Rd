@@ -11,7 +11,8 @@ using methods such as \code{mean}, while the data from multiple samples will
 be plotted in separate panels.  
 }
 \usage{
-plotfeatureCoverage(covMA, method = mean, scales = "fixed", extendylim=2, scale_count_val = 10^6)
+plotfeatureCoverage(covMA, method = mean, scales = "fixed", extendylim=2, 
+                    scale_count_val = 10^6)
 }
 \arguments{
   \item{covMA}{
@@ -101,4 +102,5 @@ fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizeread
                     outfile="results/RleCoverage.xls")
 }
 }
+
 \keyword{ utilities }
