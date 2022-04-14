@@ -100,4 +100,5 @@ fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizeread
                     resizefeatures=TRUE, upstream=20, downstream=20, 
                     outfile="results/RleCoverage.xls")
 }
+}
 \keyword{ utilities }
