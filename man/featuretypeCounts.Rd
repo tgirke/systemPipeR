@@ -74,12 +74,19 @@ Thomas Girke
 \code{plotfeaturetypeCounts}, \code{genFeatures}
 }
 \examples{
-## Construct SYSargs object from param and targets files 
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
+## Construct SYSargs2 object from param and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-args <- systemArgs(sysma=param, mytargets=targets)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+args <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
+args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+args
 
 \dontrun{
+## Run alignments
+args <- runCommandline(args, dir = FALSE, make_bam = TRUE)
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+
 ## Features from sample data of systemPipeRdata package
 library(GenomicFeatures)
 file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
@@ -87,12 +94,12 @@ txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
 feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, verbose=TRUE)
 
 ## Generate and plot feature counts for specific read lengths
-fc <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
+fc <- featuretypeCounts(bfl=BamFileList(outpaths, yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=c(74:76,99:102), type="data.frame")
 p <- plotfeaturetypeCounts(x=fc, graphicsfile="featureCounts.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=FALSE)
 
 ## Generate and plot feature counts for any read length  
-fc2 <- featuretypeCounts(bfl=BamFileList(outpaths(args), yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
-p2 <- plotfeaturetypeCounts(x=featureCounts2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE)
+fc2 <- featuretypeCounts(bfl=BamFileList(outpaths, yieldSize=50000), grl=feat, singleEnd=TRUE, readlength=NULL, type="data.frame")
+p2 <- plotfeaturetypeCounts(x=fc2, graphicsfile="featureCounts2.pdf", graphicsformat="pdf", scales="fixed", anyreadlength=TRUE)
 }
 }
 \keyword{ utilities }

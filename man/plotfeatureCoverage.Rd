@@ -11,7 +11,8 @@ using methods such as \code{mean}, while the data from multiple samples will
 be plotted in separate panels.  
 }
 \usage{
-plotfeatureCoverage(covMA, method = mean, scales = "fixed", extendylim=2, scale_count_val = 10^6)
+plotfeatureCoverage(covMA, method = mean, scales = "fixed", extendylim=2, 
+                    scale_count_val = 10^6)
 }
 \arguments{
   \item{covMA}{
@@ -54,12 +55,19 @@ Thomas Girke
 \code{featureCoverage}
 }
 \examples{
-## Construct SYSargs object from param and targets files 
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
+## Construct SYSargs2 object from param and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-args <- systemArgs(sysma=param, mytargets=targets)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+args <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
+args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+args
 
 \dontrun{
+## Run alignments
+args <- runCommandline(args, dir = FALSE, make_bam = TRUE)
+outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
+
 ## Features from sample data of systemPipeRdata package
 library(GenomicFeatures)
 file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
@@ -67,31 +75,32 @@ txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
 
 ## (A) Generate binned coverage for two BAM files and 4 transcripts
 grl <- cdsBy(txdb, "tx", use.names=TRUE)
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizereads=NULL, 
                     readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=FALSE, 
-                    resizefeatures=TRUE, upstream=20, downstream=20)
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
-                    readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
-                    resizefeatures=TRUE, upstream=20, downstream=20)
+                    resizefeatures=TRUE, upstream=20, downstream=20, 
+                    outfile="results/featureCoverage.xls")
 plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
 
 ## (B) Coverage matrix upstream and downstream of start/stop codons
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizereads=NULL, 
                     readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=TRUE, 
-                    resizefeatures=TRUE, upstream=20, downstream=20)
+                    resizefeatures=TRUE, upstream=20, downstream=20, 
+                    outfile="results/featureCoverage_UpDown.xls")
 plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
 
 ## (C) Combined matrix for both binned and start/stop codon 
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizereads=NULL, 
                     readlengthrange=NULL, Nbins=20, method=mean, fixedmatrix=TRUE, 
-                    resizefeatures=TRUE, upstream=20, downstream=20, outfile="results/test.xls")
+                    resizefeatures=TRUE, upstream=20, downstream=20, 
+                    outfile="results/test.xls")
 plotfeatureCoverage(covMA=fcov, method=mean, scales="fixed", scale_count_val=10^6)
 
 ## (D) Rle coverage objects one for each query feature
-fcov <- featureCoverage(bfl=BamFileList(outpaths(args)[1:2]), grl=grl[1:4], resizereads=NULL, 
+fcov <- featureCoverage(bfl=BamFileList(outpaths[1:2]), grl=grl[1:4], resizereads=NULL, 
                     readlengthrange=NULL, Nbins=NULL, method=mean, fixedmatrix=FALSE, 
-                    resizefeatures=TRUE, upstream=20, downstream=20)
+                    resizefeatures=TRUE, upstream=20, downstream=20, 
+                    outfile="results/RleCoverage.xls")
+}
+}
 
-}
-}
 \keyword{ utilities }
