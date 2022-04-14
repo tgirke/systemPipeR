@@ -7,7 +7,7 @@ Render RMarkdown Report
 Render the technical report file to the specified output format using pandoc.
 }
 \usage{
-renderReport(sysargs, fileName ="spr_report",
+renderReport(sysargs, fileName ="SPR_Report",
               rmd_title = "SPR workflow Template - Report",
               rmd_author = "Author",
               rmd_date= "Last update: `r format(Sys.time(), '\%d \%B, \%Y')`",
