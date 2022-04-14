@@ -37,17 +37,17 @@ symLink2bam(sysargs, command="ln -s", htmldir, ext = c(".bam", ".bai"), urlbase,
 Thomas Girke
 }
 \examples{
-## Construct SYSargs object from param and targets files 
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
+## Construct SYSargs2 object from param and targets files 
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-args <- systemArgs(sysma=param, mytargets=targets)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+args <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
+args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+args
 
 \dontrun{
-## Construct SYSargs2 object from cwl and targets files
-targets <- system.file("extdata", "targets.txt", package="systemPipeR") 
-dir_path <- system.file("extdata/cwl", package="systemPipeR") 
-args <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)  
-args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+## Run alignments
+args <- runCommandline(args, dir = FALSE, make_bam = TRUE)
 
 ## Create sym links and URL file for IGV
 symLink2bam(sysargs=args, command="ln -s", htmldir=c("~/.html/", "somedir/"), ext=c(".bam", ".bai"), urlbase="http://myserver.edu/~username/", urlfile="IGVurl.txt")

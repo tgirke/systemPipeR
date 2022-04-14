@@ -34,10 +34,13 @@ targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
 read.delim(targetspath, comment.char = "#")
 readComp(file=targetspath, format="vector", delim="-")
 
-## Return comparisons from SYSargs object
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
+## Return comparisons from SYSargs2 object
 targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-args <- systemArgs(sysma=param, mytargets=targets)
+dir_path <- system.file("extdata/cwl", package="systemPipeR")
+args <- loadWorkflow(targets=targets, wf_file="hisat2/hisat2-mapping-se.cwl", 
+                  input_file="hisat2/hisat2-mapping-se.yml", dir_path=dir_path)
+args <- renderWF(args, inputvars=c(FileName="_FASTQ_PATH1_", SampleName="_SampleName_"))
+args
 readComp(args, format = "vector", delim = "-")
 }
 \keyword{ utilities }

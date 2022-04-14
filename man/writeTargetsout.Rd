@@ -58,19 +58,6 @@ Daniela Cassol and Thomas Girke
 \code{writeTargetsRef}
 }
 \examples{
-#########################################
-## Examples with \code{SYSargs} object ##
-#########################################
-## Create SYSargs object
-param <- system.file("extdata", "tophat.param", package="systemPipeR")
-targets <- system.file("extdata", "targets.txt", package="systemPipeR")
-args <- systemArgs(sysma=param, mytargets=targets)
-
-\dontrun{
-## Write targets out file
-writeTargetsout(x=args, file="default")
-}
-
 ##########################################
 ## Examples with \code{SYSargs2} object ##
 ##########################################
