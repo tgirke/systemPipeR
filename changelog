@@ -1,5 +1,5 @@
 changelog
-    version 2.1.24
+    version 2.1.25
         - Fix runWF --> logs
         - Adding final lines for renderReport function
         
