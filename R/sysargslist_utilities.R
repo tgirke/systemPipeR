@@ -518,10 +518,11 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     output_path_reg <- .getPath(reg$file.dir)
                     if (!identical(output_path_args, output_path_reg)) {
                         file.copy(reg$file.dir, file.path(output_path_args, "_logs"), recursive = TRUE)
-                        message("Moving registry to '", file.path(output_path_args, "_logs"), "'.", "\n")
+                        message("\n", "Moving registry to '", file.path(output_path_args, "_logs"), "'.", "\n")
                         unlink(reg$file.dir, recursive = TRUE)
                         message("Jobs completed successfully!")
-                        args.run@files$logs <- file.path(output_path_args, "_logs", basename(reg$file.dir))
+                        args.run@files[["log_cluster"]] <- file.path(output_path_args, "_logs", basename(reg$file.dir))
+                        args.run@files[["log"]] <- file.path(output_path_args, "_logs", basename(reg$file.dir), basename(args.run@files$log))
                     }
                     ## Printing
                     cat(crayon::blue("---- Summary ----"), "\n")
@@ -731,7 +732,7 @@ clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, lo
         write(logs, file_log, append = TRUE, sep = "\n")
     }
     args.run@status$status.summary <- .statusSummary(args.run)
-    args.run@files$logs <- file_log
+    args.run@files$log <- file_log
     return(args.run)
 }
 

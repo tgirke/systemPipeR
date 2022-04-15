@@ -1,4 +1,7 @@
 changelog
+    version 2.1.23
+        - Fix runWF --> logs
+        
     version 2.1.22
         - Updated help files
         
