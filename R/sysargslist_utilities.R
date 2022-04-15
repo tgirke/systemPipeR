@@ -539,10 +539,11 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     output_path_reg <- .getPath(reg$file.dir)
                     if (!identical(output_path_args, output_path_reg)) {
                         file.copy(reg$file.dir, file.path(output_path_args, "_logs"), recursive = TRUE)
-                        message("Moving registry to '", file.path(output_path_args, "_logs"), "'.", "\n")
+                        message("\n", "Moving registry to '", file.path(output_path_args, "_logs"), "'.", "\n")
                         unlink(reg$file.dir, recursive = TRUE)
                         message("Jobs completed successfully!")
-                        args.run@files$logs <- file.path(output_path_args, "_logs", basename(reg$file.dir))
+                        args.run@files[["log_cluster"]] <- file.path(output_path_args, "_logs", basename(reg$file.dir))
+                        args.run@files[["log"]] <- file.path(output_path_args, "_logs", basename(reg$file.dir), basename(args.run@files$log))
                     }
                     ## Printing
                     cat(crayon::blue("---- Summary ----"), "\n")
@@ -753,7 +754,7 @@ clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, lo
         write(logs, file_log, append = TRUE, sep = "\n")
     }
     args.run@status$status.summary <- .statusSummary(args.run)
-    args.run@files$logs <- file_log
+    args.run@files$log <- file_log
     return(args.run)
 }
 
@@ -1162,7 +1163,7 @@ writeSE <- function(SE, dir.path, dir.name, overwrite = FALSE, silent = FALSE) {
     if (length(SummarizedExperiment::assays(SE)) > 0) {
         for (i in length(SummarizedExperiment::assays(SE))) {
             write.table(SummarizedExperiment::assays(SE)[[i]], file.path(path, paste0("counts_", i, ".csv")),
-                quote = FALSE, row.names = FALSE,
+                quote = FALSE, row.names = TRUE,
                 col.names = TRUE, sep = "\t"
             )
         }
@@ -1199,9 +1200,10 @@ readSE <- function(dir.path, dir.name) {
     ## Counts
     files_counts <- list.files(path, pattern = "counts")
     if (length(files_counts) > 0) {
-        counts_ls <- S4Vectors::SimpleList(NULL)
+        counts_ls <- S4Vectors::SimpleList()
         for (i in files_counts) {
-            counts_ls <- as.matrix(read.table(file.path(path, i), check.names = FALSE, header = TRUE))
+            counts_ls1 <- S4Vectors::SimpleList(as.matrix(read.table(file.path(path, i), check.names = FALSE, header = TRUE)))
+            counts_ls <- append(counts_ls, counts_ls1)
         }
     } else {
         counts_ls <- S4Vectors::SimpleList()
@@ -1220,13 +1222,21 @@ readSE <- function(dir.path, dir.name) {
     } else {
         rowRanges <- GRangesList()
     }
-    SE <- SummarizedExperiment::SummarizedExperiment(
-        assays = counts_ls,
-        # rowData=NULL,
-        rowRanges = rowRanges,
-        colData = colData,
-        metadata = metadata
-    )
+    if(length(rowRanges) == 0){
+        SE <- SummarizedExperiment::SummarizedExperiment(
+            assays = counts_ls,
+            # rowRanges = rowRanges,
+            colData = colData,
+            metadata = metadata
+        )
+    } else{
+        SE <- SummarizedExperiment::SummarizedExperiment(
+            assays = counts_ls,
+            rowRanges = rowRanges,
+            colData = colData,
+            metadata = metadata
+        )
+    }
     return(SE)
 }
 
@@ -1471,7 +1481,6 @@ renderReport <- function(sysargs,
                          desc = "This is a workflow template.",
                          quiet = FALSE,
                          open_file = TRUE) {
-    out_path <- file.path(paste0(fileName, ".Rmd"))
     ext <- sub("_.*", "", type)
     out_path <- file.path(paste0(fileName, ".", ext))
     out_path_rmd <- file.path(paste0(fileName, ".Rmd"))
@@ -1549,6 +1558,11 @@ renderReport <- function(sysargs,
                     newLines <- append(newLines, appStep)
                 }
             }
+        }
+        if(length(lines)!= last_line){
+            n <- as.numeric(length(lines)) - (as.numeric(last_line) + 1 )
+            final_lines <- tail(lines, n)
+            newLines <- append(newLines, final_lines)
         }
         writeLines(newLines, out_path_rmd)
     }

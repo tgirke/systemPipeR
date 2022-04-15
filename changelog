@@ -1,4 +1,8 @@
 changelog
+    version 2.1.25
+        - Fix runWF --> logs
+        - Adding final lines for renderReport function
+        
     version 2.1.22
         - Updated help files
         
