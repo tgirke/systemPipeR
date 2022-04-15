@@ -1529,6 +1529,13 @@ renderReport <- function(sysargs,
                 }
             }
         }
+        if(length(lines)!= last_line){
+            print("a")
+            n <- as.numeric(length(lines)) - (as.numeric(last_line) + 1 )
+            print(n)
+            final_lines <- tail(lines, n)
+            newLines <- append(newLines, final_lines)
+        }
         writeLines(newLines, out_path_rmd)
     }
     rmarkdown::render(input = out_path_rmd, c(paste0("BiocStyle::", type)), quiet = quiet, envir = new.env())
