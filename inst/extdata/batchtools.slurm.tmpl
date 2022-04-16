@@ -34,7 +34,7 @@ log.file = normalizePath(log.file, winslash = "/", mustWork = FALSE)
 <%= if (array.jobs) sprintf("#SBATCH --array=1-%i", nrow(jobs)) else "" %>
 
 ## specify which queue on biocluster, one of 'batch', 'highmem', 'intel', 'gpu', 'mygroup'
-#SBATCH -p short 
+##SBATCH -p short 
 ##SBATCH -p batch  
 ##SBATCH -p intel 
 
