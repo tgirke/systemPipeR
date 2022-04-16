@@ -649,11 +649,13 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     }
                 }
                 cat(status_color(args.run$status$status.summary)("Step Status: ", args.run$status$status.summary, "\n"))
+                run_targets <- NULL
             }
         } else {
             ## Printing step name
             single.step <- names(stepsWF(args2)[i])
             cat(status_color("Skipping")("Skipping Step: ", single.step), "\n")
+            run_targets <- NULL
         }
     }
     if (saveEnv == TRUE) {
@@ -729,10 +731,12 @@ clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, lo
         format(Sys.time(), "%b%d%Y_%H%Ms%S"),
         paste(sample(0:9, 4), collapse = "")
     ))
+    id_save <- character()
     for (i in seq_along(1:nTargets)) {
         ## ind object created by the batchtools
         newsysargs <- batchtools::loadResult(reg = reg, id = i)
         id_sysargs <- names(newsysargs$cmdlist)
+        id_save <- c(id_save, id_sysargs)
         ## update output slot
         args.run@output[id_sysargs] <- newsysargs$output[id_sysargs]
         ## Update status slot
@@ -741,18 +745,24 @@ clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, lo
         ## time
         args.run@status$status.time[id_sysargs, ]$time_start <- as.POSIXct(args.run@status$status.time[id_sysargs, ]$time_start, origin = "1970-01-01")
         args.run@status$status.time[id_sysargs, ]$time_end <- as.POSIXct(args.run@status$status.time[id_sysargs, ]$time_end, origin = "1970-01-01")
-        time_start <- args.run$status$status.time$time_start[!is.na(args.run$status$status.time$time_start)][1]
-        time_end_length <- length(args.run$status$status.time$time_end[!is.na(args.run$status$status.time$time_end)])
-        time_end <- args.run$status$status.time$time_end[!is.na(args.run$status$status.time$time_end)][time_end_length]
-        args.run@status$total.time <- list(
-            time_start = as.POSIXct(time_start, origin = "1970-01-01"),
-            time_end = as.POSIXct(time_end, origin = "1970-01-01")
-        )
+        # time_start <- args.run$status$status.time$time_start[!is.na(args.run$status$status.time$time_start)][1]
+        # time_end_length <- length(args.run$status$status.time$time_end[!is.na(args.run$status$status.time$time_end)])
+        # time_end <- args.run$status$status.time$time_end[!is.na(args.run$status$status.time$time_end)][time_end_length]
+        # args.run@status$total.time <- list(
+        #     time_start = as.POSIXct(time_start, origin = "1970-01-01"),
+        #     time_end = as.POSIXct(time_end, origin = "1970-01-01")
+        # )
         # args.run@status$total.time <- newsysargs$status$total.time
         ## Update files logs --> combining
         logs <- readLines(newsysargs$files$log)
         write(logs, file_log, append = TRUE, sep = "\n")
     }
+    time_start <- sort(args.run$status$status.time[id_save, ]$time_start)[1]
+    time_end <- tail(sort(args.run$status$status.time[id_save, ]$time_end), 1)
+    args.run@status$total.time <- list(
+    	time_start = as.POSIXct(time_start, origin = "1970-01-01"),
+    	time_end = as.POSIXct(time_end, origin = "1970-01-01")
+    	)
     args.run@status$status.summary <- .statusSummary(args.run)
     args.run@files$log <- file_log
     return(args.run)
