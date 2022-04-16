@@ -265,6 +265,7 @@ check.outfiles <- check.output
              call. = FALSE)
       }
     }
+    if(any(duplicated(names(inputvars)))) warning("names of the inputvars are duplicated. Please continue with attention! This object can not be resumed in a later occasion.")
     input <- unlist(WF$yamlinput)
     if (!all(inputvars %in% input)) {
         stop(
