@@ -379,6 +379,8 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     if (!dir.exists(projectInfo(sysargs)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
     sysproj <- projectInfo(sysargs)$logsDir
+    ## targets selection
+    targets_internal <- targets
     ## Check steps
     if (inherits(steps, "numeric")) {
         if (!all(steps %in% seq_along(sysargs))) {
@@ -434,8 +436,6 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
             steps <- which(stepName(sysargs) %in% run_step_names)
         }
     }
-    ## targets selection
-    run_targets <- targets
     ## Selecting
     for (i in seq_along(stepsWF(args2))) {
         if (i %in% steps) {
@@ -464,7 +464,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 dir <- args2$runInfo$runOption[[i]]$directory
                 dir.name <- single.step
                 ## check run_targets
-                run_targets <- targets
+                run_targets <- targets_internal
                 ## run_targets input
                 if (!is.null(run_targets)) {
                     if (inherits(run_targets, c("numeric", "integer"))) {
@@ -487,15 +487,6 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 } else {
                     run_targets <- seq_along(cmdlist(args.run))
                 }
-                ## Checking "results" PATH. Requirement: sysargs2$projectInfo$results == yamlinput(args.run)$results_path$path
-                ## Note: All the cwl/yml requires the results_path input.
-                # if (normalizePath(file.path(yamlinput(args.run)$results_path$path)) != normalizePath(args2$projectInfo$results)) {
-                #     stop("We found an inconsistency!", "\n", "The individual instance has a directory path: '",
-                #          normalizePath(file.path(yamlinput(args.run)$results_path$path)), "' \n",
-                #          "while the project points to another location: '",
-                #          normalizePath(args2$projectInfo$results), "' \n",
-                #          "**Both PATHS are required to be the same.**")
-                # }
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
                 if (run_location == "management") {
@@ -578,7 +569,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 cat(status_color(step.status.summary)("Step Status: ", step.status.summary, "\n"))
             ## LineWise ##
             } else if (inherits(args.run, "LineWise")) {
-                if (!is.null(targets)) message("'targets' argument has been ignored since this step is 'LineWise' instance.")
+                if (!is.null(targets_internal)) message("'targets' argument has been ignored since this step is 'LineWise' instance.")
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
                 if (!dir.exists(file.path(sysproj, "Rsteps"))) {
