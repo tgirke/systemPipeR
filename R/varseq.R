@@ -59,7 +59,11 @@ filterVars <- function(files, filter, varcaller="gatk", organism, out_dir="resul
   ## Make variant calls in rd unique by collapsing duplicated ones
   VARID <- VARID <- unique(names(rd))
   REF <- tapply(as.character(values(rd)$REF), factor(names(rd)), function(i) paste(unique(i), collapse=" "))
-  ALT <- tapply(as.character(unlist(values(rd)$ALT)), factor(names(rd)), function(i) paste(unique(i), collapse=" "))
+  # gatk > 4.2 chaged the way of detection. Now alternative allele can have more than one possiblities, simply `unlist` will not work. 
+  ALT <- tapply(
+    unlist(lapply(values(rd)$ALT, function(x) paste0(x, collapse = ","))), factor(names(rd)),
+    function(i) paste(unique(i), collapse=" ")
+  )
   QUAL <- tapply(values(rd)$QUAL, factor(names(rd)), function(i) paste(unique(i), collapse=" "))
 
   ## fix names field in x if incomplete
