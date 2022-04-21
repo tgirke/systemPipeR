@@ -41,7 +41,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
         restart.sys.file <- normalizePath(file.path(projPath, sys.file))
         ## restart OR resume OR overwrite options...
         if (all(resume == TRUE && restart == TRUE && overwrite == TRUE)) {
-            stop("Please select only one action: 
+            stop("Please select only one action:
         'resume' OR 'restart' OR 'overwrite'")
         } else if (all(resume == FALSE && restart == FALSE && overwrite == FALSE)) {
             stop(file.path(projPath, logs.dir),
@@ -87,7 +87,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
                 if (silent != TRUE) cat("Creating directory '", file.path(projPath, logs.dir), "'", sep = "", "\n")
             }
         } else {
-            stop("Please select only one action: 
+            stop("Please select only one action:
         'resume' OR 'restart' OR 'overwrite'")
         }
     }
@@ -324,7 +324,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 } else {
                     sal$SE <- list(SummarizedExperiment::SummarizedExperiment())
                 }
-                
+
             }
         }
         names(sal$targetsWF) <- names(sal$SE) <- step_name
@@ -339,7 +339,8 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
 runWF <- function(sysargs, steps = NULL, targets = NULL,
                   force = FALSE, saveEnv = TRUE,
                   run_step = "ALL", ignore.dep = FALSE,
-                  warning.stop = FALSE, error.stop = TRUE, silent = FALSE, ...) {
+                  warning.stop = FALSE, error.stop = TRUE,
+                  silent = FALSE, ...) {
     # Validations
     if (!inherits(sysargs, "SYSargsList")) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList'")
     if (length(sysargs) == 0) message("Workflow has no steps. Please add a step before trying to execute the workflow.")
@@ -586,9 +587,9 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     unlink(tempImage)
                 }
                 ## time - double-check
-                if(is.numeric(args.run@status$total.time$time_start)) 
+                if(is.numeric(args.run@status$total.time$time_start))
                     args.run@status$total.time$time_start <- as.POSIXct(args.run@status$total.time$time_start, origin = "1970-01-01")
-                if(is.numeric(args.run@status$total.time$time_end)) 
+                if(is.numeric(args.run@status$total.time$time_end))
                     args.run@status$total.time$time_end <- as.POSIXct(args.run@status$total.time$time_start, origin = "1970-01-01")
                 ## assign all the new object to the envir
                 assign(
@@ -636,11 +637,30 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
         saveRDS(args2$runInfo$env, envPath)
         args2[["projectInfo"]][["envir"]] <- envPath
     }
+    if(!silent) .renderMsg()
     args2 <- .check_write_SYSargsList(args2, TRUE)
     #return(args2)
 }
 ## Usage:
 ## runWF(sal)
+
+############################
+## .renderMsg function ##
+############################
+.renderMsg <- function(){
+    warn_flag <- getOption("spr_render_msg")
+    if(isTRUE(warn_flag)) return()
+    cat(
+        crayon::green$bold("Done with workflow running, now consider rendering logs & reports\n"),
+        crayon::blue("To render logs, run:    "), "renderLogs(sal)\n",
+        crayon::blue("From command-line:      "), 'Rscript -e "sal=systemPipeR::SPRproject(resume=TRUE);systemPipeR::renderLogs(sal)"\n',
+        crayon::blue("To render reports, run: "), 'renderReport(sal)\n',
+        crayon::blue("From command-line:      "), 'Rscript -e "sal=systemPipeR::SPRproject(resume=TRUE);systemPipeR::renderReport(sal)"\n',
+        crayon::make_style("white")$bold("This message is displayed once per R session\n"),
+        sep = ""
+    )
+    options(spr_render_msg = TRUE)
+}
 
 ############################
 ## clusterRCode function ##
@@ -1190,7 +1210,7 @@ readSE <- function(dir.path, dir.name) {
     ## Metadata
     metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
     ## colData
-    colData <- tryCatch(read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t", header = TRUE), 
+    colData <- tryCatch(read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t", header = TRUE),
              error=function(e) NULL)
     if(is.null(colData)) colData <- data.frame()
     ## rowRanges
@@ -1641,7 +1661,7 @@ renderLogs <- function(sysargs,
 ########################
 .prepareRmdPlot <- function(sysargs, dir_log) {
     out_path <- file.path(dir_log, "log_plot.html")
-    plotWF(sysargs, out_format = "html", out_path = out_path, rmarkdown = TRUE, 
+    plotWF(sysargs, out_format = "html", out_path = out_path, rmarkdown = TRUE,
            in_log = TRUE, rstudio = TRUE, plot_ctr = FALSE)
     # modify HTML content
     if (!file.exists(out_path)) stop("Cannot create the workflow plot for logs at\n", out_path)
@@ -1824,7 +1844,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
             stop("for each element of the 'param' list need to assign a name.")
         }
         input <- out_obj <- .replace(input = input_file, param = param)
-        path_file <- normalizePath(file) 
+        path_file <- normalizePath(file)
         out_msg <- c("input_file")
     } else if (inherits(input_file, "SYSargs2")) {
         input <- .replace(input = yamlinput(input_file), param = param)
@@ -1848,7 +1868,7 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
         args1 <- out_obj <- as(args1, "SYSargs2")
         out_msg <- c("yamlinput(args1)")
         path_file <- files(input_file)[["yml"]]
-    } else if (inherits(input_file, "SYSargsList")) { 
+    } else if (inherits(input_file, "SYSargsList")) {
         input <- out_obj <- .replace(input = input_file$sysconfig, param = param)
         path_file <- input_file$projectInfo$project
         out_msg <- c("input_file")

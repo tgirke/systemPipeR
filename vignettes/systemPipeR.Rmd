@@ -1769,21 +1769,22 @@ hard to see. Then it will be good to use `height` and `responsive = FALSE` toget
 
 ## Main branch 
 
-From the plots above, you can that there are many steps which do not connect to any 
-other steps. These dead-ends are called ending steps. If we connect the first step,
+From the plots above, you can see that there are many steps which do not connect to any 
+other steps in downstream. These dead-ends are called ending steps. If we connect the first step,
 steps in between and these ending step, this will become a branch. Imagine the workflow is 
-a upside-down tree structure and the root is the first step. Therefore, there are 
+a top-bottom tree structure and the root is the first step. Therefore, there are 
 many possible ways to connect the workflow. For the convenience of plotting, we 
 introduce a concept of _"main branch"_, meaning one of the possible connecting 
 strategies that will be placed at the center of the plot. Other steps that are not 
-in this major branch will surround this major space. 
+in this major branch will surround this major space. This  _"main branch"_ will not 
+affect how a workflow is run, but an algorithm to **compute the best visualization**. 
 
 This main branch will not impact the `compact` layout so much but will have a huge 
 effect on `horizontal` and `vertical` layouts. 
 
-The plotting function has an algorithm that will automatically choose a best branch for 
-you by default. In simple words, it favors: a. branches that connect first and last step;
-b. as long as possible. 
+The algorithm in `plotWF` will automatically choose a best branch for 
+you by default. In simple words, it favors: (a). branches that connect first and last step;
+(b). as long as possible. 
 
 You can also choose a branch you want by `branch_method = "choose"`. It will first 
 list all possible branches, and then give you a prompt to ask for your favorite branch. 
@@ -1792,24 +1793,12 @@ in combination, `branch_no = x` to directly choose a branch and skip the prompt.
 we use the `verbose = TRUE` to imitate the branch listing in console. In a real case, 
 you only need `branch_method = "choose"`.
 
+To have the main branch marked, `mark_main_branch = TRUE` must be added (default `FALSE`). 
 Watch closely how the plot change by choosing different branches. Here we use `vertical`
-layout to demo. Remember, the main branch is marked in blue. 
+layout to demo. Remember, the main branch is marked in blue.
 
 ```{r collapse=TRUE}
-plotWF(sal, layout = "vertical", branch_method = "choose", branch_no = 1, verbose = FALSE)
-```
-
-### Unmark main branch 
-
-The _main branch_ concept may not represent the main workflow. It is introduced 
-for the convenience of plotting. Most times by auto detecting, it will find the 
-major steps in a workflows, sometimes it does not. It depends on how the users 
-design the workflow. If you think this is not a good representation, you can mute it 
-by `mark_main_branch = FALSE`. You will no longer see the blue-colored steps on 
-plot and on legends. 
-
-```{r}
-plotWF(sal, mark_main_branch = FALSE, height = "500px")
+plotWF(sal,  mark_main_branch = TRUE, layout = "vertical", branch_method = "choose", branch_no = 1, verbose = FALSE)
 ```
 
 ## Legends 
@@ -1830,18 +1819,36 @@ two were chosen, you also need provide a path `out_path` to save the file.
   DOT engine. 
 - dot_print: directly cat the dot script to console. 
 
+### HTML
+HTML format is very useful if you want to view the plot later or share it to other 
+people. This format is also helpful when you are working on a remote computer 
+cluster. To view the workflow plot, a browser device (viewer) must be available, 
+but often time this is not the case for computer clusters. When you plot a workflow 
+and see the message `"Couldn't get a file descriptor referring to the console"`,
+it means your computer (cluster) does not have a browser device. Saving to 
+HTML format is the best option. 
+
 ```{r}
 plotWF(sal, out_format = "html", out_path = "example_out.html")
 file.exists("example_out.html")
 ```
 
+### DOT
+Saving workflow plot to `dot` format allows one to reproduce the plot with 
+the Graphviz language. 
 ```{r}
 plotWF(sal, out_format = "dot", out_path = "example_out.dot")
 cat(readLines("example_out.dot")[1:5], sep = "\n")
 ```
 
+### DOT print
+Instead of saving the Graphviz plotting code to a file, this option directly 
+prints out the code on console. If you have a Graphviz plotting device in hand,
+simply copy and paste the code to that engine to reproduce the plot. For example, 
+use our [Workflow Plot Editor](https://systempipe.org/sp/spr/viz_editor).
+
 ```{r eval=FALSE}
-plotWF(sal, out_format = "dot_print") #
+plotWF(sal, out_format = "dot_print") 
 ```
 
 ### Save to a static image file
@@ -1854,10 +1861,17 @@ to render the plot before we can see it.
 
 #### Interactive 
 
-- If you are working in Rstudio, you can use the `export` button in the viewer to save 
+- With the `plot_ctr = TRUE` (default) option, a plot control panel is displayed 
+  on the top-left corner. One can choose from different formats like _png_, _jpg_, 
+  _svg_ to download them from the webpage. To enable these buttons, internet connection is required.
+  The underlying Javascript libraries are download on the fly. Please make sure 
+  internet is connected. There are known conflicts of underlying web format
+  creating libraries with R markdown web libraries, so some of these buttons may not work
+  inside R markdown as you are seeing in this vignette right now. However, they 
+  should work properly if the workflow plot is saved to a stand-alone HTML file.
+- If you are working in Rstudio, you can also use the `export` button in the viewer to save 
 an image file. 
-- If you are working from command-line, use `plot_method = 'png'` to first ask the browser
-  to generate a png and then when you see the image, you can right-click to save it. 
+
   
 #### Non-interactive
 
@@ -1868,21 +1882,26 @@ package to screenshot the plot. It runs headless Chrome in the back-end (which h
 Install the package 
 
 ```{r eval=FALSE}
-# remotes::install_github("rstudio/webshot2")
+remotes::install_github("rstudio/webshot2")
 ```
 
 Save to html first
 
 ```{r eval=FALSE}
-#plotWF(sal, out_format = "html", out_path = "example_out.html")
-# file.exists("example_out.html")
+plotWF(sal, out_format = "html", out_path = "example_out.html")
+file.exists("example_out.html")
 ```
 
 Use `webshot2` to save the image
 
-```{r}
-# webshot2::webshot("example_out.html", "example_out.png")
+```{r eval=FALSE}
+webshot2::webshot("example_out.html", "example_out.png")
 ```
+
+
+## plotWF in Shiny
+`plotWF` is able to render plots in Shiny apps. Please refer to the help document of
+`renderPlotwf`, `plotwfOutput`, and check out systemPipeShiny [demos](https://systempipe.org/sps/#demo).
 
 # Inner Classes
 
