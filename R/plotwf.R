@@ -625,7 +625,7 @@ makeDot <- function(df,
             "Error" = "#d9534f",
             "black"
         )
-        duration <- .stepDuration(time_start[i], time_end[i])
+        duration <- .stepDuration(steps[i], time_start[i], time_end[i])
         node_text <- c(node_text, paste0(
             "    ", steps[i], "[",
             if(req[i] == "mandatory") 'fillcolor="#d3d6eb" ' else "",
@@ -662,10 +662,24 @@ makeDot <- function(df,
 # figure the right unit to display for duration time.
 
 #' inputs should be `Sys.time()` timestamp
+#' @param step string, step name, length 1
+#' @param start POSIXct object, step start time
+#' @param end POSIXct object, step end time
 #' @return a list of duration in short format and long format
-.stepDuration <- function(start, end) {
+.stepDuration <- function(step, start, end) {
     duration <- round(as.numeric(difftime(end, start, units = "sec")), 1)
-    if (duration < 0) stop("Ending time is smaller than starting time, something wrong?")
+    if (duration < 0) {
+        duration <- 0
+        warning(
+            "In step: ", step, "\n",
+            "Starting time: ", start, "\n",
+            "Ending time: ", end, "\n",
+            "Ending time is before starting time, something wrong?\n",
+            "Duration of this step is treated as 0 for now.",
+            immediate. = TRUE,
+            call. = FALSE
+        )
+    }
     secs <- duration %% 60
     mins_raw <- duration %/% 60
     mins <- mins_raw %% 60
