@@ -23,7 +23,7 @@ results_path:
   path: ./results
 
 ModulesToLoad: 
-  module1: gatk/4.1.1.0
+  module1: gatk/4.2.0.0
   module2: bwa/0.7.17
   module3: samtools/1.14
   module4: bcftools/1.15
