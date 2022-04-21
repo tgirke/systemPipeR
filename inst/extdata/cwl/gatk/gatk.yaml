@@ -22,11 +22,11 @@ results_path:
   class: Directory
   path: ./results
 
-ModulesToLoad: 
+ModulesToLoad:
   module1: gatk/4.2.0.0
   module2: bwa/0.7.17
-  module3: samtools/1.14
-  module4: bcftools/1.15
+  module3: bcftools/1.15
+  module4: samtools/1.14
 
 scripts_path:
   class: Directory
