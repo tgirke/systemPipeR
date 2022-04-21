@@ -1,4 +1,7 @@
 changelog
+    version 2.1.28
+        - Fix varseq bug
+        
     version 2.1.25
         - Fix runWF --> logs
         - Adding final lines for renderReport function

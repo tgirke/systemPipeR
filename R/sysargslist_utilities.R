@@ -665,6 +665,24 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
 ## runWF(sal)
 
 ############################
+## .renderMsg function ##
+############################
+.renderMsg <- function(){
+    warn_flag <- getOption("spr_render_msg")
+    if(isTRUE(warn_flag)) return()
+    cat(
+        crayon::green$bold("Done with workflow running, now consider rendering logs & reports\n"),
+        crayon::blue("To render logs, run:    "), "renderLogs(sal)\n",
+        crayon::blue("From command-line:      "), 'Rscript -e "sal=systemPipeR::SPRproject(resume=TRUE);systemPipeR::renderLogs(sal)"\n',
+        crayon::blue("To render reports, run: "), 'renderReport(sal)\n',
+        crayon::blue("From command-line:      "), 'Rscript -e "sal=systemPipeR::SPRproject(resume=TRUE);systemPipeR::renderReport(sal)"\n',
+        crayon::make_style("white")$bold("This message is displayed once per R session\n"),
+        sep = ""
+    )
+    options(spr_render_msg = TRUE)
+}
+
+############################
 ## clusterRCode function ##
 ############################
 clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, loaded_pkgs, resources) {
