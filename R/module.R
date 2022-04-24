@@ -194,43 +194,6 @@ setReplaceMethod(f = "[[", signature = "EnvModules", definition = function(x, i,
 	eval(parse(text = paste0("myenv$module(", deparse(call_cmd),")")))
 }
 
-#' @title module system R interface
-#' @param action_type string, one of "init", "load", "unload", "list", "avail". 
-#' Note action "init" is not supported in module system > 4.
-#' @param module_name string, one or a vector, module names, like `"hisat2"`, 
-#' `"hisat2/2.1.0"`, `c("hisat2", "samtools")`
-#' @param forced bool, whether you want to confirm some actions. Currently only
-#' used for "clear" action. 
-#' @details 
-#' #### Clear all modules
-#' In case of mistyping of the clear command, additional argument `force` must be `TRUE`
-#' to confirm this action. 
-#' @return bool, `TRUE` if the action is successful, `FALSE` if fails. Note:
-#' 
-#' 1. Partial failure would also result `FALSE`, e.g. "load" two modules, one successful and the other failed, 
-#' then the return is `FALSE`.
-#' 2. For "unload" action will always return `TRUE` even if the module is not loaded at all or not found.
-#' 
-#' @examples 
-#' try(module("init")) # only for < 4 module system version
-#' # check current loaded mods
-#' module("list")
-#' # check all avial mods
-#' module("avail") 
-#' # check a specific mod
-#' module("avail", "hisat2")
-#' # check specific mods
-#' module("avail", c("hisat2", "samtools"))
-#' # module load one mod
-#' module("load", "samtools")
-#' # module load mods 
-#' module("load", c("samtools", "hisat2"))
-#' # module load specific version
-#' module("load", "hisat2/2.2.1")
-#' # module unload one mod(s)
-#' module("unload", c("samtools", "hisat2"))
-#' # clear all mods, `forced = T` must be provided as confirmation
-#' module("clear")
 module <- function(action_type, module_name = NULL) {
 	# assertions 
 	stopifnot(is.character(action_type) && length(action_type) == 1)
