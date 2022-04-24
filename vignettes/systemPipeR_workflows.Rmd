@@ -114,7 +114,7 @@ genWorkenvir(workflow="rnaseq")
 setwd("rnaseq")
 ```
 
-## Create the workflow interactively
+## Create the workflow 
 
 This template provides some common steps for a `RNAseq` workflow. One can add, remove, modify 
 workflow steps by operating on the `sal` object. 
@@ -146,7 +146,7 @@ sal <- runWF(sal)
 ## Workflow visualization 
 
 ```{r plot_rnaseq, eval=FALSE}
-plotWF(sal, rstudio = TRUE)
+plotWF(sal)
 ```
 
 ## Report generation
@@ -179,13 +179,13 @@ setwd("chipseq")
     + FASTQ quality report
 2. Alignments: _`Bowtie2`_ or _`rsubread`_
 3. Alignment stats 
-4. Peak calling: _`MACS2`_, _`BayesPeak`_ 
+4. Peak calling: _`MACS2`_
 5. Peak annotation with genomic context
 6. Differential binding analysis
 7. GO term enrichment analysis
 8. Motif analysis
 
-## Create the workflow interactively
+## Create the workflow 
 
 This template provides some common steps for a `ChIPseq` workflow. One can add, remove, modify 
 workflow steps by operating on the `sal` object. 
@@ -204,7 +204,7 @@ sal <- runWF(sal)
 ## Workflow visualization 
 
 ```{r plot_chipseq, eval=FALSE}
-plotWF(sal, rstudio = TRUE)
+plotWF(sal)
 ```
 
 ## Report generation
@@ -242,7 +242,7 @@ setwd("varseq")
 6. Combine results from many samples
 7. Summary statistics of samples
 
-## Create the workflow interactively
+## Create the workflow 
 
 This template provides some common steps for a `VARseq` workflow. One can add, remove, modify 
 workflow steps by operating on the `sal` object. 
@@ -261,7 +261,7 @@ sal <- runWF(sal)
 ## Workflow visualization 
 
 ```{r plot_varseq, eval=FALSE}
-plotWF(sal, rstudio = TRUE)
+plotWF(sal)
 ```
 
 ## Report generation
@@ -305,8 +305,6 @@ setwd("riboseq")
 11. Gene-wise clustering
 12. Differential ribosome binding (translational efficiency)
 
-## Create the workflow interactively
-
 This template provides some common steps for a `RIBOseq` workflow. One can add, remove, modify 
 workflow steps by operating on the `sal` object. 
 
@@ -324,7 +322,7 @@ sal <- runWF(sal)
 ## Workflow visualization 
 
 ```{r plot_riboseq, eval=FALSE}
-plotWF(sal, rstudio = TRUE)
+plotWF(sal)
 ```
 
 ## Report generation

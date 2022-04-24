@@ -19,6 +19,11 @@ editor_options:
   chunk_output_type: console
 ---
 
+<!--
+- Compile from command-line
+Rscript -e "rmarkdown::render('systemPipeR.Rmd', c('BiocStyle::html_document'), clean=F); knitr::knit('systemPipeR.Rmd', tangle=FALSE)"
+-->
+
 ```{css, echo=FALSE}
 pre code {
 white-space: pre !important;
@@ -51,19 +56,20 @@ suppressPackageStartupMessages({
 # Introduction
 
 [_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) 
-provides flexible utilities for designing, building, and running automated nd-to-end analysis 
-workflows for a wide range of research applications, including next-generation 
-sequencing (NGS) experiments [@H_Backman2016-bt]. Important features include a 
-uniform workflow interface across different data analysis applications, automated 
-report generation, and support for running both R and command-line software, 
-on local computers or compute clusters (see Figure \@ref(fig:utilities)).
+provides flexible utilities for designing, building, and running automated 
+end-to-end analysis workflows for a wide range of research applications, 
+including next-generation sequencing (NGS) experiments [@H_Backman2016-bt]. 
+Important features include a uniform workflow interface across different data
+analysis applications, automated report generation, and support for running both 
+R and command-line software, on local computers or compute clusters (see Figure 
+\@ref(fig:utilities)).
 The latter supports interactive job submissions and batch submissions to queuing 
 systems of clusters. 
 
 It has been designed to improve the reproducibility of large-scale data analysis 
 projects while substantially reducing the time it takes to analyze complex omics
 data sets. Its unique features include a uniform workflow interface and management 
-system that allows the user to run selected steps, customize, and design entirely
+system that allows the users to run selected steps, customize, and design entirely
 new workflows. Also, the package features take advantage of central community S4 
 classes of the Bioconductor ecosystem and command-line-based software support.
 
@@ -82,15 +88,8 @@ knitr::include_graphics(system.file("extdata/images", "utilities.png", package =
 ```
 
 A central concept for designing workflows within the _`systemPipeR`_ environment 
-is the use of workflow management containers. 
-Workflow management containers allow the automation of design, build, run and 
-scale different steps and tools in data analysis.
-_`systemPipeR`_ adopted the widely used community standard [Common Workflow Language](https://www.commonwl.org/) (CWL)
-[@Amstutz2016-ka] for describing parameters analysis workflows in a generic and reproducible 
-manner. Using this community standard in _`systemPipeR`_
-has many advantages. For instance, the integration of CWL allows running _`systemPipeR`_
-workflows from a single specification instance either entirely from within R, 
-from various command-line wrappers (e.g., *cwl-runner*) or from other languages 
+is the use of workflow management containers. Workflow management containers allow the automation of design, build, run and scale different steps and tools in data analysis.
+_`systemPipeR`_ adopted the widely used community standard [Common Workflow Language](https://www.commonwl.org/) (CWL) [@Amstutz2016-ka] for describing parameters analysis workflows in a generic and reproducible manner. Using this community standard in _`systemPipeR`_ has many advantages. For instance, the integration of CWL allows running _`systemPipeR`_ workflows from a single specification instance either entirely from within R,  from various command-line wrappers (e.g., *cwl-runner*) or from other languages 
 (*, e.g.,* Bash or Python).
 _`systemPipeR`_ includes support for both command-line and R/Bioconductor software 
 as well as resources for containerization, parallel evaluations on computer clusters 
@@ -196,7 +195,7 @@ BiocManager::install("systemPipeRdata")
 
 Please note that if you desire to use a third-party command-line tool, the particular
 tool and dependencies need to be installed and exported in your PATH. 
-See [details](#tools). 
+See [details](#third-party-software-tools). 
 
 ## Loading package and documentation
 
@@ -230,13 +229,39 @@ to a different location and still be able to run the entire workflow. Also, it
 increases efficiency and data management once the raw data is kept in a separate 
 folder and avoids duplication. 
 
-## Directory Structure {#dir}
+### Load sample data and workflow templates
 
-[_`systemPipeRdata`_](http://bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html), 
-helper package, provides pre-configured workflows, reporting 
+The mini sample FASTQ files used by this overview vignette as well as the
+associated workflow reporting vignettes can be loaded via the
+_`systemPipeRdata`_ package as shown below. The chosen data set
+[`SRP010938`](http://www.ncbi.nlm.nih.gov/sra/?term=SRP010938) obtains 18
+paired-end (PE) read sets from _Arabidposis thaliana_ [@Howard2013-fq]. To
+minimize processing time during testing, each FASTQ file has been subsetted to
+90,000-100,000 randomly sampled PE reads that map to the first 100,000
+nucleotides of each chromosome of the _A. thalina_ genome. The corresponding
+reference genome sequence (FASTA) and its GFF annotation files (provided in the
+same download) have been truncated accordingly. This way the entire test sample
+data set requires less than 200MB disk storage space. A PE read set has been
+chosen for this test data set for flexibility, because it can be used for
+testing both types of analysis routines requiring either SE (single-end) reads
+or PE reads. 
+
+The following generates a fully populated _`systemPipeR`_ workflow environment 
+(here for RNA-Seq) in the current working directory of an R session. At this time 
+the package includes workflow templates for RNA-Seq, ChIP-Seq, VAR-Seq, and Ribo-Seq. 
+Templates for additional NGS applications will be provided in the future.
+
+## Directory Structure {#directory-structure}
+
+[_`systemPipeRdata`_](http://bioconductor.org/packages/devel/data/experiment/html/systemPipeRdata.html), helper package, provides pre-configured workflows, reporting 
 templates, and sample data loaded as demonstrated below. With a single command, 
 the package allows creating the workflow environment containing the structure 
 described here (see Figure \@ref(fig:dir)).
+
+```{r generate_workenvir, eval=FALSE}
+genWorkenvir(workflow="rnaseq")
+setwd("rnaseq")
+```
 
 Directory names are indicated in <span style="color:grey">***green***</span>.
 Users can change this structure as needed, but need to adjust the code in their 
@@ -256,7 +281,7 @@ workflows accordingly.
         + Metadata
         + etc.
     + <span style="color:green">_**results/**_</span>
-        + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files
+        + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files.
         + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
 ```{r dir, eval=TRUE, echo=FALSE, warning= FALSE, out.width="100%", fig.align = "center", fig.cap= "*systemPipeR's* preconfigured directory structure."}
@@ -269,14 +294,13 @@ The following parameter files are included in each workflow template:
 2. *`*.param/cwl`*: defines parameter for input/output file operations, *e.g.*:
     + *`hisat2/hisat2-mapping-se.cwl`* 
     + *`hisat2/hisat2-mapping-se.yml`*
-3. *`*_run.sh`*: optional bash scripts 
-4. Configuration files for computer cluster environments (skip on single machines):
+3. Configuration files for computer cluster environments (skip on single machines):
     + *`.batchtools.conf.R`*: defines the type of scheduler for *`batchtools`* pointing to template file of cluster, and located in user's home directory
     + *`batchtools.*.tmpl`*: specifies parameters of scheduler used by a system, *e.g.* Torque, SGE, Slurm, etc.
 
-## Structure of initial _`targets`_ data
+## Structure of initial _`targets`_ file
 
-The _`targets`_ data defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
+The _`targets`_ file defines all input files (_e.g._ FASTQ, BAM, BCF) and sample 
 comparisons of an analysis workflow. It can, also, store any number of descriptive 
 information for each sample used in the workflow. 
 
@@ -284,7 +308,7 @@ The following shows the format of a sample _`targets`_ file included in the
 package. It also can be viewed and downloaded 
 from _`systemPipeR`'s_ GitHub repository [here](https://github.com/tgirke/systemPipeR/blob/master/inst/extdata/targets.txt). 
 Please note that here it is represented a tabular file, however _`systemPipeR`_ can 
-import the inputs information from a `YAML` and `Google Sheets` files, as well as 
+import the inputs information from a `YAML` files, as well as 
 `SummarizedExperiment` object. For more details on how to create custom `targets`, 
 please find here. 
 
@@ -322,24 +346,12 @@ targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 showDF(read.delim(targetspath, comment.char = "#"))
 ```
 
-### Structure of _`targets`_ file for "Hello World" example
-
-In this example, _`targets`_ file presents only two columns, which the first one 
-are the different phrases used by the `echo` command-line and the second column
-it is the sample `id`. The `id` column is required, and each sample id should be unique. 
-
-```{r targets_echo, eval=TRUE}
-targetspath <- system.file("extdata/cwl/example/targets_example.txt", package = "systemPipeR")
-showDF(read.delim(targetspath, comment.char = "#"))
-```
-
 ### Sample comparisons
 
 Sample comparisons are defined in the header lines of the _`targets`_ file 
 starting with '``# <CMP>``'. 
 
 ```{r comment_lines, echo=TRUE}
-targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")
 readLines(targetspath)[1:4]
 ```
 
@@ -497,7 +509,7 @@ if (file.exists(".SPRproject")) unlink(".SPRproject", recursive = TRUE)
 
 # Project initialization
 
-To create a Workflow within _`systemPipeR`_, we can start by defining an empty
+To create a workflow within _`systemPipeR`_, we can start by defining an empty
 container and checking the directory structure:
 
 ```{r SPRproject1, eval=TRUE}
@@ -518,7 +530,7 @@ sal <- SPRproject(logs.dir= ".SPRproject", sys.file=".SPRproject/SYSargsList.yml
 ```
 
 Also, this function will check and/or create the basic folder structure if missing, 
-which means `data`, `param`, and `results` folder, as described [here](#dir). 
+which means `data`, `param`, and `results` folder, as described [here](#directory-structure). 
 If the user wants to use a different names for these directories, can be specified 
 as follows:
 
@@ -542,8 +554,8 @@ sal
 projectInfo(sal)
 ```
 
-Also, the `length` function will return how many steps this workflow contains and
-in this case it is empty, as follow:
+Also, the `length` function will return how many steps this workflow contains, 
+and in this case, it is empty, as follow:
 
 ```{r length, eval=TRUE}
 length(sal)
@@ -551,28 +563,20 @@ length(sal)
 
 # Workflow Design 
 
-_`systemPipeR`_ workflows can be designed and built from start to finish with a 
-single command, importing from an R Markdown file or stepwise in interactive 
-mode from the R console. 
-In the [next section](#appendstep), we will demonstrate how to build the workflow in an
-interactive mode, and in the [following section](#importWF), we will show how to build from a file. 
+_`systemPipeR`_ workflows can be designed and built from start to finish with a single command, importing from an R Markdown file or stepwise in interactive mode from the R console. 
+In the [next section](#appendstep), we will demonstrate how to build the workflow in an interactive mode, and in the [following section](#importWF), we will show how to build from a file. 
 
-New workflows are constructed, or existing ones modified, by connecting each 
-step via `appendStep` method. Each `SYSargsList` instance contains instructions 
-needed for processing a set of input files with a specific command-line or R 
-software, as well as the paths to the corresponding outfiles generated by a 
-particular tool/step. 
+New workflows are constructed, or existing ones modified, by connecting each step
+via `appendStep` method. Each `SYSargsList` instance contains instructions needed 
+for processing a set of input files with a specific command-line and the paths to 
+the corresponding outfiles generated.
 
-To build R code based step, the constructor function `Linewise` is used. 
+The constructor function `Linewise` is used to build the R code-based step. 
 For more details about this S4 class container, see [here](#linewise). 
 
 ## Build workflow interactive {#appendstep}
 
-This tutorial shows a very simple example for describing and explaining all main 
-features available within systemPipeR to design, build, manage, run, and 
-visualize the workflow. In summary, we are exporting a dataset to multiple 
-files, compressing and decompressing each one of the files, and importing to R, 
-and finally performing a statistical analysis. 
+This tutorial shows a straightforward example for describing and explaining all main features available within systemPipeR to design, build, manage, run, and visualize the workflow. In summary, we are exporting a dataset to multiple files, compressing and decompressing each one of the files, importing to R, and finally performing a statistical analysis. 
 
 In the previous section, we initialize the project by building the `sal` object.
 Until this moment, the container has no steps:
@@ -685,7 +689,7 @@ For more details about the command-line rendered for each target file, it can be
 checked as follows: 
 
 ```{r}
-cmdlist(sal, step="gzip")
+cmdlist(sal, step = "gzip")
 ```
 
 #### Using the `outfiles` for the next step
@@ -950,7 +954,7 @@ sal <- runWF(sal)
 ```
 
 Note: The example is submitting the jog to `short` partition. If you desire to 
-use a different partition, please adjust accordingly (`batchtools.slurm.tmpl`).
+use a different partition, please adjust accordingly.
 
 # Visualize workflow
 
@@ -2103,7 +2107,7 @@ or R-based software.
 knitr::include_graphics(system.file("extdata/images", "SystemPipeR_Workflow.png", package = "systemPipeR"))  
 ```
 
-# Third-party software tools {#tools}
+# Third-party software tools {#third-party-software-tools}
 
 Current, *systemPipeR* provides the _`param`_ file templates for third-party 
 software tools. Please check the listed software tools. 
