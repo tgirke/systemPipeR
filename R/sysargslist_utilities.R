@@ -652,10 +652,10 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     if(isTRUE(warn_flag)) return()
     cat(
         crayon::green$bold("Done with workflow running, now consider rendering logs & reports\n"),
-        crayon::blue("To render logs, run:    "), "renderLogs(sal)\n",
-        crayon::blue("From command-line:      "), 'Rscript -e "sal=systemPipeR::SPRproject(resume=TRUE);systemPipeR::renderLogs(sal)"\n',
-        crayon::blue("To render reports, run: "), 'renderReport(sal)\n',
-        crayon::blue("From command-line:      "), 'Rscript -e "sal=systemPipeR::SPRproject(resume=TRUE);systemPipeR::renderReport(sal)"\n',
+        crayon::blue("To render logs, run:    "), "sal <- renderLogs(sal)\n",
+        crayon::blue("From command-line:      "), 'Rscript -e "sal = systemPipeR::SPRproject(resume = TRUE); sal = systemPipeR::renderLogs(sal)"\n',
+        crayon::blue("To render reports, run: "), 'sal <- renderReport(sal)\n',
+        crayon::blue("From command-line:      "), 'Rscript -e "sal= s ystemPipeR::SPRproject(resume = TRUE); sal = systemPipeR::renderReport(sal)"\n',
         crayon::make_style("white")$bold("This message is displayed once per R session\n"),
         sep = ""
     )
