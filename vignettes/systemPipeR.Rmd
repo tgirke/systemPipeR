@@ -1880,7 +1880,7 @@ an image file.
 #### Non-interactive
 
 If you cannot have an interactive session, like submitting a job to a cluster, 
-but still want the png, we recommend to use the {[webshot2](https://github.com/wch/webshot)}
+but still want the png, we recommend to use the {[webshot2](https://github.com/rstudio/webshot2)}
 package to screenshot the plot. It runs headless Chrome in the back-end (which has a javascript engine).
 
 Install the package 
