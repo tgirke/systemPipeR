@@ -1,1 +1,1 @@
-cwl_version: 1.0.42
+cwl_version: 1.0.43
