@@ -292,6 +292,11 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
             If the particular step(s) is set to be executed "management section,"
             when the resources is added, the step(s) will be executed on the
             "compute section." }
+    \item{getColumn}{\code{signature(x = "SYSargsList", step, 
+            position = c("outfiles", "targetsWF"), column = 1, 
+            names = SampleName(x, step))}:
+            extracts the information for \code{targetsWF} or \code{outfiles} 
+            slots. The information can be used in an R code downstream }
     \item{[[<-}{\code{signature(x = "SYSargsList", i = "ANY", j = "ANY", value = "ANY")}: 
               replacement method for \code{SYSargsList} class }
     \item{appendStep<-}{\code{signature(x = "SYSargsList", after = length(x))}:
@@ -311,7 +316,7 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
               replace the R code in a specific step at the position given by \code{line} }
     \item{updateColumn<-}{\code{signature(x = "SYSargsList", step, 
               position = c("outfiles", "targetsWF"))}:
-              update or add a new column in targetsWF or outfiles slots }
+              update or add a new column in \code{targetsWF} or \code{outfiles} slots }
   }
 }
 \author{
