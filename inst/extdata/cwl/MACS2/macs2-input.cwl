@@ -24,11 +24,11 @@ requirements:
 
 arguments:
   - prefix: -t
-    valueFrom: $(inputs.fq1)
-  - prefix: -c
     valueFrom: $(inputs.fq2)
+  - prefix: -c
+    valueFrom: $(inputs.fq1)
   - prefix: -n
-    valueFrom: $(inputs.fq1.basename)
+    valueFrom: $(inputs.fq2.basename)
   - prefix: --outdir
     valueFrom: $(inputs.results_path.path)
   - prefix: -f
