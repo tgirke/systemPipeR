@@ -1507,7 +1507,6 @@ renderReport <- function(sysargs,
         # firstLine <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[1]]$rmd_line))
         newLines <- lines[1:firstLine - 1]
         ## We need to consider if append step after=0, in this case it's appending before the first R chunk but not before the text...
-        ## TODO ##
         for (i in seq_along(sysargs$stepsWF)) {
             if (length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 1) {
                 if (exists("last_line")) {
