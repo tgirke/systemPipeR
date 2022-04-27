@@ -124,7 +124,7 @@ setMethod(
 )
 
 ## Extend infile1() method
-setMethod(f = "infile1", signature = "SYSargs2", definition = function(x, input=c("FileName", "FileName1")) {
+setMethod(f = "infile1", signature = "SYSargs2", definition = function(x, input = c("FileName", "FileName1")) {
     subset_input <- input(x)
     input_sub <- input[input %in% names(input(x)[[1]])]
     subset_sample <- sapply(names(subset_input), function(y) subset_input[[y]][[input_sub]])
@@ -133,10 +133,10 @@ setMethod(f = "infile1", signature = "SYSargs2", definition = function(x, input=
 })
 
 ## Extend infile2() method
-setMethod(f = "infile2", signature = "SYSargs2", definition = function(x, input="FileName2") {
+setMethod(f = "infile2", signature = "SYSargs2", definition = function(x, input = "FileName2") {
     subset_input <- input(x)
     input_sub <- input[input %in% names(input(x)[[1]])]
-    if(length(input_sub)==0) input_sub <- ""
+    if (length(input_sub) == 0) input_sub <- ""
     subset_sample <- sapply(names(subset_input), function(y) subset_input[[y]][[input_sub]])
     subset_sample <- sapply(names(subset_sample), function(y) ifelse(is.null(subset_sample[[y]]), "", subset_sample[y]))
     return(subset_sample)
@@ -172,14 +172,14 @@ setMethod(
 
 ## Behavior of "$" operator for SYSargs2
 setMethod("$",
-          signature = "SYSargs2",
-          definition = function(x, name) {
-              slot(x, name)
-          }
+    signature = "SYSargs2",
+    definition = function(x, name) {
+        slot(x, name)
+    }
 )
 
 ## Convert targets data.frame to list
-targets.as.list <- function(x, id="SampleName") {
+targets.as.list <- function(x, id = "SampleName") {
     targetslist <- yaml::yaml.load(yaml::as.yaml(x, column.major = FALSE))
     names(targetslist) <- x[[id]]
     return(targetslist)
@@ -214,7 +214,7 @@ setMethod("SampleName", signature = "SYSargs2", definition = function(x) {
     targets_x <- targets(x)
     if (length(targets_x) > 0) {
         sample_name_x <- as(x, "DataFrame")
-        id <- x[['files']][['id']]
+        id <- x[["files"]][["id"]]
         return(sample_name_x[[id]])
     } else if (length(targets_x) == 0) {
         message("This step doesn't contain multiple samples.")
@@ -255,13 +255,19 @@ setReplaceMethod(f = "[[", signature = "SYSargs2", definition = function(x, i, j
 setReplaceMethod("yamlinput", c("SYSargs2"), function(x, paramName, value) {
     x <- as(x, "list")
     ## Check paramName
-    if (!paramName %in% names(x$yamlinput))
-        stop("'paramName' argument must be one of the following: ", "\n",
-             paste0(names(x$yamlinput), collapse = ", "))
+    if (!paramName %in% names(x$yamlinput)) {
+        stop(
+            "'paramName' argument must be one of the following: ", "\n",
+            paste0(names(x$yamlinput), collapse = ", ")
+        )
+    }
     ## Check class of value
-    if (!identical(class(x$yamlinput[[paramName]]), class(value))) 
-        stop("'value' argument must be the same class of the 'paramName': ", "\n",
-                    class(x$yamlinput[[paramName]]))
+    if (!identical(class(x$yamlinput[[paramName]]), class(value))) {
+        stop(
+            "'value' argument must be the same class of the 'paramName': ", "\n",
+            class(x$yamlinput[[paramName]])
+        )
+    }
     x$yamlinput[paramName] <- value
     x <- as(x, "SYSargs2")
     x <- updateWF(x)
