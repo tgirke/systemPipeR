@@ -4,10 +4,12 @@
 LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
                      rmdPath = character(), dependency = NA,
                      run_step = "mandatory",
-                     run_session = "management", 
+                     run_session = "management",
                      run_remote_resources = NULL) {
     ## used in `importWF`
-    on.exit({options(linewise_importing = FALSE)})
+    on.exit({
+        options(linewise_importing = FALSE)
+    })
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
     run_session <- match.arg(run_session, c("management", "compute"))
@@ -33,9 +35,11 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
             run_session <- "compute"
         }
     }
-    runInfo <- list(runOption = list(list(directory = FALSE, run_step = run_step,
-                                          run_session = run_session, 
-                                          run_remote_resources = run_remote_resources)))
+    runInfo <- list(runOption = list(list(
+        directory = FALSE, run_step = run_step,
+        run_session = run_session,
+        run_remote_resources = run_remote_resources
+    )))
     names(runInfo$runOption) <- step_name
     ## status
     step_status <- list(
@@ -44,22 +48,18 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
         status.time = data.frame()
     )
     ## codeLine
-    if(length(deparse(substitute(code))) == 1){
-        #if (!getOption("linewise_importing", TRUE)) {
-            codeLine <- parse(text = sub("^\\{|\\}$", "", deparse(substitute(code))))
-        #} else if(getOption("linewise_importing", TRUE)) {
-          #  codeLine <- parse(text = sub("^\\{|\\}$", "", deparse(substitute(code))))
-        #}
+    if (length(deparse(substitute(code))) == 1) {
+        codeLine <- parse(text = sub("^\\{|\\}$", "", deparse(substitute(code))))
     } else {
         codeLine <- deparse(substitute(code))
-        codeLine[1] <- sub("^\\{", "",codeLine[1])
+        codeLine[1] <- sub("^\\{", "", codeLine[1])
         codeLine[length(codeLine)] <- sub("\\}$", "", codeLine[length(codeLine)])
         codeLine <- parse(text = codeLine)
     }
     line <- list(
         codeLine = codeLine,
         codeChunkStart = codeChunkStart,
-       # rmdPath = rmdPath,
+        # rmdPath = rmdPath,
         stepName = step_name,
         dependency = dependency,
         status = step_status,
@@ -76,7 +76,6 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
 #   plot(iris)
 # })
 
-
 ########################
 ## importRmd function ##
 ########################
@@ -84,7 +83,6 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
     on.exit({
         options(linewise_importing = FALSE)
         options(spr_importing = FALSE)
-        # options(importwf_options = NULL)
     })
     stopifnot(is.character(file_path) && length(file_path) == 1)
     if (!stringr::str_detect(file_path, "\\.[Rr]md$")) stop("File must be .Rmd, or .rmd ending.")
@@ -95,47 +93,23 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
     df <- parseRmd(file_path, ignore_eval = ignore_eval, verbose = verbose)
     df$dep <- lapply(df$dep, function(x) ifelse(x == "", NA, x))
     names(df$dep) <- df$step_name
-    ## create a new env for sysarges to eval
+    ## create a new env for sysargs to eval
     sysargs_env <- new.env()
     sal_imp <- sysargs
     sal_imp <- as(sal_imp, "list")
     ## adding steps
     for (i in seq_along(df$spr)) {
         if (verbose) cat(crayon::blue$bold("Now importing step '", df$step_name[i], "' \n", sep = ""))
-        # if (df$spr[i] == "r") {
-        #     options(linewise_importing = TRUE)
-        #     line_obj <- LineWise(code = df$code[i], step_name = df$step_name[i],
-        #                          codeChunkStart = df$start[i], rmdPath = file_path,
-        #                          dependency = df$dep[[i]])
-        #     sal_imp$stepsWF[[df$step_name[i]]] <- line_obj
-        #     sal_imp$statusWF[[df$step_name[i]]] <- list(
-        #         status.summary = "Pending",
-        #         status.completed = data.frame(Step = df$step_name[i], status.summary = "Pending"),
-        #         status.time = data.frame()
-        #     )
-        #     sal_imp$targetsWF[[df$step_name[i]]] <- S4Vectors::DataFrame()
-        #     sal_imp$outfiles[[df$step_name[i]]] <- S4Vectors::DataFrame()
-        #     sal_imp$SE[df$step_name[i]] <- list(NULL)
-        #     sal_imp$dependency[[df$step_name[i]]] <- df$dep[[i]]
-        #     sal_imp$targets_connection[df$step_name[i]] <- list(NULL)
-        #     sal_imp$runInfo[["runOption"]][df$step_name[i]] <- list(
-        #         list(directory = FALSE, run_step = df$req[i], run_session = df$session[i],
-        #              rmd_line = paste(df[i,2:3], collapse = ":")))
-        # } else if (df$spr[i] == "sysargs") {
-            options(spr_importing = TRUE)
-            # options(importwf_options = c(df$step_name[i], df$dep[i]))
-            sal_imp <- as(sal_imp, "SYSargsList")
-            salname <- sub("[\\)].*", "", sub(".*(appendStep\\()", "", df$code[i]))
-            assign(salname, sal_imp, sysargs_env)
-            args <- eval(parse(text = df$code[i]), envir = sysargs_env)
-          #  if (!inherits(args, "SYSargsList")) stop("Cannot import this step. It is not returning a `SYSargsList` object.")
-            appendStep(sal_imp) <- args
-            sal_imp <- as(sal_imp, "list")
-            sal_imp$runInfo[["runOption"]][[df$step_name[i]]][['rmd_line']] <- paste(df[i,2:3], collapse = ":")
-        #}
+        options(spr_importing = TRUE)
+        sal_imp <- as(sal_imp, "SYSargsList")
+        salname <- sub("[\\)].*", "", sub(".*(appendStep\\()", "", df$code[i]))
+        assign(salname, sal_imp, sysargs_env)
+        args <- eval(parse(text = df$code[i]), envir = sysargs_env)
+        appendStep(sal_imp) <- args
+        sal_imp <- as(sal_imp, "list")
+        sal_imp$runInfo[["runOption"]][[df$step_name[i]]][["rmd_line"]] <- paste(df[i, 2:3], collapse = ":")
     }
     sal_imp[["projectInfo"]]$rmd_file <- file_path
-    # sal_imp[["projectInfo"]]$rmd_lines <- df[,1:3]
     sal_imp <- as(sal_imp, "SYSargsList")
     sysargslist <- file.path(sal_imp$projectInfo$project, sal_imp$projectInfo$sysargslist)
     write_SYSargsList(sal_imp, sysargslist, silent = TRUE)
@@ -149,7 +123,6 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, verbose = TRUE) {
 
 ########################
 ## parseRmd function ##
-########################
 ########################
 parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     # assertions
@@ -166,8 +139,10 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     }
     for (i in seq_along(chunk_start)[-length(chunk_end)]) {
         if (chunk_start[i + 1] <= chunk_end[i]) {
-            stop("A code chunk does not end, chunk line:\n",
-                chunk_start[i + 1])
+            stop(
+                "A code chunk does not end, chunk line:\n",
+                chunk_start[i + 1]
+            )
         }
     }
     # create df
@@ -229,11 +204,13 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     opt_eval <- stringr::str_match(df$opt_text, "eval[ ]{0,}=[ ]{0,}(['\"]{0,1}\\w+['\"]{0,1})")[, 2]
     # eval unspecified will be TRUE
     opt_eval[is.na(opt_eval)] <- TRUE
-    if(any(stringr::str_detect(opt_eval, "['\"]"))) stop(
-        "Line ",
-        paste(df$start[stringr::str_detect(opt_eval, "['\"]")], collapse = ", "),
-        " has a character value for `eval` option, only TRUE, T, FALSE, F are valid"
-    )
+    if (any(stringr::str_detect(opt_eval, "['\"]"))) {
+        stop(
+            "Line ",
+            paste(df$start[stringr::str_detect(opt_eval, "['\"]")], collapse = ", "),
+            " has a character value for `eval` option, only TRUE, T, FALSE, F are valid"
+        )
+    }
     opt_eval <- stringr::str_detect(opt_eval, "^TRUE|T")
     # overwrite if ignore eval param is TRUE
     if (ignore_eval) opt_eval <- rep(TRUE, length(opt_eval))
@@ -244,112 +221,21 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     # get spr option
     if (verbose) message("Checking chunk SPR option")
     opt_spr <- stringr::str_match(df$opt_text, "spr[ ]{0,}=[ ]{0,}(\\w+)")[, 2] %>% stringr::str_detect("^TRUE|T")
-    if(all(is.na(opt_spr))) stop("No valid SPR code chunk detected, remember to add `spr=TRUE` in chunk options")
+    if (all(is.na(opt_spr))) stop("No valid SPR code chunk detected, remember to add `spr=TRUE` in chunk options")
     ## update df
     if (verbose && any(is.na(opt_spr))) message("Ignore non-SPR chunks: ", paste0(df$start[is.na(opt_spr)], collapse = ", "))
     # eval unspecified will be TRUE
     opt_spr[is.na(opt_spr)] <- FALSE
     df <- df[opt_spr, ]
     if (nrow(df) == 0) stop("No SPR code chunk left")
-
-    # get reqiurement options
-    # if (verbose) message("Checking chunk spr.req option")
-    # spr_req <- stringr::str_match(df$opt_text, "spr\\.req[ ]{0,}=[ ]{0,}['\"]((\\w+[;]{0,}[ ]{0,})+)['\"]")[, 2] %>%
-    #     stringr::str_remove_all('\'|"') %>%
-    #     stringr::str_remove_all("^spr\\.req[ ]{0,}=[ ]{0,}")
-    ## update df
-    # spr_req[is.na(spr_req)] <- "mandatory"
-    # spr_req[spr_req == "m"] <- "mandatory"
-    # spr_req[spr_req == "o"] <- "optional"
-    #
-    # df$req <- spr_req
-    ## enforce sysarg or r option only for spr
-    # bad_req <- !df$req %in% c("mandatory", "optional")
-    # if (any(bad_req)) {
-    #     stop(
-    #         "Bad spr.req option for chunk at line:\n",
-    #         paste(df$start[bad_req], collapse = ", "),
-    #         "\nOnly 'm' or 'o' allowed"
-    #     )
-    # }
-    # get session options
-    # if (verbose) message("Checking chunk spr.ses option")
-    # spr_ses <- stringr::str_match(df$opt_text, "spr\\.ses[ ]{0,}=[ ]{0,}['\"]((\\w+[;]{0,}[ ]{0,})+)['\"]")[, 2] %>%
-    #     stringr::str_remove_all('\'|"') %>%
-    #     stringr::str_remove_all("^spr\\.ses[ ]{0,}=[ ]{0,}")
-    ## update df
-    # spr_ses[is.na(spr_ses)] <- "management"
-    # spr_ses[spr_ses == "m"] <- "management"
-    # spr_ses[spr_ses == "c"] <- "compute"
-    #
-    # df$session <- spr_ses
-    ## enforce c or r option only for spr.ses
-    # bad_ses <- !df$session %in% c("management", "compute")
-    # if (any(bad_ses)) {
-    #     stop(
-    #         "Bad spr.req option for chunk at line:\n",
-    #         paste(df$start[bad_ses], collapse = ", "),
-    #         "\nOnly 'm' or 'c' allowed"
-    #     )
-    # }
-    # get eval
-    # check step names
-    # if (verbose) message("Resolve step names")
-    # chun_name_empty <- df$step_name %in% c("", NA)
-    # if (verbose && any(chun_name_empty)) message("Give default names to chunks with empty names at line: ", paste0(df$start[chun_name_empty], collapse = ", "))
-    # df$step_name[chun_name_empty] <- paste0("unnamed_step", seq(sum(chun_name_empty)))
-    # if (verbose) message("Check duplicated step names")
-    # if (any(duplicated(df$step_name))) {
-    #     stop("Duplicated step names not allowed: ", paste0(df$step_name[duplicated(df$step_name)], collapse = ", "))
-    # }
-    # chunk_names_bad <- stringr::str_detect(df$step_name, "\\W")
-    # if (any(chunk_names_bad)) {
-    #     stop(
-    #         "Only letters, numbers, and '_' allowed for step names. Invalid names:\n",
-    #         paste0(df$step_name[chunk_names_bad], collapse = ", ")
-    #     )
-    # }
-    # get dependencies
-    # if (verbose) message("Checking chunk dependencies")
-    ## first use previous step as dep for all and use "" for first step
-    # if(nrow(df) > 1) df$dep[seq(2, nrow(df))] <- df$step_name[seq(1, nrow(df) - 1)]
-    # df$dep[1] <- ""
-    ## parse user provided dep
-    # spr_dep <- stringr::str_match(df$opt_text, "spr\\.dep[ ]{0,}=[ ]{0,}['\"]((\\w+[;]{0,}[ ]{0,})+)['\"]")[, 2] %>%
-    #     stringr::str_remove_all('\'|"') %>%
-    #     stringr::str_remove_all("^spr\\.dep[ ]{0,}=[ ]{0,}")
-    # if (verbose && any(is.na(spr_dep))) message("Use the previous step as dependency for steps without 'spr.dep' options: ", paste0(df$start[is.na(spr_dep)], collapse = ", "))
-    # spr_dep <- stringr::str_split(spr_dep, ";")
-    # spr_dep <- lapply(spr_dep, function(x) stringr::str_remove_all(x, "^[ ]{0,}") %>% stringr::str_remove_all("[ ]{0,}$"))
-    #
-    # lapply(seq_along(spr_dep), function(i) {
-    #     lapply(spr_dep[[i]], function(x) {
-    #         if (!x %in% c(df$step_name, NA)) stop("Step '", df$step_name[i], "'s dependency '", x, "' not found.")
-    #     })
-    # })
-    # df$dep <- lapply(seq_along(spr_dep), function(i) {
-    #     if (is.na(spr_dep[[i]][1])) {
-    #         df$dep[i]
-    #     } else {
-    #         spr_dep[[i]]
-    #     }
-    # })
-    # if (df$dep[[1]] != "") {
-    #     warning("First step has the dependency of '", paste0(df$dep[[1]], collapse = ", "), "'. Usually the first step has no depenency", immediate. = TRUE)
-    #     message("Clear dependency of step 1")
-    #     df$dep[[1]] <- ""
-    # }
-    # get code
     if (verbose) message("Parse chunk code")
     code <- lapply(seq_along(df$start), function(x) {
         paste0(lines[(df$start[x] + 1):(df$end[x] - 1)], collapse = "\n")
     }) %>% unlist()
     df$code <- code
-    # create log path
-    # df$log_path <- paste0("#", tolower(stringr::str_replace_all(df$step_name, "[ ]", "-")))
-    # if (verbose) message(crayon::blue("---- Succes! Create output ----"))
     df
 }
+
 ## Usage:
 # rmdpath <- system.file("extdata", "spr_simple_wf.Rmd", package="systemPipeR")
 # df <- parseRmd(rmdpath)
