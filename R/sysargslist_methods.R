@@ -721,6 +721,7 @@ setReplaceMethod(
     ## used in `importWF`
     on.exit({
         options(spr_importing = FALSE)
+        options(replace_step = FALSE)
     })
     targetsCon <- value$targets_connection[[1]]
     ## Check outfiles names
@@ -938,7 +939,9 @@ setReplaceMethod(
             }
         }
         ## Update connections
-        options(replace_step = TRUE)
+        on.exit({
+            options(replace_step = TRUE)
+        })
         if (inherits(value, "SYSargsList")) value <- .validationStepConn(x[-c(step)], value)
         ## replace
         x <- sysargslist(x)
