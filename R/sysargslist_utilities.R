@@ -1411,7 +1411,7 @@ writeTargets <- function(sysargs, step, file = "default", silent = FALSE, overwr
 configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALSE, ...) {
     ## Validations
     if (!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
-    utils::capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") ## TODO: refazer
+    utils::capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") 
     if ("ALL" %in% input_steps) {
         input_steps <- paste0(steps_all$t_number[1], ":", steps_all$t_number[length(steps_all$t_number)])
         save_rmd <- FALSE
@@ -1429,7 +1429,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
     utils::capture.output(steps_all <- subsetRmd(
         Rmd = x$sysconfig$script$path, input_steps = input_steps,
         exclude_steps = exclude_steps, save_Rmd = save_rmd, Rmd_outfile = Rmd_outfile
-    ), file = ".NULL") ## TODO: refazer
+    ), file = ".NULL") 
     steps_number <- steps_all$t_number[steps_all$selected]
     ## Save input_steps in the SYSconfig.yml
     if (!any(names(x$sysconfig) %in% c("input_steps", "exclude_steps"))) {

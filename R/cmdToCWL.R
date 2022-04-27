@@ -84,7 +84,7 @@ writeParamFiles <- function(sysargs, file = "default", overwrite = TRUE, silent 
             file.yml, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
         )
     }
-    args <- sysargs2(sysargs) ## TODO
+    args <- sysargs2(sysargs) 
     cwlVersion <- args$clt[[1]]$cwlVersion
     class <- args$clt[[1]]$class
     module_load <- args$yamlinput$ModulesToLoad[[1]]
