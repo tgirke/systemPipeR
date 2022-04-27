@@ -1,4 +1,7 @@
 changelog
+    version 2.3.0
+        - Fix style of R files
+        
     version 2.1.31
         - Update vignette.
         
