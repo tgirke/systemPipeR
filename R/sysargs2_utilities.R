@@ -216,7 +216,6 @@ updateWF <- function(WF, write.yaml = FALSE, name.yaml = "default", new_targets 
 # cmdlist(WF)[1]
 # yamlinput(WF)$thread
 
-
 ##################################################
 ## check outfiles: if the expected files exist ##
 ##################################################
@@ -1066,22 +1065,15 @@ output_update <- function(args, dir = FALSE, dir.name = NULL, replace = FALSE, e
 ###################################################
 createWF <- function(targets = NULL, commandLine, results_path = "./results", module_load = "baseCommand", file = "default",
                      overwrite = FALSE, cwlVersion = "v1.0", class = "CommandLineTool", writeout = FALSE, silent = FALSE) {
-    ## TODO if is not default, module load and file
     if (all(!inherits(commandLine, "list"))) stop("'commandLine' needs to be object of class 'list'.")
     if (any(!c("baseCommand", "inputs", "outputs") %in% names(commandLine))) stop("Argument 'commandLine' needs to be assigned at least to: 'baseCommand', 'input' or 'output'.")
     if (all(!c("Workflow", "CommandLineTool") %in% class)) stop("Class slot in '<wf_file>.cwl' needs to be 'Workflow' or 'CommandLineTool'.")
     if (dir.exists(results_path) == FALSE) dir.create(path = results_path)
-    ## module_load
-    ## 1.  module_load="baseCommand" will use the name of the software
-    ## 2.  module_load=c("ncbi-blast/2.2.30+", "hisat2/2.1.0") will use the specific version and names
     if (module_load == "baseCommand") {
         module_load <- commandLine$baseCommand[[1]]
     } else {
         module_load <- module_load
     }
-    ## File Path
-    ## 1. file="default"
-    ## 2. file = c("test.cwl", "test.yml")
     if ("default" %in% file) {
         if (dir.exists(paste("param/cwl/", commandLine$baseCommand, sep = "")) == FALSE) dir.create(path = paste("param/cwl/", commandLine$baseCommand, sep = ""), recursive = TRUE)
         file.cwl <- paste("param/cwl/", commandLine$baseCommand, "/", commandLine$baseCommand, ".cwl", sep = "")
@@ -1178,7 +1170,7 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout = TRUE,
     if (is.null(commandLine$requeriments)) {
         dump <- "do nothing"
     } else if (!is.null(commandLine$requeriments)) {
-        requeriments <- list() ## TODO
+        requeriments <- list()
         clt <- c(clt, list(requeriments = requeriments))
     }
     ## ARGUMENTS
@@ -1249,7 +1241,6 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, writeout
     ## yamlinput_yml
     yamlinput_yml <- sapply(names(inputs), function(x) list())
     for (i in seq_along(inputs)) {
-        ## TODO!!!
         if (!c("type") %in% names(inputs[[i]])) stop("Each element of the sublist 'inputs' in 'commandLine' needs to be defined the type of the argument, for example: type='Directory' or type='File' or type='int' or type='string'")
         if ("type" %in% names(inputs[[i]])) {
             if (any(c("File", "Directory") %in% inputs[[i]])) {
