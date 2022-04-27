@@ -214,7 +214,8 @@ setMethod("SampleName", signature = "SYSargs2", definition = function(x) {
     targets_x <- targets(x)
     if (length(targets_x) > 0) {
         sample_name_x <- as(x, "DataFrame")
-        return(sample_name_x$SampleName)
+        id <- x[['files']][['id']]
+        return(sample_name_x[[id]])
     } else if (length(targets_x) == 0) {
         message("This step doesn't contain multiple samples.")
     }

@@ -227,10 +227,17 @@ setMethod("SampleName", signature = "SYSargsList", definition = function(x, step
     } else if (inherits(step, "character")) {
         if (!step %in% stepName(x)) stop("We can not find this step in the Workflow")
     }
-    if (!is.null(targetsWF(x)[[step]]$SampleName)) {
-        return(targetsWF(x)[[step]]$SampleName)
-    } else if (is.null(targetsWF(x)[[step]]$SampleName)) {
-        message("This step doesn't contain multiple samples.")
+    id <- stepsWF(x)[[step]][['files']][['id']]
+    if(is.null(id)){
+        #message("This is a LineWise step.")
+        return(NULL)
+    } else {
+        names <- targetsWF(x)[[step]]
+        if (length(names) > 1) {
+            return(names[[id]])
+        } else {
+            message("This step doesn't contain multiple samples.")
+        }
     }
 })
 
