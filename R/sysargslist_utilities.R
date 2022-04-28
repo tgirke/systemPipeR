@@ -494,10 +494,10 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     ## time
                     args.run@status$status.time$time_start <- as.POSIXct(args.run@status$status.time$time_start, origin = "1970-01-01")
                     args.run@status$status.time$time_end <- as.POSIXct(args.run@status$status.time$time_end, origin = "1970-01-01")
-                    cat(readLines(args.run$files$log),
-                        file = file_log, sep = "\n",
-                        append = TRUE
-                    )
+                    # cat(readLines(args.run$files$log),
+                    #     file = file_log, sep = "\n",
+                    #     append = TRUE
+                    # )
                     ## moving file #reg$file.dir to new directory
                     output_path_args <- .getPath(args.run$output[[run_targets[1]]][[1]][1])
                     output_path_reg <- .getPath(reg$file.dir)
@@ -520,11 +520,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 stepsWF(args2, single.step) <- args.run
                 args2[["outfiles"]][[single.step]] <- .outList2DF(args.run)
                 args2 <- .updateAfterRunC(args2, single.step)
-                ## logs
-                cat(readLines(args2[["stepsWF"]][[single.step]]$files$log),
-                    file = file_log, sep = "\n",
-                    append = TRUE
-                )
+
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
                 ## Stop workflow
@@ -539,6 +535,11 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                         stop("Caught an error, stop workflow!")
                     }
                 }
+                ## logs
+                cat(readLines(args2[["stepsWF"]][[single.step]]$files$log),
+                		file = file_log, sep = "\n",
+                		append = TRUE
+                )
                 cat(status_color(step.status.summary)("Step Status: ", step.status.summary, "\n"))
                 ## LineWise ##
             } else if (inherits(args.run, "LineWise")) {
@@ -553,7 +554,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     cat(crayon::bgMagenta("Running Session: Management"), "\n")
                     # RUN
                     args.run <- runRcode(args.run,
-                        step = single.step, file_log = file_log_Rcode,
+                        step = single.step, file_log_Rcode = file_log_Rcode,
                         envir = envir, force = force
                     )
                 } else if (run_location == "compute") {
@@ -563,7 +564,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     save(list = viewEnvir(args2, silent = TRUE), file = tempImage, envir = envir)
                     list_return <- clusterRCode(args.run,
                         step = single.step, sysproj = sysproj,
-                        file_log = file_log_Rcode, force = force,
+                        file_log_Rcode = file_log_Rcode, force = force,
                         tempImage = tempImage, loaded_pkgs = loaded_pkgs,
                         resources = run_resorces
                     )
@@ -624,6 +625,14 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
             run_targets <- NULL
         }
     }
+    ## Each time the workflow is executed, a new logs report should be generated (HTML format), via sal <- renderLogs(sal)
+    if(!is.null(args2$projectInfo$Report)){
+    	args2@projectInfo$Report_Logs <- NA
+    }
+    assign(
+    	x = as.character(as.list(match.call())$sysargs), args2,
+    	envir = envir
+    )
     if (saveEnv == TRUE) {
         envPath <- file.path(sysproj, "sysargsEnv.rds")
         if (any(as.character(as.list(match.call())$sysargs) %in% ls(sysargs@runInfo$env, all.names = TRUE))) {
@@ -634,35 +643,43 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     }
     if (!silent) .renderMsg()
     args2 <- .check_write_SYSargsList(args2, TRUE)
-    # return(args2)
+    on.exit(return(args2))
 }
 ## Usage:
 ## runWF(sal)
 
-
-
 ############################
 ## clusterRCode function ##
 ############################
-clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, loaded_pkgs, resources) {
+clusterRCode <- function(args.run, step, sysproj, file_log_Rcode, force, tempImage, loaded_pkgs, resources) {
     checkPkg("batchtools", quietly = FALSE)
     if (!file.exists(tempImage)) stop("Something went wrong, temporary 'image' doesn't exist.", call. = FALSE)
     if (all(args.run$status$status.summary == "Success" && !force)) {
-        ## file_log information about skipping this step
-        cat("The expected output file(s) already exist", "\n", file = file_log, fill = TRUE, append = TRUE)
+    	## Print at the log_file
+    	cat(c(
+    		paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
+    		"## Code: ",
+    		"```{r, eval=FALSE} ",
+    		utils::capture.output(codeLine(args.run)),
+    		"```", "\n",
+    		"## Stdout: ",
+    		"```{r, eval=FALSE}", 
+    		"The expected output file(s) already exist", "\n"
+    	), file = file_log_Rcode, sep = "\n", fill = TRUE, append = TRUE)
         ## close R chunk
-        cat("```", file = file_log, sep = "\n", append = TRUE)
+        cat("```", file = file_log_Rcode, sep = "\n", append = TRUE)
+        args.run@files$log <- file_log_Rcode
         list_return <- list(args = args.run, loaded_pkgs = loaded_pkgs, tempImage = tempImage)
         return(list_return)
     }
     ## Function definition
-    fct <- function(i, args.run, step, file_log, force,
+    fct <- function(i, args.run, step, file_log_Rcode, force,
                     tempImage, loaded_pkgs, ...) {
         load(file.path(tempImage))
         ls_list1 <- ls()
         lapply(loaded_pkgs, require, character.only = TRUE)
         args <- runRcode(
-            args = args.run, step = step, file_log = file_log,
+            args = args.run, step = step, file_log_Rcode = file_log_Rcode,
             envir = environment(), force = force
         )
         loaded_pkgs <- .packages()
@@ -676,7 +693,7 @@ clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, lo
     template <- resources$template
     reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
     ids <- batchtools::batchMap(fun = fct, 1, more.args = list(
-        args.run = args.run, step = step, file_log = file_log,
+        args.run = args.run, step = step, file_log_Rcode = file_log_Rcode,
         force = force, tempImage = tempImage,
         loaded_pkgs = loaded_pkgs
     ), reg = reg)
@@ -711,13 +728,13 @@ status_color <- function(x) {
 #######################
 ## runRcode function ##
 #######################
-runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globalenv(), force = FALSE) {
+runRcode <- function(args, step = stepName(args), file_log_Rcode = NULL, envir = globalenv(), force = FALSE) {
     ## Validation for 'args'
     if (!inherits(args, "LineWise")) stop("Argument 'args' needs to be assigned an object of class 'LineWise'")
     pb <- txtProgressBar(min = 0, max = length(args), style = 3)
     ## log_file
-    if (is.null(file_log)) {
-        file_log <- paste0("_logRcode_", format(Sys.time(), "%b%d%Y_%H%M"))
+    if (is.null(file_log_Rcode)) {
+        file_log_Rcode <- paste0("_logRcode_", format(Sys.time(), "%b%d%Y_%H%M"))
     }
     ## Print at the log_file
     cat(c(
@@ -728,11 +745,11 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         "```", "\n",
         "## Stdout: ",
         "```{r, eval=FALSE}"
-    ), file = file_log, sep = "\n", append = TRUE)
+    ), file = file_log_Rcode, sep = "\n", append = TRUE)
     ## Check status of step
     if (all(args$status$status.summary == "Success" && force == FALSE)) {
         args[["status"]]$status.time$time_start <- Sys.time()
-        cat("The step status is 'Success' and it was skipped.", file = file_log, fill = TRUE, append = TRUE, sep = "\n")
+        cat("The step status is 'Success' and it was skipped.", file = file_log_Rcode, fill = TRUE, append = TRUE, sep = "\n")
         args[["status"]]$status.time$time_end <- Sys.time()
     } else {
         ## Status and time register
@@ -742,15 +759,15 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         ## Running the code
         stdout <- .tryRcode(args$codeLine, envir = envir)
         ## save stdout to file
-        utils::capture.output(stdout$stdout, file = file_log, append = TRUE)
+        utils::capture.output(stdout$stdout, file = file_log_Rcode, append = TRUE)
         ## save error and warning messages
         if (!is.null(stdout$error)) {
-            cat("## Error", file = file_log, sep = "\n", append = TRUE)
-            cat(stdout$error, file = file_log, sep = "\n", append = TRUE)
+            cat("## Error", file = file_log_Rcode, sep = "\n", append = TRUE)
+            cat(stdout$error, file = file_log_Rcode, sep = "\n", append = TRUE)
             step_status[["status.summary"]] <- "Error"
         } else if (!is.null(stdout$warning)) {
-            cat("## Warning", file = file_log, sep = "\n", append = TRUE)
-            cat(stdout$warning, file = file_log, sep = "\n", append = TRUE)
+            cat("## Warning", file = file_log_Rcode, sep = "\n", append = TRUE)
+            cat(stdout$warning, file = file_log_Rcode, sep = "\n", append = TRUE)
             step_status[["status.summary"]] <- "Warning"
         } else if (all(is.null(stdout$error) && is.null(stdout$warning))) {
             step_status[["status.summary"]] <- "Success"
@@ -764,9 +781,9 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
     }
     utils::setTxtProgressBar(pb, length(args))
     ## close R chunk
-    cat("``` \n", file = file_log, sep = "\n", append = TRUE)
+    cat("``` \n", file = file_log_Rcode, sep = "\n", append = TRUE)
     close(pb)
-    args[["files"]] <- list(log = file_log)
+    args[["files"]] <- list(log = file_log_Rcode)
     return(args)
 }
 
