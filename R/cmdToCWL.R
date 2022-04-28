@@ -1,17 +1,18 @@
+#######################
 ## createParamFiles ##
-createParamFiles <- function(commandline, cwlVersion = "v1.1", class = "CommandLineTool", 
-                             results_path = "./results", module_load = "baseCommand", 
-                             file = "default", writeParamFiles = TRUE, confirm=FALSE,
+#######################
+createParamFiles <- function(commandline, cwlVersion = "v1.1", class = "CommandLineTool",
+                             results_path = "./results", module_load = "baseCommand",
+                             file = "default", writeParamFiles = TRUE, confirm = FALSE,
                              overwrite = FALSE, silent = FALSE) {
     commandline <- .modifyCwlParse(commandline = commandline)
-    if (all(interactive() && confirm==FALSE)) {
-      
+    if (all(interactive() && confirm == FALSE)) {
         correct <- readline(cat(
             cat(crayon::bgMagenta("*****Checking Output*****\n")),
             "Is it all correct? ", "\n",
             "Would you like to proceed now? Type a number: \n 1. Yes \n 2. No \n"
         ))
-        if(all(is.na(pmatch(c(1,2), correct)))) stop("Unrecognized response ", dQuote(correct))
+        if (all(is.na(pmatch(c(1, 2), correct)))) stop("Unrecognized response ", dQuote(correct))
     } else {
         ## For an non-interactive session
         correct <- "1"
@@ -25,17 +26,17 @@ createParamFiles <- function(commandline, cwlVersion = "v1.1", class = "CommandL
         if (writeParamFiles) {
             ## Action to save files
             writeParamFiles(sysargs = WF, file = file, overwrite = overwrite, silent = silent)
-        } 
+        }
         ## Return
         return(WF)
     } else if (correct == "2") {
-      message("Please try to adjust the raw command line and try again!")
+        message("Please try to adjust the raw command line and try again!")
     }
 }
 
 createParam <- createParamFiles
 
-## Usage: 
+## Usage:
 # command <- "
 # hisat2 \
 #     -S <F, out: ./results/M1A.sam> \
@@ -50,8 +51,9 @@ createParam <- createParamFiles
 # cmd <- createParamFiles(command)
 # cmdlist(cmd)
 
-
+#######################
 ## writeParamFiles ##
+#######################
 writeParamFiles <- function(sysargs, file = "default", overwrite = TRUE, silent = FALSE) {
     if (any(length(cmdlist(sysargs)[[1]]) == 0)) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargs2' fully rendered.")
     baseCommand <- clt(sysargs)[[1]]$baseCommand
@@ -71,16 +73,18 @@ writeParamFiles <- function(sysargs, file = "default", overwrite = TRUE, silent 
         }
     }
     if (file.exists(file.cwl) & overwrite == FALSE) {
-          stop("I am not allowed to overwrite files; please delete existing file: ",
-              file.cwl, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
-          )
-      }
+        stop(
+            "I am not allowed to overwrite files; please delete existing file: ",
+            file.cwl, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
+        )
+    }
     if (file.exists(file.yml) & overwrite == FALSE) {
-          stop("I am not allowed to overwrite files; please delete existing file: ",
-              file.yml, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
-          )
-      }
-    args <- sysargs2(sysargs) ## TODO
+        stop(
+            "I am not allowed to overwrite files; please delete existing file: ",
+            file.yml, " or set 'overwrite=TRUE', or provide a different name in the 'file' argument"
+        )
+    }
+    args <- sysargs2(sysargs) 
     cwlVersion <- args$clt[[1]]$cwlVersion
     class <- args$clt[[1]]$class
     module_load <- args$yamlinput$ModulesToLoad[[1]]
@@ -89,11 +93,13 @@ writeParamFiles <- function(sysargs, file = "default", overwrite = TRUE, silent 
     yamlinput <- write.yml(args$cmdToCwl, file.yml = file.yml, results_path = results_path, module_load = module_load, writeout = TRUE, silent = silent)
 }
 
-## Usage: 
+## Usage:
 # cmd <- createParamFiles(command)
 # writeParamFiles(cmd)
 
+################
 ## printParam ##
+################
 printParam <- function(sysargs, position, index = NULL) {
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
@@ -120,8 +126,9 @@ printParam <- function(sysargs, position, index = NULL) {
 # printParam(cmd, position = "inputs", index = c("S", "U"))
 # printParam(cmd, position = "inputs", index = -1:-2)
 
-
+##################
 ## subsetParam  ##
+##################
 subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FALSE) {
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
@@ -134,7 +141,7 @@ subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FAL
         return(invisible(sysargs))
     } else {
         if (inherits(sysargs, "cwlParse")) {
-          sysargs <- .modifyCwlParse(
+            sysargs <- .modifyCwlParse(
                 commandline = sysargs, position = position,
                 index = index, trim = trim, mute = mute
             )
@@ -149,8 +156,9 @@ subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FAL
 # cmd3 <- subsetParam(cmd, position = "inputs", index = -1, trim = TRUE)
 # cmdlist(cmd3)
 
-
+###################
 ## replaceParam  ##
+###################
 replaceParam <- function(sysargs, position, index = NULL, replace, mute = FALSE) {
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
@@ -163,7 +171,7 @@ replaceParam <- function(sysargs, position, index = NULL, replace, mute = FALSE)
         return(invisible(sysargs))
     } else {
         if (inherits(sysargs, "cwlParse")) {
-          sysargs <- .modifyCwlParse(
+            sysargs <- .modifyCwlParse(
                 commandline = sysargs, position = position,
                 index = index, replacing = replace, mute = mute
             )
@@ -175,21 +183,21 @@ replaceParam <- function(sysargs, position, index = NULL, replace, mute = FALSE)
 ## Usage:
 # cmd4 <- replaceParam(cmd, "base", index = 1, replace = list(baseCommand = "bwa"))
 # cmdlist(cmd4)
-# 
+#
 # newIn <- new_inputs <- list(
 #     "new_input1" = list(type = "File", preF="-b", yml ="myfile"),
 #     "new_input2" = "-L <int: 4>"
 # )
 # cmd5 <- replaceParam(cmd, "inputs", index = 1:2, replace = new_inputs)
 # cmdlist(cmd5)
-# 
+#
 # # string format
 # new_outs <- list(
 #     "sam_out" = "<F: $(inputs.results_path)/test.sam>"
 # )
-# cmd6 <- replaceParam(cmd, "outputs", index = 1, replace = new_outs) 
+# cmd6 <- replaceParam(cmd, "outputs", index = 1, replace = new_outs)
 # output(cmd6)
-# 
+#
 # # list format
 # new_outs <- list(
 #     "sam_out" = list(type = "File", value = "$(inputs.results_path)/test2.sam")
@@ -197,7 +205,9 @@ replaceParam <- function(sysargs, position, index = NULL, replace, mute = FALSE)
 # cmd7 <- replaceParam(cmd, "outputs", index = 1, replace = new_outs)
 # output(cmd7)
 
+###################
 ## renameParam  ##
+###################
 renameParam <- function(sysargs, position, index = FALSE, rename, mute = FALSE) {
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
@@ -210,7 +220,7 @@ renameParam <- function(sysargs, position, index = FALSE, rename, mute = FALSE) 
         return(invisible(sysargs))
     } else {
         if (inherits(sysargs, "cwlParse")) {
-          sysargs <- .modifyCwlParse(
+            sysargs <- .modifyCwlParse(
                 commandline = sysargs, position = position,
                 index = index, rename = rename, mute = mute
             )
@@ -222,8 +232,10 @@ renameParam <- function(sysargs, position, index = FALSE, rename, mute = FALSE) 
 # ## Usage:
 # cmd8 <- renameParam(cmd, "inputs", index = c("S"), rename = c("Sample"))
 
+###################
 ## appendParam  ##
-appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mute = FALSE) {
+###################
+appendParam <- function(sysargs, position, index = NULL, append, after = NULL, mute = FALSE) {
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
         newParam <- .modifyCwlParse(
@@ -235,7 +247,7 @@ appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mut
         return(invisible(sysargs))
     } else {
         if (inherits(sysargs, "cwlParse")) {
-          sysargs <- .modifyCwlParse(
+            sysargs <- .modifyCwlParse(
                 commandline = sysargs, position = position,
                 index = index, appending = append, after = after, mute = mute
             )
@@ -251,11 +263,13 @@ appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mut
 # )
 # cmd9 <- appendParam(cmd, "inputs", append = new_inputs)
 # cmdlist(cmd9)
-# 
+#
 # cmd10 <- appendParam(cmd, "inputs", append = new_inputs, after=0)
 # cmdlist(cmd10)
 
-## Internal Functions
+############################
+## ## Internal Functions  ##
+############################
 .cmdToCwl <- function(cmd, mute = FALSE) {
     . <- slash_line <- NULL
     stopifnot(is.character(cmd) && length(cmd) == 1)
@@ -342,14 +356,14 @@ appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mut
 
 ########## .modifyCwlParse ##########
 .modifyCwlParse <- function(commandline,
-                           position = NULL,
-                           index = NULL,
-                           trim = FALSE,
-                           replacing = NULL,
-                           appending = NULL,
-                           after = NULL,
-                           rename = NULL,
-                           mute = FALSE) {
+                            position = NULL,
+                            index = NULL,
+                            trim = FALSE,
+                            replacing = NULL,
+                            appending = NULL,
+                            after = NULL,
+                            rename = NULL,
+                            mute = FALSE) {
     # assertions
     if (inherits(commandline, "character")) {
         commandline <- .cmdToCwl(commandline, mute = TRUE)
@@ -704,8 +718,6 @@ appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mut
     commandline
 }
 
-
-
 ## in/out parsing methods
 .parseNewIn <- function(newIn, print_word = "replacing") {
     in_names <- names(newIn)
@@ -799,16 +811,16 @@ appendParam <- function(sysargs, position, index = NULL, append, after=NULL, mut
     cmd_list <- outStr
     if (!stringr::str_detect(cmd_list, "^<.*>$")) stop("Invalid string: '", outStr, " ', needs to be inside '<...>'")
     if (length(stringr::str_extract_all(cmd_list, ":", simplify = TRUE)) != 1) {
-          stop("Invalid string: '", outStr, " ', needs to have exact 1 ':'")
-      }
+        stop("Invalid string: '", outStr, " ', needs to have exact 1 ':'")
+    }
 
     cmd_args <- cmd_list %>%
         stringr::str_remove("^<") %>%
         stringr::str_remove(">$") %>%
         stringr::str_split(": ")
     if (stringr::str_detect(cmd_args[[1]][1], "\\W")) {
-          stop("Invalid string: '", outStr, " ', no special character for output type")
-      }
+        stop("Invalid string: '", outStr, " ', no special character for output type")
+    }
 
     cmd_arg_defaults <- unlist(lapply(cmd_args, `[[`, 2)) %>%
         stringr::str_remove("^[ ]+") %>%

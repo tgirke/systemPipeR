@@ -119,7 +119,7 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
     header <- header <- paste0("```{r ", step_name, ", eval=FALSE, spr=TRUE}", collapse = "")
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
     rep_code <- if (req == "optional") paste0("    run_step = c('optional'),") else paste0("    run_step = c('mandatory'),")
-    ses_code <- if (session == "compute") paste0("    run_session = c('compute'),") else paste0("    run_session = c('management')\n)")
+    ses_code <- if (session == "compute") paste0("    run_session = c('compute')") else paste0("    run_session = c('management')")
     rcode <- c(
         paste0("# Step", i, " ", step_name, collapse = ""),
         header,
@@ -130,7 +130,7 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
         dep_code,
         rep_code,
         ses_code,
-        "```\n\n"
+        ")\n```\n\n"
     )
     if (return == "write") {
         writeLines(
@@ -151,7 +151,7 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
     name_code <- paste0("    step_name = '", step_name, "',")
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
     rep_code <- if (req == "optional") paste0("    run_step = c('optional'),") else paste0("    run_step = c('mandatory'),")
-    ses_code <- if (session == "compute") paste0("    run_session = c('compute'),") else paste0("    run_session = c('management')")
+    ses_code <- if (session == "compute") paste0("    run_session = c('compute')") else paste0("    run_session = c('management')")
     targets_text <- if (!is.na(sal$stepsWF[[i]]$files$targets)) {
         paste0('    targets = "', sal$stepsWF[[i]]$files$targets, '",')
     } else if (!is.null(t_con)) {

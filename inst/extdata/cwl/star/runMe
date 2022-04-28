@@ -1,7 +1,5 @@
 ### Alignment with _`STAR`_ 
 
-TODO: Description
-
 ```{r star_alignment, eval=FALSE}
 ## Build the index:
 dir_path <- system.file("extdata/cwl/star/star-idx", package="systemPipeR")

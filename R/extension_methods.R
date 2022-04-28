@@ -69,12 +69,6 @@ SPRdata <- function(counts = S4Vectors::SimpleList(), rowData = NULL, rowRanges 
     }
 }
 
-## TODO
-## rowData matching with all the assays
-## rowRanges
-## from sprSE to targets and cmp
-
-
 ## Usage:
 # Targets file
 # targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
