@@ -1,6 +1,7 @@
 changelog
-    version 2.3.0
+    version 2.3.1
         - Fix style of R files
+        - Improvement of runWF and renderLogs functions
         
     version 2.1.31
         - Update vignette.
