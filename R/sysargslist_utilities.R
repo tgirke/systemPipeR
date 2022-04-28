@@ -8,11 +8,11 @@
 ## Detection and creation of the logs directory of the project
 ## This function detects an existing project or creates a project structure on the path provide
 SPRproject <- function(projPath = getwd(), data = "data", param = "param", results = "results",
-                        logs.dir = ".SPRproject", sys.file = "SYSargsList.yml",
-                        envir = new.env(),
-                        restart = FALSE, resume = FALSE,
-                        load.envir = FALSE,
-                        overwrite = FALSE, silent = FALSE) {
+                       logs.dir = ".SPRproject", sys.file = "SYSargsList.yml",
+                       envir = new.env(),
+                       restart = FALSE, resume = FALSE,
+                       load.envir = FALSE,
+                       overwrite = FALSE, silent = FALSE) {
     if (!file.exists(projPath)) stop("Provide valid 'projPath' PATH.")
     projPath <- normalizePath(projPath)
     on.exit(options(projPath = projPath), add = TRUE)
@@ -44,10 +44,12 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
             stop("Please select only one action:
         'resume' OR 'restart' OR 'overwrite'")
         } else if (all(resume == FALSE && restart == FALSE && overwrite == FALSE)) {
-            stop(file.path(projPath, logs.dir),
-                 " already exists.", "\n",
-                 "The Workflow can be resume where it was stopped, using the argument 'resume=TRUE'",
-                 "\n", "OR ", "restart using 'restart=TRUE'. The latter will recover the workflow object, however, it will delete all the existing logs.")
+            stop(
+                file.path(projPath, logs.dir),
+                " already exists.", "\n",
+                "The Workflow can be resume where it was stopped, using the argument 'resume=TRUE'",
+                "\n", "OR ", "restart using 'restart=TRUE'. The latter will recover the workflow object, however, it will delete all the existing logs."
+            )
         } else if (all(overwrite == TRUE && resume == FALSE && restart == FALSE)) {
             ## Return SYSargsList obj - empty
             unlink(logs.dir, recursive = TRUE)
@@ -133,20 +135,14 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
     on.exit({
         options(replace_step = FALSE)
         options(spr_importing = FALSE)
-        # options(importwf_options = NULL)
     })
-    # if (!is.null(getOption("importwf_options"))) {
-    #     step_name <- getOption("importwf_options")[[1]]
-    #     .checkSpecialChar(step_name)
-    #     dependency <- getOption("importwf_options")[[2]]
-    # }
     ## check options
     run_step <- match.arg(run_step, c("mandatory", "optional"))
     run_session <- match.arg(run_session, c("management", "compute"))
     if (!is.null(run_remote_resources)) {
         if (!inherits(run_remote_resources, "list")) {
-              stop("Argument 'run_remote_resources' needs to be assigned an object of class 'list'")
-          }
+            stop("Argument 'run_remote_resources' needs to be assigned an object of class 'list'")
+        }
     }
     ## sal object
     sal <- as(SYScreate("SYSargsList"), "list")
@@ -215,9 +211,9 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 targets_step <- targets
                 targets <- NULL
             }
-        } else if(inherits(targets, "SummarizedExperiment")) {
+        } else if (inherits(targets, "SummarizedExperiment")) {
             se <- targets
-            if(sum(dim(colData(targets))) == 0){
+            if (sum(dim(colData(targets))) == 0) {
                 targets <- NULL
             } else {
                 targets <- targets
@@ -239,7 +235,7 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
         ## Relative Path for targets and dir_path when these files are in the project folder,
         ## otherwise, keep the full path
         ## targets_path to projPath
-        if(!is.null( WF$files$targets)){
+        if (!is.null(WF$files$targets)) {
             if (!grepl(projPath, WF$files$targets)) {
                 if (!is.na(WF$files$targets)) WF@files$targets <- gsub(projPath, "", WF$files$targets)
                 if (all(!is.fullPath(WF$files$targets) && grepl("^/", WF$files$targets))) WF@files$targets <- sub("^(/|[A-Za-z]:|\\\\|~)", "", WF$files$targets)
@@ -307,15 +303,16 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
             if (length(targets(sal$stepsWF[[1]])) > 0) {
                 sal$targetsWF <- list(as(sal$stepsWF[[1]], "DataFrame"))
                 rownames(sal$targetsWF[[1]]) <- sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
-                rownames(sal$outfiles[[1]]) <-  sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
+                rownames(sal$outfiles[[1]]) <- sal$targetsWF[[1]][, sal$stepsWF[[1]]$files$id]
                 if (exists("se", inherits = FALSE)) {
                     colData(se) <- sal$targetsWF[[1]]
-                    metadata(se) <- list(metadata=metadata(se), SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)
+                    metadata(se) <- list(metadata = metadata(se), SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)
                     sal$SE <- list(se)
                 } else {
                     sal$SE <- list(SummarizedExperiment::SummarizedExperiment(
                         colData = sal$targetsWF[[1]],
-                        metadata = list(SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)))
+                        metadata = list(SPRversion = utils::packageVersion("systemPipeR"), targetsheader = sal$stepsWF[[1]]$targetsheader)
+                    ))
                 }
             } else {
                 sal$targetsWF <- list(S4Vectors::DataFrame())
@@ -324,13 +321,12 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
                 } else {
                     sal$SE <- list(SummarizedExperiment::SummarizedExperiment())
                 }
-
             }
         }
         names(sal$targetsWF) <- names(sal$SE) <- step_name
     }
     sal <- as(sal, "SYSargsList")
-    return(sal)
+    on.exit(return(sal))
 }
 
 ####################
@@ -370,11 +366,13 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
            Please check 'SPRproject' help file.")
     }
     if (projectInfo(sysargs)$project != normalizePath(getwd())) {
-        stop("Your current working directory is different from the directory chosen for the Project Workflow.",
-             "\n",
-             "For accurate location of the files and running the Workflow, please set the working directory to ",
-             "\n",
-             "'setwd('", projectInfo(sysargs)$project, "')'")
+        stop(
+            "Your current working directory is different from the directory chosen for the Project Workflow.",
+            "\n",
+            "For accurate location of the files and running the Workflow, please set the working directory to ",
+            "\n",
+            "'setwd('", projectInfo(sysargs)$project, "')'"
+        )
     }
     if (!dir.exists(projectInfo(sysargs)$logsDir)) stop("Project logsDir doesn't exist. Something went wrong...
         It is possible to restart the workflow saving the SYSargsList object with 'write_SYSargsList()' and restarting the project with 'SPRproject()'")
@@ -424,7 +422,6 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
     sysargs[["projectInfo"]]$logsFile <- file_log
     ## Select steps for the loop based on the steps argument
     args2 <- sysargs
-    #on.exit(return(args2))
     if (is.null(steps)) steps <- 1:length(args2)
     ## Select steps for the loop based on the run_step
     if (run_step != "ALL") {
@@ -498,8 +495,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                         force = force, input_targets = run_targets, ...
                     )
                 } else if (run_location == "compute") {
-                    cat(crayon::bgMagenta("Running Session: Compute Session"
-                                          ), "\n")
+                    cat(crayon::bgMagenta("Running Session: Compute Session"), "\n")
                     if (is.null(run_resorces)) stop("Resources are not available for this step.")
                     reg <- clusterRun(args.run[c(run_targets)],
                         FUN = runCommandline,
@@ -515,16 +511,13 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     )
                     batchtools::waitForJobs()
                     args.run <- .clusterRunResults(args.run, reg, nTargets = length(run_targets))
-                    # print(args.run$status)
                     ## time
                     args.run@status$status.time$time_start <- as.POSIXct(args.run@status$status.time$time_start, origin = "1970-01-01")
                     args.run@status$status.time$time_end <- as.POSIXct(args.run@status$status.time$time_end, origin = "1970-01-01")
-                    # print(args.run$status)
-                    # return(reg)
-                    cat(readLines(args.run$files$log),
-                        file = file_log, sep = "\n",
-                        append = TRUE
-                    )
+                    # cat(readLines(args.run$files$log),
+                    #     file = file_log, sep = "\n",
+                    #     append = TRUE
+                    # )
                     ## moving file #reg$file.dir to new directory
                     output_path_args <- .getPath(args.run$output[[run_targets[1]]][[1]][1])
                     output_path_reg <- .getPath(reg$file.dir)
@@ -547,11 +540,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                 stepsWF(args2, single.step) <- args.run
                 args2[["outfiles"]][[single.step]] <- .outList2DF(args.run)
                 args2 <- .updateAfterRunC(args2, single.step)
-                ## logs
-                cat(readLines(args2[["stepsWF"]][[single.step]]$files$log),
-                file = file_log, sep = "\n",
-                append = TRUE
-                )
+
                 ## assign to the envir
                 assign(x = as.character(as.list(match.call())$sysargs), args2, envir = envir)
                 ## Stop workflow
@@ -566,8 +555,13 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                         stop("Caught an error, stop workflow!")
                     }
                 }
+                ## logs
+                cat(readLines(args2[["stepsWF"]][[single.step]]$files$log),
+                		file = file_log, sep = "\n",
+                		append = TRUE
+                )
                 cat(status_color(step.status.summary)("Step Status: ", step.status.summary, "\n"))
-            ## LineWise ##
+                ## LineWise ##
             } else if (inherits(args.run, "LineWise")) {
                 if (!is.null(targets_internal)) message("'targets' argument has been ignored since this step is 'LineWise' instance.")
                 ## assign to the envir
@@ -580,7 +574,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     cat(crayon::bgMagenta("Running Session: Management"), "\n")
                     # RUN
                     args.run <- runRcode(args.run,
-                        step = single.step, file_log = file_log_Rcode,
+                        step = single.step, file_log_Rcode = file_log_Rcode,
                         envir = envir, force = force
                     )
                 } else if (run_location == "compute") {
@@ -590,7 +584,7 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     save(list = viewEnvir(args2, silent = TRUE), file = tempImage, envir = envir)
                     list_return <- clusterRCode(args.run,
                         step = single.step, sysproj = sysproj,
-                        file_log = file_log_Rcode, force = force,
+                        file_log_Rcode = file_log_Rcode, force = force,
                         tempImage = tempImage, loaded_pkgs = loaded_pkgs,
                         resources = run_resorces
                     )
@@ -607,10 +601,12 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
                     unlink(tempImage)
                 }
                 ## time - double-check
-                if(is.numeric(args.run@status$total.time$time_start))
+                if (is.numeric(args.run@status$total.time$time_start)) {
                     args.run@status$total.time$time_start <- as.POSIXct(args.run@status$total.time$time_start, origin = "1970-01-01")
-                if(is.numeric(args.run@status$total.time$time_end))
+                }
+                if (is.numeric(args.run@status$total.time$time_end)) {
                     args.run@status$total.time$time_end <- as.POSIXct(args.run@status$total.time$time_start, origin = "1970-01-01")
+                }
                 ## assign all the new object to the envir
                 assign(
                     "args2", get(as.character(as.list(match.call())$sysargs), envir),
@@ -649,6 +645,14 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
             run_targets <- NULL
         }
     }
+    ## Each time the workflow is executed, a new logs report should be generated (HTML format), via sal <- renderLogs(sal)
+    if(!is.null(args2$projectInfo$Report)){
+    	args2@projectInfo$Report_Logs <- NA
+    }
+    assign(
+    	x = as.character(as.list(match.call())$sysargs), args2,
+    	envir = envir
+    )
     if (saveEnv == TRUE) {
         envPath <- file.path(sysproj, "sysargsEnv.rds")
         if (any(as.character(as.list(match.call())$sysargs) %in% ls(sysargs@runInfo$env, all.names = TRUE))) {
@@ -657,53 +661,45 @@ runWF <- function(sysargs, steps = NULL, targets = NULL,
         saveRDS(args2$runInfo$env, envPath)
         args2[["projectInfo"]][["envir"]] <- envPath
     }
-    if(!silent) .renderMsg()
+    if (!silent) .renderMsg()
     args2 <- .check_write_SYSargsList(args2, TRUE)
-    #return(args2)
+    on.exit(return(args2))
 }
 ## Usage:
 ## runWF(sal)
 
 ############################
-## .renderMsg function ##
-############################
-.renderMsg <- function(){
-    warn_flag <- getOption("spr_render_msg")
-    if(isTRUE(warn_flag)) return()
-    cat(
-        crayon::green$bold("Done with workflow running, now consider rendering logs & reports\n"),
-        crayon::blue("To render logs, run:    "), "sal <- renderLogs(sal)\n",
-        crayon::blue("From command-line:      "), 'Rscript -e "sal = systemPipeR::SPRproject(resume = TRUE); sal = systemPipeR::renderLogs(sal)"\n',
-        crayon::blue("To render reports, run: "), 'sal <- renderReport(sal)\n',
-        crayon::blue("From command-line:      "), 'Rscript -e "sal= s ystemPipeR::SPRproject(resume = TRUE); sal = systemPipeR::renderReport(sal)"\n',
-        crayon::make_style("white")$bold("This message is displayed once per R session\n"),
-        sep = ""
-    )
-    options(spr_render_msg = TRUE)
-}
-
-############################
 ## clusterRCode function ##
 ############################
-clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, loaded_pkgs, resources) {
+clusterRCode <- function(args.run, step, sysproj, file_log_Rcode, force, tempImage, loaded_pkgs, resources) {
     checkPkg("batchtools", quietly = FALSE)
     if (!file.exists(tempImage)) stop("Something went wrong, temporary 'image' doesn't exist.", call. = FALSE)
     if (all(args.run$status$status.summary == "Success" && !force)) {
-        ## file_log information about skipping this step
-        cat("The expected output file(s) already exist", "\n", file = file_log, fill = TRUE, append = TRUE)
+    	## Print at the log_file
+    	cat(c(
+    		paste0("Time: ", paste0(format(Sys.time(), "%b%d%Y_%H%Ms%S"))), "\n",
+    		"## Code: ",
+    		"```{r, eval=FALSE} ",
+    		utils::capture.output(codeLine(args.run)),
+    		"```", "\n",
+    		"## Stdout: ",
+    		"```{r, eval=FALSE}", 
+    		"The expected output file(s) already exist", "\n"
+    	), file = file_log_Rcode, sep = "\n", fill = TRUE, append = TRUE)
         ## close R chunk
-        cat("```", file = file_log, sep = "\n", append = TRUE)
+        cat("```", file = file_log_Rcode, sep = "\n", append = TRUE)
+        args.run@files$log <- file_log_Rcode
         list_return <- list(args = args.run, loaded_pkgs = loaded_pkgs, tempImage = tempImage)
         return(list_return)
     }
     ## Function definition
-    fct <- function(i, args.run, step, file_log, force,
+    fct <- function(i, args.run, step, file_log_Rcode, force,
                     tempImage, loaded_pkgs, ...) {
         load(file.path(tempImage))
         ls_list1 <- ls()
         lapply(loaded_pkgs, require, character.only = TRUE)
         args <- runRcode(
-            args = args.run, step = step, file_log = file_log,
+            args = args.run, step = step, file_log_Rcode = file_log_Rcode,
             envir = environment(), force = force
         )
         loaded_pkgs <- .packages()
@@ -717,7 +713,7 @@ clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, lo
     template <- resources$template
     reg <- batchtools::makeRegistry(file.dir = logdir1, conf.file = conffile, packages = "systemPipeR")
     ids <- batchtools::batchMap(fun = fct, 1, more.args = list(
-        args.run = args.run, step = step, file_log = file_log,
+        args.run = args.run, step = step, file_log_Rcode = file_log_Rcode,
         force = force, tempImage = tempImage,
         loaded_pkgs = loaded_pkgs
     ), reg = reg)
@@ -728,53 +724,6 @@ clusterRCode <- function(args.run, step, sysproj, file_log, force, tempImage, lo
     list_return <- batchtools::loadResult(reg = reg, id = ids)
     message("Jobs completed successfully!")
     return(list_return)
-}
-
-#################################
-## .clusterRunResults function ##
-################################
-.clusterRunResults <- function(args.run, reg, nTargets) {
-    logdir <- reg$file.dir
-    file_log <- file.path(logdir, paste0(
-        "sysargs2_log_",
-        format(Sys.time(), "%b%d%Y_%H%Ms%S"),
-        paste(sample(0:9, 4), collapse = "")
-    ))
-    id_save <- character()
-    for (i in seq_along(1:nTargets)) {
-        ## ind object created by the batchtools
-        newsysargs <- batchtools::loadResult(reg = reg, id = i)
-        id_sysargs <- names(newsysargs$cmdlist)
-        id_save <- c(id_save, id_sysargs)
-        ## update output slot
-        args.run@output[id_sysargs] <- newsysargs$output[id_sysargs]
-        ## Update status slot
-        args.run@status$status.completed[id_sysargs, ] <- newsysargs$status$status.completed[id_sysargs, ]
-        args.run@status$status.time[id_sysargs, ] <- newsysargs$status$status.time[id_sysargs, ]
-        ## time
-        args.run@status$status.time[id_sysargs, ]$time_start <- as.POSIXct(args.run@status$status.time[id_sysargs, ]$time_start, origin = "1970-01-01")
-        args.run@status$status.time[id_sysargs, ]$time_end <- as.POSIXct(args.run@status$status.time[id_sysargs, ]$time_end, origin = "1970-01-01")
-        # time_start <- args.run$status$status.time$time_start[!is.na(args.run$status$status.time$time_start)][1]
-        # time_end_length <- length(args.run$status$status.time$time_end[!is.na(args.run$status$status.time$time_end)])
-        # time_end <- args.run$status$status.time$time_end[!is.na(args.run$status$status.time$time_end)][time_end_length]
-        # args.run@status$total.time <- list(
-        #     time_start = as.POSIXct(time_start, origin = "1970-01-01"),
-        #     time_end = as.POSIXct(time_end, origin = "1970-01-01")
-        # )
-        # args.run@status$total.time <- newsysargs$status$total.time
-        ## Update files logs --> combining
-        logs <- readLines(newsysargs$files$log)
-        write(logs, file_log, append = TRUE, sep = "\n")
-    }
-    time_start <- sort(args.run$status$status.time[id_save, ]$time_start)[1]
-    time_end <- tail(sort(args.run$status$status.time[id_save, ]$time_end), 1)
-    args.run@status$total.time <- list(
-    	time_start = as.POSIXct(time_start, origin = "1970-01-01"),
-    	time_end = as.POSIXct(time_end, origin = "1970-01-01")
-    	)
-    args.run@status$status.summary <- .statusSummary(args.run)
-    args.run@files$log <- file_log
-    return(args.run)
 }
 
 ###########################
@@ -799,13 +748,13 @@ status_color <- function(x) {
 #######################
 ## runRcode function ##
 #######################
-runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globalenv(), force = FALSE) {
+runRcode <- function(args, step = stepName(args), file_log_Rcode = NULL, envir = globalenv(), force = FALSE) {
     ## Validation for 'args'
     if (!inherits(args, "LineWise")) stop("Argument 'args' needs to be assigned an object of class 'LineWise'")
     pb <- txtProgressBar(min = 0, max = length(args), style = 3)
     ## log_file
-    if (is.null(file_log)) {
-        file_log <- paste0("_logRcode_", format(Sys.time(), "%b%d%Y_%H%M"))
+    if (is.null(file_log_Rcode)) {
+        file_log_Rcode <- paste0("_logRcode_", format(Sys.time(), "%b%d%Y_%H%M"))
     }
     ## Print at the log_file
     cat(c(
@@ -816,11 +765,11 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         "```", "\n",
         "## Stdout: ",
         "```{r, eval=FALSE}"
-    ), file = file_log, sep = "\n", append = TRUE)
+    ), file = file_log_Rcode, sep = "\n", append = TRUE)
     ## Check status of step
     if (all(args$status$status.summary == "Success" && force == FALSE)) {
         args[["status"]]$status.time$time_start <- Sys.time()
-        cat("The step status is 'Success' and it was skipped.", file = file_log, fill = TRUE, append = TRUE, sep = "\n")
+        cat("The step status is 'Success' and it was skipped.", file = file_log_Rcode, fill = TRUE, append = TRUE, sep = "\n")
         args[["status"]]$status.time$time_end <- Sys.time()
     } else {
         ## Status and time register
@@ -830,15 +779,15 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
         ## Running the code
         stdout <- .tryRcode(args$codeLine, envir = envir)
         ## save stdout to file
-        utils::capture.output(stdout$stdout, file = file_log, append = TRUE)
+        utils::capture.output(stdout$stdout, file = file_log_Rcode, append = TRUE)
         ## save error and warning messages
         if (!is.null(stdout$error)) {
-            cat("## Error", file = file_log, sep = "\n", append = TRUE)
-            cat(stdout$error, file = file_log, sep = "\n", append = TRUE)
+            cat("## Error", file = file_log_Rcode, sep = "\n", append = TRUE)
+            cat(stdout$error, file = file_log_Rcode, sep = "\n", append = TRUE)
             step_status[["status.summary"]] <- "Error"
         } else if (!is.null(stdout$warning)) {
-            cat("## Warning", file = file_log, sep = "\n", append = TRUE)
-            cat(stdout$warning, file = file_log, sep = "\n", append = TRUE)
+            cat("## Warning", file = file_log_Rcode, sep = "\n", append = TRUE)
+            cat(stdout$warning, file = file_log_Rcode, sep = "\n", append = TRUE)
             step_status[["status.summary"]] <- "Warning"
         } else if (all(is.null(stdout$error) && is.null(stdout$warning))) {
             step_status[["status.summary"]] <- "Success"
@@ -852,83 +801,10 @@ runRcode <- function(args, step = stepName(args), file_log = NULL, envir = globa
     }
     utils::setTxtProgressBar(pb, length(args))
     ## close R chunk
-    cat("``` \n", file = file_log, sep = "\n", append = TRUE)
+    cat("``` \n", file = file_log_Rcode, sep = "\n", append = TRUE)
     close(pb)
-    args[["files"]] <- list(log = file_log)
+    args[["files"]] <- list(log = file_log_Rcode)
     return(args)
-}
-
-########################
-## .tryRcode function ##
-########################
-.tryRcode <- function(command, envir) {
-    warning <- error <- NULL
-    value <- withCallingHandlers(
-        tryCatch(
-            eval(command, envir = envir),
-            error = function(e) {
-                error <<- conditionMessage(e)
-                NULL
-            }
-        ),
-        warning = function(w) {
-            warning <<- append(warning, conditionMessage(w))
-            invokeRestart("muffleWarning")
-        }
-    )
-    list(stdout = value, warning = warning, error = error)
-}
-
-###############################
-## .updateAfterRunC function ##
-###############################
-.updateAfterRunC <- function(args, step) {
-    args2 <- args
-    conList <- args2$targets_connection[lengths(args2$targets_connection) != 0]
-    conList_step <- sapply(conList, "[[", 1)
-    for (l in seq_along(conList_step)) {
-        if (step %in% conList_step[[l]]) {
-            requiredUP <- names(conList)[[l]]
-            for (s in requiredUP) {
-                WF <- args2[s]
-                WFstep <- names(stepsWF(WF))
-                new_targets <- WF$targetsWF[[1]]
-                col_out <- lapply(outfiles(args2), function(x) colnames(x))
-                col_out_l <- sapply(names(col_out), function(x) list(NULL))
-                for (i in names(col_out)) {
-                    col_out_l[[i]] <- col_out[[i]][col_out[[i]] %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
-                }
-                col_out_l <- col_out_l[lapply(col_out_l, length) > 0]
-
-                if (all(sapply(col_out_l, function(x) length(x) == 1))) {
-                    col_out_df <- lapply(names(col_out_l), function(x) getColumn(args2, step = x, position = "outfiles", column = col_out_l[[x]]))
-                    names(col_out_df) <- col_out_l
-                    new_targets[as.character(col_out_l)] <- col_out_df
-                } else {
-                    col_out_df <- data.frame(args2[step]$outfiles[[step]][, col_out_l[[1]]])
-                    names(col_out_df) <- col_out_l[[1]]
-                    new_targets[as.character(col_out_l[[1]])] <- col_out_df
-                }
-                WF2 <- stepsWF(WF)[[1]]
-                WF2 <- updateWF(WF2, new_targets = targets.as.list(data.frame(new_targets)), inputvars = WF2$inputvars, write.yaml = FALSE)
-                ## Preserve outfiles
-                WF2[["output"]] <- WF$stepsWF[[s]]$output
-                args2 <- sysargslist(args2)
-                args2$stepsWF[[WFstep]] <- WF2
-                args2$targetsWF[[WFstep]] <- as(WF2, "DataFrame")
-                rownames(args2$targetsWF[[WFstep]]) <- rownames(args$targetsWF[[WFstep]])
-                args2$outfiles[[WFstep]] <- output.as.df(WF2)
-                rownames(args2$outfiles[[WFstep]]) <- rownames(args$outfiles[[WFstep]])
-                args2$statusWF[[WFstep]] <- WF2$status
-                rownames(args2$statusWF[[WFstep]]$status.completed) <- rownames(args$outfiles[[WFstep]])
-                rownames(args2$statusWF[[WFstep]]$status.time) <- rownames(args$outfiles[[WFstep]])
-                args2 <- as(args2, "SYSargsList")
-            }
-        } else {
-            do <- "donothing"
-        }
-    }
-    return(args2)
 }
 
 #############################
@@ -941,38 +817,13 @@ output.as.df <- function(x) {
     return(out_x)
 }
 
-#############################
-## .statusSummary function ##
-#############################
-.statusSummary <- function(args) {
-    if (inherits(args, "SYSargs2")) {
-        step.status.summary <- args$status$status.completed
-    } else if (inherits(args, "data.frame")) {
-        step.status.summary <- args[5:ncol(args)]
-    } else {
-        stop("Argument 'args' needs to be assigned an object of class 'SYSargs2' or 'data.frame'.")
-    }
-    if ("Error" %in% unlist(unique(step.status.summary))) {
-        step.status <- "Error"
-    } else if ("Warning" %in% unlist(unique(step.status.summary))) {
-        step.status <- "Warning"
-    } else if ("Success" %in% unlist(unique(step.status.summary))) {
-        step.status <- "Success"
-    } else if ("Pending" %in% unlist(unique(step.status.summary))) {
-        step.status <- "Pending"
-    } else if (is.null(step.status.summary)) {
-        step.status <- "Pending"
-    }
-    return(step.status)
-}
-
 ################################
 ## write_SYSargsList function ##
 ################################
 write_SYSargsList <- function(sysargs, sys.file = ".SPRproject/SYSargsList.yml", silent = TRUE) {
     ## check logDir folder
     logDir <- .getPath(sys.file, warning = FALSE, normalizePath = FALSE)
-     if(!file.exists(logDir)) stop("'logs.dir': No such file or directory. Check the file PATH.")
+    if (!file.exists(logDir)) stop("'logs.dir': No such file or directory. Check the file PATH.")
     if (!inherits(sysargs, "SYSargsList")) stop("sysargs needs to be object of class 'SYSargsList'.")
     args2 <- sysargslist(sysargs)
     args_comp <- sapply(args2, function(x) list(NULL))
@@ -1090,7 +941,7 @@ read_SYSargsList <- function(sys.file) {
                 args <- yaml::yaml.load(args_comp_yml[["stepsWF"]][[j]])
                 args[["status"]][[2]] <- data.frame(args[["status"]][[2]], check.names = FALSE)
                 args[["status"]][[3]] <- data.frame(args[["status"]][[3]])
-                if (length(names(args$targets)) != 0){
+                if (length(names(args$targets)) != 0) {
                     df_rownames <- names(args$targets)
                 } else {
                     df_rownames <- args[["status"]][[3]]$Targets
@@ -1119,26 +970,22 @@ read_SYSargsList <- function(sys.file) {
         steps_comp <- sapply(steps, function(x) list(NULL))
         for (j in steps) {
             steps_comp[j] <- yaml::yaml.load(args_comp_yml[[i]][j])
-            # if (length(steps_comp[[j]]$status.time) != 0) {
-            #     steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
-            #     steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
-            # }
             steps_comp[[j]]$status.completed <- data.frame(steps_comp[[j]]$status.completed, check.names = FALSE)
             steps_comp[[j]]$status.time <- data.frame(steps_comp[[j]]$status.time)
             if (length(steps_comp[[j]]$status.time) != 0) {
-            steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
-            steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
+                steps_comp[[j]]$status.time$time_start <- .POSIXct(steps_comp[[j]]$status.time$time_start)
+                steps_comp[[j]]$status.time$time_end <- .POSIXct(steps_comp[[j]]$status.time$time_end)
             }
             if (length(steps_comp[[j]]$total.time) != 0) {
-            steps_comp[[j]]$total.time$time_start <- .POSIXct(steps_comp[[j]]$total.time$time_start)
-            steps_comp[[j]]$total.time$time_end <- .POSIXct(steps_comp[[j]]$total.time$time_end)
+                steps_comp[[j]]$total.time$time_start <- .POSIXct(steps_comp[[j]]$total.time$time_start)
+                steps_comp[[j]]$total.time$time_end <- .POSIXct(steps_comp[[j]]$total.time$time_end)
             }
         }
         args_comp[[i]] <- steps_comp
     }
     ## rownames
     for (j in steps) {
-        if(inherits(args_comp$stepsWF[[j]], "SYSargs2")){
+        if (inherits(args_comp$stepsWF[[j]], "SYSargs2")) {
             rownames(args_comp$targetsWF[[j]]) <- args_comp$targetsWF[[j]][[args_comp$stepsWF[[j]]$files$id]]
             rownames(args_comp$outfiles[[j]]) <- args_comp$targetsWF[[j]][[args_comp$stepsWF[[j]]$files$id]]
             rownames(args_comp$statusWF[[j]]$status.completed) <- args_comp$targetsWF[[j]][[args_comp$stepsWF[[j]]$files$id]]
@@ -1231,8 +1078,9 @@ readSE <- function(dir.path, dir.name) {
     metadata <- yaml::read_yaml(file.path(path, paste0("metadata.yml")))
     ## colData
     colData <- tryCatch(read.table(file.path(path, paste0("colData.csv")), check.names = FALSE, sep = "\t", header = TRUE),
-             error=function(e) NULL)
-    if(is.null(colData)) colData <- data.frame()
+        error = function(e) NULL
+    )
+    if (is.null(colData)) colData <- data.frame()
     ## rowRanges
     files_counts <- list.files(path, pattern = "rowRanges")
     if (length(files_counts) > 0) {
@@ -1241,14 +1089,14 @@ readSE <- function(dir.path, dir.name) {
     } else {
         rowRanges <- GRangesList()
     }
-    if(length(rowRanges) == 0){
+    if (length(rowRanges) == 0) {
         SE <- SummarizedExperiment::SummarizedExperiment(
             assays = counts_ls,
             # rowRanges = rowRanges,
             colData = colData,
             metadata = metadata
         )
-    } else{
+    } else {
         SE <- SummarizedExperiment::SummarizedExperiment(
             assays = counts_ls,
             rowRanges = rowRanges,
@@ -1284,9 +1132,9 @@ readSE <- function(dir.path, dir.name) {
 ###########################
 ## writeTargets function ##
 ###########################
-writeTargets <- function(sysargs, step, file = "default", silent = FALSE, overwrite = FALSE){
+writeTargets <- function(sysargs, step, file = "default", silent = FALSE, overwrite = FALSE) {
     if (all(!inherits(sysargs, "SYSargsList"))) stop("Argument 'sysargs' needs to be assigned an object of class 'SYSargsList")
-    if(!step %in% stepName(sysargs)) stop("It was not possible to find the 'step' name in the 'sysargs' object")
+    if (!step %in% stepName(sysargs)) stop("It was not possible to find the 'step' name in the 'sysargs' object")
     ## Workflow and Step Name
     if (file == "default") {
         file <- paste("targets_", step, ".txt", sep = "")
@@ -1302,136 +1150,13 @@ writeTargets <- function(sysargs, step, file = "default", silent = FALSE, overwr
     if (silent != TRUE) cat("\t", "Written content of 'targetsout(x)' to file:", file, "\n")
 }
 
-################################
-## .dirProject function ##
-################################
-.dirProject <- function(projPath, data, param, results, silent) {
-    project <- list(
-        project = projPath,
-        data = file.path(projPath, data),
-        param = file.path(projPath, param),
-        results = file.path(projPath, results)
-    )
-    path <- sapply(project, function(x) suppressMessages(tryPath(x)))
-    create <- NULL
-    for (i in seq_along(path)) {
-        if (is.null(path[[i]])) create <- c(create, project[i])
-    }
-    ## Question
-    if (!is.null(create)) {
-        ## For an interactive() session
-        if (interactive()) {
-            dir_create <- readline(cat(
-                "It is required to have the project structure in place. We can create the directories now, and you can find more information by reading the `?SPRProject` help file. ", "\n",
-                "\n", "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep = "\n"), "\n", "\n",
-                "Would you like to create this directory now? Type a number: \n 1. Yes \n 2. No \n"
-            ))
-        } else {
-            ## For an non-interactive session
-            dir_create <- "1"
-        }
-        for (i in seq_along(create)) {
-            if (dir_create == "1") {
-                dir.create(create[[i]], recursive = TRUE)
-                if (silent != TRUE) cat("Creating directory: ", create[[i]], "\n")
-            } else if (dir_create == 2) {
-                stop("Aborting project creation. Find more information by reading the `?SPRProject` help file.", call. = FALSE)
-            }
-        }
-    }
-    project <- list(
-        project = projPath,
-        data = file.path(data),
-        param = file.path(param),
-        results = file.path(results)
-    )
-    return(project)
-}
-
-#############################
-## .statusPending function ##
-#############################
-.statusPending <- function(args) {
-    status.pending <- check.output(args)
-    ## function
-    .statusSYSargs2 <- function(args, status.pending) {
-        pending <- sapply(args$files$steps, function(x) list(x = "Pending"))
-        pending <- data.frame(matrix(unlist(pending), ncol = length(pending), byrow = TRUE), stringsAsFactors = TRUE)
-        colnames(pending) <- args$files$steps
-        status.pending <- cbind(status.pending, pending)
-        rownames(status.pending) <- status.pending$Targets
-        status.pending[c(2:4)] <- sapply(status.pending[c(2:4)], as.numeric)
-        status.pending[c(5:ncol(status.pending))] <- sapply(status.pending[c(5:ncol(status.pending))], as.character)
-        # status.time <- data.frame(matrix(, nrow=nrow(status.pending),  ncol = length(pending)))
-        status.time <- status.pending[, 1, drop = FALSE]
-        # status.time <- cbind(status.time)
-        status.time <- cbind(status.time, time_start = NA, time_end = NA)
-        status.time$time_start <- .POSIXct(status.time$time_start)
-        status.time$time_end <- .POSIXct(status.time$time_end)
-        rownames(status.time) <- status.pending$Targets
-        pendingList <- list(
-            status.summary = .statusSummary(status.pending),
-            status.completed = status.pending, status.time = status.time
-        )
-    }
-    if (inherits(args, "SYSargsList")) {
-        for (i in seq_along(status.pending)) {
-            # print(i)
-            if (inherits(args$stepsWF[[i]], "SYSargs2")) {
-                status.pending[[i]] <- .statusSYSargs2(args$stepsWF[[i]], status.pending[[i]])
-                # print(status.pending[[i]])
-            }
-        }
-        pendingList <- status.pending
-    } else if (inherits(args, "SYSargs2")) {
-        pendingList <- .statusSYSargs2(args, status.pending)
-    }
-    return(pendingList)
-}
-
-##########################
-## .outList2DF function ##
-##########################
-.outList2DF <- function(args) {
-    if (inherits(args, "list")) {
-        args <- as(args, "SYSargsList")
-        out <- sapply(names(stepsWF(args)), function(x) list(NULL))
-        for (i in seq_along(stepsWF(args))) {
-            l_out <- output(stepsWF(args)[[i]])
-            out[[i]] <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
-            # out <- S4Vectors::DataFrame(as.data.frame(do.call(rbind, l_out)))
-            colnames(out[[i]]) <- stepsWF(args)[[i]]$files$output_names
-        }
-    } else if (inherits(args, "SYSargs2")) {
-        l_out <- output(args)
-        # sapply(l_out, function(x) length(x))
-        out <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
-        # out <- S4Vectors::DataFrame(as.data.frame(do.call(rbind, l_out)))
-        colnames(out) <- args$files$output_names
-    }
-    return(out)
-}
-
-#############################
-## .outputTargets function ##
-#############################
-.outputTargets <- function(args, fromStep, index = 1, toStep, replace = c("FileName")) {
-    if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
-    outputfiles <- outfiles(args[fromStep])[[1]]
-    if (length(targetsWF(args)[[fromStep]]) > 0) {
-        df <- targetsWF(args)[[fromStep]]
-        df[replace] <- outputfiles
-    }
-    return(df)
-}
-
 ########################
 ## ConfigWF function ##
 ########################
 configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALSE, ...) {
     ## Validations
     if (!inherits(x, "SYSargsList")) stop("Argument 'x' needs to be assigned an object of class 'SYSargsList'")
-    utils::capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL") ## TODO: refazer
+    utils::capture.output(steps_all <- subsetRmd(Rmd = x$sysconfig$script$path), file = ".SYSproject/.NULL")
     if ("ALL" %in% input_steps) {
         input_steps <- paste0(steps_all$t_number[1], ":", steps_all$t_number[length(steps_all$t_number)])
         save_rmd <- FALSE
@@ -1449,7 +1174,7 @@ configWF <- function(x, input_steps = "ALL", exclude_steps = NULL, silent = FALS
     utils::capture.output(steps_all <- subsetRmd(
         Rmd = x$sysconfig$script$path, input_steps = input_steps,
         exclude_steps = exclude_steps, save_Rmd = save_rmd, Rmd_outfile = Rmd_outfile
-    ), file = ".NULL") ## TODO: refazer
+    ), file = ".NULL")
     steps_number <- steps_all$t_number[steps_all$selected]
     ## Save input_steps in the SYSconfig.yml
     if (!any(names(x$sysconfig) %in% c("input_steps", "exclude_steps"))) {
@@ -1524,10 +1249,8 @@ renderReport <- function(sysargs,
         ## get the first line
         chunk_start <- lines %>% stringr::str_which("^```\\{.*\\}.*")
         firstLine <- chunk_start[lines[lines %>% stringr::str_which("^```\\{.*\\}.*")] %>% stringr::str_detect("spr")][1]
-        # firstLine <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[1]]$rmd_line))
         newLines <- lines[1:firstLine - 1]
         ## We need to consider if append step after=0, in this case it's appending before the first R chunk but not before the text...
-        ## TODO ##
         for (i in seq_along(sysargs$stepsWF)) {
             if (length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 1) {
                 if (exists("last_line")) {
@@ -1578,8 +1301,8 @@ renderReport <- function(sysargs,
                 }
             }
         }
-        if(length(lines)!= last_line){
-            n <- as.numeric(length(lines)) - (as.numeric(last_line) + 1 )
+        if (length(lines) != last_line) {
+            n <- as.numeric(length(lines)) - (as.numeric(last_line) + 1)
             final_lines <- tail(lines, n)
             newLines <- append(newLines, final_lines)
         }
@@ -1642,7 +1365,6 @@ renderLogs <- function(sysargs,
     if (type == "html_document") plot_path <- normalizePath(.prepareRmdPlot(sysargs, dir_log))
     writeLines(c(
         "---",
-        #if (type == "html_document") "title: '&nbsp;'" else "title: 'SPR Workflow Technical Report'",]
         "title: SPR Workflow Technical Report",
         paste0("date: 'Last update: ", format(Sys.time(), "%d %B, %Y"), "'"),
         "output:",
@@ -1659,7 +1381,7 @@ renderLogs <- function(sysargs,
     ),
     con = fileName
     )
-    #rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
+    # rmarkdown::render(input = fileName, c(paste0(type)), quiet = TRUE, envir = new.env())
     rmarkdown::render(input = fileName, c(paste0("BiocStyle::", type)), quiet = TRUE, envir = new.env())
     detach("package:BiocStyle", unload = TRUE)
     file_path <- .getPath(fileName)
@@ -1677,53 +1399,12 @@ renderLogs <- function(sysargs,
 # sal <- renderLogs(sal)
 
 ########################
-## .prepareRmdPlot ##
-########################
-.prepareRmdPlot <- function(sysargs, dir_log) {
-    out_path <- file.path(dir_log, "log_plot.html")
-    plotWF(sysargs, out_format = "html", out_path = out_path, rmarkdown = TRUE,
-           in_log = TRUE, rstudio = TRUE, plot_ctr = FALSE)
-    # modify HTML content
-    if (!file.exists(out_path)) stop("Cannot create the workflow plot for logs at\n", out_path)
-    plot_content <- readLines(out_path)
-    # writeLines(c(
-    #     plot_content[seq(13)],
-    #     "<h1>SPR Workflow Log Report</h1>",
-    #     plot_content[seq(14, length(plot_content))]
-    # ), con = out_path)
-    out_path
-}
-
-########################
 ## subsetRmd function ##
 ########################
-## This function allows the user to subset the Rmarkdown and select the corresponding text and R chunk code.
-## The steps definition is based on the block-level elements, defined by the `#`.
-## For example: # First-level header represents step number 1;
-## For example: ## Second-level header represents step number 1.1;
-## For example: ### Third-level header represents step number 1.1.1
-## Arguments:
-# Rmd: a character vector name and path of the Rmd file
-# Rmd_outfile: a character vector name and path of the output Rmd file
-# input_steps: a character vector of all steps desires to preserve on the output file.
-# Default is NULL. If no input_steps defined, it will return only list steps on Rmd and datagram, however, all titles are unselected (FALSE) and no output file will be saved.
-# It can be used the symbol ":" to select many steps in sequence, for example, input_steps=1:5.2, from step 1 to step 5.2.
-# The symbol "." represents the substeps and symbol "," is used to separate selections.
-# Jump from a major step to sub-step is supported, but if a major step is selected/excluded, all sub-steps of this major step will be selected/excluded. Repeatedly selected steps will only result in a unique step.  It is recommended to put major steps in `input_steps`, like '1:4, 6:8, 10'; and unwanted sub-steps in `exclude_steps`, like '1.1, 3.1.1-3.1.3, 6.5'.
-# Reverse selecting is supported e.g. '10:1'.
-# exclude_steps: a character vector of all steps desires to remove on the output file.
-# save_Rmd: logical, default TRUE. If set FALSE, list new selected tiles and exit.
-## Value
-## It returns a data frame of title levels, title numbers, title text, whether it is selected, and R code under this title.
-
 subsetRmd <- function(Rmd, input_steps = NULL, exclude_steps = NULL, Rmd_outfile = NULL, save_Rmd = TRUE) {
     . <- NULL
     # function start, check inputs
     if (!file.exists(Rmd) == TRUE) stop("Provide valid 'Rmd' file.")
-    # if (assertthat::not_empty(input_steps)) assertthat::assert_that(assertthat::is.string(input_steps))
-    # if (assertthat::not_empty(Rmd_outfile)) assertthat::assert_that(file.exists(dirname(Rmd_outfile)))
-    # if (assertthat::not_empty(exclude_steps)) assertthat::assert_that(assertthat::is.string(exclude_steps))
-    # default out behavior, in ISO 8601 time format
     if (is.null(Rmd_outfile)) Rmd_outfile <- paste0("new", format(Sys.time(), "%Y%m%d_%H%M%S"), basename(Rmd))
     # read file
     file <- readLines(Rmd)
@@ -1902,8 +1583,6 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
             paste0(gsub("\\..*", "", basename(path_file)), "_run"),
             run
         )) + 1)
-        # path <- paste0(.getPath(path_file), '/', paste(format(Sys.time(), '%b%d%Y_%H%M%S')), '_',
-        # basename(path_file), collapse = '/')
         path <- paste0(.getPath(path_file), "/", gsub("\\..*", "", basename(path_file)), fileName, ".",
             gsub(".*\\.", "", basename(path_file)),
             collapse = "/"
@@ -1914,8 +1593,6 @@ config.param <- function(input_file = NULL, param, file = "default", silent = FA
         path <- file
     }
     ## Rename original file
-    # file.rename(from = path_file, to = path)
-    # if (silent != TRUE) cat("\t", "The original file was renamed to:", "\n", paste0(path), "\n")
     ## Write YML file
     yaml::write_yaml(x = input, file = path)
     if (silent != TRUE) cat("\t", "All the new param + ", out_msg, "were written to:", "\n", path, "\n")
@@ -1998,9 +1675,11 @@ tryCMD <- function(command, silent = FALSE) {
         warning = function(w) {
             if (silent) invisible(return("error"))
             if (!silent) {
-                cat("ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
+                cat(
+                    "ERROR: ", "\n", command, ": COMMAND NOT FOUND. ", "\n",
                     "Please make sure to configure your PATH environment variable according to the software in use.",
-                    "\n")
+                    "\n"
+                )
             }
         }
     )
@@ -2172,7 +1851,7 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
 .getFileName <- function(x) {
     #  if (!file.exists(x)) warning("No such file or directory. Check the file PATH.")
     filename <- Biostrings::strsplit(basename(x), split = ".([^.]*)$")[[1]]
-    #filename <- filename[[-2]]
+    # filename <- filename[[-2]]
     return(filename)
 }
 
@@ -2311,3 +1990,298 @@ is.fullPath <- function(x) {
 ## Usage:
 # .checkSpecialChar("name@")
 # .checkSpecialChar("name test")
+
+############################
+## .renderMsg function ##
+############################
+.renderMsg <- function() {
+    warn_flag <- getOption("spr_render_msg")
+    if (isTRUE(warn_flag)) {
+        return()
+    }
+    cat(
+        crayon::green$bold("Done with workflow running, now consider rendering logs & reports\n"),
+        crayon::blue("To render logs, run:    "), "sal <- renderLogs(sal)\n",
+        crayon::blue("From command-line:      "), 'Rscript -e "sal = systemPipeR::SPRproject(resume = TRUE); sal = systemPipeR::renderLogs(sal)"\n',
+        crayon::blue("To render reports, run: "), "sal <- renderReport(sal)\n",
+        crayon::blue("From command-line:      "), 'Rscript -e "sal= s ystemPipeR::SPRproject(resume = TRUE); sal = systemPipeR::renderReport(sal)"\n',
+        crayon::make_style("white")$bold("This message is displayed once per R session\n"),
+        sep = ""
+    )
+    options(spr_render_msg = TRUE)
+}
+
+#################################
+## .clusterRunResults function ##
+################################
+.clusterRunResults <- function(args.run, reg, nTargets) {
+    logdir <- reg$file.dir
+    file_log <- file.path(logdir, paste0(
+        "sysargs2_log_",
+        format(Sys.time(), "%b%d%Y_%H%Ms%S"),
+        paste(sample(0:9, 4), collapse = "")
+    ))
+    id_save <- character()
+    for (i in seq_along(1:nTargets)) {
+        ## ind object created by the batchtools
+        newsysargs <- batchtools::loadResult(reg = reg, id = i)
+        id_sysargs <- names(newsysargs$cmdlist)
+        id_save <- c(id_save, id_sysargs)
+        ## update output slot
+        args.run@output[id_sysargs] <- newsysargs$output[id_sysargs]
+        ## Update status slot
+        args.run@status$status.completed[id_sysargs, ] <- newsysargs$status$status.completed[id_sysargs, ]
+        args.run@status$status.time[id_sysargs, ] <- newsysargs$status$status.time[id_sysargs, ]
+        ## time
+        args.run@status$status.time[id_sysargs, ]$time_start <- as.POSIXct(args.run@status$status.time[id_sysargs, ]$time_start, origin = "1970-01-01")
+        args.run@status$status.time[id_sysargs, ]$time_end <- as.POSIXct(args.run@status$status.time[id_sysargs, ]$time_end, origin = "1970-01-01")
+        ## Update files logs --> combining
+        logs <- readLines(newsysargs$files$log)
+        write(logs, file_log, append = TRUE, sep = "\n")
+    }
+    time_start <- sort(args.run$status$status.time[id_save, ]$time_start)[1]
+    time_end <- tail(sort(args.run$status$status.time[id_save, ]$time_end), 1)
+    args.run@status$total.time <- list(
+        time_start = as.POSIXct(time_start, origin = "1970-01-01"),
+        time_end = as.POSIXct(time_end, origin = "1970-01-01")
+    )
+    args.run@status$status.summary <- .statusSummary(args.run)
+    args.run@files$log <- file_log
+    return(args.run)
+}
+
+
+########################
+## .tryRcode function ##
+########################
+.tryRcode <- function(command, envir) {
+    warning <- error <- NULL
+    value <- withCallingHandlers(
+        tryCatch(
+            eval(command, envir = envir),
+            error = function(e) {
+                error <<- conditionMessage(e)
+                NULL
+            }
+        ),
+        warning = function(w) {
+            warning <<- append(warning, conditionMessage(w))
+            invokeRestart("muffleWarning")
+        }
+    )
+    list(stdout = value, warning = warning, error = error)
+}
+
+###############################
+## .updateAfterRunC function ##
+###############################
+.updateAfterRunC <- function(args, step) {
+    args2 <- args
+    conList <- args2$targets_connection[lengths(args2$targets_connection) != 0]
+    conList_step <- sapply(conList, "[[", 1)
+    for (l in seq_along(conList_step)) {
+        if (step %in% conList_step[[l]]) {
+            requiredUP <- names(conList)[[l]]
+            for (s in requiredUP) {
+                WF <- args2[s]
+                WFstep <- names(stepsWF(WF))
+                new_targets <- WF$targetsWF[[1]]
+                col_out <- lapply(outfiles(args2), function(x) colnames(x))
+                col_out_l <- sapply(names(col_out), function(x) list(NULL))
+                for (i in names(col_out)) {
+                    col_out_l[[i]] <- col_out[[i]][col_out[[i]] %in% WF$targets_connection[[WFstep]]$new_targets_col[[1]]]
+                }
+                col_out_l <- col_out_l[lapply(col_out_l, length) > 0]
+                if (all(sapply(col_out_l, function(x) length(x) == 1))) {
+                    col_out_df <- lapply(names(col_out_l), function(x) getColumn(args2, step = x, position = "outfiles", column = col_out_l[[x]]))
+                    names(col_out_df) <- col_out_l
+                    new_targets[as.character(col_out_l)] <- col_out_df
+                } else {
+                    col_out_df <- data.frame(args2[step]$outfiles[[step]][, col_out_l[[1]]])
+                    names(col_out_df) <- col_out_l[[1]]
+                    new_targets[as.character(col_out_l[[1]])] <- col_out_df
+                }
+                WF2 <- stepsWF(WF)[[1]]
+                WF2 <- updateWF(WF2, new_targets = targets.as.list(data.frame(new_targets)), inputvars = WF2$inputvars, write.yaml = FALSE)
+                ## Preserve outfiles
+                WF2[["output"]] <- WF$stepsWF[[s]]$output
+                args2 <- sysargslist(args2)
+                args2$stepsWF[[WFstep]] <- WF2
+                args2$targetsWF[[WFstep]] <- as(WF2, "DataFrame")
+                rownames(args2$targetsWF[[WFstep]]) <- rownames(args$targetsWF[[WFstep]])
+                args2$outfiles[[WFstep]] <- output.as.df(WF2)
+                rownames(args2$outfiles[[WFstep]]) <- rownames(args$outfiles[[WFstep]])
+                args2$statusWF[[WFstep]] <- WF2$status
+                rownames(args2$statusWF[[WFstep]]$status.completed) <- rownames(args$outfiles[[WFstep]])
+                rownames(args2$statusWF[[WFstep]]$status.time) <- rownames(args$outfiles[[WFstep]])
+                args2 <- as(args2, "SYSargsList")
+            }
+        } else {
+            do <- "donothing"
+        }
+    }
+    return(args2)
+}
+
+#############################
+## .statusSummary function ##
+#############################
+.statusSummary <- function(args) {
+    if (inherits(args, "SYSargs2")) {
+        step.status.summary <- args$status$status.completed
+    } else if (inherits(args, "data.frame")) {
+        step.status.summary <- args[5:ncol(args)]
+    } else {
+        stop("Argument 'args' needs to be assigned an object of class 'SYSargs2' or 'data.frame'.")
+    }
+    if ("Error" %in% unlist(unique(step.status.summary))) {
+        step.status <- "Error"
+    } else if ("Warning" %in% unlist(unique(step.status.summary))) {
+        step.status <- "Warning"
+    } else if ("Success" %in% unlist(unique(step.status.summary))) {
+        step.status <- "Success"
+    } else if ("Pending" %in% unlist(unique(step.status.summary))) {
+        step.status <- "Pending"
+    } else if (is.null(step.status.summary)) {
+        step.status <- "Pending"
+    }
+    return(step.status)
+}
+
+########################
+## .prepareRmdPlot ##
+########################
+.prepareRmdPlot <- function(sysargs, dir_log) {
+    out_path <- file.path(dir_log, "log_plot.html")
+    plotWF(sysargs,
+           out_format = "html", out_path = out_path, rmarkdown = TRUE,
+           in_log = TRUE, rstudio = TRUE, plot_ctr = FALSE
+    )
+    # modify HTML content
+    if (!file.exists(out_path)) stop("Cannot create the workflow plot for logs at\n", out_path)
+    plot_content <- readLines(out_path)
+    out_path
+}
+
+################################
+## .dirProject function ##
+################################
+.dirProject <- function(projPath, data, param, results, silent) {
+    project <- list(
+        project = projPath,
+        data = file.path(projPath, data),
+        param = file.path(projPath, param),
+        results = file.path(projPath, results)
+    )
+    path <- sapply(project, function(x) suppressMessages(tryPath(x)))
+    create <- NULL
+    for (i in seq_along(path)) {
+        if (is.null(path[[i]])) create <- c(create, project[i])
+    }
+    ## Question
+    if (!is.null(create)) {
+        ## For an interactive() session
+        if (interactive()) {
+            dir_create <- readline(cat(
+                "It is required to have the project structure in place. We can create the directories now, and you can find more information by reading the `?SPRProject` help file. ", "\n",
+                "\n", "There is no directory called", "\n", paste(names(create), collapse = " OR ", sep = "\n"), "\n", "\n",
+                "Would you like to create this directory now? Type a number: \n 1. Yes \n 2. No \n"
+            ))
+        } else {
+            ## For an non-interactive session
+            dir_create <- "1"
+        }
+        for (i in seq_along(create)) {
+            if (dir_create == "1") {
+                dir.create(create[[i]], recursive = TRUE)
+                if (silent != TRUE) cat("Creating directory: ", create[[i]], "\n")
+            } else if (dir_create == 2) {
+                stop("Aborting project creation. Find more information by reading the `?SPRProject` help file.", call. = FALSE)
+            }
+        }
+    }
+    project <- list(
+        project = projPath,
+        data = file.path(data),
+        param = file.path(param),
+        results = file.path(results)
+    )
+    return(project)
+}
+
+#############################
+## .statusPending function ##
+#############################
+.statusPending <- function(args) {
+    status.pending <- check.output(args)
+    ## function
+    .statusSYSargs2 <- function(args, status.pending) {
+        pending <- sapply(args$files$steps, function(x) list(x = "Pending"))
+        pending <- data.frame(matrix(unlist(pending), ncol = length(pending), byrow = TRUE), stringsAsFactors = TRUE)
+        colnames(pending) <- args$files$steps
+        status.pending <- cbind(status.pending, pending)
+        rownames(status.pending) <- status.pending$Targets
+        status.pending[c(2:4)] <- sapply(status.pending[c(2:4)], as.numeric)
+        status.pending[c(5:ncol(status.pending))] <- sapply(status.pending[c(5:ncol(status.pending))], as.character)
+        # status.time <- data.frame(matrix(, nrow=nrow(status.pending),  ncol = length(pending)))
+        status.time <- status.pending[, 1, drop = FALSE]
+        # status.time <- cbind(status.time)
+        status.time <- cbind(status.time, time_start = NA, time_end = NA)
+        status.time$time_start <- .POSIXct(status.time$time_start)
+        status.time$time_end <- .POSIXct(status.time$time_end)
+        rownames(status.time) <- status.pending$Targets
+        pendingList <- list(
+            status.summary = .statusSummary(status.pending),
+            status.completed = status.pending, status.time = status.time
+        )
+    }
+    if (inherits(args, "SYSargsList")) {
+        for (i in seq_along(status.pending)) {
+            # print(i)
+            if (inherits(args$stepsWF[[i]], "SYSargs2")) {
+                status.pending[[i]] <- .statusSYSargs2(args$stepsWF[[i]], status.pending[[i]])
+                # print(status.pending[[i]])
+            }
+        }
+        pendingList <- status.pending
+    } else if (inherits(args, "SYSargs2")) {
+        pendingList <- .statusSYSargs2(args, status.pending)
+    }
+    return(pendingList)
+}
+
+##########################
+## .outList2DF function ##
+##########################
+.outList2DF <- function(args) {
+    if (inherits(args, "list")) {
+        args <- as(args, "SYSargsList")
+        out <- sapply(names(stepsWF(args)), function(x) list(NULL))
+        for (i in seq_along(stepsWF(args))) {
+            l_out <- output(stepsWF(args)[[i]])
+            out[[i]] <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
+            # out <- S4Vectors::DataFrame(as.data.frame(do.call(rbind, l_out)))
+            colnames(out[[i]]) <- stepsWF(args)[[i]]$files$output_names
+        }
+    } else if (inherits(args, "SYSargs2")) {
+        l_out <- output(args)
+        # sapply(l_out, function(x) length(x))
+        out <- S4Vectors::DataFrame(matrix(unlist(l_out), nrow = length(l_out), byrow = TRUE))
+        # out <- S4Vectors::DataFrame(as.data.frame(do.call(rbind, l_out)))
+        colnames(out) <- args$files$output_names
+    }
+    return(out)
+}
+
+#############################
+## .outputTargets function ##
+#############################
+.outputTargets <- function(args, fromStep, index = 1, toStep, replace = c("FileName")) {
+    if (!inherits(args, "SYSargsList")) stop("Argument 'args' needs to be assigned an object of class 'SYSargsList'")
+    outputfiles <- outfiles(args[fromStep])[[1]]
+    if (length(targetsWF(args)[[fromStep]]) > 0) {
+        df <- targetsWF(args)[[fromStep]]
+        df[replace] <- outputfiles
+    }
+    return(df)
+}

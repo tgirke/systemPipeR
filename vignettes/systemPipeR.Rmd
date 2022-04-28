@@ -81,8 +81,8 @@ The main motivation and advantages of using _`systemPipeR`_ for complex data ana
 6. Accelerated runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple nodes
 6. Improved reproducibility by automating the generation of analysis reports 
 
-```{r utilities, eval=TRUE, warning= FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A). Examples of `systemPipeR's` visualization functionalities are given under (B)."}
-knitr::include_graphics(system.file("extdata/images", "utilities.png", package = "systemPipeR"))
+```{r utilities, eval=TRUE, warning= FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A). Examples of `systemPipeR's` visualization functionalities are given under (B).", warning=FALSE}
+knitr::include_graphics("images/utilities.png")
 ```
 
 A central concept for designing workflows within the _`systemPipeR`_
@@ -99,9 +99,9 @@ support for both command-line and R/Bioconductor software, the package provides
 utilities for containerization, parallel evaluations on computer clusters and
 automated generation of interactive analysis reports.
 
-```{r general, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Overview of `systemPipeR` workflows management instances. A) A typical analysis workflow requires multiple software tools (red), as well the description of the input (green) and output files, including analysis reports (purple). B) `systemPipeR` provides multiple utilities to design and build a workflow, allowing multi-instance, integration of R code and command-line software, a simple and efficient annotation system, that allows automatic control of the input and output data, and multiple resources to manage the entire workflow. c) Options are provided to execute single or multiple workflow steps, while enabling scalability, checkpoints, and generation of technical and scientific reports."}
+```{r general, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Overview of `systemPipeR` workflows management instances. A) A typical analysis workflow requires multiple software tools (red), as well the description of the input (green) and output files, including analysis reports (purple). B) `systemPipeR` provides multiple utilities to design and build a workflow, allowing multi-instance, integration of R code and command-line software, a simple and efficient annotation system, that allows automatic control of the input and output data, and multiple resources to manage the entire workflow. c) Options are provided to execute single or multiple workflow steps, while enabling scalability, checkpoints, and generation of technical and scientific reports.", warning=FALSE}
 
-knitr::include_graphics(system.file("extdata/images", "general.png", package = "systemPipeR"))
+knitr::include_graphics("images/general.png")
 ```
 
 An important feature of _`systemPipeR's`_ CWL interface is that it provides two
@@ -133,9 +133,9 @@ workflow step. _`SYSargsList`_ containers store all information required for
 one or multiple steps. This establishes central control for running, monitoring
 and debugging complex workflows from start to finish. 
 
-```{r sysargslistImage, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow steps with input/output file operations are controlled by the _`SYSargsList`_ container. Each of its components (_`SYSargs2`_) are constructed from an optional *targets* and two *param* files. Alternatively, _`LineWise`_ instances containing pure R code can be used. "}
+```{r sysargslistImage, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow steps with input/output file operations are controlled by the _`SYSargsList`_ container. Each of its components (_`SYSargs2`_) are constructed from an optional *targets* and two *param* files. Alternatively, _`LineWise`_ instances containing pure R code can be used.", warning=FALSE}
 
-knitr::include_graphics(system.file("extdata/images", "SYSargsList.png", package = "systemPipeR"))
+knitr::include_graphics("images/SYSargsList.png")
 ```
 
 ## Command-line software support
@@ -160,9 +160,9 @@ output files, and arguments for the command-line (Figure \@ref(fig:sprandCWL)A).
 The second file is optional yet provides flexibility to assign values to 
 parameters required to make the input or output objects when building the command-line. 
 
-```{r sprandCWL, warning=FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Example of 'Hello World' message using CWL syntax and demonstrating the connectivity with `systemPipeR`. (A) This file describes the command-line tool, here using 'echo' command. (B) This file describes all the parameters variables connected with the tool specification file. Here the reference value of the input parameter can be specific or can be filled dynamically, adding a variable that connects with the targets files from `systemPipeR`. (C) `SYSargsList` function provides the 'inputvars' arguments to build the connectivity between the CWL description of parameters and the targets files. The argument requires a named vector where each vector element is required to be defined in the CWL description of parameters file (B), and the names of the elements are needed to match the column names defined in the targets file (D). "}
+```{r sprandCWL, warning=FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Example of 'Hello World' message using CWL syntax and demonstrating the connectivity with `systemPipeR`. (A) This file describes the command-line tool, here using 'echo' command. (B) This file describes all the parameters variables connected with the tool specification file. Here the reference value of the input parameter can be specific or can be filled dynamically, adding a variable that connects with the targets files from `systemPipeR`. (C) `SYSargsList` function provides the 'inputvars' arguments to build the connectivity between the CWL description of parameters and the targets files. The argument requires a named vector where each vector element is required to be defined in the CWL description of parameters file (B), and the names of the elements are needed to match the column names defined in the targets file (D).", warning=FALSE}
 
-knitr::include_graphics(system.file("extdata/images", "SPR_CWL_hello.png", package = "systemPipeR"))
+knitr::include_graphics("images/SPR_CWL_hello.png")
 ```
 
 # Getting Started
@@ -273,8 +273,8 @@ workflows accordingly.
         + Analysis results are usually written to this directory, including: alignment, variant and peak files (BAM, VCF, BED); tabular result files; and image/plot files.
         + Note, the user has the option to organize results files for a given sample and analysis step in a separate subdirectory.
 
-```{r dir, eval=TRUE, echo=FALSE, warning= FALSE, out.width="100%", fig.align = "center", fig.cap= "*systemPipeR's* preconfigured directory structure."}
-knitr::include_graphics(system.file("extdata/images", "spr_project.png", package = "systemPipeR"))  
+```{r dir, eval=TRUE, echo=FALSE, warning= FALSE, out.width="100%", fig.align = "center", fig.cap= "*systemPipeR's* preconfigured directory structure.", warning=FALSE}
+knitr::include_graphics("images/spr_project.png")  
 ```
 
 The following parameter files are included in each workflow template:
@@ -366,8 +366,8 @@ _`systemPipeR`_ provides features to automatically and systematically build this
 connection, providing security that all the samples will be managed efficiently 
 and reproducibly.
 
-```{r targetsFig, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "_`systemPipeR`_ automatically creates the downstream `targets` files based on the previous steps outfiles. A) Usually, users provide the initial `targets` files, and this step will generate some outfiles, as demonstrated on B. Then, those files are used to build the new `targets` files as inputs in the next step. _`systemPipeR`_ (C) manages this connectivity among the steps automatically for the users."}
-knitr::include_graphics(system.file("extdata/images", "targets_con.png", package = "systemPipeR"))  
+```{r targetsFig, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "_`systemPipeR`_ automatically creates the downstream `targets` files based on the previous steps outfiles. A) Usually, users provide the initial `targets` files, and this step will generate some outfiles, as demonstrated on B. Then, those files are used to build the new `targets` files as inputs in the next step. _`systemPipeR`_ (C) manages this connectivity among the steps automatically for the users.", warning=FALSE}
+knitr::include_graphics("images/targets_con.png")  
 ```
 
 ## Structure of the new parameters files
@@ -440,8 +440,8 @@ the workflow instances. Then, each R chuck in the file will be converted in a wo
 
 ```{r importwf_example, eval=TRUE}
 sal <- importWF(sal, 
-                    file_path = system.file("extdata", "spr_simple_wf.Rmd", package = "systemPipeR"),
-                    verbose = FALSE)
+                file_path = system.file("extdata", "spr_simple_wf.Rmd", package = "systemPipeR"),
+                verbose = FALSE)
 ```
 
 This workflow contains five steps. First, it loads _`systemPipeR`_  library, then 
@@ -630,7 +630,7 @@ The `targets` file is optional for workflow steps lacking `input` files. The con
 between `input` variables and the `targets` file is defined under the `inputvars` 
 argument. It is required a `named vector`, where each element name needs to match
 with column names in the `targets` file, and the value must match the names of 
-the `input` variables defined in the `*.yml` files (see Figure \@ref(fig:sprCWL)). 
+the `input` variables defined in the `*.yml` files (see Figure \@ref(fig:sprandCWL)). 
 
 A detailed description of the dynamic between `input` variables and `targets` 
 files can be found [here](#cwl_targets). 
@@ -1480,10 +1480,6 @@ HW_mul
 cmdlist(HW_mul)
 ```
 
-```{r sprCWL, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "WConnectivity between CWL param files and targets files."}
-knitr::include_graphics(system.file("extdata/images", "SPR_CWL_hello.png", package = "systemPipeR"))
-```
-
 # Creating the CWL param files from the command-line
 
 Users need to define the command-line in a pseudo-bash script format:
@@ -2092,8 +2088,10 @@ downstream *`targets`* files are generated automatically. By chaining several
 sample-level input/output file operations with any combination of command-line
 or R-based software.
 
-```{r, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow design structure of *`systemPipeR`* using previous version of *`SYSargs`*"}
-knitr::include_graphics(system.file("extdata/images", "SystemPipeR_Workflow.png", package = "systemPipeR"))  
+<center><img src="images/SystemPipeR_Workflow.png"></center>
+
+```{r, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow design structure of *`systemPipeR`* using previous version of *`SYSargs`*", warning=FALSE}
+# knitr::include_graphics(system.file("extdata/images", "SystemPipeR_Workflow.png", package = "systemPipeR"))
 ```
 
 # Third-party software tools {#third-party-software-tools}
@@ -2473,7 +2471,6 @@ appendStep(sal) <- SYSargsList(step_name = "gsnap_index",
 - Prepare the alignment step:
 
 ```{r gsnap_mapping, eval=FALSE, spr=TRUE}
-print(getwd())
 appendStep(sal) <- SYSargsList(step_name = "gsnap", 
                                targets = "targetsPE.txt", dir = TRUE,
                                wf_file = "gsnap/gsnap-mapping-pe.cwl", 
