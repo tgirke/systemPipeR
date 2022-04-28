@@ -24,11 +24,11 @@ requirements:
 
 arguments:
   - prefix: -t
-    valueFrom: $(inputs.fq1)
-  - prefix: -c
     valueFrom: $(inputs.fq2)
+  - prefix: -c
+    valueFrom: $(inputs.fq1)
   - prefix: -n
-    valueFrom: $(inputs.fq1.basename)
+    valueFrom: $(inputs.fq2.basename)
   - prefix: --outdir
     valueFrom: $(inputs.results_path.path)
   - prefix: -f
@@ -64,20 +64,20 @@ outputs:
   peaks_xls:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.fq1.basename)_peaks.xls
+      glob: $(inputs.results_path.path)/$(inputs.fq2.basename)_peaks.xls
   control_lambda:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.fq1.basename)_control_lambda.bdg
+      glob: $(inputs.results_path.path)/$(inputs.fq2.basename)_control_lambda.bdg
   narrow_peak:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.fq1.basename)_peaks.narrowPeak
+      glob: $(inputs.results_path.path)/$(inputs.fq2.basename)_peaks.narrowPeak
   summits_bed:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.fq1.basename)_summits.bed
+      glob: $(inputs.results_path.path)/$(inputs.fq2.basename)_summits.bed
   macs2_pileup:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.fq1.basename)_treat_pileup.bdg
+      glob: $(inputs.results_path.path)/$(inputs.fq2.basename)_treat_pileup.bdg
