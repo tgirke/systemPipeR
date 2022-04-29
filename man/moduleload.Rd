@@ -1,3 +1,4 @@
+
 \name{moduleload}
 \alias{module}
 \alias{moduleload}
@@ -12,13 +13,10 @@ Interface to allow full use of the Environment Modules system for Unix
 \description{
 The function \code{module} enables use of the Environment Modules system
 (http://modules.sourceforge.net/) from within the R environment. 
-For Environment Modules version < 4.0 or Lmod, by default, the user's login shell 
-environment (i.e. \code{bash -l}) will be used to initialize the current session. 
-For Environment Modules version > 4.0, the existing R interface already provided 
-(https://github.com/cea-hpc/modules/blob/master/init/r.R.in) is used. 
-The module function can also; load or unload specific software, list all the 
-loaded software within the current session, and list all the applications available 
-for loading from the module system.
+The user's login shell environment (i.e. \code{bash -l}) will be used to 
+initialize the current session. The module function can also; load or unload 
+specific software, list all the loaded software within the current session, 
+and list all the applications available for loading from the module system.
 Lastly, the module function can remove all loaded software from the current
 session.
 }

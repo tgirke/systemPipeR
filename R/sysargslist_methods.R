@@ -277,7 +277,7 @@ setMethod(f = "cmdlist", signature = "SYSargsList", definition = function(x, ste
         step <- 1:length(x)
     }
     step <- .StepClass(x, class = "SYSargs2", step)
-    if (length(step) == 0) stop("No selected step is a 'SYSargs2' object.")
+    if (length(step) == 0) stop("Provide a step with a 'SYSargs2' class instance.")
     x <- x[step]
     cmd <- sapply(names(x$stepsWF), function(x) list(NULL))
     for (i in seq_along(x)) {

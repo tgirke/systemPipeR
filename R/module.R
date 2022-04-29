@@ -131,10 +131,10 @@ setReplaceMethod(f = "[[", signature = "EnvModules", definition = function(x, i,
     return(x)
 })
 
-#########################################
-## .callModuleOld function Constructor ##
-#########################################
-.callModuleOld <- function(action_type, module_name = NULL) {
+#################################
+## Module function Constructor ##
+#################################
+module <- function(action_type, module_name = NULL) {
     # Find path for module command
     modulecmd_path <- is.modules.avail()
     # Only initialize module system if it has not yet been initialized and the module command exists
@@ -151,80 +151,23 @@ setReplaceMethod(f = "[[", signature = "EnvModules", definition = function(x, i,
     )
     ## Action
     switch(action_type,
-        "load"   = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
-        "unload" = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
-        "list"   = mymodules$loaded_modules <- print(module.List.Avail(action_type, mymodules$modulecmd)),
-        "avail"  = mymodules$available_modules <- module.List.Avail(action_type, mymodules$modulecmd),
-        "clear"  = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
-        "init"   = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
-        stop("That action is not supported.")
+           "load"   = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+           "unload" = mymodules$loaded_modules <- module.Load.Unload(action_type, module_name, mymodules$modulecmd),
+           "list"   = mymodules$loaded_modules <- print(module.List.Avail(action_type, mymodules$modulecmd)),
+           "avail"  = mymodules$available_modules <- module.List.Avail(action_type, mymodules$modulecmd),
+           "clear"  = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
+           "init"   = mymodules$loaded_modules <- module.Clear.Init(action_type, mymodules$modulecmd),
+           stop("That action is not supported.")
     )
-    return(as(mymodules, "EnvModules"))
+    invisible(as(mymodules, "EnvModules"))
 }
-
-#########################################
-## .callModNew function Constructor ##
-#########################################
-.callModNew <- function(action_type, module_name, modulecmd_path) {
-    if (action_type %in% c("list", "clear", "init") && !is.null(module_name)) {
-        warning("Any value of `module_name` for action type 'list', 'clear', and 'init' is ignored", immediate. = TRUE)
-    }
-    if (action_type %in% c("load", "unload") && is.null(module_name)) {
-        stop("`module_name` cannot be empty for load and unload actions")
-    }
-
-    cmdpipe <- pipe(paste0(modulecmd_path, " r autoinit"))
-    on.exit(try(close(cmdpipe), silent = TRUE), add = TRUE)
-    myenv <- new.env()
-    eval(parse(cmdpipe), envir = myenv)
-
-    module_name <- paste(module_name, collapse = " ")
-    if (action_type %in% c("init")) {
-        default_modules <- myEnvModules()[[1]]
-        module_name <- paste(default_modules, collapse = " ")
-    }
-    call_cmd <- switch(action_type,
-        "load"   = paste("load", module_name),
-        "unload" = paste("unload", module_name),
-        "init"   = paste("load", module_name),
-        "list"   = "list",
-        "avail"  = paste("avail", module_name),
-        "clear"  = "clear -f",
-        stop("That action is not supported.")
-    )
-    call_cmd <- stringr::str_remove(call_cmd, "[ ]{0,}$")
-    eval(parse(text = paste0("myenv$module(", deparse(call_cmd), ")")))
-}
-
-module <- function(action_type, module_name = NULL) {
-    # assertions
-    stopifnot(is.character(action_type) && length(action_type) == 1)
-    if (!is.null(module_name)) stopifnot(is.character(module_name) && length(module_name) > 0 && all(nchar(module_name) > 0))
-    if (action_type %in% c("list", "clear", "init") && !is.null(module_name)) {
-        stop('No `module_name` should be provided for `action_type` "list", "clear", "init"')
-    }
-
-    # Find path for module command
-    modulecmd_path <- is.modules.avail()
-    version <- NULL
-    if (Sys.getenv("LMOD_CMD") == "") {
-        version <- system2(modulecmd_path, "bash -V", stdout = TRUE, stderr = TRUE)
-        version <- as.numeric(sub("\\..*", "", gsub(pattern = "(.*Release)(.*)([/(].*)", replacement = "\\2", x = version)))
-    }
-    # >= V4 call
-    if (all(!is.null(version) && version >= 4)) {
-        # Only initialize module system if it has not yet been initialized and the module command exists
-        if (Sys.getenv("MODULEPATH") == "" && length(modulecmd_path) > 0) {
-            default_modules <- myEnvModules()[[1]]
-            .callModNew(action_type, default_modules, modulecmd_path)
-        } else if (Sys.getenv("MODULEPATH") == "" && length(modulecmd_path) == 0) {
-            stop("Cound not find the path of Environment Modules command \"modulecmd\" nor LMOD_CMD")
-        }
-        return(.callModNew(action_type, module_name, modulecmd_path))
-    }
-    # < V4 call
-    .callModuleOld(action_type, module_name)
-}
+## Usage::
+# mod <- module("init")
+# mod <- module("list")
+# mod <- module("avail")
+# mod <- module("load","samtools")
+# mod <- module("unload", "samtools")
+# mod <- module("clear")
 
 ##############
 ## Wrappers ##
@@ -468,3 +411,38 @@ module.Clear.Init <- function(action_type, modulecmd_path) {
 ## Usage:
 # module.Clear.Init("init", modulecmd_path)
 # module.Clear.Init("clear")
+
+#########################################
+## .callModNew function Constructor ##
+#########################################
+## This was developed for the r shell in Module system.
+# .callModNew <- function(action_type, module_name, modulecmd_path) {
+#     if (action_type %in% c("list", "clear", "init") && !is.null(module_name)) {
+#         warning("Any value of `module_name` for action type 'list', 'clear', and 'init' is ignored", immediate. = TRUE)
+#     }
+#     if (action_type %in% c("load", "unload") && is.null(module_name)) {
+#         stop("`module_name` cannot be empty for load and unload actions")
+#     }
+#     
+#     cmdpipe <- pipe(paste0(modulecmd_path, " r autoinit"))
+#     on.exit(try(close(cmdpipe), silent = TRUE), add = TRUE)
+#     myenv <- new.env()
+#     eval(parse(cmdpipe), envir = myenv)
+#     
+#     module_name <- paste(module_name, collapse = " ")
+#     if (action_type %in% c("init")) {
+#         default_modules <- myEnvModules()[[1]]
+#         module_name <- paste(default_modules, collapse = " ")
+#     }
+#     call_cmd <- switch(action_type,
+#                        "load"   = paste("load", module_name),
+#                        "unload" = paste("unload", module_name),
+#                        "init"   = paste("load", module_name),
+#                        "list"   = "list",
+#                        "avail"  = paste("avail", module_name),
+#                        "clear"  = "clear -f",
+#                        stop("That action is not supported.")
+#     )
+#     call_cmd <- stringr::str_remove(call_cmd, "[ ]{0,}$")
+#     eval(parse(text = paste0("myenv$module(", deparse(call_cmd), ")")))
+# }
