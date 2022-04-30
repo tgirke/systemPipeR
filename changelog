@@ -1,4 +1,7 @@
 changelog
+    version 2.3.2
+        - Environment Modules system -->  back to the previous version
+        
     version 2.3.1
         - Fix style of R files
         - Improvement of runWF and renderLogs functions
