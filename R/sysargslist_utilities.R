@@ -335,11 +335,6 @@ SYSargsList <- function(sysargs = NULL, step_name = "default",
 .renderMsg <- function(){
     warn_flag <- getOption("spr_render_msg")
     if(isTRUE(warn_flag)) return()
-        log_cmd <- "renderLogs(sal)"
-        report_cmd <- "renderReport(sal)"
-        log_cmd <-
-        report_cmd <-
-
     cat(
         crayon::green$bold("Done with workflow running, now consider rendering logs & reports\n"),
         crayon::blue("To render logs, run:    "), "renderLogs(sal)\n",
@@ -683,7 +678,7 @@ clusterRCode <- function(args.run, step, sysproj, file_log_Rcode, force, tempIma
     		utils::capture.output(codeLine(args.run)),
     		"```", "\n",
     		"## Stdout: ",
-    		"```{r, eval=FALSE}", 
+    		"```{r, eval=FALSE}",
     		"The expected output file(s) already exist", "\n"
     	), file = file_log_Rcode, sep = "\n", fill = TRUE, append = TRUE)
         ## close R chunk
