@@ -180,7 +180,8 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
         time_start = Sys.time(),
         time_end = Sys.time() + 1,
         # cols will be removed?
-        opt_text = ""
+        opt_text = "",
+        prepro_lines = ""
     )
     # get r chunks -----
     r_chunk <- lines[chunk_start] %>% stringr::str_detect("^```\\{r")
