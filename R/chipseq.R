@@ -5,8 +5,11 @@
 ## where pooling of replicates maximizes depth of read coverage.
 ## Note: default factor is "Factor"
 mergeBamByFactor <- function(args, targetsDF = NULL, mergefactor = "Factor",
+                             out_dir = file.path("results", "merge_bam"),
                              overwrite = FALSE, silent = FALSE, ...) {
-    if (!any(inherits(args, "SYSargs"), inherits(args, "SYSargs2"), inherits(args, "character"))) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2 OR named character vector")
+    if (!inherits(args, c("SYSargs", "SYSargs2", "character"))) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2 OR named character vector")
+    dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+    if(!dir.exists(out_dir)) stop("Cannot create out dircotory '", out_dir, "' for you, check permissions")
     ## SYSargs class
     if (inherits(args, "SYSargs")) {
         mergefactor <- targetsin(args)[[mergefactor]]
@@ -23,7 +26,7 @@ mergeBamByFactor <- function(args, targetsDF = NULL, mergefactor = "Factor",
         if (is.null(names(args))) stop("Please provide a named character vector, where the names elements should be the sampleID")
         bampaths <- args
         if (is.null(targetsDF)) stop("'targets argument is required when a named character vector is provided for 'args' argument'.")
-        if (!inherits(targetsDF, "DFrame")) stop("Argument 'targets' needs to be assigned an object of class 'DFrame'")
+        if (!inherits(targetsDF, c("DFrame", "data.frame"))) stop("Argument 'targets' needs to be assigned an object of class 'DFrame' OR 'data.frame'")
         targetsDF <- as.data.frame(targetsDF)
         mergefactor <- targetsDF[[mergefactor]]
         targetsin <- targetsDF
@@ -41,23 +44,22 @@ mergeBamByFactor <- function(args, targetsDF = NULL, mergefactor = "Factor",
     filelist <- tapply(bampaths, factor(mergefactor), as.character)
     filelist <- filelist[names(unifreq)] # Assures original order
     ## Create vector containing paths of output BAM files
-    filelist_merge <- filelist[names(unifreq[unifreq >= 2])] # Merge only those with >= files
-    outname_vec <- character(length(filelist_merge))
-    names(outname_vec) <- names(filelist_merge)
-    for (i in seq(along = outname_vec)) {
-        outname <- gsub("\\.bam$|\\.BAM$", "", filelist_merge[[i]][1])
-        outname <- paste(outname, "_", names(filelist_merge[i]), ".bam", sep = "")
-        outname_vec[i] <- outname
-    }
+    outname_vec <- file.path(out_dir, paste0(names(filelist), "_merged.bam"))
+    names(outname_vec) <- names(filelist)
+
+    filelist_merge <- names(unifreq[unifreq >= 2])# Merge only those with >= 2 files
+    filelist_single <- names(unifreq[unifreq == 1])# single bams will be copied cover
+
     ## If any output BAM file exists and 'overwrite=FALSE' then stop
     file_exists <- file.exists(outname_vec)
     names(file_exists) <- names(outname_vec)
     if (any(file_exists) & overwrite == FALSE) stop("The following files exist: ", paste(names(file_exists)[file_exists], collapse = ", "), ". Delete/rename them or set 'overwrite=TRUE'")
     ## Generate collapsed BAM files
-    for (i in seq(along = filelist_merge)) {
-        mergeBam(filelist_merge[[i]], outname_vec[i], indexDestination = TRUE, overwrite = overwrite)
+    for (i in seq(along = filelist)) {
+        if(names(filelist)[i] %in% filelist_merge) mergeBam(filelist[[i]],  outname_vec[i], indexDestination = TRUE, overwrite = overwrite)
+        else if (names(filelist)[i] %in% filelist_single) file.copy(filelist[[i]],  outname_vec[i], overwrite = overwrite)
         if (silent != TRUE) {
-            cat("Merged BAM files:", basename(filelist_merge[[i]]), "and saved to file", basename(outname_vec[i]), "\n\n")
+            cat("Merged BAM files:", basename(filelist[[i]]), "and saved to file", outname_vec[i], "\n\n")
         }
     }
     ## Generate updated SYSargs and SYSargs2 object
