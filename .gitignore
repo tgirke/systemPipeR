@@ -4,3 +4,8 @@
 .Ruserdata
 *.Rproj
 
+# ignore some test folders
+vignettes/rnaseq
+vignettes/varseq
+vignettes/chipseq
+vignettes/riboseq
