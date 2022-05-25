@@ -9,3 +9,9 @@ vignettes/rnaseq
 vignettes/varseq
 vignettes/chipseq
 vignettes/riboseq
+
+tests/data2
+tests/param
+tests/results
+tests/results
+tests/testthat/test.Rmd
