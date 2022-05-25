@@ -1216,101 +1216,109 @@ renderReport <- function(sysargs,
                          rmd_title = "SPR workflow Template - Report",
                          rmd_author = "Author",
                          rmd_date = "Last update: `r format(Sys.time(), '%d %B, %Y')`",
-                         rmd_template = "default",
                          type = c("html_document"),
                          desc = "This is a workflow template.",
                          quiet = FALSE,
                          open_file = TRUE) {
+    stopifnot(is.logical(quiet) && length(quiet) == 1)
+    stopifnot(is.logical(open_file) && length(open_file) == 1)
+    stopifnot(inherits(sysargs, "SYSargsList"))
+
+    if (is.null(sysargs$projectInfo$rmd_file)) return(
+        sal2rmd(sysargs,
+                out_path = out_path_rmd,
+                rmd_title = rmd_title,
+                rmd_author = rmd_author,
+                rmd_date = rmd_date,
+                rmd_output = type,
+                desc = desc,
+                verbose = !quiet
+        )
+    )
+
     ext <- sub("_.*", "", type)
     out_path <- file.path(paste0(fileName, ".", ext))
     out_path_rmd <- file.path(paste0(fileName, ".Rmd"))
-    if (is.null(sysargs$projectInfo$rmd_file)) {
-        sal2rmd(sysargs,
-            out_path = out_path_rmd,
-            rmd_title = rmd_title,
-            rmd_author = rmd_author,
-            rmd_date = rmd_date,
-            rmd_output = type,
-            desc = desc,
-            verbose = quiet
-        )
-    } else if (!is.null(sysargs$projectInfo$rmd_file)) {
-        file_path <- sysargs$projectInfo$rmd_file
-        lines <- readLines(file_path) ## original file
-        ## get info from sysargs
-        step_names <- names(sysargs$stepsWF)
-        deps <- sysargs$dependency
-        t_connects <- sysargs$targets_connection
-        opts <- sysargs$runInfo$runOption
-        ## get the first line
-        chunk_start <- lines %>% stringr::str_which("^```\\{.*\\}.*")
-        firstLine <- chunk_start[lines[lines %>% stringr::str_which("^```\\{.*\\}.*")] %>% stringr::str_detect("spr")][1]
-        newLines <- lines[1:firstLine - 1]
-        ## We need to consider if append step after=0, in this case it's appending before the first R chunk but not before the text...
-        for (i in seq_along(sysargs$stepsWF)) {
-            if (length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 1) {
-                if (exists("last_line")) {
-                    new_last <- as.numeric(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) - 1
-                    new_first <- as.numeric(last_line) + 1
-                    newLines <- append(newLines, lines[new_first:new_last])
-                }
-                first_line <- gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)
-                last_line <- gsub(".*:", "", sysargs$runInfo$runOption[[i]]$rmd_line)
-                if (inherits(sysargs$stepsWF[[i]], "LineWise")) {
-                    appStep <- .sal2rmd_rstep(sysargs,
-                        con = NULL, i = i, step_name = step_names[i],
-                        dep = deps[[i]], req = opts[[i]]$run_step,
-                        session = opts[[i]]$run_session, return = "object"
-                    )[-1]
-                    newLines <- append(newLines, appStep)
-                } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")) {
-                    appStep <- .sal2rmd_sysstep(sysargs,
-                        con = NULL, i = i,
-                        step_name = step_names[i],
-                        dep = deps[[i]],
-                        dir = opts[[i]]$directory,
-                        req = opts[[i]]$run_step,
-                        session = opts[[i]]$run_session,
-                        t_con = t_connects[[i]], return = "object"
-                    )[-1]
-                    newLines <- append(newLines, appStep)
-                }
-            } else if (length(gsub(":.*$", "", sysargs$runInfo$runOption[[i]]$rmd_line)) == 0) {
-                if (inherits(sysargs$stepsWF[[i]], "LineWise")) {
-                    appStep <- .sal2rmd_rstep(sysargs,
-                        con = NULL, i = i, step_name = step_names[i],
-                        dep = deps[[i]], req = opts[[i]]$run_step,
-                        session = opts[[i]]$run_session, return = "object"
-                    )
-                    newLines <- append(newLines, appStep)
-                } else if (inherits(sysargs$stepsWF[[i]], "SYSargs2")) {
-                    appStep <- .sal2rmd_sysstep(sysargs,
-                        con = NULL, i = i,
-                        step_name = step_names[i],
-                        dep = deps[[i]],
-                        dir = opts[[i]]$directory,
-                        req = opts[[i]]$run_step,
-                        session = opts[[i]]$run_session,
-                        t_con = t_connects[[i]], return = "object"
-                    )
-                    newLines <- append(newLines, appStep)
-                }
-            }
-        }
-        if (length(lines) != last_line) {
-            n <- as.numeric(length(lines)) - (as.numeric(last_line) + 1)
-            final_lines <- tail(lines, n)
-            newLines <- append(newLines, final_lines)
-        }
-        writeLines(newLines, out_path_rmd)
+
+    file_path <- sysargs$projectInfo$rmd_file
+
+    lines <- readLines(file_path) ## original file
+    ## get info from sysargs
+    step_names <- names(sysargs$stepsWF)
+    deps <- sysargs$dependency
+    t_connects <- sysargs$targets_connection
+    opts <- sysargs$runInfo$runOption
+    ## get the first line
+    chunk_start <- lines %>% stringr::str_which("^```\\{.*\\}.*")
+    df <- parseRmd(file_path, verbose = FALSE)[, 1:3]
+    # check steps
+    df_in_sal <- df$step_name %in% step_names
+    if(!all(df_in_sal)) {
+        warning("Some steps exist in template but not in SYSargsList. ",
+                "Step code and text of these steps will be removed in report\n",
+                "Consider using `sal <- importWF(sal, 'xx.Rmd', update = TRUE)` ",
+                "to sync the template and SYSargsList before rendering report\n",
+                paste(df$step_name[!df_in_sal], collapse = " "), immediate. = TRUE)
     }
+    # find text in between
+    text_start <- c(NA, df$end + 1)
+    df$text_start <- text_start[-length(text_start)]
+    df$text_end <- df$start - 1
+    df$text_end[1] <- NA
+    # get starter lines
+    rmd_text <- lines[seq(1, df$start[1] -1)]
+    for (i in seq_along(step_names)) {
+        appStep <- switch(class(sysargs$stepsWF[[i]]),
+            "LineWise" = .sal2rmd_rstep(
+                sysargs,
+                con = NULL, i = i, step_name = step_names[i],
+                dep = deps[[i]], req = opts[[i]]$run_step,
+                prepro = opts[[i]]$prepro_lines,
+                session = opts[[i]]$run_session, return = "object"
+            ),
+            "SYSargs2" = .sal2rmd_sysstep(
+                sysargs,
+                con = NULL, i = i,
+                step_name = step_names[i],
+                dep = deps[[i]],
+                dir = opts[[i]]$directory,
+                req = opts[[i]]$run_step,
+                session = opts[[i]]$run_session,
+                prepro = opts[[i]]$prepro_lines,
+                t_con = t_connects[[i]], return = "object"
+            )
+        )
+        # find sal step matched steps from df lines
+        df_step <- df[df$step_name == step_names[i],]
+        if(nrow(df_step) == 0) {
+            message(crayon::yellow$bold(
+                "Step name ", step_names[i], " exist in SYSargsList but not in template.\n ",
+                "It will be added as a new step in report, consider add it to your template first, ",
+                "and then use `sal <- importWF(sal, 'xx.Rmd', update = TRUE)`",
+                "to update the template first before rendering report."
+            ))
+        } else if (nrow(df_step) > 1){
+            stop(crayon::red$bold("Step name ", step_names[i], " has more than one match in template, something wrong?"))
+        } else {
+            # add text
+            if(!is.na(df_step$text_start[1])) rmd_text <- c(rmd_text, lines[seq(df_step$text_start[1], df_step$text_end[1])])
+        }
+        # add code
+        rmd_text <- c(rmd_text, if(nrow(df_step) == 0) appStep else appStep[-1])
+    }
+    # add tail
+    rmd_text <- c(rmd_text, lines[seq(df$end[nrow(df)] + 1, length(lines))])
+    writeLines(rmd_text, out_path_rmd)
+
     rmarkdown::render(input = out_path_rmd, c(paste0("BiocStyle::", type)), quiet = quiet, envir = new.env())
     detach("package:BiocStyle", unload = TRUE)
     if (!quiet) message(crayon::green$bold("Success! Report created at", out_path))
     sysargs <- as(sysargs, "list")
     sysargs$projectInfo[["Report"]] <- normalizePath(file.path(out_path))
     if (open_file) try(utils::browseURL(file.path(out_path)), TRUE)
-    return(as(sysargs, "SYSargsList"))
+    sysargs <- as(sysargs, "SYSargsList")
+    write_SYSargsList(sysargs, silent = TRUE)
+    return(sysargs)
 }
 
 ## Usage:
