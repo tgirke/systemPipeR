@@ -41,6 +41,9 @@ renameParam2(sysargs, index=NULL, new_names,
   \item{outputs}{
   logical, print out outputs information?
 }
+  \item{stdout}{
+  logical, print out stdout information?
+}
   \item{raw_cmd}{
   logical, print out parsed raw command information?
 }

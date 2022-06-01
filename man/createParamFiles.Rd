@@ -117,14 +117,14 @@ writeParamFiles(sysargs, file = "default", overwrite = TRUE, silent = FALSE,
     - Each line is composed with exact 2 \code{;} to seprate 3 columns.
 
     - Text before first \code{;} will be will used as prefix/names.
-    If it starts with keyword “\code{p:}”, anything after “\code{p:}”
+    If it starts with keyword "\code{p:}", anything after "\code{p:}"
     and before the first \code{;} will be used as prefix, and the name
-    of this position will be the prefix but with leading dash(s) ‘\code{-}’,
-    ‘\code{–}’ removed. If there is any duplication, a number index will be
-    added to the end. If there is no keyword “\code{p:}” before first \code{;},
+    of this position will be the prefix but with leading dash(s) "\code{-}",
+    "\code{-}" removed. If there is any duplication, a number index will be
+    added to the end. If there is no keyword "\code{p:}" before first \code{;},
     all text before first \code{;} will be the name.
 
-    - If there is keyword “\code{p:}” before first \code{;} but nothing before
+    - If there is keyword "\code{p:}" before first \code{;} but nothing before
     and after the second \code{;}, this position will be treated as CWL argument
     instead of input.
 
@@ -132,13 +132,13 @@ writeParamFiles(sysargs, file = "default", overwrite = TRUE, silent = FALSE,
     string, int, double, float, long, boolean.
 
     - Text after second \code{;} and before \code{\\} or end of the line is the
-    default value. If it starts with keyword “\code{out}” or “\code{stdout}”, this
+    default value. If it starts with keyword "\code{out}" or "\code{stdout}", this
     position will also be added to outputs or standard output.
 
-    - There is only 1 position with “\code{stdout}” allowed and usually it is the
+    - There is only 1 position with "\code{stdout}" allowed and usually it is the
     last position arguement.
 
-    - Ending with “\code{\\}” is recommended but not required.
+    - Ending with "\code{\\}" is recommended but not required.
 
     }
 }

@@ -135,7 +135,7 @@ printParam <- function(sysargs, position, index = NULL) {
 ##################
 ## subsetParam  ##
 ##################
-subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FALSE, syntaxVersion = "v1") {
+subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FALSE) {
     if(!inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
