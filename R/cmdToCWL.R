@@ -136,7 +136,7 @@ printParam <- function(sysargs, position, index = NULL) {
 ## subsetParam  ##
 ##################
 subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FALSE, syntaxVersion = "v1") {
-    if(inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
+    if(!inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
         if(inherits(param, "v2")) stop("input sysargs built on syntax version 2, please use `removeParam2`")
@@ -169,7 +169,7 @@ subsetParam <- function(sysargs, position, index = NULL, trim = TRUE, mute = FAL
 ## replaceParam  ##
 ###################
 replaceParam <- function(sysargs, position, index = NULL, replace, mute = FALSE) {
-    if(inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
+    if(!inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
         if(inherits(param, "v2")) stop("input sysargs built on syntax version 2, please use `replaceParam2`")
@@ -221,7 +221,7 @@ replaceParam <- function(sysargs, position, index = NULL, replace, mute = FALSE)
 ## renameParam  ##
 ###################
 renameParam <- function(sysargs, position, index = FALSE, rename, mute = FALSE) {
-    if(inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
+    if(!inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
         if(inherits(param, "v2")) stop("input sysargs built on syntax version 2, please use `renameParam2`")
@@ -251,7 +251,7 @@ renameParam <- function(sysargs, position, index = FALSE, rename, mute = FALSE) 
 ## appendParam  ##
 ###################
 appendParam <- function(sysargs, position, index = NULL, append, after = NULL, mute = FALSE) {
-    if(inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
+    if(!inherits(sysargs, c("SYSargs2", "cwlParse"))) stop("sysargs must be `SYSargs2` or `cwlParse` object")
     if (inherits(sysargs, "SYSargs2")) {
         param <- cmdToCwl(sysargs)
         if(inherits(param, "v2")) stop("input sysargs built on syntax version 2, please use `appendParam2`")
@@ -289,7 +289,7 @@ appendParam <- function(sysargs, position, index = NULL, append, after = NULL, m
 ## ## Internal Functions  ##
 ############################
 .cmdToCwl <- function(cmd, mute = FALSE) {
-    . <- slash_line <- NULL
+    slash_line <- NULL
     stopifnot(is.character(cmd) && length(cmd) == 1)
     cmd_split <- stringr::str_split(cmd, "\n", simplify = TRUE) %>% # split args by line
         stringr::str_remove_all("^[ ]+") %>% # remove all leading, ending spaces
