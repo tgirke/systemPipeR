@@ -197,6 +197,8 @@ export(
     "createParamFiles", "createParam", "writeParamFiles", "printParam",
     "subsetParam", "replaceParam", "renameParam",
     "appendParam",
+    ## cmd2cwl2
+    "printParam2", "appendParam2", "replaceParam2", "removeParam2", "renameParam2",
     ## LineWise
     "importWF", "LineWise"
 )

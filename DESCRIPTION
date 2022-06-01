@@ -1,8 +1,8 @@
 Package: systemPipeR
 Type: Package
 Title: systemPipeR: NGS workflow and report generation environment
-Version: 2.3.3
-Date: 2022-04-29
+Version: 2.3.4
+Date: 2022-05-31
 Author: Thomas Girke
 Maintainer: Thomas Girke <thomas.girke@ucr.edu>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, RiboSeq, ChIPSeq, MethylSeq, SNP, GeneExpression, Coverage, GeneSetEnrichment, Alignment, QualityControl, ImmunoOncology, ReportWriting, Workflow
