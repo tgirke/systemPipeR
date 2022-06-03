@@ -1671,7 +1671,7 @@ When the mouse is hovering on each step, detailed information will be displayed.
 
 The workflow steps will also become clickable if `in_log = TRUE`. This will create links 
 for each step that navigate to corresponding log section in the SPR 
-[workflow log file](change to page that introduce the log file). Normally this option 
+[workflow log file](https://systempipe.org/sp/spr/sp_run/step_reports/). Normally this option 
 is handled by SPR log file generating function to create this plot on top of the log file,
 so when a certain step is click, it will navigate to the detailed section down the page. 
 Here is only an example to demo how the plot can be clickable (will not navigate you to 
