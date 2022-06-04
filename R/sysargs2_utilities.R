@@ -1103,10 +1103,11 @@ createWF <- function(targets = NULL, commandLine, results_path = "./results", mo
     }
     ## class("CommandLineTool", "Workflow")
     # WF.temp <- SYScreate("SYSargs2")
+    syntaxVersion <- if(inherits(commandLine, "v2")) "v2" else "v1"
     WF.temp <- as(SYScreate("SYSargs2"), "list")
     WF.temp$wf <- list()
-    WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, writeout = writeout, silent = silent)
-    WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, writeout = writeout, silent = silent)
+    WF.temp$clt <- write.clt(commandLine, cwlVersion, class, file.cwl, writeout = writeout, silent = silent, syntaxVersion = syntaxVersion)
+    WF.temp$yamlinput <- write.yml(commandLine, file.yml, results_path, module_load, writeout = writeout, silent = silent, syntaxVersion = syntaxVersion)
     WF.temp$modules <- WF.temp$yamlinput$ModulesToLoad
     WF.temp$cmdlist <- sapply(names(WF.temp$clt), function(x) list(NULL))
     WF.temp$input <- sapply(names(WF.temp$clt), function(x) list(NULL))
@@ -1161,7 +1162,7 @@ createWF <- function(targets = NULL, commandLine, results_path = "./results", mo
 ###################
 ##   write.cwl   ##
 ###################
-write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout = TRUE, silent = FALSE) {
+write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout = TRUE, silent = FALSE, syntaxVersion = "v1") {
     cwlVersion <- cwlVersion
     class <- class
     baseCommand <- commandLine$baseCommand[[1]]
@@ -1175,15 +1176,13 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout = TRUE,
         clt <- c(clt, list(requeriments = requeriments))
     }
     ## ARGUMENTS
-    if (is.null(commandLine$arguments)) {
-        dump <- "do nothing"
-    } else if (!is.null(commandLine$arguments)) {
-        arguments <- sapply(seq_along(commandLine$arguments), function(x) list())
-        for (i in seq_along(commandLine$arguments)) {
-            arguments[[i]]["prefix"] <- commandLine$arguments[[i]]$preF
-            arguments[[i]]["valueFrom"] <- commandLine$arguments[[i]]$valueFrom
+    arguments <- sapply(names(commandLine$args), function(x) list())
+    if (!is.null(commandLine$args)) {
+        for (i in seq_along(commandLine$args)) {
+            arguments[[i]]["prefix"] <- commandLine$args[[i]]$preF
+            arguments[[i]]["valueFrom"] <- ""
+            arguments[[i]]["position"] <- as.integer(commandLine$args[[i]]$index)
         }
-        clt <- c(clt, list(arguments = arguments))
     }
     ## INPUTS
     if (any(names(commandLine$inputs) == "")) stop("Each element of the list 'commandLine' needs to be assigned a name")
@@ -1196,11 +1195,12 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout = TRUE,
         }
         if ("preF" %in% names(commandLine$inputs[[i]])) {
             if (commandLine$inputs[[i]]$preF == "") {
-                inputs[[i]]["inputBinding"] <- list(list(prefix = NULL))
+                inputs[[i]]["inputBinding"] <- list(list(prefix = ""))
             } else {
                 inputs[[i]]["inputBinding"] <- list(list(prefix = commandLine$inputs[[i]]$preF))
             }
         }
+        if(syntaxVersion == "v2") inputs[[i]]["inputBinding"]$inputBinding$position <- as.integer(commandLine$inputs[[i]]$index)
         if (any(c("label", "secondaryFiles", "doc", "default", "format", "streamable") %in% names(commandLine$inputs[[i]]))) {
             for (j in which(c("label", "secondaryFiles", "doc", "default", "format", "streamable") %in% names(commandLine$inputs[[i]]))) {
                 inputs[[i]][names(commandLine$inputs[[i]][j])] <- commandLine$inputs[[i]][names(commandLine$inputs[[i]])][[j]]
@@ -1215,8 +1215,16 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout = TRUE,
         outputs[[i]]["type"] <- commandLine$outputs[[i]]$type
         outputs[[i]]["outputBinding"] <- list(list(glob = commandLine$outputs[[i]][[2]]))
     }
+    ## standard out
+    if(length(commandLine$stdout) > 0) {
+        stdout_name <- names(commandLine$stdout)
+        if(is.null(stdout_name) || stdout_name == "") stdout_name <- "new_stdout"
+        outputs[[stdout_name]]$type <- "stdout"
+    }
     ## FILE
-    clt <- c(clt, list(baseCommand = baseCommand, inputs = inputs, outputs = outputs))
+    positions <- list(baseCommand = baseCommand, arguments = arguments, inputs = inputs, outputs = outputs)
+    if(length(commandLine$stdout) > 0) positions$stdout <- commandLine$stdout[[1]]$value
+    clt <- c(clt, positions)
     ## writing file
     if (writeout == TRUE) {
         yaml::write_yaml(x = clt, file = file.cwl)
@@ -1235,15 +1243,21 @@ write.clt <- function(commandLine, cwlVersion, class, file.cwl, writeout = TRUE,
 ##   write.yml   ##
 ###################
 ## Write the yaml file
-write.yml <- function(commandLine, file.yml, results_path, module_load, writeout = TRUE, silent = FALSE) {
+write.yml <- function(commandLine, file.yml, results_path, module_load, writeout = TRUE, silent = FALSE, syntaxVersion = "v1") {
     inputs <- commandLine$inputs
+    if(length(inputs) == 0) {
+        return(
+            message(crayon::yellow$bold("No inputs given, no yml file is written"),
+                    "\nAre you sure this is correct? Double-check the command string")
+        )
+    }
     if (any(names(inputs) == "")) stop("Each element of the list 'commandLine' needs to be assigned a name")
     if (is.null(names(inputs))) stop("Each element of the list 'commandLine' needs to be assigned a name")
     ## yamlinput_yml
     yamlinput_yml <- sapply(names(inputs), function(x) list())
     for (i in seq_along(inputs)) {
         if (!c("type") %in% names(inputs[[i]])) stop("Each element of the sublist 'inputs' in 'commandLine' needs to be defined the type of the argument, for example: type='Directory' or type='File' or type='int' or type='string'")
-        if ("type" %in% names(inputs[[i]])) {
+        if(syntaxVersion == "v1") {
             if (any(c("File", "Directory") %in% inputs[[i]])) {
                 yamlinput_yml[[i]]["class"] <- inputs[[i]]$type
                 yamlinput_yml[[i]]["path"] <- inputs[[i]]$yml
@@ -1251,7 +1265,21 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, writeout
                 yamlinput_yml[[i]] <- inputs[[i]]$yml
             }
         } else {
-            print("do something")
+            # enforce types
+            if (any(c("File", "Directory") %in% inputs[[i]])) {
+                yamlinput_yml[[i]]["class"] <- inputs[[i]]$type
+                yamlinput_yml[[i]]["path"] <- inputs[[i]]$value
+            } else if ("string" %in% inputs[[i]]) {
+                yamlinput_yml[[i]] <- as.character(inputs[[i]]$value)
+            } else if (any(c("double", "float") %in% inputs[[i]])) {
+                yamlinput_yml[[i]] <- as.numeric(inputs[[i]]$value)
+            } else if (any(c("int", "long") %in% inputs[[i]])) {
+                yamlinput_yml[[i]] <- as.integer(inputs[[i]]$value)
+            } else if ("boolean" %in% inputs[[i]]) {
+                yamlinput_yml[[i]] <- as.logical(inputs[[i]]$value)
+            }  else {
+                stop("Argument ", names(inputs[i])[1], " has a currently unsupported type ", inputs[[i]]$type)
+            }
         }
     }
     ## results_path

@@ -53,9 +53,14 @@ sal2rmd <- function(sal,
     for (i in seq_along(sal$stepsWF)) {
         if (verbose) message(crayon::blue$bold("Now writing step", i, step_names[i]))
         if (inherits(sal$stepsWF[[i]], "LineWise")) {
-            .sal2rmd_rstep(sal, con, i, step_names[i], deps[[i]], opts[[i]]$run_step, opts[[i]]$run_session)
+            .sal2rmd_rstep(
+                sal = sal, con = con, i = i, step_name = step_names[i], dep = deps[[i]],
+                req = opts[[i]]$run_step, session = opts[[i]]$run_session, prepro = opts[[i]]$prepro_lines)
         } else {
-            .sal2rmd_sysstep(sal, con, i, step_names[i], deps[[i]], opts[[i]]$directory, opts[[i]]$run_step, opts[[i]]$run_session, t_connects[[i]])
+            .sal2rmd_sysstep(
+                sal = sal, con = con, i = i, step_name = step_names[i], dep = deps[[i]],
+                dir = opts[[i]]$directory, req = opts[[i]]$run_step, session = opts[[i]]$run_session,
+                t_con = t_connects[[i]], prepro = opts[[i]]$prepro_lines)
         }
     }
     if (verbose) message(crayon::green$bold("Success! File created at", out_path))
@@ -115,14 +120,15 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
 #####################
 ## .sal2rmd_rstep ##
 #####################
-.sal2rmd_rstep <- function(sal, con, i, step_name, dep, req, session, return = "write") {
+.sal2rmd_rstep <- function(sal, con, i, step_name, dep, req, session, prepro, return = "write") {
     header <- header <- paste0("```{r ", step_name, ", eval=FALSE, spr=TRUE}", collapse = "")
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
     rep_code <- if (req == "optional") paste0("    run_step = c('optional'),") else paste0("    run_step = c('mandatory'),")
     ses_code <- if (session == "compute") paste0("    run_session = c('compute')") else paste0("    run_session = c('management')")
     rcode <- c(
-        paste0("# Step", i, " ", step_name, collapse = ""),
+        paste0("## Step", i, " ", step_name, collapse = ""),
         header,
+        if(is.null(prepro) || prepro == "") NULL else prepro,
         "appendStep(sal) <- LineWise(\n    code={",
         paste0("        ", as.character(sal$stepsWF[[i]]$codeLine)) %>% stringr::str_replace_all("\n", "\n        "),
         "    },",
@@ -146,7 +152,7 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
 ######################
 ## .sal2rmd_sysstep ##
 ######################
-.sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, req, session, t_con, return = "write") {
+.sal2rmd_sysstep <- function(sal, con, i, step_name, dep, dir, req, session, t_con, prepro, return = "write") {
     header <- paste0("```{r ", step_name, ", eval=FALSE, spr=TRUE}", collapse = "")
     name_code <- paste0("    step_name = '", step_name, "',")
     dep_code <- if (!is.na(dep[1])) paste0("    dependency = c('", paste0(dep, collapse = ","), "'),") else paste0("    dependency = NA", ",")
@@ -179,8 +185,9 @@ sal2bash <- function(sal, out_dir = ".", bash_path = "/bin/bash", stop_on_error 
     wf_file <- paste0('    wf_file="', sal$stepsWF[[i]]$files$cwl[1], '",')
     input_file <- paste0('    input_file="', sal$stepsWF[[i]]$files$yml[1], '",')
     final_obj <- c(
-        paste0("# Step", i, " ", step_name, collapse = ""),
+        paste0("## Step", i, " ", step_name, collapse = ""),
         header,
+        if(is.null(prepro) || prepro == "") NULL else prepro,
         "appendStep(sal) <- SYSargsList(",
         targets_text,
         dir_path,

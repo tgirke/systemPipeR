@@ -777,7 +777,7 @@ setReplaceMethod(
     if (inherits(value, "SYSargs2")) {
         value[["statusWF"]][[1]]$status.completed <- cbind(check.output(value)[[1]], value$statusWF[[1]]$status.completed[5:ncol(value$statusWF[[1]]$status.completed)])
     }
-    if (all(!is.na(dependency(value)) && !getOption("spr_importing") && !getOption("replace_step"))) {
+    if (all(!is.na(dependency(value)) && !getOption("spr_importing", FALSE) && !getOption("replace_step", FALSE))) {
         dep <- dependency(value)[[1]]
         if (inherits(dep, "character")) {
             if (all(!dep %in% names(stepsWF(x)))) {

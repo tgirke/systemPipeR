@@ -6,10 +6,10 @@
 \alias{appendParam}
 
 \title{
-Accessories function to modify the Command-line 
+Accessories function to modify the Command-line Version 1
 }
 \description{
-Accessories function to modify the Command-line 
+Accessories function to modify the Command-line Version 1
 }
 \usage{
 printParam(sysargs, position, index = NULL)
@@ -27,7 +27,7 @@ appendParam(sysargs, position, index = NULL, append, after, mute = FALSE)
   string, one of \code{baseCommand}, \code{inputs}, \code{outputs} to view or apply a modification.
 }
   \item{index}{
-  numeric or character vector, index to view or change a single item in 
+  numeric or character vector, index to view or change a single item in
   \code{baseCommand}, \code{inputs}, \code{outputs}.
 }
   \item{trim}{
@@ -45,7 +45,7 @@ appendParam(sysargs, position, index = NULL, append, after, mute = FALSE)
   named list, same requirements as \code{replace}, however it cannot append \code{baseCommand}.
 }
   \item{after}{
-  a subscript, after which the values are to be appended. If \code{NULL} will be 
+  a subscript, after which the values are to be appended. If \code{NULL} will be
   after the last argument or specify a numeric integer.
 }
   \item{mute}{

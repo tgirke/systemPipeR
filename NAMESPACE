@@ -13,7 +13,7 @@ importFrom("Biostrings", "DNAStringSet")
 importFrom("Biostrings", "alphabetFrequency")
 importFrom("Biostrings", "codons")
 importFrom("Biostrings", "Views")
-importFrom("Biostrings", "reverse") 
+importFrom("Biostrings", "reverse")
 importFrom("Biostrings", "unstrsplit")
 importFrom("Biostrings", "PhredQuality")
 importFrom("Biostrings", "quality")
@@ -72,7 +72,6 @@ importFrom("Rsamtools", "scanBamFlag")
 importFrom("Rsamtools", "scanBamWhat")
 importFrom("Rsamtools", "BamFile")
 importFrom("Rsamtools", "mergeBam")
-importFrom("Rsamtools", "BamFileList")
 importFrom("S4Vectors", "DataFrame")
 importFrom("S4Vectors", "elementMetadata<-")
 importFrom("S4Vectors", "first")
@@ -154,13 +153,13 @@ exportMethods(
     ## SYSargs2
     "targets", "wf", "clt", "yamlinput", "cmdlist", "input",  "output", "files",
     "inputvars", "cmdToCwl", "status",
-    "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-", 
+    "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-",
     ## SYSargsList
     "stepsWF", "statusWF", "targetsWF", "outfiles", "SE",
     "dependency", "projectInfo", "runInfo",
-    "sysargslist", "subset", "stepName", "getColumn", 
+    "sysargslist", "subset", "stepName", "getColumn",
     "SampleName", "viewEnvir", "copyEnvir", "addResources",
-    "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-", 
+    "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
     "updateColumn<-",
     ## LineWise
     "codeLine", "codeChunkStart", "rmdPath", "linewise",
@@ -191,13 +190,15 @@ export(
     "targets.as.df", "targets.as.list", "evalCode", "tryPath", "tryCL", "tryCMD",
     "configWF", "config.param",
     # SYSargsList
-    "SPRproject", "SYSargsList", "runWF", "check.outfiles",  "plotWF", 
-    "plotwfOutput", "renderPlotwf", "renderLogs", "sal2rmd", "sal2bash", 
+    "SPRproject", "SYSargsList", "runWF", "check.outfiles",  "plotWF",
+    "plotwfOutput", "renderPlotwf", "renderLogs", "sal2rmd", "sal2bash",
     "write_SYSargsList", "renderReport", "writeTargets",
     ## cmd2cwl
-    "createParamFiles", "createParam", "writeParamFiles", "printParam", 
+    "createParamFiles", "createParam", "writeParamFiles", "printParam",
     "subsetParam", "replaceParam", "renameParam",
-    "appendParam", 
+    "appendParam",
+    ## cmd2cwl2
+    "printParam2", "appendParam2", "replaceParam2", "removeParam2", "renameParam2",
     ## LineWise
     "importWF", "LineWise"
 )

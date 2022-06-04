@@ -1,5 +1,13 @@
 ^_pkgdown\.yml$
+^\.git
 ^\.github
+^\.gitignore
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.Rhistory
 test_devel
+
+^vignettes/rnaseq
+^vignettes/varseq
+^vignettes/chipseq
+^vignettes/riboseq
