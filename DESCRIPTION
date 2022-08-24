@@ -1,7 +1,7 @@
 Package: systemPipeR
 Type: Package
 Title: systemPipeR: NGS workflow and report generation environment
-Version: 2.3.4
+Version: 2.3.5
 Date: 2022-05-31
 Author: Thomas Girke
 Maintainer: Thomas Girke <thomas.girke@ucr.edu>
