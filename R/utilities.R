@@ -486,8 +486,8 @@ preprocessReads <- function(args = NULL,
             if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
                 outpaths <- outpaths(args) # SYSargs
             } else {
-                outpaths1 <- as.character(targetsout(args)$FileName1[i])
-                outpaths2 <- as.character(targetsout(args)$FileName2[i])
+                outpaths1 <- as.character(targetsout(args)$FileName1)
+                outpaths2 <- as.character(targetsout(args)$FileName2)
             }
         } else if (class(args) == "SYSargs2") {
             colnames_args <- colnames(targets.as.df(args$targets)) # SYSargs2
