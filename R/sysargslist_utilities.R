@@ -95,7 +95,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
     }
     write_SYSargsList(init, file.path(projPath, sys.file), silent = silent)
     ## Message about the paths
-    if (getwd() != projPath) {
+    if (normalizePath(getwd()) != projPath) {
         message(
             "Your current working directory is different from the directory chosen for the Project Workflow.",
             "\n",
