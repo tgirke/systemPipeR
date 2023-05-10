@@ -1,5 +1,6 @@
 
 \name{listCmdTools}
+\alias{listCmdTools}
 \alias{listCmdModules}
 \title{
 List/check the existence of command-line tools of a workflow
