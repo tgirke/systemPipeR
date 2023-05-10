@@ -95,7 +95,7 @@ SPRproject <- function(projPath = getwd(), data = "data", param = "param", resul
     }
     write_SYSargsList(init, file.path(projPath, sys.file), silent = silent)
     ## Message about the paths
-    if (getwd() != projPath) {
+    if (normalizePath(getwd()) != projPath) {
         message(
             "Your current working directory is different from the directory chosen for the Project Workflow.",
             "\n",
@@ -1673,7 +1673,7 @@ tryCMD <- function(command, silent = FALSE) {
     tryCatch(
         {
             system(command, ignore.stdout = TRUE, ignore.stderr = TRUE)
-            if (!silent) print("All set up, proceed!")
+            if (!silent) print("All set, proceed!")
             if (silent) (return("proceed"))
         },
         warning = function(w) {
@@ -1707,6 +1707,113 @@ tryPath <- function(path) {
 }
 ## Usage:
 # tryPath(path="./")
+
+
+########################################################################
+## Function to list/check if all cmd tools are in path for a workflow ##
+########################################################################
+listCmdTools <- function(
+    sal,
+    check_path = FALSE,
+    check_module = FALSE
+){
+    if(!inherits(sal, "SYSargsList")) stop("ERROR: Please provide a `SYSargsList` object")
+    # list of cmd steps
+    all_steps <- stepsWF(sal) %>% lapply(class) %>% unlist()
+    cmd_steps <- which(all_steps == "SYSargs2")
+    if(length(cmd_steps) == 0) return(cat(crayon::make_style("orange")$bold("There is no commandline (SYSargs) step in this workflow, skip.\n")))
+    base_cmd <- lapply(cmd_steps, function(step) {
+        # step_module <- stepsWF(sal)[[step]]@modules
+        # if(length(step_module) > 0)
+        step_clt <- stepsWF(sal)[[step]]@clt
+       lapply(step_clt, function(clt) {
+            clt$baseCommand[1]
+        })
+    })
+
+    base_cmd <- data.frame(
+        step_name = rep(names(base_cmd), (lapply(base_cmd, length) %>% unlist(use.names = FALSE))),
+        tool = base_cmd %>% unlist(use.names = FALSE),
+        in_path = NA
+    )
+    if(!check_path) {
+        cat(crayon::blue$bold("Following tools are used in steps in this workflow:\n"))
+        print(base_cmd)
+    }
+
+    if(!check_path) return(invisible(base_cmd))
+    cat(crayon::blue$bold("Check if they are in path:\n"))
+    unique_tools <- unique(base_cmd$tool)
+    path_res <- lapply(unique_tools, function(i) {
+        cat(crayon::blue$bold(paste0("Checking path for ", i, "\n")))
+        try_res <- tryCMD(i, silent = TRUE)
+        if(try_res == "proceed") {
+            cat(crayon::blue$green$bold("PASS\n"))
+            return(TRUE)
+        }
+        cat(crayon::blue$red$bold("ERROR\n"))
+        FALSE
+    }) %>% unlist()
+
+    base_cmd$in_path <- path_res[match(base_cmd$tool, unique_tools)]
+    print(base_cmd)
+
+    if (all(path_res) && check_module) return(cat(crayon::green$bold(
+        "All required tools in PATH, skip module check. If you want to check modules use `listCmdModules`"
+    )))
+
+    if(!check_module) return({
+        if(!all(path_res)) {
+            cat(crayon::blue$bold(
+                c("Not all tools required are in PATH.",
+                  "If you have a modular system, turn `load_module = TRUE`",
+                  "It will call `listCmdModules` to check the required tools are in your modular system.\n")))
+        }
+        invisible(base_cmd)
+    })
+
+    cat(crayon::blue$bold("Now check if modular system:\n"))
+    listCmdModules(sal, check_module)
+    invisible(base_cmd)
+}
+
+listCmdModules <- function(
+    sal,
+    check_module = FALSE
+) {
+    if(!inherits(sal, "SYSargsList")) stop("ERROR: Please provide a `SYSargsList` object")
+    # list of cmd steps
+    all_steps <- stepsWF(sal) %>% lapply(class) %>% unlist()
+    cmd_steps <- which(all_steps == "SYSargs2")
+    if(length(cmd_steps) == 0) return(cat(crayon::make_style("orange")$bold("There is no commandline (SYSargs) step in this workflow, skip.\n")))
+    base_mod <- lapply(cmd_steps, function(step) {
+       stepsWF(sal)[[step]]@modules
+    }) %>% unlist()
+    if(is.null(base_mod)) return(cat(crayon::make_style("orange")$bold("No module is listed, check your CWL yaml configuration files, skip.\n")))
+    base_mod <- data.frame(
+        step_name = stringr::str_remove(names(base_mod), "\\.module[0-9]{1,}$"),
+        module = unname(base_mod),
+        avail = NA
+    )
+
+    if(!check_module) {
+        cat(crayon::make_style("orange")$bold("Here are modules used in this workflow:\n"))
+        print(base_mod)
+    }
+
+    if(!check_module) return(invisible(base_mod))
+    module_avail <- is.modules.avail()
+    if(is.null(module_avail)) return({
+        cat(crayon::make_style("orange")$bold("Modular system is not installed, skip\n"))
+        invisible(base_mod)
+    })
+
+    all_mods <- moduleAvail()$available_modules %>% unlist(use.names = FALSE)
+    base_mod$avail <-  base_mod$module %in% all_mods
+    cat(crayon::blue$bold("Module availability:\n"))
+    print(base_mod)
+}
+
 
 ###########################################################################################
 ## Function to evaluate (eval=TRUE) or not evaluate (eval=FALSE) R code in the Rmarkdown ##

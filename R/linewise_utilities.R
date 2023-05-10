@@ -80,7 +80,16 @@ LineWise <- function(code, step_name = "default", codeChunkStart = integer(),
 ########################
 ## importRmd function ##
 ########################
-importWF <- function(sysargs, file_path, ignore_eval = TRUE, update = FALSE, confirm = FALSE, verbose = TRUE) {
+importWF <- function(
+        sysargs,
+        file_path,
+        ignore_eval = TRUE,
+        update = FALSE,
+        confirm = FALSE,
+        check_tool = !update,
+        check_module = check_tool,
+        verbose = TRUE
+        ) {
     on.exit({
         options(linewise_importing = FALSE)
         options(spr_importing = FALSE)
@@ -91,7 +100,9 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, update = FALSE, con
     stopifnot(is.logical(verbose) && length(verbose) == 1)
     stopifnot(is.logical(ignore_eval) && length(ignore_eval) == 1)
     stopifnot(is.logical(update) && length(update) == 1)
-    keyword <- if(update) "update" else "import"
+    stopifnot(is.logical(check_tool) && length(check_tool) == 1)
+    stopifnot(is.logical(check_module) && length(check_module) == 1)
+    keyword <- if(update) "Update" else "Import"
     if (!update && length(sysargs) > 0) {
         cat(orangeText("SYSargsList is not empty. Are you sure that you are combining two workflows?\n",
                        "If not use `update = TRUE` to re-import/update current workflow"), "\n")
@@ -179,6 +190,13 @@ importWF <- function(sysargs, file_path, ignore_eval = TRUE, update = FALSE, con
     sal_imp <- as(sal_imp, "SYSargsList")
     sysargslist <- file.path(sal_imp$projectInfo$project, sal_imp$projectInfo$sysargslist)
     write_SYSargsList(sal_imp, sysargslist, silent = TRUE)
+
+    if(check_tool) {
+        cat(crayon::blue$bold("Now check if required tools are installed"), "\n")
+        listCmdTools(sal_imp, check_path = TRUE, check_module = check_module)
+    }
+
+
     if (verbose) cat(crayon::green$bold(keyword, " done\n"))
     return(sal_imp)
 }

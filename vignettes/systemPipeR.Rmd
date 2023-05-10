@@ -1856,11 +1856,13 @@ software %>%
 
 Remember, if you desire to run any of these tools, make sure to have the 
 respective software installed on your system and configure in the `PATH`. 
-You can check as follows: 
 
-```{r test_tool_path, eval=FALSE}
-tryCMD(command="gzip") 
-```
+There are a few ways to check if the required tools/modules are installed. The easiest way is automatically performed for 
+users by calling the `importWF` function. At the end of the import, all required tools and modules are automatically 
+listed and checked for users. 
+
+There are a few other methods that one could use to perform the tool validation, please read details on our website, 
+the [Before running section](https://systempipe.org/sp/spr/sp_run/step_run/#before-running).  
 
 ```{r cleaning3, eval=TRUE, include=FALSE}
 if (file.exists(".SPRproject")) unlink(".SPRproject", recursive = TRUE)

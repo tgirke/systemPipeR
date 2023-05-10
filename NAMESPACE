@@ -184,6 +184,7 @@ export(
     "varSummary", "countRangeset", "runDiff", "genFeatures", "featuretypeCounts",
     "plotfeaturetypeCounts", "featureCoverage", "plotfeatureCoverage", "predORF",
     "trimbatch", "scaleRanges", "olRanges", "showDF", "cwlFilesUpdate",
+    "listCmdTools", "listCmdModules",
     ## SYSargs2
     "loadWorkflow", "loadWF", "renderWF", "updateWF", "check.output",
     "subsetWF", "output_update",
