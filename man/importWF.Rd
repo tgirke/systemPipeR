@@ -12,7 +12,10 @@ options, to include a particular code chunk in the workflow analysis. Please che
 \usage{
 importWF(
     sysargs, file_path, ignore_eval = TRUE,
-    update = FALSE, confirm = FALSE, verbose = TRUE
+    update = FALSE, confirm = FALSE,
+    check_tool = !update,
+    check_module = check_tool,
+    verbose = TRUE
 )
 }
 \arguments{
@@ -38,6 +41,18 @@ importWF(
   will be asked during update. Changing this to \code{TRUE} would
   skip these questions and directly say "Yes" to all answers. Useful
   in non-interactive mode. Default is to say "No" in  non-interactive mode.
+}
+  \item{check_tool}{
+  logical, whether to check all required tools by this workflow are in PATH (callable).
+  It uses the \code{listCmdTools} function to perform the check.
+  The default is the reverse of \code{update}. It means if it is the first importing the workflow, tools and modules
+  will be checked. If it is updating the existing workflow, tools will not be checked.
+}
+  \item{check_module}{
+  logical, whether to check all required modules are available. To do so, a modular system has be to installed.
+  If no modular system, this check will be skipped, even if \code{check_module = TRUE}.
+  It uses the \code{listCmdModules} function to perform the check.
+  Check the help of \code{\link{module}} to know more about modular system.
 }
   \item{verbose}{
   logical, print out verbose message while function running.

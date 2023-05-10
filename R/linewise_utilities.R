@@ -102,7 +102,7 @@ importWF <- function(
     stopifnot(is.logical(update) && length(update) == 1)
     stopifnot(is.logical(check_tool) && length(check_tool) == 1)
     stopifnot(is.logical(check_module) && length(check_module) == 1)
-    keyword <- if(update) "update" else "import"
+    keyword <- if(update) "Update" else "Import"
     if (!update && length(sysargs) > 0) {
         cat(orangeText("SYSargsList is not empty. Are you sure that you are combining two workflows?\n",
                        "If not use `update = TRUE` to re-import/update current workflow"), "\n")

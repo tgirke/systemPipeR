@@ -1721,7 +1721,7 @@ listCmdTools <- function(
     # list of cmd steps
     all_steps <- stepsWF(sal) %>% lapply(class) %>% unlist()
     cmd_steps <- which(all_steps == "SYSargs2")
-    if(length(cmd_steps) == 0) return(cat(crayon::make_style("orange")$bold("There is no commandline step in this workflow, skip.\n")))
+    if(length(cmd_steps) == 0) return(cat(crayon::make_style("orange")$bold("There is no commandline (SYSargs) step in this workflow, skip.\n")))
     base_cmd <- lapply(cmd_steps, function(step) {
         # step_module <- stepsWF(sal)[[step]]@modules
         # if(length(step_module) > 0)
@@ -1758,6 +1758,10 @@ listCmdTools <- function(
     base_cmd$in_path <- path_res[match(base_cmd$tool, unique_tools)]
     print(base_cmd)
 
+    if (all(path_res) && check_module) return(cat(crayon::green$bold(
+        "All required tools in PATH, skip module check. If you want to check modules use `listCmdModules`"
+    )))
+
     if(!check_module) return({
         if(!all(path_res)) {
             cat(crayon::blue$bold(
@@ -1770,7 +1774,7 @@ listCmdTools <- function(
 
     cat(crayon::blue$bold("Now check if modular system:\n"))
     listCmdModules(sal, check_module)
-
+    invisible(base_cmd)
 }
 
 listCmdModules <- function(
@@ -1781,7 +1785,7 @@ listCmdModules <- function(
     # list of cmd steps
     all_steps <- stepsWF(sal) %>% lapply(class) %>% unlist()
     cmd_steps <- which(all_steps == "SYSargs2")
-    if(length(cmd_steps) == 0) return(cat(crayon::make_style("orange")$bold("There is no commandline step in this workflow, skip.\n")))
+    if(length(cmd_steps) == 0) return(cat(crayon::make_style("orange")$bold("There is no commandline (SYSargs) step in this workflow, skip.\n")))
     base_mod <- lapply(cmd_steps, function(step) {
        stepsWF(sal)[[step]]@modules
     }) %>% unlist()
