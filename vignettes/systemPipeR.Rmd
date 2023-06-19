@@ -1,5 +1,5 @@
 ---
-title: "systemPipeR: Workflow and Visualization Toolkit" 
+title: "systemPipeR: Workflow Management and Report Generation Environment" 
 author: "Author: Daniela Cassol, Le Zhang, and Thomas Girke"
 date: "Last update: `r format(Sys.time(), '%d %B, %Y')`" 
 output:
@@ -9,7 +9,7 @@ output:
 package: systemPipeR
 vignette: |
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{systemPipeR: Workflow and Visualization Toolkit}
+  %\VignetteIndexEntry{Overview}
   %\VignetteEngine{knitr::rmarkdown}
 fontsize: 14pt
 bibliography: bibtex.bib
@@ -55,56 +55,13 @@ suppressPackageStartupMessages({
 
 # Introduction
 
-[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html)
-provides flexible utilities for designing, building and running automated end-to-end
-analysis workflows for a wide range of research applications, including
-next-generation sequencing (NGS) experiments, such as RNA-Seq, ChIP-Seq,
-VAR-Seq and Ribo-Seq [@H_Backman2016-bt]. Important features include a uniform
-workflow interface across different data analysis applications, automated
-report generation, and support for running both R and command-line software,
-such as NGS aligners or peak/variant callers, on local computers or compute
-clusters (Figure \@ref(fig:utilities)). The latter supports interactive job submissions and batch submissions to queuing systems of clusters. 
-
-_`systemPipeR`_ has been designed to improve the reproducibility of large-scale data
-analysis projects while substantially reducing the time it takes to analyze 
-complex omics data sets. It provides a uniform workflow interface and management
-system that allows the users to run selected workflow steps, as well as customize and design entirely new workflows. Additionally, the package take advantage of central community S4 
-classes of the Bioconductor ecosystem, and enhances them with command-line software support.
-
-The main motivation and advantages of using _`systemPipeR`_ for complex data analysis tasks are:
-
-1. Design of complex workflows involving multiple R/Bioconductor packages
-2. Common workflow interface for different applications
-3. User-friendly access to widely used Bioconductor utilities 
-4. Support of command-line software from within R
-5. Reduced complexity of using compute clusters from R 
-6. Accelerated runtime of workflows via parallelization on computer systems with multiple CPU cores and/or multiple nodes
-6. Improved reproducibility by automating the generation of analysis reports 
+[_`systemPipeR`_](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html) is a multipurpose data analysis workflow environment that unifies R with command-line tools [@H_Backman2016-bt]. It enables scientists to analyze many types of large- or small-scale data on local or distributed computer systems with a high level of reproducibility, scalability and portability (Figure \@ref(fig:utilities)). At its core is a command-line interface (CLI) that adopts the Common Workflow Language (CWL, Crusoe et al. [-@Crusoe2021-iq]). This design allows users to choose for each analysis step the optimal R or command-line software. It supports both end-to-end and partial execution of workflows with built-in restart functionalities. Efficient management of complex analysis tasks is accomplished by a flexible workflow control container class (_`SYSargsList`_). Handling of large numbers of input samples and experimental designs is facilitated by consistent sample annotation mechanisms. As a multi-purpose workflow toolkit, _`systemPipeR`_ enables users to run existing workflows, customize them or design entirely new ones while taking advantage of widely adopted data structures within the Bioconductor ecosystem. Another important core functionality is the generation of reproducible scientific analysis and technical reports. For result interpretation, _`systemPipeR`_ offers a wide range of plotting functionality, while an associated Shiny App offers many useful functionalities for interactive result exploration. 
 
 ```{r utilities, eval=TRUE, warning= FALSE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Relevant features in `systemPipeR`. Workflow design concepts are illustrated under (A). Examples of `systemPipeR's` visualization functionalities are given under (B).", warning=FALSE}
 knitr::include_graphics("images/utilities.png")
 ```
 
-A central concept for designing workflows within the _`systemPipeR`_
-environment is the use of workflow management containers. Workflow management
-containers facilitate the design and execution of complex data
-analysis steps. For its command-line interface _`systemPipeR`_ adopts the
-widely used [Common Workflow Language](https://www.commonwl.org/) (CWL)
-[@Amstutz2016-ka]. The interface to CWL is established by _`systemPipeR's`_
-workflow control class called _`SYSargsList`_ (see Figure \@ref(fig:general)). This 
-design offers many advantages such as: (i) options to run workflows either
-entirely from within R, from various command-line wrappers (e.g., *cwl-runner*)
-or from other languages (*, e.g.,* Bash or Python). Apart from providing
-support for both command-line and R/Bioconductor software, the package provides
-utilities for containerization, parallel evaluations on computer clusters and
-automated generation of interactive analysis reports.
-
-```{r general, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Overview of `systemPipeR` workflows management instances. A) A typical analysis workflow requires multiple software tools (red), as well the description of the input (green) and output files, including analysis reports (purple). B) `systemPipeR` provides multiple utilities to design and build a workflow, allowing multi-instance, integration of R code and command-line software, a simple and efficient annotation system, that allows automatic control of the input and output data, and multiple resources to manage the entire workflow. c) Options are provided to execute single or multiple workflow steps, while enabling scalability, checkpoints, and generation of technical and scientific reports.", warning=FALSE}
-
-knitr::include_graphics("images/general.png")
-```
-
-An important feature of _`systemPipeR's`_ CWL interface is that it provides two
+_`systemPipeR's`_ CWL interface provides two
 options to run command-line tools and workflows based on CWL. First, one can
 run CWL in its native way via an R-based wrapper utility for *cwl-runner* or
 *cwl-tools* (CWL-based approach). Second, one can run workflows using CWL's
@@ -115,8 +72,16 @@ _`systemPipeR`_, and thus use CWL mainly as a command-line and workflow
 definition format rather than execution software to run workflows. In this regard
 _`systemPipeR`_ also provides several convenience functions that are useful for
 designing and debugging workflows, such as a command-line rendering function to
-retrieve the exact command-line strings for each data set and processing step
-prior to running a command-line.
+retrieve the exact command-line strings for each step prior to running a command-line.
+Auto-generation of CWL parameter files is also supported, where
+users can simply provide the command-line strings new software to a function and 
+the corresponding `*.cwl` and `*.yml` are generated for them. 
+
+
+```{r general, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Overview of `systemPipeR` workflows management instances. A) A typical analysis workflow requires multiple software tools (red), as well the description of the input (green) and output files, including analysis reports (purple). B) `systemPipeR` provides multiple utilities to design and build a workflow, allowing multi-instance, integration of R code and command-line software, a simple and efficient annotation system, that allows automatic control of the input and output data, and multiple resources to manage the entire workflow. c) Options are provided to execute single or multiple workflow steps, while enabling scalability, checkpoints, and generation of technical and scientific reports.", warning=FALSE}
+
+knitr::include_graphics("images/general.png")
+```
 
 ## Workflow Management with _`SYSargsList`_ 
 
