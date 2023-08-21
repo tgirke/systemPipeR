@@ -1672,7 +1672,7 @@ tryCMD <- function(command, silent = FALSE) {
     if (command == "gzip") command <- "gzip -h"
     tryCatch(
         {
-            system(command, ignore.stdout = TRUE, ignore.stderr = TRUE)
+            system(command, ignore.stdout = TRUE, ignore.stderr = TRUE, timeout = 2)
             if (!silent) print("All set, proceed!")
             if (silent) (return("proceed"))
         },
