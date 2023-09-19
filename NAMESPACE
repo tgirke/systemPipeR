@@ -155,12 +155,12 @@ exportMethods(
     "inputvars", "cmdToCwl", "status",
     "sysargs2", "baseCommand", "yamlinput<-", "cmdToCwl<-",
     ## SYSargsList
-    "stepsWF", "statusWF", "targetsWF", "outfiles", "SE",
+    "stepsWF", "statusWF", "targetsWF", "outfiles", "SE", 
     "dependency", "projectInfo", "runInfo",
     "sysargslist", "subset", "stepName", "getColumn",
     "SampleName", "viewEnvir", "copyEnvir", "addResources",
     "appendStep<-", "replaceStep<-", "renameStep<-", "dependency<-",
-    "updateColumn<-",
+    "updateColumn<-", "SE<-",
     ## LineWise
     "codeLine", "codeChunkStart", "rmdPath", "linewise",
     "replaceCodeLine<-", "appendCodeLine<-"
