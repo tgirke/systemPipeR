@@ -78,6 +78,8 @@
 \alias{replaceCodeLine<-,SYSargsList-method}
 \alias{updateColumn<-}
 \alias{updateColumn<-,SYSargsList-method}
+\alias{SE<-}
+\alias{SE<-,SYSargsList-method}
 
 \title{Class \code{"SYSargsList"}}
 \description{
