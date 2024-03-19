@@ -4,10 +4,10 @@
 on:
   push:
     branches:
-      - master
+      - devel
   pull_request:
     branches:
-      - master
+      - devel
 
 name: R-CMD-check
 
