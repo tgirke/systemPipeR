@@ -82,7 +82,7 @@ Objects can be created by calls of the form \code{new("SYSargs2", ...)}.
     \item{\code{modules}:}{Object of class \code{"list"} storing software versions from module system }
     \item{\code{wf}:}{Object of class \code{"list"} storing data from Workflow \code{CWL parameters} file }
     \item{\code{clt}:}{Object of class \code{"list"} storing data from each \code{CommandLineTool}
-                        substep in the Workflow or the single code{CommandLineTool} \code{CWL parameters} file }
+                        substep in the Workflow or the single \code{CommandLineTool} \code{CWL parameters} file }
     \item{\code{yamlinput}:}{Object of class \code{"list"} storing data from \code{input (*.yml)} file }
     \item{\code{cmdlist}:}{Object of class \code{"list"} storing all command-line used to execute external software }
     \item{\code{input}:}{Object of class \code{"list"} storing data from each target defined in \code{inputvars} }

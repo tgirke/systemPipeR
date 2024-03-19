@@ -16,7 +16,7 @@ instance, constant length clipping of the reads on either end or variable
 length clipping on the 3' end maintains this relationship, while variable
 length clipping on the 5' end without reversing the reads erases it.
 
-The function {seeFastq} computes the summary stats and stores them in a relatively 
+The function \code{seeFastq} computes the summary stats and stores them in a relatively 
 small list object that can be saved to disk with \code{save()} and reloaded with 
 \code{load()} for later plotting. The argument 'klength' specifies the k-mer length and 'batchsize' the
 number of reads to random sample from each fastq file.  }
