@@ -54,7 +54,7 @@ scaleRanges(GRangesList(myid1=subject), GRangesList(myid1=query), type="test")
 
 \dontrun{
 ## Usage for more complex example
-library(GenomicFeatures); library(systemPipeRdata)
+library(txdbmaker); library(systemPipeRdata)
 gff <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
 txdb <- makeTxDbFromGFF(file=gff, format="gff3", organism="Arabidopsis")
 futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)

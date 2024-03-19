@@ -6,7 +6,7 @@ skip_on_ci()
 setwd(file.path(tempdir(), "rnaseq"))
 
 test_that("check_features", {
-    library(GenomicFeatures)
+    library(txdbmaker)
     ## Create paths
     file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
     expect_warning(txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis"))

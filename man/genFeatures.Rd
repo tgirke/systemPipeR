@@ -64,9 +64,9 @@ Thomas Girke
 the \code{GenomicFeatures} package.
 }
 \examples{
-## Sample from GenomicFeatures package
-library(GenomicFeatures)
-gffFile <- system.file("extdata", "GFF3_files", "a.gff3", package="GenomicFeatures")
+## Sample from txdbmaker package
+library(txdbmaker)
+gffFile <- system.file("extdata", "GFF3_files", "a.gff3", package="txdbmaker")
 txdb <- makeTxDbFromGFF(file=gffFile, format="gff3", organism="Solanum lycopersicum")
 feat <- genFeatures(txdb, featuretype="all", reduce_ranges=FALSE, upstream=1000, downstream=0)
 

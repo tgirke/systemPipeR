@@ -71,7 +71,7 @@ dna <- readDNAStringSet(file)
 
 \dontrun{
 ## Usage for more complex example
-library(GenomicFeatures); library(systemPipeRdata)
+library(txdbmaker); library(systemPipeRdata)
 gff <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
 txdb <- makeTxDbFromGFF(file=gff, format="gff3", organism="Arabidopsis")
 futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)

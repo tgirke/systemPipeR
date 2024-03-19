@@ -1167,7 +1167,7 @@ scaleRanges <- function(subject, query, type = "custom", verbose = TRUE) {
 # scaleRanges(GRangesList(myid1=subject), GRangesList(myid1=query), type="test")
 
 ## Usage for more complex example
-# library(GenomicFeatures)
+# library(txdbmaker)
 # gff <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
 # txdb <- makeTxDbFromGFF(file=gff, format="gff3", organism="Arabidopsis")
 # futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)

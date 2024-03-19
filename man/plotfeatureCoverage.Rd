@@ -69,7 +69,7 @@ args <- runCommandline(args, dir = FALSE, make_bam = TRUE)
 outpaths <- subsetWF(args, slot = "output", subset = 1, index = 1)
 
 ## Features from sample data of systemPipeRdata package
-library(GenomicFeatures)
+library(txdbmaker)
 file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
 txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
 

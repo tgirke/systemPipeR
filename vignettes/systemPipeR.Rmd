@@ -2215,7 +2215,7 @@ Create _`txdb`_ (needs to be done only once).
 
 ```{r create_txdb, message=FALSE, eval=FALSE, spr=TRUE}
 appendStep(sal) <- LineWise(code = {
-                            library(GenomicFeatures)
+                            library(txdbmaker)
                             txdb <- makeTxDbFromGFF(file="data/tair10.gff", format="gff", 
                                                     dataSource="TAIR", organism="Arabidopsis thaliana")
                             saveDb(txdb, file="./data/tair10.sqlite")

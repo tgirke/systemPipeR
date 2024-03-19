@@ -74,7 +74,7 @@ test_that("check_chipSeq_fnc", {
                     overwrite = TRUE)
     
     library(ChIPpeakAnno)
-    library(GenomicFeatures)
+    library(txdbmaker)
     dir_path <- system.file("extdata/cwl/annotate_peaks", package = "systemPipeR")
     args <- loadWF(targets = "targets_macs.txt", wf_file = "annotate_peaks.cwl", 
                    input_file = "annotate_peaks.yml", dir_path = dir_path)
