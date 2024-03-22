@@ -36,7 +36,7 @@ runDiff(args, outfiles=NULL, diffFct, targets, cmp, dbrfilter, ...)
     targets \code{data.frame}
 }
   \item{cmp}{
-    code{character matrix} where comparisons are defined in two columns. This matrix should be generated with \code{readComp()} from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
+    \code{character matrix} where comparisons are defined in two columns. This matrix should be generated with \code{readComp()} from the targets file. Values used for comparisons need to match those in the \code{Factor} column of the targets file.
 }
   \item{dbrfilter}{
     Named vector with filter cutoffs of format \code{c(Fold=2, FDR=1)} where \code{Fold} refers to the fold change cutoff (unlogged) and \code{FDR} to the p-value cutoff. Those values are passed on to the \code{filterDEGs} function.
