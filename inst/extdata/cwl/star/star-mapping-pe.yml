@@ -45,7 +45,7 @@ ModulesToLoad:
 
 runMode: alignReads
 
-outSAMtype: [SAM] # [BAM, Unsorted, SortedByCoordinate]
+outSAMtype: [BAM SortedByCoordinate] # [SAM, BAM, Unsorted, SortedByCoordinate]
 
 readFilesCommand: zcat
 
@@ -53,7 +53,7 @@ readFilesCommand: zcat
 ## STAR optional parameters ##
 ##############################
 
-quantMode: [GeneCounts, TranscriptomeSAM]
+quantMode: GeneCounts
 
 twopassMode: Basic # use None to disable twopassMode
 
