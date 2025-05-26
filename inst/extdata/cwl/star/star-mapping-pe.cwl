@@ -116,7 +116,7 @@ outputs:
   Aligned_toTranscriptome_out_bam:
     type: File
     outputBinding:
-      glob: $(inputs.results_path.path)/$(inputs.SampleName).Aligned.toTranscriptome.out.bam
+      glob: $(inputs.results_path.path)/$(inputs.SampleName).Aligned.sortedByCoord.out.bam
   ReadsPerGene_out_tab:
     type: File
     outputBinding:
