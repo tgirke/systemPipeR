@@ -1289,6 +1289,18 @@ write.yml <- function(commandLine, file.yml, results_path, module_load, writeout
     for (i in seq_along(module_load)) {
         yamlinput_yml[["ModulesToLoad"]][paste0("module", i)] <- list(module_load[[i]])
     }
+    # detect if there is any special _xx_ values, if so extract them and add them to the yamlinput_yml
+    if (any(grepl("_", unlist(yamlinput_yml)))) {
+        special_vars <-  unlist(yamlinput_yml) |>
+            stringr::str_extract_all("_([a-zA-Z0-9_]+)_") |>
+            unlist() |>
+            unique()
+        special_vars_names <- stringr::str_remove(special_vars, "^_") |>
+            stringr::str_remove("_$")
+        for (i in seq_along(special_vars)) {
+            yamlinput_yml[[special_vars_names[i]]] <- special_vars[i]
+        }
+    }
     ## write out the '.yml' file
     if (writeout == TRUE) {
         yaml::write_yaml(x = yamlinput_yml, file = file.yml)
