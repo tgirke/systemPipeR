@@ -1884,7 +1884,7 @@ WF <- createParam(command2, overwrite = TRUE, writeParamFiles = TRUE, confirm = 
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")
 WF_test <- loadWorkflow(targets = targetspath, wf_file="hisat2.cwl",
                    input_file="hisat2.yml", dir_path = "param/cwl/hisat2/")
-WF_test <- renderWF(WF_test, inputvars = c(FileName = "_FASTQ_PATH1_"))
+WF_test <- renderWF(WF_test, inputvars = c(FileName = "_FASTQ_PATH1_", SampleName= "_SampleName_"))
 ```
 
 ```{r sysargs2b, eval=TRUE}
