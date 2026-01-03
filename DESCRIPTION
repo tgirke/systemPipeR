@@ -1,7 +1,7 @@
 Package: systemPipeR
 Type: Package
 Title: systemPipeR: Workflow Environment for Data Analysis and Report Generation
-Version: 2.16.1
+Version: 2.16.2
 Date: 2025-01-02
 Author: Thomas Girke
 Maintainer: Thomas Girke <thomas.girke@ucr.edu>
