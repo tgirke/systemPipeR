@@ -34,6 +34,7 @@ word-wrap: initial !important;
 }
 ```
 
+
 ```{r style, echo = FALSE, results = 'asis'}
 BiocStyle::markdown()
 options(width = 100, max.print = 1000)
@@ -63,22 +64,25 @@ suppressPackageStartupMessages({
 knitr::include_graphics("images/utilities.png")
 ```
 
-## Workflow control class
+## Design overview
 
-A central component of `systemPipeR` is `SYSargsList` or short `SAL`, a
-container for workflow management. This S4 class stores all relevant
-information for running and monitoring each analysis step in workflows. It 
-captures the connectivity between workflow steps, the paths to their input and 
-output data, and pertinent parameter values used in each step 
-(see Figure \@ref(fig:sysargslistImage)). Typically, `SAL` instances are constructed 
-from an intial metadata targets table, R code and CWL parameter files for each 
-R- and CL-based analysis step in workflows (details provided below). 
-For preconfigured workflows, users only need to provide their input data (such as FASTQ 
-files) and the corresponding metadata in a targets file. The latter describes the 
-experimental design, defines sample labels, replicate information, and other 
-relevant information. 
+The overall design of the `systemPipeR` workflow management framework is
+illustrated in Figure \@ref(fig:sysargslistImage). A workflow project is initialized
+by creating a standardized directory structure containing input data, metadata
+(`targets` file), parameter files, and an R Markdown (Rmd) document that defines the
+workflow and generates the final analysis report. During workflow setup, these
+components are imported into the central workflow control object, the
+`SYSargsList` (`SAL`) S4 class, which manages step dependencies, command-line
+arguments, and execution order. The workflow is then executed stepwise with
+`runWF`, where input/output relationships are resolved automatically and
+execution status is tracked to enable monitoring and restart of interrupted
+runs. Upon completion, systemPipeR generates scientific and technical reports
+from the Rmd source as well as interactive workflow topology graphs summarizing
+execution statistics. The core workflow run is typically performed with
+four primary commands: `genWorkenvir/SPRproject`, `importWF`, `runWF`, and
+`renderReport/renderLogs`.
 
-```{r sysargslistImage, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "Workflow management class. Workflows are defined and managed by the `SYSargsList` (`SAL`) control class. Components of `SAL` include `SYSargs2` and/or `LineWise` for defining CL- and R-based workflow steps, respectively. The former are constructed from a `targets` and two CWL *param* files, and the latter comprises mainly R code.", warning=FALSE}
+```{r sysargslistImage, warning= FALSE, eval=TRUE, echo=FALSE, out.width="100%", fig.align = "center", fig.cap= "systemPipeR workflow design overview. Illustration of project initialization, workflow control class, execution, and reporting.", warning=FALSE}
 
 knitr::include_graphics("images/SYSargsList.png")
 ```
@@ -119,11 +123,12 @@ knitr::include_graphics("images/SPR_CWL_hello.png")
 `systemPipeRdata`, a companion package to `systemPipeR`, offers a collection of
 workflow templates that are ready to use. With a single command, users can
 easily load these templates onto their systems. Once loaded, users have the
-flexibility to utilize the templates as they are or modify them as needed. More
-in-depth information can be found in the main vignette of systemPipeRdata,
-which can be accessed
-[here](https://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html).
-
+flexibility to utilize the templates as they are or modify them as needed. 
+Similar and additional workflow templates are also available from GitHub (see [here](https://systempipe.org/about/project/#core-packages)), which
+can be retrieved directly from their repositories. More detailed information
+about the template collection and its usage is provided in the main vignette of
+`systemPipeRdata`, available [here](https://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html), 
+as well as the project site [here](https://systempipe.org/about/project/#workflow-templates).
 
 ## Other functionalities
 <!-- _`systemPipeR's`_ CWL interface provides two
@@ -174,16 +179,24 @@ For a workflow to run successfully, all CL tools used by a workflow need to be i
 
 The following demonstrates how to initialize, run and monitor workflows, and subsequently create analysis reports. 
 
-
-__1. Create workflow environment.__ The chosen example uses the `genWorenvir` function from
-the `systemPipeRdata` package to create an RNA-Seq workflow environment that is fully populated with a small test data set, including FASTQ files, reference genome and annotation data. After this, the user's R session needs to be directed 
-into the resulting `rnaseq` directory (here with `setwd`). A list of available workflow templates 
-is available in the vignette of the `systemPipeRdata` package [here](https://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#wf-bioc-collection).
+__1. Create workflow environment.__ The chosen example uses the `genWorkenvir`
+function from the `systemPipeRdata` package to create an RNA-Seq workflow
+environment that is fully populated with a small test dataset, including FASTQ
+files, reference genome, and annotation files. After initialization, the user’s
+R session should be directed to the resulting `rnaseq` directory (here with
+`setwd`). A list of available workflow templates can be found in the vignette of
+the `systemPipeRdata` package 
+(see [here](https://www.bioconductor.org/packages/devel/data/experiment/vignettes/systemPipeRdata/inst/doc/systemPipeRdata.html#wf-bioc-collection)).
 
 ```{r eval=FALSE}
 systemPipeRdata::genWorkenvir(workflow = "rnaseq")
 setwd("rnaseq")
 ```
+
+In addition to the templates distributed through `systemPipeRdata`, workflow 
+templates can also be retrieved directly from GitHub repositories using the `genWorkenvir_gh` function. 
+Details on available repositories and usage instructions are provided on the project 
+website and within the corresponding GitHub repositories (see [here](https://systempipe.org/about/project/)).
 
 __2. Initialize project and import workflow from `Rmd` template.__ New workflow
 instances are created with the `SPRproject` function. When calling this

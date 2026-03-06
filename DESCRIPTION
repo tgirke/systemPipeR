@@ -1,12 +1,12 @@
 Package: systemPipeR
 Type: Package
-Title: systemPipeR: Workflow Environment for Data Analysis and Report Generation
-Version: 2.17.1
-Date: 2026-01-03
+Title: systemPipeR: A Multipurpose Workflow Management System for Reproducible Data Analysis
+Version: 2.17.2
+Date: 2026-03-05
 Author: Thomas Girke
 Maintainer: Thomas Girke <thomas.girke@ucr.edu>
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, RiboSeq, ChIPSeq, MethylSeq, SNP, GeneExpression, Coverage, GeneSetEnrichment, Alignment, QualityControl, ImmunoOncology, ReportWriting, WorkflowStep, WorkflowManagement
-Description: systemPipeR is a multipurpose data analysis workflow environment that unifies R with command-line tools. It enables scientists to analyze many types of large- or small-scale data on local or distributed computer systems with a high level of reproducibility, scalability and portability. At its core is a command-line interface (CLI) that adopts the Common Workflow Language (CWL). This design allows users to choose for each analysis step the optimal R or command-line software. It supports both end-to-end and partial execution of workflows with built-in restart functionalities. Efficient management of complex analysis tasks is accomplished by a flexible workflow control container class. Handling of large numbers of input samples and experimental designs is facilitated by consistent sample annotation mechanisms. As a multi-purpose workflow toolkit, systemPipeR enables users to run existing workflows, customize them or design entirely new ones while taking advantage of widely adopted data structures within the Bioconductor ecosystem. Another important core functionality is the generation of reproducible scientific analysis and technical reports. For result interpretation, systemPipeR offers a wide range of plotting functionality, while an associated Shiny App offers many useful functionalities for interactive result exploration. The vignettes linked from this page include (1) a general introduction, (2) a description of technical details, and (3) a collection of workflow templates.
+Description: systemPipeR is a workflow management environment for reproducible data analysis that integrates R with command-line software. It enables researchers to design, execute, and report complex workflows on local machines and HPC systems. The framework combines R-based analysis with external tools through a Common Workflow Language (CWL) interface, manages workflow dependencies and restart capabilities, and automatically generates reproducible scientific analysis reports. The companion package systemPipeRdata provides ready-to-use workflow templates that simplify workflow setup and customization. Alternatively, workflow templates can be loaded from dedicated GitHub repositories. 
 Depends: R (>= 4.1.0), Rsamtools (>= 1.31.2), Biostrings, ShortRead (>= 1.37.1), methods
 Imports: GenomicRanges, SummarizedExperiment, ggplot2, 
             yaml, stringr, magrittr, S4Vectors, crayon, BiocGenerics, htmlwidgets
