@@ -1,4 +1,4 @@
-f# It will check the catDB class and methods
+## It will check the catDB class and methods
 library(systemPipeR)
 skip_on_bioc()
 skip_on_ci()
