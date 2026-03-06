@@ -7,7 +7,7 @@ test_that("check_catDB", {
     ## Obtain annotations from BioMart
     library("biomaRt")
     listMarts()  # To choose BioMart database
-    listMarts(host = "plants.ensembl.org")
+    listMarts(host = "https://plants.ensembl.org")
     m <- useMart("plants_mart", host = "https://plants.ensembl.org")
     listDatasets(m)
     m <- useMart("plants_mart", dataset = "athaliana_eg_gene", host = "https://plants.ensembl.org")
