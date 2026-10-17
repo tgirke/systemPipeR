@@ -152,7 +152,7 @@ overLapper <- function(setlist, complexity = "default", sep = "_", cleanup = FAL
     ## Default complexity levels
     if (complexity[1] == "default") complexity <- 1:length(setlist)
     ## Check validity of inputs
-    if (class(setlist) != "list" | length(names(setlist)) == 0) stop("Unexpected input.
+    if (!inherits(setlist, "list") | length(names(setlist)) == 0) stop("Unexpected input.
              The input 'setlist' needs to be of class 'list' where each list component stores a
              label set as 'vector' and the name of each label set is provided under the
              name slot of each list component.")
@@ -221,19 +221,19 @@ vennPlot <- function(x, mymain = "Venn Diagram", mysub = "default", setlabels = 
                      lines = c("#FF0000", "#008B00", "#0000FF", "#FF00FF", "#CD8500"), mylwd = 3, diacol = 1, type = "ellipse",
                      ccex = 1.0, lcex = 1.0, sepsplit = "_", ...) {
     ## Check validity of inputs and
-    if (!any(c(class(x) == "VENNset", class(x) == "list", is.numeric(x)))) {
+    if (!any(c(is(x, "VENNset"), inherits(x, "list"), is.numeric(x)))) {
         stop("x needs to be one of: VENNset, list of VENNsets, named numeric vector, or list of named numeric vectors.")
     }
-    if (class(x) == "list") {
+    if (inherits(x, "list")) {
         if (length(unique(sapply(x, length))) != 1) stop("List components need to have identical length.")
     }
     ## Compute count set(s)
     # If x is VENNset
-    if (class(x) == "VENNset") {
+    if (is(x, "VENNset")) {
         counts <- list(sapply(vennlist(x), length))
         myclass <- "VENNset"
         # If x is list of VENNsets
-    } else if (class(x) == "list" & all(sapply(x, class) == "VENNset")) {
+    } else if (inherits(x, "list") & all(sapply(x, class) == "VENNset")) {
         counts <- lapply(x, function(y) sapply(vennlist(y), length))
         myclass <- "VENNset"
         ## If x is count set (named numeric vector)
@@ -241,7 +241,7 @@ vennPlot <- function(x, mymain = "Venn Diagram", mysub = "default", setlabels = 
         counts <- list(x)
         myclass <- "numeric"
         ## If x is list of count sets
-    } else if (class(x) == "list" & all(sapply(x, is.numeric))) {
+    } else if (inherits(x, "list") & all(sapply(x, is.numeric))) {
         counts <- x
         myclass <- "numeric"
     } else {
@@ -271,7 +271,7 @@ vennPlot <- function(x, mymain = "Venn Diagram", mysub = "default", setlabels = 
                 }
                 mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), sep = "")
             } else if (myclass == "VENNset") {
-                if (class(x) == "list") x <- x[[1]]
+                if (inherits(x, "list")) x <- x[[1]]
                 sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
                 mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), sep = "")
             } else {
@@ -319,7 +319,7 @@ vennPlot <- function(x, mymain = "Venn Diagram", mysub = "default", setlabels = 
                 }
                 mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), sep = "")
             } else if (myclass == "VENNset") {
-                if (class(x) == "list") x <- x[[1]]
+                if (inherits(x, "list")) x <- x[[1]]
                 sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
                 mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), sep = "")
             } else {
@@ -367,7 +367,7 @@ vennPlot <- function(x, mymain = "Venn Diagram", mysub = "default", setlabels = 
                 }
                 mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep = "")
             } else if (myclass == "VENNset") {
-                if (class(x) == "list") x <- x[[1]]
+                if (inherits(x, "list")) x <- x[[1]]
                 sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
                 mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep = "")
             } else {
@@ -435,7 +435,7 @@ vennPlot <- function(x, mymain = "Venn Diagram", mysub = "default", setlabels = 
                 }
                 mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep = "")
             } else if (myclass == "VENNset") {
-                if (class(x) == "list") x <- x[[1]]
+                if (inherits(x, "list")) x <- x[[1]]
                 sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
                 mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), sep = "")
             } else {
@@ -484,7 +484,7 @@ vennPlot <- function(x, mymain = "Venn Diagram", mysub = "default", setlabels = 
                 }
                 mysub <- paste(paste("Unique objects: All =", sum(counts[[1]])), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), paste("; S5 =", sample_counts[5]), sep = "")
             } else if (myclass == "VENNset") {
-                if (class(x) == "list") x <- x[[1]]
+                if (inherits(x, "list")) x <- x[[1]]
                 sample_counts <- sapply(setlist(x), function(y) unique(length(y)))
                 mysub <- paste(paste("Unique objects: All =", length(unique(unlist(setlist(x))))), paste("; S1 =", sample_counts[1]), paste("; S2 =", sample_counts[2]), paste("; S3 =", sample_counts[3]), paste("; S4 =", sample_counts[4]), paste("; S5 =", sample_counts[5]), sep = "")
             } else {
@@ -550,8 +550,8 @@ olBarplot <- function(x, mincount = 0, complexity = "default", myxlabel = "defau
     ## global functions or variables
     Intersect_Sets <- Counts <- Level <- NULL
     ## Generate counts
-    if (class(x) == "VENNset") counts <- sapply(vennlist(x), length)
-    if (class(x) == "INTERSECTset") counts <- sapply(intersectlist(x), length)
+    if (is(x, "VENNset")) counts <- sapply(vennlist(x), length)
+    if (is(x, "INTERSECTset")) counts <- sapply(intersectlist(x), length)
     ## Complexity filter
     if (complexity[1] != "default") {
         complfilter <- complexitylevels(x) %in% complexity

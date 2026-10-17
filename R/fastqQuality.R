@@ -67,19 +67,19 @@ seeFastq <- function(fastq, batchsize, klength = 8) {
         bstats[, 3] <- as.numeric(gsub("X", "", bstats[, 3]))
         bstats[, 3] <- factor(bstats[, 3], levels = unique(bstats[, 3]), ordered = TRUE)
         ## (C) Per cycle average quality of each base type
-        A <- q
-        A[s %in% c("T", "G", "C")] <- NA
-        A <- colMeans(A, na.rm = TRUE)
-        T <- q
-        T[s %in% c("A", "G", "C")] <- NA
-        T <- colMeans(T, na.rm = TRUE)
-        G <- q
-        G[s %in% c("T", "A", "C")] <- NA
-        G <- colMeans(G, na.rm = TRUE)
-        C <- q
-        C[s %in% c("T", "G", "A")] <- NA
-        C <- colMeans(C, na.rm = TRUE)
-        cstats <- data.frame(Quality = c(A, C, G, T), Base = rep(c("A", "C", "G", "T"), each = length(A)), Cycle = c(names(A), names(C), names(G), names(T)))
+        qA <- q
+        qA[s %in% c("T", "G", "C")] <- NA
+        qA <- colMeans(qA, na.rm = TRUE)
+        qT <- q
+        qT[s %in% c("A", "G", "C")] <- NA
+        qT <- colMeans(qT, na.rm = TRUE)
+        qG <- q
+        qG[s %in% c("T", "A", "C")] <- NA
+        qG <- colMeans(qG, na.rm = TRUE)
+        qC <- q
+        qC[s %in% c("T", "G", "A")] <- NA
+        qC <- colMeans(qC, na.rm = TRUE)
+        cstats <- data.frame(Quality = c(qA, qC, qG, qT), Base = rep(c("A", "C", "G", "T"), each = length(qA)), Cycle = c(names(qA), names(qC), names(qG), names(qT)))
         cstats[, 3] <- factor(cstats[, 3], levels = unique(cstats[, 3]), ordered = TRUE)
         ## (D) Relative K-mer Diversity
         dna <- ShortRead::sread(fq)

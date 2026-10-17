@@ -463,7 +463,7 @@ populateCommandline <- function(WF, cltid, exclude = exclude, mmp) {
 ## Inject command-line lists from populateCommandline into cmdlist slot WF object ##
 ####################################################################################
 injectCommandlinelist <- function(WF) {
-    if (class(WF) == "SYSargs2") {
+    if (is(WF, "SYSargs2")) {
         WF <- as(WF, "list")
     } else {
         stop("WF needs to be object of class 'SYSargs2'.")
@@ -510,7 +510,7 @@ injectCommandlinelist <- function(WF) {
 ## Render Commandline Strings ##
 ################################
 renderCommandline <- function(x, dropoutput = TRUE, redirect = ">") {
-    if (class(x) == "SYSargs2") {
+    if (is(x, "SYSargs2")) {
         x <- as(x, "list")
     } else {
         stop("x needs to be object of class 'SYSargs2'.")
@@ -570,7 +570,7 @@ renderInputs <- function(x = WF$clt[[1]]$inputs, returntags = list(inputBinding 
         tmp
     }, simplify = FALSE)
     inputposition <- sapply(inputnames, function(i) x[[i]]$inputBinding$position)
-    if (class(inputposition) == "list") inputposition <- seq_along(inputposition)
+    if (inherits(inputposition, "list")) inputposition <- seq_along(inputposition)
     inputlist <- inputlist[order(inputposition)]
     return(inputlist)
 }
@@ -615,10 +615,10 @@ nameUnnamed <- function(l) {
         for (b in seq_along(l[[a]])) {
             for (c in seq_along(l[[a]][[b]])) {
                 for (d in seq_along(l[[a]][[b]][[c]])) {
-                    if (is.null(names(l[[a]][[b]][[c]][[d]])) & class(l[[a]][[b]][[c]][[d]]) == "list") names(l[[a]][[b]][[c]][[d]]) <- paste0("_", seq_along(l[[a]][[b]][[c]][[d]]), "_")
-                    if (is.null(names(l[[a]][[b]][[c]])) & class(l[[a]][[b]][[c]]) == "list") names(l[[a]][[b]][[c]]) <- paste0("_", seq_along(l[[a]][[b]][[c]]), "_")
-                    if (is.null(names(l[[a]][[b]])) & class(l[[a]][[b]]) == "list") names(l[[a]][[b]]) <- paste0("_", seq_along(l[[a]][[b]]), "_")
-                    if (is.null(names(l[[a]])) & class(l[[a]]) == "list") names(l[[a]]) <- paste0("_", seq_along(l[[a]]), "_")
+                    if (is.null(names(l[[a]][[b]][[c]][[d]])) & inherits(l[[a]][[b]][[c]][[d]], "list")) names(l[[a]][[b]][[c]][[d]]) <- paste0("_", seq_along(l[[a]][[b]][[c]][[d]]), "_")
+                    if (is.null(names(l[[a]][[b]][[c]])) & inherits(l[[a]][[b]][[c]], "list")) names(l[[a]][[b]][[c]]) <- paste0("_", seq_along(l[[a]][[b]][[c]]), "_")
+                    if (is.null(names(l[[a]][[b]])) & inherits(l[[a]][[b]], "list")) names(l[[a]][[b]]) <- paste0("_", seq_along(l[[a]][[b]]), "_")
+                    if (is.null(names(l[[a]])) & inherits(l[[a]], "list")) names(l[[a]]) <- paste0("_", seq_along(l[[a]]), "_")
                 }
             }
         }
@@ -870,7 +870,7 @@ termMMatch <- function(x, y, mmp, minmatch = 2, returntype = "values") {
 ###############################################################
 subsetWF <- function(args, slot, subset = NULL, index = NULL, delete = FALSE) {
     ## Check the class and slot
-    if (!class(args) == "SYSargs2") stop("args needs to be object of class 'SYSargs2'.")
+    if (!is(args, "SYSargs2")) stop("args needs to be object of class 'SYSargs2'.")
     if (all(!c("input", "output", "step") %in% slot)) stop("Argument slot can only be assigned one of: 'input' or 'output' or 'step'.")
 
     ## slot input

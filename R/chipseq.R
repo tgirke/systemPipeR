@@ -90,7 +90,7 @@ mergeBamByFactor <- function(args, targetsDF = NULL, mergefactor = "Factor",
         args_sub_out <- as(syslist, "SYSargs")
         ## SYSargs2 class
     } else if (inherits(args, "SYSargs2")) {
-        out <- sapply(names(outfile_names), function(x) list(outfile_names[[x]]), simplify = F)
+        out <- sapply(names(outfile_names), function(x) list(outfile_names[[x]]), simplify = FALSE)
         for (i in seq_along(out)) {
             names(out[[i]]) <- files(args)$step
         }
@@ -275,11 +275,11 @@ olRanges <- function(query, subject, output = "gr") {
     pkg <- c("IRanges", "GenomeInfoDb")
     checkPkg(pkg, quietly = FALSE)
     ## Input check
-    if (!((class(query) == "GRanges" & class(subject) == "GRanges") | (class(query) == "IRanges" & class(subject) == "IRanges"))) {
+    if (!((is(query, "GRanges") & is(subject, "GRanges")) | (is(query, "IRanges") & is(subject, "IRanges")))) {
         stop("Query and subject need to be of same class, either GRanges or IRanges!")
     }
     ## Find overlapping ranges
-    if (class(query) == "GRanges") {
+    if (is(query, "GRanges")) {
         GenomeInfoDb::seqlengths(query) <- rep(NA, length(GenomeInfoDb::seqlengths(query)))
         GenomeInfoDb::seqlengths(subject) <- rep(NA, length(GenomeInfoDb::seqlengths(subject)))
     }
@@ -320,17 +320,17 @@ olRanges <- function(query, subject, output = "gr") {
     OLpercS <- OLlength / width(subject) * 100
     ## Output type
     oldf <- data.frame(Qindex = olindex[, 1], Sindex = olindex[, 2], olma, OLstart, OLend, OLlength, OLpercQ, OLpercS, OLtype)
-    if (class(query) == "GRanges") {
+    if (is(query, "GRanges")) {
         oldf <- cbind(space = as.character(GenomeInfoDb::seqnames(query)), oldf)
     }
     if (output == "df") {
         return(oldf)
     }
     if (output == "gr") {
-        if (class(query) == "GRanges") {
+        if (is(query, "GRanges")) {
             S4Vectors::elementMetadata(query) <- cbind(as.data.frame(elementMetadata(query)), oldf)
         }
-        if (class(query) == "IRanges") {
+        if (is(query, "IRanges")) {
             query <- GRanges(seqnames = S4Vectors::Rle(rep("dummy", length(query))), ranges = IRanges::IRanges(start = oldf[, "Qstart"], end = oldf[, "Qend"]), strand = S4Vectors::Rle(BiocGenerics::strand(rep("+", length(query)))), oldf)
         }
         return(query)

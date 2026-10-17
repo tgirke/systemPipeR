@@ -7,9 +7,9 @@
 ######################################################
 writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FALSE, step = NULL, new_col = NULL,
                             new_col_output_index = NULL, remove = FALSE, ...) {
-    if (all(class(x) != "SYSargs" & class(x) != "SYSargs2")) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
+    if (!is(x, "SYSargs") && !is(x, "SYSargs2")) stop("Argument 'x' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
     ## SYSargs class
-    if (class(x) == "SYSargs") {
+    if (is(x, "SYSargs")) {
         targets <- targetsout(x)
         software <- software(x)
         if (file == "default") {
@@ -20,7 +20,7 @@ writeTargetsout <- function(x, file = "default", silent = FALSE, overwrite = FAL
         }
         headerlines <- targetsheader(x)
         ## SYSargs2 class
-    } else if (class(x) == "SYSargs2") {
+    } else if (is(x, "SYSargs2")) {
         if (is.null(step)) {
             stop(
                 "Argument 'step' needs to be assigned one of the following values: ",
@@ -103,9 +103,9 @@ runCommandline <- function(args, runid = "01",
     ## Environment Modules section
     .moduleload(args)
     ## SYSargs class ##
-    if (class(args) == "SYSargs") {
+    if (is(args, "SYSargs")) {
         .sysargsrunCommandline(args = args, runid = runid, make_bam = make_bam, del_sam = del_sam)
-    } else if (class(args) == "SYSargs2") {
+    } else if (is(args, "SYSargs2")) {
         ## SYSargs2 class ##
         ## Workflow Name (Workflow OR CommandLineTool class)
         if (length(wf(args)$steps) == 0) {
@@ -366,7 +366,7 @@ clusterRun <- function(args,
             "Sample template files for different schedulers are available here: https://github.com/mllg/batchtools/blob/master/inst/templates/"
         )
     }
-    if (!class(more.args) == "list") {
+    if (!inherits(more.args, "list")) {
         stop("'more.args' needs to be object of class 'list'.")
     }
     if (any(!names(more.args) %in% names(as.list(formals(FUN))))) {
@@ -477,10 +477,10 @@ preprocessReads <- function(args = NULL,
         stop("At least one argument must be provided, either 'args' or 'FileName1' and 'outfile1'.")
     }
     ## Checking the function argument
-    if (class(Fct) != "character") stop("Argument 'Fct' needs to be of class character")
+    if (!is.character(Fct)) stop("Argument 'Fct' needs to be of class character")
     if (!is.null(args)) {
         if (all(!inherits(args, "SYSargs") & !inherits(args, "SYSargs2"))) stop("Argument 'args' needs to be assigned an object of class 'SYSargs' OR 'SYSargs2")
-        if (class(args) == "SYSargs") {
+        if (is(args, "SYSargs")) {
             colnames_args <- colnames(targetsout(args)) # SYSargs
             targets_in <- targetsin(args)
             if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
@@ -489,7 +489,7 @@ preprocessReads <- function(args = NULL,
                 outpaths1 <- as.character(targetsout(args)$FileName1)
                 outpaths2 <- as.character(targetsout(args)$FileName2)
             }
-        } else if (class(args) == "SYSargs2") {
+        } else if (is(args, "SYSargs2")) {
             colnames_args <- colnames(targets.as.df(args$targets)) # SYSargs2
             targets_in <- targets.as.df(args$targets)
             if (!all(c("FileName1", "FileName2") %in% colnames_args)) {
@@ -647,12 +647,12 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
                        output_index = 1,
                        subset = "FileName1") {
     ## SYSargs class
-    if (class(args) == "SYSargs") {
+    if (is(args, "SYSargs")) {
         fqpaths <- infile1(args)
         bampaths <- outpaths(args)
         if (!nchar(infile2(args))[1] > 0) pairEnd <- FALSE
         # SYSargs2 class
-    } else if (class(args) == "SYSargs2") {
+    } else if (is(args, "SYSargs2")) {
         fqpaths <- infile1(args)
         output.all <- subsetWF(args, slot = "output", subset = 1, index = output_index)
         bampaths <- as.character()
@@ -667,7 +667,7 @@ alignStats <- function(args, fqpaths, pairEnd = TRUE,
         }
         names(bampaths) <- names(output.all)
         if (!nchar(infile2(args))[1] > 0) pairEnd <- FALSE
-    } else if (class(args) == "character") {
+    } else if (is.character(args)) {
         if (missing(fqpaths)) stop("Please provide fqpaths argument! It must be a named character vector, where the names elements should be the sampleID")
         bampaths <- args
         fqpaths <- fqpaths
@@ -774,7 +774,7 @@ run_edgeR <- function(countDF, targets, cmp, independent = TRUE, paired = NULL, 
     checkPkg(pkg, quietly = FALSE)
     ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
     ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
-    if (all(class(cmp) != "matrix" & length(cmp) == 2)) cmp <- t(as.matrix(cmp))
+    if (!is.matrix(cmp) && length(cmp) == 2) cmp <- t(as.matrix(cmp))
     samples <- as.character(targets$Factor)
     names(samples) <- paste(as.character(targets$SampleName), "", sep = "")
     countDF <- countDF[, names(samples)]
@@ -851,7 +851,7 @@ run_DESeq2 <- function(countDF, targets, cmp, independent = FALSE, lfcShrink = F
     checkPkg(pkg, quietly = FALSE)
     ## if(class(cmp) != "matrix" & length(cmp)==2) cmp <- t(as.matrix(cmp)) # If cmp is vector of length 2, convert it to matrix.
     ## fix for _R_CHECK_LENGTH_1_LOGIC2_ error: " --- failure: the condition has length > 1 ---"
-    if (all(class(cmp) != "matrix" & length(cmp) == 2)) cmp <- t(as.matrix(cmp))
+    if (!is.matrix(cmp) && length(cmp) == 2) cmp <- t(as.matrix(cmp))
     samples <- as.character(targets$Factor)
     names(samples) <- paste(as.character(targets$SampleName), "", sep = "")
     countDF <- countDF[, names(samples)]
@@ -993,7 +993,7 @@ checkPkg <- function(pkg, quietly = TRUE) {
         tryCatch(
             if (command %in% "bwa") {
                 bwa_err <- tempfile()
-                system2(command, args = commandargs, stdout = T, stderr = bwa_err)
+                system2(command, args = commandargs, stdout = TRUE, stderr = bwa_err)
                 readLines(bwa_err)
             } else if (command %in% c("bash")) {
                 system(paste(command, commandargs))

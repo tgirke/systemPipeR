@@ -7,7 +7,7 @@ genFeatures <- function(txdb, featuretype = "all", reduce_ranges, upstream = 100
     ## Check validity of inputs
     supported_features <- c("tx_type", "promoter", "intron", "exon", "cds", "fiveUTR", "threeUTR", "intergenic")
     if (tolower(featuretype[1]) == "all") featuretype <- supported_features
-    if (class(txdb) != "TxDb") stop("Argument 'txdb' needs to be assigned object of class TxDb!")
+    if (!is(txdb, "TxDb")) stop("Argument 'txdb' needs to be assigned object of class TxDb!")
     if (any(!featuretype %in% supported_features)) stop("featuretype supports any of the following values: ", paste(supported_features, collapse = ", "))
     ## Empty GRangesList to store results
     featuresGRl <- GRangesList()
@@ -409,7 +409,7 @@ featuretypeCounts <- function(bfl, grl, singleEnd = TRUE, readlength = NULL, typ
 plotfeaturetypeCounts <- function(x, graphicsfile, graphicsformat = "pdf", scales = "fixed", anyreadlength = FALSE, drop_N_total_aligned = TRUE, scale_count_val = 10^6, scale_length_val = NULL) {
     checkPkg("grid", quietly = FALSE)
     ## Input validity checks
-    if (class(x) != "data.frame") stop("x needs to be object of class 'data.frame'")
+    if (!is.data.frame(x)) stop("x needs to be object of class 'data.frame'")
     if (any(colnames(x)[1:3] != c("SampleName", "Strand", "Featuretype"))) stop("First three column names need to be: 'SampleName', 'Strand', 'Featuretype'")
     if (!is.numeric(as.matrix(x[, -c(1:3)]))) stop("Following columns (after 3rd one) need to be numeric.")
     ## global functions or variables
@@ -542,7 +542,7 @@ featureCoverage <- function(bfl, grl, resizereads = NULL, readlengthrange = NULL
         if (file.exists(outfile) & overwrite == FALSE) stop("File ", outfile, " exists. Delete it or set 'overwrite=TRUE'")
         if (file.exists(outfile) & overwrite == TRUE) unlink(outfile)
     }
-    if (class(bfl) != "BamFileList") stop("'bfl' needs to be of class 'BamFileList'")
+    if (!is(bfl, "BamFileList")) stop("'bfl' needs to be of class 'BamFileList'")
     if (!inherits(grl, "GRangesList")) stop("'grl' needs to be a GRangesList object.")
     if (!is.null(readlengthrange)) {
         if (is.numeric(readlengthrange) & length(readlengthrange) != 2) stop("'readlengthrange' needs to be assigned NULL or numeric vector of length 2")
@@ -780,7 +780,7 @@ featureCoverage <- function(bfl, grl, resizereads = NULL, readlengthrange = NULL
 plotfeatureCoverage <- function(covMA, method = mean, scales = "fixed", extendylim = 2, scale_count_val = 10^6) {
     checkPkg("grid", quietly = FALSE)
     ## Some input validity checks
-    if (class(covMA) != "data.frame") stop("'covMA' needs to be assigned an object of class 'data.frame'.")
+    if (!is.data.frame(covMA)) stop("'covMA' needs to be assigned an object of class 'data.frame'.")
     expectedcol <- c("SampleName", "N_total_aligned", "IDs", "Strand")
     if (any(!colnames(covMA)[1:4] %in% expectedcol)) stop("The first 4 columns in 'covMA' need to be named: ", paste(expectedcol, collapse = ", "))
     ## global functions or variables
@@ -1012,7 +1012,7 @@ predORF <- function(x, n = 1, type = "grl", mode = "orf", strand = "sense", long
         }
     }
     ## Run .predORF
-    if (class(x) == "DNAString") {
+    if (is(x, "DNAString")) {
         if (tolower(strand) == "sense" | tolower(strand) == "antisense") {
             tmp <- .predORF(x, n, mode, strand, longest_disjoint, startcodon, stopcodon)
             tmp[, "strand"] <- ifelse(as.numeric(tmp[, "strand"]) == 1, "+", "-")
@@ -1031,7 +1031,7 @@ predORF <- function(x, n = 1, type = "grl", mode = "orf", strand = "sense", long
             return(makeGRangesFromDataFrame(data.frame(seqnames = "unknown", tmp), keep.extra.columns = TRUE))
         }
     }
-    if (class(x) == "DNAStringSet") {
+    if (is(x, "DNAStringSet")) {
         if (tolower(strand) == "sense" | tolower(strand) == "antisense") {
             tmp <- lapply(x, function(y) .predORF(y, n = n, mode = mode, strand, longest_disjoint, startcodon, stopcodon))
             names(tmp) <- names(x)
