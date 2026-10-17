@@ -54,6 +54,7 @@ test_that("check_SYSargs2_test", {
 test_that("check_SYSargs2_hisat2", {
     skip_on_bioc()
     skip_on_ci()
+    skip_if_no_cmdline(c("hisat2-build", "hisat2"))
     ## build instance
     ## loadWorkflow() // renderWF()
     targetspath <- system.file("extdata", "targetsPE.txt", package="systemPipeR")

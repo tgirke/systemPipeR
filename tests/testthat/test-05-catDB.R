@@ -2,6 +2,7 @@
 library(systemPipeR)
 skip_on_bioc()
 skip_on_ci()
+skip_on_cran() # queries plants.ensembl.org via biomaRt
 
 test_that("check_catDB", {
     ## Obtain annotations from BioMart

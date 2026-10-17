@@ -5,7 +5,6 @@ Usage:
     
 ' -> doc
 
-library(docopt)
 library(systemPipeR)
 
 targetspath <- system.file("extdata", "targets.txt", package = "systemPipeR")

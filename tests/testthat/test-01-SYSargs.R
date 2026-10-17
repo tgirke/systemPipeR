@@ -1,6 +1,7 @@
 ## It will check the SYSargs class and methods
 skip_on_bioc()
 skip_on_ci()
+skip_if_no_cmdline(c("hisat2-build", "hisat2"))
 
 library(systemPipeR)
 library(systemPipeRdata)

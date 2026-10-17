@@ -2,6 +2,7 @@
 library(systemPipeR)
 skip_on_bioc()
 skip_on_ci()
+skip_if_no_cmdline("hisat2")
 
 setwd(file.path(tempdir(), "rnaseq"))
 

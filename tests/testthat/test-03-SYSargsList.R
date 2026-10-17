@@ -62,6 +62,7 @@ test_that("check_SYSargsList_test", {
 test_that("check_sal_hisat2", {
     skip_on_bioc()
     skip_on_ci()
+    skip_if_no_cmdline(c("trimmomatic", "hisat2-build", "hisat2", "samtools"))
     ## build instance
     sal2 <- SPRproject(overwrite = TRUE)
     targetspath <- system.file("extdata", "targetsPE.txt", package = "systemPipeR")

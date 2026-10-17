@@ -3,6 +3,7 @@ library(systemPipeR)
 library(systemPipeRdata)
 skip_on_bioc()
 skip_on_ci()
+skip_if_no_cmdline(c("bowtie2-build", "bowtie2", "macs2"))
 
 genWorkenvir("rnaseq", mydirname = file.path(tempdir(), "chipseq"))
 setwd(file.path(tempdir(), "chipseq"))
