@@ -3,8 +3,13 @@ Type: Package
 Title: systemPipeR: A Multipurpose Workflow Management System for Reproducible Data Analysis
 Version: 2.19.2
 Date: 2026-10-17
-Author: Thomas Girke
-Maintainer: Thomas Girke <thomas.girke@ucr.edu>
+Authors@R: c(
+    person("Thomas", "Girke", email = "thomas.girke@ucr.edu",
+           role = c("aut", "cre")),
+    person("Le", "Zhang", role = "aut"),
+    person("Daniela", "Cassol", role = "aut"),
+    person("Brendan", "Gongol", role = "aut"),
+    person(c("Tyler", "W.", "H."), "Backman", role = "aut"))
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, RiboSeq, ChIPSeq, MethylSeq, SNP, GeneExpression, Coverage, GeneSetEnrichment, Alignment, QualityControl, ImmunoOncology, ReportWriting, WorkflowStep, WorkflowManagement
 Description: systemPipeR is a workflow management environment for reproducible data analysis that integrates R with command-line software. It enables researchers to design, execute, and report complex workflows on local machines and HPC systems. The framework combines R-based analysis with external tools through a Common Workflow Language (CWL) interface, manages workflow dependencies and restart capabilities, and automatically generates reproducible scientific analysis reports. The companion package systemPipeRdata provides ready-to-use workflow templates that simplify workflow setup and customization. Alternatively, workflow templates can be loaded from dedicated GitHub repositories. 
 Depends: R (>= 4.1.0), Rsamtools (>= 1.31.2), Biostrings, ShortRead (>= 1.37.1), methods

@@ -124,8 +124,6 @@ importFrom("utils", "setTxtProgressBar")
 importFrom("utils", "txtProgressBar")
 importFrom("utils", "head")
 importFrom("utils", "tail")
-importFrom("utils", "download.file")
-importFrom("utils", "unzip")
 importFrom("yaml", "as.yaml")
 importFrom("yaml", "read_yaml")
 importFrom("yaml", "write_yaml")
@@ -168,7 +166,6 @@ exportMethods(
 S3method("+", SYSargsList)
 
 ## Functions
-# exportPattern("^[[:alpha:]]+")
 export(
     ## Data sets
     ## Import/exports

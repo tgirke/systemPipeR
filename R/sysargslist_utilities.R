@@ -1844,26 +1844,18 @@ evalCode <- function(infile, eval = TRUE, output) {
 ## Update CWL description files  ##
 ###################################
 cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
-    tempDir <- tempdir()
-    download.file(
-        url = "https://raw.githubusercontent.com/systemPipeR/cwl_collection/master/cwl/repo_version.txt",
-        file.path(tempDir, "repo_version_new.txt"), quiet = TRUE
-    )
+    ## CWL and docopt.R files shipped with the installed package
+    cwl_dir <- system.file("extdata", "cwl", package = "systemPipeR")
+    docopt_dir <- system.file("extdata", "docopt.R", package = "systemPipeR")
+    new <- readLines(file.path(cwl_dir, "repo_version.txt"))
     ## option for old versions
     if (force) {
-        download.file(
-            url = "https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip",
-            file.path(tempDir, "cwl_collection-master.zip")
-        )
-        unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
-        file.copy(file.path(tempDir, "cwl_collection-master", "cwl"), to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
-        file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"), to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
+        file.copy(cwl_dir, to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
+        file.copy(docopt_dir, to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
         if (verbose) {
             cat(crayon::magenta(file.path(destdir, "cwl"), "folder was updated successfully!"))
         }
     } else {
-        ## Get version
-        new <- readLines(file.path(tempDir, "repo_version_new.txt"))
         if (!file.exists(file.path(destdir, "cwl", "repo_version.txt"))) {
             if (verbose) {
                 cat(crayon::magenta(
@@ -1873,19 +1865,10 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
             }
         } else {
             current <- readLines(file.path(destdir, "cwl", "repo_version.txt"))
-            ## Download CWL repo
+            ## Copy CWL files if the installed package has a newer version
             if (as.numeric(sub(".*\\.", "", current)) < as.numeric(sub(".*\\.", "", new))) {
-                download.file(
-                    url = "https://github.com/systemPipeR/cwl_collection/archive/refs/heads/master.zip",
-                    file.path(tempDir, "cwl_collection-master.zip"), quiet = TRUE
-                )
-                unzip(file.path(tempDir, "cwl_collection-master.zip"), exdir = tempDir)
-                file.copy(file.path(tempDir, "cwl_collection-master", "cwl"),
-                    to = file.path(destdir), overwrite = TRUE, recursive = TRUE
-                )
-                file.copy(file.path(tempDir, "cwl_collection-master", "docopt.R"),
-                    to = file.path(destdir), overwrite = TRUE, recursive = TRUE
-                )
+                file.copy(cwl_dir, to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
+                file.copy(docopt_dir, to = file.path(destdir), overwrite = TRUE, recursive = TRUE)
                 if (verbose) {
                     cat(crayon::magenta(
                         file.path(destdir, "cwl"), "folder was updated successfully!", "\n",
@@ -1902,7 +1885,6 @@ cwlFilesUpdate <- function(destdir, force = FALSE, verbose = TRUE) {
 }
 ## Usage
 # destdir <- "param/"
-# options(timeout = max(3000, getOption("timeout")))
 # cwlFilesUpdate(destdir)
 
 #################################
