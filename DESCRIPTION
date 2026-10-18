@@ -1,7 +1,7 @@
 Package: systemPipeR
 Type: Package
 Title: systemPipeR: A Multipurpose Workflow Management System for Reproducible Data Analysis
-Version: 2.19.5
+Version: 2.19.6
 Date: 2026-10-17
 Authors@R: c(
     person("Thomas", "Girke", email = "thomas.girke@ucr.edu",
