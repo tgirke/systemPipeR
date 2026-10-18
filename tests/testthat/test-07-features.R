@@ -9,7 +9,7 @@ setwd(file.path(tempdir(), "rnaseq"))
 test_that("check_features", {
     library(txdbmaker)
     ## Create paths
-    file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
+    file <- "data/tair10.gff"
     expect_warning(txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis"))
     
     targetspath <- system.file("extdata", "targets.txt", package="systemPipeR")
@@ -23,7 +23,7 @@ test_that("check_features", {
     expect_true(all(file.exists(outpaths)))
     
     ## genFeatures
-    file <- system.file("extdata/annotation", "tair10.gff", package="systemPipeRdata")
+    file <- "data/tair10.gff"
     #txdb <- makeTxDbFromGFF(file=file, format="gff3", organism="Arabidopsis")
     feat <- genFeatures(txdb, featuretype="all", reduce_ranges=TRUE, upstream=1000, downstream=0, verbose=TRUE)
     
@@ -51,7 +51,7 @@ test_that("check_features", {
     orf <- predORF(dna[1:4], n=1, type="df", mode="orf", strand="antisense", startcodon="ATG", stopcodon=c("TAA", "TAG", "TGA"))
     ## scaleRanges
     futr <- fiveUTRsByTranscript(txdb, use.names=TRUE)
-    genome <- system.file("extdata/annotation", "tair10.fasta", package="systemPipeRdata")
+    genome <- "data/tair10.fasta"
     dna <- extractTranscriptSeqs(FaFile(genome), futr)
     uorf <- predORF(dna, n="all", mode="orf", longest_disjoint=TRUE, strand="sense")
     grl_scaled <- scaleRanges(subject=futr, query=uorf, type="uORF", verbose=TRUE)
