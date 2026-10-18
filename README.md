@@ -1,5 +1,11 @@
 # systemPipeR <img src="https://raw.githubusercontent.com/systemPipeR/systemPipeR.github.io/main/static/images/systemPipeR.png" align="right" height="139" />
 
+<p align="right">
+  <a href="https://girke.bioinformatics.ucr.edu/systemPipeR/systemPipeR.html">
+    <img src="https://img.shields.io/badge/TUTORIAL-blue?style=for-the-badge&logo=gitbook&logoColor=white" alt="Tutorial Badge">
+  </a>
+</p>
+
 [![platforms](http://www.bioconductor.org/shields/availability/release/systemPipeR.svg)](http://www.bioconductor.org/packages/devel/bioc/html/systemPipeR.html#archives)
 [![rank](http://www.bioconductor.org/shields/downloads/devel/systemPipeR.svg)](http://bioconductor.org/packages/stats/bioc/systemPipeR/)
 [![posts](http://www.bioconductor.org/shields/posts/systemPipeR.svg)](https://support.bioconductor.org/t/systempiper/)
