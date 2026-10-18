@@ -96,13 +96,14 @@ setMethod(
 .sampleDFgene2GO <- function(lib) {
     pkg <- c("GO.db", "annotate", "AnnotationDbi")
     # checkPkg(pkg, quietly = FALSE)
-    require(lib, character.only = TRUE)
+    if (!requireNamespace(lib, quietly = TRUE)) stop("Package '", lib, "' needs to be installed.")
     mylibbase <- gsub(".db", "", lib)
-    GOMF <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
+    gomap <- as.list(get(paste(mylibbase, "GO", sep = ""), envir = asNamespace(lib))) # gene-to-GO Bimap as named list
+    GOMF <- lapply(gomap, annotate::getOntology, "MF") # generates list with GeneID components containing MFGOs
     GO_MF_DF <- data.frame(GOID = unlist(GOMF), GeneID = rep(names(GOMF), as.vector(sapply(GOMF, length))), Count = rep(as.vector(sapply(GOMF, length)), as.vector(sapply(GOMF, length))))
-    GOBP <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
+    GOBP <- lapply(gomap, annotate::getOntology, "BP") # generates list with GeneID components containing BPGOs
     GO_BP_DF <- data.frame(GOID = unlist(GOBP), GeneID = rep(names(GOBP), as.vector(sapply(GOBP, length))), Count = rep(as.vector(sapply(GOBP, length)), as.vector(sapply(GOBP, length))))
-    GOCC <- eapply(get(paste(mylibbase, "GO", sep = "")), annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
+    GOCC <- lapply(gomap, annotate::getOntology, "CC") # generates list with GeneID components containing CCGOs
     GO_CC_DF <- data.frame(GOID = unlist(GOCC), GeneID = rep(names(GOCC), as.vector(sapply(GOCC, length))), Count = rep(as.vector(sapply(GOCC, length)), as.vector(sapply(GOCC, length))))
     ## Generates data frame (go_df) containing the commonly used components for all GO nodes: GOID, GO Term and Ontology Type. This step is only required if "go_df" hasn't been imported with the above load() function.
     go_df <- data.frame(GOID = names(AnnotationDbi::Term(GO.db::GOTERM)), Term = AnnotationDbi::Term(GO.db::GOTERM), Ont = AnnotationDbi::Ontology(GO.db::GOTERM))
