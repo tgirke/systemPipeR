@@ -60,6 +60,12 @@ which includes instructions on how to use them.
 
 # Funding
 
-This project is funded by awards from the National Science Foundation ([ABI-1661152](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1661152)], 
+This project is funded by awards from the National Science Foundation ([ABI-1661152](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1661152)), 
 and the National Institute on Aging of the National Institutes of Health ([U19AG023122](https://reporter.nih.gov/project-details/9632486)). 
 
+
+# Session Info
+
+```{r sessionInfo}
+sessionInfo()
+```

@@ -12,7 +12,7 @@ Authors@R: c(
     person(c("Tyler", "W.", "H."), "Backman", role = "aut"))
 biocViews: Genetics, Infrastructure, DataImport, Sequencing, RNASeq, RiboSeq, ChIPSeq, MethylSeq, SNP, GeneExpression, Coverage, GeneSetEnrichment, Alignment, QualityControl, ImmunoOncology, ReportWriting, WorkflowStep, WorkflowManagement
 Description: systemPipeR is a workflow management environment for reproducible data analysis that integrates R with command-line software. It enables researchers to design, execute, and report complex workflows on local machines and HPC systems. The framework combines R-based analysis with external tools through a Common Workflow Language (CWL) interface, manages workflow dependencies and restart capabilities, and automatically generates reproducible scientific analysis reports. The companion package systemPipeRdata provides ready-to-use workflow templates that simplify workflow setup and customization. Alternatively, workflow templates can be loaded from dedicated GitHub repositories. 
-Depends: R (>= 4.1.0), Rsamtools (>= 1.31.2), Biostrings, ShortRead (>= 1.37.1), methods
+Depends: R (>= 4.6.0), Rsamtools (>= 1.31.2), Biostrings, ShortRead (>= 1.37.1), methods
 Imports: GenomicRanges, SummarizedExperiment, ggplot2, 
             yaml, stringr, magrittr, S4Vectors, crayon, BiocGenerics, htmlwidgets
 Suggests: BiocStyle, knitr, rmarkdown, systemPipeRdata, GenomicAlignments, grid, 
@@ -26,3 +26,4 @@ SystemRequirements: systemPipeR can be used to run external
         corresponding tool needs to be installed on a system.  
 License: Artistic-2.0 
 URL: https://github.com/tgirke/systemPipeR
+BugReports: https://github.com/tgirke/systemPipeR/issues
