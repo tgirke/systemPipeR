@@ -5,7 +5,6 @@
 \alias{catlist-methods}
 \alias{idconv}
 \alias{idconv-methods}
-\docType{data}
 \title{ catDB accessor methods}
 
 \description{
@@ -20,7 +19,18 @@
 }
 }
 \value{
-	various outputs
+	\code{catmap}: \code{list} of \code{data.frame}s with the gene-to-GO
+	mappings \code{D_BP}, \code{D_CC} and \code{D_MF} (columns \code{GOID} and
+	\code{GeneID}, plus \code{GOCAT} when built from \code{myfile} or
+	\code{Count} when built from \code{lib}), and \code{GO_DF} with the GO term
+	descriptions (columns \code{GOID}, \code{Term}, \code{Ont}).
+
+	\code{catlist}: \code{list} with components \code{L_BP}, \code{L_CC} and
+	\code{L_MF}, each a named \code{list} giving for every GO node the IDs of
+	the genes assigned to it or to any of its offspring nodes.
+
+	\code{idconv}: the ID conversion data provided to \code{makeCATdb} via
+	its \code{idconv} argument, or \code{NULL} if none was provided.
 }
 \author{
 Thomas Girke

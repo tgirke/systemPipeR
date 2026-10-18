@@ -321,6 +321,23 @@ Objects can be created by calls of the form \code{new("SYSargsList", ...)}.
               update or add a new column in \code{targetsWF} or \code{outfiles} slots }
   }
 }
+\value{
+Accessors (\code{stepsWF}, \code{targetsWF}, \code{outfiles},
+\code{dependency}, \code{projectInfo}, \code{runInfo}) return the content
+of the corresponding slot; \code{statusWF} returns the status of each step;
+\code{SE} returns the \code{SummarizedExperiment} list, or that of one
+\code{step}. \code{stepName} returns a \code{character} vector of step
+names; \code{cmdlist} and \code{baseCommand} return the command lines and
+base commands of the command-line steps; \code{SampleName},
+\code{targetsheader} and \code{yamlinput} return the sample names, targets
+header and parameters of a \code{step}. \code{getColumn} returns a named
+\code{character} vector from the \code{outfiles} or \code{targetsWF}
+\code{column} of a \code{step}. \code{subset} and \code{addResources} return
+the modified \code{SYSargsList}. \code{codeLine} prints the code of R steps,
+\code{viewEnvir} prints and returns the names of the objects in the
+workflow environment, and \code{copyEnvir} copies those objects to
+\code{new.env}. Replacement methods modify \code{x} in place.
+}
 \author{
 Daniela Cassol and Thomas Girke
 }

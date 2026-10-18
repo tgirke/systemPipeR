@@ -17,6 +17,12 @@ stored.}
 
 \item{verbose}{logical. The setting \code{FALSE} suppresses all print messages.}
 }
+\value{
+Called for its side effect: copies the \code{cwl} and \code{docopt.R}
+directories bundled with the installed package into \code{destdir} when
+\code{force = TRUE} or when the bundled version is newer. Returns
+\code{NULL} invisibly.
+}
 \author{
 Daniela Cassol
 }

@@ -163,6 +163,11 @@ LineWise(code, step_name = "default", codeChunkStart = integer(),
     \item{linewise}{ Coerce back to list \code{as(LineWise, "list")} }
  }
 }
+\value{
+\code{LineWise} returns a \code{LineWise} object containing the R code of
+the step and its metadata (step name, dependency, run settings, and the
+code chunk position when imported with \code{\link{importWF}}).
+}
 \author{
 Daniela Cassol
 }

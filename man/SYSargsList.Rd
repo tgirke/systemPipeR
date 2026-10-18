@@ -93,6 +93,11 @@ SYSargsList(sysargs = NULL, step_name = "default",
   a character vector of a full project path name. Default is the current path. 
 }
 }
+\value{
+A \code{SYSargsList} object containing the new workflow step. With
+\code{sysargs = NULL} and no \code{wf_file}/\code{input_file}, an empty
+\code{SYSargsList} container.
+}
 \author{
 Daniela Cassol
 }

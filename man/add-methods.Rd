@@ -28,6 +28,11 @@ addMetadata(x, ...)
     \item{addMetadata}{\code{signature(x = "SummarizedExperiment")}: add new dataset to \code{metadata} slot }
 }
 }
+\value{
+The \code{SummarizedExperiment} object \code{x}, with \code{value}
+appended as a new assay (\code{addAssay}) or as a new \code{metadata}
+element (\code{addMetadata}), named \code{xName}.
+}
 \author{
 Daniela Cassol
 }

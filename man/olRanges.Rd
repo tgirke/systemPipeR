@@ -21,6 +21,15 @@ olRanges(query, subject, output = "gr")
   By default \code{"gr"} returns any overlap with OL length information in an object of class \code{GRanges}. Also, can returns an object of class \code{data.frame} with \code{"df"}.
 }
 }
+\value{
+For \code{output = "df"}, a \code{data.frame} with one row per overlap
+between \code{query} and \code{subject}: the query and subject indices,
+start and end coordinates, the overlap start, end and length, the overlap
+as a percentage of the query and subject widths, and the overlap type
+(plus a \code{space} column for \code{GRanges}). For \code{output = "gr"},
+the \code{query} ranges as a \code{GRanges} object with these columns added
+as metadata.
+}
 \author{
 Thomas Girke
 }

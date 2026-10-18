@@ -36,6 +36,11 @@ supported e.g. \code{10:1}.
   Additional arguments to pass on to \code{configWF()}.
 }
 }
+\value{
+A \code{SYSargsList} object whose \code{sysconfig} records the selected
+steps and the path of the new R Markdown file, with the selected
+workflow steps and their code.
+}
 \author{
 Daniela Cassol
 }

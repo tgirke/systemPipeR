@@ -27,6 +27,13 @@ config.param(input_file = NULL, param, file = "default", silent = FALSE)
   if set to TRUE, all messages returned by the function will be suppressed.
 }
 }
+\value{
+The parameter list with the new or replaced settings from \code{param}.
+If \code{input_file} is a \code{SYSargs2} object, that object is returned
+instead, updated with the new parameters and with the path of the newly
+written param file. As a side effect, the parameters are written to a
+YAML file (see \code{file}).
+}
 \author{
 Daniela Cassol
 }

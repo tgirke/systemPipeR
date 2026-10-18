@@ -46,6 +46,11 @@ trimbatch(fq, pattern, internalmatch=FALSE, minpatternlength=8,
   \code{numeric} value representing maximun read length.
 }
 }
+\value{
+A \code{ShortReadQ} object with the trimmed reads that pass the length
+filter (\code{minreadlength} to \code{maxreadlength}) and the filters for
+\code{N} content (\code{Nnumber}) and homopolymer runs (\code{polyhomo}).
+}
 \author{
 Thomas Girke
 }

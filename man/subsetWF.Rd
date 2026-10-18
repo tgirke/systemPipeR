@@ -27,6 +27,12 @@ subsetWF(args, slot, subset=NULL, index=NULL, delete=FALSE)
   allows to delete a subset of files in the case of \code{slot="output"}. Default is \code{delete=NULL}.
 }
 }
+\value{
+For \code{subset = NULL}, a \code{list} with the requested \code{input},
+\code{output} or \code{step} elements of each sample. Otherwise a named
+\code{character} vector of the selected values. With \code{delete = TRUE},
+the selected output files are deleted as a side effect.
+}
 \author{
 Daniela Cassol and Thomas Girke
 }

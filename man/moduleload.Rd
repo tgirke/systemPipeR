@@ -48,6 +48,12 @@ For "unload" action will always return `TRUE` even if the module is not
 loaded at all or not found.
 }
 
+\value{
+\code{module} and its wrappers return, invisibly, an \code{EnvModules}
+object with the \code{available_modules}, \code{loaded_modules},
+\code{default_modules} and \code{modulecmd} information after the
+requested action; \code{modulelist} also prints the loaded modules.
+}
 \author{
 Tyler Backman, Jordan Hayes and Thomas Girke
 }

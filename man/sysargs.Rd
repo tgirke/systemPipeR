@@ -28,7 +28,6 @@
 \alias{sysargs-methods}
 \alias{outpaths}
 \alias{outpaths-methods}
-\docType{data}
 \title{ SYSargs accessor methods}
 
 \description{
@@ -43,7 +42,13 @@
 }
 }
 \value{
-	various outputs
+	The content of the slot of the same name in \code{x}:
+	\code{targetsin} and \code{targetsout} return a \code{data.frame},
+	\code{cores} a \code{numeric}, and \code{modules}, \code{software},
+	\code{other}, \code{reference}, \code{results}, \code{infile1},
+	\code{infile2}, \code{outfile1}, \code{sysargs} and \code{outpaths} a
+	\code{character} vector. \code{SampleName} returns the sample names, taken
+	from the names of the \code{sysargs} slot.
 }
 \author{
 Thomas Girke
