@@ -862,7 +862,7 @@ Rmd script, and then importing them from there into an R session.
 __1. Loading workflows from an R script.__ For importing workflow steps from an
 R script, the code of the workflow steps needs to be stored in an R script
 from where it can be imported with R's `source` command. Applied to
-the above workflow example (see [here](appendstep)), this means nothing else 
+the above workflow example (see [here](#appendstep)), this means nothing else 
 than saving the code of the four workflow steps to an R script where each step is declared 
 with the standard CL or R step syntax: `appendStep(sal) <- SYSargsList/LineWise(...)`. 
 At the beginning of the R script one has to load the `systemPipeR` library, and 
@@ -2675,7 +2675,7 @@ identifying differentially expressed genes (DEGs) in batch mode with
 _`edgeR`_'s GML method [@Robinson2010-uk] for any number of
 pairwise sample comparisons specified under the _`cmp`_ argument. Users
 are strongly encouraged to consult the 
-[_`edgeR`_](\href{http://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf) vignette 
+[_`edgeR`_](http://www.bioconductor.org/packages/devel/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf) vignette 
 for more detailed information on this topic and how to properly run _`edgeR`_ 
 on data sets with more complex experimental designs. 
 
