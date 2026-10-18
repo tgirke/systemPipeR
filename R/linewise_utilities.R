@@ -439,12 +439,11 @@ parseRmd <- function(file_path, ignore_eval = TRUE, verbose = FALSE) {
     prepro_dup <- lapply(prepro_steps, length) %>% unlist()
     if(any(prepro_dup > 1))
         stop("More than 1 preprocess delimitor `###pre-end` detected in SPR code chunk starting:",
-             paste(df$start[prepro_dup[prepro_dup > 1]], collapse = " "))
+             paste(df$start[prepro_dup > 1], collapse = " "))
     prepro_steps <- unlist(prepro_steps)
     if (verbose && sum(prepro_steps) == 0) message("No preprocessing code for SPR steps found")
     for(i in which(prepro_steps > 0)) {
-        df$prepro_lines[i] <- stringr::str_split(df$code[i], "\n") %>%
-            {.[[1]][1:prepro_steps[i]]} %>%
+        df$prepro_lines[i] <- stringr::str_split(df$code[i], "\n")[[1]][seq_len(prepro_steps[i])] %>%
             paste0(collapse = "\n")
     }
     df

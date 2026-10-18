@@ -10,7 +10,7 @@ test_that("check_SYSargs2_test", {
     ## build instance 
     ## loadWorkflow() // renderWF()
     dir_path <- system.file("extdata/cwl/test/", package = "systemPipeR")
-    dir.create("param/docopt.R/test", recursive = TRUE)
+    dir.create("param/docopt.R/test", recursive = TRUE, showWarnings = FALSE)
     file.copy(system.file("extdata/docopt.R/test/test.doc.R", package = "systemPipeR"), to = "param/docopt.R/test", recursive = TRUE)
     args <- loadWorkflow(targets = NULL, wf_file = "test.cwl",
                          input_file = "test.yml", dir_path = dir_path)
