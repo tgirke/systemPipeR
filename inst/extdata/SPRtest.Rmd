@@ -42,7 +42,7 @@ This is a test template.
 ## Required packages and resources
 
 The `systemPipeR` package needs to be loaded to perform the analysis steps shown in
-this report [@H_Backman2016-bt].
+this report [@Zhang2026-sp; @H_Backman2016-bt].
 
 ```{r load_systempiper, eval=TRUE, message=FALSE, spr=TRUE}
 appendStep(sal) <- LineWise(code={

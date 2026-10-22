@@ -23,3 +23,12 @@ generating publication-quality analysis reports.
 
 For additional information, please visit the project site [here](https://systempipe.org/about/project/#core-packages).
 
+### Citation
+
+If you use systemPipeR in published research, please cite:
+
+- Zhang L, Cassol D, Gongol B, Girke T (2026). systemPipeR: a multipurpose workflow management system for reproducible data analysis. *NAR Genomics and Bioinformatics*, 8(2), lqag032. [doi:10.1093/nargab/lqag032](https://doi.org/10.1093/nargab/lqag032)
+- Backman TWH, Girke T (2016). systemPipeR: NGS workflow and report generation environment. *BMC Bioinformatics*, 17(1), 388. [doi:10.1186/s12859-016-1241-0](https://doi.org/10.1186/s12859-016-1241-0)
+
+Or run `citation("systemPipeR")` in R.
+

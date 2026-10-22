@@ -15,6 +15,10 @@ All software-related questions should be posted to the Bioconductor Support Site
 The code can be viewed at the GitHub repository: https://github.com/tgirke/systemPipeR
 }
 \references{
+Zhang L, Cassol D, Gongol B, Girke T (2026) systemPipeR: a multipurpose workflow
+management system for reproducible data analysis. NAR Genomics and Bioinformatics
+8 (2): lqag032. https://doi.org/10.1093/nargab/lqag032
+
 Backman TWH, Girke T (2016) systemPipeR: NGS workflow and report generation 
 environment. BMC Bioinformatics 17 (1). https://doi.org/10.1186/s12859-016-1241-0
 }
